@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import DataPulseAIContent from "./Content";
+import PredictiveAnalyticsEngineContent from "./Content";
 import { siteUrl, softwareApplicationJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
-const title = "DataPulse AI — Real-Time Business Intelligence | YashOrbit";
+const title = "Predictive Analytics Engine — ML Forecasting for Orders & Labor | YashOrbit";
 const description =
-  "DataPulse AI connects to your data sources for real-time dashboards, AI-generated insights, and anomaly alerts on your business health.";
-const path = "/products/datapulse-ai";
+  "A predictive analytics engine forecasting orders, sales, and labor needs using machine learning, delivered via API for operations and workforce planning teams.";
+const path = "/products/predictive-analytics-engine";
 
 export const metadata: Metadata = {
   title,
@@ -21,13 +21,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function DataPulseAIPage() {
+export default function PredictiveAnalyticsEnginePage() {
   const jsonLd = [
-    softwareApplicationJsonLd({ name: "DataPulse AI", description, path, category: "BusinessApplication" }),
+    softwareApplicationJsonLd({ name: "Predictive Analytics Engine", description, path, category: "BusinessApplication" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Products", path: "/products" },
-      { name: "DataPulse AI", path },
+      { name: "Predictive Analytics Engine", path },
     ]),
   ];
 
@@ -36,7 +36,7 @@ export default function DataPulseAIPage() {
       {jsonLd.map((schema, i) => (
         <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       ))}
-      <DataPulseAIContent />
+      <PredictiveAnalyticsEngineContent />
     </>
   );
 }

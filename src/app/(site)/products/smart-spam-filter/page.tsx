@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import ConvoCraftContent from "./Content";
+import SmartSpamFilterContent from "./Content";
 import { siteUrl, softwareApplicationJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
-const title = "ConvoCraft — Conversational AI Platform | YashOrbit";
+const title = "Smart Spam Filter — Dynamic Spam Call Scoring & Routing | YashOrbit";
 const description =
-  "ConvoCraft is a no-code conversational AI platform for building and deploying chatbots and voice assistants across web, WhatsApp, and voice channels.";
-const path = "/products/convocraft";
+  "Smart Spam Filter is a PWA that filters spam calls in real time using dynamic spam scoring and intelligent routing logic.";
+const path = "/products/smart-spam-filter";
 
 export const metadata: Metadata = {
   title,
@@ -16,18 +16,18 @@ export const metadata: Metadata = {
     description,
     url: `${siteUrl}${path}`,
     siteName: "YashOrbit",
-    images: ["https://images.unsplash.com/photo-1611606063065-ee7946f0787a?q=80&w=1200&auto=format&fit=crop"],
+    images: ["https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1200&auto=format&fit=crop"],
     type: "website",
   },
 };
 
-export default function ConvoCraftPage() {
+export default function SmartSpamFilterPage() {
   const jsonLd = [
-    softwareApplicationJsonLd({ name: "ConvoCraft", description, path, category: "BusinessApplication" }),
+    softwareApplicationJsonLd({ name: "Smart Spam Filter", description, path, category: "BusinessApplication" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Products", path: "/products" },
-      { name: "ConvoCraft", path },
+      { name: "Smart Spam Filter", path },
     ]),
   ];
 
@@ -36,7 +36,7 @@ export default function ConvoCraftPage() {
       {jsonLd.map((schema, i) => (
         <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       ))}
-      <ConvoCraftContent />
+      <SmartSpamFilterContent />
     </>
   );
 }

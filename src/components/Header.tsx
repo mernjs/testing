@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Lightbulb, Layers, Glasses, Eye, LineChart, UserCog, FolderSearch, Scale, Activity, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel } from "lucide-react";
+import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera } from "lucide-react";
 import { useTheme } from "next-themes";
 
 function LinkedinIcon({ className }: { className?: string }) {
@@ -110,10 +110,10 @@ const navigation = [
     href: "/products",
     featured: { title: "Next-Gen Tools", description: "Proprietary software products.", image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=600&auto=format&fit=crop" },
     items: [
-      { name: "ConvoCraft", href: "/products/convocraft", description: "Conversational AI", icon: Zap },
-      { name: "Legal Tech", href: "/products/legal-tech", description: "Streamlined workflows", icon: Box },
-      { name: "DataPulse AI", href: "/products/datapulse-ai", description: "Real-time analytics", icon: LayoutGrid },
-      { name: "Illumate", href: "/products/illumate", description: "Intelligent illumination", icon: Lightbulb },
+      { name: "AI Construction Platform", href: "/products/ai-construction-platform", description: "Document analyzer & AI chat", icon: HardHat },
+      { name: "Smart Spam Filter", href: "/products/smart-spam-filter", description: "Dynamic spam call scoring", icon: Zap },
+      { name: "AI Voice Assistant", href: "/products/ai-voice-assistant", description: "Human-like voice AI", icon: Bot },
+      { name: "Predictive Analytics Engine", href: "/products/predictive-analytics-engine", description: "ML-driven forecasting", icon: LineChart },
     ],
   },
   {
@@ -186,12 +186,12 @@ const mobileNavigation = [
     href: "/products",
     icon: Box,
     items: [
-      { name: "ConvoCraft", href: "/products/convocraft", icon: MessageSquare },
-      { name: "Legal Tech", href: "/products/legal-tech", icon: Scale },
-      { name: "DataPulse AI", href: "/products/datapulse-ai", icon: Activity },
-      { name: "Illumate", href: "/products/illumate", icon: Lightbulb },
-      { name: "AI HR Assistant", href: "/products/ai-hr-assistant", icon: UserCog },
-      { name: "AI Powered Smart DMS", href: "/products/ai-powered-smart-dms", icon: FolderSearch },
+      { name: "AI Construction Platform", href: "/products/ai-construction-platform", icon: HardHat },
+      { name: "Smart Spam Filter", href: "/products/smart-spam-filter", icon: ShieldAlert },
+      { name: "AI Voice Assistant", href: "/products/ai-voice-assistant", icon: Bot },
+      { name: "Predictive Analytics Engine", href: "/products/predictive-analytics-engine", icon: LineChart },
+      { name: "Image Recognition System", href: "/products/image-recognition-system", icon: Camera },
+      { name: "AI Job Board Portal", href: "/products/ai-job-board-portal", icon: Briefcase },
     ],
   },
   {

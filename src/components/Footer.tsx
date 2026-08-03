@@ -147,18 +147,18 @@ export default function Footer() {
                 <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-secondary-foreground/50">Products</h3>
                 <ul role="list" className="mt-6 space-y-4">
                   <li>
-                    <Link href="/products/convocraft" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      ConvoCraft
+                    <Link href="/products/ai-construction-platform" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                      AI Construction Platform
                     </Link>
                   </li>
                   <li>
-                    <Link href="/products/illumate" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      Illumate
+                    <Link href="/products/smart-spam-filter" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                      Smart Spam Filter
                     </Link>
                   </li>
                   <li>
-                    <Link href="/products/datapulse-ai" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      DataPulse AI
+                    <Link href="/products/ai-voice-assistant" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                      AI Voice Assistant
                     </Link>
                   </li>
                 </ul>

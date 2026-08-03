@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import LegalTechContent from "./Content";
+import AIVoiceAssistantContent from "./Content";
 import { siteUrl, softwareApplicationJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
-const title = "Legal Tech — Legal Practice Management Software | YashOrbit";
+const title = "AI Voice Assistant — Human-Like Voice AI for Sports Fans | YashOrbit";
 const description =
-  "Legal Tech is a practice management suite for law firms — document automation, case tracking, compliance checklists, and a secure client portal.";
-const path = "/products/legal-tech";
+  "AI Voice Assistant is a sports-focused hybrid app that lets fans talk to a human-like AI agent over a live voice call for scores, standings, and updates.";
+const path = "/products/ai-voice-assistant";
 
 export const metadata: Metadata = {
   title,
@@ -16,18 +16,18 @@ export const metadata: Metadata = {
     description,
     url: `${siteUrl}${path}`,
     siteName: "YashOrbit",
-    images: ["https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=1200&auto=format&fit=crop"],
+    images: ["https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=1200&auto=format&fit=crop"],
     type: "website",
   },
 };
 
-export default function LegalTechPage() {
+export default function AIVoiceAssistantPage() {
   const jsonLd = [
-    softwareApplicationJsonLd({ name: "Legal Tech", description, path, category: "BusinessApplication" }),
+    softwareApplicationJsonLd({ name: "AI Voice Assistant", description, path, category: "BusinessApplication" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Products", path: "/products" },
-      { name: "Legal Tech", path },
+      { name: "AI Voice Assistant", path },
     ]),
   ];
 
@@ -36,7 +36,7 @@ export default function LegalTechPage() {
       {jsonLd.map((schema, i) => (
         <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       ))}
-      <LegalTechContent />
+      <AIVoiceAssistantContent />
     </>
   );
 }
