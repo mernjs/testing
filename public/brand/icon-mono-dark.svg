@@ -1,0 +1,22 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="YashOrbit">
+  <circle cx="32" cy="32" r="25.5" fill="none" stroke="#1b1a1a" stroke-width="1.5"/>
+  <path d="M4,50 C0,60 40,38 50,26" fill="none" stroke="#1b1a1a" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+  <g fill="#1b1a1a" opacity="0.3">
+    <circle cx="29.4" cy="24.6" r="0.92"/>
+    <circle cx="34.6" cy="24.6" r="0.92"/>
+    <circle cx="26.8" cy="29.8" r="0.98"/>
+    <circle cx="37.2" cy="29.8" r="0.98"/>
+    <circle cx="24.2" cy="35.0" r="0.9"/>
+    <circle cx="39.8" cy="35.0" r="0.9"/>
+    <circle cx="21.6" cy="19.4" r="0.75"/>
+    <circle cx="42.4" cy="19.4" r="0.75"/>
+    <circle cx="19.0" cy="45.4" r="0.6"/>
+    <circle cx="45.0" cy="45.4" r="0.6"/>
+  </g>
+  <path d="M17.6,17.6 L32,33.6" fill="none" stroke="#1b1a1a" stroke-width="8" stroke-linecap="round"/>
+  <path d="M32,33.6 L32,48" fill="none" stroke="#1b1a1a" stroke-width="8" stroke-linecap="round"/>
+  <path d="M46.4,17.6 L36,29.2" fill="none" stroke="#1b1a1a" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="34.4" cy="30.4" r="4.8" fill="#1b1a1a"/>
+  <path d="M8,44 C2,57 45,31 56,12" fill="none" stroke="#1b1a1a" stroke-width="3" stroke-linecap="round"/>
+  <polygon points="58.6,15.8 51.4,11.6 59.8,5.5" fill="#1b1a1a"/>
+</svg>
