@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import PredictiveAnalyticsEngineContent, { predictiveAnalyticsEngineFaqs } from "./Content";
+import PredictiveAnalyticsEngineContent from "./Content";
+import { predictiveAnalyticsEngineFaqs } from "./faqs";
 import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Predictive Analytics Engine — ML Forecasting for Orders & Labor | YashOrbit";

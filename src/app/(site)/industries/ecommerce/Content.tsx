@@ -14,14 +14,7 @@ import CaseStudyShowcase from "@/components/sections/CaseStudyShowcase";
 import FeatureHighlights from "@/components/sections/FeatureHighlights";
 import FAQAccordion from "@/components/sections/FAQAccordion";
 import DetailCTA from "@/components/sections/DetailCTA";
-
-export const ecommerceFaqs: { question: string; answer: string }[] = [
-  { question: "Can you migrate us from our current commerce platform?", answer: "Yes, we regularly migrate stores from platforms like Shopify, Magento, and WooCommerce to custom or headless architectures without disrupting live sales." },
-  { question: "How do you handle payment security and PCI compliance?", answer: "We minimize direct handling of card data through tokenization and PCI-compliant payment processors, and design checkout flows with PCI-DSS requirements in mind." },
-  { question: "Can the platform handle a major traffic spike, like a flash sale?", answer: "Yes, we load-test against simulated peak traffic and build on auto-scaling infrastructure specifically to hold up during sales events." },
-  { question: "Do you integrate with our existing inventory or ERP system?", answer: "Yes, we build integration layers that sync with most common inventory, ERP, and fulfillment systems rather than requiring a full replacement." },
-  { question: "Do you offer ongoing support after launch?", answer: "Yes, we offer SLA-backed support plans, including extended coverage around major sales events and peak seasons." },
-];
+import { ecommerceFaqs } from "./faqs";
 
 export default function EcommerceContent() {
   return (

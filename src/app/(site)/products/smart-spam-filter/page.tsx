@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import SmartSpamFilterContent, { smartSpamFilterFaqs } from "./Content";
+import SmartSpamFilterContent from "./Content";
+import { smartSpamFilterFaqs } from "./faqs";
 import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Smart Spam Filter — Dynamic Spam Call Scoring & Routing | YashOrbit";

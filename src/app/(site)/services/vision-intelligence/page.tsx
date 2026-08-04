@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import VisionIntelligenceContent, { visionIntelligenceFaqs } from "./Content";
+import VisionIntelligenceContent from "./Content";
+import { visionIntelligenceFaqs } from "./faqs";
 import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Vision Intelligence Services | YashOrbit";

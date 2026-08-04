@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import MobileAppDevelopmentContent, { mobileAppDevelopmentFaqs } from "./Content";
+import MobileAppDevelopmentContent from "./Content";
+import { mobileAppDevelopmentFaqs } from "./faqs";
 import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Mobile App Development Services | YashOrbit";

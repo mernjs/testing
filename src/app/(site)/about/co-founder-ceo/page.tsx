@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import CoFounderCeoContent, { coFounderCeoFaqs } from "./Content";
+import CoFounderCeoContent from "./Content";
+import { coFounderCeoFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Co-Founder & CEO | YashOrbit";

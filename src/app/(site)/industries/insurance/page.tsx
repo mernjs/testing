@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import InsuranceContent, { insuranceFaqs } from "./Content";
+import InsuranceContent from "./Content";
+import { insuranceFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Insurance Software Development | YashOrbit";

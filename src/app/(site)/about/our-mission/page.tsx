@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import OurMissionContent, { ourMissionFaqs } from "./Content";
+import OurMissionContent from "./Content";
+import { ourMissionFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Our Mission | YashOrbit";

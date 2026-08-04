@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import ComputerVisionContent, { computerVisionFaqs } from "./Content";
+import ComputerVisionContent from "./Content";
+import { computerVisionFaqs } from "./faqs";
 import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Computer Vision Training | YashOrbit";

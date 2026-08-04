@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import RealEstateContent, { realEstateFaqs } from "./Content";
+import RealEstateContent from "./Content";
+import { realEstateFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Real Estate Software Development | YashOrbit";

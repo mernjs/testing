@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import AIConstructionPlatformContent, { aiConstructionPlatformFaqs } from "./Content";
+import AIConstructionPlatformContent from "./Content";
+import { aiConstructionPlatformFaqs } from "./faqs";
 import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "AI Construction Platform — AI Document Analyzer & RAG Chat | YashOrbit";

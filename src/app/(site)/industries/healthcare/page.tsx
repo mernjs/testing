@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import HealthcareContent, { healthcareFaqs } from "./Content";
+import HealthcareContent from "./Content";
+import { healthcareFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Healthcare Software Development | YashOrbit";

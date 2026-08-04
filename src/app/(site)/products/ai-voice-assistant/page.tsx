@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import AIVoiceAssistantContent, { aiVoiceAssistantFaqs } from "./Content";
+import AIVoiceAssistantContent from "./Content";
+import { aiVoiceAssistantFaqs } from "./faqs";
 import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "AI Voice Assistant — Human-Like Voice AI for Sports Fans | YashOrbit";

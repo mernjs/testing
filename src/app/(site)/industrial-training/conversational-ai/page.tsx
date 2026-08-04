@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import ConversationalAiContent, { conversationalAiFaqs } from "./Content";
+import ConversationalAiContent from "./Content";
+import { conversationalAiFaqs } from "./faqs";
 import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Conversational AI Training | YashOrbit";

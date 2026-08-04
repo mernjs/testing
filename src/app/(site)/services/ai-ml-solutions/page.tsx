@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import AIMLSolutionsContent, { aiMlSolutionsFaqs } from "./Content";
+import AIMLSolutionsContent from "./Content";
+import { aiMlSolutionsFaqs } from "./faqs";
 import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "AI/ML Solutions Services | YashOrbit";

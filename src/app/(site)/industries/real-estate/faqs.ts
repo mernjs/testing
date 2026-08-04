@@ -1,0 +1,7 @@
+export const realEstateFaqs: { question: string; answer: string }[] = [
+  { question: "Can you integrate with our existing MLS or CRM?", answer: "Yes, we regularly integrate with common MLS/RETS feeds and CRM platforms, syncing listing and lead data without requiring a full migration." },
+  { question: "Do you build the 3D virtual tours yourselves?", answer: "We build the platform and rendering pipeline for interactive 3D tours and floor plans, integrating with capture tools and 3D scanning hardware your team already uses." },
+  { question: "How do you handle fair housing compliance in listings?", answer: "We build compliance-aware listing tools with disclosure templates and targeting safeguards to help your platform stay aligned with fair housing requirements, though final legal review is always recommended." },
+  { question: "Can tenants and owners use the same platform?", answer: "Yes, we typically build role-based portals so tenants, owners, and property managers each get the right view and permissions within one system." },
+  { question: "Do you offer ongoing support after launch?", answer: "Yes, we offer SLA-backed support plans and continue to refine the platform based on real usage and market data." },
+];

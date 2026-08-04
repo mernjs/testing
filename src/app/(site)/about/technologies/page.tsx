@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import TechnologiesContent, { technologiesFaqs } from "./Content";
+import TechnologiesContent from "./Content";
+import { technologiesFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Technologies | YashOrbit";

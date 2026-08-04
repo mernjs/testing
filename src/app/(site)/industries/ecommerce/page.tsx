@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import EcommerceContent, { ecommerceFaqs } from "./Content";
+import EcommerceContent from "./Content";
+import { ecommerceFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Ecommerce Software Development | YashOrbit";

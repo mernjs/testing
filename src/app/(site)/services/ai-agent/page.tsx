@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import AIAgentContent, { aiAgentFaqs } from "./Content";
+import AIAgentContent from "./Content";
+import { aiAgentFaqs } from "./faqs";
 import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "AI Agent Development Services | YashOrbit";

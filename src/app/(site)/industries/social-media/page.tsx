@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import SocialMediaContent, { socialMediaFaqs } from "./Content";
+import SocialMediaContent from "./Content";
+import { socialMediaFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Social Media Platform Development | YashOrbit";

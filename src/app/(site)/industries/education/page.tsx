@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import EducationContent, { educationFaqs } from "./Content";
+import EducationContent from "./Content";
+import { educationFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Education Software Development | YashOrbit";

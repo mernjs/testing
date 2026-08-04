@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import GenerativeAiContent, { generativeAiFaqs } from "./Content";
+import GenerativeAiContent from "./Content";
+import { generativeAiFaqs } from "./faqs";
 import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Generative AI Training | YashOrbit";

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import DesktopAppDevelopmentContent, { desktopAppDevelopmentFaqs } from "./Content";
+import DesktopAppDevelopmentContent from "./Content";
+import { desktopAppDevelopmentFaqs } from "./faqs";
 import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Desktop App Development Services | YashOrbit";

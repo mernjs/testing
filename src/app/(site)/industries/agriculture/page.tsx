@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import AgricultureContent, { agricultureFaqs } from "./Content";
+import AgricultureContent from "./Content";
+import { agricultureFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Agriculture Software Development | YashOrbit";

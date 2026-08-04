@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import ARVRContent, { arVrFaqs } from "./Content";
+import ARVRContent from "./Content";
+import { arVrFaqs } from "./faqs";
 import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "AR/VR Development Services | YashOrbit";

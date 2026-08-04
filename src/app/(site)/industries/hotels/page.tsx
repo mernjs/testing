@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import HotelsContent, { hotelsFaqs } from "./Content";
+import HotelsContent from "./Content";
+import { hotelsFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Hotel & Hospitality Software Development | YashOrbit";

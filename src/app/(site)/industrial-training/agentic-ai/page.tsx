@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import AgenticAiContent, { agenticAiFaqs } from "./Content";
+import AgenticAiContent from "./Content";
+import { agenticAiFaqs } from "./faqs";
 import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Agentic AI Training | YashOrbit";

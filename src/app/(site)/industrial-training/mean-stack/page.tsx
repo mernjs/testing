@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import MeanStackContent, { meanStackFaqs } from "./Content";
+import MeanStackContent from "./Content";
+import { meanStackFaqs } from "./faqs";
 import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "MEAN Stack Training | YashOrbit";

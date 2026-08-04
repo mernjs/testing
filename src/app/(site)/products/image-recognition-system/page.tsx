@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import ImageRecognitionSystemContent, { imageRecognitionSystemFaqs } from "./Content";
+import ImageRecognitionSystemContent from "./Content";
+import { imageRecognitionSystemFaqs } from "./faqs";
 import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Image Recognition System — Serverless Computer Vision at Scale | YashOrbit";

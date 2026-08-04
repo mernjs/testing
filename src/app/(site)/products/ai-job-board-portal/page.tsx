@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import AIJobBoardPortalContent, { aiJobBoardPortalFaqs } from "./Content";
+import AIJobBoardPortalContent from "./Content";
+import { aiJobBoardPortalFaqs } from "./faqs";
 import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "AI Job Board Portal — Job Listings, ATS & AI Matching | YashOrbit";

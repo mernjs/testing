@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import TravelContent, { travelFaqs } from "./Content";
+import TravelContent from "./Content";
+import { travelFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Travel Software Development | YashOrbit";

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import FinanceContent, { financeFaqs } from "./Content";
+import FinanceContent from "./Content";
+import { financeFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Finance Software Development | YashOrbit";

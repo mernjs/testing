@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import MernStackContent, { mernStackFaqs } from "./Content";
+import MernStackContent from "./Content";
+import { mernStackFaqs } from "./faqs";
 import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "MERN Stack Training | YashOrbit";

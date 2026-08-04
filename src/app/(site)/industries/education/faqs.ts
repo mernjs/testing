@@ -1,0 +1,7 @@
+export const educationFaqs: { question: string; answer: string }[] = [
+  { question: "Can you integrate with our existing SIS or LMS?", answer: "Yes, we regularly integrate with common student information systems and LMS platforms via LTI, SCORM, and custom APIs, so you don't have to migrate everything at once." },
+  { question: "How do you handle student data privacy?", answer: "We build to FERPA and COPPA requirements from the architecture stage, including data minimization, access controls, and audit logging for platforms handling minors' data." },
+  { question: "Can the platform handle both live and self-paced learning?", answer: "Yes, our LMS architecture supports live classrooms, on-demand content, and blended formats within the same platform and progress tracking system." },
+  { question: "What happens during high-traffic periods like enrollment week?", answer: "We design infrastructure with autoscaling and load testing specifically for predictable peak periods like registration and exam weeks." },
+  { question: "Do you offer ongoing support after launch?", answer: "Yes, we offer SLA-backed support plans and continue to iterate on the platform based on real usage and engagement data." },
+];

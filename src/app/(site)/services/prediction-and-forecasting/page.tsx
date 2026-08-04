@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import PredictionForecastingContent, { predictionForecastingFaqs } from "./Content";
+import PredictionForecastingContent from "./Content";
+import { predictionForecastingFaqs } from "./faqs";
 import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Prediction & Forecasting Services | YashOrbit";

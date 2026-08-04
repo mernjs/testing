@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import ConstructionContent, { constructionFaqs } from "./Content";
+import ConstructionContent from "./Content";
+import { constructionFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Construction Software Development | YashOrbit";
