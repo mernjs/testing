@@ -161,7 +161,7 @@ export default function ClientTestimonials({ icon: Icon, category }: ClientTesti
                   key={t.name}
                   onClick={() => { setDirection(i > index ? 1 : -1); setIndex(i); }}
                   aria-label={`Go to testimonial ${i + 1}`}
-                  className="group p-2.5 -m-2.5 flex items-center justify-center"
+                  className="group min-w-6 min-h-6 flex items-center justify-center"
                 >
                   <span className={`block h-2 rounded-full transition-all duration-300 ${i === index ? "w-8 bg-primary" : "w-2 bg-border group-hover:bg-primary/40"}`} />
                 </button>

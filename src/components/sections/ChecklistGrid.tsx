@@ -48,7 +48,7 @@ export default function ChecklistGrid({ id, title, description, items, columns =
                 {icon}
                 <div className="flex-1">
                   <div className="flex items-center justify-between gap-2">
-                    <h4 className="font-bold text-foreground mb-1.5 leading-snug">{item.title}</h4>
+                    <h3 className="font-bold text-foreground mb-1.5 leading-snug">{item.title}</h3>
                     {item.href && (
                       <ChevronRight className="w-4 h-4 flex-none text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                     )}

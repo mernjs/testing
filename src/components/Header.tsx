@@ -7,14 +7,6 @@ import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from
 import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera } from "lucide-react";
 import { useTheme } from "next-themes";
 
-function LinkedinIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.024-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-    </svg>
-  );
-}
-
 function InstagramIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
@@ -35,6 +27,14 @@ function FacebookIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
       <path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a7.66 7.66 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.191.302-.29.658-.29 1.108v1.541h3.777l-.383 3.667h-3.394v7.98H9.101z" />
+    </svg>
+  );
+}
+
+function GithubIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path fillRule="evenodd" clipRule="evenodd" d="M12 0C5.37 0 0 5.373 0 12c0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.333-1.754-1.333-1.754-1.089-.744.083-.729.083-.729 1.205.084 1.84 1.237 1.84 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.605-2.665-.303-5.466-1.332-5.466-5.93 0-1.31.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.61-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222 0 1.604-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 21.796 24 17.298 24 12c0-6.627-5.373-12-12-12z" />
     </svg>
   );
 }
@@ -73,10 +73,10 @@ function Logo({ className }: { className?: string }) {
 }
 
 const socialLinks = [
-  { name: "LinkedIn", href: "#", icon: LinkedinIcon },
-  { name: "Instagram", href: "#", icon: InstagramIcon },
-  { name: "X (Twitter)", href: "#", icon: XIcon },
-  { name: "Facebook", href: "#", icon: FacebookIcon },
+  { name: "Facebook", href: "https://www.facebook.com/yashorbittech", icon: FacebookIcon },
+  { name: "GitHub", href: "https://github.com/yashorbittech", icon: GithubIcon },
+  { name: "X (Twitter)", href: "https://x.com/yashorbittech", icon: XIcon },
+  { name: "Instagram", href: "https://www.instagram.com/yashorbittech", icon: InstagramIcon },
 ];
 
 const navigation = [
@@ -583,12 +583,12 @@ export default function Header() {
                         support@yashorbit.com
                       </span>
                     </a>
-                    <a href="tel:+918076623694" className="group flex items-center gap-3">
+                    <a href="tel:+918072278460" className="group flex items-center gap-3">
                       <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary">
                         <Phone className="h-4 w-4 text-primary transition-colors group-hover:text-primary-foreground" />
                       </span>
                       <span className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
-                        +91 8076623694
+                        +91 8072278460
                       </span>
                     </a>
                   </div>

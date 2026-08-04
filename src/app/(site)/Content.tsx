@@ -557,14 +557,15 @@ export default function HomeContent() {
                   <div className="w-24 h-24 rounded-[2rem] bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center mb-8">
                     {services[activeService].iconLarge}
                   </div>
-                  <h4 className="text-primary text-sm font-bold uppercase tracking-widest mb-6">
+                  <p className="text-primary text-sm font-bold uppercase tracking-widest mb-6">
                     {services[activeService].subtitle}
-                  </h4>
+                  </p>
                   <p className="text-white text-xl sm:text-2xl leading-relaxed mb-10 max-w-lg font-medium">
                     {services[activeService].desc}
                   </p>
                   <Link
                     href={services[activeService].href}
+                    aria-label={`Learn more about ${services[activeService].title}`}
                     className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black font-bold hover:scale-105 transition-all w-fit shadow-xl shadow-black/20"
                   >
                     Learn More <ArrowRight className="w-4 h-4" />
@@ -766,7 +767,7 @@ export default function HomeContent() {
                     {program.duration}
                   </span>
                 </div>
-                <h4 className="font-bold text-foreground mb-2 leading-snug">{program.title}</h4>
+                <h3 className="font-bold text-foreground mb-2 leading-snug">{program.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">{program.overview}</p>
                 <div className="flex flex-wrap gap-2 mb-6">
                   {program.tech.map((t) => (
@@ -775,7 +776,7 @@ export default function HomeContent() {
                     </span>
                   ))}
                 </div>
-                <Link href={program.href} className="inline-flex items-center text-sm font-bold text-foreground hover:text-primary hover:gap-3 gap-2 transition-all mt-auto">
+                <Link href={program.href} aria-label={`Learn more about ${program.title}`} className="inline-flex items-center text-sm font-bold text-foreground hover:text-primary hover:gap-3 gap-2 transition-all mt-auto">
                   Learn More <ArrowRight className="w-4 h-4" />
                 </Link>
               </motion.div>
@@ -893,7 +894,7 @@ export default function HomeContent() {
                   key={s.title}
                   onClick={() => { setStoryDirection(i > storyIndex ? 1 : -1); setStoryIndex(i); }}
                   aria-label={`Go to success story ${i + 1}`}
-                  className="group p-2.5 -m-2.5 flex items-center justify-center"
+                  className="group min-w-6 min-h-6 flex items-center justify-center"
                 >
                   <span className={`block h-2 rounded-full transition-all duration-300 ${i === storyIndex ? "w-8 bg-primary" : "w-2 bg-border group-hover:bg-primary/40"}`} />
                 </button>
@@ -968,9 +969,9 @@ export default function HomeContent() {
                 <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full w-fit mb-5">
                   {post.tag}
                 </span>
-                <h4 className="font-bold text-foreground mb-3 leading-snug">{post.title}</h4>
+                <h3 className="font-bold text-foreground mb-3 leading-snug">{post.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-6 flex-1">{post.excerpt}</p>
-                <Link href={post.href} className="inline-flex items-center text-sm font-bold text-foreground hover:text-primary hover:gap-3 gap-2 transition-all mt-auto">
+                <Link href={post.href} aria-label={`Read more about ${post.title}`} className="inline-flex items-center text-sm font-bold text-foreground hover:text-primary hover:gap-3 gap-2 transition-all mt-auto">
                   Read More <ArrowRight className="w-4 h-4" />
                 </Link>
               </motion.div>
@@ -1024,11 +1025,11 @@ export default function HomeContent() {
                   </div>
                   <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">support@yashorbit.com</span>
                 </a>
-                <a href="tel:+918076623694" className="flex items-center gap-3 group">
+                <a href="tel:+918072278460" className="flex items-center gap-3 group">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
                     <Phone className="w-4 h-4 text-primary group-hover:text-primary-foreground transition-colors" />
                   </div>
-                  <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">+91 8076623694</span>
+                  <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">+91 8072278460</span>
                 </a>
               </div>
             </motion.div>

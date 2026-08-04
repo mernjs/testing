@@ -51,9 +51,9 @@ export default function ArchitectureOverview({ title, description, layers, tone 
                   <div className="w-9 h-9 flex-none rounded-lg bg-primary/10 flex items-center justify-center">
                     <layer.icon className="w-4 h-4 text-primary" />
                   </div>
-                  <h4 className="font-bold text-foreground">{layer.name}</h4>
+                  <h3 className="font-bold text-foreground">{layer.name}</h3>
                 </div>
-                <h4 className="hidden sm:block font-bold text-foreground mb-2">{layer.name}</h4>
+                <h3 className="hidden sm:block font-bold text-foreground mb-2">{layer.name}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3">{layer.description}</p>
                 <span className="inline-flex text-xs font-semibold text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full">
                   {layer.tech}

@@ -45,7 +45,7 @@ export default function ProjectShowcase({ title, description, projects, tone = "
               <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
                 <FolderGit2 className="w-5 h-5 text-primary" />
               </div>
-              <h4 className="font-bold text-foreground mb-2 leading-snug">{project.title}</h4>
+              <h3 className="font-bold text-foreground mb-2 leading-snug">{project.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">{project.description}</p>
               <div className="flex flex-wrap gap-2">
                 {project.skills.map((skill) => (

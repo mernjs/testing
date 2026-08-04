@@ -165,7 +165,7 @@ export default function ContactContent() {
                   <div>
                     <h3 className="font-semibold text-foreground text-lg">Call us</h3>
                     <p className="text-muted-foreground mb-1">Available during business hours.</p>
-                    <a href="tel:+918076623694" className="text-primary font-medium hover:underline">+91 8076623694</a>
+                    <a href="tel:+918072278460" className="text-primary font-medium hover:underline">+91 8072278460</a>
                   </div>
                 </div>
 

@@ -48,7 +48,7 @@ export default function CaseStudyShowcase({ title, description, caseStudies, ton
                 {study.segment}
               </span>
 
-              <h4 className="text-xl font-bold text-foreground mb-4 leading-snug">{study.title}</h4>
+              <h3 className="text-xl font-bold text-foreground mb-4 leading-snug">{study.title}</h3>
 
               <div className="space-y-3 mb-6 flex-1">
                 <div className="flex gap-3">

@@ -63,10 +63,10 @@ export default function CurriculumTimeline({ title, description, modules, tone =
                 {String(i + 1).padStart(2, "0")}
               </div>
               <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-                <h4 className="text-lg font-bold text-foreground">
+                <h3 className="text-lg font-bold text-foreground">
                   <span className="sm:hidden text-primary">{String(i + 1).padStart(2, "0")}. </span>
                   {module.title}
-                </h4>
+                </h3>
                 <span className="text-xs font-semibold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full">
                   {module.duration}
                 </span>

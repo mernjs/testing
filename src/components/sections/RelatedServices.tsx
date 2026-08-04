@@ -45,7 +45,7 @@ export default function RelatedServices({ title = "Related services", services, 
                 <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
                   <service.icon className="w-5 h-5 text-primary" />
                 </div>
-                <h4 className="font-bold text-foreground mb-2 leading-snug">{service.title}</h4>
+                <h3 className="font-bold text-foreground mb-2 leading-snug">{service.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1">{service.description}</p>
                 <span className="inline-flex items-center text-sm font-semibold text-foreground group-hover:text-primary group-hover:gap-3 gap-2 transition-all">
                   Explore service <ArrowRight className="w-4 h-4" />

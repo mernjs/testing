@@ -64,7 +64,7 @@ export default function TeamGrid({ title, description, members, tone = "default"
               >
                 {member.initials}
               </div>
-              <h4 className="font-bold text-foreground mb-1">{member.name}</h4>
+              <h3 className="font-bold text-foreground mb-1">{member.name}</h3>
               <p className="text-sm font-semibold text-primary mb-3">{member.role}</p>
               <p className="text-sm text-muted-foreground leading-relaxed">{member.bio}</p>
             </motion.div>

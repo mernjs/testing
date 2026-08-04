@@ -11,7 +11,7 @@ export default function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6 rounded-3xl bg-background/10 border border-white/10 backdrop-blur-sm px-8 py-10 sm:px-12">
           <div className="text-center sm:text-left">
             <h3 className="text-2xl sm:text-3xl font-black tracking-tight">Have a project in mind?</h3>
-            <p className="text-sm sm:text-base text-secondary-foreground/70 mt-2">Let&apos;s turn your idea into a scalable product.</p>
+            <p className="text-sm sm:text-base text-secondary-foreground/85 mt-2">Let&apos;s turn your idea into a scalable product.</p>
           </div>
           <Link
             href="/contact"
@@ -106,7 +106,7 @@ export default function Footer() {
                 <span className="sr-only">Email</span>
                 <Mail className="h-4 w-4" aria-hidden="true" />
               </Link>
-              <Link href="#" className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors">
+              <Link href="tel:+918072278460" className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors">
                 <span className="sr-only">Phone</span>
                 <Phone className="h-4 w-4" aria-hidden="true" />
               </Link>
