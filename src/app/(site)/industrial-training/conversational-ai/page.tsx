@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import ConversationalAiContent from "./Content";
-import { socialMetadata, courseJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import ConversationalAiContent, { conversationalAiFaqs } from "./Content";
+import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Conversational AI Training | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function ConversationalAiTrainingPage() {
       { name: "Industrial Training", path: "/industrial-training" },
       { name: "Conversational AI", path },
     ]),
+    faqJsonLd(conversationalAiFaqs),
   ];
 
   return (

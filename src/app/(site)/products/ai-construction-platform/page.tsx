@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import AIConstructionPlatformContent from "./Content";
-import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import AIConstructionPlatformContent, { aiConstructionPlatformFaqs } from "./Content";
+import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "AI Construction Platform — AI Document Analyzer & RAG Chat | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function AIConstructionPlatformPage() {
       { name: "Products", path: "/products" },
       { name: "AI Construction Platform", path },
     ]),
+    faqJsonLd(aiConstructionPlatformFaqs),
   ];
 
   return (

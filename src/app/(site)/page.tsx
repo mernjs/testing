@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import HomeContent from "./Content";
-import { socialMetadata, defaultOgImage } from "@/lib/seo";
+import { homeFaqs } from "./faqs";
+import { socialMetadata, defaultOgImage, faqJsonLd } from "@/lib/seo";
 
 const title = "YashOrbit — Tech Solutions Built Around Your Business";
 const description =
@@ -26,5 +27,12 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <HomeContent />;
+  const jsonLd = faqJsonLd(homeFaqs);
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <HomeContent />
+    </>
+  );
 }

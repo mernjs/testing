@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import AIVoiceAssistantContent from "./Content";
-import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import AIVoiceAssistantContent, { aiVoiceAssistantFaqs } from "./Content";
+import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "AI Voice Assistant — Human-Like Voice AI for Sports Fans | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function AIVoiceAssistantPage() {
       { name: "Products", path: "/products" },
       { name: "AI Voice Assistant", path },
     ]),
+    faqJsonLd(aiVoiceAssistantFaqs),
   ];
 
   return (

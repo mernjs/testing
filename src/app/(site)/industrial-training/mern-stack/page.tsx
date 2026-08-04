@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import MernStackContent from "./Content";
-import { socialMetadata, courseJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import MernStackContent, { mernStackFaqs } from "./Content";
+import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "MERN Stack Training | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function MernStackTrainingPage() {
       { name: "Industrial Training", path: "/industrial-training" },
       { name: "MERN Stack", path },
     ]),
+    faqJsonLd(mernStackFaqs),
   ];
 
   return (

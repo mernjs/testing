@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import HealthcareContent from "./Content";
-import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import HealthcareContent, { healthcareFaqs } from "./Content";
+import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Healthcare Software Development | YashOrbit";
 const description =
@@ -18,15 +18,20 @@ export const metadata: Metadata = {
 };
 
 export default function HealthcarePage() {
-  const breadcrumbs = breadcrumbJsonLd([
-    { name: "Home", path: "/" },
-    { name: "Industries", path: "/industries" },
-    { name: "Healthcare", path },
-  ]);
+  const jsonLd = [
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Industries", path: "/industries" },
+      { name: "Healthcare", path },
+    ]),
+    faqJsonLd(healthcareFaqs),
+  ];
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />
+      {jsonLd.map((schema, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      ))}
       <HealthcareContent />
     </>
   );

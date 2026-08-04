@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import WebAppDevelopmentContent from "./Content";
-import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import WebAppDevelopmentContent, { webAppDevelopmentFaqs } from "./Content";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Web App Development Services | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function WebAppDevelopmentPage() {
       { name: "Services", path: "/services" },
       { name: "Web App Development", path },
     ]),
+    faqJsonLd(webAppDevelopmentFaqs),
   ];
 
   return (

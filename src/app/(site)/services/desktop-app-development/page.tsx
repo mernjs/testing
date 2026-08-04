@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import DesktopAppDevelopmentContent from "./Content";
-import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import DesktopAppDevelopmentContent, { desktopAppDevelopmentFaqs } from "./Content";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Desktop App Development Services | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function DesktopAppDevelopmentPage() {
       { name: "Services", path: "/services" },
       { name: "Desktop App Development", path },
     ]),
+    faqJsonLd(desktopAppDevelopmentFaqs),
   ];
 
   return (

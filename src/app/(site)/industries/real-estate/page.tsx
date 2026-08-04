@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import RealEstateContent from "./Content";
-import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import RealEstateContent, { realEstateFaqs } from "./Content";
+import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Real Estate Software Development | YashOrbit";
 const description =
@@ -18,15 +18,20 @@ export const metadata: Metadata = {
 };
 
 export default function RealEstatePage() {
-  const breadcrumbs = breadcrumbJsonLd([
-    { name: "Home", path: "/" },
-    { name: "Industries", path: "/industries" },
-    { name: "Real Estate", path },
-  ]);
+  const jsonLd = [
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Industries", path: "/industries" },
+      { name: "Real Estate", path },
+    ]),
+    faqJsonLd(realEstateFaqs),
+  ];
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />
+      {jsonLd.map((schema, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      ))}
       <RealEstateContent />
     </>
   );

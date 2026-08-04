@@ -1,0 +1,7 @@
+export const homeFaqs: { question: string; answer: string }[] = [
+  { question: "How do I get started working with YashOrbit?", answer: "Reach out through our contact form or book a consultation call — we'll start with a short discovery conversation to understand your goals before proposing an approach." },
+  { question: "Do you work with startups, or only established enterprises?", answer: "Both. We work with early-stage startups building their first product through to enterprises modernizing decades-old systems, adjusting our engagement model to fit." },
+  { question: "What industries do you have the most experience in?", answer: "We have particularly deep experience in EdTech, FinTech, and Real Estate Tech, alongside general SaaS and enterprise software across other sectors." },
+  { question: "How long does a typical project take?", answer: "It depends heavily on scope — an MVP can take 3-4 weeks, while a full enterprise platform typically runs 6-10+ weeks. AI-assisted workflows let us move faster than traditional timelines without cutting corners. We'll give you a realistic estimate during scoping." },
+  { question: "Do you offer support after a project launches?", answer: "Yes, SLA-backed support plans covering monitoring, bug fixes, and ongoing feature work are a standard part of how we deliver, not a separate add-on." },
+];

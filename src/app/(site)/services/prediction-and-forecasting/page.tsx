@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import PredictionForecastingContent from "./Content";
-import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import PredictionForecastingContent, { predictionForecastingFaqs } from "./Content";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Prediction & Forecasting Services | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function PredictionForecastingPage() {
       { name: "Services", path: "/services" },
       { name: "Prediction & Forecasting", path },
     ]),
+    faqJsonLd(predictionForecastingFaqs),
   ];
 
   return (

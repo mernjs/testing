@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import AIJobBoardPortalContent from "./Content";
-import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import AIJobBoardPortalContent, { aiJobBoardPortalFaqs } from "./Content";
+import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "AI Job Board Portal — Job Listings, ATS & AI Matching | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function AIJobBoardPortalPage() {
       { name: "Products", path: "/products" },
       { name: "AI Job Board Portal", path },
     ]),
+    faqJsonLd(aiJobBoardPortalFaqs),
   ];
 
   return (

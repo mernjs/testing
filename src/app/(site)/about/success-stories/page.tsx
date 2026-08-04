@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import SuccessStoriesContent from "./Content";
-import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import SuccessStoriesContent, { successStoriesFaqs } from "./Content";
+import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Success Stories | YashOrbit";
 const description =
@@ -18,15 +18,20 @@ export const metadata: Metadata = {
 };
 
 export default function SuccessStoriesPage() {
-  const breadcrumbs = breadcrumbJsonLd([
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "Success Stories", path },
-  ]);
+  const jsonLd = [
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "About", path: "/about" },
+      { name: "Success Stories", path },
+    ]),
+    faqJsonLd(successStoriesFaqs),
+  ];
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />
+      {jsonLd.map((schema, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      ))}
       <SuccessStoriesContent />
     </>
   );

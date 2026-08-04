@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import FinanceContent from "./Content";
-import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import FinanceContent, { financeFaqs } from "./Content";
+import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Finance Software Development | YashOrbit";
 const description =
@@ -18,15 +18,20 @@ export const metadata: Metadata = {
 };
 
 export default function FinancePage() {
-  const breadcrumbs = breadcrumbJsonLd([
-    { name: "Home", path: "/" },
-    { name: "Industries", path: "/industries" },
-    { name: "Finance", path },
-  ]);
+  const jsonLd = [
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Industries", path: "/industries" },
+      { name: "Finance", path },
+    ]),
+    faqJsonLd(financeFaqs),
+  ];
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />
+      {jsonLd.map((schema, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      ))}
       <FinanceContent />
     </>
   );

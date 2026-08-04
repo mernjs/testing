@@ -1,0 +1,7 @@
+export const ourMissionFaqs: { question: string; answer: string }[] = [
+  { question: "How long has YashOrbit been in business?", answer: "We were founded in 2026 — we're a young, senior-led team building our early track record with our first clients, backed by our founders' combined 14+ years in the industry." },
+  { question: "What industries do you typically work with?", answer: "We work across EdTech, FinTech, Real Estate Tech, and general SaaS/enterprise software, with deep expertise concentrated in AI-driven products." },
+  { question: "Do you only work with large enterprises?", answer: "No, we work with early-stage startups through to established enterprises, adjusting our engagement model to fit the size and stage of your team." },
+  { question: "How do you stay current with fast-moving AI technology?", answer: "We dedicate internal R&D time, maintain an active applied-AI practice, and continuously evaluate new models and frameworks as part of how we operate, not as a side project." },
+  { question: "What makes YashOrbit different from other dev agencies?", answer: "Our combination of senior-led delivery, transparent communication, and genuine AI depth. Most agencies are strong in one of those; we've built our culture around all three." },
+];

@@ -14,6 +14,7 @@ import ProjectShowcase from "@/components/sections/ProjectShowcase";
 import FeatureHighlights from "@/components/sections/FeatureHighlights";
 import FAQAccordion from "@/components/sections/FAQAccordion";
 import DetailCTA from "@/components/sections/DetailCTA";
+import { computerVisionFaqs } from "./faqs";
 
 export default function ComputerVisionContent() {
   return (
@@ -170,13 +171,7 @@ export default function ComputerVisionContent() {
 
       <FAQAccordion
         tone="muted"
-        faqs={[
-          { question: "Do I need a strong math background to join?", answer: "No. Basic familiarity with linear algebra and statistics helps you understand concepts faster, but we teach the practical skills needed without requiring a formal math background." },
-          { question: "Will I train models from scratch or use pretrained ones?", answer: "Both — you'll learn CNN fundamentals by training small models, then use transfer learning with pretrained models for the more complex detection and recognition projects." },
-          { question: "Does the training cover real-time video, not just static images?", answer: "Yes, video analytics is a dedicated module covering object tracking, motion detection, and building real-time processing pipelines." },
-          { question: "What hardware do I need for this course?", answer: "A standard laptop is enough for most of the coursework; for heavier training workloads we guide you through using free or low-cost cloud GPU options." },
-          { question: "Do you provide a certificate on completion?", answer: "Yes, you receive a certificate of completion once you finish the curriculum and submit your capstone project." },
-        ]}
+        faqs={computerVisionFaqs}
       />
 
       <DetailCTA

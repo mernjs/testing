@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import ARVRContent from "./Content";
-import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import ARVRContent, { arVrFaqs } from "./Content";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "AR/VR Development Services | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function ARVRPage() {
       { name: "Services", path: "/services" },
       { name: "AR/VR", path },
     ]),
+    faqJsonLd(arVrFaqs),
   ];
 
   return (

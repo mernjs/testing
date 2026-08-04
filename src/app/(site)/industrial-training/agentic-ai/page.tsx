@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import AgenticAiContent from "./Content";
-import { socialMetadata, courseJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import AgenticAiContent, { agenticAiFaqs } from "./Content";
+import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Agentic AI Training | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function AgenticAiTrainingPage() {
       { name: "Industrial Training", path: "/industrial-training" },
       { name: "Agentic AI", path },
     ]),
+    faqJsonLd(agenticAiFaqs),
   ];
 
   return (

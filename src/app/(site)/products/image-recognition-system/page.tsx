@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import ImageRecognitionSystemContent from "./Content";
-import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import ImageRecognitionSystemContent, { imageRecognitionSystemFaqs } from "./Content";
+import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Image Recognition System — Serverless Computer Vision at Scale | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function ImageRecognitionSystemPage() {
       { name: "Products", path: "/products" },
       { name: "Image Recognition System", path },
     ]),
+    faqJsonLd(imageRecognitionSystemFaqs),
   ];
 
   return (

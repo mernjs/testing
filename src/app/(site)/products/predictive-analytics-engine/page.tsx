@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import PredictiveAnalyticsEngineContent from "./Content";
-import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import PredictiveAnalyticsEngineContent, { predictiveAnalyticsEngineFaqs } from "./Content";
+import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Predictive Analytics Engine — ML Forecasting for Orders & Labor | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function PredictiveAnalyticsEnginePage() {
       { name: "Products", path: "/products" },
       { name: "Predictive Analytics Engine", path },
     ]),
+    faqJsonLd(predictiveAnalyticsEngineFaqs),
   ];
 
   return (

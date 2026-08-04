@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import SmartSpamFilterContent from "./Content";
-import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import SmartSpamFilterContent, { smartSpamFilterFaqs } from "./Content";
+import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Smart Spam Filter — Dynamic Spam Call Scoring & Routing | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function SmartSpamFilterPage() {
       { name: "Products", path: "/products" },
       { name: "Smart Spam Filter", path },
     ]),
+    faqJsonLd(smartSpamFilterFaqs),
   ];
 
   return (

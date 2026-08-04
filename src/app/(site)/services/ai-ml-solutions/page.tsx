@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import AIMLSolutionsContent from "./Content";
-import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import AIMLSolutionsContent, { aiMlSolutionsFaqs } from "./Content";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "AI/ML Solutions Services | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function AIMLSolutionsPage() {
       { name: "Services", path: "/services" },
       { name: "AI/ML Solutions", path },
     ]),
+    faqJsonLd(aiMlSolutionsFaqs),
   ];
 
   return (

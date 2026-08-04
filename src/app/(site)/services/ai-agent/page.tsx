@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import AIAgentContent from "./Content";
-import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import AIAgentContent, { aiAgentFaqs } from "./Content";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "AI Agent Development Services | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function AIAgentPage() {
       { name: "Services", path: "/services" },
       { name: "AI Agent", path },
     ]),
+    faqJsonLd(aiAgentFaqs),
   ];
 
   return (

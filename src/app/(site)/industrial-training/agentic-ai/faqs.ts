@@ -1,0 +1,7 @@
+export const agenticAiFaqs: { question: string; answer: string }[] = [
+  { question: "What's the difference between this and the Generative AI program?", answer: "Generative AI focuses on building applications around LLMs (RAG, prompting, fine-tuning). Agentic AI goes further — teaching agents to plan, use tools, and act autonomously toward a goal across multiple steps." },
+  { question: "Do I need to take the Generative AI course first?", answer: "It's not mandatory, but familiarity with LLM APIs helps you move faster in the first two modules. We do cover the essentials you need along the way." },
+  { question: "How do you handle the risks of autonomous agents?", answer: "Safety is built into the curriculum from week one — guardrails, human-in-the-loop checkpoints, and evaluation are core modules, not optional extras." },
+  { question: "Will I build multi-agent systems, or just single agents?", answer: "Both — you'll start with single-agent planning and tool use, then move on to a dedicated multi-agent orchestration module and project." },
+  { question: "Do you provide a certificate on completion?", answer: "Yes, you receive a certificate of completion once you finish the curriculum and submit your capstone project." },
+];

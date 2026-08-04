@@ -139,6 +139,26 @@ export function softwareApplicationJsonLd({ name, description, path, category = 
   };
 }
 
+interface FaqJsonLdInput {
+  question: string;
+  answer: string;
+}
+
+export function faqJsonLd(faqs: FaqJsonLdInput[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
+}
+
 interface BreadcrumbItem {
   name: string;
   path: string;

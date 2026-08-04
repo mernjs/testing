@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import MeanStackContent from "./Content";
-import { socialMetadata, courseJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import MeanStackContent, { meanStackFaqs } from "./Content";
+import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "MEAN Stack Training | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function MeanStackTrainingPage() {
       { name: "Industrial Training", path: "/industrial-training" },
       { name: "MEAN Stack", path },
     ]),
+    faqJsonLd(meanStackFaqs),
   ];
 
   return (

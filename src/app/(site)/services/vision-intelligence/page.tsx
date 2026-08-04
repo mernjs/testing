@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import VisionIntelligenceContent from "./Content";
-import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import VisionIntelligenceContent, { visionIntelligenceFaqs } from "./Content";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Vision Intelligence Services | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function VisionIntelligencePage() {
       { name: "Services", path: "/services" },
       { name: "Vision Intelligence", path },
     ]),
+    faqJsonLd(visionIntelligenceFaqs),
   ];
 
   return (

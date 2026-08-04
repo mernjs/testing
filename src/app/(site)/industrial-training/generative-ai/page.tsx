@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import GenerativeAiContent from "./Content";
-import { socialMetadata, courseJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import GenerativeAiContent, { generativeAiFaqs } from "./Content";
+import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Generative AI Training | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function GenerativeAiTrainingPage() {
       { name: "Industrial Training", path: "/industrial-training" },
       { name: "Generative AI", path },
     ]),
+    faqJsonLd(generativeAiFaqs),
   ];
 
   return (

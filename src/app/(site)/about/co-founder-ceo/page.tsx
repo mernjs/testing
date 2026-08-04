@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import CoFounderCeoContent from "./Content";
-import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import CoFounderCeoContent, { coFounderCeoFaqs } from "./Content";
+import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Co-Founder & CEO | YashOrbit";
 const description =
@@ -18,15 +18,20 @@ export const metadata: Metadata = {
 };
 
 export default function CoFounderCeoPage() {
-  const breadcrumbs = breadcrumbJsonLd([
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "Co-Founder & CEO", path },
-  ]);
+  const jsonLd = [
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "About", path: "/about" },
+      { name: "Co-Founder & CEO", path },
+    ]),
+    faqJsonLd(coFounderCeoFaqs),
+  ];
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />
+      {jsonLd.map((schema, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      ))}
       <CoFounderCeoContent />
     </>
   );

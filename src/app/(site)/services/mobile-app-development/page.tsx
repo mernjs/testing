@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import MobileAppDevelopmentContent from "./Content";
-import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import MobileAppDevelopmentContent, { mobileAppDevelopmentFaqs } from "./Content";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Mobile App Development Services | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function MobileAppDevelopmentPage() {
       { name: "Services", path: "/services" },
       { name: "Mobile App Development", path },
     ]),
+    faqJsonLd(mobileAppDevelopmentFaqs),
   ];
 
   return (

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import ComputerVisionContent from "./Content";
-import { socialMetadata, courseJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import ComputerVisionContent, { computerVisionFaqs } from "./Content";
+import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Computer Vision Training | YashOrbit";
 const description =
@@ -25,6 +25,7 @@ export default function ComputerVisionTrainingPage() {
       { name: "Industrial Training", path: "/industrial-training" },
       { name: "Computer Vision", path },
     ]),
+    faqJsonLd(computerVisionFaqs),
   ];
 
   return (

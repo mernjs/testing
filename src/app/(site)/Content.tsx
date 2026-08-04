@@ -21,6 +21,7 @@ import TeamGrid from "@/components/sections/TeamGrid";
 import FAQAccordion from "@/components/sections/FAQAccordion";
 import SectionHeader from "@/components/sections/SectionHeader";
 import { brandify } from "@/lib/brand";
+import { homeFaqs } from "./faqs";
 
 const stats = [
   { value: 10, suffix: "+", label: "Years Founder Experience", icon: Trophy },
@@ -113,14 +114,6 @@ const insights = [
   { title: "Where Applied AI Actually Pays Off in 2026", excerpt: "Most businesses don't need a chatbot — they need automation grounded in their own data. Here's where we see AI creating real ROI right now.", href: "/services/ai-ml-solutions", tag: "AI Trends" },
   { title: "What We're Learning With Our First Projects", excerpt: "Early patterns from our client engagements so far: the technical decisions that consistently paid off, and the ones that didn't.", href: "/about/success-stories", tag: "Company Insights" },
   { title: "Why We Built an Industrial Training Program", excerpt: "How a talent pipeline problem turned into one of our most rewarding initiatives — and what it means for the businesses we serve.", href: "/industrial-training", tag: "Company News" },
-];
-
-const homeFaqs = [
-  { question: brandify("How do I get started working with YashOrbit?"), answer: "Reach out through our contact form or book a consultation call — we'll start with a short discovery conversation to understand your goals before proposing an approach." },
-  { question: "Do you work with startups, or only established enterprises?", answer: "Both. We work with early-stage startups building their first product through to enterprises modernizing decades-old systems, adjusting our engagement model to fit." },
-  { question: "What industries do you have the most experience in?", answer: "We have particularly deep experience in EdTech, FinTech, and Real Estate Tech, alongside general SaaS and enterprise software across other sectors." },
-  { question: "How long does a typical project take?", answer: "It depends heavily on scope — an MVP can take 3-4 weeks, while a full enterprise platform typically runs 6-10+ weeks. AI-assisted workflows let us move faster than traditional timelines without cutting corners. We'll give you a realistic estimate during scoping." },
-  { question: "Do you offer support after a project launches?", answer: "Yes, SLA-backed support plans covering monitoring, bug fixes, and ongoing feature work are a standard part of how we deliver, not a separate add-on." },
 ];
 
 const fadeIn = {
@@ -989,7 +982,7 @@ export default function HomeContent() {
         category="FAQs"
         icon={HelpCircle}
         title="Frequently asked questions"
-        faqs={homeFaqs}
+        faqs={homeFaqs.map((f) => ({ question: brandify(f.question), answer: f.answer }))}
       />
 
       {/* The Execution: Think. Build. Scale. */}
