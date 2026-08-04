@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const title = "YashOrbit - Empowering Businesses via Next-Gen Tech Solutions";
-const description = "YashOrbit addresses unique strategic and technical challenges of businesses across industries by providing innovative and impactful solutions in web, mobile, and AI/ML software development.";
+const title = "YashOrbit - Web, Mobile & AI/ML Software Development";
+const description = "YashOrbit is a software development company that partners with growing businesses to design, build, and scale web, mobile, and AI/ML products — from MVPs to production-grade systems.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

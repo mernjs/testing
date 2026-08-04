@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import HomeContent from "./Content";
 import { socialMetadata, defaultOgImage } from "@/lib/seo";
 
-const title = "YashOrbit — Empowering Businesses via Next-Gen Tech Solutions";
+const title = "YashOrbit — Tech Solutions Built Around Your Business";
 const description =
-  "YashOrbit partners with growing businesses to design, build, and scale web, mobile, and AI/ML software — from full-stack products to production-grade AI systems.";
+  "YashOrbit builds tech solutions designed around your business goals — web, mobile, and AI/ML systems engineered to cut costs, accelerate growth, and give your team a lasting competitive edge.";
 const path = "/";
 
 export const metadata: Metadata = {
@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   keywords: [
     "YashOrbit",
     "software development company",
+    "business technology solutions",
     "web app development",
     "mobile app development",
     "AI/ML solutions",
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
     "digital transformation",
   ],
   alternates: { canonical: path },
-  ...socialMetadata({ title, description, path, image: defaultOgImage, imageAlt: "YashOrbit — Next-Gen Tech Solutions" }),
+  ...socialMetadata({ title, description, path, image: defaultOgImage, imageAlt: "YashOrbit — Tech Solutions Built Around Your Business" }),
 };
 
 export default function Home() {

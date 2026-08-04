@@ -95,7 +95,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm leading-6 text-secondary-foreground/70 max-w-xs">
-              Empowering Businesses via Next-Gen Tech Solutions. We deliver innovative and impactful solutions leveraging Web 3.0, AI, and Industry 4.0.
+              Tech solutions built around your business goals — web, mobile, and AI/ML systems engineered to accelerate growth and deliver measurable results.
             </p>
             <div className="flex gap-3">
               <Link href="#" className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors">
