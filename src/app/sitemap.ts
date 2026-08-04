@@ -37,7 +37,6 @@ const routes = [
   "/services/desktop-app-development",
   "/services/mobile-app-development",
   "/services/prediction-and-forecasting",
-  "/services/prediction-forecasting",
   "/services/vision-intelligence",
   "/services/web-app-development",
   "/industrial-training",

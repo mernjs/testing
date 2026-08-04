@@ -1,24 +1,20 @@
 import type { Metadata } from "next";
 import ComputerVisionContent from "./Content";
-import { siteUrl, courseJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import { socialMetadata, courseJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 const title = "Computer Vision Training | YashOrbit";
 const description =
   "Hands-on Computer Vision training covering OpenCV, CNNs, object detection, OCR, and video analytics — build and deploy real image and video intelligence systems.";
 const path = "/industrial-training/computer-vision";
 
+const image = "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200&auto=format&fit=crop";
+
 export const metadata: Metadata = {
   title,
   description,
+  keywords: ["Computer Vision Training", "OpenCV", "CNNs", "Edge Deploy", "YashOrbit"],
   alternates: { canonical: path },
-  openGraph: {
-    title,
-    description,
-    url: `${siteUrl}${path}`,
-    siteName: "YashOrbit",
-    images: ["https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200&auto=format&fit=crop"],
-    type: "website",
-  },
+  ...socialMetadata({ title, description, path, image }),
 };
 
 export default function ComputerVisionTrainingPage() {

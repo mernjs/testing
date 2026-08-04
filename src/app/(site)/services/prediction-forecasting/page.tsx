@@ -2,9 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, ChevronRight } from "lucide-react";
 
+// This route duplicates /services/prediction-and-forecasting (the canonical,
+// fully-featured version of this page). Canonicalizing here instead of
+// removing the route avoids breaking any inbound links, while telling search
+// engines not to index this as separate duplicate content.
 export const metadata: Metadata = {
   title: "Prediction & Forecasting | YashOrbit",
   description: "Turn historical data into actionable foresight with advanced statistical modeling.",
+  alternates: { canonical: "/services/prediction-and-forecasting" },
+  robots: { index: false, follow: true },
 };
 
 export default function Page() {

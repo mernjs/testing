@@ -1,9 +1,14 @@
 export const siteUrl = "https://yashorbit.com";
+export const siteName = "YashOrbit";
+
+// 512x512 brand tile — used as the sitewide fallback social preview image
+// for routes that don't set their own page-specific image.
+export const defaultOgImage = `${siteUrl}/brand/social-avatar.png`;
 
 export const organizationInfo = {
-  name: "YashOrbit",
+  name: siteName,
   url: siteUrl,
-  logo: `${siteUrl}/logo.png`,
+  logo: `${siteUrl}/brand/icon-tile-512.png`,
 };
 
 export function organizationJsonLd() {
@@ -13,6 +18,48 @@ export function organizationJsonLd() {
     name: organizationInfo.name,
     url: organizationInfo.url,
     logo: organizationInfo.logo,
+  };
+}
+
+export function websiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteName,
+    url: siteUrl,
+  };
+}
+
+interface SocialMetadataInput {
+  title: string;
+  description: string;
+  path: string;
+  image: string;
+  imageAlt?: string;
+}
+
+/**
+ * Builds matching openGraph + twitter metadata fields for a page. `image` may
+ * be an absolute URL (e.g. Unsplash) or a site-relative path (resolved via
+ * metadataBase).
+ */
+export function socialMetadata({ title, description, path, image, imageAlt }: SocialMetadataInput) {
+  return {
+    openGraph: {
+      title,
+      description,
+      url: `${siteUrl}${path}`,
+      siteName,
+      images: [{ url: image, alt: imageAlt ?? title }],
+      type: "website" as const,
+      locale: "en_US",
+    },
+    twitter: {
+      card: "summary_large_image" as const,
+      title,
+      description,
+      images: [image],
+    },
   };
 }
 

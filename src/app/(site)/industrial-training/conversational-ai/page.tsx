@@ -1,24 +1,20 @@
 import type { Metadata } from "next";
 import ConversationalAiContent from "./Content";
-import { siteUrl, courseJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import { socialMetadata, courseJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 const title = "Conversational AI Training | YashOrbit";
 const description =
   "Practical Conversational AI training covering NLU, dialogue management, and voice interfaces — design and deploy chatbots and voice assistants for real businesses.";
 const path = "/industrial-training/conversational-ai";
 
+const image = "https://images.unsplash.com/photo-1531746790731-6c087fecd65a?q=80&w=1200&auto=format&fit=crop";
+
 export const metadata: Metadata = {
   title,
   description,
+  keywords: ["Conversational AI Training", "NLU", "Dialogue Mgmt", "Voice", "YashOrbit"],
   alternates: { canonical: path },
-  openGraph: {
-    title,
-    description,
-    url: `${siteUrl}${path}`,
-    siteName: "YashOrbit",
-    images: ["https://images.unsplash.com/photo-1531746790731-6c087fecd65a?q=80&w=1200&auto=format&fit=crop"],
-    type: "website",
-  },
+  ...socialMetadata({ title, description, path, image }),
 };
 
 export default function ConversationalAiTrainingPage() {

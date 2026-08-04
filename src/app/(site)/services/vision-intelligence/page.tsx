@@ -1,24 +1,20 @@
 import type { Metadata } from "next";
 import VisionIntelligenceContent from "./Content";
-import { siteUrl, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 const title = "Vision Intelligence Services | YashOrbit";
 const description =
   "Computer vision solutions for business — real-time object detection, quality inspection, retail analytics, and document OCR, deployed to cloud or edge.";
 const path = "/services/vision-intelligence";
 
+const image = "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200&auto=format&fit=crop";
+
 export const metadata: Metadata = {
   title,
   description,
+  keywords: ["Vision Intelligence Services", "Real-Time Detection", "Edge Deployment", "AI Powered", "YashOrbit"],
   alternates: { canonical: path },
-  openGraph: {
-    title,
-    description,
-    url: `${siteUrl}${path}`,
-    siteName: "YashOrbit",
-    images: ["https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200&auto=format&fit=crop"],
-    type: "website",
-  },
+  ...socialMetadata({ title, description, path, image }),
 };
 
 export default function VisionIntelligencePage() {

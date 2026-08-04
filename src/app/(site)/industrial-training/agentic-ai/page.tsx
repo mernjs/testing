@@ -1,24 +1,20 @@
 import type { Metadata } from "next";
 import AgenticAiContent from "./Content";
-import { siteUrl, courseJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import { socialMetadata, courseJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 const title = "Agentic AI Training | YashOrbit";
 const description =
   "Applied Agentic AI training covering tool use, planning, memory, and multi-agent orchestration — design autonomous AI systems that plan and act, not just chat.";
 const path = "/industrial-training/agentic-ai";
 
+const image = "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1200&auto=format&fit=crop";
+
 export const metadata: Metadata = {
   title,
   description,
+  keywords: ["Agentic AI Training", "Python", "Agent Frameworks", "Memory", "YashOrbit"],
   alternates: { canonical: path },
-  openGraph: {
-    title,
-    description,
-    url: `${siteUrl}${path}`,
-    siteName: "YashOrbit",
-    images: ["https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1200&auto=format&fit=crop"],
-    type: "website",
-  },
+  ...socialMetadata({ title, description, path, image }),
 };
 
 export default function AgenticAiTrainingPage() {

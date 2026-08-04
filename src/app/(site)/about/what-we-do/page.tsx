@@ -1,24 +1,20 @@
 import type { Metadata } from "next";
 import WhatWeDoContent from "./Content";
-import { siteUrl, breadcrumbJsonLd } from "@/lib/seo";
+import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
 
 const title = "What We Do | YashOrbit";
 const description =
   "YashOrbit is a full-stack product engineering company building web, mobile, and AI-native software — explore our expertise, services, and development process.";
 const path = "/about/what-we-do";
 
+const image = "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1200&auto=format&fit=crop";
+
 export const metadata: Metadata = {
   title,
   description,
+  keywords: ["What We Do", "Full-Stack Delivery", "AI-First Approach", "Senior-led Team", "YashOrbit"],
   alternates: { canonical: path },
-  openGraph: {
-    title,
-    description,
-    url: `${siteUrl}${path}`,
-    siteName: "YashOrbit",
-    images: ["https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1200&auto=format&fit=crop"],
-    type: "website",
-  },
+  ...socialMetadata({ title, description, path, image }),
 };
 
 export default function WhatWeDoPage() {

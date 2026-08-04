@@ -1,24 +1,20 @@
 import type { Metadata } from "next";
 import AIConstructionPlatformContent from "./Content";
-import { siteUrl, softwareApplicationJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 const title = "AI Construction Platform — AI Document Analyzer & RAG Chat | YashOrbit";
 const description =
   "An AI-powered construction web app with subscription-based access, an AI document analyzer, and a RAG-based AI chat for project teams.";
 const path = "/products/ai-construction-platform";
 
+const image = "https://images.unsplash.com/photo-1571624436279-b272aff752b5?q=80&w=1200&auto=format&fit=crop";
+
 export const metadata: Metadata = {
   title,
   description,
+  keywords: ["AI Construction Platform", "AI Document Analyzer", "RAG AI Chat", "Subscriptions", "YashOrbit"],
   alternates: { canonical: path },
-  openGraph: {
-    title,
-    description,
-    url: `${siteUrl}${path}`,
-    siteName: "YashOrbit",
-    images: ["https://images.unsplash.com/photo-1571624436279-b272aff752b5?q=80&w=1200&auto=format&fit=crop"],
-    type: "website",
-  },
+  ...socialMetadata({ title, description, path, image }),
 };
 
 export default function AIConstructionPlatformPage() {

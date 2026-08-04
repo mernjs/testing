@@ -1,24 +1,20 @@
 import type { Metadata } from "next";
 import ImageRecognitionSystemContent from "./Content";
-import { siteUrl, softwareApplicationJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 const title = "Image Recognition System — Serverless Computer Vision at Scale | YashOrbit";
 const description =
   "A serverless computer vision system processing 1M+ images across 800+ devices to detect blank captures and alert admins in real time.";
 const path = "/products/image-recognition-system";
 
+const image = "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200&auto=format&fit=crop";
+
 export const metadata: Metadata = {
   title,
   description,
+  keywords: ["Image Recognition System", "Computer Vision", "Serverless", "Fleet Monitoring", "YashOrbit"],
   alternates: { canonical: path },
-  openGraph: {
-    title,
-    description,
-    url: `${siteUrl}${path}`,
-    siteName: "YashOrbit",
-    images: ["https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200&auto=format&fit=crop"],
-    type: "website",
-  },
+  ...socialMetadata({ title, description, path, image }),
 };
 
 export default function ImageRecognitionSystemPage() {
