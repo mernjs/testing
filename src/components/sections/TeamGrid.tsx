@@ -42,7 +42,7 @@ export default function TeamGrid({ title, description, members, tone = "default"
               </div>
             )}
             {category && (
-              <h3 className="text-sm font-semibold tracking-widest uppercase text-primary mb-3">{category}</h3>
+              <p className="text-sm font-semibold tracking-widest uppercase text-primary mb-3">{category}</p>
             )}
             <h2 className={`font-bold tracking-tight text-foreground mb-4 ${enhanced ? "text-4xl sm:text-5xl" : "text-3xl sm:text-4xl"}`}>{title}</h2>
             {description && <p className="text-lg leading-8 text-muted-foreground">{description}</p>}

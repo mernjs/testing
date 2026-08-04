@@ -38,7 +38,7 @@ export default function SectionHeader({
         </div>
       )}
       {category && (
-        <h3 className="text-sm font-semibold tracking-widest uppercase text-primary mb-3">{category}</h3>
+        <p className="text-sm font-semibold tracking-widest uppercase text-primary mb-3">{category}</p>
       )}
       <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl mb-4 leading-[1.1]">
         {heading}

@@ -93,8 +93,8 @@ export default function ClientTestimonials({ icon: Icon, category }: ClientTesti
               <Icon className="w-6 h-6 text-primary" />
             </div>
           )}
-          <h2 className="text-sm font-semibold tracking-widest uppercase text-primary mb-3">{category ?? "Client Voices"}</h2>
-          <p className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">What our clients say.</p>
+          <p className="text-sm font-semibold tracking-widest uppercase text-primary mb-3">{category ?? "Client Voices"}</p>
+          <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">What our clients say.</h2>
         </motion.div>
 
         <div
@@ -161,8 +161,10 @@ export default function ClientTestimonials({ icon: Icon, category }: ClientTesti
                   key={t.name}
                   onClick={() => { setDirection(i > index ? 1 : -1); setIndex(i); }}
                   aria-label={`Go to testimonial ${i + 1}`}
-                  className={`h-2 rounded-full transition-all duration-300 ${i === index ? "w-8 bg-primary" : "w-2 bg-border hover:bg-primary/40"}`}
-                />
+                  className="group p-2.5 -m-2.5 flex items-center justify-center"
+                >
+                  <span className={`block h-2 rounded-full transition-all duration-300 ${i === index ? "w-8 bg-primary" : "w-2 bg-border group-hover:bg-primary/40"}`} />
+                </button>
               ))}
             </div>
 

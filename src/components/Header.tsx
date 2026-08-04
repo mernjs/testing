@@ -323,7 +323,7 @@ export default function Header() {
               <span className="font-extrabold text-2xl tracking-tight">
                 <span className="text-foreground">Yash</span><span className="text-primary">Orbit</span>
               </span>
-              <span className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.15em] text-foreground/60">
+              <span className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.15em] text-foreground/80">
                 Technologies Pvt. Ltd.
               </span>
             </span>
@@ -333,6 +333,7 @@ export default function Header() {
         <div className="flex lg:hidden gap-4 items-center">
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
             className="p-2.5 rounded-full hover:bg-muted/80 backdrop-blur-sm transition-all"
           >
             {isDark ? <Sun className="w-5 h-5 text-foreground" /> : <Moon className="w-5 h-5 text-foreground" />}
@@ -415,6 +416,7 @@ export default function Header() {
         <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-6">
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
             className="p-2.5 rounded-full bg-muted/30 hover:bg-muted/80 backdrop-blur-sm transition-all border border-border/50"
           >
             {isDark ? <Sun className="w-4 h-4 text-foreground" /> : <Moon className="w-4 h-4 text-foreground" />}

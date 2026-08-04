@@ -55,7 +55,7 @@ export default function ArchitectureOverview({ title, description, layers, tone 
                 </div>
                 <h4 className="hidden sm:block font-bold text-foreground mb-2">{layer.name}</h4>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3">{layer.description}</p>
-                <span className="inline-flex text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
+                <span className="inline-flex text-xs font-semibold text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full">
                   {layer.tech}
                 </span>
               </motion.div>

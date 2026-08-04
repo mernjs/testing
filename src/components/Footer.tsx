@@ -89,12 +89,12 @@ export default function Footer() {
                 <span className="font-extrabold text-2xl tracking-tight">
                   <span className="text-secondary-foreground">Yash</span><span className="text-primary">Orbit</span>
                 </span>
-                <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.15em] text-secondary-foreground/60">
+                <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.15em] text-secondary-foreground/85">
                   Technologies Pvt. Ltd.
                 </span>
               </span>
             </Link>
-            <p className="text-sm leading-6 text-secondary-foreground/70 max-w-xs">
+            <p className="text-sm leading-6 text-secondary-foreground/85 max-w-xs">
               Tech solutions built around your business goals — web, mobile, and AI/ML systems engineered to accelerate growth and deliver measurable results.
             </p>
             <div className="flex gap-3">
@@ -119,7 +119,7 @@ export default function Footer() {
           <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
             <div className="md:grid md:grid-cols-2 md:gap-8">
               <div>
-                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-secondary-foreground/50">Services</h3>
+                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-secondary-foreground/85">Services</h3>
                 <ul role="list" className="mt-6 space-y-4">
                   <li>
                     <Link href="/services/web-app-development" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
@@ -144,7 +144,7 @@ export default function Footer() {
                 </ul>
               </div>
               <div className="mt-10 md:mt-0">
-                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-secondary-foreground/50">Products</h3>
+                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-secondary-foreground/85">Products</h3>
                 <ul role="list" className="mt-6 space-y-4">
                   <li>
                     <Link href="/products/ai-construction-platform" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
@@ -166,7 +166,7 @@ export default function Footer() {
             </div>
             <div className="md:grid md:grid-cols-2 md:gap-8">
               <div>
-                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-secondary-foreground/50">Company</h3>
+                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-secondary-foreground/85">Company</h3>
                 <ul role="list" className="mt-6 space-y-4">
                   <li>
                     <Link href="/about/what-we-do" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
@@ -189,10 +189,10 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs leading-5 text-secondary-foreground/60">
+          <p className="text-xs leading-5 text-secondary-foreground/85">
             &copy; {new Date().getFullYear()} <span className="text-secondary-foreground">Yash</span><span className="text-primary">Orbit</span> Technologies Pvt. Ltd. All rights reserved.
           </p>
-          <div className="flex items-center gap-6 text-xs text-secondary-foreground/60">
+          <div className="flex items-center gap-6 text-xs text-secondary-foreground/85">
             <Link href="/about/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
             <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
           </div>

@@ -356,7 +356,7 @@ export default function HomeContent() {
                       <div className="w-3 h-3 rounded-full bg-green-400/80"></div>
                     </div>
                     <div className="flex gap-1.5">
-                      <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-primary/10 text-primary">React</span>
+                      <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-primary/10 text-orange-700 dark:text-orange-300">React</span>
                       <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-secondary/20 text-secondary-foreground">Node.js</span>
                       <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-[#ff8e75]/15 text-[#ff8e75]">AI/ML</span>
                     </div>
@@ -470,7 +470,7 @@ export default function HomeContent() {
             {[1, 2].map((set) => (
               <React.Fragment key={set}>
                 {trustedClients.map((brand) => (
-                  <div key={brand + set} className="text-2xl sm:text-3xl font-black text-foreground/20 hover:text-primary transition-colors duration-300 cursor-default">
+                  <div key={brand + set} className="text-2xl sm:text-3xl font-black text-foreground/55 hover:text-primary transition-colors duration-300 cursor-default">
                     {brand}
                   </div>
                 ))}
@@ -762,7 +762,7 @@ export default function HomeContent() {
                   <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
                     <program.icon className="w-5 h-5 text-primary" />
                   </div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1 rounded-full">
+                  <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full">
                     {program.duration}
                   </span>
                 </div>
@@ -841,7 +841,7 @@ export default function HomeContent() {
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 className="relative z-10 p-8 sm:p-12"
               >
-                <span className="text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1 rounded-full w-fit inline-block mb-5">
+                <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full w-fit inline-block mb-5">
                   {activeStory.segment}
                 </span>
                 <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 leading-snug">{activeStory.title}</h3>
@@ -893,8 +893,10 @@ export default function HomeContent() {
                   key={s.title}
                   onClick={() => { setStoryDirection(i > storyIndex ? 1 : -1); setStoryIndex(i); }}
                   aria-label={`Go to success story ${i + 1}`}
-                  className={`h-2 rounded-full transition-all duration-300 ${i === storyIndex ? "w-8 bg-primary" : "w-2 bg-border hover:bg-primary/40"}`}
-                />
+                  className="group p-2.5 -m-2.5 flex items-center justify-center"
+                >
+                  <span className={`block h-2 rounded-full transition-all duration-300 ${i === storyIndex ? "w-8 bg-primary" : "w-2 bg-border group-hover:bg-primary/40"}`} />
+                </button>
               ))}
             </div>
             <button
@@ -963,7 +965,7 @@ export default function HomeContent() {
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 className="p-7 rounded-2xl bg-background border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 flex flex-col"
               >
-                <span className="text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1 rounded-full w-fit mb-5">
+                <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full w-fit mb-5">
                   {post.tag}
                 </span>
                 <h4 className="font-bold text-foreground mb-3 leading-snug">{post.title}</h4>
