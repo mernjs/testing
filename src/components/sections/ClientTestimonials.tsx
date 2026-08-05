@@ -109,9 +109,9 @@ export default function ClientTestimonials({ icon: Icon, category }: ClientTesti
               <motion.div
                 key={index}
                 custom={direction}
-                initial={{ opacity: 0, x: direction * 60 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: direction * -60 }}
+                initial={{ x: direction * 60 }}
+                animate={{ x: 0 }}
+                exit={{ x: direction * -60 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 drag="x"
                 dragConstraints={{ left: 0, right: 0 }}

@@ -548,9 +548,9 @@ export default function HomeContent() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeService}
-                  initial={{ opacity: 0, y: 40, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -40, scale: 1.05 }}
+                  initial={{ y: 40, scale: 0.95 }}
+                  animate={{ y: 0, scale: 1 }}
+                  exit={{ y: -40, scale: 1.05 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                   className="relative z-10 w-full h-full flex flex-col justify-center"
                 >
@@ -835,9 +835,9 @@ export default function HomeContent() {
               <motion.div
                 key={storyIndex}
                 custom={storyDirection}
-                initial={{ opacity: 0, x: storyDirection * 60 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: storyDirection * -60 }}
+                initial={{ x: storyDirection * 60 }}
+                animate={{ x: 0 }}
+                exit={{ x: storyDirection * -60 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 className="relative z-10 p-8 sm:p-12"
               >
