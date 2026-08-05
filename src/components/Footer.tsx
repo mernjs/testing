@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Mail, Phone, MapPin, Globe, ArrowRight } from "lucide-react";
-import { FacebookIcon, GithubIcon, XIcon, InstagramIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
-import { socialLinks, emails, whatsapp } from "@/lib/contact";
+import { Mail, MapPin, ArrowRight } from "lucide-react";
+import { FacebookIcon, GithubIcon, XIcon, InstagramIcon, WhatsAppIcon, LinkedinIcon } from "@/components/icons/SocialIcons";
+import { socialLinks, emails, whatsapp, linkedin, mapsUrl } from "@/lib/contact";
 
 const socialIcons = { Facebook: FacebookIcon, GitHub: GithubIcon, "X (Twitter)": XIcon, Instagram: InstagramIcon };
 
@@ -113,6 +113,43 @@ export default function Footer() {
               Tech solutions built around your business goals — web, mobile, and AI/ML systems engineered to accelerate growth and deliver measurable results.
             </p>
 
+            <div className="flex gap-3">
+              <a
+                href={linkedin.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
+              >
+                <span className="sr-only">LinkedIn</span>
+                <LinkedinIcon className="h-4 w-4" />
+              </a>
+              <a
+                href={`mailto:${emails.support}`}
+                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
+              >
+                <span className="sr-only">Email</span>
+                <Mail className="h-4 w-4" aria-hidden="true" />
+              </a>
+              <a
+                href={whatsapp.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-[#25D366] hover:border-[#25D366] transition-colors"
+              >
+                <span className="sr-only">WhatsApp</span>
+                <WhatsAppIcon className="h-4 w-4" />
+              </a>
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
+              >
+                <span className="sr-only">Location</span>
+                <MapPin className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </div>
+
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-secondary-foreground/85 mb-3">Follow us</p>
               <div className="flex gap-3">
@@ -137,7 +174,7 @@ export default function Footer() {
           <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
             <div className="md:grid md:grid-cols-2 md:gap-8">
               <div>
-                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-secondary-foreground/85">Services</h3>
+                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Services</h3>
                 <ul role="list" className="mt-6 space-y-4">
                   <li>
                     <Link href="/services/web-app-development" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
@@ -150,8 +187,18 @@ export default function Footer() {
                     </Link>
                   </li>
                   <li>
+                    <Link href="/services/desktop-app-development" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                      Desktop Apps
+                    </Link>
+                  </li>
+                  <li>
                     <Link href="/services/ai-ml-solutions" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
                       AI & ML
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/services/ai-agent" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                      AI Agent
                     </Link>
                   </li>
                   <li>
@@ -159,10 +206,15 @@ export default function Footer() {
                       AR/VR
                     </Link>
                   </li>
+                  <li>
+                    <Link href="/services" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
+                      View All Services
+                    </Link>
+                  </li>
                 </ul>
               </div>
               <div className="mt-10 md:mt-0">
-                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-secondary-foreground/85">Products</h3>
+                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Products</h3>
                 <ul role="list" className="mt-6 space-y-4">
                   <li>
                     <Link href="/products/ai-construction-platform" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
@@ -179,16 +231,51 @@ export default function Footer() {
                       AI Voice Assistant
                     </Link>
                   </li>
+                  <li>
+                    <Link href="/products/predictive-analytics-engine" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                      Predictive Analytics Engine
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/products/image-recognition-system" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                      Image Recognition System
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/products/ai-job-board-portal" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                      AI Job Board Portal
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/products" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
+                      View All Products
+                    </Link>
+                  </li>
                 </ul>
               </div>
             </div>
             <div className="md:grid md:grid-cols-2 md:gap-8">
               <div>
-                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-secondary-foreground/85">Company</h3>
+                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Company</h3>
                 <ul role="list" className="mt-6 space-y-4">
                   <li>
                     <Link href="/about/what-we-do" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
                       About Us
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/about/our-mission" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                      Our Mission
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/about/our-team" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                      Our Team
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/about/technologies" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                      Technologies
                     </Link>
                   </li>
                   <li>
@@ -199,6 +286,26 @@ export default function Footer() {
                   <li>
                     <Link href="/about/privacy-policy" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
                       Privacy Policy
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/about" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
+                      View All Company
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+              <div className="mt-10 md:mt-0">
+                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Live Demos</h3>
+                <ul role="list" className="mt-6 space-y-4">
+                  <li>
+                    <Link href="/live-demos/social-media-ai-reels-generator" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                      Social Media AI Reels Generator
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/live-demos" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
+                      View All Live Demos
                     </Link>
                   </li>
                 </ul>

@@ -57,7 +57,7 @@ const navigation = [
       { name: "Success Stories", href: "/about/success-stories", description: "Client impact cases", icon: Box },
       { name: "Our Team", href: "/about/our-team", description: "The experts behind it", icon: LayoutGrid },
       { name: "Co-Founder & CEO", href: "/about/co-founder-ceo", description: "Meet our leadership", icon: Briefcase },
-      { name: "Privacy Policy", href: "/about/privacy-policy", description: "Data protection", icon: Monitor },
+      // { name: "Privacy Policy", href: "/about/privacy-policy", description: "Data protection", icon: Monitor },
     ],
   },
   {
@@ -69,6 +69,8 @@ const navigation = [
       { name: "Mobile App Development", href: "/services/mobile-app-development", description: "Native & cross-platform", icon: Smartphone },
       { name: "Desktop App Development", href: "/services/desktop-app-development", description: "High-performance apps", icon: Box },
       { name: "AI/ML Solutions", href: "/services/ai-ml-solutions", description: "Custom machine learning", icon: Cpu },
+      { name: "AI Agent", href: "/services/ai-agent", description: "Autonomous digital workers", icon: Bot },
+      { name: "Vision Intelligence", href: "/services/vision-intelligence", description: "Computer vision at scale", icon: Eye },
     ],
   },
   {
@@ -80,6 +82,8 @@ const navigation = [
       { name: "Smart Spam Filter", href: "/products/smart-spam-filter", description: "Dynamic spam call scoring", icon: Zap },
       { name: "AI Voice Assistant", href: "/products/ai-voice-assistant", description: "Human-like voice AI", icon: Bot },
       { name: "Predictive Analytics Engine", href: "/products/predictive-analytics-engine", description: "ML-driven forecasting", icon: LineChart },
+      { name: "Image Recognition System", href: "/products/image-recognition-system", description: "Serverless computer vision", icon: Camera },
+      { name: "AI Job Board Portal", href: "/products/ai-job-board-portal", description: "ATS with AI matching", icon: Briefcase },
     ],
   },
   {
@@ -101,11 +105,11 @@ const navigation = [
       { name: "Agriculture", href: "/industries/agriculture", description: "Precision farming platforms", icon: Tractor },
       { name: "Education", href: "/industries/education", description: "Transforming education", icon: GraduationCap },
       { name: "Real Estate", href: "/industries/real-estate", description: "Property management", icon: Building2 },
-      { name: "Social Media", href: "/industries/social-media", description: "Feeds & community at scale", icon: Share2 },
-      { name: "Travel", href: "/industries/travel", description: "Booking & itinerary platforms", icon: Plane },
-      { name: "Construction", href: "/industries/construction", description: "Job site visibility", icon: HardHat },
-      { name: "Hotels", href: "/industries/hotels", description: "Guest experience platforms", icon: Hotel },
-      { name: "Finance", href: "/industries/finance", description: "Secure financial tech", icon: Landmark },
+      // { name: "Social Media", href: "/industries/social-media", description: "Feeds & community at scale", icon: Share2 },
+      // { name: "Travel", href: "/industries/travel", description: "Booking & itinerary platforms", icon: Plane },
+      // { name: "Construction", href: "/industries/construction", description: "Job site visibility", icon: HardHat },
+      // { name: "Hotels", href: "/industries/hotels", description: "Guest experience platforms", icon: Hotel },
+      // { name: "Finance", href: "/industries/finance", description: "Secure financial tech", icon: Landmark },
     ],
   },
   {

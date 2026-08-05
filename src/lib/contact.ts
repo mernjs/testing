@@ -19,3 +19,10 @@ export const whatsapp = {
   href: "https://wa.me/918072278460",
   displayMessage: "Chat with us on WhatsApp",
 };
+
+// TODO: replace with the real YashOrbit LinkedIn company page URL.
+export const linkedin = {
+  href: "#",
+};
+
+export const mapsUrl = "https://www.google.com/maps/search/?api=1&query=Noida%2C+Uttar+Pradesh%2C+India";
