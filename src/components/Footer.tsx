@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Mail, MapPin, ArrowRight } from "lucide-react";
+import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
 import { FacebookIcon, GithubIcon, XIcon, InstagramIcon, WhatsAppIcon, LinkedinIcon } from "@/components/icons/SocialIcons";
-import { socialLinks, emails, whatsapp, linkedin, mapsUrl } from "@/lib/contact";
+import { socialLinks, emails, phone, whatsapp, linkedin, mapsUrl } from "@/lib/contact";
 
 const socialIcons = { Facebook: FacebookIcon, GitHub: GithubIcon, "X (Twitter)": XIcon, Instagram: InstagramIcon };
 
@@ -112,6 +112,23 @@ export default function Footer() {
             <p className="text-sm leading-6 text-secondary-foreground/85 max-w-xs">
               Tech solutions built around your business goals — web, mobile, and AI/ML systems engineered to accelerate growth and deliver measurable results.
             </p>
+
+            <div className="space-y-2.5">
+              <a
+                href={`mailto:${emails.support}`}
+                className="flex items-center gap-2.5 text-sm text-secondary-foreground/85 hover:text-primary transition-colors"
+              >
+                <Mail className="h-4 w-4 flex-none" aria-hidden="true" />
+                {emails.support}
+              </a>
+              <a
+                href={phone.href}
+                className="flex items-center gap-2.5 text-sm text-secondary-foreground/85 hover:text-primary transition-colors"
+              >
+                <Phone className="h-4 w-4 flex-none" aria-hidden="true" />
+                {phone.display}
+              </a>
+            </div>
 
             <div className="flex gap-3">
               <a
