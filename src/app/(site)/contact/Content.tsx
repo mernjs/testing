@@ -158,13 +158,7 @@ export default function ContactContent() {
                     <p className="text-muted-foreground mb-2">For general inquiries and project proposals.</p>
                     <div className="flex flex-col gap-1">
                       <a href={`mailto:${emails.support}`} className="text-primary font-medium hover:underline">
-                        {emails.support} <span className="text-muted-foreground font-normal">— general</span>
-                      </a>
-                      <a href={`mailto:${emails.sales}`} className="text-primary font-medium hover:underline">
-                        {emails.sales} <span className="text-muted-foreground font-normal">— sales</span>
-                      </a>
-                      <a href={`mailto:${emails.careers}`} className="text-primary font-medium hover:underline">
-                        {emails.careers} <span className="text-muted-foreground font-normal">— careers</span>
+                        {emails.support}
                       </a>
                     </div>
                   </div>

@@ -53,21 +53,6 @@ export default function SuccessStoriesContent() {
         ]}
       />
 
-      <ChecklistGrid
-        id="client-stories"
-        tone="muted"
-        title="Client success stories"
-        description="A few of the specific wins behind the numbers."
-        items={[
-          { title: "Nexora Health", description: "Modernized a legacy patient portal, cutting average page load time from 6 seconds to under 1." },
-          { title: "Bloomly", description: "Took an idea from whiteboard to a fully polished MVP in under eight weeks." },
-          { title: "Vertex Logistics", description: "Automated manual ops triage with AI, saving the team an estimated 20 hours per week." },
-          { title: "Arclight Finance", description: "Delivered a PCI-DSS-ready payments platform that passed its first compliance audit without a single finding." },
-          { title: "Wavecrest Media", description: "Rebuilt a content platform's recommendation engine, lifting average session time by 34%." },
-          { title: "Northgate Retail", description: "Deployed a computer vision system that cut manual inventory counts by 90% across 40 stores." },
-        ]}
-      />
-
       <ProjectShowcase
         title="Project highlights"
         description="A closer look at a few of the builds behind these results."

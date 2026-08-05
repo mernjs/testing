@@ -7,8 +7,6 @@ export const socialLinks = [
 
 export const emails = {
   support: "support@yashorbit.com",
-  sales: "sales@yashorbit.com",
-  careers: "careers@yashorbit.com",
 } as const;
 
 export const phone = {

@@ -174,16 +174,6 @@ export default function CoFounderCeoContent() {
       />
 
       <ChecklistGrid
-        id="media"
-        title="Media mentions"
-        description="Placeholder entries — replace with actual coverage once available."
-        items={[
-          { title: "[Publication Name] — Feature Interview", description: "[Placeholder description — e.g. a discussion of applied AI adoption for mid-market companies.]" },
-          { title: "[Publication Name] — Founder Spotlight", description: "[Placeholder description — replace with the actual publication and topic once available.]" },
-        ]}
-      />
-
-      <ChecklistGrid
         id="community"
         title="Community & social impact"
         items={[

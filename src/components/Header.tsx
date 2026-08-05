@@ -67,7 +67,7 @@ const navigation = [
     items: [
       { name: "Web App Development", href: "/services/web-app-development", description: "Scalable solutions", icon: Monitor },
       { name: "Mobile App Development", href: "/services/mobile-app-development", description: "Native & cross-platform", icon: Smartphone },
-      { name: "Desktop App Dev", href: "/services/desktop-app-development", description: "High-performance apps", icon: Box },
+      { name: "Desktop App Development", href: "/services/desktop-app-development", description: "High-performance apps", icon: Box },
       { name: "AI/ML Solutions", href: "/services/ai-ml-solutions", description: "Custom machine learning", icon: Cpu },
     ],
   },
@@ -139,7 +139,7 @@ const mobileNavigation = [
     items: [
       { name: "Web App Development", href: "/services/web-app-development", icon: Monitor },
       { name: "Mobile App Development", href: "/services/mobile-app-development", icon: Smartphone },
-      { name: "Desktop App Dev", href: "/services/desktop-app-development", icon: Box },
+      { name: "Desktop App Development", href: "/services/desktop-app-development", icon: Box },
       { name: "AI/ML Solutions", href: "/services/ai-ml-solutions", icon: Cpu },
       { name: "AI Agent", href: "/services/ai-agent", icon: Bot },
       { name: "Vision Intelligence", href: "/services/vision-intelligence", icon: Eye },
