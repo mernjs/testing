@@ -113,52 +113,6 @@ export default function Footer() {
               Tech solutions built around your business goals — web, mobile, and AI/ML systems engineered to accelerate growth and deliver measurable results.
             </p>
 
-            <ul className="space-y-1.5 text-sm">
-              <li>
-                <a href={`mailto:${emails.support}`} className="text-secondary-foreground/85 hover:text-primary transition-colors">
-                  <span className="text-secondary-foreground/85">General:</span> {emails.support}
-                </a>
-              </li>
-              <li>
-                <a href={`mailto:${emails.sales}`} className="text-secondary-foreground/85 hover:text-primary transition-colors">
-                  <span className="text-secondary-foreground/85">Sales:</span> {emails.sales}
-                </a>
-              </li>
-              <li>
-                <a href={`mailto:${emails.careers}`} className="text-secondary-foreground/85 hover:text-primary transition-colors">
-                  <span className="text-secondary-foreground/85">Careers:</span> {emails.careers}
-                </a>
-              </li>
-            </ul>
-
-            <div className="flex gap-3">
-              <Link href="#" className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors">
-                <span className="sr-only">Website</span>
-                <Globe className="h-4 w-4" aria-hidden="true" />
-              </Link>
-              <a href={`mailto:${emails.support}`} className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors">
-                <span className="sr-only">Email</span>
-                <Mail className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <Link href="tel:+918072278460" className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors">
-                <span className="sr-only">Phone</span>
-                <Phone className="h-4 w-4" aria-hidden="true" />
-              </Link>
-              <a
-                href={whatsapp.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-[#25D366] hover:border-[#25D366] transition-colors"
-              >
-                <span className="sr-only">WhatsApp</span>
-                <WhatsAppIcon className="h-4 w-4" />
-              </a>
-              <Link href="#" className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors">
-                <span className="sr-only">Location</span>
-                <MapPin className="h-4 w-4" aria-hidden="true" />
-              </Link>
-            </div>
-
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-secondary-foreground/85 mb-3">Follow us</p>
               <div className="flex gap-3">
