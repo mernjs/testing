@@ -228,7 +228,7 @@ export default function HomeContent() {
   return (
     <div className="flex flex-col min-h-screen selection:bg-primary/30 overflow-hidden">
       {/* Immersive Hero Section */}
-      <section className="relative bg-background pt-32 pb-20 lg:pt-48 lg:pb-32 min-h-screen flex items-center justify-center overflow-hidden border-b border-border/50">
+      <section className="relative bg-background pt-28 pb-20 lg:pt-36 lg:pb-32 min-h-screen flex items-center justify-center overflow-hidden border-b border-border/50">
 
         {/* Background Image */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">

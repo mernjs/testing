@@ -44,7 +44,7 @@ export default function ListingHero({ eyebrow, title, description, icon: Icon, i
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-background pt-32 pb-20 lg:pt-48 lg:pb-32 border-b border-border/50">
+    <section className="relative overflow-hidden bg-background pt-28 pb-20 lg:pt-36 lg:pb-32 border-b border-border/50">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={image} alt="" className="absolute inset-0 w-full h-full object-cover" />
