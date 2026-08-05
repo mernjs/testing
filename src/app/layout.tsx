@@ -3,7 +3,7 @@ import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import WhatsAppFloatingButton from "@/components/WhatsAppFloatingButton";
+import FloatingContactButtons from "@/components/FloatingContactButtons";
 import { siteUrl, siteName, defaultOgImage, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 const geistSans = Geist({
@@ -109,6 +109,7 @@ export default function RootLayout({
         <Script id="tawk-to" strategy="afterInteractive">
           {`
             var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+            Tawk_API.onLoad = function(){ Tawk_API.hideWidget(); };
             (function(){
             var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
             s1.async=true;
@@ -131,7 +132,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <WhatsAppFloatingButton />
+          <FloatingContactButtons />
         </ThemeProvider>
       </body>
     </html>
