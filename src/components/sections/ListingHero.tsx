@@ -28,7 +28,7 @@ function renderTitle(title: string) {
     <>
       {title.slice(0, idx)}
       <span className="text-foreground">Yash</span>
-      <span className="text-primary">Orbit</span>
+      <span className="text-orange-700 dark:text-orange-300">Orbit</span>
       {title.slice(idx + "YashOrbit".length)}
     </>
   );

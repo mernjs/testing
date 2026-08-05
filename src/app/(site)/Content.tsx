@@ -314,7 +314,7 @@ export default function HomeContent() {
               </motion.h1>
 
               <motion.p variants={fadeIn} className="text-lg sm:text-xl leading-relaxed text-muted-foreground mb-10 max-w-lg">
-                <span className="font-bold"><span className="text-foreground">Yash</span><span className="text-primary">Orbit</span></span> partners with growing businesses to design, build, and scale software that actually moves the needle — from full-stack products to production-grade AI systems.
+                <span className="font-bold"><span className="text-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span></span> partners with growing businesses to design, build, and scale software that actually moves the needle — from full-stack products to production-grade AI systems.
               </motion.p>
 
               <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-start gap-4">

@@ -87,7 +87,7 @@ export default function Footer() {
               </svg>
               <span className="flex flex-col leading-none">
                 <span className="font-extrabold text-2xl tracking-tight">
-                  <span className="text-secondary-foreground">Yash</span><span className="text-primary">Orbit</span>
+                  <span className="text-secondary-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span>
                 </span>
                 <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.15em] text-secondary-foreground/85">
                   Technologies Pvt. Ltd.
@@ -190,7 +190,7 @@ export default function Footer() {
         </div>
         <div className="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs leading-5 text-secondary-foreground/85">
-            &copy; {new Date().getFullYear()} <span className="text-secondary-foreground">Yash</span><span className="text-primary">Orbit</span> Technologies Pvt. Ltd. All rights reserved.
+            &copy; {new Date().getFullYear()} <span className="text-secondary-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span> Technologies Pvt. Ltd. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-xs text-secondary-foreground/85">
             <Link href="/about/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>

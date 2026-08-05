@@ -102,8 +102,8 @@ export default function ClientTestimonials({ icon: Icon, category }: ClientTesti
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
-          <div className="relative min-h-[320px] sm:min-h-[280px] rounded-[2.5rem] bg-muted/20 border border-border/50 shadow-xl overflow-hidden">
-            <Quote className="absolute top-8 right-8 w-16 h-16 text-primary/10" />
+          <div className="relative min-h-[320px] sm:min-h-[280px] rounded-[2.5rem] bg-card border border-border/50 shadow-xl overflow-hidden">
+            <Quote aria-hidden="true" className="absolute top-8 right-8 w-16 h-16 text-primary/10" />
 
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
