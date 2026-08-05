@@ -1,0 +1,111 @@
+"use client";
+
+import * as React from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { MessageCircle, X } from "lucide-react";
+import { WhatsAppIcon } from "@/components/icons/SocialIcons";
+import { whatsapp } from "@/lib/contact";
+
+declare global {
+  interface Window {
+    Tawk_API?: {
+      toggle?: () => void;
+      hideWidget?: () => void;
+      showWidget?: () => void;
+      onLoad?: () => void;
+    };
+  }
+}
+
+export default function FloatingContactButtons() {
+  const [open, setOpen] = React.useState(false);
+
+  const openLiveChat = () => {
+    window.Tawk_API?.toggle?.();
+    setOpen(false);
+  };
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={{ visible: { transition: { staggerChildren: 0.06 } } }}
+            className="flex flex-col items-end gap-3"
+          >
+            <motion.a
+              variants={{
+                hidden: { opacity: 0, y: 12, scale: 0.85 },
+                visible: { opacity: 1, y: 0, scale: 1 },
+              }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              href={whatsapp.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              className="group flex items-center gap-3 rounded-full bg-[#25D366] pl-4 pr-1.5 py-1.5 text-sm font-bold text-[#0b3d1e] shadow-xl shadow-black/15 hover:scale-105 active:scale-95 transition-transform"
+            >
+              WhatsApp
+              <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-white/25">
+                <WhatsAppIcon className="h-4 w-4" />
+              </span>
+            </motion.a>
+
+            <motion.button
+              type="button"
+              variants={{
+                hidden: { opacity: 0, y: 12, scale: 0.85 },
+                visible: { opacity: 1, y: 0, scale: 1 },
+              }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              onClick={openLiveChat}
+              className="group flex items-center gap-3 rounded-full bg-foreground pl-4 pr-1.5 py-1.5 text-sm font-bold text-background shadow-xl shadow-black/15 hover:scale-105 active:scale-95 transition-transform"
+            >
+              Live Chat
+              <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-background/15">
+                <MessageCircle className="h-4 w-4" />
+              </span>
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-label={open ? "Close contact options" : "Contact us"}
+        onClick={() => setOpen((prev) => !prev)}
+        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl shadow-black/20 transition-transform hover:scale-110 active:scale-95"
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          {open ? (
+            <motion.span
+              key="close"
+              initial={{ opacity: 0, rotate: -45 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: 45 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <X className="h-6 w-6" />
+            </motion.span>
+          ) : (
+            <motion.span
+              key="open"
+              initial={{ opacity: 0, rotate: 45 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: -45 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <MessageCircle className="h-6 w-6" />
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </button>
+    </div>
+  );
+}
