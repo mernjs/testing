@@ -10,10 +10,10 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
   
-  --color-hesta-orange: #E56043;
-  --color-hesta-light: #ECF2FD;
-  --color-hesta-blue: #1D428A;
-  --color-hesta-dark: #1b1a1a;
+  --color-yashorbit-orange: #E56043;
+  --color-yashorbit-light: #ECF2FD;
+  --color-yashorbit-blue: #1D428A;
+  --color-yashorbit-dark: #1b1a1a;
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
