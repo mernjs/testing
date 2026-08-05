@@ -28,7 +28,7 @@ export default function Footer() {
               href={whatsapp.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-7 py-3.5 text-sm font-bold text-[#0b3d1e] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-black/10"
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/30"
             >
               <WhatsAppIcon className="w-4 h-4" />
               Chat on WhatsApp
@@ -134,7 +134,7 @@ export default function Footer() {
                 href={whatsapp.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-[#25D366] hover:border-[#25D366] transition-colors"
+                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
               >
                 <span className="sr-only">WhatsApp</span>
                 <WhatsAppIcon className="h-4 w-4" />

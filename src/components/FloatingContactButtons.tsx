@@ -46,10 +46,10 @@ export default function FloatingContactButtons() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setOpen(false)}
-              className="group flex items-center gap-3 rounded-full bg-[#25D366] pl-4 pr-1.5 py-1.5 text-sm font-bold text-[#0b3d1e] shadow-xl shadow-black/15 hover:scale-105 active:scale-95 transition-transform"
+              className="group flex items-center gap-3 rounded-full bg-primary pl-4 pr-1.5 py-1.5 text-sm font-bold text-primary-foreground shadow-xl shadow-black/15 hover:scale-105 active:scale-95 transition-transform"
             >
               WhatsApp
-              <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-white/25">
+              <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-primary-foreground/15">
                 <WhatsAppIcon className="h-4 w-4" />
               </span>
             </motion.a>

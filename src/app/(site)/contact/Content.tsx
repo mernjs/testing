@@ -176,8 +176,8 @@ export default function ContactContent() {
                 </div>
 
                 <div className="flex gap-4 p-6 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors">
-                  <div className="w-12 h-12 rounded-xl bg-[#25D366]/10 flex items-center justify-center flex-shrink-0">
-                    <WhatsAppIcon className="w-6 h-6 text-[#25D366]" />
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <WhatsAppIcon className="w-6 h-6 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground text-lg">Chat on WhatsApp</h3>
