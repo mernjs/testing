@@ -565,10 +565,9 @@ export default function HomeContent() {
                   </p>
                   <Link
                     href={services[activeService].href}
-                    aria-label={`Learn more about ${services[activeService].title}`}
                     className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black font-bold hover:scale-105 transition-all w-fit shadow-xl shadow-black/20"
                   >
-                    Learn More <ArrowRight className="w-4 h-4" />
+                    Learn More<span className="sr-only"> about {services[activeService].title}</span> <ArrowRight className="w-4 h-4" />
                   </Link>
                 </motion.div>
               </AnimatePresence>
@@ -776,8 +775,8 @@ export default function HomeContent() {
                     </span>
                   ))}
                 </div>
-                <Link href={program.href} aria-label={`Learn more about ${program.title}`} className="inline-flex items-center text-sm font-bold text-foreground hover:text-primary hover:gap-3 gap-2 transition-all mt-auto">
-                  Learn More <ArrowRight className="w-4 h-4" />
+                <Link href={program.href} className="inline-flex items-center text-sm font-bold text-foreground hover:text-primary hover:gap-3 gap-2 transition-all mt-auto">
+                  Learn More<span className="sr-only"> about {program.title}</span> <ArrowRight className="w-4 h-4" />
                 </Link>
               </motion.div>
             ))}
@@ -971,8 +970,8 @@ export default function HomeContent() {
                 </span>
                 <h3 className="font-bold text-foreground mb-3 leading-snug">{post.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-6 flex-1">{post.excerpt}</p>
-                <Link href={post.href} aria-label={`Read more about ${post.title}`} className="inline-flex items-center text-sm font-bold text-foreground hover:text-primary hover:gap-3 gap-2 transition-all mt-auto">
-                  Read More <ArrowRight className="w-4 h-4" />
+                <Link href={post.href} className="inline-flex items-center text-sm font-bold text-foreground hover:text-primary hover:gap-3 gap-2 transition-all mt-auto">
+                  Read More<span className="sr-only"> about {post.title}</span> <ArrowRight className="w-4 h-4" />
                 </Link>
               </motion.div>
             ))}
