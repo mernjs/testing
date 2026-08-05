@@ -220,9 +220,15 @@ export default function ContactContent() {
                       <input type="text" id="lastName" className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" placeholder="Enter your last name" />
                     </div>
                   </div>
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-2">Work Email</label>
-                    <input type="email" id="email" className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" placeholder="Enter your work email" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-2">Work Email</label>
+                      <input type="email" id="email" className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" placeholder="Enter your work email" />
+                    </div>
+                    <div>
+                      <label htmlFor="phone" className="block text-sm font-semibold text-foreground mb-2">Phone Number</label>
+                      <input type="tel" id="phone" className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" placeholder="Enter your phone number" />
+                    </div>
                   </div>
                   <div>
                     <label htmlFor="company" className="block text-sm font-semibold text-foreground mb-2">Company Name</label>
