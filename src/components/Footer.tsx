@@ -1,5 +1,9 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin, Globe, ArrowRight } from "lucide-react";
+import { FacebookIcon, GithubIcon, XIcon, InstagramIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
+import { socialLinks, emails, whatsapp } from "@/lib/contact";
+
+const socialIcons = { Facebook: FacebookIcon, GitHub: GithubIcon, "X (Twitter)": XIcon, Instagram: InstagramIcon };
 
 export default function Footer() {
   return (
@@ -13,12 +17,23 @@ export default function Footer() {
             <h3 className="text-2xl sm:text-3xl font-black tracking-tight">Have a project in mind?</h3>
             <p className="text-sm sm:text-base text-secondary-foreground/85 mt-2">Let&apos;s turn your idea into a scalable product.</p>
           </div>
-          <Link
-            href="/contact"
-            className="group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/30 flex-shrink-0"
-          >
-            Start a Conversation <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center gap-3 flex-shrink-0">
+            <Link
+              href="/contact"
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/30"
+            >
+              Start a Conversation <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <a
+              href={whatsapp.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-7 py-3.5 text-sm font-bold text-[#0b3d1e] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-black/10"
+            >
+              <WhatsAppIcon className="w-4 h-4" />
+              Chat on WhatsApp
+            </a>
+          </div>
         </div>
       </div>
 
@@ -97,23 +112,72 @@ export default function Footer() {
             <p className="text-sm leading-6 text-secondary-foreground/85 max-w-xs">
               Tech solutions built around your business goals — web, mobile, and AI/ML systems engineered to accelerate growth and deliver measurable results.
             </p>
+
+            <ul className="space-y-1.5 text-sm">
+              <li>
+                <a href={`mailto:${emails.support}`} className="text-secondary-foreground/85 hover:text-primary transition-colors">
+                  <span className="text-secondary-foreground/85">General:</span> {emails.support}
+                </a>
+              </li>
+              <li>
+                <a href={`mailto:${emails.sales}`} className="text-secondary-foreground/85 hover:text-primary transition-colors">
+                  <span className="text-secondary-foreground/85">Sales:</span> {emails.sales}
+                </a>
+              </li>
+              <li>
+                <a href={`mailto:${emails.careers}`} className="text-secondary-foreground/85 hover:text-primary transition-colors">
+                  <span className="text-secondary-foreground/85">Careers:</span> {emails.careers}
+                </a>
+              </li>
+            </ul>
+
             <div className="flex gap-3">
               <Link href="#" className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors">
                 <span className="sr-only">Website</span>
                 <Globe className="h-4 w-4" aria-hidden="true" />
               </Link>
-              <Link href="#" className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors">
+              <a href={`mailto:${emails.support}`} className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors">
                 <span className="sr-only">Email</span>
                 <Mail className="h-4 w-4" aria-hidden="true" />
-              </Link>
+              </a>
               <Link href="tel:+918072278460" className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors">
                 <span className="sr-only">Phone</span>
                 <Phone className="h-4 w-4" aria-hidden="true" />
               </Link>
+              <a
+                href={whatsapp.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-[#25D366] hover:border-[#25D366] transition-colors"
+              >
+                <span className="sr-only">WhatsApp</span>
+                <WhatsAppIcon className="h-4 w-4" />
+              </a>
               <Link href="#" className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors">
                 <span className="sr-only">Location</span>
                 <MapPin className="h-4 w-4" aria-hidden="true" />
               </Link>
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-secondary-foreground/85 mb-3">Follow us</p>
+              <div className="flex gap-3">
+                {socialLinks.map((social) => {
+                  const Icon = socialIcons[social.name];
+                  return (
+                    <a
+                      key={social.name}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
+                    >
+                      <span className="sr-only">{social.name}</span>
+                      <Icon className="h-4 w-4" />
+                    </a>
+                  );
+                })}
+              </div>
             </div>
           </div>
           <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">

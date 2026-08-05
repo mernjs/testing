@@ -3,6 +3,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Mail, MapPin, Phone, ArrowRight, MessageCircle, Clock, Sparkles } from "lucide-react";
+import { WhatsAppIcon } from "@/components/icons/SocialIcons";
+import { emails, phone, whatsapp } from "@/lib/contact";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -153,8 +155,18 @@ export default function ContactContent() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground text-lg">Email us</h3>
-                    <p className="text-muted-foreground mb-1">For general inquiries and project proposals.</p>
-                    <a href="mailto:support@yashorbit.com" className="text-primary font-medium hover:underline">support@yashorbit.com</a>
+                    <p className="text-muted-foreground mb-2">For general inquiries and project proposals.</p>
+                    <div className="flex flex-col gap-1">
+                      <a href={`mailto:${emails.support}`} className="text-primary font-medium hover:underline">
+                        {emails.support} <span className="text-muted-foreground font-normal">— general</span>
+                      </a>
+                      <a href={`mailto:${emails.sales}`} className="text-primary font-medium hover:underline">
+                        {emails.sales} <span className="text-muted-foreground font-normal">— sales</span>
+                      </a>
+                      <a href={`mailto:${emails.careers}`} className="text-primary font-medium hover:underline">
+                        {emails.careers} <span className="text-muted-foreground font-normal">— careers</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
 
@@ -165,7 +177,20 @@ export default function ContactContent() {
                   <div>
                     <h3 className="font-semibold text-foreground text-lg">Call us</h3>
                     <p className="text-muted-foreground mb-1">Available during business hours.</p>
-                    <a href="tel:+918072278460" className="text-primary font-medium hover:underline">+91 8072278460</a>
+                    <a href={phone.href} className="text-primary font-medium hover:underline">{phone.display}</a>
+                  </div>
+                </div>
+
+                <div className="flex gap-4 p-6 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors">
+                  <div className="w-12 h-12 rounded-xl bg-[#25D366]/10 flex items-center justify-center flex-shrink-0">
+                    <WhatsAppIcon className="w-6 h-6 text-[#25D366]" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground text-lg">Chat on WhatsApp</h3>
+                    <p className="text-muted-foreground mb-1">Message us directly for the fastest response.</p>
+                    <a href={whatsapp.href} target="_blank" rel="noopener noreferrer" className="text-primary font-medium hover:underline">
+                      {phone.display}
+                    </a>
                   </div>
                 </div>
 
