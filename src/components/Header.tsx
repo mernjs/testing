@@ -6,8 +6,19 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera, Video } from "lucide-react";
 import { useTheme } from "next-themes";
-import { InstagramIcon, XIcon, FacebookIcon, GithubIcon } from "@/components/icons/SocialIcons";
-import { socialLinks as socialLinksData } from "@/lib/contact";
+import { InstagramIcon, XIcon, FacebookIcon, GithubIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
+import { socialLinks as socialLinksData, whatsapp } from "@/lib/contact";
+
+declare global {
+  interface Window {
+    Tawk_API?: {
+      toggle?: () => void;
+      hideWidget?: () => void;
+      showWidget?: () => void;
+      onLoad?: () => void;
+    };
+  }
+}
 
 function Logo({ className }: { className?: string }) {
   return (
@@ -214,9 +225,9 @@ const mobileNavigation = [
 ];
 
 const mobileContactLinks = [
-  { name: "Contact Us", href: "/contact", icon: Mail },
-  { name: "Book a Consultation", href: "/contact", icon: Calendar },
-  { name: "Let's Talk", href: "/contact", icon: MessageSquare },
+  { name: "Book a Consultation", type: "link" as const, href: "/contact", icon: Calendar },
+  { name: "Live Chat", type: "action" as const, icon: MessageSquare },
+  { name: "WhatsApp", type: "external" as const, href: whatsapp.href, icon: WhatsAppIcon },
 ];
 
 function FeaturedCard({ item }: { item: (typeof navigation)[number] }) {
@@ -534,19 +545,59 @@ export default function Header() {
 
                 <div className="border-b border-border/50 py-4">
                   <div className="grid grid-cols-3 gap-2">
-                    {mobileContactLinks.map((link) => (
-                      <Link
-                        key={link.name}
-                        href={link.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex flex-col items-center gap-2 rounded-xl px-2 py-3 text-center transition-colors hover:bg-muted/50"
-                      >
-                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
-                          <link.icon className="h-4 w-4" />
-                        </span>
-                        <span className="text-xs font-medium leading-tight text-muted-foreground">{link.name}</span>
-                      </Link>
-                    ))}
+                    {mobileContactLinks.map((link) => {
+                      const tileContent = (
+                        <>
+                          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <link.icon className="h-4 w-4" />
+                          </span>
+                          <span className="text-xs font-medium leading-tight text-muted-foreground">{link.name}</span>
+                        </>
+                      );
+                      const tileClassName = "flex flex-col items-center gap-2 rounded-xl px-2 py-3 text-center transition-colors hover:bg-muted/50";
+
+                      if (link.type === "action") {
+                        return (
+                          <button
+                            key={link.name}
+                            type="button"
+                            onClick={() => {
+                              window.Tawk_API?.toggle?.();
+                              setMobileMenuOpen(false);
+                            }}
+                            className={tileClassName}
+                          >
+                            {tileContent}
+                          </button>
+                        );
+                      }
+
+                      if (link.type === "external") {
+                        return (
+                          <a
+                            key={link.name}
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className={tileClassName}
+                          >
+                            {tileContent}
+                          </a>
+                        );
+                      }
+
+                      return (
+                        <Link
+                          key={link.name}
+                          href={link.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={tileClassName}
+                        >
+                          {tileContent}
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
 
