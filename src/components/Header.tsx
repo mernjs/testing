@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera } from "lucide-react";
+import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera, Video } from "lucide-react";
 import { useTheme } from "next-themes";
 import { InstagramIcon, XIcon, FacebookIcon, GithubIcon } from "@/components/icons/SocialIcons";
 import { socialLinks as socialLinksData } from "@/lib/contact";
@@ -83,6 +83,14 @@ const navigation = [
     ],
   },
   {
+    name: "Live Demos",
+    href: "/live-demos",
+    featured: { title: "Try It Yourself", description: "Real, working in-house AI projects.", image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=600&auto=format&fit=crop" },
+    items: [
+      { name: "Social Media AI Reels Generator", href: "/live-demos/social-media-ai-reels-generator", description: "Image-to-video AI, live demo", icon: Video },
+    ],
+  },
+  {
     name: "Industries",
     href: "/industries",
     featured: { title: "Industry Focus", description: "Tailored tech across sectors.", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop" },
@@ -158,6 +166,14 @@ const mobileNavigation = [
       { name: "Predictive Analytics Engine", href: "/products/predictive-analytics-engine", icon: LineChart },
       { name: "Image Recognition System", href: "/products/image-recognition-system", icon: Camera },
       { name: "AI Job Board Portal", href: "/products/ai-job-board-portal", icon: Briefcase },
+    ],
+  },
+  {
+    name: "Live Demos",
+    href: "/live-demos",
+    icon: Sparkles,
+    items: [
+      { name: "Social Media AI Reels Generator", href: "/live-demos/social-media-ai-reels-generator", icon: Video },
     ],
   },
   {

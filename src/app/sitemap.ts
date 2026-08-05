@@ -30,6 +30,8 @@ const routes = [
   "/products/predictive-analytics-engine",
   "/products/image-recognition-system",
   "/products/ai-job-board-portal",
+  "/live-demos",
+  "/live-demos/social-media-ai-reels-generator",
   "/services",
   "/services/ai-agent",
   "/services/ai-ml-solutions",
