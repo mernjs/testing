@@ -130,43 +130,6 @@ export default function Footer() {
               </a>
             </div>
 
-            <div className="flex gap-3">
-              <a
-                href={linkedin.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
-              >
-                <span className="sr-only">LinkedIn</span>
-                <LinkedinIcon className="h-4 w-4" />
-              </a>
-              <a
-                href={`mailto:${emails.support}`}
-                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
-              >
-                <span className="sr-only">Email</span>
-                <Mail className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <a
-                href={whatsapp.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
-              >
-                <span className="sr-only">WhatsApp</span>
-                <WhatsAppIcon className="h-4 w-4" />
-              </a>
-              <a
-                href={mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
-              >
-                <span className="sr-only">Location</span>
-                <MapPin className="h-4 w-4" aria-hidden="true" />
-              </a>
-            </div>
-
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-secondary-foreground/85 mb-3">Follow us</p>
               <div className="flex gap-3">
@@ -185,6 +148,33 @@ export default function Footer() {
                     </a>
                   );
                 })}
+                <a
+                href={linkedin.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
+              >
+                <span className="sr-only">LinkedIn</span>
+                <LinkedinIcon className="h-4 w-4" />
+              </a>  
+              <a
+                href={whatsapp.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
+              >
+                <span className="sr-only">WhatsApp</span>
+                <WhatsAppIcon className="h-4 w-4" />
+              </a>
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary transition-colors"
+              >
+                <span className="sr-only">Location</span>
+                <MapPin className="h-4 w-4" aria-hidden="true" />
+              </a>             
               </div>
             </div>
           </div>
