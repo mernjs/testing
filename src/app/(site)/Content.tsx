@@ -303,7 +303,7 @@ export default function HomeContent() {
             <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
               <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/40 border border-border/50 text-sm font-medium text-foreground backdrop-blur-md mb-8 shadow-sm">
                 <Sparkles className="w-4 h-4 text-primary animate-pulse" />
-                <span>Next-Generation Technology Partner</span>
+                <span>Next-Gen Tech, Built for Growth</span>
               </motion.div>
 
               <motion.h1 variants={fadeIn} className="text-5xl font-black tracking-tighter text-foreground sm:text-7xl leading-[1.1] mb-6">
@@ -314,7 +314,7 @@ export default function HomeContent() {
               </motion.h1>
 
               <motion.p variants={fadeIn} className="text-lg sm:text-xl leading-relaxed text-muted-foreground mb-10 max-w-lg">
-                <span className="font-bold"><span className="text-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span></span> partners with growing businesses to design, build, and scale software that actually moves the needle — from full-stack products to production-grade AI systems.
+                <span className="font-bold"><span className="text-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span></span> builds software and AI that grow your business — so you spend less, earn more, and stay ahead of the competition.
               </motion.p>
 
               <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-start gap-4">
@@ -807,7 +807,7 @@ export default function HomeContent() {
         eyebrowIcon={Network}
         heading="AI &"
         headingAccent="Innovation"
-        description="Building true intelligence requires more than just calling an API. We architect comprehensive AI ecosystems that blend cutting-edge models into seamless, autonomous workflows tailored for your business."
+        description="Building true intelligence requires more than just calling an API. We architect AI ecosystems around production-grade models, blended into seamless, autonomous workflows tailored for your business."
         centerLabel="AI Core"
         centerSublabel="The Intelligence Hub"
         nodes={aiEcosystemNodes}

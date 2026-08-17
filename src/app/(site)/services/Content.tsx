@@ -23,7 +23,7 @@ export default function ServicesContent() {
       <ListingHero
         eyebrow="services portfolio"
         title="Our Services"
-        description="From custom web and mobile applications to cutting-edge AI integrations, explore the comprehensive suite of services we offer to accelerate your digital growth."
+        description="From custom web and mobile applications to AI integrations built where they genuinely create value — not just where it's trendy — explore the services we offer to accelerate your digital growth."
         icon={Layers}
         image="https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=1400&auto=format&fit=crop"
       />

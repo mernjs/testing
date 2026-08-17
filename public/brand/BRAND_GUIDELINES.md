@@ -1,5 +1,46 @@
 # YashOrbit Brand Identity
 
+## Trademark & Legal Notice
+
+"YashOrbit," the YashOrbit wordmark, and the Orbit Arrow icon (`icon.svg` and every variant listed below) are trademarks of YashOrbit Technologies Private Limited ("YashOrbit"). All rights reserved.
+
+- **Notation:** Until registration is granted, mark the brand name with **™** on the first or most prominent use per page or document — the hero heading of a page, the top of a proposal, the cover of a deck — not on every repeated mention. Once the Trademark Registry confirms registration, switch that same mark to **®**.
+- **Copyright line:** `© {year} YashOrbit Technologies Private Limited. All rights reserved.` — already implemented in `src/components/Footer.tsx`; reuse verbatim on other official documents (proposals, letterhead, contracts).
+- **Third-party use:** Others may reference "YashOrbit" in plain factual statements (e.g. "built by YashOrbit") but may not use the wordmark, icon, or any lockup in their own branding, or in any way implying endorsement, sponsorship, or affiliation, without written permission. The legal terms for this live in the Acceptable Use Policy and Terms & Conditions.
+- **Evidence of use:** Registration (and defending the mark afterward) depends on a clear record of first and continuous use — keep dated exports of `icon.svg` / `wordmark.svg`, this site's launch date, and dated marketing material as supporting evidence.
+- **Consistency matters for registrability:** always reproduce the mark from these approved files, unmodified — a mark that's been stretched, recolored, or redrawn inconsistently across materials is harder to defend as *the* mark in a registration or infringement dispute.
+
+## Brand Positioning
+
+**Primary tagline** (homepage hero): *"Build the future with Intelligent Tech."*
+
+**Descriptor** (meta title / social sharing): *"Tech Solutions Built Around Your Business."*
+
+**Positioning statement:** YashOrbit builds software and AI that grow your business — so you spend less, earn more, and stay ahead of the competition.
+
+**Category label** (hero eyebrow, used on-site): *"Next-Gen Tech, Built for Growth."*
+
+**Framing line** (Why Choose Us section heading): *"A partner built around outcomes."*
+
+**Why us — the sharpest differentiators.** The site names eight reasons clients choose YashOrbit; these three carry a pitch because they're specific enough that a generic dev shop can't borrow the words:
+
+1. **Senior-led delivery, not junior hours billed at a discount.** Every engagement is run by senior engineers directly — not the pitch-senior, deliver-junior bait-and-switch that's standard at most shops.
+2. **AI-first, not AI-for-show.** We evaluate where AI genuinely creates value in your product, not just where it's trendy. Most businesses don't need a chatbot — they need automation grounded in their own data.
+3. **Named industry depth, not "various industries."** Deep experience across EdTech, FinTech, Real Estate Tech, and general enterprise software — concrete verticals a prospect can recognize themselves in, not a vague catch-all.
+
+## Brand Voice
+
+Based on the actual tone used across the live site — direct, outcome-focused, and specific rather than generic corporate language.
+
+| Voice Trait | In Practice |
+|---|---|
+| Outcome-focused, not feature-focused | "Software that actually moves the needle" rather than a generic feature list |
+| Specific and concrete | "Deep experience across EdTech, FinTech, Real Estate Tech" — named domains, not "various industries" |
+| Confident without overclaiming | "We evaluate where AI genuinely creates value in your product, not just where it's trendy" |
+| Plain language over jargon | "Most businesses don't need a chatbot — they need automation grounded in their own data" |
+
+**Avoid:** generic buzzword-heavy claims — "synergistic," "best-in-class," "world-class," "cutting-edge," "state-of-the-art" — that the voice above deliberately steers away from. The specificity *is* the differentiator; reaching for a stock superlative undoes it in one word.
+
 ## The Mark — "Orbit Arrow"
 
 The icon is a navy globe carrying the same **Y** monogram the brand has always used, with the "Orbit" half of the name made literal as a ring and a breakaway arrow:
@@ -63,6 +104,7 @@ Wordmark: **Geist**, weight 800, letter-spacing −0.6 (matches the site's exist
 - Use the horizontal lockup as the default (navbar, headers, email signatures).
 - Use the icon alone for favicon, app icon, and social avatar.
 - Place the mark only on backgrounds from the approved palette, or on plain photography with strong contrast.
+- Mark "YashOrbit" with ™ (or ® post-registration) on the first prominent use per page or document — see Trademark & Legal Notice above.
 
 **Don't**
 - Stretch, skew, or otherwise distort the proportions.

@@ -27,7 +27,7 @@ export default function AboutContent() {
       <ListingHero
         eyebrow="about portfolio"
         title="About YashOrbit"
-        description="Discover our mission, our values, and the talented team that drives our innovation. We are committed to delivering world-class technology solutions."
+        description="Discover our mission, our values, and the senior-led team building software that actually moves the needle for our clients."
         icon={Users}
         image="https://images.unsplash.com/photo-1560264280-88b68371db39?q=80&w=1400&auto=format&fit=crop"
       />
