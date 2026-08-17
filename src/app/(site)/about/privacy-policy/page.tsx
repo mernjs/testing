@@ -4,7 +4,7 @@ import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
 
 const title = "Privacy Policy | YashOrbit";
 const description =
-  "YashOrbit's Privacy Policy — how we collect, use, and protect your information, including cookies, data protection, third-party services, and your rights.";
+  "YashOrbit's Privacy Policy — how we collect, use, and protect your information, including cookies, data retention, cross-border transfers, and your rights under India's DPDPA and GDPR.";
 const path = "/about/privacy-policy";
 
 const image = "https://images.unsplash.com/photo-1633265486064-086b219458ec?q=80&w=1200&auto=format&fit=crop";

@@ -178,145 +178,161 @@ export default function Footer() {
               </div>
             </div>
           </div>
-          <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div>
-                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Services</h3>
-                <ul role="list" className="mt-6 space-y-4">
-                  <li>
-                    <Link href="/services/web-app-development" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      Web Development
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/services/mobile-app-development" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      Mobile Apps
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/services/desktop-app-development" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      Desktop Apps
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/services/ai-ml-solutions" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      AI & ML
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/services/ai-agent" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      AI Agent
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/services/ar-vr" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      AR/VR
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/services" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
-                      View All Services
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-              <div className="mt-10 md:mt-0">
-                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Products</h3>
-                <ul role="list" className="mt-6 space-y-4">
-                  <li>
-                    <Link href="/products/ai-construction-platform" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      AI Construction Platform
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/products/smart-spam-filter" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      Smart Spam Filter
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/products/ai-voice-assistant" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      AI Voice Assistant
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/products/predictive-analytics-engine" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      Predictive Analytics Engine
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/products/image-recognition-system" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      Image Recognition System
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/products/ai-job-board-portal" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      AI Job Board Portal
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/products" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
-                      View All Products
-                    </Link>
-                  </li>
-                </ul>
-              </div>
+          <div className="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5 xl:col-span-2 xl:mt-0">
+            <div>
+              <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Services</h3>
+              <ul role="list" className="mt-6 space-y-4">
+                <li>
+                  <Link href="/services/web-app-development" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Web Development
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/services/mobile-app-development" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Mobile Apps
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/services/desktop-app-development" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Desktop Apps
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/services/ai-ml-solutions" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    AI & ML
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/services/ai-agent" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    AI Agent
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/services/ar-vr" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    AR/VR
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/services" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
+                    View All Services
+                  </Link>
+                </li>
+              </ul>
             </div>
-            <div className="md:grid md:grid-cols-2 md:gap-8">
-              <div>
-                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Company</h3>
-                <ul role="list" className="mt-6 space-y-4">
-                  <li>
-                    <Link href="/about/what-we-do" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      About Us
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/about/our-mission" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      Our Mission
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/about/our-team" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      Our Team
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/about/technologies" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      Technologies
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/about/success-stories" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      Success Stories
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/about/privacy-policy" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      Privacy Policy
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/about" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
-                      View All Company
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-              <div className="mt-10 md:mt-0">
-                <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Live Demos</h3>
-                <ul role="list" className="mt-6 space-y-4">
-                  <li>
-                    <Link href="/live-demos/social-media-ai-reels-generator" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                      Social Media AI Reels Generator
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/live-demos" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
-                      View All Live Demos
-                    </Link>
-                  </li>
-                </ul>
-              </div>
+            <div>
+              <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Products</h3>
+              <ul role="list" className="mt-6 space-y-4">
+                <li>
+                  <Link href="/products/ai-construction-platform" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    AI Construction Platform
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/products/smart-spam-filter" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Smart Spam Filter
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/products/ai-voice-assistant" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    AI Voice Assistant
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/products/predictive-analytics-engine" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Predictive Analytics Engine
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/products/image-recognition-system" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Image Recognition System
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/products/ai-job-board-portal" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    AI Job Board Portal
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/products" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
+                    View All Products
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Company</h3>
+              <ul role="list" className="mt-6 space-y-4">
+                <li>
+                  <Link href="/about/what-we-do" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about/our-mission" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Our Mission
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about/our-team" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Our Team
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about/technologies" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Technologies
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about/success-stories" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Success Stories
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
+                    View All Company
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Legal</h3>
+              <ul role="list" className="mt-6 space-y-4">
+                <li>
+                  <Link href="/about/privacy-policy" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about/terms-and-conditions" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Terms & Conditions
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about/refund-cancellation-policy" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Refund & Cancellation Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about/acceptable-use-policy" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Acceptable Use Policy
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Live Demos</h3>
+              <ul role="list" className="mt-6 space-y-4">
+                <li>
+                  <Link href="/live-demos/social-media-ai-reels-generator" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Social Media AI Reels Generator
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/live-demos" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
+                    View All Live Demos
+                  </Link>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -324,8 +340,11 @@ export default function Footer() {
           <p className="text-xs leading-5 text-secondary-foreground/85">
             &copy; {new Date().getFullYear()} <span className="text-secondary-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span> Technologies Pvt. Ltd. All rights reserved.
           </p>
-          <div className="flex items-center gap-6 text-xs text-secondary-foreground/85">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-secondary-foreground/85">
             <Link href="/about/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+            <Link href="/about/terms-and-conditions" className="hover:text-primary transition-colors">Terms & Conditions</Link>
+            <Link href="/about/refund-cancellation-policy" className="hover:text-primary transition-colors">Refund & Cancellation</Link>
+            <Link href="/about/acceptable-use-policy" className="hover:text-primary transition-colors">Acceptable Use</Link>
             <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
           </div>
         </div>

@@ -38,7 +38,7 @@ export default function OurTeamContent() {
         ]}
       />
 
-      <TeamGrid
+      {/* <TeamGrid
         title="Leadership team"
         description="The people setting direction across product, engineering, and AI."
         members={[
@@ -47,7 +47,7 @@ export default function OurTeamContent() {
           { name: "Devraj Malhotra", role: "VP of Engineering", bio: "Leads delivery across client teams, keeping quality and timelines consistent as we scale.", initials: "DM", color: "from-[#ff8e75] to-secondary" },
           { name: "Elena Popescu", role: "Head of AI", bio: "Directs our applied AI practice, from model development through production MLOps.", initials: "EP", color: "from-primary to-secondary" },
         ]}
-      />
+      /> */}
 
       <ChecklistGrid
         id="engineering"

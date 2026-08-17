@@ -118,7 +118,7 @@ export default function SuccessStoriesContent() {
         ]}
       />
 
-      <ClientTestimonials />
+      {/* <ClientTestimonials /> */}
 
       <StatsBand
         tone="muted"

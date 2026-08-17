@@ -6,8 +6,11 @@ const routes = [
   "/about",
   "/about/our-mission",
   "/about/our-team",
-  "/about/co-founder-ceo",
+  // "/about/co-founder-ceo", // hidden from nav/listings; page still exists, just not linked or indexed
   "/about/privacy-policy",
+  "/about/terms-and-conditions",
+  "/about/refund-cancellation-policy",
+  "/about/acceptable-use-policy",
   "/about/success-stories",
   "/about/what-we-do",
   "/contact",

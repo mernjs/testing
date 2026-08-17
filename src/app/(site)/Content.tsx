@@ -457,7 +457,7 @@ export default function HomeContent() {
       </section>
 
       {/* Infinite Marquee Section */}
-      <section className="py-10 border-b border-border/50 bg-muted/20 overflow-hidden flex flex-col items-center justify-center">
+      {/* <section className="py-10 border-b border-border/50 bg-muted/20 overflow-hidden flex flex-col items-center justify-center">
         <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground mb-6">Trusted by growing businesses worldwide</p>
         <div className="relative w-full max-w-7xl mx-auto flex overflow-hidden">
           <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-muted/20 to-transparent z-10 pointer-events-none"></div>
@@ -478,7 +478,7 @@ export default function HomeContent() {
             ))}
           </motion.div>
         </div>
-      </section>
+      </section> */}
 
       {/* ULTRA-MODERN: Interactive Services Section (Hover Reveal Showcase) */}
       <section className="py-24 sm:py-32 bg-background relative overflow-hidden border-b border-border/50">
@@ -923,9 +923,9 @@ export default function HomeContent() {
       </section>
 
       {/* What Clients Say — Interactive Testimonials Carousel */}
-      <ClientTestimonials icon={Quote} category="Client Voices" />
+      {/* <ClientTestimonials icon={Quote} category="Client Voices" /> */}
 
-      {/* Team Highlights */}
+      {/* Team Highlights 
       <TeamGrid
         align="center"
         category="Team Highlights"
@@ -934,6 +934,7 @@ export default function HomeContent() {
         description="Senior leadership guiding every engagement, backed by engineers, designers, and AI specialists."
         members={teamMembers}
       />
+      
       <div className="pb-24 sm:pb-32 bg-background flex justify-center -mt-12 relative z-10">
         <Link
           href="/about/our-team"
@@ -942,6 +943,7 @@ export default function HomeContent() {
           Meet the Full Team <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
+      */}
 
       {/* Latest Insights */}
       <section className="py-24 sm:py-32 bg-muted/10 relative">
