@@ -2,7 +2,8 @@
 
 import {
   Layers, Code2, Server, Smartphone, BrainCircuit, Sparkles, Bot, Database,
-  Cloud, Palette, ShoppingCart, CheckCircle2, BarChart3, Workflow, Rocket,
+  Cloud, Palette, ShoppingCart, CheckCircle2, BarChart3, Workflow, Rocket, HeartHandshake, Blocks,
+  AppWindow, SquareTerminal,
 } from "lucide-react";
 import PageHero from "@/components/sections/PageHero";
 import SectionHeader from "@/components/sections/SectionHeader";
@@ -78,6 +79,27 @@ const categories: TechCategory[] = [
       { name: "Firebase (Mobile)", blurb: "Auth, realtime data, and crash reporting out of the box." },
       { name: "Push Notifications (FCM / APNs)", blurb: "Reliable re-engagement across iOS and Android." },
       { name: "App Store & Play Store Deployment", blurb: "Release management and store compliance handled end to end." },
+    ],
+  },
+  {
+    id: "desktop",
+    name: "Desktop Application Technologies",
+    icon: AppWindow,
+    description: "Software that earns a permanent spot on the desktop, framework chosen for your performance, distribution, and system-access needs, not habit.",
+    expertise: ["Cross-platform desktop delivery", "Native system access", "Code-signed, auto-updating releases"],
+    items: [
+      { name: "Electron", blurb: "Cross-platform desktop apps built with familiar web technologies." },
+      { name: "Tauri / Rust", blurb: "Lightweight, Rust-powered native runtime with a tiny footprint." },
+      { name: "WPF (.NET)", blurb: "Native Windows desktop UI framework built on .NET." },
+      { name: "Qt (C++)", blurb: "Cross-platform native UI framework for high-performance desktop apps." },
+      { name: "JavaFX", blurb: "Java-based desktop UI toolkit for cross-platform business apps." },
+      { name: "GTK", blurb: "Open-source toolkit for native Linux desktop applications." },
+      { name: "SwiftUI for macOS", blurb: "Native macOS interfaces built with Apple's declarative framework." },
+      { name: "Windows Forms", blurb: "Rapid, mature framework for internal Windows business tools." },
+      { name: "Avalonia UI", blurb: "Modern, cross-platform XAML-based .NET desktop framework." },
+      { name: "Win32 / Native C++", blurb: "Full native performance and system access where frameworks fall short." },
+      { name: "Electron Builder / Squirrel.Windows", blurb: "Packaging, code-signing, and auto-update tooling for signed Windows releases." },
+      { name: "Sparkle (macOS Auto-update)", blurb: "Auto-update framework for signed macOS desktop releases." },
     ],
   },
   {
@@ -250,6 +272,27 @@ const categories: TechCategory[] = [
     ],
   },
   {
+    id: "ai-coding-tools",
+    name: "AI Coding Tools",
+    icon: SquareTerminal,
+    description: "AI pair programmers and coding agents our engineers build alongside every day, used deliberately to move faster, not to skip review.",
+    expertise: ["AI pair programming", "Agentic code generation", "Codebase-aware AI assistants"],
+    items: [
+      { name: "Cursor", blurb: "AI-native code editor built around pair-programming with an LLM." },
+      { name: "GitHub Copilot", blurb: "AI pair programmer integrated directly into the editor." },
+      { name: "OpenAI Codex", blurb: "AI coding agent for autonomous, task-level code changes." },
+      { name: "Claude Code", blurb: "Agentic coding tool for terminal-based, multi-step development work." },
+      { name: "Windsurf", blurb: "AI-native IDE built around agentic coding workflows." },
+      { name: "Amazon Q Developer", blurb: "AWS's AI coding assistant, integrated across popular IDEs." },
+      { name: "Tabnine", blurb: "AI code completion with enterprise privacy controls." },
+      { name: "Replit Agent", blurb: "AI agent that builds and ships full apps inside Replit." },
+      { name: "Sourcegraph Cody", blurb: "AI coding assistant with deep, codebase-aware context." },
+      { name: "JetBrains AI Assistant", blurb: "AI coding help built directly into JetBrains IDEs." },
+      { name: "Devin", blurb: "Autonomous AI software engineer for end-to-end coding tasks." },
+      { name: "v0 by Vercel", blurb: "AI tool for generating UI components from a prompt." },
+    ],
+  },
+  {
     id: "data-engineering",
     name: "Data Engineering & Analytics",
     icon: BarChart3,
@@ -292,6 +335,48 @@ const categories: TechCategory[] = [
     ],
   },
   {
+    id: "crm",
+    name: "CRM Technologies",
+    icon: HeartHandshake,
+    description: "Customer relationship platforms that keep sales, marketing, and support working off the same data, configured and integrated, not just installed.",
+    expertise: ["CRM implementation & migration", "Custom workflow automation", "Cross-system integrations"],
+    items: [
+      { name: "Salesforce", blurb: "The enterprise standard for sales, service, and marketing on one platform." },
+      { name: "HubSpot CRM", blurb: "All-in-one CRM with strong inbound marketing and sales tooling." },
+      { name: "Zoho CRM", blurb: "Affordable, feature-rich CRM for growing sales teams." },
+      { name: "Microsoft Dynamics 365", blurb: "Deep CRM and ERP integration inside the Microsoft ecosystem." },
+      { name: "Pipedrive", blurb: "Visual, pipeline-first CRM built for sales-led teams." },
+      { name: "Freshsales (Freshworks CRM)", blurb: "AI-assisted lead scoring and sales pipeline management." },
+      { name: "monday Sales CRM", blurb: "Customizable, no-code CRM built on a flexible work OS." },
+      { name: "SugarCRM", blurb: "Self-hosted or cloud CRM with deep customization control." },
+      { name: "Zendesk Sell", blurb: "Lightweight CRM paired tightly with Zendesk's support suite." },
+      { name: "ActiveCampaign", blurb: "Marketing automation and CRM combined for lifecycle campaigns." },
+      { name: "Salesforce Apex & Flow", blurb: "Custom logic and process automation built inside Salesforce." },
+      { name: "CRM API Integrations", blurb: "Connecting your CRM to the rest of your stack, not leaving it siloed." },
+    ],
+  },
+  {
+    id: "no-code-low-code",
+    name: "No-Code & Low-Code",
+    icon: Blocks,
+    description: "Visual builders and low-code platforms that get a working product in front of users fast, without giving up on real engineering once you outgrow them.",
+    expertise: ["Rapid prototyping & MVPs", "Low-code to custom-code migration", "Internal tools & admin panels"],
+    items: [
+      { name: "Bubble", blurb: "Full-featured no-code platform for building web apps visually." },
+      { name: "Airtable", blurb: "Spreadsheet-simple database with app-like views and automations." },
+      { name: "Glide", blurb: "Turns a spreadsheet into a native-feel mobile app." },
+      { name: "FlutterFlow", blurb: "Visual builder that generates real Flutter code, not a black box." },
+      { name: "OutSystems", blurb: "Enterprise low-code platform for complex, governed applications." },
+      { name: "Mendix", blurb: "Low-code platform built for large-scale enterprise app delivery." },
+      { name: "Retool", blurb: "Low-code builder for fast, functional internal tools and admin panels." },
+      { name: "SAP Build Apps (AppGyver)", blurb: "Low-code platform for cross-platform app development." },
+      { name: "Adalo", blurb: "No-code builder for native mobile apps." },
+      { name: "Microsoft Power Apps", blurb: "Low-code apps deeply integrated with the Microsoft ecosystem." },
+      { name: "Xano", blurb: "No-code backend and API layer for no-code frontends." },
+      { name: "Softr", blurb: "Turns Airtable or Google Sheets data into client-ready web apps." },
+    ],
+  },
+  {
     id: "emerging",
     name: "Emerging Technologies",
     icon: Rocket,
@@ -330,7 +415,7 @@ export default function TechnologiesContent() {
           <SectionHeader
             category="Technology Stack"
             icon={Layers}
-            heading="Fourteen categories, one deliberate stack."
+            heading="Eighteen categories, one deliberate stack."
             description="We don't chase every new framework. Each category below reflects tools we've used in production, chosen for the problem at hand rather than the hype cycle. Search for a tool, or expand a category to explore it."
           />
           <TechShowcase categories={categories} />
