@@ -9,6 +9,7 @@ import {
   ThumbsUp, Globe2, Users2, Smartphone, Server, Cloud, Database, Package, Palette,
   MessageSquare, ScanEye, ChevronLeft, ChevronRight, ShieldCheck, Rocket,
   Mail, Phone, Quote, TrendingUp, Workflow, Building2, GraduationCap, Newspaper, HelpCircle,
+  Eye, Lock, ReceiptText, Scale, ShieldAlert, Wallet, FileSignature, Copyright, BadgeCheck,
 } from "lucide-react";
 import ExecutionFramework from "@/components/sections/ExecutionFramework";
 import ProcessOrbit from "@/components/sections/ProcessOrbit";
@@ -114,6 +115,20 @@ const insights = [
   { title: "Where Applied AI Actually Pays Off in 2026", excerpt: "Most businesses don't need a chatbot — they need automation grounded in their own data. Here's where we see AI creating real ROI right now.", href: "/services/ai-ml-solutions", tag: "AI Trends" },
   { title: "What We're Learning With Our First Projects", excerpt: "Early patterns from our client engagements so far: the technical decisions that consistently paid off, and the ones that didn't.", href: "/about/success-stories", tag: "Company Insights" },
   { title: "Why We Built an Industrial Training Program", excerpt: "How a talent pipeline problem turned into one of our most rewarding initiatives — and what it means for the businesses we serve.", href: "/industrial-training", tag: "Company News" },
+];
+
+const transparencyPolicies = [
+  { title: "Privacy, plainly explained", desc: "We tell you exactly what data we collect and why — and we never sell it to anyone.", href: "/about/privacy-policy", icon: Lock },
+  { title: "Fair, written-down refunds", desc: "Milestone-based, pro-rata refund terms, spelled out before you pay — not decided after.", href: "/about/refund-cancellation-policy", icon: ReceiptText },
+  { title: "Terms without the fine print", desc: "Clear terms on ownership, payment, and what happens if something goes wrong.", href: "/about/terms-and-conditions", icon: Scale },
+  { title: "The same rules apply to us", desc: "Our Acceptable Use Policy holds our own systems and team to the same standard we expect of you.", href: "/about/acceptable-use-policy", icon: ShieldAlert },
+];
+
+const engagementAssurances = [
+  { title: "You control the spend", desc: "Milestone-based billing — you approve spend before it happens, not after.", icon: Wallet },
+  { title: "NDA from day one", desc: "A mutual NDA is signed before a single project detail is shared.", icon: FileSignature },
+  { title: "100% code ownership", desc: "You own 100% of what we build for you — the code, the assets, all of it.", icon: Copyright },
+  { title: "Quality, guaranteed", desc: "Automated tests, manual QA, and senior code review before anything ships.", icon: BadgeCheck },
 ];
 
 const fadeIn = {
@@ -639,6 +654,7 @@ export default function HomeContent() {
         title="Technologies we work with"
         description="A snapshot of the stack we reach for across frontend, backend, mobile, and AI."
         items={technologies}
+        cta={{ label: "View All Technologies", href: "/about/technologies" }}
       />
 
       {/* ULTRA-MODERN: Interactive Industry Focus Section (Expanding Horizontal Accordion) */}
@@ -977,6 +993,72 @@ export default function HomeContent() {
                 </Link>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Transparency & Trust */}
+      <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+          <SectionHeader
+            align="center"
+            category="Trust & Transparency"
+            icon={Eye}
+            heading="We don't ask you to trust us."
+            accent="We show you."
+            description="No fine print to go hunting for. Every promise about your data, your money, and your code is written down — click through and read it yourself."
+            className="mx-auto"
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {transparencyPolicies.map((policy, i) => (
+              <motion.div
+                key={policy.href}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              >
+                <Link
+                  href={policy.href}
+                  className="group flex flex-col h-full p-6 rounded-2xl bg-muted/20 border border-border/50 hover:border-primary/30 hover:bg-muted/40 hover:-translate-y-1 transition-all duration-300"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                    <policy.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <h3 className="font-bold text-foreground mb-2 leading-snug">{policy.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">{policy.desc}</p>
+                  <span className="inline-flex items-center text-sm font-bold text-foreground group-hover:text-primary group-hover:gap-3 gap-2 transition-all mt-auto">
+                    Read the policy <ArrowRight className="w-4 h-4" />
+                  </span>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="mt-16 pt-12 border-t border-border/50">
+            <p className="text-center text-sm font-semibold tracking-widest uppercase text-muted-foreground mb-10">
+              Every engagement also includes
+            </p>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
+              {engagementAssurances.map((item, i) => (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className="flex flex-col items-center text-center gap-3"
+                >
+                  <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <item.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="text-sm font-bold text-foreground">{item.title}</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-[220px]">{item.desc}</div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { LucideIcon } from "lucide-react";
+import { ArrowRight, LucideIcon } from "lucide-react";
 
 interface TechItem {
   name: string;
@@ -17,9 +18,10 @@ interface TechStackGridProps {
   icon?: LucideIcon;
   category?: string;
   align?: "left" | "center";
+  cta?: { label: string; href: string };
 }
 
-export default function TechStackGrid({ title, description, items, tone = "default", icon: Icon, category, align = "left" }: TechStackGridProps) {
+export default function TechStackGrid({ title, description, items, tone = "default", icon: Icon, category, align = "left", cta }: TechStackGridProps) {
   const enhanced = Boolean(Icon || category);
   const centered = align === "center";
 
@@ -67,6 +69,26 @@ export default function TechStackGrid({ title, description, items, tone = "defau
             </motion.div>
           ))}
         </div>
+
+        {cta && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5 }}
+            className="mt-14 flex justify-center"
+          >
+            <Link
+              href={cta.href}
+              className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
+            >
+              {cta.label}
+              <span className="w-10 h-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
+                <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
+              </span>
+            </Link>
+          </motion.div>
+        )}
       </div>
     </section>
   );
