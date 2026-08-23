@@ -10,7 +10,7 @@ import {
   MessageSquare, ShieldCheck, Rocket,
   Mail, Phone, Workflow, Building2, GraduationCap, HelpCircle,
   Eye, Lock, ReceiptText, Scale, ShieldAlert, Wallet, FileSignature, Copyright, BadgeCheck,
-  UserPlus, MonitorPlay, HandCoins, UserCheck, ArrowLeftRight, CalendarClock, Handshake, LifeBuoy,
+  UserPlus, MonitorPlay, UserCheck, ArrowLeftRight, CalendarClock, Handshake, LifeBuoy,
 } from "lucide-react";
 import ProcessOrbit from "@/components/sections/ProcessOrbit";
 import FeatureHighlights from "@/components/sections/FeatureHighlights";
@@ -22,30 +22,35 @@ import { brandify } from "@/lib/brand";
 import { homeFaqs } from "./faqs";
 import { engagementCategories } from "./resource-augmentation/resources-data";
 
-const businessDivisions = [
+const coreDepartments = [
   {
-    tag: "Division 01",
+    tag: "Department 01",
     title: "IT Services & Software Development",
-    description: "Custom software, web, mobile, cloud, AI & enterprise solutions.",
-    highlights: ["Web & Mobile Apps", "Cloud & DevOps", "AI/ML Integration", "Enterprise Systems"],
+    description: "Our engineering department designs, builds, and ships custom software — web, mobile, cloud, and AI-powered products.",
+    services: [
+      "Web App Development", "Mobile App Development", "Desktop App Development", "Prediction & Forecasting",
+      "AI Agent", "AI/ML Solutions", "Vision Intelligence", "AR/VR",
+    ],
     icon: Code,
     href: "/services",
     cta: "Explore Services",
   },
   {
-    tag: "Division 02",
+    tag: "Department 02",
     title: "IT Industrial Training",
-    description: "Professional training, internships, mentorship & real-world project experience.",
-    highlights: ["Live Client Projects", "Mentor-Led Cohorts", "Internship Placement", "Job-Ready Curriculum"],
+    description: "Our training department runs mentor-led, project-based programs that take developers from fundamentals to job-ready.",
+    services: [
+      "MERN Stack", "MEAN Stack", "Generative AI", "Agentic AI", "Conversational AI", "Computer Vision",
+    ],
     icon: GraduationCap,
     href: "/industrial-training",
     cta: "Explore Training",
   },
   {
-    tag: "Division 03",
+    tag: "Department 03",
     title: "IT Resource Augmentation",
-    description: "Hire dedicated developers, engineers, tech leads & complete development teams.",
-    highlights: ["Single Developer Hiring", "Pre-Built Team Packages", "Flexible Engagement Models", "Fast Onboarding"],
+    description: "Our staffing department places pre-vetted developers and full teams directly inside your workflow, fast.",
+    services: engagementCategories.map((category) => category.title),
     icon: UserPlus,
     href: "/resource-augmentation",
     cta: "Explore Hiring",
@@ -54,7 +59,6 @@ const businessDivisions = [
 
 const trustBadges = [
   { label: "Free Live Project Demo", icon: MonitorPlay },
-  { label: "100% Money-Back Guarantee", icon: HandCoins },
   { label: "Pre-Vetted Developers", icon: UserCheck },
   { label: "NDA & IP Protected", icon: FileSignature },
   { label: "Developer Replacement Anytime", icon: ArrowLeftRight },
@@ -431,44 +435,52 @@ export default function HomeContent() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
           <SectionHeader
             align="center"
-            category="What We Do"
+            category="How We're Structured"
             icon={Layers}
-            heading="Our 3 Dedicated Teams"
-            description="Everything we build, teach, and staff falls under three focused divisions — each with its own dedicated team, process, and expertise."
+            heading="Our 3 Core Service Departments"
+            description="YashOrbit operates through three core service categories — each one managed by its own specialized, dedicated department. Explore the individual services delivered under each department below."
             className="mx-auto"
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {businessDivisions.map((division, idx) => (
+            {coreDepartments.map((department, idx) => (
               <motion.div
-                key={division.title}
+                key={department.title}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.5, delay: idx * 0.12 }}
                 className="group relative flex flex-col h-full p-8 sm:p-10 rounded-[2rem] bg-background border border-border/50 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 transition-all duration-300"
               >
-                <span className="text-xs font-bold uppercase tracking-widest text-primary mb-6">{division.tag}</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-primary mb-6">{department.tag}</span>
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
-                  <division.icon className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors" />
+                  <department.icon className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors" />
                 </div>
-                <h3 className="text-2xl font-bold text-foreground mb-3 leading-snug">{division.title}</h3>
-                <p className="text-muted-foreground leading-relaxed mb-8">{division.description}</p>
+                <h3 className="text-2xl font-bold text-foreground mb-3 leading-snug">{department.title}</h3>
+                <p className="text-muted-foreground leading-relaxed mb-8">{department.description}</p>
 
-                <ul className="space-y-3 mb-10 flex-1">
-                  {division.highlights.map((h) => (
-                    <li key={h} className="flex items-center gap-2.5 text-sm text-foreground">
-                      <CheckCircle2 className="w-4 h-4 text-primary flex-none" />
-                      {h}
-                    </li>
-                  ))}
-                </ul>
+                <div className="mb-10 flex-1">
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
+                    {department.services.length} Services Under This Department
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {department.services.map((service) => (
+                      <span
+                        key={service}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground bg-muted/40 border border-border/50 px-3 py-1.5 rounded-full group-hover:border-primary/30 transition-colors duration-300"
+                      >
+                        <CheckCircle2 className="w-3 h-3 text-primary flex-none" />
+                        {service}
+                      </span>
+                    ))}
+                  </div>
+                </div>
 
                 <Link
-                  href={division.href}
+                  href={department.href}
                   className="inline-flex items-center gap-2 text-sm font-bold text-foreground group-hover:text-primary group-hover:gap-3 transition-all mt-auto"
                 >
-                  {division.cta} <ArrowRight className="w-4 h-4" />
+                  {department.cta} <ArrowRight className="w-4 h-4" />
                 </Link>
               </motion.div>
             ))}
