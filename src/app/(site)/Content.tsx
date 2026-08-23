@@ -9,7 +9,7 @@ import {
   Smartphone,
   MessageSquare, ShieldCheck, Rocket,
   Mail, Phone, Workflow, Building2, GraduationCap, HelpCircle,
-  Eye, Lock, ReceiptText, Scale, ShieldAlert, Wallet, FileSignature, Copyright, BadgeCheck,
+  Eye, Wallet, FileSignature, Copyright, BadgeCheck,
   UserPlus, MonitorPlay, UserCheck, ArrowLeftRight, CalendarClock, Handshake, LifeBuoy,
 } from "lucide-react";
 import ProcessOrbit from "@/components/sections/ProcessOrbit";
@@ -95,13 +95,6 @@ const aiEcosystemNodes = [
   { label: "Generative AI", icon: Sparkles, color: "text-emerald-500", detail: "On-demand content, code, and creative generation." },
   { label: "AI Automation", icon: UsersIcon, color: "text-teal-500", detail: "Task-specific agents that automate real workflows end-to-end." },
   { label: "Computer Vision", icon: BrainCircuit, color: "text-blue-500", detail: "Understanding and acting on images and video in real time." },
-];
-
-const transparencyPolicies = [
-  { title: "Privacy, plainly explained", desc: "We tell you exactly what data we collect and why — and we never sell it to anyone.", href: "/about/privacy-policy", icon: Lock },
-  { title: "Fair, written-down refunds", desc: "Milestone-based, pro-rata refund terms, spelled out before you pay — not decided after.", href: "/about/refund-cancellation-policy", icon: ReceiptText },
-  { title: "Terms without the fine print", desc: "Clear terms on ownership, payment, and what happens if something goes wrong.", href: "/about/terms-and-conditions", icon: Scale },
-  { title: "The same rules apply to us", desc: "Our Acceptable Use Policy holds our own systems and team to the same standard we expect of you.", href: "/about/acceptable-use-policy", icon: ShieldAlert },
 ];
 
 const engagementAssurances = [
@@ -917,60 +910,28 @@ export default function HomeContent() {
             align="center"
             category="Trust & Transparency"
             icon={Eye}
-            heading="We don't ask you to trust us."
-            accent="We show you."
-            description="No fine print to go hunting for. Every promise about your data, your money, and your code is written down — click through and read it yourself."
+            heading="Every engagement also includes"
+            description="The baseline protections that come standard with every engagement — no exceptions, and no fine print to go hunting for."
             className="mx-auto"
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {transparencyPolicies.map((policy, i) => (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
+            {engagementAssurances.map((item, i) => (
               <motion.div
-                key={policy.href}
+                key={item.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="flex flex-col items-center text-center gap-3"
               >
-                <Link
-                  href={policy.href}
-                  className="group flex flex-col h-full p-6 rounded-2xl bg-background border border-border/50 hover:border-primary/30 hover:bg-background/80 hover:-translate-y-1 transition-all duration-300"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                    <policy.icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <h3 className="font-bold text-foreground mb-2 leading-snug">{policy.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">{policy.desc}</p>
-                  <span className="inline-flex items-center text-sm font-bold text-foreground group-hover:text-primary group-hover:gap-3 gap-2 transition-all mt-auto">
-                    Read the policy <ArrowRight className="w-4 h-4" />
-                  </span>
-                </Link>
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                  <item.icon className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-sm font-bold text-foreground">{item.title}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-[220px]">{item.desc}</div>
               </motion.div>
             ))}
-          </div>
-
-          <div className="mt-16 pt-12 border-t border-border/50">
-            <p className="text-center text-sm font-semibold tracking-widest uppercase text-muted-foreground mb-10">
-              Every engagement also includes
-            </p>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
-              {engagementAssurances.map((item, i) => (
-                <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="flex flex-col items-center text-center gap-3"
-                >
-                  <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                    <item.icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="text-sm font-bold text-foreground">{item.title}</div>
-                  <div className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-[220px]">{item.desc}</div>
-                </motion.div>
-              ))}
-            </div>
           </div>
         </div>
       </section>
