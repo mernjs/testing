@@ -288,11 +288,6 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/careers" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                    Careers
-                  </Link>
-                </li>
-                <li>
                   <Link href="/resource-augmentation" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
                     Resource Augmentation
                   </Link>
@@ -305,41 +300,81 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Legal</h3>
+              <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Training</h3>
               <ul role="list" className="mt-6 space-y-4">
                 <li>
-                  <Link href="/about/privacy-policy" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                    Privacy Policy
+                  <Link href="/industrial-training/mern-stack" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    MERN Stack
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about/terms-and-conditions" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                    Terms & Conditions
+                  <Link href="/industrial-training/mean-stack" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    MEAN Stack
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about/refund-cancellation-policy" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                    Refund & Cancellation Policy
+                  <Link href="/industrial-training/generative-ai" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Generative AI
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about/acceptable-use-policy" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                    Acceptable Use Policy
+                  <Link href="/industrial-training/agentic-ai" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Agentic AI
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/industrial-training/conversational-ai" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Conversational AI
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/industrial-training/computer-vision" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Computer Vision
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/industrial-training" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
+                    View All Programs
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Live Demos</h3>
+              <h3 className="text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">Careers</h3>
               <ul role="list" className="mt-6 space-y-4">
                 <li>
-                  <Link href="/live-demos/social-media-ai-reels-generator" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
-                    Social Media AI Reels Generator
+                  <Link href="/careers/mern-developer" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    MERN Developer
                   </Link>
                 </li>
                 <li>
-                  <Link href="/live-demos" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
-                    View All Live Demos
+                  <Link href="/careers/genai-developer" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    GenAI Developer
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/careers/ui-ux-designer" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    UI/UX Designer
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/careers/business-analyst" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Business Analyst
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/careers/project-manager" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Project Manager
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/careers/digital-marketing" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Digital Marketing
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/careers" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
+                    View All Careers
                   </Link>
                 </li>
               </ul>
