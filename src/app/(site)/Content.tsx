@@ -5,26 +5,22 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, Code, Cpu, LineChart, Globe, Sparkles, CheckCircle2, Play, Users, Zap, Layers,
-  Bot, BrainCircuit, Trophy, Clock3,
-  Smartphone, Server, Cloud, Database, Package, Palette,
-  MessageSquare, ScanEye, ChevronLeft, ChevronRight, ShieldCheck, Rocket,
-  Mail, Phone, Quote, Workflow, Building2, GraduationCap, Newspaper, HelpCircle,
+  Network, Bot, Mic, Users as UsersIcon, BrainCircuit, Clock3,
+  Smartphone,
+  MessageSquare, ShieldCheck, Rocket,
+  Mail, Phone, Workflow, Building2, GraduationCap, HelpCircle,
   Eye, Lock, ReceiptText, Scale, ShieldAlert, Wallet, FileSignature, Copyright, BadgeCheck,
   UserPlus, MonitorPlay, HandCoins, UserCheck, ArrowLeftRight, CalendarClock, Handshake, LifeBuoy,
 } from "lucide-react";
-import ClientTestimonials from "@/components/sections/ClientTestimonials";
+import ProcessOrbit from "@/components/sections/ProcessOrbit";
 import FeatureHighlights from "@/components/sections/FeatureHighlights";
 import CurriculumTimeline from "@/components/sections/CurriculumTimeline";
-import TechStackGrid from "@/components/sections/TechStackGrid";
-import TeamGrid from "@/components/sections/TeamGrid";
 import FAQAccordion from "@/components/sections/FAQAccordion";
 import SectionHeader from "@/components/sections/SectionHeader";
 import SubscriptionCard from "@/components/sections/SubscriptionCard";
 import { brandify } from "@/lib/brand";
 import { homeFaqs } from "./faqs";
 import { engagementCategories } from "./resource-augmentation/resources-data";
-
-const trustedClients = ["Nexora Health", "Bloomly", "Vertex Logistics", "Arclight Finance", "Wavecrest Media", "Northgate Retail"];
 
 const businessDivisions = [
   {
@@ -88,67 +84,13 @@ const developmentProcess = [
   { title: "Support & Maintenance", duration: "Phase 7", topics: ["Monitoring", "Bug fixes", "Ongoing iteration"] },
 ];
 
-const technologies = [
-  { name: "React / Next.js", category: "Frontend", icon: Code },
-  { name: "Node.js", category: "Backend", icon: Server },
-  { name: "React Native", category: "Mobile", icon: Smartphone },
-  { name: "PyTorch / TensorFlow", category: "AI/ML", icon: BrainCircuit },
-  { name: "AWS / GCP", category: "Cloud", icon: Cloud },
-  { name: "PostgreSQL / MongoDB", category: "Database", icon: Database },
-  { name: "Docker / Kubernetes", category: "DevOps", icon: Package },
-  { name: "Figma", category: "UI/UX", icon: Palette },
-];
-
-const trainingPrograms = [
-  { title: "MERN Stack", overview: "Full-stack JavaScript development with MongoDB, Express, React, and Node.js.", duration: "12 Weeks", tech: ["MongoDB", "React", "Node.js"], icon: Code, href: "/industrial-training/mern-stack" },
-  { title: "MEAN Stack", overview: "Enterprise-grade single-page apps with MongoDB, Express, Angular, and Node.js.", duration: "12 Weeks", tech: ["Angular", "TypeScript", "RxJS"], icon: Database, href: "/industrial-training/mean-stack" },
-  { title: "Generative AI", overview: "Prompt engineering, fine-tuning, and RAG pipelines on top of modern LLMs.", duration: "10 Weeks", tech: ["LLM APIs", "LangChain", "Vector DB"], icon: Sparkles, href: "/industrial-training/generative-ai" },
-  { title: "Agentic AI", overview: "Autonomous agents that plan, use tools, and coordinate to complete tasks.", duration: "10 Weeks", tech: ["Python", "Agent Frameworks", "Memory"], icon: Bot, href: "/industrial-training/agentic-ai" },
-  { title: "Conversational AI", overview: "Task-oriented chatbots and voice assistants for real businesses.", duration: "10 Weeks", tech: ["NLU", "Dialogue Mgmt", "Voice"], icon: MessageSquare, href: "/industrial-training/conversational-ai" },
-  { title: "Computer Vision", overview: "Image classification, object detection, and real-time video analytics.", duration: "10 Weeks", tech: ["OpenCV", "CNNs", "Edge Deploy"], icon: ScanEye, href: "/industrial-training/computer-vision" },
-];
-
-const successStories = [
-  {
-    segment: "Retail Tech",
-    title: "Cutting checkout abandonment for an omnichannel retailer",
-    challenge: "A fast-growing retailer was losing a significant share of customers at checkout, with cart abandonment spiking on mobile during peak sale periods.",
-    solution: "We rebuilt the checkout flow with optimistic UI updates, faster payment processing, and aggressive caching, cutting load times by more than half.",
-    technologies: ["Next.js", "Stripe", "Redis"],
-    metric: "-42%",
-    metricLabel: "Cart abandonment rate",
-  },
-  {
-    segment: "HealthTech",
-    title: "Building a scheduling platform for a telehealth network",
-    challenge: "A telehealth provider's manual, phone-based scheduling process couldn't keep up with patient demand, leading to long wait times and missed appointments.",
-    solution: "We built a self-service scheduling platform with automated reminders and provider availability sync across their clinic network.",
-    technologies: ["React Native", "Node.js", "PostgreSQL"],
-    metric: "3x",
-    metricLabel: "Faster appointment booking",
-  },
-  {
-    segment: "Logistics",
-    title: "Automating route planning for a regional delivery fleet",
-    challenge: "A regional delivery company was planning routes manually every morning, leading to inefficient routing and rising fuel costs as their fleet grew.",
-    solution: "We built an automated route optimization engine that factors in traffic, delivery windows, and vehicle capacity in real time.",
-    technologies: ["Python", "OR-Tools", "AWS"],
-    metric: "-28%",
-    metricLabel: "Fuel & delivery costs",
-  },
-];
-
-const teamMembers = [
-  { name: "Aditya Rao", role: "Co-Founder & CEO", bio: "Sets the long-term product and business vision, and still reviews architecture decisions on major engagements.", initials: "AR", color: "from-primary to-[#ff8e75]" },
-  { name: "Simone Carter", role: "Chief Technology Officer", bio: "Owns technical strategy across every engagement, from cloud architecture to AI implementation standards.", initials: "SC", color: "from-secondary to-primary" },
-  { name: "Devraj Malhotra", role: "VP of Engineering", bio: "Leads delivery across client teams, keeping quality and timelines consistent as we scale.", initials: "DM", color: "from-[#ff8e75] to-secondary" },
-  { name: "Elena Popescu", role: "Head of AI", bio: "Directs our applied AI practice, from model development through production MLOps.", initials: "EP", color: "from-primary to-secondary" },
-];
-
-const insights = [
-  { title: "Where Applied AI Actually Pays Off in 2026", excerpt: "Most businesses don't need a chatbot — they need automation grounded in their own data. Here's where we see AI creating real ROI right now.", href: "/services/ai-ml-solutions", tag: "AI Trends" },
-  { title: "What We're Learning With Our First Projects", excerpt: "Early patterns from our client engagements so far: the technical decisions that consistently paid off, and the ones that didn't.", href: "/about/success-stories", tag: "Company Insights" },
-  { title: "Why We Built a Training Program", excerpt: "How a talent pipeline problem turned into one of our most rewarding initiatives — and what it means for the businesses we serve.", href: "/industrial-training", tag: "Company News" },
+const aiEcosystemNodes = [
+  { label: "RAG Solutions", icon: Network, color: "text-amber-500", detail: "Grounding model responses in your own proprietary data." },
+  { label: "Agentic AI", icon: Bot, color: "text-indigo-500", detail: "Autonomous agents that plan, act, and self-correct." },
+  { label: "Conversational AI", icon: Mic, color: "text-rose-500", detail: "Natural, task-oriented chat and voice interfaces for your product." },
+  { label: "Generative AI", icon: Sparkles, color: "text-emerald-500", detail: "On-demand content, code, and creative generation." },
+  { label: "AI Automation", icon: UsersIcon, color: "text-teal-500", detail: "Task-specific agents that automate real workflows end-to-end." },
+  { label: "Computer Vision", icon: BrainCircuit, color: "text-blue-500", detail: "Understanding and acting on images and video in real time." },
 ];
 
 const transparencyPolicies = [
@@ -180,8 +122,6 @@ export default function HomeContent() {
 
   const [activeService, setActiveService] = useState(0);
   const [activeIndustry, setActiveIndustry] = useState(0);
-  const [storyIndex, setStoryIndex] = useState(0);
-  const [storyDirection, setStoryDirection] = useState(1);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -263,16 +203,6 @@ export default function HomeContent() {
       related: ["AI/ML Solutions", "Vision Intelligence"],
     }
   ];
-
-  const nextStory = React.useCallback(() => {
-    setStoryDirection(1);
-    setStoryIndex((i) => (i + 1) % successStories.length);
-  }, []);
-  const prevStory = () => {
-    setStoryDirection(-1);
-    setStoryIndex((i) => (i - 1 + successStories.length) % successStories.length);
-  };
-  const activeStory = successStories[storyIndex];
 
   return (
     <div className="flex flex-col min-h-screen selection:bg-primary/30 overflow-hidden">
@@ -768,85 +698,7 @@ export default function HomeContent() {
         modules={developmentProcess}
       />
 
-      {/* 8. Technologies We Work With */}
-      <TechStackGrid
-        tone="muted"
-        align="center"
-        category="Our Toolkit"
-        icon={Code}
-        title="Technologies we work with"
-        description="A snapshot of the stack we reach for across frontend, backend, mobile, and AI."
-        items={technologies}
-        cta={{ label: "View All Technologies", href: "/about/technologies" }}
-      />
-
-      {/* 9. Training Programs — Training deep-dive */}
-      <section className="py-24 sm:py-32 bg-background relative">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <SectionHeader
-            align="center"
-            category="Training"
-            icon={GraduationCap}
-            heading="Build job-ready skills with us."
-            description="Hands-on programs across full-stack development and applied AI."
-            className="mx-auto"
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {trainingPrograms.map((program, i) => (
-              <motion.div
-                key={program.href}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.5, delay: (i % 6) * 0.08 }}
-                className="p-7 rounded-2xl bg-muted/10 border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 flex flex-col"
-              >
-                <div className="flex items-center justify-between mb-5">
-                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <program.icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full">
-                    {program.duration}
-                  </span>
-                </div>
-                <h3 className="font-bold text-foreground mb-2 leading-snug">{program.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">{program.overview}</p>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {program.tech.map((t) => (
-                    <span key={t} className="text-xs font-semibold text-foreground bg-background border border-border/60 px-2.5 py-1 rounded-full">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                <Link href={program.href} className="inline-flex items-center text-sm font-bold text-foreground hover:text-primary hover:gap-3 gap-2 transition-all mt-auto">
-                  Learn More<span className="sr-only"> about {program.title}</span> <ArrowRight className="w-4 h-4" />
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.5 }}
-            className="mt-14 flex justify-center"
-          >
-            <Link
-              href="/industrial-training"
-              className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
-            >
-              View All Programs
-              <span className="w-10 h-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
-                <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
-              </span>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* 10. Resource Augmentation Preview — Hiring deep-dive */}
+      {/* 8. Resource Augmentation Preview — Hiring deep-dive */}
       <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden border-b border-border/50">
         <div className="absolute right-0 top-1/3 translate-x-1/3 w-[600px] h-[600px] bg-secondary/20 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
@@ -902,7 +754,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 11. Industries We Serve */}
+      {/* 9. Industries We Serve */}
       <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
         <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/3 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
@@ -997,114 +849,20 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 12. Success Stories — Proof, navigable carousel */}
-      <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden">
-        <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-primary/10 rounded-full blur-[140px] pointer-events-none"></div>
-        <div className="mx-auto max-w-5xl px-6 lg:px-8 relative z-10">
-          <SectionHeader
-            align="center"
-            category="Success Stories"
-            icon={Trophy}
-            heading="Real challenges, real results."
-            description="A closer look at how we've solved real problems for real businesses."
-            className="mx-auto"
-          />
+      {/* 10. AI & Innovation */}
+      <ProcessOrbit
+        eyebrowIcon={Network}
+        heading="AI &"
+        headingAccent="Innovation"
+        description="We build AI features that solve real problems, not chatbots bolted onto your product. Every integration is grounded in your own data and tailored to your workflow."
+        centerLabel="AI Core"
+        centerSublabel="The Intelligence Hub"
+        nodes={aiEcosystemNodes}
+        glow="primary"
+        image="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?q=80&w=1600&auto=format&fit=crop"
+      />
 
-          <div className="relative min-h-[480px] sm:min-h-[420px] rounded-[2.5rem] bg-background border border-border/50 shadow-xl overflow-hidden">
-            <Quote className="absolute top-8 right-8 w-16 h-16 text-primary/10" />
-
-            <AnimatePresence mode="wait" custom={storyDirection}>
-              <motion.div
-                key={storyIndex}
-                custom={storyDirection}
-                initial={{ x: storyDirection * 60 }}
-                animate={{ x: 0 }}
-                exit={{ x: storyDirection * -60 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="relative z-10 p-8 sm:p-12"
-              >
-                <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full w-fit inline-block mb-5">
-                  {activeStory.segment}
-                </span>
-                <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 leading-snug">{activeStory.title}</h3>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Challenge</p>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{activeStory.challenge}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Solution</p>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{activeStory.solution}</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-between gap-6 pt-6 border-t border-border/50">
-                  <div className="flex flex-wrap gap-2">
-                    {activeStory.technologies.map((t) => (
-                      <span key={t} className="text-xs font-semibold text-foreground bg-muted/40 border border-border/60 px-2.5 py-1 rounded-full">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Rocket className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <div className="text-lg font-black text-foreground leading-tight">{activeStory.metric}</div>
-                      <div className="text-xs text-muted-foreground">{activeStory.metricLabel}</div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          <div className="flex items-center justify-center gap-6 mt-8">
-            <button
-              onClick={prevStory}
-              aria-label="Previous success story"
-              className="w-11 h-11 rounded-full border border-border/50 bg-background flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <div className="flex items-center gap-2">
-              {successStories.map((s, i) => (
-                <button
-                  key={s.title}
-                  onClick={() => { setStoryDirection(i > storyIndex ? 1 : -1); setStoryIndex(i); }}
-                  aria-label={`Go to success story ${i + 1}`}
-                  className="group min-w-6 min-h-6 flex items-center justify-center"
-                >
-                  <span className={`block h-2 rounded-full transition-all duration-300 ${i === storyIndex ? "w-8 bg-primary" : "w-2 bg-border group-hover:bg-primary/40"}`} />
-                </button>
-              ))}
-            </div>
-            <button
-              onClick={nextStory}
-              aria-label="Next success story"
-              className="w-11 h-11 rounded-full border border-border/50 bg-background flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
-
-          <div className="mt-10 flex justify-center">
-            <Link
-              href="/about/success-stories"
-              className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
-            >
-              View All Success Stories
-              <span className="w-10 h-10 rounded-full bg-background border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
-                <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
-              </span>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* 13. Client Commitment — Relationship trust */}
+      {/* 11. Client Commitment — Relationship trust */}
       <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
         <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/3 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
@@ -1139,7 +897,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 14. Transparency & Trust — Legal/contractual trust */}
+      {/* 12. Transparency & Trust — Legal/contractual trust */}
       <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden">
         <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
@@ -1205,43 +963,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 15. Latest Insights */}
-      <section className="py-24 sm:py-32 bg-background relative">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <SectionHeader
-            align="center"
-            category="Latest Insights"
-            icon={Newspaper}
-            heading="Ideas worth sharing."
-            description="Perspectives on AI, technology, and how we build for our clients."
-            className="mx-auto"
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {insights.map((post, i) => (
-              <motion.div
-                key={post.href + post.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="p-7 rounded-2xl bg-muted/10 border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 flex flex-col"
-              >
-                <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full w-fit mb-5">
-                  {post.tag}
-                </span>
-                <h3 className="font-bold text-foreground mb-3 leading-snug">{post.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-6 flex-1">{post.excerpt}</p>
-                <Link href={post.href} className="inline-flex items-center text-sm font-bold text-foreground hover:text-primary hover:gap-3 gap-2 transition-all mt-auto">
-                  Read More<span className="sr-only"> about {post.title}</span> <ArrowRight className="w-4 h-4" />
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 16. FAQs */}
+      {/* 13. FAQs */}
       <FAQAccordion
         category="FAQs"
         icon={HelpCircle}
@@ -1249,7 +971,7 @@ export default function HomeContent() {
         faqs={homeFaqs.map((f) => ({ question: brandify(f.question), answer: f.answer }))}
       />
 
-      {/* 17. Final CTA — Get started */}
+      {/* 14. Final CTA — Get started */}
       <section className="relative overflow-hidden border-t border-border/50 py-24 sm:py-32">
         <div className="absolute inset-0 bg-primary/5"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
