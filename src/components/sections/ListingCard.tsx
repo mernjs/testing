@@ -27,7 +27,6 @@ interface ListingCardProps {
 export default function ListingCard({
   icon: Icon,
   index,
-  badge,
   badgeIcon: BadgeIcon,
   title,
   subtitle,
@@ -42,8 +41,8 @@ export default function ListingCard({
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
   const springConfig = { stiffness: 200, damping: 20, mass: 0.5 };
-  const rotateX = useSpring(useTransform(mouseY, [0, 1], [4, -4]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [0, 1], [-4, 4]), springConfig);
+  const rotateX = useSpring(useTransform(mouseY, [0, 1], [3, -3]), springConfig);
+  const rotateY = useSpring(useTransform(mouseX, [0, 1], [-3, 3]), springConfig);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -57,10 +56,10 @@ export default function ListingCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, delay: (index % 4) * 0.1 }}
+      transition={{ duration: 0.5, delay: (index % 6) * 0.08 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ rotateX, rotateY, transformPerspective: 1000 }}
@@ -74,44 +73,38 @@ export default function ListingCard({
       <Link
         href={href}
         aria-label={`${title} — ${ctaLabel}`}
-        className={`relative flex flex-col h-full overflow-hidden rounded-3xl bg-muted/20 shadow-sm transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+        className={`relative flex flex-col h-full overflow-hidden rounded-3xl bg-muted/10 p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
           featured ? "border-2 border-primary shadow-lg shadow-primary/10" : "border border-border/50 hover:border-primary/40"
         }`}
       >
-        {/* Image Banner */}
-        <div className="relative h-52 overflow-hidden flex-none">
+        {/* Ambient color wash, sampled from the item's real image, kept abstract and soft */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <Image
             src={image}
-            alt={title}
+            alt=""
             fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover scale-105 group-hover/card:scale-110 transition-transform duration-700 ease-out"
+            sizes="400px"
+            className="object-cover scale-125 blur-2xl opacity-[0.07] group-hover/card:opacity-[0.14] transition-opacity duration-500"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/25 via-transparent to-secondary/30 mix-blend-overlay"></div>
-
-          {/* Shine sweep */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute inset-y-0 -left-1/2 w-1/3 bg-gradient-to-r from-transparent via-white/25 to-transparent -skew-x-12 -translate-x-full group-hover/card:translate-x-[350%] transition-transform duration-1000 ease-out" />
-          </div>
-
-          {/* Category badge */}
-          <div className="absolute top-4 right-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-primary to-secondary text-primary-foreground text-xs font-bold shadow-lg">
-            <BadgeIcon className="w-3.5 h-3.5" />
-            {badge}
-          </div>
-
-          {/* Icon container */}
-          <div className="absolute top-4 left-4 w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg group-hover/card:scale-110 group-hover/card:bg-primary group-hover/card:border-primary transition-all duration-500">
-            <Icon className="w-5 h-5 text-white" />
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/5 to-muted/20" />
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 flex-1 flex flex-col p-8">
-          <h3 className="text-2xl font-bold text-foreground mb-2 leading-snug group-hover/card:text-primary transition-colors">{title}</h3>
-          <p className="text-primary text-sm font-bold uppercase tracking-wider mb-4">{subtitle}</p>
-          <p className="text-muted-foreground leading-relaxed mb-6 line-clamp-3">{description}</p>
+        <div className="relative z-10 flex flex-col h-full">
+          <div className="flex items-center justify-between mb-6">
+            <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center group-hover/card:bg-primary group-hover/card:border-primary group-hover/card:scale-110 transition-all duration-300">
+              <Icon className="w-6 h-6 text-primary group-hover/card:text-primary-foreground transition-colors duration-300" />
+            </div>
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-background/70 border border-border/50 px-2.5 py-1 rounded-full backdrop-blur-sm">
+              <BadgeIcon className="w-3 h-3 text-primary flex-none" />
+              {String(index + 1).padStart(2, "0")}
+            </span>
+          </div>
+
+          <h3 className="text-xl font-bold text-foreground mb-1.5 leading-snug group-hover/card:text-primary transition-colors">
+            {title}
+          </h3>
+          <p className="text-xs font-bold uppercase tracking-wider text-primary mb-4">{subtitle}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-6 line-clamp-3 flex-1">{description}</p>
 
           <div className="flex flex-wrap gap-2 mb-6">
             {highlights.map((h) => (
