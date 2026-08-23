@@ -370,14 +370,14 @@ export default function Header() {
               <span className="font-extrabold text-2xl tracking-tight">
                 <span className="text-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span>
               </span>
-              <span className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.15em] text-foreground/80">
+              <span className="mt-0.5 whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.15em] text-foreground/80">
                 Technologies Pvt. Ltd.
               </span>
             </span>
           </Link>
         </div>
 
-        <div className="flex lg:hidden gap-4 items-center">
+        <div className="flex xl:hidden gap-4 items-center">
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
@@ -401,7 +401,7 @@ export default function Header() {
           </button>
         </div>
 
-        <div className="hidden lg:flex lg:gap-x-1 items-center relative h-full">
+        <div className="hidden xl:flex xl:gap-x-1 items-center relative h-full">
           {navigation.map((item) => {
             const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
             return (
@@ -413,7 +413,7 @@ export default function Header() {
             >
               <Link
                 href={item.href}
-                className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200 ${activeMenu === item.name || isActive ? "text-primary bg-muted/60" : "text-foreground hover:text-primary hover:bg-muted/40"
+                className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold transition-all duration-200 xl:px-4 ${activeMenu === item.name || isActive ? "text-primary bg-muted/60" : "text-foreground hover:text-primary hover:bg-muted/40"
                   }`}
               >
                 {item.name}
@@ -461,7 +461,7 @@ export default function Header() {
           })}
         </div>
 
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:gap-6">
+        <div className="hidden xl:flex xl:flex-1 xl:justify-end xl:items-center xl:gap-6">
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
@@ -471,9 +471,9 @@ export default function Header() {
           </button>
           <Link
             href="/contact"
-            className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-foreground px-6 py-2.5 text-sm font-semibold text-background transition-all hover:scale-105 active:scale-95"
+            className="group relative inline-flex flex-none items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-full bg-foreground px-6 py-2.5 text-sm font-semibold text-background transition-all hover:scale-105 active:scale-95"
           >
-            <span className="relative z-10 flex items-center gap-2">
+            <span className="relative z-10 flex items-center gap-2 whitespace-nowrap">
               Let&apos;s Talk <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </span>
           </Link>
@@ -488,7 +488,7 @@ export default function Header() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] lg:hidden"
+            className="fixed inset-0 z-[100] xl:hidden"
           >
             <div className="fixed inset-0 bg-background/80 backdrop-blur-md" onClick={() => setMobileMenuOpen(false)} />
             <motion.div
@@ -505,7 +505,7 @@ export default function Header() {
                     <span className="font-extrabold text-xl tracking-tight">
                       <span className="text-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span>
                     </span>
-                    <span className="mt-0.5 text-[8px] font-bold uppercase tracking-[0.13em] text-foreground/80">
+                    <span className="mt-0.5 whitespace-nowrap text-[8px] font-bold uppercase tracking-[0.13em] text-foreground/80">
                       Technologies Pvt. Ltd.
                     </span>
                   </span>
