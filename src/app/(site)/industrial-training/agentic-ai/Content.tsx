@@ -21,7 +21,7 @@ export default function AgenticAiContent() {
     <div className="flex flex-col min-h-screen overflow-hidden">
       <PageHero
         category="industrial-training"
-        categoryLabel="industrial training"
+        categoryLabel="training"
         title="Agentic AI Training"
         subtitle="Systems that plan and act, not just chat."
         description="Learn to design autonomous AI agents that break down goals, call tools, remember context, and coordinate with other agents — the skill set behind the next generation of AI-powered automation."

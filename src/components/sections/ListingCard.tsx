@@ -18,6 +18,10 @@ interface ListingCardProps {
   href: string;
   image: string;
   ctaLabel?: string;
+  /** Optional short line rendered under the highlight tags, e.g. "Best for: ...". */
+  footnote?: React.ReactNode;
+  /** Highlights the card as the recommended pick with a "Most Popular" ribbon. */
+  featured?: boolean;
 }
 
 export default function ListingCard({
@@ -32,6 +36,8 @@ export default function ListingCard({
   href,
   image,
   ctaLabel = "Explore More",
+  footnote,
+  featured = false,
 }: ListingCardProps) {
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
@@ -60,10 +66,17 @@ export default function ListingCard({
       style={{ rotateX, rotateY, transformPerspective: 1000 }}
       className="group/card relative h-full"
     >
+      {featured && (
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-4 py-1.5 text-xs font-bold uppercase tracking-wider shadow-lg">
+          Most Popular
+        </span>
+      )}
       <Link
         href={href}
         aria-label={`${title} — ${ctaLabel}`}
-        className="relative flex flex-col h-full overflow-hidden rounded-3xl bg-muted/20 border border-border/50 shadow-sm transition-all duration-300 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className={`relative flex flex-col h-full overflow-hidden rounded-3xl bg-muted/20 shadow-sm transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+          featured ? "border-2 border-primary shadow-lg shadow-primary/10" : "border border-border/50 hover:border-primary/40"
+        }`}
       >
         {/* Image Banner */}
         <div className="relative h-52 overflow-hidden flex-none">
@@ -111,6 +124,12 @@ export default function ListingCard({
               </span>
             ))}
           </div>
+
+          {footnote && (
+            <p className="text-sm text-muted-foreground mb-6 -mt-2">
+              <span className="font-semibold text-foreground">Best for:</span> {footnote}
+            </p>
+          )}
 
           <div className="pt-6 border-t border-border/50 mt-auto">
             <span className="inline-flex items-center gap-2 text-sm font-bold text-foreground group-hover/card:text-primary group-hover/card:gap-3 transition-all">

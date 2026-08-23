@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera, Video } from "lucide-react";
+import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target } from "lucide-react";
 import { useTheme } from "next-themes";
 import { InstagramIcon, XIcon, FacebookIcon, GithubIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
 import { socialLinks as socialLinksData, whatsapp } from "@/lib/contact";
@@ -98,13 +98,25 @@ const navigation = [
     ],
   },
   {
-    name: "Live Demos",
-    href: "/live-demos",
-    featured: { title: "Try It Yourself", description: "Real, working in-house AI projects.", image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=600&auto=format&fit=crop" },
+    name: "Resource Augmentation",
+    href: "/resource-augmentation",
+    featured: { title: "Resource Augmentation", description: "Flexible engagement models, vetted talent.", image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop" },
     items: [
-      { name: "Social Media AI Reels Generator", href: "/live-demos/social-media-ai-reels-generator", description: "Image-to-video AI, live demo", icon: Video },
+      { name: "Single Resource", href: "/resource-augmentation/single-resource", description: "Hire an individual developer", icon: UserCheck },
+      { name: "Package-Based Team", href: "/resource-augmentation/package-based-team", description: "A complete, pre-built team", icon: Users },
+      { name: "Hourly / On-Demand", href: "/resource-augmentation/hourly-on-demand", description: "Pay only for hours used", icon: Clock },
+      { name: "Project-Based", href: "/resource-augmentation/project-based", description: "Fixed-scope, milestone-priced", icon: Target },
     ],
   },
+  // Hidden from nav; page still exists, just not linked or indexed via the menu.
+  // {
+  //   name: "Live Demos",
+  //   href: "/live-demos",
+  //   featured: { title: "Try It Yourself", description: "Real, working in-house AI projects.", image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=600&auto=format&fit=crop" },
+  //   items: [
+  //     { name: "Social Media AI Reels Generator", href: "/live-demos/social-media-ai-reels-generator", description: "Image-to-video AI, live demo", icon: Video },
+  //   ],
+  // },
   {
     name: "Industries",
     href: "/industries",
@@ -124,7 +136,7 @@ const navigation = [
     ],
   },
   {
-    name: "Industrial Training",
+    name: "Training",
     href: "/industrial-training",
     featured: { title: "Become Industry-Ready", description: "Hands-on, mentor-led training programs.", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop" },
     items: [
@@ -134,6 +146,19 @@ const navigation = [
       { name: "Agentic AI", href: "/industrial-training/agentic-ai", description: "Autonomous, tool-using agents", icon: Bot },
       { name: "Conversational AI", href: "/industrial-training/conversational-ai", description: "Chatbots & voice assistants", icon: MessageSquare },
       { name: "Computer Vision", href: "/industrial-training/computer-vision", description: "Image & video intelligence", icon: ScanEye },
+    ],
+  },
+  {
+    name: "Careers",
+    href: "/careers",
+    featured: { title: "Careers at YashOrbit", description: "Join our growing team building AI-powered products.", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop" },
+    items: [
+      { name: "MERN Developer", href: "/careers/mern-developer", description: "Full-stack MongoDB, Express, React, Node", icon: Code2 },
+      { name: "GenAI Developer", href: "/careers/genai-developer", description: "LLM-powered products & pipelines", icon: Sparkles },
+      { name: "AI/ML Engineer", href: "/careers/ai-ml-engineer", description: "Model training & deployment", icon: Cpu },
+      { name: "UI/UX Designer", href: "/careers/ui-ux-designer", description: "Product design across web & mobile", icon: Palette },
+      { name: "Business Development Manager", href: "/careers/business-development-manager", description: "Grow our client pipeline", icon: Handshake },
+      { name: "HR Executive", href: "/careers/hr-executive", description: "Recruitment & employee experience", icon: Users },
     ],
   },
 ];
@@ -184,13 +209,25 @@ const mobileNavigation = [
     ],
   },
   {
-    name: "Live Demos",
-    href: "/live-demos",
-    icon: Sparkles,
+    name: "Resource Augmentation",
+    href: "/resource-augmentation",
+    icon: UserPlus,
     items: [
-      { name: "Social Media AI Reels Generator", href: "/live-demos/social-media-ai-reels-generator", icon: Video },
+      { name: "Single Resource", href: "/resource-augmentation/single-resource", icon: UserCheck },
+      { name: "Package-Based Team", href: "/resource-augmentation/package-based-team", icon: Users },
+      { name: "Hourly / On-Demand", href: "/resource-augmentation/hourly-on-demand", icon: Clock },
+      { name: "Project-Based", href: "/resource-augmentation/project-based", icon: Target },
     ],
   },
+  // Hidden from nav; page still exists, just not linked or indexed via the menu.
+  // {
+  //   name: "Live Demos",
+  //   href: "/live-demos",
+  //   icon: Sparkles,
+  //   items: [
+  //     { name: "Social Media AI Reels Generator", href: "/live-demos/social-media-ai-reels-generator", icon: Video },
+  //   ],
+  // },
   {
     name: "Industries",
     href: "/industries",
@@ -210,7 +247,7 @@ const mobileNavigation = [
     ],
   },
   {
-    name: "Industrial Training",
+    name: "Training",
     href: "/industrial-training",
     icon: Code2,
     items: [
@@ -220,6 +257,19 @@ const mobileNavigation = [
       { name: "Agentic AI", href: "/industrial-training/agentic-ai", icon: Bot },
       { name: "Conversational AI", href: "/industrial-training/conversational-ai", icon: MessageSquare },
       { name: "Computer Vision", href: "/industrial-training/computer-vision", icon: ScanEye },
+    ],
+  },
+  {
+    name: "Careers",
+    href: "/careers",
+    icon: Briefcase,
+    items: [
+      { name: "MERN Developer", href: "/careers/mern-developer", icon: Code2 },
+      { name: "GenAI Developer", href: "/careers/genai-developer", icon: Sparkles },
+      { name: "AI/ML Engineer", href: "/careers/ai-ml-engineer", icon: Cpu },
+      { name: "UI/UX Designer", href: "/careers/ui-ux-designer", icon: Palette },
+      { name: "Business Development Manager", href: "/careers/business-development-manager", icon: Handshake },
+      { name: "HR Executive", href: "/careers/hr-executive", icon: Users },
     ],
   },
 ];

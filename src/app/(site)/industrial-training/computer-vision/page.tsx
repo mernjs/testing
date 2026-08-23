@@ -23,7 +23,7 @@ export default function ComputerVisionTrainingPage() {
     courseJsonLd({ name: "Computer Vision Training", description, path }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Industrial Training", path: "/industrial-training" },
+      { name: "Training", path: "/industrial-training" },
       { name: "Computer Vision", path },
     ]),
     faqJsonLd(computerVisionFaqs),

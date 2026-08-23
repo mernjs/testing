@@ -21,7 +21,7 @@ export default function ConversationalAiContent() {
     <div className="flex flex-col min-h-screen overflow-hidden">
       <PageHero
         category="industrial-training"
-        categoryLabel="industrial training"
+        categoryLabel="training"
         title="Conversational AI Training"
         subtitle="Chatbots and voice assistants people actually enjoy using."
         description="Learn to design and build task-oriented conversational experiences — from understanding user intent to managing multi-turn dialogue — and deploy them across chat and voice channels for real businesses."

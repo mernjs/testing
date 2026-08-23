@@ -23,7 +23,7 @@ export default function ConversationalAiTrainingPage() {
     courseJsonLd({ name: "Conversational AI Training", description, path }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Industrial Training", path: "/industrial-training" },
+      { name: "Training", path: "/industrial-training" },
       { name: "Conversational AI", path },
     ]),
     faqJsonLd(conversationalAiFaqs),

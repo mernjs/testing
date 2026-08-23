@@ -19,7 +19,7 @@ export default function IndustrialTrainingContent() {
     <div className="flex flex-col min-h-screen selection:bg-primary/30 overflow-hidden">
 
       <ListingHero
-        eyebrow="industrial training"
+        eyebrow="training"
         title="Become Industry-Ready"
         description="Practical, mentor-led training programs built around live projects, real tooling, and internship exposure — designed to take you from fundamentals to job-ready in weeks, not years."
         icon={GraduationCap}

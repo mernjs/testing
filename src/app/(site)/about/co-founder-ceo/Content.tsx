@@ -97,7 +97,7 @@ export default function CoFounderCeoContent() {
           { title: "Backend Engineer, Early Career", duration: "2012–2025", topics: ["Shipped infrastructure at two mid-sized software companies", "Learned the cost of poor architecture decisions firsthand"] },
           { title: brandify("Founded YashOrbit"), duration: "2026", topics: ["Assembled the founding engineering team", "First client projects delivered"] },
           { title: "Building the Applied AI Practice", duration: "2026", topics: ["Hired the first AI specialists", "Delivered first production ML engagement"] },
-          { title: "Launching Industrial Training", duration: "2026", topics: ["Built an early talent pipeline through cohort-based programs"] },
+          { title: "Launching Training", duration: "2026", topics: ["Built an early talent pipeline through cohort-based programs"] },
           { title: "Leading the Team Today", duration: "2026", topics: ["Overseeing the founding team", "Personally involved in every client architecture review"] },
         ]}
       />
@@ -132,7 +132,7 @@ export default function CoFounderCeoContent() {
         projects={[
           { title: brandify("Built the YashOrbit Founding Team"), description: "Assembled a small, senior founding team to deliver on day-one client commitments.", skills: ["Team Building", "Operations"] },
           { title: "Launched the Applied AI Practice", description: "Took the company from zero AI experience to an early practice delivering production ML and generative AI systems.", skills: ["AI Strategy", "MLOps"] },
-          { title: "Built the Industrial Training Program", description: "Created a cohort-based training initiative to build an early talent pipeline for the company.", skills: ["Talent Development", "Program Design"] },
+          { title: "Built the Training Program", description: "Created a cohort-based training initiative to build an early talent pipeline for the company.", skills: ["Talent Development", "Program Design"] },
         ]}
       />
 
@@ -155,7 +155,7 @@ export default function CoFounderCeoContent() {
         title="Business growth & strategy"
         items={[
           { title: "Senior-heavy Hiring, By Design", description: "Is prioritizing experienced hires over rapid headcount growth from day one, even when it means slower early expansion." },
-          { title: "Diversifying Beyond Project Work", description: "Led the move into Industrial Training as a second, complementary revenue line from the start." },
+          { title: "Diversifying Beyond Project Work", description: "Led the move into Training as a second, complementary revenue line from the start." },
           { title: "Disciplined Client Selection", description: "Has already turned down work that didn't fit the company's strengths, even when it was lucrative." },
           { title: "Long-term Relationships Over Short-term Margin", description: "Prioritizes long-term client and employee relationships over maximizing any single quarter." },
         ]}

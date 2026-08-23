@@ -114,7 +114,7 @@ const teamMembers = [
 const insights = [
   { title: "Where Applied AI Actually Pays Off in 2026", excerpt: "Most businesses don't need a chatbot — they need automation grounded in their own data. Here's where we see AI creating real ROI right now.", href: "/services/ai-ml-solutions", tag: "AI Trends" },
   { title: "What We're Learning With Our First Projects", excerpt: "Early patterns from our client engagements so far: the technical decisions that consistently paid off, and the ones that didn't.", href: "/about/success-stories", tag: "Company Insights" },
-  { title: "Why We Built an Industrial Training Program", excerpt: "How a talent pipeline problem turned into one of our most rewarding initiatives — and what it means for the businesses we serve.", href: "/industrial-training", tag: "Company News" },
+  { title: "Why We Built a Training Program", excerpt: "How a talent pipeline problem turned into one of our most rewarding initiatives — and what it means for the businesses we serve.", href: "/industrial-training", tag: "Company News" },
 ];
 
 const transparencyPolicies = [
@@ -752,12 +752,12 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* Industrial Training */}
+      {/* Training */}
       <section className="py-24 sm:py-32 bg-muted/10 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <SectionHeader
             align="center"
-            category="Industrial Training"
+            category="Training"
             icon={GraduationCap}
             heading="Build job-ready skills with us."
             description="Hands-on programs across full-stack development and applied AI."

@@ -20,9 +20,20 @@ interface PageHeroProps {
   description: React.ReactNode;
   icon: LucideIcon;
   image: string;
+  /** Overrides the default "Start a Project" → /contact primary CTA. Set `external: true` for mailto/tel/off-site links. */
+  primaryCta?: { label: string; href: string; external?: boolean };
 }
 
-export default function PageHero({ category, categoryLabel, title, subtitle, description, icon: Icon, image }: PageHeroProps) {
+export default function PageHero({
+  category,
+  categoryLabel,
+  title,
+  subtitle,
+  description,
+  icon: Icon,
+  image,
+  primaryCta = { label: "Start a Project", href: "/contact", external: false },
+}: PageHeroProps) {
   const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
 
   React.useEffect(() => {
@@ -113,12 +124,21 @@ export default function PageHero({ category, categoryLabel, title, subtitle, des
                 {description}
               </motion.p>
               <motion.div variants={fadeIn} className="flex flex-wrap items-center gap-4">
-                <Link
-                  href="/contact"
-                  className="group inline-flex items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-bold text-background hover:scale-105 active:scale-95 transition-all shadow-lg shadow-foreground/10"
-                >
-                  Start a Project <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                {primaryCta.external ? (
+                  <a
+                    href={primaryCta.href}
+                    className="group inline-flex items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-bold text-background hover:scale-105 active:scale-95 transition-all shadow-lg shadow-foreground/10"
+                  >
+                    {primaryCta.label} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </a>
+                ) : (
+                  <Link
+                    href={primaryCta.href}
+                    className="group inline-flex items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-bold text-background hover:scale-105 active:scale-95 transition-all shadow-lg shadow-foreground/10"
+                  >
+                    {primaryCta.label} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                )}
                 <Link
                   href={`/${category}`}
                   className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-bold text-foreground bg-muted/30 border border-border/50 hover:bg-muted/60 transition-all capitalize"

@@ -13,9 +13,21 @@ interface DetailCTAProps {
   heading: string;
   description: string;
   ctaLabel?: string;
+  /** Overrides the default /contact link. Set `external: true` for mailto/tel/off-site links. */
+  ctaHref?: string;
+  external?: boolean;
+  /** Overrides the default trio of trust bullets under the button. */
+  checklist?: string[];
 }
 
-export default function DetailCTA({ heading, description, ctaLabel = "Start a Conversation" }: DetailCTAProps) {
+export default function DetailCTA({
+  heading,
+  description,
+  ctaLabel = "Start a Conversation",
+  ctaHref = "/contact",
+  external = false,
+  checklist = ["Free consultation", "Dedicated team", "Agile methodology"],
+}: DetailCTAProps) {
   return (
     <section id="contact" className="relative overflow-hidden border-t border-border/50 py-24 sm:py-28 bg-primary/5">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
@@ -24,23 +36,28 @@ export default function DetailCTA({ heading, description, ctaLabel = "Start a Co
           <h2 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl mb-6">{heading}</h2>
           <p className="text-lg text-muted-foreground mb-10">{description}</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/contact"
-              className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground hover:scale-105 transition-all shadow-lg shadow-primary/20 w-full sm:w-auto"
-            >
-              {ctaLabel} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            {external ? (
+              <a
+                href={ctaHref}
+                className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground hover:scale-105 transition-all shadow-lg shadow-primary/20 w-full sm:w-auto"
+              >
+                {ctaLabel} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </a>
+            ) : (
+              <Link
+                href={ctaHref}
+                className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground hover:scale-105 transition-all shadow-lg shadow-primary/20 w-full sm:w-auto"
+              >
+                {ctaLabel} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            )}
           </div>
           <div className="pt-10 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary" /> Free consultation
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary" /> Dedicated team
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary" /> Agile methodology
-            </div>
+            {checklist.map((item) => (
+              <div key={item} className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-primary" /> {item}
+              </div>
+            ))}
           </div>
         </motion.div>
       </div>

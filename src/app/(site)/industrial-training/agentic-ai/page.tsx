@@ -23,7 +23,7 @@ export default function AgenticAiTrainingPage() {
     courseJsonLd({ name: "Agentic AI Training", description, path }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Industrial Training", path: "/industrial-training" },
+      { name: "Training", path: "/industrial-training" },
       { name: "Agentic AI", path },
     ]),
     faqJsonLd(agenticAiFaqs),

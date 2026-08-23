@@ -288,6 +288,16 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/careers" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Careers
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/resource-augmentation" className="text-sm leading-6 text-secondary-foreground/80 hover:text-primary transition-colors">
+                    Resource Augmentation
+                  </Link>
+                </li>
+                <li>
                   <Link href="/about" className="text-sm font-semibold leading-6 text-primary hover:underline transition-colors">
                     View All Company
                   </Link>

@@ -74,7 +74,7 @@ export default function OurMissionContent() {
           { title: "Founded with a Simple Idea", duration: "Early 2026", topics: ["Small founding team", "Web & mobile focus", "First client conversations"] },
           { title: "First Client Projects", duration: "2026", topics: ["First production launches", "Early web & mobile engagements"] },
           { title: "Building the Applied AI Practice", duration: "2026", topics: ["First ML engagements", "Early AI specialist hires"] },
-          { title: "Launching Industrial Training", duration: "2026", topics: ["Cohort-based tech training", "Talent pipeline partnerships"] },
+          { title: "Launching Training", duration: "2026", topics: ["Cohort-based tech training", "Talent pipeline partnerships"] },
           { title: "Today & Beyond", duration: "2026", topics: ["8+ specialists", "Remote-first across time zones", "Continued AI R&D investment"] },
         ]}
       />

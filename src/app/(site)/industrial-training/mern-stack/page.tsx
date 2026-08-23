@@ -23,7 +23,7 @@ export default function MernStackTrainingPage() {
     courseJsonLd({ name: "MERN Stack Training", description, path }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Industrial Training", path: "/industrial-training" },
+      { name: "Training", path: "/industrial-training" },
       { name: "MERN Stack", path },
     ]),
     faqJsonLd(mernStackFaqs),

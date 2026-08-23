@@ -21,7 +21,7 @@ export default function MernStackContent() {
     <div className="flex flex-col min-h-screen overflow-hidden">
       <PageHero
         category="industrial-training"
-        categoryLabel="industrial training"
+        categoryLabel="training"
         title="MERN Stack Training"
         subtitle="Full-stack JavaScript, one project at a time."
         description="Learn to design, build, and ship complete web applications using MongoDB, Express, React, and Node.js — the same stack running production software at thousands of startups."

@@ -21,7 +21,7 @@ export default function MeanStackContent() {
     <div className="flex flex-col min-h-screen overflow-hidden">
       <PageHero
         category="industrial-training"
-        categoryLabel="industrial training"
+        categoryLabel="training"
         title="MEAN Stack Training"
         subtitle="Structured, enterprise-grade single-page apps."
         description="Learn MongoDB, Express, Angular, and Node.js — a fully TypeScript, opinionated stack designed for large codebases, strict typing, and teams that need structure over improvisation."

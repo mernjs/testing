@@ -21,7 +21,7 @@ export default function ComputerVisionContent() {
     <div className="flex flex-col min-h-screen overflow-hidden">
       <PageHero
         category="industrial-training"
-        categoryLabel="industrial training"
+        categoryLabel="training"
         title="Computer Vision Training"
         subtitle="Teach machines to see, read, and track."
         description="Learn to build systems that classify images, detect objects, read documents, and analyze video in real time — using OpenCV, convolutional neural networks, and modern deep learning frameworks."

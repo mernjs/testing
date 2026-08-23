@@ -23,7 +23,7 @@ export default function MeanStackTrainingPage() {
     courseJsonLd({ name: "MEAN Stack Training", description, path }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Industrial Training", path: "/industrial-training" },
+      { name: "Training", path: "/industrial-training" },
       { name: "MEAN Stack", path },
     ]),
     faqJsonLd(meanStackFaqs),

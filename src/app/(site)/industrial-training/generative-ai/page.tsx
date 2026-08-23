@@ -23,7 +23,7 @@ export default function GenerativeAiTrainingPage() {
     courseJsonLd({ name: "Generative AI Training", description, path }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
-      { name: "Industrial Training", path: "/industrial-training" },
+      { name: "Training", path: "/industrial-training" },
       { name: "Generative AI", path },
     ]),
     faqJsonLd(generativeAiFaqs),

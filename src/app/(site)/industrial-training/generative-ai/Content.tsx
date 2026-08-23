@@ -21,7 +21,7 @@ export default function GenerativeAiContent() {
     <div className="flex flex-col min-h-screen overflow-hidden">
       <PageHero
         category="industrial-training"
-        categoryLabel="industrial training"
+        categoryLabel="training"
         title="Generative AI Training"
         subtitle="Build real products on top of LLMs."
         description="Move beyond prompting ChatGPT and learn to engineer applications on top of large language models — prompt design, retrieval pipelines, fine-tuning, and evaluation, all grounded in shipped projects."
