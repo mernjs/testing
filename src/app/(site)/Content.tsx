@@ -529,7 +529,165 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 5. Industries We Serve — Sector relevance & trust */}
+      {/* 5. How We Work — How to get started */}
+      <section className="py-24 sm:py-32 bg-background relative overflow-hidden border-b border-border/50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+          <SectionHeader
+            align="center"
+            category="How We Work"
+            icon={Workflow}
+            heading="From First Call to Launch."
+            accent="Four Steps."
+            description="A simple, transparent process whether you're hiring a project team or a single developer."
+            className="mx-auto"
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {howWeWorkSteps.map((step, i) => (
+              <motion.div
+                key={step.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="relative p-7 rounded-2xl bg-muted/10 border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <step.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-2.5 py-1 rounded-full">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <h3 className="font-bold text-foreground mb-2 leading-snug">{step.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-14 flex justify-center"
+          >
+            <Link
+              href="/contact"
+              className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
+            >
+              Start With a Discovery Call
+              <span className="w-10 h-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
+                <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
+              </span>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 6. Our Delivery Process — How we build */}
+      <CurriculumTimeline
+        align="center"
+        category="Our Delivery Process"
+        icon={Workflow}
+        title="Our development process"
+        description="A closer look at the seven phases behind every software engagement, from first call to launch."
+        modules={developmentProcess}
+      />
+
+      {/* 7. Client Commitment — Relationship trust */}
+      <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/3 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+          <SectionHeader
+            align="center"
+            category="Our Commitment"
+            icon={Handshake}
+            heading="Working With Us Feels"
+            accent="Different."
+            description="Every engagement — big or small — comes with the same standard of communication and accountability."
+            className="mx-auto"
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {clientCommitments.map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="p-7 rounded-2xl bg-muted/10 border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
+                  <item.icon className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="font-bold text-foreground mb-2 leading-snug">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 8. Resource Augmentation Preview — Hiring deep-dive */}
+      <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden border-b border-border/50">
+        <div className="absolute right-0 top-1/3 translate-x-1/3 w-[600px] h-[600px] bg-secondary/20 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+          <SectionHeader
+            align="center"
+            category="Resource Augmentation"
+            icon={UserPlus}
+            heading="Need Extra Hands?"
+            accent="We&apos;ve Got You."
+            description="Hire a single developer or a complete pre-built team — flexible engagement models built for how you actually work."
+            className="mx-auto"
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {engagementCategories
+              .filter((category) => category.slug === "single-resource" || category.slug === "package-based-team")
+              .map((category, idx) => (
+                <SubscriptionCard
+                  key={category.slug}
+                  index={idx}
+                  icon={category.icon}
+                  title={category.title}
+                  tagline={category.tagline}
+                  price={category.cardHighlight.pricing}
+                  billingType={category.cardHighlight.billingType}
+                  bestFor={category.cardHighlight.idealUseCase}
+                  features={category.keyBenefits}
+                  featuresLabel="Key Benefits"
+                  href={`/resource-augmentation/${category.slug}`}
+                  ctaLabel="View Details"
+                  featured={category.slug === "package-based-team"}
+                />
+              ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-14 flex justify-center"
+          >
+            <Link
+              href="/resource-augmentation"
+              className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
+            >
+              View All Engagement Models
+              <span className="w-10 h-10 rounded-full bg-background border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
+                <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
+              </span>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 9. Industries We Serve — Sector relevance & trust */}
       <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
         <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/3 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
@@ -624,64 +782,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 6. How We Work — How to get started */}
-      <section className="py-24 sm:py-32 bg-background relative overflow-hidden border-b border-border/50">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
-          <SectionHeader
-            align="center"
-            category="How We Work"
-            icon={Workflow}
-            heading="From First Call to Launch."
-            accent="Four Steps."
-            description="A simple, transparent process whether you're hiring a project team or a single developer."
-            className="mx-auto"
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {howWeWorkSteps.map((step, i) => (
-              <motion.div
-                key={step.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="relative p-7 rounded-2xl bg-muted/10 border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300"
-              >
-                <div className="flex items-center justify-between mb-5">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <step.icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-2.5 py-1 rounded-full">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                </div>
-                <h3 className="font-bold text-foreground mb-2 leading-snug">{step.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-14 flex justify-center"
-          >
-            <Link
-              href="/contact"
-              className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
-            >
-              Start With a Discovery Call
-              <span className="w-10 h-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
-                <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
-              </span>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* 7. What We Build — Software Development deep-dive */}
+      {/* 10. What We Build — Software Development deep-dive */}
       <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden border-b border-border/50">
         <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 w-[600px] h-[600px] bg-secondary/20 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
@@ -795,73 +896,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 8. Our Delivery Process — How we build */}
-      <CurriculumTimeline
-        align="center"
-        category="Our Delivery Process"
-        icon={Workflow}
-        title="Our development process"
-        description="A closer look at the seven phases behind every software engagement, from first call to launch."
-        modules={developmentProcess}
-      />
-
-      {/* 9. Resource Augmentation Preview — Hiring deep-dive */}
-      <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden border-b border-border/50">
-        <div className="absolute right-0 top-1/3 translate-x-1/3 w-[600px] h-[600px] bg-secondary/20 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
-        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
-          <SectionHeader
-            align="center"
-            category="Resource Augmentation"
-            icon={UserPlus}
-            heading="Need Extra Hands?"
-            accent="We&apos;ve Got You."
-            description="Hire a single developer or a complete pre-built team — flexible engagement models built for how you actually work."
-            className="mx-auto"
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {engagementCategories
-              .filter((category) => category.slug === "single-resource" || category.slug === "package-based-team")
-              .map((category, idx) => (
-                <SubscriptionCard
-                  key={category.slug}
-                  index={idx}
-                  icon={category.icon}
-                  title={category.title}
-                  tagline={category.tagline}
-                  price={category.cardHighlight.pricing}
-                  billingType={category.cardHighlight.billingType}
-                  bestFor={category.cardHighlight.idealUseCase}
-                  features={category.keyBenefits}
-                  featuresLabel="Key Benefits"
-                  href={`/resource-augmentation/${category.slug}`}
-                  ctaLabel="View Details"
-                  featured={category.slug === "package-based-team"}
-                />
-              ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-14 flex justify-center"
-          >
-            <Link
-              href="/resource-augmentation"
-              className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
-            >
-              View All Engagement Models
-              <span className="w-10 h-10 rounded-full bg-background border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
-                <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
-              </span>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* 10. AI & Innovation */}
+      {/* 11. AI & Innovation */}
       <ProcessOrbit
         eyebrowIcon={Network}
         heading="AI &"
@@ -873,41 +908,6 @@ export default function HomeContent() {
         glow="primary"
         image="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?q=80&w=1600&auto=format&fit=crop"
       />
-
-      {/* 11. Client Commitment — Relationship trust */}
-      <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/3 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
-        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
-          <SectionHeader
-            align="center"
-            category="Our Commitment"
-            icon={Handshake}
-            heading="Working With Us Feels"
-            accent="Different."
-            description="Every engagement — big or small — comes with the same standard of communication and accountability."
-            className="mx-auto"
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {clientCommitments.map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="p-7 rounded-2xl bg-muted/10 border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300"
-              >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
-                  <item.icon className="w-5 h-5 text-primary" />
-                </div>
-                <h3 className="font-bold text-foreground mb-2 leading-snug">{item.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* 12. Transparency & Trust — Legal/contractual trust */}
       <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden">
