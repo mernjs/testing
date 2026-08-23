@@ -5,34 +5,24 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, Code, Cpu, LineChart, Globe, Sparkles, CheckCircle2, Play, Users, Zap, Layers,
-  Network, Bot, Mic, Users as UsersIcon, BrainCircuit, Briefcase, Trophy, Clock3, Building,
-  ThumbsUp, Globe2, Users2, Smartphone, Server, Cloud, Database, Package, Palette,
+  Bot, BrainCircuit, Trophy, Clock3,
+  Smartphone, Server, Cloud, Database, Package, Palette,
   MessageSquare, ScanEye, ChevronLeft, ChevronRight, ShieldCheck, Rocket,
-  Mail, Phone, Quote, TrendingUp, Workflow, Building2, GraduationCap, Newspaper, HelpCircle,
+  Mail, Phone, Quote, Workflow, Building2, GraduationCap, Newspaper, HelpCircle,
   Eye, Lock, ReceiptText, Scale, ShieldAlert, Wallet, FileSignature, Copyright, BadgeCheck,
-  UserPlus,
+  UserPlus, MonitorPlay, HandCoins, UserCheck, ArrowLeftRight, CalendarClock, Handshake, LifeBuoy,
 } from "lucide-react";
-import ExecutionFramework from "@/components/sections/ExecutionFramework";
-import ProcessOrbit from "@/components/sections/ProcessOrbit";
 import ClientTestimonials from "@/components/sections/ClientTestimonials";
-import AnimatedCounter from "@/components/AnimatedCounter";
 import FeatureHighlights from "@/components/sections/FeatureHighlights";
 import CurriculumTimeline from "@/components/sections/CurriculumTimeline";
 import TechStackGrid from "@/components/sections/TechStackGrid";
 import TeamGrid from "@/components/sections/TeamGrid";
 import FAQAccordion from "@/components/sections/FAQAccordion";
 import SectionHeader from "@/components/sections/SectionHeader";
+import SubscriptionCard from "@/components/sections/SubscriptionCard";
 import { brandify } from "@/lib/brand";
 import { homeFaqs } from "./faqs";
-
-const stats = [
-  { value: 10, suffix: "+", label: "Years Founder Experience", icon: Trophy },
-  { value: 12, suffix: "+", label: "Projects Delivered", icon: Briefcase },
-  { value: 6, suffix: "+", label: "Global Clients", icon: Building },
-  { value: 8, suffix: "+", label: "Team Members", icon: Users2 },
-  { value: 4, suffix: "+", label: "Industries Served", icon: Globe2 },
-  { value: 99, suffix: "%", label: "Customer Satisfaction", icon: ThumbsUp },
-];
+import { engagementCategories } from "./resource-augmentation/resources-data";
 
 const trustedClients = ["Nexora Health", "Bloomly", "Vertex Logistics", "Arclight Finance", "Wavecrest Media", "Northgate Retail"];
 
@@ -66,13 +56,26 @@ const businessDivisions = [
   },
 ];
 
-const aiEcosystemNodes = [
-  { label: "RAG Solutions", icon: Network, color: "text-amber-500", detail: "Grounding model responses in your own proprietary data." },
-  { label: "Agentic AI", icon: Bot, color: "text-indigo-500", detail: "Autonomous agents that plan, act, and self-correct." },
-  { label: "Conversational AI", icon: Mic, color: "text-rose-500", detail: "Natural, task-oriented chat and voice interfaces for your product." },
-  { label: "Generative AI", icon: Sparkles, color: "text-emerald-500", detail: "On-demand content, code, and creative generation." },
-  { label: "AI Automation", icon: UsersIcon, color: "text-teal-500", detail: "Task-specific agents that automate real workflows end-to-end." },
-  { label: "Computer Vision", icon: BrainCircuit, color: "text-blue-500", detail: "Understanding and acting on images and video in real time." },
+const trustBadges = [
+  { label: "Free Live Project Demo", icon: MonitorPlay },
+  { label: "100% Money-Back Guarantee", icon: HandCoins },
+  { label: "Pre-Vetted Developers", icon: UserCheck },
+  { label: "NDA & IP Protected", icon: FileSignature },
+  { label: "Developer Replacement Anytime", icon: ArrowLeftRight },
+];
+
+const howWeWorkSteps = [
+  { title: "Discovery Call", description: "We learn your goals, constraints, and the right engagement model for your project or hiring need.", icon: MessageSquare },
+  { title: "Proposal & Team Match", description: "A clear scope, timeline, and pricing — plus the right developers or team matched to the work.", icon: FileSignature },
+  { title: "Build & Weekly Updates", description: "Sprint-based development or fast onboarding, with weekly demos so you always see real progress.", icon: Workflow },
+  { title: "Launch & Ongoing Support", description: "Go live with SLA-backed support — we stay accountable long after the first release.", icon: Rocket },
+];
+
+const clientCommitments = [
+  { title: "Full Transparency", description: "Milestone-based billing and honest timelines — you always know exactly where your project stands.", icon: Eye },
+  { title: "Weekly Progress Updates", description: "Structured weekly check-ins and demos, not radio silence between kickoff and delivery.", icon: CalendarClock },
+  { title: "Dedicated Project Manager", description: "One point of contact who owns your engagement end to end, not a rotating cast of account reps.", icon: Handshake },
+  { title: "Long-Term Support", description: "SLA-backed maintenance and support long after launch — we don't disappear after go-live.", icon: LifeBuoy },
 ];
 
 const developmentProcess = [
@@ -273,7 +276,7 @@ export default function HomeContent() {
 
   return (
     <div className="flex flex-col min-h-screen selection:bg-primary/30 overflow-hidden">
-      {/* Immersive Hero Section */}
+      {/* 1. Hero — Who we are & what we do */}
       <section className="relative bg-background pt-28 pb-20 lg:pt-36 lg:pb-32 min-h-screen flex items-center justify-center overflow-hidden border-b border-border/50">
 
         {/* Background Image */}
@@ -349,7 +352,7 @@ export default function HomeContent() {
             <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
               <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/40 border border-border/50 text-sm font-medium text-foreground backdrop-blur-md mb-8 shadow-sm">
                 <Sparkles className="w-4 h-4 text-primary animate-pulse" />
-                <span>Next-Gen Tech, Built for Growth</span>
+                <span>Software Development · Training · Dedicated Teams</span>
               </motion.div>
 
               <motion.h1 variants={fadeIn} className="text-5xl font-black tracking-tighter text-foreground sm:text-7xl leading-[1.1] mb-6">
@@ -360,7 +363,7 @@ export default function HomeContent() {
               </motion.h1>
 
               <motion.p variants={fadeIn} className="text-lg sm:text-xl leading-relaxed text-muted-foreground mb-10 max-w-lg">
-                <span className="font-bold"><span className="text-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span></span> builds software and AI that grow your business — so you spend less, earn more, and stay ahead of the competition.
+                <span className="font-bold"><span className="text-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span></span> builds custom software, trains job-ready developers, and staffs pre-vetted tech talent — so you ship faster, scale smarter, and never worry about finding the right people.
               </motion.p>
 
               <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-start gap-4">
@@ -468,41 +471,31 @@ export default function HomeContent() {
         </motion.div>
       </section>
 
-      {/* Animated Stats Bar */}
-      <section className="relative bg-background border-b border-border/50 py-24 sm:py-32">
+      {/* 2. Trust Badges — Instant credibility signals */}
+      <section className="relative bg-background border-b border-border/50 py-8 sm:py-10">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <SectionHeader
-            align="center"
-            category="By The Numbers"
-            icon={TrendingUp}
-            heading="Results you can measure."
-            description="A snapshot of the scale and consistency behind every engagement."
-            className="mx-auto"
-          />
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8 lg:gap-6">
-            {stats.map((stat, idx) => (
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-40px" }}
+            variants={stagger}
+            className="flex flex-wrap items-center justify-center gap-3 sm:gap-4"
+          >
+            {trustBadges.map((badge) => (
               <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="flex flex-col items-center text-center gap-3 group"
+                key={badge.label}
+                variants={fadeIn}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-muted/40 border border-border/50 text-xs sm:text-sm font-semibold text-foreground backdrop-blur-md shadow-sm"
               >
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
-                  <stat.icon className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors duration-300" />
-                </div>
-                <div className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">
-                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                </div>
-                <div className="text-xs sm:text-sm font-medium text-muted-foreground">{stat.label}</div>
+                <badge.icon className="w-4 h-4 text-primary flex-none" />
+                {badge.label}
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Business Divisions */}
+      {/* 3. Our 3 Dedicated Teams — What we offer */}
       <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden border-b border-border/50">
         <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[900px] h-[500px] bg-primary/10 rounded-full blur-[140px] pointer-events-none"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
@@ -510,8 +503,7 @@ export default function HomeContent() {
             align="center"
             category="What We Do"
             icon={Layers}
-            heading="Three Dedicated Teams."
-            accent="One Mission."
+            heading="Our 3 Dedicated Teams"
             description="Everything we build, teach, and staff falls under three focused divisions — each with its own dedicated team, process, and expertise."
             className="mx-auto"
           />
@@ -569,40 +561,99 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* Infinite Marquee Section */}
-      {/* <section className="py-10 border-b border-border/50 bg-muted/20 overflow-hidden flex flex-col items-center justify-center">
-        <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground mb-6">Trusted by growing businesses worldwide</p>
-        <div className="relative w-full max-w-7xl mx-auto flex overflow-hidden">
-          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-muted/20 to-transparent z-10 pointer-events-none"></div>
-          <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-muted/20 to-transparent z-10 pointer-events-none"></div>
-          <motion.div
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
-            className="flex whitespace-nowrap gap-16 sm:gap-24 items-center pr-16 sm:pr-24 w-max"
-          >
-            {[1, 2].map((set) => (
-              <React.Fragment key={set}>
-                {trustedClients.map((brand) => (
-                  <div key={brand + set} className="text-2xl sm:text-3xl font-black text-foreground/55 hover:text-primary transition-colors duration-300 cursor-default">
-                    {brand}
+      {/* 4. Why Choose Us — Why trust us */}
+      <section className="py-24 sm:py-32 bg-muted/10 relative">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <SectionHeader
+            align="center"
+            category="Why Choose Us"
+            icon={ShieldCheck}
+            heading="A partner built around outcomes."
+            description="Eight reasons growing businesses choose to build with us."
+            className="mx-auto"
+          />
+          <FeatureHighlights
+            features={[
+              { name: "Industry Expertise", desc: "Deep experience across EdTech, FinTech, Real Estate Tech, and general enterprise software." },
+              { name: "Experienced Team", desc: "Senior-led delivery on every engagement, not junior hours billed at a discount." },
+              { name: "Fastest Development", desc: "Reusable components and proven workflows take you from kickoff to launch faster, without cutting corners on quality." },
+              { name: "Agile Development", desc: "Sprint-based delivery with regular demos, so you see progress every step of the way." },
+              { name: "AI-first Approach", desc: "We evaluate where AI genuinely creates value in your product, not just where it's trendy." },
+              { name: "Security by Default", desc: "Authentication, data protection, and compliance built in from the first architecture review." },
+              { name: "Built to Scale", desc: "Infrastructure designed for where your business is headed, not just where it is today." },
+              { name: "Post-launch Support", desc: "SLA-backed maintenance and monitoring once your product is live, not radio silence after go-live." },
+            ]}
+          />
+        </div>
+      </section>
+
+      {/* 5. How We Work — How to get started */}
+      <section className="py-24 sm:py-32 bg-background relative overflow-hidden border-b border-border/50">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+          <SectionHeader
+            align="center"
+            category="How We Work"
+            icon={Workflow}
+            heading="From First Call to Launch."
+            accent="Four Steps."
+            description="A simple, transparent process whether you're hiring a project team or a single developer."
+            className="mx-auto"
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {howWeWorkSteps.map((step, i) => (
+              <motion.div
+                key={step.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="relative p-7 rounded-2xl bg-muted/10 border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <step.icon className="w-5 h-5 text-primary" />
                   </div>
-                ))}
-              </React.Fragment>
+                  <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-2.5 py-1 rounded-full">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <h3 className="font-bold text-foreground mb-2 leading-snug">{step.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
+              </motion.div>
             ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-14 flex justify-center"
+          >
+            <Link
+              href="/contact"
+              className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
+            >
+              Start With a Discovery Call
+              <span className="w-10 h-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
+                <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
+              </span>
+            </Link>
           </motion.div>
         </div>
-      </section> */}
+      </section>
 
-      {/* ULTRA-MODERN: Interactive Services Section (Hover Reveal Showcase) */}
-      <section className="py-24 sm:py-32 bg-background relative overflow-hidden border-b border-border/50">
+      {/* 6. What We Build — Software Development deep-dive */}
+      <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden border-b border-border/50">
         <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 w-[600px] h-[600px] bg-secondary/20 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
           <SectionHeader
             align="center"
-            category="Accelerate Growth"
+            category="What We Build"
             icon={Rocket}
-            heading="Architecture for the modern web."
-            description="Top services engineered for performance, security, and scale."
+            heading="The core services we deliver most."
+            description="From web platforms to AI agents — engineered for performance, security, and scale."
             className="mx-auto"
           />
 
@@ -614,8 +665,8 @@ export default function HomeContent() {
                   key={idx}
                   onMouseEnter={() => setActiveService(idx)}
                   className={`group relative p-6 sm:p-8 rounded-[2rem] cursor-pointer transition-all duration-500 border ${activeService === idx
-                    ? "bg-muted/30 border-primary/20 shadow-xl"
-                    : "bg-transparent border-transparent hover:bg-muted/10"
+                    ? "bg-background border-primary/20 shadow-xl"
+                    : "bg-transparent border-transparent hover:bg-background/60"
                     }`}
                 >
                   <div className="flex items-center gap-6">
@@ -699,7 +750,7 @@ export default function HomeContent() {
               className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
             >
               View All Services
-              <span className="w-10 h-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
+              <span className="w-10 h-10 rounded-full bg-background border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
                 <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
               </span>
             </Link>
@@ -707,43 +758,17 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="py-24 sm:py-32 bg-muted/10 relative">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <SectionHeader
-            align="center"
-            category="Why Choose Us"
-            icon={ShieldCheck}
-            heading="A partner built around outcomes."
-            description="Eight reasons growing businesses choose to build with us."
-            className="mx-auto"
-          />
-          <FeatureHighlights
-            features={[
-              { name: "Industry Expertise", desc: "Deep experience across EdTech, FinTech, Real Estate Tech, and general enterprise software." },
-              { name: "Experienced Team", desc: "Senior-led delivery on every engagement, not junior hours billed at a discount." },
-              { name: "Fastest Development", desc: "Reusable components and proven workflows take you from kickoff to launch faster, without cutting corners on quality." },
-              { name: "Agile Development", desc: "Sprint-based delivery with regular demos, so you see progress every step of the way." },
-              { name: "AI-first Approach", desc: "We evaluate where AI genuinely creates value in your product, not just where it's trendy." },
-              { name: "Security by Default", desc: "Authentication, data protection, and compliance built in from the first architecture review." },
-              { name: "Built to Scale", desc: "Infrastructure designed for where your business is headed, not just where it is today." },
-              { name: "Post-launch Support", desc: "SLA-backed maintenance and monitoring once your product is live, not radio silence after go-live." },
-            ]}
-          />
-        </div>
-      </section>
-
-      {/* Development Process */}
+      {/* 7. Our Delivery Process — How we build */}
       <CurriculumTimeline
         align="center"
-        category="How We Work"
+        category="Our Delivery Process"
         icon={Workflow}
         title="Our development process"
-        description="A disciplined, seven-phase process behind every engagement, regardless of size."
+        description="A closer look at the seven phases behind every software engagement, from first call to launch."
         modules={developmentProcess}
       />
 
-      {/* Technologies We Work With */}
+      {/* 8. Technologies We Work With */}
       <TechStackGrid
         tone="muted"
         align="center"
@@ -755,15 +780,137 @@ export default function HomeContent() {
         cta={{ label: "View All Technologies", href: "/about/technologies" }}
       />
 
-      {/* ULTRA-MODERN: Interactive Industry Focus Section (Expanding Horizontal Accordion) */}
+      {/* 9. Training Programs — Training deep-dive */}
+      <section className="py-24 sm:py-32 bg-background relative">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <SectionHeader
+            align="center"
+            category="Training"
+            icon={GraduationCap}
+            heading="Build job-ready skills with us."
+            description="Hands-on programs across full-stack development and applied AI."
+            className="mx-auto"
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {trainingPrograms.map((program, i) => (
+              <motion.div
+                key={program.href}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: (i % 6) * 0.08 }}
+                className="p-7 rounded-2xl bg-muted/10 border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 flex flex-col"
+              >
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <program.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full">
+                    {program.duration}
+                  </span>
+                </div>
+                <h3 className="font-bold text-foreground mb-2 leading-snug">{program.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">{program.overview}</p>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {program.tech.map((t) => (
+                    <span key={t} className="text-xs font-semibold text-foreground bg-background border border-border/60 px-2.5 py-1 rounded-full">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+                <Link href={program.href} className="inline-flex items-center text-sm font-bold text-foreground hover:text-primary hover:gap-3 gap-2 transition-all mt-auto">
+                  Learn More<span className="sr-only"> about {program.title}</span> <ArrowRight className="w-4 h-4" />
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5 }}
+            className="mt-14 flex justify-center"
+          >
+            <Link
+              href="/industrial-training"
+              className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
+            >
+              View All Programs
+              <span className="w-10 h-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
+                <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
+              </span>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 10. Resource Augmentation Preview — Hiring deep-dive */}
+      <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden border-b border-border/50">
+        <div className="absolute right-0 top-1/3 translate-x-1/3 w-[600px] h-[600px] bg-secondary/20 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+          <SectionHeader
+            align="center"
+            category="Resource Augmentation"
+            icon={UserPlus}
+            heading="Need Extra Hands?"
+            accent="We&apos;ve Got You."
+            description="Hire a single developer or a complete pre-built team — flexible engagement models built for how you actually work."
+            className="mx-auto"
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {engagementCategories
+              .filter((category) => category.slug === "single-resource" || category.slug === "package-based-team")
+              .map((category, idx) => (
+                <SubscriptionCard
+                  key={category.slug}
+                  index={idx}
+                  icon={category.icon}
+                  title={category.title}
+                  tagline={category.tagline}
+                  price={category.cardHighlight.pricing}
+                  billingType={category.cardHighlight.billingType}
+                  bestFor={category.cardHighlight.idealUseCase}
+                  features={category.keyBenefits}
+                  featuresLabel="Key Benefits"
+                  href={`/resource-augmentation/${category.slug}`}
+                  ctaLabel="View Details"
+                  featured={category.slug === "package-based-team"}
+                />
+              ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-14 flex justify-center"
+          >
+            <Link
+              href="/resource-augmentation"
+              className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
+            >
+              View All Engagement Models
+              <span className="w-10 h-10 rounded-full bg-background border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
+                <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
+              </span>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 11. Industries We Serve */}
       <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
         <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/3 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
           <SectionHeader
             align="center"
-            category="Industry Focus"
+            category="Industries We Serve"
             icon={Building2}
-            heading="Empowering diverse sectors."
+            heading="Built for your industry."
             description="Deep, applied experience across the industries we know best."
             className="mx-auto"
           />
@@ -850,86 +997,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* Training */}
-      <section className="py-24 sm:py-32 bg-muted/10 relative">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <SectionHeader
-            align="center"
-            category="Training"
-            icon={GraduationCap}
-            heading="Build job-ready skills with us."
-            description="Hands-on programs across full-stack development and applied AI."
-            className="mx-auto"
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {trainingPrograms.map((program, i) => (
-              <motion.div
-                key={program.href}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.5, delay: (i % 6) * 0.08 }}
-                className="p-7 rounded-2xl bg-background border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 flex flex-col"
-              >
-                <div className="flex items-center justify-between mb-5">
-                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <program.icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full">
-                    {program.duration}
-                  </span>
-                </div>
-                <h3 className="font-bold text-foreground mb-2 leading-snug">{program.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">{program.overview}</p>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {program.tech.map((t) => (
-                    <span key={t} className="text-xs font-semibold text-foreground bg-muted/40 border border-border/60 px-2.5 py-1 rounded-full">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                <Link href={program.href} className="inline-flex items-center text-sm font-bold text-foreground hover:text-primary hover:gap-3 gap-2 transition-all mt-auto">
-                  Learn More<span className="sr-only"> about {program.title}</span> <ArrowRight className="w-4 h-4" />
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.5 }}
-            className="mt-14 flex justify-center"
-          >
-            <Link
-              href="/industrial-training"
-              className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
-            >
-              View All Programs
-              <span className="w-10 h-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
-                <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
-              </span>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* The AI Ecosystem */}
-      <ProcessOrbit
-        eyebrowIcon={Network}
-        heading="AI &"
-        headingAccent="Innovation"
-        description="Building true intelligence requires more than just calling an API. We architect AI ecosystems around production-grade models, blended into seamless, autonomous workflows tailored for your business."
-        centerLabel="AI Core"
-        centerSublabel="The Intelligence Hub"
-        nodes={aiEcosystemNodes}
-        glow="primary"
-        image="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?q=80&w=1600&auto=format&fit=crop"
-      />
-
-      {/* Success Stories — Navigable Carousel */}
+      {/* 12. Success Stories — Proof, navigable carousel */}
       <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden">
         <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-primary/10 rounded-full blur-[140px] pointer-events-none"></div>
         <div className="mx-auto max-w-5xl px-6 lg:px-8 relative z-10">
@@ -997,7 +1065,7 @@ export default function HomeContent() {
             <button
               onClick={prevStory}
               aria-label="Previous success story"
-              className="w-11 h-11 rounded-full border border-border/50 bg-muted/30 flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all"
+              className="w-11 h-11 rounded-full border border-border/50 bg-background flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
@@ -1016,7 +1084,7 @@ export default function HomeContent() {
             <button
               onClick={nextStory}
               aria-label="Next success story"
-              className="w-11 h-11 rounded-full border border-border/50 bg-muted/30 flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all"
+              className="w-11 h-11 rounded-full border border-border/50 bg-background flex items-center justify-center hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -1028,7 +1096,7 @@ export default function HomeContent() {
               className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
             >
               View All Success Stories
-              <span className="w-10 h-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
+              <span className="w-10 h-10 rounded-full bg-background border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
                 <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
               </span>
             </Link>
@@ -1036,67 +1104,43 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* What Clients Say — Interactive Testimonials Carousel */}
-      {/* <ClientTestimonials icon={Quote} category="Client Voices" /> */}
-
-      {/* Team Highlights 
-      <TeamGrid
-        align="center"
-        category="Team Highlights"
-        icon={Users2}
-        title="The team behind the work"
-        description="Senior leadership guiding every engagement, backed by engineers, designers, and AI specialists."
-        members={teamMembers}
-      />
-      
-      <div className="pb-24 sm:pb-32 bg-background flex justify-center -mt-12 relative z-10">
-        <Link
-          href="/about/our-team"
-          className="group inline-flex items-center justify-center gap-2 rounded-full bg-muted/30 border border-border/50 px-8 py-4 text-sm font-bold text-foreground hover:bg-muted/60 transition-all"
-        >
-          Meet the Full Team <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </Link>
-      </div>
-      */}
-
-      {/* Latest Insights */}
-      <section className="py-24 sm:py-32 bg-muted/10 relative">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      {/* 13. Client Commitment — Relationship trust */}
+      <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/3 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
           <SectionHeader
             align="center"
-            category="Latest Insights"
-            icon={Newspaper}
-            heading="Ideas worth sharing."
-            description="Perspectives on AI, technology, and how we build for our clients."
+            category="Our Commitment"
+            icon={Handshake}
+            heading="Working With Us Feels"
+            accent="Different."
+            description="Every engagement — big or small — comes with the same standard of communication and accountability."
             className="mx-auto"
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {insights.map((post, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {clientCommitments.map((item, i) => (
               <motion.div
-                key={post.href + post.title}
+                key={item.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="p-7 rounded-2xl bg-background border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 flex flex-col"
+                className="p-7 rounded-2xl bg-muted/10 border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300"
               >
-                <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full w-fit mb-5">
-                  {post.tag}
-                </span>
-                <h3 className="font-bold text-foreground mb-3 leading-snug">{post.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-6 flex-1">{post.excerpt}</p>
-                <Link href={post.href} className="inline-flex items-center text-sm font-bold text-foreground hover:text-primary hover:gap-3 gap-2 transition-all mt-auto">
-                  Read More<span className="sr-only"> about {post.title}</span> <ArrowRight className="w-4 h-4" />
-                </Link>
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
+                  <item.icon className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="font-bold text-foreground mb-2 leading-snug">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Transparency & Trust */}
-      <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
+      {/* 14. Transparency & Trust — Legal/contractual trust */}
+      <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden">
         <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
           <SectionHeader
@@ -1120,7 +1164,7 @@ export default function HomeContent() {
               >
                 <Link
                   href={policy.href}
-                  className="group flex flex-col h-full p-6 rounded-2xl bg-muted/20 border border-border/50 hover:border-primary/30 hover:bg-muted/40 hover:-translate-y-1 transition-all duration-300"
+                  className="group flex flex-col h-full p-6 rounded-2xl bg-background border border-border/50 hover:border-primary/30 hover:bg-background/80 hover:-translate-y-1 transition-all duration-300"
                 >
                   <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
                     <policy.icon className="w-5 h-5 text-primary" />
@@ -1161,7 +1205,43 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* FAQs */}
+      {/* 15. Latest Insights */}
+      <section className="py-24 sm:py-32 bg-background relative">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <SectionHeader
+            align="center"
+            category="Latest Insights"
+            icon={Newspaper}
+            heading="Ideas worth sharing."
+            description="Perspectives on AI, technology, and how we build for our clients."
+            className="mx-auto"
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {insights.map((post, i) => (
+              <motion.div
+                key={post.href + post.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+                className="p-7 rounded-2xl bg-muted/10 border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 flex flex-col"
+              >
+                <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full w-fit mb-5">
+                  {post.tag}
+                </span>
+                <h3 className="font-bold text-foreground mb-3 leading-snug">{post.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-6 flex-1">{post.excerpt}</p>
+                <Link href={post.href} className="inline-flex items-center text-sm font-bold text-foreground hover:text-primary hover:gap-3 gap-2 transition-all mt-auto">
+                  Read More<span className="sr-only"> about {post.title}</span> <ArrowRight className="w-4 h-4" />
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 16. FAQs */}
       <FAQAccordion
         category="FAQs"
         icon={HelpCircle}
@@ -1169,10 +1249,7 @@ export default function HomeContent() {
         faqs={homeFaqs.map((f) => ({ question: brandify(f.question), answer: f.answer }))}
       />
 
-      {/* The Execution: Think. Build. Scale. */}
-      <ExecutionFramework />
-
-      {/* Interactive CTA Section */}
+      {/* 17. Final CTA — Get started */}
       <section className="relative overflow-hidden border-t border-border/50 py-24 sm:py-32">
         <div className="absolute inset-0 bg-primary/5"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
