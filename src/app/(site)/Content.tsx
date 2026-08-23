@@ -286,7 +286,7 @@ export default function HomeContent() {
             <motion.div initial="hidden" animate="visible" variants={stagger} className="max-w-2xl">
               <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/40 border border-border/50 text-sm font-medium text-foreground backdrop-blur-md mb-8 shadow-sm">
                 <Sparkles className="w-4 h-4 text-primary animate-pulse" />
-                <span>Software Development · Training · Dedicated Teams</span>
+                <span>Next-Gen Software Development · Training · Dedicated Teams</span>
               </motion.div>
 
               <motion.h1 variants={fadeIn} className="text-5xl font-black tracking-tighter text-foreground sm:text-7xl leading-[1.1] mb-6">
@@ -297,7 +297,7 @@ export default function HomeContent() {
               </motion.h1>
 
               <motion.p variants={fadeIn} className="text-lg sm:text-xl leading-relaxed text-muted-foreground mb-10 max-w-lg">
-                <span className="font-bold"><span className="text-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span></span> builds custom software, trains job-ready developers, and staffs pre-vetted tech talent — so you ship faster, scale smarter, and never worry about finding the right people.
+                <span className="font-bold"><span className="text-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span></span> delivers next-gen software development, builds developers who ship from day one, and deploys pre-vetted tech talent in days — so you launch faster, scale without limits, and never let hiring slow you down.
               </motion.p>
 
               <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-start gap-4">
@@ -429,7 +429,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 3. Our 3 Dedicated Teams — What we offer */}
+      {/* 3. Our 3 Core Service Departments — What we offer */}
       <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden border-b border-border/50">
         <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[900px] h-[500px] bg-primary/10 rounded-full blur-[140px] pointer-events-none"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
@@ -529,7 +529,102 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 5. How We Work — How to get started */}
+      {/* 5. Industries We Serve — Sector relevance & trust */}
+      <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/3 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+          <SectionHeader
+            align="center"
+            category="Industries We Serve"
+            icon={Building2}
+            heading="Built for your industry."
+            description="Deep, applied experience across the industries we know best."
+            className="mx-auto"
+          />
+
+          {/* Horizontal Expanding Accordion Container */}
+          <div className="flex flex-col lg:flex-row h-auto lg:h-[600px] gap-4 w-full">
+            {industries.map((ind, idx) => (
+              <div
+                key={idx}
+                onMouseEnter={() => setActiveIndustry(idx)}
+                className={`relative rounded-[2.5rem] overflow-hidden transition-all duration-700 ease-out border border-border/50 flex flex-col justify-end p-8 cursor-pointer group ${activeIndustry === idx
+                  ? "lg:flex-[3] shadow-2xl h-[450px] lg:h-auto"
+                  : "lg:flex-[1] h-[150px] lg:h-auto"
+                  }`}
+              >
+                {/* Background Photo */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={ind.image}
+                  alt={ind.title}
+                  className="absolute inset-0 w-full h-full object-cover scale-105 group-hover:scale-110 transition-transform duration-700 ease-out"
+                />
+                <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/10 transition-opacity duration-700 ${activeIndustry === idx ? "opacity-100" : "opacity-90 group-hover:opacity-80"
+                  }`}></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-secondary/25 mix-blend-overlay"></div>
+
+                <div className="relative z-10 flex flex-col h-full justify-between">
+                  {/* Top Area: Icon and Collapsed Title (Desktop Only) */}
+                  <div className="flex flex-col gap-6">
+                    <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 ${activeIndustry === idx ? "bg-primary text-primary-foreground" : "bg-white/10 backdrop-blur-md text-white group-hover:bg-primary/80"
+                      }`}>
+                      {ind.icon}
+                    </div>
+                    {/* Collapsed rotated text for inactive panels on desktop */}
+                    <div className={`hidden lg:block transition-all duration-500 origin-left ${activeIndustry === idx ? "opacity-0 max-h-0" : "opacity-100 -rotate-90 translate-y-32 translate-x-4"
+                      }`}>
+                      <h3 className="text-3xl font-bold text-white/80 whitespace-nowrap">
+                        {ind.title}
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* Expanded Content Area */}
+                  <div className={`flex flex-col justify-end overflow-hidden transition-all duration-700 ease-out ${activeIndustry === idx ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+                    }`}>
+                    <h3 className="text-4xl sm:text-5xl font-bold text-white mb-4">{ind.title}</h3>
+                    <p className="text-primary text-sm font-bold uppercase tracking-widest mb-6">{ind.subtitle}</p>
+                    <p className="text-white/70 text-lg leading-relaxed mb-6 max-w-lg">
+                      {ind.desc}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-8">
+                      {ind.related.map((service) => (
+                        <span key={service} className="text-xs font-semibold text-white/90 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+                          {service}
+                        </span>
+                      ))}
+                    </div>
+                    <Link href={ind.href} className="inline-flex items-center gap-2 text-white font-bold hover:text-primary transition-all w-fit">
+                      Explore {ind.title} <ArrowRight className="w-5 h-5" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5 }}
+            className="mt-14 flex justify-center"
+          >
+            <Link
+              href="/industries"
+              className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
+            >
+              View All Industries
+              <span className="w-10 h-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
+                <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
+              </span>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 6. How We Work — How to get started */}
       <section className="py-24 sm:py-32 bg-background relative overflow-hidden border-b border-border/50">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
           <SectionHeader
@@ -586,7 +681,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 6. What We Build — Software Development deep-dive */}
+      {/* 7. What We Build — Software Development deep-dive */}
       <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden border-b border-border/50">
         <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 w-[600px] h-[600px] bg-secondary/20 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
@@ -700,7 +795,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 7. Our Delivery Process — How we build */}
+      {/* 8. Our Delivery Process — How we build */}
       <CurriculumTimeline
         align="center"
         category="Our Delivery Process"
@@ -710,7 +805,7 @@ export default function HomeContent() {
         modules={developmentProcess}
       />
 
-      {/* 8. Resource Augmentation Preview — Hiring deep-dive */}
+      {/* 9. Resource Augmentation Preview — Hiring deep-dive */}
       <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden border-b border-border/50">
         <div className="absolute right-0 top-1/3 translate-x-1/3 w-[600px] h-[600px] bg-secondary/20 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
@@ -759,101 +854,6 @@ export default function HomeContent() {
             >
               View All Engagement Models
               <span className="w-10 h-10 rounded-full bg-background border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
-                <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
-              </span>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* 9. Industries We Serve */}
-      <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/3 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none opacity-50"></div>
-        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
-          <SectionHeader
-            align="center"
-            category="Industries We Serve"
-            icon={Building2}
-            heading="Built for your industry."
-            description="Deep, applied experience across the industries we know best."
-            className="mx-auto"
-          />
-
-          {/* Horizontal Expanding Accordion Container */}
-          <div className="flex flex-col lg:flex-row h-auto lg:h-[600px] gap-4 w-full">
-            {industries.map((ind, idx) => (
-              <div
-                key={idx}
-                onMouseEnter={() => setActiveIndustry(idx)}
-                className={`relative rounded-[2.5rem] overflow-hidden transition-all duration-700 ease-out border border-border/50 flex flex-col justify-end p-8 cursor-pointer group ${activeIndustry === idx
-                  ? "lg:flex-[3] shadow-2xl h-[450px] lg:h-auto"
-                  : "lg:flex-[1] h-[150px] lg:h-auto"
-                  }`}
-              >
-                {/* Background Photo */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={ind.image}
-                  alt={ind.title}
-                  className="absolute inset-0 w-full h-full object-cover scale-105 group-hover:scale-110 transition-transform duration-700 ease-out"
-                />
-                <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/10 transition-opacity duration-700 ${activeIndustry === idx ? "opacity-100" : "opacity-90 group-hover:opacity-80"
-                  }`}></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-secondary/25 mix-blend-overlay"></div>
-
-                <div className="relative z-10 flex flex-col h-full justify-between">
-                  {/* Top Area: Icon and Collapsed Title (Desktop Only) */}
-                  <div className="flex flex-col gap-6">
-                    <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 ${activeIndustry === idx ? "bg-primary text-primary-foreground" : "bg-white/10 backdrop-blur-md text-white group-hover:bg-primary/80"
-                      }`}>
-                      {ind.icon}
-                    </div>
-                    {/* Collapsed rotated text for inactive panels on desktop */}
-                    <div className={`hidden lg:block transition-all duration-500 origin-left ${activeIndustry === idx ? "opacity-0 max-h-0" : "opacity-100 -rotate-90 translate-y-32 translate-x-4"
-                      }`}>
-                      <h3 className="text-3xl font-bold text-white/80 whitespace-nowrap">
-                        {ind.title}
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* Expanded Content Area */}
-                  <div className={`flex flex-col justify-end overflow-hidden transition-all duration-700 ease-out ${activeIndustry === idx ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-                    }`}>
-                    <h3 className="text-4xl sm:text-5xl font-bold text-white mb-4">{ind.title}</h3>
-                    <p className="text-primary text-sm font-bold uppercase tracking-widest mb-6">{ind.subtitle}</p>
-                    <p className="text-white/70 text-lg leading-relaxed mb-6 max-w-lg">
-                      {ind.desc}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {ind.related.map((service) => (
-                        <span key={service} className="text-xs font-semibold text-white/90 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
-                          {service}
-                        </span>
-                      ))}
-                    </div>
-                    <Link href={ind.href} className="inline-flex items-center gap-2 text-white font-bold hover:text-primary transition-all w-fit">
-                      Explore {ind.title} <ArrowRight className="w-5 h-5" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.5 }}
-            className="mt-14 flex justify-center"
-          >
-            <Link
-              href="/industries"
-              className="group inline-flex items-center gap-3 text-sm font-bold text-foreground hover:text-primary transition-colors"
-            >
-              View All Industries
-              <span className="w-10 h-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
                 <ArrowRight className="w-4 h-4 group-hover:text-primary-foreground group-hover:translate-x-0.5 transition-all" />
               </span>
             </Link>
