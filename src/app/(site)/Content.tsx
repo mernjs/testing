@@ -10,6 +10,7 @@ import {
   MessageSquare, ScanEye, ChevronLeft, ChevronRight, ShieldCheck, Rocket,
   Mail, Phone, Quote, TrendingUp, Workflow, Building2, GraduationCap, Newspaper, HelpCircle,
   Eye, Lock, ReceiptText, Scale, ShieldAlert, Wallet, FileSignature, Copyright, BadgeCheck,
+  UserPlus,
 } from "lucide-react";
 import ExecutionFramework from "@/components/sections/ExecutionFramework";
 import ProcessOrbit from "@/components/sections/ProcessOrbit";
@@ -34,6 +35,36 @@ const stats = [
 ];
 
 const trustedClients = ["Nexora Health", "Bloomly", "Vertex Logistics", "Arclight Finance", "Wavecrest Media", "Northgate Retail"];
+
+const businessDivisions = [
+  {
+    tag: "Division 01",
+    title: "IT Services & Software Development",
+    description: "Custom software, web, mobile, cloud, AI & enterprise solutions.",
+    highlights: ["Web & Mobile Apps", "Cloud & DevOps", "AI/ML Integration", "Enterprise Systems"],
+    icon: Code,
+    href: "/services",
+    cta: "Explore Services",
+  },
+  {
+    tag: "Division 02",
+    title: "IT Industrial Training",
+    description: "Professional training, internships, mentorship & real-world project experience.",
+    highlights: ["Live Client Projects", "Mentor-Led Cohorts", "Internship Placement", "Job-Ready Curriculum"],
+    icon: GraduationCap,
+    href: "/industrial-training",
+    cta: "Explore Training",
+  },
+  {
+    tag: "Division 03",
+    title: "IT Resource Augmentation",
+    description: "Hire dedicated developers, engineers, tech leads & complete development teams.",
+    highlights: ["Single Developer Hiring", "Pre-Built Team Packages", "Flexible Engagement Models", "Fast Onboarding"],
+    icon: UserPlus,
+    href: "/resource-augmentation",
+    cta: "Explore Hiring",
+  },
+];
 
 const aiEcosystemNodes = [
   { label: "RAG Solutions", icon: Network, color: "text-amber-500", detail: "Grounding model responses in your own proprietary data." },
@@ -468,6 +499,73 @@ export default function HomeContent() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Business Divisions */}
+      <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden border-b border-border/50">
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[900px] h-[500px] bg-primary/10 rounded-full blur-[140px] pointer-events-none"></div>
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+          <SectionHeader
+            align="center"
+            category="What We Do"
+            icon={Layers}
+            heading="Three Dedicated Teams."
+            accent="One Mission."
+            description="Everything we build, teach, and staff falls under three focused divisions — each with its own dedicated team, process, and expertise."
+            className="mx-auto"
+          />
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {businessDivisions.map((division, idx) => (
+              <motion.div
+                key={division.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.5, delay: idx * 0.12 }}
+                className="group relative flex flex-col h-full p-8 sm:p-10 rounded-[2rem] bg-background border border-border/50 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 transition-all duration-300"
+              >
+                <span className="text-xs font-bold uppercase tracking-widest text-primary mb-6">{division.tag}</span>
+                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
+                  <division.icon className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors" />
+                </div>
+                <h3 className="text-2xl font-bold text-foreground mb-3 leading-snug">{division.title}</h3>
+                <p className="text-muted-foreground leading-relaxed mb-8">{division.description}</p>
+
+                <ul className="space-y-3 mb-10 flex-1">
+                  {division.highlights.map((h) => (
+                    <li key={h} className="flex items-center gap-2.5 text-sm text-foreground">
+                      <CheckCircle2 className="w-4 h-4 text-primary flex-none" />
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  href={division.href}
+                  className="inline-flex items-center gap-2 text-sm font-bold text-foreground group-hover:text-primary group-hover:gap-3 transition-all mt-auto"
+                >
+                  {division.cta} <ArrowRight className="w-4 h-4" />
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="mt-14 flex justify-center"
+          >
+            <p className="text-sm text-muted-foreground text-center">
+              Want to build this with us?{" "}
+              <Link href="/careers" className="font-bold text-foreground hover:text-primary transition-colors">
+                We&apos;re hiring — explore Careers <ArrowRight className="inline w-3.5 h-3.5 ml-0.5" />
+              </Link>
+            </p>
+          </motion.div>
         </div>
       </section>
 

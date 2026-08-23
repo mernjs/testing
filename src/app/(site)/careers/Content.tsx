@@ -2,21 +2,12 @@
 
 import React from "react";
 import Link from "next/link";
-import { Briefcase, MapPin, ArrowRight, Rocket, GraduationCap, HeartHandshake, Clock, Gauge, Sparkles } from "lucide-react";
+import { Briefcase, MapPin, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import ListingHero from "@/components/sections/ListingHero";
 import ChecklistGrid from "@/components/sections/ChecklistGrid";
 import DetailCTA from "@/components/sections/DetailCTA";
-import { jobs, categories, type Job } from "./jobs-data";
-
-const perks = [
-  { title: "Growth-First Culture", description: "Real ownership from day one, with mentorship from senior engineers and leaders.", icon: Rocket },
-  { title: "Learning & Development", description: "A dedicated budget for courses, certifications, and conference passes.", icon: GraduationCap },
-  { title: "Health & Wellness", description: "Comprehensive health coverage for you and your family.", icon: HeartHandshake },
-  { title: "Flexible, Hybrid Work", description: "Hybrid-friendly roles out of Noida, built around outcomes, not hours logged.", icon: Clock },
-  { title: "Competitive Compensation", description: "Market-benchmarked salaries plus performance-based bonuses.", icon: Gauge },
-  { title: "Cutting-Edge Projects", description: "Work on real GenAI, ML, and full-stack products shipped to real users.", icon: Sparkles },
-];
+import { jobs, categories, perks, type Job } from "./jobs-data";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },

@@ -17,6 +17,15 @@ import {
   Users,
   PenTool,
   Megaphone,
+  Rocket,
+  GraduationCap,
+  HeartHandshake,
+  Clock,
+  Gauge,
+  Mail,
+  PhoneCall,
+  UserCheck,
+  ThumbsUp,
   LucideIcon,
 } from "lucide-react";
 
@@ -36,8 +45,38 @@ export interface Job {
   experience: string;
   responsibilities: JobListItem[];
   qualifications: JobListItem[];
+  niceToHave: string[];
   skills: string[];
 }
+
+export interface Perk {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}
+
+export const perks: Perk[] = [
+  { title: "Growth-First Culture", description: "Real ownership from day one, with mentorship from senior engineers and leaders.", icon: Rocket },
+  { title: "Learning & Development", description: "A dedicated budget for courses, certifications, and conference passes.", icon: GraduationCap },
+  { title: "Health & Wellness", description: "Comprehensive health coverage for you and your family.", icon: HeartHandshake },
+  { title: "Flexible, Hybrid Work", description: "Hybrid-friendly roles out of Noida, built around outcomes, not hours logged.", icon: Clock },
+  { title: "Competitive Compensation", description: "Market-benchmarked salaries plus performance-based bonuses.", icon: Gauge },
+  { title: "Cutting-Edge Projects", description: "Work on real GenAI, ML, and full-stack products shipped to real users.", icon: Sparkles },
+];
+
+export interface ApplicationStep {
+  title: string;
+  duration: string;
+  description: string;
+  icon: LucideIcon;
+}
+
+export const applicationSteps: ApplicationStep[] = [
+  { title: "Send Your Resume", duration: "2 Minutes", description: "Hit Apply Now and email your resume — no account, no lengthy form.", icon: Mail },
+  { title: "Quick Screening Call", duration: "Within a Few Days", description: "A short call with our HR team to talk through your background and the role.", icon: PhoneCall },
+  { title: "Role Interview", duration: "45–60 Minutes", description: "A focused conversation or task with the team you'd actually be working with.", icon: UserCheck },
+  { title: "Offer & Onboarding", duration: "Fast Turnaround", description: "If it's a match, we move quickly — most offers go out within a week of the final interview.", icon: ThumbsUp },
+];
 
 export interface JobCategory {
   name: string;
@@ -92,6 +131,7 @@ export const jobs: Job[] = [
       { title: "Fundamentals", description: "Strong grasp of data structures and REST API design principles." },
       { title: "Team Fit", description: "Comfortable working in an agile, fast-paced product team." },
     ],
+    niceToHave: ["Experience with Next.js or server-side rendering", "Familiarity with CI/CD pipelines", "Exposure to cloud platforms like AWS or Vercel"],
     skills: ["JavaScript / TypeScript", "React", "Node.js", "Express", "MongoDB", "Git", "REST APIs", "Tailwind CSS"],
   },
   {
@@ -117,6 +157,7 @@ export const jobs: Job[] = [
       { title: "Domain Knowledge", description: "Familiarity with vector databases and RAG architectures." },
       { title: "Education", description: "Bachelor's degree in CS, AI/ML, or a related field." },
     ],
+    niceToHave: ["Experience fine-tuning open-source LLMs", "Familiarity with evaluation frameworks such as RAGAS", "Side projects or published work in the GenAI space"],
     skills: ["Python", "LLM APIs", "LangChain", "RAG", "Vector Databases", "Prompt Engineering", "FastAPI"],
   },
   {
@@ -142,6 +183,7 @@ export const jobs: Job[] = [
       { title: "Fundamentals", description: "Solid grounding in statistics and machine learning fundamentals." },
       { title: "Bonus", description: "Experience deploying models to production is a strong plus." },
     ],
+    niceToHave: ["Experience with MLOps tools like MLflow or Kubeflow", "Familiarity with distributed training", "Contributions to open-source ML projects"],
     skills: ["Python", "PyTorch / TensorFlow", "scikit-learn", "SQL", "MLOps", "Docker", "Cloud (AWS/GCP/Azure)"],
   },
   {
@@ -167,6 +209,7 @@ export const jobs: Job[] = [
       { title: "Modern Tooling", description: "Familiarity with Jetpack Compose and modern Android architecture." },
       { title: "Education", description: "Bachelor's degree in CS/IT or equivalent practical experience." },
     ],
+    niceToHave: ["Experience publishing apps with 10K+ downloads", "Familiarity with mobile CI/CD (Fastlane, Bitrise)", "Exposure to Kotlin Multiplatform"],
     skills: ["Kotlin", "Jetpack Compose", "MVVM", "Room", "Retrofit", "Play Store CI/CD"],
   },
   {
@@ -192,6 +235,7 @@ export const jobs: Job[] = [
       { title: "Platform Knowledge", description: "Understanding of Apple's Human Interface Guidelines." },
       { title: "Education", description: "Bachelor's degree in CS/IT or equivalent practical experience." },
     ],
+    niceToHave: ["Experience with Combine or async/await concurrency", "Familiarity with CI/CD for mobile (Fastlane, Xcode Cloud)", "Published apps on the App Store"],
     skills: ["Swift", "SwiftUI", "UIKit", "Combine", "REST APIs", "App Store Connect"],
   },
   {
@@ -217,6 +261,7 @@ export const jobs: Job[] = [
       { title: "Mindset", description: "Strong attention to detail and a genuine bug-hunter's instinct." },
       { title: "Technical Grounding", description: "Basic understanding of APIs, databases, and how systems fail." },
     ],
+    niceToHave: ["ISTQB or equivalent certification", "Experience with performance testing tools (JMeter, k6)", "Basic scripting for test automation (Python/JS)"],
     skills: ["Manual & Automated Testing", "Selenium / Cypress / Playwright", "API Testing", "JIRA", "SQL"],
   },
   {
@@ -242,6 +287,7 @@ export const jobs: Job[] = [
       { title: "Tooling", description: "Proficiency in Figma and modern design system practices." },
       { title: "Fundamentals", description: "Understanding of accessibility and responsive design principles." },
     ],
+    niceToHave: ["Experience designing for both web and mobile platforms", "Basic front-end coding knowledge (HTML/CSS)", "A track record of running usability tests"],
     skills: ["Figma", "Design Systems", "Prototyping", "User Research", "Accessibility", "HTML/CSS Basics"],
   },
   {
@@ -267,6 +313,7 @@ export const jobs: Job[] = [
       { title: "Communication", description: "Excellent communication and negotiation skills." },
       { title: "Education", description: "Bachelor's degree in Business, Marketing, or a related field." },
     ],
+    niceToHave: ["Existing network in the software or IT services industry", "Experience with outbound lead-gen tools (Apollo, LinkedIn Sales Navigator)", "Prior experience selling to international clients"],
     skills: ["B2B Sales", "Lead Generation", "CRM Tools", "Negotiation", "Proposal Writing"],
   },
   {
@@ -292,6 +339,7 @@ export const jobs: Job[] = [
       { title: "Tooling", description: "Familiarity with agile methodologies and tools like JIRA." },
       { title: "Education", description: "Bachelor's degree in Business, IT, or a related field." },
     ],
+    niceToHave: ["Experience with data visualization tools", "Exposure to UX or wireframing tools like Figma", "Certification in Business Analysis (CBAP, ECBA)"],
     skills: ["Requirements Gathering", "User Stories", "JIRA / Confluence", "Process Mapping", "SQL Basics"],
   },
   {
@@ -317,6 +365,7 @@ export const jobs: Job[] = [
       { title: "Core Skills", description: "Strong organizational and stakeholder-management skills." },
       { title: "Bonus", description: "PMP or CSM certification is a plus." },
     ],
+    niceToHave: ["Experience managing distributed or remote teams", "Familiarity with resource and budget forecasting tools", "Exposure to client-facing IT services projects"],
     skills: ["Agile / Scrum", "JIRA", "Stakeholder Management", "Risk Management", "Budgeting"],
   },
   {
@@ -342,6 +391,7 @@ export const jobs: Job[] = [
       { title: "Domain Knowledge", description: "Understanding of software development lifecycles and pricing models." },
       { title: "Education", description: "Bachelor's degree in any discipline." },
     ],
+    niceToHave: ["Prior experience winning bids on Upwork or Freelancer", "Familiarity with government or enterprise RFP processes", "Basic understanding of software estimation techniques"],
     skills: ["Proposal Writing", "Upwork / Freelancer", "Pre-Sales", "Client Communication", "MS Office"],
   },
   {
@@ -367,6 +417,7 @@ export const jobs: Job[] = [
       { title: "Tooling", description: "Proficiency with accounting software such as Tally or QuickBooks." },
       { title: "Attention to Detail", description: "Strong accuracy and integrity handling financial data." },
     ],
+    niceToHave: ["Experience with international client billing (multi-currency)", "Exposure to GST filing and statutory audits", "Familiarity with ERP systems"],
     skills: ["Accounting", "Invoicing", "Tally / QuickBooks", "GST & Compliance", "MS Excel"],
   },
   {
@@ -392,6 +443,7 @@ export const jobs: Job[] = [
       { title: "Attention to Detail", description: "High attention to detail and data accuracy." },
       { title: "Education", description: "Bachelor's degree in any analytical discipline." },
     ],
+    niceToHave: ["Experience building dashboards in Power BI or Tableau", "Basic SQL query writing", "Exposure to automation tools like Excel macros or Python"],
     skills: ["MS Excel", "SQL", "Power BI / Tableau", "Data Validation", "Report Automation"],
   },
   {
@@ -417,6 +469,7 @@ export const jobs: Job[] = [
       { title: "Tooling", description: "Familiarity with HRMS/ATS tools and labor compliance basics." },
       { title: "Education", description: "Bachelor's or Master's degree in HR, Business, or a related field." },
     ],
+    niceToHave: ["Experience with applicant tracking systems (ATS)", "Exposure to IT/tech industry hiring", "Basic knowledge of labor law and statutory compliance"],
     skills: ["Recruitment", "Onboarding", "HRMS / ATS", "Employee Engagement", "HR Compliance"],
   },
   {
@@ -442,6 +495,7 @@ export const jobs: Job[] = [
       { title: "Domain Comfort", description: "Comfortable writing about software, AI, and technology topics." },
       { title: "Education", description: "Bachelor's degree in English, Journalism, CS, or a related field." },
     ],
+    niceToHave: ["Experience writing for developer audiences", "Basic understanding of SEO tools (Ahrefs, SEMrush)", "A portfolio of published technical articles"],
     skills: ["Technical Writing", "SEO Writing", "Content Strategy", "Editing", "CMS Tools"],
   },
   {
@@ -467,6 +521,7 @@ export const jobs: Job[] = [
       { title: "Analytics", description: "Strong analytical skills with tools like Google Analytics." },
       { title: "Education", description: "Bachelor's degree in Marketing or a related field." },
     ],
+    niceToHave: ["Google Ads or Meta Blueprint certification", "Experience with marketing automation tools (HubSpot, Mailchimp)", "Basic understanding of conversion rate optimization"],
     skills: ["SEO", "Google Ads", "Meta Ads", "Google Analytics", "Social Media Marketing", "Email Marketing"],
   },
 ];
