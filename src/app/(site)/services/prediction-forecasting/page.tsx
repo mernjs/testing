@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, ChevronRight } from "lucide-react";
+import { serviceJsonLd } from "@/lib/seo";
 
 // This route duplicates /services/prediction-and-forecasting (the canonical,
 // fully-featured version of this page). Canonicalizing here instead of
@@ -14,8 +15,15 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
+  const jsonLd = serviceJsonLd({
+    name: "Prediction & Forecasting",
+    description: "Turn historical data into actionable foresight with advanced statistical modeling.",
+    path: "/services/prediction-and-forecasting",
+  });
+
   return (
     <div className="flex flex-col min-h-screen pt-16 bg-background">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Universal Hero Banner for Subpages */}
       <section className="pt-24 pb-16 px-4 bg-muted border-b border-border">
         <div className="container mx-auto max-w-6xl text-center">
