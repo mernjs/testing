@@ -159,6 +159,29 @@ export function faqJsonLd(faqs: FaqJsonLdInput[]) {
   };
 }
 
+interface PersonJsonLdInput {
+  name: string;
+  jobTitle: string;
+  path: string;
+  description?: string;
+}
+
+export function personJsonLd({ name, jobTitle, path, description }: PersonJsonLdInput) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name,
+    jobTitle,
+    url: `${siteUrl}${path}`,
+    ...(description ? { description } : {}),
+    worksFor: {
+      "@type": "Organization",
+      name: organizationInfo.name,
+      url: organizationInfo.url,
+    },
+  };
+}
+
 interface BreadcrumbItem {
   name: string;
   path: string;

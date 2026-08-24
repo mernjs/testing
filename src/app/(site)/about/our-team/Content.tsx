@@ -42,7 +42,7 @@ export default function OurTeamContent() {
         title="Leadership team"
         description="The people setting direction across product, engineering, and AI."
         members={[
-          { name: "Aditya Rao", role: "Co-Founder & CEO", bio: "Sets the long-term product and business vision, and still reviews architecture decisions on major engagements.", initials: "AR", color: "from-primary to-[#ff8e75]" },
+          { name: "Priyanka Singh", role: "Co-Founder & COO", bio: "Owns delivery operations, hiring, and cross-team coordination, keeping every engagement on schedule as we scale.", initials: "PS", color: "from-primary to-[#ff8e75]" },
           { name: "Simone Carter", role: "Chief Technology Officer", bio: "Owns technical strategy across every engagement, from cloud architecture to AI implementation standards.", initials: "SC", color: "from-secondary to-primary" },
           { name: "Devraj Malhotra", role: "VP of Engineering", bio: "Leads delivery across client teams, keeping quality and timelines consistent as we scale.", initials: "DM", color: "from-[#ff8e75] to-secondary" },
           { name: "Elena Popescu", role: "Head of AI", bio: "Directs our applied AI practice, from model development through production MLOps.", initials: "EP", color: "from-primary to-secondary" },

@@ -1,19 +1,18 @@
 import type { Metadata } from "next";
 import CoFounderCeoContent from "./Content";
-import { coFounderCeoFaqs } from "./faqs";
-import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, breadcrumbJsonLd, personJsonLd } from "@/lib/seo";
 
 const title = "Co-Founder & CEO | YashOrbit";
 const description =
-  "Meet Aditya Rao, Co-Founder & CEO of YashOrbit — his background, leadership philosophy, career journey, and vision for the company.";
+  "Meet [NAME_OF_CEO], Co-Founder & CEO of YashOrbit — her background, leadership philosophy, career journey, and vision for the company.";
 const path = "/about/co-founder-ceo";
 
-const image = "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1200&auto=format&fit=crop";
+const image = "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=1200&auto=format&fit=crop";
 
 export const metadata: Metadata = {
   title,
   description,
-  keywords: ["Co-Founder & CEO", "Founder Insights", "Leadership Vision", "Direct Access", "YashOrbit"],
+  keywords: ["Co-Founder & CEO", "Founder Insights", "Leadership Vision", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
@@ -25,7 +24,12 @@ export default function CoFounderCeoPage() {
       { name: "About", path: "/about" },
       { name: "Co-Founder & CEO", path },
     ]),
-    faqJsonLd(coFounderCeoFaqs),
+    personJsonLd({
+      name: "[NAME_OF_CEO]",
+      jobTitle: "Co-Founder & CEO",
+      path,
+      description: "Co-Founder & CEO of YashOrbit, leading company strategy, culture, and long-term vision.",
+    }),
   ];
 
   return (

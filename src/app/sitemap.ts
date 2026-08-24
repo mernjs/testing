@@ -6,7 +6,12 @@ const routes = [
   "/about",
   "/about/our-mission",
   "/about/our-team",
+  "/about/leadership",
   // "/about/co-founder-ceo", // hidden from nav/listings; page still exists, just not linked or indexed
+  // "/about/co-founder-coo", // hidden from nav/listings; page still exists, just not linked or indexed
+  // "/about/cto", // hidden from nav/listings; page still exists, just not linked or indexed
+  // "/about/cfo", // hidden from nav/listings; page still exists, just not linked or indexed
+  // "/about/chro", // hidden from nav/listings; page still exists, just not linked or indexed
   "/about/privacy-policy",
   "/about/terms-and-conditions",
   "/about/refund-cancellation-policy",

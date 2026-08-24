@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target } from "lucide-react";
+import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Users2 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { InstagramIcon, XIcon, FacebookIcon, GithubIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
 import { socialLinks as socialLinksData, whatsapp } from "@/lib/contact";
@@ -67,8 +67,7 @@ const navigation = [
       { name: "Technologies", href: "/about/technologies", description: "Our full tech stack", icon: Layers },
       { name: "Success Stories", href: "/about/success-stories", description: "Client impact cases", icon: Box },
       { name: "Our Team", href: "/about/our-team", description: "The experts behind it", icon: LayoutGrid },
-      // { name: "Co-Founder & CEO", href: "/about/co-founder-ceo", description: "Meet our leadership", icon: Briefcase },
-      { name: "Privacy Policy", href: "/about/privacy-policy", description: "Data protection", icon: Monitor },
+      { name: "Founders & Leadership", href: "/about/leadership", description: "Meet our leadership team", icon: Users2 },
     ],
   },
   {
@@ -176,8 +175,7 @@ const mobileNavigation = [
       { name: "Technologies", href: "/about/technologies", icon: Layers },
       { name: "Success Stories", href: "/about/success-stories", icon: Box },
       { name: "Our Team", href: "/about/our-team", icon: LayoutGrid },
-      // { name: "Co-Founder & CEO", href: "/about/co-founder-ceo", icon: Briefcase },
-      { name: "Privacy Policy", href: "/about/privacy-policy", icon: Monitor },
+      { name: "Founders & Leadership", href: "/about/leadership", icon: Users2 },
     ],
   },
   {
