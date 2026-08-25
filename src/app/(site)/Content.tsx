@@ -739,13 +739,13 @@ export default function HomeContent() {
                       ))}
                     </ul>
                   </div>
-
-                  {i < developmentProcess.length - 1 && (i + 1) % 4 !== 0 && (
-                    <div className="hidden lg:flex absolute top-1/2 -right-[calc(1.25rem+1px)] -translate-y-1/2 z-20 w-6 h-6 rounded-full bg-background border border-border/50 items-center justify-center group-hover:border-primary/40 transition-colors duration-300">
-                      <ArrowRight className="w-3 h-3 text-muted-foreground" />
-                    </div>
-                  )}
                 </div>
+
+                {i < developmentProcess.length - 1 && (i + 1) % 4 !== 0 && (
+                  <div className="hidden lg:flex absolute top-1/2 -right-[calc(1.25rem+1px)] -translate-y-1/2 z-20 w-6 h-6 rounded-full bg-background border border-border/50 items-center justify-center group-hover:border-primary/40 transition-colors duration-300">
+                    <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>
