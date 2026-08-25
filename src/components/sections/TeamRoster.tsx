@@ -25,6 +25,10 @@ interface TeamRosterProps {
 function TeamCard({ member }: { member: RosterMember }) {
   const CardInner = (
     <>
+      <span className="absolute top-3 right-3 inline-flex items-center rounded-full bg-primary/10 text-primary text-[11px] font-semibold px-2.5 py-1">
+        {member.department}
+      </span>
+
       <div className="relative mb-5">
         <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden ring-4 ring-muted/30 group-hover:ring-primary/25 shadow-md transition-all duration-300">
           <img
@@ -41,17 +45,12 @@ function TeamCard({ member }: { member: RosterMember }) {
         </span>
       </div>
 
-      <div className="flex items-center justify-center gap-2 mb-3">
-        <span className="inline-flex items-center rounded-full bg-primary/10 text-primary text-[11px] font-semibold px-2.5 py-1">
-          {member.department}
-        </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-muted/50 text-muted-foreground text-[11px] font-semibold px-2.5 py-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-          Remote
-        </span>
-      </div>
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-muted/50 text-muted-foreground text-[11px] font-semibold px-2.5 py-1 mb-3">
+        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+        Remote
+      </span>
 
-      <h3 className="font-bold text-foreground leading-snug">{member.name}</h3>
+      <h3 className="font-bold text-foreground leading-snug mb-1.5">{member.name}</h3>
       <p className="text-sm font-semibold text-primary mb-3">{member.role}</p>
       <p className="text-sm text-muted-foreground leading-relaxed">{member.description}</p>
 
