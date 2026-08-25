@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 
 interface RosterMember {
   name: string;
@@ -9,6 +11,7 @@ interface RosterMember {
   department: string;
   description: string;
   photo: string;
+  href?: string;
 }
 
 interface TeamRosterProps {
@@ -20,6 +23,49 @@ interface TeamRosterProps {
 }
 
 function TeamCard({ member }: { member: RosterMember }) {
+  const CardInner = (
+    <>
+      <div className="relative mb-5">
+        <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden ring-4 ring-muted/30 group-hover:ring-primary/25 shadow-md transition-all duration-300">
+          <img
+            src={member.photo}
+            alt={member.name}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+        </div>
+        <span className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-background ring-2 ring-background shadow-sm">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
+          </span>
+        </span>
+      </div>
+
+      <div className="flex items-center justify-center gap-2 mb-3">
+        <span className="inline-flex items-center rounded-full bg-primary/10 text-primary text-[11px] font-semibold px-2.5 py-1">
+          {member.department}
+        </span>
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-muted/50 text-muted-foreground text-[11px] font-semibold px-2.5 py-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+          Remote
+        </span>
+      </div>
+
+      <h3 className="font-bold text-foreground leading-snug">{member.name}</h3>
+      <p className="text-sm font-semibold text-primary mb-3">{member.role}</p>
+      <p className="text-sm text-muted-foreground leading-relaxed">{member.description}</p>
+
+      {member.href && (
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground mt-4">
+          View Profile
+          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+        </span>
+      )}
+    </>
+  );
+
+  const cardClasses = "relative h-full flex flex-col items-center text-center rounded-3xl border border-border/50 bg-background p-7 shadow-sm group-hover:shadow-xl group-hover:-translate-y-1 group-hover:border-primary/30 transition-all duration-300";
+
   return (
     <motion.div
       layout
@@ -31,37 +77,13 @@ function TeamCard({ member }: { member: RosterMember }) {
     >
       <div className="absolute -inset-1 rounded-[28px] bg-gradient-to-br from-primary/30 via-primary/0 to-secondary/30 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
 
-      <div className="relative h-full flex flex-col items-center text-center rounded-3xl border border-border/50 bg-background p-7 shadow-sm group-hover:shadow-xl group-hover:-translate-y-1 group-hover:border-primary/30 transition-all duration-300">
-        <div className="relative mb-5">
-          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden ring-4 ring-muted/30 group-hover:ring-primary/25 shadow-md transition-all duration-300">
-            <img
-              src={member.photo}
-              alt={member.name}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-          </div>
-          <span className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-background ring-2 ring-background shadow-sm">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
-            </span>
-          </span>
-        </div>
-
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <span className="inline-flex items-center rounded-full bg-primary/10 text-primary text-[11px] font-semibold px-2.5 py-1">
-            {member.department}
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-muted/50 text-muted-foreground text-[11px] font-semibold px-2.5 py-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            Remote
-          </span>
-        </div>
-
-        <h3 className="font-bold text-foreground leading-snug">{member.name}</h3>
-        <p className="text-sm font-semibold text-primary mb-3">{member.role}</p>
-        <p className="text-sm text-muted-foreground leading-relaxed">{member.description}</p>
-      </div>
+      {member.href ? (
+        <Link href={member.href} className={cardClasses}>
+          {CardInner}
+        </Link>
+      ) : (
+        <div className={cardClasses}>{CardInner}</div>
+      )}
     </motion.div>
   );
 }

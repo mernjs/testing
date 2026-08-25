@@ -14,7 +14,7 @@ export default function OurTeamContent() {
         categoryLabel="about"
         title="Our Team"
         subtitle="The people building your product."
-        description="A remote-first team of 16 specialists spanning engineering, AI, design, and business — senior-led, distributed across timezones, and coordinated around overlapping core hours."
+        description="A remote-first team of 21 — leadership plus specialists spanning engineering, AI, design, and business — senior-led, distributed across timezones, and coordinated around overlapping core hours."
         icon={Users}
         image="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop"
       />

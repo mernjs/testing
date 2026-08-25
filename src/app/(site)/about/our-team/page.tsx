@@ -4,7 +4,7 @@ import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
 
 const title = "Our Team | YashOrbit";
 const description =
-  "Meet the 16 engineers, designers, AI specialists, and business leads behind YashOrbit — a remote-first, senior-led team.";
+  "Meet the 21 people behind YashOrbit — our leadership team plus the engineers, designers, AI specialists, and business leads on a remote-first, senior-led team.";
 const path = "/about/our-team";
 
 const image = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop";
@@ -12,7 +12,7 @@ const image = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80
 export const metadata: Metadata = {
   title,
   description,
-  keywords: ["Our Team", "16 Specialists", "Senior-Led Team", "Remote-first", "YashOrbit"],
+  keywords: ["Our Team", "Leadership", "21 Specialists", "Senior-Led Team", "Remote-first", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
