@@ -10,11 +10,9 @@ import {
   MessageSquare, ShieldCheck, Rocket,
   Mail, Phone, Workflow, Building2, GraduationCap, HelpCircle,
   Eye, Wallet, FileSignature, Copyright, BadgeCheck,
-  UserPlus, MonitorPlay, UserCheck, ArrowLeftRight, CalendarClock, Handshake, LifeBuoy,
+  UserPlus, MonitorPlay, UserCheck, ArrowLeftRight, CalendarClock, Handshake, LifeBuoy, Briefcase,
 } from "lucide-react";
 import ProcessOrbit from "@/components/sections/ProcessOrbit";
-import FeatureHighlights from "@/components/sections/FeatureHighlights";
-import CurriculumTimeline from "@/components/sections/CurriculumTimeline";
 import FAQAccordion from "@/components/sections/FAQAccordion";
 import SectionHeader from "@/components/sections/SectionHeader";
 import SubscriptionCard from "@/components/sections/SubscriptionCard";
@@ -55,6 +53,28 @@ const coreDepartments = [
     href: "/resource-augmentation",
     cta: "Explore Hiring",
   },
+  {
+    tag: "Department 04",
+    title: "IT Internship Program",
+    description: "Our internship department places students and freshers directly onto live engagements, working real feature tickets under a dedicated mentor.",
+    services: [
+      "MERN Stack", "MEAN Stack", "Generative AI", "Agentic AI", "Conversational AI", "Computer Vision",
+    ],
+    icon: Briefcase,
+    href: "/internship-program",
+    cta: "Explore Internships",
+  },
+];
+
+const whyChooseUs = [
+  { name: "Industry Expertise", desc: "Deep experience across EdTech, FinTech, Real Estate Tech, and general enterprise software.", icon: Building2 },
+  { name: "Experienced Team", desc: "Senior-led delivery on every engagement, not junior hours billed at a discount.", icon: Users },
+  { name: "Fastest Development", desc: "Reusable components and proven workflows take you from kickoff to launch faster, without cutting corners on quality.", icon: Zap },
+  { name: "Agile Development", desc: "Sprint-based delivery with regular demos, so you see progress every step of the way.", icon: Workflow },
+  { name: "AI-first Approach", desc: "We evaluate where AI genuinely creates value in your product, not just where it's trendy.", icon: Sparkles },
+  { name: "Security by Default", desc: "Authentication, data protection, and compliance built in from the first architecture review.", icon: ShieldCheck },
+  { name: "Built to Scale", desc: "Infrastructure designed for where your business is headed, not just where it is today.", icon: LineChart },
+  { name: "Post-launch Support", desc: "SLA-backed maintenance and monitoring once your product is live, not radio silence after go-live.", icon: LifeBuoy },
 ];
 
 const trustBadges = [
@@ -79,13 +99,13 @@ const clientCommitments = [
 ];
 
 const developmentProcess = [
-  { title: "Discovery", duration: "Phase 1", topics: ["Stakeholder interviews", "Requirements gathering", "Goal alignment"] },
-  { title: "Planning", duration: "Phase 2", topics: ["Technical scoping", "Roadmap creation", "Resource planning"] },
-  { title: "Design", duration: "Phase 3", topics: ["UX wireframes", "Design system", "Prototype validation"] },
-  { title: "Development", duration: "Phase 4", topics: ["Sprint-based builds", "Code reviews", "Continuous integration"] },
-  { title: "Testing", duration: "Phase 5", topics: ["Automated testing", "Manual QA", "Performance testing"] },
-  { title: "Deployment", duration: "Phase 6", topics: ["CI/CD rollout", "Staging validation", "Production launch"] },
-  { title: "Support & Maintenance", duration: "Phase 7", topics: ["Monitoring", "Bug fixes", "Ongoing iteration"] },
+  { title: "Discovery", duration: "Phase 1", topics: ["Stakeholder interviews", "Requirements gathering", "Goal alignment"], icon: Eye },
+  { title: "Planning", duration: "Phase 2", topics: ["Technical scoping", "Roadmap creation", "Resource planning"], icon: CalendarClock },
+  { title: "Design", duration: "Phase 3", topics: ["UX wireframes", "Design system", "Prototype validation"], icon: Layers },
+  { title: "Development", duration: "Phase 4", topics: ["Sprint-based builds", "Code reviews", "Continuous integration"], icon: Code },
+  { title: "Testing", duration: "Phase 5", topics: ["Automated testing", "Manual QA", "Performance testing"], icon: CheckCircle2 },
+  { title: "Deployment", duration: "Phase 6", topics: ["CI/CD rollout", "Staging validation", "Production launch"], icon: Rocket },
+  { title: "Support & Maintenance", duration: "Phase 7", topics: ["Monitoring", "Bug fixes", "Ongoing iteration"], icon: LifeBuoy },
 ];
 
 const aiEcosystemNodes = [
@@ -422,7 +442,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 3. Our 3 Core Service Departments — What we offer */}
+      {/* 3. Our 4 Core Service Departments — What we offer */}
       <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden border-b border-border/50">
         <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[900px] h-[500px] bg-primary/10 rounded-full blur-[140px] pointer-events-none"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
@@ -430,50 +450,121 @@ export default function HomeContent() {
             align="center"
             category="How We're Structured"
             icon={Layers}
-            heading="Our 3 Core Service Departments"
-            description="YashOrbit operates through three core service categories — each one managed by its own specialized, dedicated department. Explore the individual services delivered under each department below."
+            heading="Our 4 Core Service Departments"
+            description="YashOrbit operates through four core service categories — each one managed by its own specialized, dedicated department. Explore the individual services delivered under each department below."
             className="mx-auto"
           />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {coreDepartments.map((department, idx) => (
+          {/* Featured department — our primary offering, given a distinct, larger treatment */}
+          {(() => {
+            const featured = coreDepartments[0];
+            const FeaturedIcon = featured.icon;
+            return (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.5 }}
+            className="group relative mb-8"
+          >
+            <div className="absolute -inset-1 rounded-[2.5rem] bg-gradient-to-br from-primary/40 via-primary/0 to-secondary/40 opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 pointer-events-none" />
+
+            <Link
+              href={featured.href}
+              className="relative flex flex-col lg:flex-row lg:items-center gap-10 lg:gap-16 rounded-[2.5rem] bg-gradient-to-br from-foreground to-neutral-800 dark:to-neutral-900 p-10 sm:p-14 overflow-hidden shadow-xl group-hover:shadow-2xl group-hover:shadow-primary/20 group-hover:-translate-y-1 transition-all duration-300"
+            >
+              <div className="absolute -top-32 -right-16 w-96 h-96 bg-primary/40 rounded-full blur-[120px] pointer-events-none" />
+              <div className="absolute -bottom-24 -left-16 w-72 h-72 bg-secondary/20 rounded-full blur-[100px] pointer-events-none" />
+
+              <div className="relative z-10 flex-1">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-primary-foreground mb-6 rounded-full bg-primary px-3 py-1.5 shadow-lg shadow-primary/30">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Our Flagship Department
+                </span>
+                <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                  <FeaturedIcon className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4 leading-snug">{featured.title}</h3>
+                <p className="text-white/70 text-lg leading-relaxed mb-8 max-w-xl">{featured.description}</p>
+
+                <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white group-hover:bg-primary px-6 py-3 text-sm font-bold text-foreground group-hover:text-primary-foreground transition-all duration-300">
+                  {featured.cta}
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </div>
+
+              <div className="relative z-10 lg:w-72 lg:flex-none">
+                <p className="text-xs font-bold uppercase tracking-widest text-white/50 mb-4">
+                  {featured.services.length} Services Under This Department
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {featured.services.map((service) => (
+                    <span
+                      key={service}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-white/10 border border-white/15 px-3 py-1.5 rounded-full group-hover:border-primary/50 group-hover:bg-white/15 transition-colors duration-300"
+                    >
+                      <CheckCircle2 className="w-3 h-3 text-primary flex-none" />
+                      {service}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </Link>
+          </motion.div>
+            );
+          })()}
+
+          {/* Remaining departments — compact, uniform row */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {coreDepartments.slice(1).map((department, idx) => (
               <motion.div
                 key={department.title}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.5, delay: idx * 0.12 }}
-                className="group relative flex flex-col h-full p-8 sm:p-10 rounded-[2rem] bg-background border border-border/50 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1 transition-all duration-300"
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="group relative"
               >
-                <span className="text-xs font-bold uppercase tracking-widest text-primary mb-6">{department.tag}</span>
-                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
-                  <department.icon className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-3 leading-snug">{department.title}</h3>
-                <p className="text-muted-foreground leading-relaxed mb-8">{department.description}</p>
-
-                <div className="mb-10 flex-1">
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
-                    {department.services.length} Services Under This Department
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {department.services.map((service) => (
-                      <span
-                        key={service}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground bg-muted/40 border border-border/50 px-3 py-1.5 rounded-full group-hover:border-primary/30 transition-colors duration-300"
-                      >
-                        <CheckCircle2 className="w-3 h-3 text-primary flex-none" />
-                        {service}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                <div className="absolute -inset-1 rounded-[2rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
 
                 <Link
                   href={department.href}
-                  className="inline-flex items-center gap-2 text-sm font-bold text-foreground group-hover:text-primary group-hover:gap-3 transition-all mt-auto"
+                  className="relative flex flex-col h-full p-7 rounded-[1.75rem] bg-background border border-border/50 overflow-hidden shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300"
                 >
-                  {department.cta} <ArrowRight className="w-4 h-4" />
+                  <span className="pointer-events-none absolute -top-4 -right-2 text-6xl font-black leading-none text-muted-foreground/[0.07] group-hover:text-primary/10 transition-colors duration-500 select-none">
+                    0{idx + 2}
+                  </span>
+
+                  <div className="relative z-10 flex flex-col h-full">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
+                      <department.icon className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
+                    </div>
+                    <h3 className="text-lg font-bold text-foreground mb-2 leading-snug">{department.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-6">{department.description}</p>
+
+                    <div className="mb-6 flex-1">
+                      <div className="flex flex-wrap gap-1.5">
+                        {department.services.slice(0, 4).map((service) => (
+                          <span
+                            key={service}
+                            className="inline-flex items-center text-[11px] font-semibold text-foreground bg-muted/40 border border-border/50 px-2.5 py-1 rounded-full group-hover:border-primary/30 group-hover:bg-primary/5 transition-colors duration-300"
+                          >
+                            {service}
+                          </span>
+                        ))}
+                        {department.services.length > 4 && (
+                          <span className="inline-flex items-center text-[11px] font-semibold text-muted-foreground px-2.5 py-1">
+                            +{department.services.length - 4} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <span className="mt-auto inline-flex w-fit items-center gap-1.5 text-sm font-bold text-foreground group-hover:text-primary group-hover:gap-2.5 transition-all duration-300">
+                      {department.cta}
+                      <ArrowRight className="w-4 h-4" />
+                    </span>
+                  </div>
                 </Link>
               </motion.div>
             ))}
@@ -497,8 +588,9 @@ export default function HomeContent() {
       </section>
 
       {/* 4. Why Choose Us — Why trust us */}
-      <section className="py-24 sm:py-32 bg-muted/10 relative">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden">
+        <div className="absolute right-0 top-1/3 -translate-y-1/2 translate-x-1/2 w-[700px] h-[700px] bg-secondary/10 rounded-full blur-[140px] pointer-events-none"></div>
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
           <SectionHeader
             align="center"
             category="Why Choose Us"
@@ -507,18 +599,35 @@ export default function HomeContent() {
             description="Eight reasons growing businesses choose to build with us."
             className="mx-auto"
           />
-          <FeatureHighlights
-            features={[
-              { name: "Industry Expertise", desc: "Deep experience across EdTech, FinTech, Real Estate Tech, and general enterprise software." },
-              { name: "Experienced Team", desc: "Senior-led delivery on every engagement, not junior hours billed at a discount." },
-              { name: "Fastest Development", desc: "Reusable components and proven workflows take you from kickoff to launch faster, without cutting corners on quality." },
-              { name: "Agile Development", desc: "Sprint-based delivery with regular demos, so you see progress every step of the way." },
-              { name: "AI-first Approach", desc: "We evaluate where AI genuinely creates value in your product, not just where it's trendy." },
-              { name: "Security by Default", desc: "Authentication, data protection, and compliance built in from the first architecture review." },
-              { name: "Built to Scale", desc: "Infrastructure designed for where your business is headed, not just where it is today." },
-              { name: "Post-launch Support", desc: "SLA-backed maintenance and monitoring once your product is live, not radio silence after go-live." },
-            ]}
-          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {whyChooseUs.map((reason, i) => (
+              <motion.div
+                key={reason.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: (i % 4) * 0.08 }}
+                className="group relative"
+              >
+                <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
+
+                <div className="relative h-full p-6 rounded-3xl bg-background border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/30 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  <span className="pointer-events-none absolute -top-3 -right-1 text-5xl font-black leading-none text-muted-foreground/[0.06] group-hover:text-primary/10 transition-colors duration-500 select-none">
+                    0{i + 1}
+                  </span>
+
+                  <div className="relative z-10">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center mb-5 shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                      <reason.icon className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="font-bold text-foreground mb-2 leading-snug">{reason.name}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{reason.desc}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -580,14 +689,68 @@ export default function HomeContent() {
       </section>
 
       {/* 6. Our Delivery Process — How we build */}
-      <CurriculumTimeline
-        align="center"
-        category="Our Delivery Process"
-        icon={Workflow}
-        title="Our development process"
-        description="A closer look at the seven phases behind every software engagement, from first call to launch."
-        modules={developmentProcess}
-      />
+      <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden">
+        <div className="absolute left-1/2 bottom-0 -translate-x-1/2 w-[900px] h-[500px] bg-primary/10 rounded-full blur-[160px] pointer-events-none"></div>
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+          <SectionHeader
+            align="center"
+            category="Our Delivery Process"
+            icon={Workflow}
+            heading="Our development process"
+            description="A closer look at the seven phases behind every software engagement, from first call to launch."
+            className="mx-auto"
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {developmentProcess.map((phase, i) => (
+              <motion.div
+                key={phase.title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ duration: 0.5, delay: (i % 4) * 0.08 }}
+                className="group relative"
+              >
+                <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
+
+                <div className="relative h-full flex flex-col p-6 rounded-3xl bg-background border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/30 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  <span className="pointer-events-none absolute -top-4 -right-2 text-6xl font-black leading-none text-muted-foreground/[0.06] group-hover:text-primary/10 transition-colors duration-500 select-none">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+
+                  <div className="relative z-10 flex flex-col h-full">
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                        <phase.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <span className="text-[11px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-full">
+                        {phase.duration}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-foreground mb-3 leading-snug">{phase.title}</h3>
+
+                    <ul className="space-y-1.5 mt-auto">
+                      {phase.topics.map((topic) => (
+                        <li key={topic} className="text-sm text-muted-foreground flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary/60 flex-none" />
+                          {topic}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {i < developmentProcess.length - 1 && (i + 1) % 4 !== 0 && (
+                    <div className="hidden lg:flex absolute top-1/2 -right-[calc(1.25rem+1px)] -translate-y-1/2 z-20 w-6 h-6 rounded-full bg-background border border-border/50 items-center justify-center group-hover:border-primary/40 transition-colors duration-300">
+                      <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* 7. Client Commitment — Relationship trust */}
       <section className="py-24 sm:py-32 bg-background relative overflow-hidden">
