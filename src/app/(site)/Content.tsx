@@ -35,7 +35,7 @@ const coreDepartments = [
   },
   {
     tag: "Department 02",
-    title: "IT Industrial Training",
+    title: "Industrial Training",
     description: "Our training department runs mentor-led, project-based programs that take developers from fundamentals to job-ready.",
     services: [
       "MERN Stack", "MEAN Stack", "Generative AI", "Agentic AI", "Conversational AI", "Computer Vision",
@@ -46,7 +46,7 @@ const coreDepartments = [
   },
   {
     tag: "Department 03",
-    title: "IT Resource Augmentation",
+    title: "Resource Augmentation",
     description: "Our staffing department places pre-vetted developers and full teams directly inside your workflow, fast.",
     services: engagementCategories.map((category) => category.title),
     icon: UserPlus,
@@ -55,7 +55,7 @@ const coreDepartments = [
   },
   {
     tag: "Department 04",
-    title: "IT Internship Program",
+    title: "Internship Program",
     description: "Our internship department places students and freshers directly onto live engagements, working real feature tickets under a dedicated mentor.",
     services: [
       "MERN Stack", "MEAN Stack", "Generative AI", "Agentic AI", "Conversational AI", "Computer Vision",
