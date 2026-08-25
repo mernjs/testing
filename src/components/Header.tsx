@@ -148,6 +148,19 @@ const navigation = [
     ],
   },
   {
+    name: "Internship",
+    href: "/internship-program",
+    featured: { title: "Intern on Real Work", description: "Paid, mentor-led internships across six tracks.", image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=600&auto=format&fit=crop" },
+    items: [
+      { name: "MERN Stack Internship", href: "/internship-program/mern-stack", description: "MongoDB, Express, React, Node", icon: Code2 },
+      { name: "MEAN Stack Internship", href: "/internship-program/mean-stack", description: "MongoDB, Express, Angular, Node", icon: Database },
+      { name: "Generative AI Internship", href: "/internship-program/generative-ai", description: "LLM pipelines & RAG systems", icon: Sparkles },
+      { name: "Agentic AI Internship", href: "/internship-program/agentic-ai", description: "Autonomous, tool-using agents", icon: Bot },
+      { name: "Conversational AI Internship", href: "/internship-program/conversational-ai", description: "Chatbots & voice assistants", icon: MessageSquare },
+      { name: "Computer Vision Internship", href: "/internship-program/computer-vision", description: "Image & video intelligence", icon: ScanEye },
+    ],
+  },
+  {
     name: "Careers",
     href: "/careers",
     featured: { title: "Careers at YashOrbit", description: "Join our growing team building AI-powered products.", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop" },
@@ -258,6 +271,19 @@ const mobileNavigation = [
     ],
   },
   {
+    name: "Internship",
+    href: "/internship-program",
+    icon: Briefcase,
+    items: [
+      { name: "MERN Stack Internship", href: "/internship-program/mern-stack", icon: Code2 },
+      { name: "MEAN Stack Internship", href: "/internship-program/mean-stack", icon: Database },
+      { name: "Generative AI Internship", href: "/internship-program/generative-ai", icon: Sparkles },
+      { name: "Agentic AI Internship", href: "/internship-program/agentic-ai", icon: Bot },
+      { name: "Conversational AI Internship", href: "/internship-program/conversational-ai", icon: MessageSquare },
+      { name: "Computer Vision Internship", href: "/internship-program/computer-vision", icon: ScanEye },
+    ],
+  },
+  {
     name: "Careers",
     href: "/careers",
     icon: Briefcase,
@@ -360,7 +386,7 @@ export default function Header() {
   return (
     <>
     <header className="fixed inset-x-0 top-0 z-50 h-[88px] bg-background/80 backdrop-blur-xl border-b border-border/50">
-      <nav className="mx-auto flex h-full max-w-7xl items-center justify-between px-6 lg:px-8" aria-label="Global">
+      <nav className="mx-auto flex h-full max-w-[1600px] items-center justify-between px-6 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2.5 group">
             <Logo className="w-9 h-9 shrink-0 transition-transform duration-300 group-hover:scale-105" />
@@ -399,7 +425,7 @@ export default function Header() {
           </button>
         </div>
 
-        <div className="hidden xl:flex xl:gap-x-1 items-center relative h-full">
+        <div className="hidden xl:flex xl:gap-x-0.5 items-center relative h-full">
           {navigation.map((item) => {
             const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
             return (
@@ -411,7 +437,7 @@ export default function Header() {
             >
               <Link
                 href={item.href}
-                className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold transition-all duration-200 xl:px-4 ${activeMenu === item.name || isActive ? "text-primary bg-muted/60" : "text-foreground hover:text-primary hover:bg-muted/40"
+                className={`flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-2 text-sm font-semibold transition-all duration-200 xl:px-2.5 ${activeMenu === item.name || isActive ? "text-primary bg-muted/60" : "text-foreground hover:text-primary hover:bg-muted/40"
                   }`}
               >
                 {item.name}
@@ -459,7 +485,7 @@ export default function Header() {
           })}
         </div>
 
-        <div className="hidden xl:flex xl:flex-1 xl:justify-end xl:items-center xl:gap-6">
+        <div className="hidden xl:flex xl:flex-1 xl:justify-end xl:items-center xl:gap-3">
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
@@ -469,7 +495,7 @@ export default function Header() {
           </button>
           <Link
             href="/contact"
-            className="group relative inline-flex flex-none items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-full bg-foreground px-6 py-2.5 text-sm font-semibold text-background transition-all hover:scale-105 active:scale-95"
+            className="group relative inline-flex flex-none items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-all hover:scale-105 active:scale-95"
           >
             <span className="relative z-10 flex items-center gap-2 whitespace-nowrap">
               Let&apos;s Talk <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

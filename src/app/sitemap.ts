@@ -78,6 +78,13 @@ const routes = [
   "/industrial-training/agentic-ai",
   "/industrial-training/conversational-ai",
   "/industrial-training/computer-vision",
+  "/internship-program",
+  "/internship-program/mern-stack",
+  "/internship-program/mean-stack",
+  "/internship-program/generative-ai",
+  "/internship-program/agentic-ai",
+  "/internship-program/conversational-ai",
+  "/internship-program/computer-vision",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
