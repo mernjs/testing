@@ -23,7 +23,7 @@ import { engagementCategories } from "./resource-augmentation/resources-data";
 const coreDepartments = [
   {
     tag: "Department 01",
-    title: "IT Services & Software Development",
+    title: "Software Development",
     description: "Our engineering department designs, builds, and ships custom software — web, mobile, cloud, and AI-powered products.",
     services: [
       "Web App Development", "Mobile App Development", "Desktop App Development", "Prediction & Forecasting",
