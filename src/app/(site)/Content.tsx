@@ -652,18 +652,29 @@ export default function HomeContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="relative p-7 rounded-2xl bg-muted/10 border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300"
+                className="group relative"
               >
-                <div className="flex items-center justify-between mb-5">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <step.icon className="w-5 h-5 text-primary" />
-                  </div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-2.5 py-1 rounded-full">
+                <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
+
+                <div className="relative h-full p-7 rounded-3xl bg-background border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/30 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  <span className="pointer-events-none absolute -top-4 -right-2 text-6xl font-black leading-none text-muted-foreground/[0.06] group-hover:text-primary/10 transition-colors duration-500 select-none">
                     {String(i + 1).padStart(2, "0")}
                   </span>
+
+                  <div className="relative z-10">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center mb-5 shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                      <step.icon className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="font-bold text-foreground mb-2 leading-snug">{step.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
+                  </div>
                 </div>
-                <h3 className="font-bold text-foreground mb-2 leading-snug">{step.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
+
+                {i < howWeWorkSteps.length - 1 && (
+                  <div className="hidden lg:flex absolute top-1/2 -right-[calc(0.75rem+1px)] -translate-y-1/2 z-20 w-6 h-6 rounded-full bg-background border border-border/50 items-center justify-center group-hover:border-primary/40 transition-colors duration-300">
+                    <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>
@@ -774,13 +785,23 @@ export default function HomeContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="p-7 rounded-2xl bg-muted/10 border border-border/50 hover:border-primary/30 hover:-translate-y-1 transition-all duration-300"
+                className="group relative"
               >
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
-                  <item.icon className="w-5 h-5 text-primary" />
+                <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
+
+                <div className="relative h-full p-7 rounded-3xl bg-background border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/30 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  <span className="pointer-events-none absolute -top-4 -right-2 text-6xl font-black leading-none text-muted-foreground/[0.06] group-hover:text-primary/10 transition-colors duration-500 select-none">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+
+                  <div className="relative z-10">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center mb-5 shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                      <item.icon className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="font-bold text-foreground mb-2 leading-snug">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+                  </div>
                 </div>
-                <h3 className="font-bold text-foreground mb-2 leading-snug">{item.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
               </motion.div>
             ))}
           </div>
@@ -1078,7 +1099,7 @@ export default function HomeContent() {
             className="mx-auto"
           />
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
             {engagementAssurances.map((item, i) => (
               <motion.div
                 key={item.title}
@@ -1086,13 +1107,17 @@ export default function HomeContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="flex flex-col items-center text-center gap-3"
+                className="group relative"
               >
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <item.icon className="w-5 h-5 text-primary" />
+                <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
+
+                <div className="relative h-full flex flex-col items-center text-center gap-3 p-6 rounded-3xl bg-background border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/30 group-hover:-translate-y-1 transition-all duration-300">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                    <item.icon className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="text-sm font-bold text-foreground">{item.title}</div>
+                  <div className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{item.desc}</div>
                 </div>
-                <div className="text-sm font-bold text-foreground">{item.title}</div>
-                <div className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-[220px]">{item.desc}</div>
               </motion.div>
             ))}
           </div>

@@ -66,10 +66,17 @@ export default function ListingCard({
       className="group/card relative h-full"
     >
       {featured && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-4 py-1.5 text-xs font-bold uppercase tracking-wider shadow-lg">
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-primary to-[#ff8e75] text-primary-foreground px-4 py-1.5 text-xs font-bold uppercase tracking-wider shadow-lg shadow-primary/30">
           Most Popular
         </span>
       )}
+
+      <div
+        className={`absolute -inset-1 rounded-[2rem] bg-gradient-to-br from-primary/30 via-primary/0 to-secondary/30 opacity-0 group-hover/card:opacity-100 blur-xl transition-opacity duration-500 pointer-events-none ${
+          featured ? "opacity-40" : ""
+        }`}
+      />
+
       <Link
         href={href}
         aria-label={`${title} — ${ctaLabel}`}
@@ -91,10 +98,10 @@ export default function ListingCard({
 
         <div className="relative z-10 flex flex-col h-full">
           <div className="flex items-center justify-between mb-6">
-            <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center group-hover/card:bg-primary group-hover/card:border-primary group-hover/card:scale-110 transition-all duration-300">
-              <Icon className="w-6 h-6 text-primary group-hover/card:text-primary-foreground transition-colors duration-300" />
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/15 to-secondary/15 border border-primary/20 flex items-center justify-center group-hover/card:from-primary group-hover/card:to-[#ff8e75] group-hover/card:border-primary group-hover/card:shadow-lg group-hover/card:shadow-primary/20 group-hover/card:scale-110 group-hover/card:rotate-3 transition-all duration-300">
+              <Icon className="w-6 h-6 text-primary group-hover/card:text-white transition-colors duration-300" />
             </div>
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-background/70 border border-border/50 px-2.5 py-1 rounded-full backdrop-blur-sm">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-background/70 border border-border/50 px-2.5 py-1 rounded-full backdrop-blur-sm group-hover/card:border-primary/30 group-hover/card:text-foreground transition-colors duration-300">
               <BadgeIcon className="w-3 h-3 text-primary flex-none" />
               {String(index + 1).padStart(2, "0")}
             </span>
@@ -110,7 +117,7 @@ export default function ListingCard({
             {highlights.map((h) => (
               <span
                 key={h}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground bg-background border border-border/60 px-2.5 py-1 rounded-full"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground bg-background border border-border/60 px-2.5 py-1 rounded-full group-hover/card:border-primary/30 group-hover/card:bg-primary/5 transition-colors duration-300"
               >
                 <CheckCircle2 className="w-3 h-3 text-primary flex-none" />
                 {h}
