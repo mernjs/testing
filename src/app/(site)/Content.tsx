@@ -471,7 +471,7 @@ export default function HomeContent() {
 
             <Link
               href={featured.href}
-              className="relative flex flex-col lg:flex-row lg:items-center gap-10 lg:gap-16 rounded-[2.5rem] bg-gradient-to-br from-foreground to-neutral-800 dark:to-neutral-900 p-10 sm:p-14 overflow-hidden shadow-xl group-hover:shadow-2xl group-hover:shadow-primary/20 group-hover:-translate-y-1 transition-all duration-300"
+              className="relative flex flex-col lg:flex-row lg:items-center gap-10 lg:gap-16 rounded-[2.5rem] bg-gradient-to-br from-neutral-900 to-neutral-800 p-10 sm:p-14 overflow-hidden shadow-xl group-hover:shadow-2xl group-hover:shadow-primary/20 group-hover:-translate-y-1 transition-all duration-300"
             >
               <div className="absolute -top-32 -right-16 w-96 h-96 bg-primary/40 rounded-full blur-[120px] pointer-events-none" />
               <div className="absolute -bottom-24 -left-16 w-72 h-72 bg-secondary/20 rounded-full blur-[100px] pointer-events-none" />
