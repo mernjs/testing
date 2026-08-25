@@ -437,9 +437,16 @@ export default function Header() {
             >
               <Link
                 href={item.href}
-                className={`flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-2 text-sm font-semibold transition-all duration-200 xl:px-2.5 ${activeMenu === item.name || isActive ? "text-primary bg-muted/60" : "text-foreground hover:text-primary hover:bg-muted/40"
+                className={`relative flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-2 text-sm font-semibold transition-colors duration-200 xl:px-2.5 ${isActive || activeMenu === item.name ? "text-primary" : "text-foreground hover:text-primary hover:bg-muted/40"
                   }`}
               >
+                {activeMenu === item.name && (
+                  <motion.span
+                    layoutId="nav-hover-pill"
+                    transition={{ type: "spring", stiffness: 420, damping: 32 }}
+                    className="absolute inset-0 -z-10 rounded-full bg-muted/60"
+                  />
+                )}
                 {item.name}
                 <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${activeMenu === item.name ? "rotate-180" : ""}`} />
               </Link>
@@ -453,27 +460,32 @@ export default function Header() {
                     transition={{ duration: 0.2, ease: "easeOut" }}
                     className="absolute left-1/2 z-50 mt-4 flex w-screen max-w-3xl -translate-x-1/2 px-4"
                   >
-                    <div className="w-full flex-auto overflow-hidden rounded-3xl bg-background/95 backdrop-blur-2xl shadow-2xl ring-1 ring-border border border-border/50">
-                      <div className="grid grid-cols-5 p-2">
-                        <FeaturedCard item={item} />
-                        <div className="col-span-3 p-6 grid grid-cols-2 gap-4">
-                          {item.items.map((subItem) => (
-                            <Link
-                              key={subItem.name}
-                              href={subItem.href}
-                              className="group relative flex items-start gap-4 rounded-xl p-3 hover:bg-muted/50 transition-colors"
-                            >
-                              <div className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-background border border-border/50 group-hover:border-primary/30 group-hover:bg-primary/5 transition-colors">
-                                <subItem.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                              </div>
-                              <div>
-                                <div className="font-semibold text-foreground text-sm mb-1 group-hover:text-primary transition-colors">
-                                  {subItem.name}
+                    <div className="relative w-full flex-auto">
+                      <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-primary/20 via-primary/0 to-secondary/20 blur-2xl pointer-events-none" />
+
+                      <div className="relative w-full flex-auto overflow-hidden rounded-3xl bg-background/95 backdrop-blur-2xl shadow-2xl ring-1 ring-border border border-border/50">
+                        <div className="h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+                        <div className="grid grid-cols-5 p-2">
+                          <FeaturedCard item={item} />
+                          <div className="col-span-3 p-6 grid grid-cols-2 gap-4">
+                            {item.items.map((subItem) => (
+                              <Link
+                                key={subItem.name}
+                                href={subItem.href}
+                                className="group relative flex items-start gap-4 rounded-xl p-3 hover:bg-muted/50 transition-colors"
+                              >
+                                <div className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-border/50 group-hover:from-primary group-hover:to-[#ff8e75] group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                                  <subItem.icon className="h-5 w-5 text-muted-foreground group-hover:text-white transition-colors duration-300" />
                                 </div>
-                                <p className="text-xs text-muted-foreground line-clamp-1">{subItem.description}</p>
-                              </div>
-                            </Link>
-                          ))}
+                                <div>
+                                  <div className="font-semibold text-foreground text-sm mb-1 group-hover:text-primary transition-colors">
+                                    {subItem.name}
+                                  </div>
+                                  <p className="text-xs text-muted-foreground line-clamp-1">{subItem.description}</p>
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
