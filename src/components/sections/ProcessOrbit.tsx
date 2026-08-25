@@ -86,6 +86,12 @@ export default function ProcessOrbit({
           transition={{ duration: 0.7 }}
           className="relative mx-auto aspect-square w-full max-w-[280px] sm:max-w-[420px] lg:max-w-[520px] my-10"
         >
+          <motion.div
+            className="absolute inset-[8%] rounded-full border border-dashed border-primary/20"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+          />
+
           <svg className="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 100 100">
             {ANGLES.map((angle, i) => {
               const rad = (angle * Math.PI) / 180;
@@ -110,7 +116,11 @@ export default function ProcessOrbit({
           </svg>
 
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-            <div className="absolute inset-0 rounded-full bg-primary/30 blur-2xl scale-125" />
+            <motion.div
+              className="absolute inset-0 rounded-full bg-primary/30 blur-2xl"
+              animate={{ scale: [1.2, 1.4, 1.2], opacity: [0.6, 0.9, 0.6] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+            />
             <div className="relative w-24 h-24 sm:w-32 sm:h-32 lg:w-40 lg:h-40 rounded-full bg-gradient-to-br from-primary to-secondary flex flex-col items-center justify-center text-center p-3 shadow-2xl ring-4 ring-background">
               <span className="text-white font-bold text-xs sm:text-sm lg:text-base leading-tight">
                 {centerLabel}
@@ -154,13 +164,16 @@ export default function ProcessOrbit({
                   )}
                 </AnimatePresence>
 
-                <div className="relative w-14 h-14 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full bg-background border border-border/60 shadow-lg flex items-center justify-center group-hover:border-primary/40 group-hover:shadow-xl group-hover:-translate-y-1 transition-all duration-300">
-                  <Icon className={`w-5 h-5 sm:w-7 sm:h-7 lg:w-8 lg:h-8 ${node.color}`} />
-                  {numbered && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center ring-2 ring-background">
-                      {i + 1}
-                    </span>
-                  )}
+                <div className="relative">
+                  <div className="absolute -inset-2 rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
+                  <div className="relative w-14 h-14 sm:w-20 sm:h-20 lg:w-24 lg:h-24 rounded-full bg-background border border-border/60 shadow-lg flex items-center justify-center group-hover:border-primary/40 group-hover:shadow-xl group-hover:-translate-y-1 group-hover:scale-105 transition-all duration-300">
+                    <Icon className={`w-5 h-5 sm:w-7 sm:h-7 lg:w-8 lg:h-8 ${node.color} group-hover:scale-110 transition-transform duration-300`} />
+                    {numbered && (
+                      <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center ring-2 ring-background">
+                        {i + 1}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <span className="text-[11px] sm:text-sm font-semibold text-foreground text-center leading-tight max-w-[80px] sm:max-w-[110px] lg:max-w-[140px]">
                   {node.label}
