@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import OurTeamContent from "./Content";
-import { ourTeamFaqs } from "./faqs";
-import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
 
 const title = "Our Team | YashOrbit";
 const description =
-  "Meet the engineers, designers, and AI specialists behind YashOrbit — our leadership, teams, culture, and what it's like to work with us.";
+  "Meet the 16 engineers, designers, AI specialists, and business leads behind YashOrbit — a remote-first, senior-led team.";
 const path = "/about/our-team";
 
 const image = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop";
@@ -13,7 +12,7 @@ const image = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80
 export const metadata: Metadata = {
   title,
   description,
-  keywords: ["Our Team", "8+ Specialists", "Senior-Led Team", "Remote-first", "YashOrbit"],
+  keywords: ["Our Team", "16 Specialists", "Senior-Led Team", "Remote-first", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
@@ -25,7 +24,6 @@ export default function OurTeamPage() {
       { name: "About", path: "/about" },
       { name: "Our Team", path },
     ]),
-    faqJsonLd(ourTeamFaqs),
   ];
 
   return (

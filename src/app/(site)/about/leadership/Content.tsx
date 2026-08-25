@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Users2, ArrowRight, Calendar, Rocket, TrendingUp, Code2, ShieldCheck, HeartHandshake } from "lucide-react";
 import PageHero from "@/components/sections/PageHero";
 import DetailCTA from "@/components/sections/DetailCTA";
@@ -74,26 +75,50 @@ export default function LeadershipContent() {
         image="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop"
       />
 
-      <section className="py-20 sm:py-28 bg-background relative">
-        <div className="mx-auto max-w-6xl px-6 lg:px-8">
-          <div className="max-w-2xl mb-12">
+      <section className="py-20 sm:py-28 bg-background relative overflow-hidden">
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[900px] h-[500px] bg-primary/10 rounded-full blur-[160px] pointer-events-none" />
+
+        <div className="mx-auto max-w-6xl px-6 lg:px-8 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+            className="max-w-2xl mb-12"
+          >
             <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">Main Founders</h2>
             <p className="text-lg leading-8 text-muted-foreground">The two co-founders who started YashOrbit and jointly set its direction.</p>
-          </div>
+          </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {founders.map((founder) => (
-              <div
+            {founders.map((founder, i) => (
+              <motion.div
                 key={founder.name}
-                className="flex flex-col rounded-3xl border border-border/50 bg-muted/20 overflow-hidden"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+                className="group relative"
               >
-                <div className="aspect-[4/3] w-full overflow-hidden">
-                  <img src={founder.photo} alt={founder.name} className="w-full h-full object-cover" />
-                </div>
+                <div className="absolute -inset-1 rounded-[32px] bg-gradient-to-br from-primary/30 via-primary/0 to-secondary/30 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 pointer-events-none" />
 
-                <div className="flex flex-col flex-1 p-8 sm:p-10">
-                  <h3 className="text-2xl font-bold text-foreground mb-1">{founder.name}</h3>
-                  <p className="text-sm font-semibold text-primary uppercase tracking-wider mb-6">{founder.role}</p>
+                <div className="relative flex flex-col h-full rounded-3xl border border-border/50 bg-muted/20 p-8 sm:p-10 shadow-sm group-hover:shadow-2xl group-hover:-translate-y-1 group-hover:border-primary/30 transition-all duration-300">
+                  <div className="flex flex-col items-center text-center mb-8">
+                    <div className="relative mb-5">
+                      <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden ring-4 ring-background shadow-lg group-hover:ring-primary/25 transition-all duration-300">
+                        <img
+                          src={founder.photo}
+                          alt={founder.name}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                      </div>
+                    </div>
+                    <span className="inline-flex items-center rounded-full bg-primary/10 text-primary text-[11px] font-semibold px-3 py-1 mb-4">
+                      Co-Founder
+                    </span>
+                    <h3 className="text-2xl font-bold text-foreground mb-1">{founder.name}</h3>
+                    <p className="text-sm font-semibold text-primary uppercase tracking-wider">{founder.role}</p>
+                  </div>
 
                   <p className="text-base text-muted-foreground leading-relaxed mb-8">
                     {brandify(founder.bio)}
@@ -111,50 +136,73 @@ export default function LeadershipContent() {
 
                   <Link
                     href={founder.href}
-                    className="mt-auto group inline-flex items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-all hover:scale-[1.02] active:scale-95"
+                    className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-all hover:scale-[1.02] active:scale-95"
                   >
                     View Full Profile
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="pb-24 sm:pb-32 bg-muted/10 pt-20 sm:pt-24 relative">
-        <div className="mx-auto max-w-6xl px-6 lg:px-8">
-          <div className="max-w-2xl mb-12">
+      <section className="pb-24 sm:pb-32 bg-muted/10 pt-20 sm:pt-24 relative overflow-hidden">
+        <div className="absolute left-1/2 bottom-0 -translate-x-1/2 w-[900px] h-[500px] bg-secondary/10 rounded-full blur-[160px] pointer-events-none" />
+
+        <div className="mx-auto max-w-6xl px-6 lg:px-8 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+            className="max-w-2xl mb-12"
+          >
             <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">Leadership Team</h2>
             <p className="text-lg leading-8 text-muted-foreground">The executives running technology, finance, and people alongside our founders.</p>
-          </div>
+          </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {leadershipTeam.map((leader) => (
-              <Link
+            {leadershipTeam.map((leader, i) => (
+              <motion.div
                 key={leader.name}
-                href={leader.href}
-                className="group flex flex-col rounded-3xl border border-border/50 bg-background overflow-hidden hover:border-primary/30 transition-colors"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+                className="group relative"
               >
-                <div className="aspect-[4/3] w-full overflow-hidden">
-                  <img src={leader.photo} alt={leader.name} className="w-full h-full object-cover" />
-                </div>
+                <div className="absolute -inset-1 rounded-[28px] bg-gradient-to-br from-primary/30 via-primary/0 to-secondary/30 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
 
-                <div className="flex flex-col flex-1 p-6 sm:p-8">
-                  <div className="flex items-center gap-2 mb-3">
-                    <leader.icon className="h-4 w-4 text-primary" />
-                    <p className="text-xs font-semibold text-primary uppercase tracking-wider">{leader.role}</p>
+                <Link
+                  href={leader.href}
+                  className="relative flex flex-col h-full items-center text-center rounded-3xl border border-border/50 bg-background p-7 shadow-sm group-hover:shadow-xl group-hover:-translate-y-1 group-hover:border-primary/30 transition-all duration-300"
+                >
+                  <div className="relative mb-5">
+                    <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden ring-4 ring-muted/30 group-hover:ring-primary/25 shadow-md transition-all duration-300">
+                      <img
+                        src={leader.photo}
+                        alt={leader.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </div>
                   </div>
-                  <h3 className="text-xl font-bold text-foreground mb-3">{leader.name}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed mb-6 flex-1">{leader.bio}</p>
+
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 text-primary text-[11px] font-semibold px-2.5 py-1 mb-3">
+                    <leader.icon className="h-3 w-3" />
+                    {leader.role}
+                  </span>
+
+                  <h3 className="font-bold text-foreground mb-2">{leader.name}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1">{leader.bio}</p>
 
                   <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-foreground">
                     View Full Profile
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </span>
-                </div>
-              </Link>
+                </Link>
+              </motion.div>
             ))}
           </div>
         </div>
