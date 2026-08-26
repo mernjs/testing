@@ -186,7 +186,7 @@ const navigation = [
 // above so the desktop mega menu's content/layout is untouched).
 const mobileNavigation = [
   {
-    name: "Who We Are",
+    name: "About",
     href: "/about",
     icon: Compass,
     items: [
@@ -291,12 +291,6 @@ const mobileNavigation = [
     ],
   },
   {
-    name: "Blog",
-    href: "/blog",
-    icon: Newspaper,
-    items: blogPosts.slice(0, 6).map((post) => ({ name: post.title, href: `/blog/${post.slug}`, icon: Newspaper })),
-  },
-  {
     name: "Careers",
     href: "/careers",
     icon: Briefcase,
@@ -308,6 +302,12 @@ const mobileNavigation = [
       { name: "Business Development Manager", href: "/careers/business-development-manager", icon: Handshake },
       { name: "HR Executive", href: "/careers/hr-executive", icon: Users },
     ],
+  },
+  {
+    name: "Blog",
+    href: "/blog",
+    icon: Newspaper,
+    items: blogPosts.slice(0, 6).map((post) => ({ name: post.title, href: `/blog/${post.slug}`, icon: Newspaper })),
   },
 ];
 

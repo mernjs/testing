@@ -1,108 +1,55 @@
 import type { MetadataRoute } from "next";
+import fs from "fs";
+import path from "path";
 import { siteUrl } from "@/lib/seo";
 import { blogPosts } from "@/lib/blog";
 
-const routes = [
-  "/",
-  "/about",
-  "/about/our-mission",
-  "/about/our-team",
-  "/about/leadership",
-  // "/about/co-founder-ceo", // hidden from nav/listings; page still exists, just not linked or indexed
-  // "/about/co-founder-coo", // hidden from nav/listings; page still exists, just not linked or indexed
-  // "/about/cto", // hidden from nav/listings; page still exists, just not linked or indexed
-  // "/about/cfo", // hidden from nav/listings; page still exists, just not linked or indexed
-  // "/about/chro", // hidden from nav/listings; page still exists, just not linked or indexed
-  "/about/privacy-policy",
-  "/about/terms-and-conditions",
-  "/about/refund-cancellation-policy",
-  "/about/acceptable-use-policy",
-  "/about/success-stories",
-  "/about/what-we-do",
-  "/careers",
-  "/careers/mern-developer",
-  "/careers/genai-developer",
-  "/careers/ai-ml-engineer",
-  "/careers/android-app-developer",
-  "/careers/ios-app-developer",
-  "/careers/quality-analyst",
-  "/careers/ui-ux-designer",
-  "/careers/business-development-manager",
-  "/careers/business-analyst",
-  "/careers/project-manager",
-  "/careers/bid-executive",
-  "/careers/accounts-manager",
-  "/careers/mis-executive",
-  "/careers/hr-executive",
-  "/careers/technical-content-writer",
-  "/careers/digital-marketing",
-  "/contact",
-  "/industries",
-  "/industries/healthcare",
-  "/industries/ecommerce",
-  "/industries/insurance",
-  "/industries/agriculture",
-  "/industries/education",
-  "/industries/real-estate",
-  "/industries/social-media",
-  "/industries/travel",
-  "/industries/construction",
-  "/industries/hotels",
-  "/industries/finance",
-  "/products",
-  "/products/ai-construction-platform",
-  "/products/smart-spam-filter",
-  "/products/ai-voice-assistant",
-  "/products/predictive-analytics-engine",
-  "/products/image-recognition-system",
-  "/products/ai-job-board-portal",
-  "/live-demos",
-  "/live-demos/social-media-ai-reels-generator",
-  "/services",
-  "/services/ai-agent",
-  "/services/ai-ml-solutions",
-  "/services/ar-vr",
-  "/services/desktop-app-development",
-  "/services/mobile-app-development",
-  "/services/prediction-and-forecasting",
-  "/services/vision-intelligence",
-  "/services/web-app-development",
-  "/resource-augmentation",
-  "/resource-augmentation/single-resource",
-  "/resource-augmentation/package-based-team",
-  "/resource-augmentation/hourly-on-demand",
-  "/resource-augmentation/project-based",
-  "/industrial-training",
-  "/industrial-training/mern-stack",
-  "/industrial-training/mean-stack",
-  "/industrial-training/generative-ai",
-  "/industrial-training/agentic-ai",
-  "/industrial-training/conversational-ai",
-  "/industrial-training/computer-vision",
-  "/internship-program",
-  "/internship-program/mern-stack",
-  "/internship-program/mean-stack",
-  "/internship-program/generative-ai",
-  "/internship-program/agentic-ai",
-  "/internship-program/conversational-ai",
-  "/internship-program/computer-vision",
-  "/blog",
-];
+const APP_DIR = path.join(process.cwd(), "src/app/(site)");
+
+// Routes that physically exist as a page but are deliberately kept out of the
+// sitemap because the page itself sets `robots: { index: false }` (duplicate
+// content, canonicalized elsewhere). Keep this list in sync with any future
+// noindex pages — everything else under src/app/(site) is picked up
+// automatically, so a new page can never be silently left out again.
+const EXCLUDED_ROUTES = new Set<string>([
+  "/services/prediction-forecasting", // duplicate of /services/prediction-and-forecasting, noindex
+]);
+
+/** Recursively finds every route that has a page.tsx under the (site) route group. */
+function discoverRoutes(dir: string, base = ""): string[] {
+  const routes: string[] = [];
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+  if (entries.some((entry) => entry.isFile() && /^page\.(tsx|ts|jsx|js)$/.test(entry.name))) {
+    routes.push(base === "" ? "/" : base);
+  }
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    if (entry.name.startsWith("_")) continue; // private folders, e.g. _components
+    if (entry.name.startsWith("[")) continue; // dynamic segments aren't used in this app; skip defensively
+    const isRouteGroup = entry.name.startsWith("(") && entry.name.endsWith(")");
+    const nextBase = isRouteGroup ? base : `${base}/${entry.name}`;
+    routes.push(...discoverRoutes(path.join(dir, entry.name), nextBase));
+  }
+
+  return routes;
+}
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticEntries: MetadataRoute.Sitemap = routes.map((route) => ({
-    url: `${siteUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: route === "/" ? 1 : 0.7,
-  }));
+  const blogDates = new Map(blogPosts.map((post) => [`/blog/${post.slug}`, post.date]));
 
-  const blogEntries: MetadataRoute.Sitemap = blogPosts.map((post) => ({
-    url: `${siteUrl}/blog/${post.slug}`,
-    lastModified: new Date(post.date),
-    changeFrequency: "monthly",
-    priority: 0.6,
-  }));
+  const routes = discoverRoutes(APP_DIR)
+    .filter((route) => !EXCLUDED_ROUTES.has(route))
+    .sort();
 
-  return [...staticEntries, ...blogEntries];
+  return routes.map((route) => {
+    const blogDate = blogDates.get(route);
+    return {
+      url: `${siteUrl}${route}`,
+      lastModified: blogDate ? new Date(blogDate) : new Date(),
+      changeFrequency: blogDate ? "monthly" : "weekly",
+      priority: route === "/" ? 1 : blogDate ? 0.6 : 0.7,
+    };
+  });
 }
