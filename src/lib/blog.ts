@@ -199,3 +199,9 @@ export function getRelatedPosts(slug: string): BlogPostMeta[] {
     .map((relatedSlug) => getBlogPost(relatedSlug))
     .filter((p): p is BlogPostMeta => Boolean(p));
 }
+
+/** The next post in publish order, wrapping around to the first post after the last. */
+export function getNextPost(slug: string): BlogPostMeta {
+  const index = blogPosts.findIndex((post) => post.slug === slug);
+  return blogPosts[(index + 1) % blogPosts.length];
+}

@@ -1,11 +1,13 @@
 import ArticleHero from "@/components/sections/ArticleHero";
 import ArticleBody, { ArticleBlock } from "@/components/sections/ArticleBody";
+import NextPost from "@/components/sections/NextPost";
 import RelatedPosts from "@/components/sections/RelatedPosts";
 import DetailCTA from "@/components/sections/DetailCTA";
-import { getBlogPost, getRelatedPosts } from "@/lib/blog";
+import { getBlogPost, getRelatedPosts, getNextPost } from "@/lib/blog";
 
 const post = getBlogPost("choosing-the-right-tech-stack-for-your-web-application")!;
 const related = getRelatedPosts(post.slug);
+const next = getNextPost(post.slug);
 
 const blocks: ArticleBlock[] = [
   {
@@ -101,6 +103,7 @@ export default function TechStackContent() {
     <div className="flex flex-col min-h-screen overflow-hidden">
       <ArticleHero post={post} />
       <ArticleBody blocks={blocks} />
+      <NextPost post={next} />
       <RelatedPosts posts={related} />
       <DetailCTA
         heading="Not sure what the right stack is for your project?"

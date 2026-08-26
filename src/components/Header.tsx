@@ -162,12 +162,6 @@ const navigation = [
     ],
   },
   {
-    name: "Blog",
-    href: "/blog",
-    featured: { title: "The YashOrbit Blog", description: "Engineering-led insights on web, mobile, and AI development.", image: "https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=600&auto=format&fit=crop" },
-    items: blogPosts.slice(0, 4).map((post) => ({ name: post.title, href: `/blog/${post.slug}`, description: post.category, icon: Newspaper })),
-  },
-  {
     name: "Careers",
     href: "/careers",
     featured: { title: "Careers at YashOrbit", description: "Join our growing team building AI-powered products.", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop" },
@@ -179,6 +173,12 @@ const navigation = [
       { name: "Business Development Manager", href: "/careers/business-development-manager", description: "Grow our client pipeline", icon: Handshake },
       { name: "HR Executive", href: "/careers/hr-executive", description: "Recruitment & employee experience", icon: Users },
     ],
+  },
+  {
+    name: "Blog",
+    href: "/blog",
+    featured: { title: "The YashOrbit Blog", description: "Engineering-led insights on web, mobile, and AI development.", image: "https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=600&auto=format&fit=crop" },
+    items: blogPosts.slice(0, 4).map((post) => ({ name: post.title, href: `/blog/${post.slug}`, description: post.category, icon: Newspaper })),
   },
 ];
 
