@@ -305,6 +305,11 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/blog" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Blog
+                  </Link>
+                </li>
+                <li>
                   <Link href="/about" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-primary">
                     View All Company
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />

@@ -4,10 +4,11 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Users2 } from "lucide-react";
+import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Users2, Newspaper } from "lucide-react";
 import { useTheme } from "next-themes";
-import { InstagramIcon, XIcon, FacebookIcon, GithubIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
+import { InstagramIcon, XIcon, FacebookIcon, GithubIcon, YoutubeIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
 import { socialLinks as socialLinksData, whatsapp } from "@/lib/contact";
+import { blogPosts } from "@/lib/blog";
 
 declare global {
   interface Window {
@@ -53,7 +54,7 @@ function Logo({ className }: { className?: string }) {
   );
 }
 
-const socialIcons = { Facebook: FacebookIcon, GitHub: GithubIcon, "X (Twitter)": XIcon, Instagram: InstagramIcon };
+const socialIcons = { Facebook: FacebookIcon, GitHub: GithubIcon, "X (Twitter)": XIcon, Instagram: InstagramIcon, YouTube: YoutubeIcon };
 const socialLinks = socialLinksData.map((social) => ({ ...social, icon: socialIcons[social.name] }));
 
 const navigation = [
@@ -159,6 +160,12 @@ const navigation = [
       { name: "Conversational AI Internship", href: "/internship-program/conversational-ai", description: "Chatbots & voice assistants", icon: MessageSquare },
       { name: "Computer Vision Internship", href: "/internship-program/computer-vision", description: "Image & video intelligence", icon: ScanEye },
     ],
+  },
+  {
+    name: "Blog",
+    href: "/blog",
+    featured: { title: "The YashOrbit Blog", description: "Engineering-led insights on web, mobile, and AI development.", image: "https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=600&auto=format&fit=crop" },
+    items: blogPosts.slice(0, 4).map((post) => ({ name: post.title, href: `/blog/${post.slug}`, description: post.category, icon: Newspaper })),
   },
   {
     name: "Careers",
@@ -282,6 +289,12 @@ const mobileNavigation = [
       { name: "Conversational AI Internship", href: "/internship-program/conversational-ai", icon: MessageSquare },
       { name: "Computer Vision Internship", href: "/internship-program/computer-vision", icon: ScanEye },
     ],
+  },
+  {
+    name: "Blog",
+    href: "/blog",
+    icon: Newspaper,
+    items: blogPosts.slice(0, 6).map((post) => ({ name: post.title, href: `/blog/${post.slug}`, icon: Newspaper })),
   },
   {
     name: "Careers",

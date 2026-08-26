@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/seo";
+import { blogPosts } from "@/lib/blog";
 
 const routes = [
   "/",
@@ -85,13 +86,23 @@ const routes = [
   "/internship-program/agentic-ai",
   "/internship-program/conversational-ai",
   "/internship-program/computer-vision",
+  "/blog",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return routes.map((route) => ({
+  const staticEntries: MetadataRoute.Sitemap = routes.map((route) => ({
     url: `${siteUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: "weekly",
     priority: route === "/" ? 1 : 0.7,
   }));
+
+  const blogEntries: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+    url: `${siteUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.date),
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
+
+  return [...staticEntries, ...blogEntries];
 }

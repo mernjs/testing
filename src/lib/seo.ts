@@ -182,6 +182,46 @@ export function personJsonLd({ name, jobTitle, path, description }: PersonJsonLd
   };
 }
 
+interface ArticleJsonLdInput {
+  title: string;
+  description: string;
+  path: string;
+  image: string;
+  datePublished: string;
+  dateModified?: string;
+  author?: string;
+}
+
+export function articleJsonLd({ title, description, path, image, datePublished, dateModified, author = siteName }: ArticleJsonLdInput) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: title,
+    description,
+    image,
+    url: `${siteUrl}${path}`,
+    datePublished,
+    dateModified: dateModified ?? datePublished,
+    author: {
+      "@type": "Organization",
+      name: author,
+      url: organizationInfo.url,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: organizationInfo.name,
+      logo: {
+        "@type": "ImageObject",
+        url: organizationInfo.logo,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${siteUrl}${path}`,
+    },
+  };
+}
+
 interface BreadcrumbItem {
   name: string;
   path: string;
