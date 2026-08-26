@@ -1134,8 +1134,9 @@ export default function HomeContent() {
 
       {/* 14. Final CTA — Get started */}
       <section className="relative overflow-hidden border-t border-border/50 py-24 sm:py-32">
-        <div className="absolute inset-0 bg-primary/5"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/5 to-transparent"></div>
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background pointer-events-none"></div>
 
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
