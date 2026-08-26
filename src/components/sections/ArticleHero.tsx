@@ -3,12 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  ChevronRight, Calendar, Clock, User, Newspaper,
-  Code2, Sparkles, Smartphone, ShieldAlert, Database, Users, Building2, Glasses, LineChart, Rocket,
-  LucideIcon,
-} from "lucide-react";
-import type { BlogPostMeta } from "@/lib/blog";
+import { ChevronRight, Calendar, Clock, User } from "lucide-react";
+import { categoryIcons, defaultCategoryIcon, type BlogPostMeta } from "@/lib/blog";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -17,26 +13,13 @@ const fadeIn = {
 
 const stagger = { visible: { transition: { staggerChildren: 0.1 } } };
 
-const categoryIcons: Record<string, LucideIcon> = {
-  "Web Development": Code2,
-  "Artificial Intelligence": Sparkles,
-  "Mobile Development": Smartphone,
-  Security: ShieldAlert,
-  "Cloud & Infrastructure": Database,
-  "Resource Augmentation": Users,
-  "Digital Transformation": Building2,
-  "AR/VR": Glasses,
-  "Data & Analytics": LineChart,
-  "Product Strategy": Rocket,
-};
-
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 }
 
 export default function ArticleHero({ post }: { post: BlogPostMeta }) {
   const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
-  const CategoryIcon = categoryIcons[post.category] ?? Newspaper;
+  const CategoryIcon = categoryIcons[post.category] ?? defaultCategoryIcon;
 
   React.useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => setMousePosition({ x: e.clientX, y: e.clientY });

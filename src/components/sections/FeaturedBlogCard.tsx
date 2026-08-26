@@ -4,13 +4,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, Calendar, Clock, Sparkles, CheckCircle2 } from "lucide-react";
-import type { BlogPostMeta } from "@/lib/blog";
+import { categoryIcons, defaultCategoryIcon, type BlogPostMeta } from "@/lib/blog";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 }
 
 export default function FeaturedBlogCard({ post }: { post: BlogPostMeta }) {
+  const CategoryIcon = categoryIcons[post.category] ?? defaultCategoryIcon;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -35,14 +37,28 @@ export default function FeaturedBlogCard({ post }: { post: BlogPostMeta }) {
             priority
             className="object-cover scale-105 group-hover/featured:scale-110 transition-transform duration-700 ease-out"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-transparent lg:bg-gradient-to-r lg:from-black/20 lg:via-black/0 lg:to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/5 to-transparent lg:bg-gradient-to-t lg:from-black/70 lg:via-black/5 lg:to-transparent" />
           <span className="absolute top-6 left-6 inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider text-primary-foreground shadow-lg shadow-primary/30">
             <Sparkles className="w-3 h-3" />
             Featured
           </span>
+          <div className="absolute bottom-6 left-6 flex items-center gap-4 text-sm font-medium text-white/90">
+            <span className="inline-flex items-center gap-1.5">
+              <Calendar className="w-4 h-4" />
+              {formatDate(post.date)}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Clock className="w-4 h-4" />
+              {post.readTime}
+            </span>
+          </div>
         </div>
 
         <div className="relative z-10 flex flex-col justify-center p-8 sm:p-10 lg:p-12">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/15 to-secondary/15 border border-primary/20 flex items-center justify-center mb-6 group-hover/featured:from-primary group-hover/featured:to-[#ff8e75] group-hover/featured:border-primary group-hover/featured:shadow-lg group-hover/featured:shadow-primary/20 group-hover/featured:scale-110 group-hover/featured:rotate-3 transition-all duration-300">
+            <CategoryIcon className="w-6 h-6 text-primary group-hover/featured:text-white transition-colors duration-300" />
+          </div>
+
           <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary mb-5 w-fit">
             <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
             {post.category}
@@ -54,7 +70,7 @@ export default function FeaturedBlogCard({ post }: { post: BlogPostMeta }) {
 
           <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6 line-clamp-3">{post.excerpt}</p>
 
-          <div className="flex flex-wrap gap-2 mb-7">
+          <div className="flex flex-wrap gap-2 mb-8">
             {post.tags.map((tag) => (
               <span
                 key={tag}
@@ -64,17 +80,6 @@ export default function FeaturedBlogCard({ post }: { post: BlogPostMeta }) {
                 {tag}
               </span>
             ))}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground mb-8">
-            <span className="inline-flex items-center gap-1.5">
-              <Calendar className="w-4 h-4" />
-              {formatDate(post.date)}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <Clock className="w-4 h-4" />
-              {post.readTime}
-            </span>
           </div>
 
           <span className="inline-flex items-center justify-center gap-2 rounded-full bg-foreground px-7 py-3.5 text-sm font-bold text-background w-fit transition-all shadow-lg shadow-foreground/10 group-hover/featured:bg-primary group-hover/featured:text-primary-foreground group-hover/featured:shadow-primary/30 group-hover/featured:scale-105">

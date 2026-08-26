@@ -1,3 +1,22 @@
+import { Code2, Sparkles, Smartphone, ShieldAlert, Database, Users, Building2, Glasses, LineChart, Rocket, Newspaper, type LucideIcon } from "lucide-react";
+
+/** Maps each blog category to the icon used on its cards and article hero — mirrors the
+ *  gradient icon-box treatment used across every other listing card on the site. */
+export const categoryIcons: Record<string, LucideIcon> = {
+  "Web Development": Code2,
+  "Artificial Intelligence": Sparkles,
+  "Mobile Development": Smartphone,
+  Security: ShieldAlert,
+  "Cloud & Infrastructure": Database,
+  "Resource Augmentation": Users,
+  "Digital Transformation": Building2,
+  "AR/VR": Glasses,
+  "Data & Analytics": LineChart,
+  "Product Strategy": Rocket,
+};
+
+export const defaultCategoryIcon: LucideIcon = Newspaper;
+
 export interface BlogPostMeta {
   slug: string;
   title: string;
