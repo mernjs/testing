@@ -194,7 +194,7 @@ export default function ContactContent() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground text-lg">Visit our HQ</h3>
-                    <p className="text-muted-foreground"><span className="font-semibold"><span className="text-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span></span> Technologies<br/>Noida, Uttar Pradesh<br/>India</p>
+                    <p className="text-muted-foreground"><span className="font-semibold"><span className="text-foreground">Yash</span><span className="text-primary">Orbit</span></span> Technologies<br/>Noida, Uttar Pradesh<br/>India</p>
                   </div>
                 </div>
               </div>

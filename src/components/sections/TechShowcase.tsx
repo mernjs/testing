@@ -121,7 +121,7 @@ export default function TechShowcase({ categories }: TechShowcaseProps) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2.5 flex-wrap">
                       <h3 className="font-bold text-foreground leading-snug">{cat.name}</h3>
-                      <span className="text-[11px] font-semibold text-orange-700 dark:text-orange-300 bg-primary/10 rounded-full px-2 py-0.5">
+                      <span className="text-[11px] font-semibold text-primary bg-primary/10 rounded-full px-2 py-0.5">
                         {cat.items.length}
                       </span>
                     </div>

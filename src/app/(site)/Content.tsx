@@ -310,7 +310,7 @@ export default function HomeContent() {
               </motion.h1>
 
               <motion.p variants={fadeIn} className="text-lg sm:text-xl leading-relaxed text-muted-foreground mb-10 max-w-lg">
-                <span className="font-bold"><span className="text-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span></span> delivers next-gen software development, builds developers who ship from day one, and deploys pre-vetted tech talent in days — so you launch faster, scale without limits, and never let hiring slow you down.
+                <span className="font-bold"><span className="text-foreground">Yash</span><span className="text-primary">Orbit</span></span> delivers next-gen software development, builds developers who ship from day one, and deploys pre-vetted tech talent in days — so you launch faster, scale without limits, and never let hiring slow you down.
               </motion.p>
 
               <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-start gap-4">
@@ -352,7 +352,7 @@ export default function HomeContent() {
                       <div className="w-3 h-3 rounded-full bg-green-400/80"></div>
                     </div>
                     <div className="flex gap-1.5">
-                      <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-primary/10 text-orange-700 dark:text-orange-300">React</span>
+                      <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-primary/10 text-primary">React</span>
                       <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-secondary/20 text-secondary-foreground">Node.js</span>
                       <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-[#ff8e75]/15 text-[#ff8e75]">AI/ML</span>
                     </div>

@@ -112,7 +112,7 @@ export default function Footer() {
               </svg>
               <span className="flex flex-col leading-none">
                 <span className="font-extrabold text-2xl tracking-tight">
-                  <span className="text-secondary-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span>
+                  <span className="text-secondary-foreground">Yash</span><span className="text-primary">Orbit</span>
                 </span>
                 <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.15em] text-secondary-foreground/85">
                   Technologies Pvt. Ltd.
@@ -181,7 +181,7 @@ export default function Footer() {
           </div>
           <div className="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5 xl:col-span-2 xl:mt-0">
             <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">
+              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 Services
               </h3>
@@ -217,7 +217,7 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/services" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-primary">
+                  <Link href="/services" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
                     View All Services
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </Link>
@@ -225,7 +225,7 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">
+              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 Products
               </h3>
@@ -261,7 +261,7 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/products" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-primary">
+                  <Link href="/products" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
                     View All Products
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </Link>
@@ -269,7 +269,7 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">
+              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 Company
               </h3>
@@ -310,7 +310,7 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-primary">
+                  <Link href="/about" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
                     View All Company
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </Link>
@@ -318,7 +318,7 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">
+              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 Training
               </h3>
@@ -354,7 +354,7 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/industrial-training" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-primary">
+                  <Link href="/industrial-training" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
                     View All Programs
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </Link>
@@ -362,7 +362,7 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-orange-700 dark:text-orange-300">
+              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 Careers
               </h3>
@@ -398,7 +398,7 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/careers" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-primary">
+                  <Link href="/careers" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
                     View All Careers
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </Link>
@@ -410,7 +410,7 @@ export default function Footer() {
         <div className="mt-16 border-t border-secondary-foreground/10 dark:border-white/10 sm:mt-20 lg:mt-24">
           <div className="mt-8 rounded-2xl bg-white/40 dark:bg-white/5 px-4 py-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs leading-5 text-secondary-foreground/85">
-              &copy; {new Date().getFullYear()} <span className="text-secondary-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span> Technologies Pvt. Ltd. All rights reserved.
+              &copy; {new Date().getFullYear()} <span className="text-secondary-foreground">Yash</span><span className="text-primary">Orbit</span> Technologies Pvt. Ltd. All rights reserved.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-secondary-foreground/85">
               <Link href="/about/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>

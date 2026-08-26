@@ -67,7 +67,7 @@ export default function CurriculumTimeline({ title, description, modules, tone =
                   <span className="sm:hidden text-primary">{String(i + 1).padStart(2, "0")}. </span>
                   {module.title}
                 </h3>
-                <span className="text-xs font-semibold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full">
+                <span className="text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1 rounded-full">
                   {module.duration}
                 </span>
               </div>

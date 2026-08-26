@@ -405,7 +405,7 @@ export default function Header() {
             <Logo className="w-9 h-9 shrink-0 transition-transform duration-300 group-hover:scale-105" />
             <span className="flex flex-col leading-none">
               <span className="font-extrabold text-2xl tracking-tight">
-                <span className="text-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span>
+                <span className="text-foreground">Yash</span><span className="text-primary">Orbit</span>
               </span>
               <span className="mt-0.5 whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.15em] text-foreground/80">
                 Technologies Pvt. Ltd.
@@ -552,7 +552,7 @@ export default function Header() {
                   <Logo className="w-8 h-8 shrink-0" />
                   <span className="flex flex-col leading-none">
                     <span className="font-extrabold text-xl tracking-tight">
-                      <span className="text-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span>
+                      <span className="text-foreground">Yash</span><span className="text-primary">Orbit</span>
                     </span>
                     <span className="mt-0.5 whitespace-nowrap text-[8px] font-bold uppercase tracking-[0.13em] text-foreground/80">
                       Technologies Pvt. Ltd.

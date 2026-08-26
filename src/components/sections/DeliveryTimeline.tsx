@@ -44,7 +44,7 @@ export default function DeliveryTimeline({ title, description, bands, tone = "de
             >
               <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <h3 className="font-bold text-foreground">{band.scope}</h3>
-                <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full">
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1 rounded-full">
                   <Clock className="w-3.5 h-3.5" />
                   {band.duration}
                 </span>

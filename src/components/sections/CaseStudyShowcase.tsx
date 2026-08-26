@@ -44,7 +44,7 @@ export default function CaseStudyShowcase({ title, description, caseStudies, ton
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="p-8 rounded-3xl bg-muted/20 border border-border/50 hover:border-primary/30 transition-all duration-300 flex flex-col"
             >
-              <span className="text-xs font-bold uppercase tracking-wider text-orange-700 dark:text-orange-300 bg-primary/10 px-3 py-1 rounded-full w-fit mb-5">
+              <span className="text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1 rounded-full w-fit mb-5">
                 {study.segment}
               </span>
 
