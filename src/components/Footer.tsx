@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
-import { FacebookIcon, GithubIcon, XIcon, InstagramIcon, WhatsAppIcon, LinkedinIcon } from "@/components/icons/SocialIcons";
+import { FacebookIcon, GithubIcon, XIcon, InstagramIcon, YoutubeIcon, WhatsAppIcon, LinkedinIcon } from "@/components/icons/SocialIcons";
 import { socialLinks, emails, phone, whatsapp, linkedin, mapsUrl } from "@/lib/contact";
 
-const socialIcons = { Facebook: FacebookIcon, GitHub: GithubIcon, "X (Twitter)": XIcon, Instagram: InstagramIcon };
+const socialIcons = { Facebook: FacebookIcon, GitHub: GithubIcon, "X (Twitter)": XIcon, Instagram: InstagramIcon, YouTube: YoutubeIcon };
 
 export default function Footer() {
   return (
@@ -151,7 +151,7 @@ export default function Footer() {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary hover:scale-110 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300"
+                      className="w-10 h-10 rounded-full bg-background/10 border border-secondary-foreground/15 dark:border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary hover:scale-110 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300"
                     >
                       <span className="sr-only">{social.name}</span>
                       <Icon className="h-4 w-4" />
@@ -162,25 +162,16 @@ export default function Footer() {
                 href={linkedin.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary hover:scale-110 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300"
+                className="w-10 h-10 rounded-full bg-background/10 border border-secondary-foreground/15 dark:border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary hover:scale-110 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300"
               >
                 <span className="sr-only">LinkedIn</span>
                 <LinkedinIcon className="h-4 w-4" />
-              </a>  
-              <a
-                href={whatsapp.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary hover:scale-110 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300"
-              >
-                <span className="sr-only">WhatsApp</span>
-                <WhatsAppIcon className="h-4 w-4" />
               </a>
               <a
                 href={mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-background/10 border border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary hover:scale-110 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300"
+                className="w-10 h-10 rounded-full bg-background/10 border border-secondary-foreground/15 dark:border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary hover:scale-110 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300"
               >
                 <span className="sr-only">Location</span>
                 <MapPin className="h-4 w-4" aria-hidden="true" />
@@ -411,16 +402,18 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs leading-5 text-secondary-foreground/85">
-            &copy; {new Date().getFullYear()} <span className="text-secondary-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span> Technologies Pvt. Ltd. All rights reserved.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-secondary-foreground/85">
-            <Link href="/about/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
-            <Link href="/about/terms-and-conditions" className="hover:text-primary transition-colors">Terms & Conditions</Link>
-            <Link href="/about/refund-cancellation-policy" className="hover:text-primary transition-colors">Refund & Cancellation</Link>
-            <Link href="/about/acceptable-use-policy" className="hover:text-primary transition-colors">Acceptable Use</Link>
-            <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
+        <div className="mt-16 border-t border-secondary-foreground/10 dark:border-white/10 sm:mt-20 lg:mt-24">
+          <div className="mt-8 rounded-2xl bg-white/40 dark:bg-white/5 px-4 py-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs leading-5 text-secondary-foreground/85">
+              &copy; {new Date().getFullYear()} <span className="text-secondary-foreground">Yash</span><span className="text-orange-700 dark:text-orange-300">Orbit</span> Technologies Pvt. Ltd. All rights reserved.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-secondary-foreground/85">
+              <Link href="/about/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+              <Link href="/about/terms-and-conditions" className="hover:text-primary transition-colors">Terms & Conditions</Link>
+              <Link href="/about/refund-cancellation-policy" className="hover:text-primary transition-colors">Refund & Cancellation</Link>
+              <Link href="/about/acceptable-use-policy" className="hover:text-primary transition-colors">Acceptable Use</Link>
+              <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
+            </div>
           </div>
         </div>
       </div>

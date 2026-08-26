@@ -3,6 +3,7 @@ export const socialLinks = [
   { name: "GitHub", href: "https://github.com/yashorbittech" },
   { name: "X (Twitter)", href: "https://x.com/yashorbittech" },
   { name: "Instagram", href: "https://www.instagram.com/yashorbittech" },
+  { name: "YouTube", href: "https://www.youtube.com/@yashorbittect" },
 ] as const;
 
 export const emails = {
