@@ -3,7 +3,7 @@
 import React from "react";
 import { Sparkles, Video, PlayCircle } from "lucide-react";
 import ListingHero from "@/components/sections/ListingHero";
-import ListingCard from "@/components/sections/ListingCard";
+import FeaturedListingCard from "@/components/sections/FeaturedListingCard";
 import DetailCTA from "@/components/sections/DetailCTA";
 
 const items = [
@@ -31,24 +31,22 @@ export default function LiveDemosContent() {
 
       <section className="py-24 sm:py-32 bg-background relative">
         <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-secondary/20 rounded-full blur-3xl pointer-events-none opacity-50"></div>
-        <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {items.map((item, i) => (
-              <ListingCard
-                key={item.href}
-                index={i}
-                icon={item.icon}
-                badge="Live Demo"
-                badgeIcon={PlayCircle}
-                title={item.title}
-                subtitle={item.subtitle}
-                description={item.description}
-                highlights={item.highlights}
-                href={item.href}
-                image={item.image}
-              />
-            ))}
-          </div>
+        <div className="mx-auto max-w-5xl px-6 lg:px-8 relative z-10">
+          {items.map((item) => (
+            <FeaturedListingCard
+              key={item.href}
+              icon={item.icon}
+              badge="Live Demo"
+              badgeIcon={PlayCircle}
+              title={item.title}
+              subtitle={item.subtitle}
+              description={item.description}
+              highlights={item.highlights}
+              href={item.href}
+              image={item.image}
+              ctaLabel="Try It Live"
+            />
+          ))}
         </div>
       </section>
 

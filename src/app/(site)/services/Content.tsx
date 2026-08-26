@@ -3,6 +3,7 @@
 import React from "react";
 import { Layers, Globe, Smartphone, Monitor, LineChart, Bot, Cpu, Eye, Glasses } from "lucide-react";
 import ListingHero from "@/components/sections/ListingHero";
+import FeaturedListingCard from "@/components/sections/FeaturedListingCard";
 import ListingCard from "@/components/sections/ListingCard";
 import DetailCTA from "@/components/sections/DetailCTA";
 
@@ -16,6 +17,8 @@ const items = [
   { title: "Vision Intelligence", subtitle: "Advanced image and video analysis.", description: "Give your software the ability to see. Our computer vision solutions can identify objects, track movement, and analyze visual data in real-time.", href: "/services/vision-intelligence", icon: Eye, image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200&auto=format&fit=crop", highlights: ["Real-Time Detection", "Edge Deployment", "AI Powered"] },
   { title: "AR/VR", subtitle: "Immersive virtual experiences.", description: "Transport your users to new worlds. We build augmented and virtual reality applications for training simulations, virtual showrooms, and interactive marketing.", href: "/services/ar-vr", icon: Glasses, image: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?q=80&w=1200&auto=format&fit=crop", highlights: ["Immersive UX", "Cross-Platform", "Interactive 3D"] },
 ];
+
+const [featured, ...rest] = items;
 
 export default function ServicesContent() {
   return (
@@ -32,8 +35,27 @@ export default function ServicesContent() {
       <section className="py-24 sm:py-32 bg-background relative">
         <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-secondary/20 rounded-full blur-3xl pointer-events-none opacity-50"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+          <div className="mb-16 lg:mb-20">
+            <FeaturedListingCard
+              icon={featured.icon}
+              badge="Service"
+              badgeIcon={Layers}
+              title={featured.title}
+              subtitle={featured.subtitle}
+              description={featured.description}
+              highlights={featured.highlights}
+              href={featured.href}
+              image={featured.image}
+            />
+          </div>
+
+          <div className="flex items-center gap-3 mb-10">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">More Services</h2>
+            <div className="h-px flex-1 bg-border/50" />
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {items.map((item, i) => (
+            {rest.map((item, i) => (
               <ListingCard
                 key={item.href}
                 index={i}

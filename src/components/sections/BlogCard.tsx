@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowRight, Calendar, Clock } from "lucide-react";
+import { ArrowRight, Calendar, Clock, CheckCircle2 } from "lucide-react";
 import type { BlogPostMeta } from "@/lib/blog";
 
 interface BlogCardProps {
@@ -50,6 +50,18 @@ export default function BlogCard({ post, index = 0 }: BlogCardProps) {
             {post.title}
           </h3>
           <p className="text-sm text-muted-foreground leading-relaxed mb-5 line-clamp-2 flex-1">{post.excerpt}</p>
+
+          <div className="flex flex-wrap gap-2 mb-5">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground bg-background border border-border/60 px-2.5 py-1 rounded-full group-hover/card:border-primary/30 group-hover/card:bg-primary/5 transition-colors duration-300"
+              >
+                <CheckCircle2 className="w-3 h-3 text-primary flex-none" />
+                {tag}
+              </span>
+            ))}
+          </div>
 
           <div className="flex items-center justify-between pt-5 border-t border-border/50 mt-auto">
             <div className="flex items-center gap-4 text-xs text-muted-foreground">

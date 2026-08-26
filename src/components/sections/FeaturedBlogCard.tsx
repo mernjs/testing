@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowRight, Calendar, Clock, Sparkles } from "lucide-react";
+import { ArrowRight, Calendar, Clock, Sparkles, CheckCircle2 } from "lucide-react";
 import type { BlogPostMeta } from "@/lib/blog";
 
 function formatDate(dateStr: string) {
@@ -52,7 +52,19 @@ export default function FeaturedBlogCard({ post }: { post: BlogPostMeta }) {
             {post.title}
           </h2>
 
-          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-7 line-clamp-3">{post.excerpt}</p>
+          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed mb-6 line-clamp-3">{post.excerpt}</p>
+
+          <div className="flex flex-wrap gap-2 mb-7">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground bg-background border border-border/60 px-2.5 py-1 rounded-full"
+              >
+                <CheckCircle2 className="w-3 h-3 text-primary flex-none" />
+                {tag}
+              </span>
+            ))}
+          </div>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground mb-8">
             <span className="inline-flex items-center gap-1.5">

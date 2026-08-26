@@ -2,6 +2,7 @@
 
 import { Briefcase, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye } from "lucide-react";
 import ListingHero from "@/components/sections/ListingHero";
+import FeaturedListingCard from "@/components/sections/FeaturedListingCard";
 import ListingCard from "@/components/sections/ListingCard";
 import DetailCTA from "@/components/sections/DetailCTA";
 
@@ -13,6 +14,8 @@ const items = [
   { title: "Conversational AI Internship", subtitle: "Ship chatbots and voice assistants.", description: "Design and deploy real conversational experiences across chat and voice channels for actual business use cases.", href: "/internship-program/conversational-ai", icon: MessageSquare, image: "https://images.unsplash.com/photo-1531746790731-6c087fecd65a?q=80&w=1200&auto=format&fit=crop", highlights: ["8–12 Weeks", "Paid Internship", "Real Deployments"] },
   { title: "Computer Vision Internship", subtitle: "Ship real detection & vision systems.", description: "Work on real image and video pipelines — detection, OCR, video analytics — deployed to production, not left in a notebook.", href: "/internship-program/computer-vision", icon: ScanEye, image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200&auto=format&fit=crop", highlights: ["8–12 Weeks", "Paid Internship", "Deployed Models"] },
 ];
+
+const [featured, ...rest] = items;
 
 export default function InternshipProgramContent() {
   return (
@@ -29,8 +32,28 @@ export default function InternshipProgramContent() {
       <section className="py-24 sm:py-32 bg-background relative">
         <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-secondary/20 rounded-full blur-3xl pointer-events-none opacity-50"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+          <div className="mb-16 lg:mb-20">
+            <FeaturedListingCard
+              icon={featured.icon}
+              badge="Internship"
+              badgeIcon={Briefcase}
+              title={featured.title}
+              subtitle={featured.subtitle}
+              description={featured.description}
+              highlights={featured.highlights}
+              href={featured.href}
+              image={featured.image}
+              ctaLabel="Learn More"
+            />
+          </div>
+
+          <div className="flex items-center gap-3 mb-10">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">More Tracks</h2>
+            <div className="h-px flex-1 bg-border/50" />
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {items.map((item, i) => (
+            {rest.map((item, i) => (
               <ListingCard
                 key={item.href}
                 index={i}

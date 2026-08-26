@@ -6,6 +6,8 @@ export interface BlogPostMeta {
   excerpt: string;
   category: string;
   keywords: string[];
+  /** Short, chip-friendly tags shown on blog cards — distinct from the longer SEO `keywords`. */
+  tags: string[];
   image: string;
   imageAlt: string;
   author: string;
@@ -26,6 +28,7 @@ export const blogPosts: BlogPostMeta[] = [
       "Framework hype makes stack decisions harder, not easier. Here's a practical framework for choosing based on your team, timeline, and real scale needs.",
     category: "Web Development",
     keywords: ["tech stack selection", "web application development", "web app architecture", "Next.js vs alternatives", "software development company"],
+    tags: ["Web Development", "Architecture", "Team Strategy"],
     image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop",
     imageAlt: "Developer reviewing a web application's code architecture on a laptop screen",
     author: "YashOrbit Team",
@@ -43,6 +46,7 @@ export const blogPosts: BlogPostMeta[] = [
       "Most \"AI strategy\" is still a slide deck. Here's where generative AI creates measurable value in a business right now, and where it doesn't yet.",
     category: "Artificial Intelligence",
     keywords: ["generative AI for business", "AI use cases", "enterprise AI adoption", "LLM applications", "AI/ML solutions"],
+    tags: ["Artificial Intelligence", "LLMs", "Automation"],
     image: "https://images.unsplash.com/photo-1555255707-c07966088b7b?q=80&w=1200&auto=format&fit=crop",
     imageAlt: "Abstract visualization of an AI neural network processing data",
     author: "YashOrbit Team",
@@ -60,6 +64,7 @@ export const blogPosts: BlogPostMeta[] = [
       "The \"native vs. cross-platform\" debate usually skips the part that matters most: what actually happens to your budget and timeline either way.",
     category: "Mobile Development",
     keywords: ["native vs cross-platform", "mobile app development", "React Native vs Flutter", "mobile app cost", "cross-platform apps"],
+    tags: ["Mobile Development", "React Native", "Flutter"],
     image: "https://images.unsplash.com/photo-1526498460520-4c246339dccb?q=80&w=1200&auto=format&fit=crop",
     imageAlt: "Person testing a mobile application on a smartphone",
     author: "YashOrbit Team",
@@ -77,6 +82,7 @@ export const blogPosts: BlogPostMeta[] = [
       "Security bolted on after launch is expensive and incomplete. Here's what should be built in from day one instead — and why it costs less that way.",
     category: "Security",
     keywords: ["software security best practices", "secure software development", "application security", "custom software development", "data protection"],
+    tags: ["Security", "Best Practices", "Compliance"],
     image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200&auto=format&fit=crop",
     imageAlt: "Digital padlock icon representing application security",
     author: "YashOrbit Team",
@@ -94,6 +100,7 @@ export const blogPosts: BlogPostMeta[] = [
       "Cloud bills rarely spike from one bad decision. They creep up from a dozen small ones. Here's where to look first, and what to fix.",
     category: "Cloud & Infrastructure",
     keywords: ["cloud cost optimization", "cloud infrastructure management", "reduce AWS costs", "cloud architecture", "software scalability"],
+    tags: ["Cloud Infrastructure", "Cost Optimization", "DevOps"],
     image: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=1200&auto=format&fit=crop",
     imageAlt: "Server room representing cloud infrastructure",
     author: "YashOrbit Team",
@@ -111,6 +118,7 @@ export const blogPosts: BlogPostMeta[] = [
       "\"Should we hire, augment, or outsource?\" is really three different questions about control, cost, and speed. Here's how to answer each one.",
     category: "Resource Augmentation",
     keywords: ["staff augmentation vs outsourcing", "IT staff augmentation", "hire dedicated developers", "software outsourcing model", "resource augmentation"],
+    tags: ["Resource Augmentation", "Hiring", "Outsourcing"],
     image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop",
     imageAlt: "Team of professionals collaborating around a table",
     author: "YashOrbit Team",
@@ -128,6 +136,7 @@ export const blogPosts: BlogPostMeta[] = [
       "Full rewrites of legacy systems fail more often than they succeed. Here's the phased approach that actually gets enterprises to a modern stack.",
     category: "Digital Transformation",
     keywords: ["legacy system modernization", "digital transformation strategy", "application modernization", "strangler fig pattern", "enterprise software"],
+    tags: ["Digital Transformation", "Enterprise", "Migration"],
     image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop",
     imageAlt: "Enterprise team reviewing a system architecture plan in a meeting",
     author: "YashOrbit Team",
@@ -145,6 +154,7 @@ export const blogPosts: BlogPostMeta[] = [
       "AR/VR spent years looking for its business case. In training, retail, and real estate, it's found several — with measurable returns to show for it.",
     category: "AR/VR",
     keywords: ["AR VR business applications", "virtual reality training", "augmented reality retail", "AR VR development", "immersive technology"],
+    tags: ["AR/VR", "Immersive Tech", "Innovation"],
     image: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?q=80&w=1200&auto=format&fit=crop",
     imageAlt: "Person using a virtual reality headset",
     author: "YashOrbit Team",
@@ -162,6 +172,7 @@ export const blogPosts: BlogPostMeta[] = [
       "Predictive analytics isn't about predicting the future perfectly. It's about being less wrong than a spreadsheet and a gut feeling. Here's how it works.",
     category: "Data & Analytics",
     keywords: ["predictive analytics", "business forecasting", "machine learning for business", "demand forecasting", "data-driven decision making"],
+    tags: ["Data Analytics", "Machine Learning", "Forecasting"],
     image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop",
     imageAlt: "Data analytics dashboard displaying charts and forecasts",
     author: "YashOrbit Team",
@@ -179,6 +190,7 @@ export const blogPosts: BlogPostMeta[] = [
       "Most MVPs fail to do the one thing they're for: testing a risky assumption cheaply. Here's how to scope one that actually does its job.",
     category: "Product Strategy",
     keywords: ["MVP development", "startup product strategy", "minimum viable product", "build an MVP", "startup software development"],
+    tags: ["Product Strategy", "Startups", "MVP"],
     image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200&auto=format&fit=crop",
     imageAlt: "Startup team whiteboarding a product roadmap",
     author: "YashOrbit Team",
