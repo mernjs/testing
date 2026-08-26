@@ -2,6 +2,7 @@
 
 import { Newspaper } from "lucide-react";
 import ListingHero from "@/components/sections/ListingHero";
+import FeaturedBlogCard from "@/components/sections/FeaturedBlogCard";
 import BlogCard from "@/components/sections/BlogCard";
 import DetailCTA from "@/components/sections/DetailCTA";
 import { blogPosts } from "@/lib/blog";
@@ -22,10 +23,18 @@ export default function BlogContent() {
       <section className="py-24 sm:py-32 bg-background relative">
         <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-secondary/20 rounded-full blur-3xl pointer-events-none opacity-50"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
+          <div className="mb-16 lg:mb-20">
+            <FeaturedBlogCard post={featured} />
+          </div>
+
+          <div className="flex items-center gap-3 mb-10">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">More Articles</h2>
+            <div className="h-px flex-1 bg-border/50" />
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            <BlogCard post={featured} index={0} featured />
             {rest.map((post, i) => (
-              <BlogCard key={post.slug} post={post} index={i + 1} />
+              <BlogCard key={post.slug} post={post} index={i} />
             ))}
           </div>
         </div>
