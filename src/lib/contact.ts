@@ -26,4 +26,4 @@ export const linkedin = {
   href: "#",
 };
 
-export const mapsUrl = "https://www.google.com/maps/search/?api=1&query=Noida%2C+Uttar+Pradesh%2C+India";
+export const mapsUrl = "https://www.google.com/maps/search/?api=1&query=4th+Floor%2C+Tower+B%2C+Logix+Cyber+Park%2C+Sector+62%2C+Noida%2C+Uttar+Pradesh+201309";
