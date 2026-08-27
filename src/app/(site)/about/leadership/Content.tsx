@@ -5,14 +5,14 @@ import { motion } from "framer-motion";
 import { Users2, ArrowRight, Calendar, Rocket, TrendingUp, Code2, ShieldCheck, HeartHandshake } from "lucide-react";
 import PageHero from "@/components/sections/PageHero";
 import DetailCTA from "@/components/sections/DetailCTA";
+import DefaultAvatar from "@/components/ui/DefaultAvatar";
 import { brandify } from "@/lib/brand";
 
-// Temporary placeholder photos — swap for each leader's actual headshot when available.
 const founders = [
   {
     name: "[NAME_OF_CEO]",
     role: "Co-Founder & CEO",
-    photo: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=800&auto=format&fit=crop",
+    gender: "female" as const,
     bio: "[NAME_OF_CEO] co-founded YashOrbit in 2026 as CEO, setting company strategy and culture while staying closely involved in the leadership team and the company's most important client relationships.",
     highlights: [
       { label: "Years in Leadership", value: "12+", icon: Calendar },
@@ -24,7 +24,7 @@ const founders = [
   {
     name: "Priyanka Singh",
     role: "Co-Founder & COO",
-    photo: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=800&auto=format&fit=crop",
+    gender: "female" as const,
     bio: "Priyanka co-founded YashOrbit in 2026 as COO, owning delivery operations, hiring, and the cross-team coordination that keeps engineering, AI, and training teams shipping on schedule.",
     highlights: [
       { label: "Years in Operations", value: "9+", icon: Calendar },
@@ -39,7 +39,7 @@ const leadershipTeam = [
   {
     name: "Tej Pratap Singh",
     role: "Chief Technology Officer",
-    photo: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=800&auto=format&fit=crop",
+    gender: "male" as const,
     bio: "Leads engineering strategy, architecture standards, and the company's applied AI roadmap across every client engagement.",
     icon: Code2,
     href: "/about/cto",
@@ -47,7 +47,7 @@ const leadershipTeam = [
   {
     name: "Shikha Singh",
     role: "Chief Financial Officer",
-    photo: "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?q=80&w=800&auto=format&fit=crop",
+    gender: "female" as const,
     bio: "Owns financial planning, statutory compliance, and pricing strategy across services, products, and training.",
     icon: ShieldCheck,
     href: "/about/cfo",
@@ -55,7 +55,7 @@ const leadershipTeam = [
   {
     name: "Pooja Singh",
     role: "Chief Human Resources Officer",
-    photo: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?q=80&w=800&auto=format&fit=crop",
+    gender: "female" as const,
     bio: "Owns talent acquisition, culture, and learning and development as the team grows across every function.",
     icon: HeartHandshake,
     href: "/about/chro",
@@ -106,10 +106,9 @@ export default function LeadershipContent() {
                   <div className="flex flex-col items-center text-center mb-8">
                     <div className="relative mb-5">
                       <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden ring-4 ring-background shadow-lg group-hover:ring-primary/25 transition-all duration-300">
-                        <img
-                          src={founder.photo}
-                          alt={founder.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        <DefaultAvatar
+                          gender={founder.gender}
+                          className="transition-transform duration-500 group-hover:scale-110"
                         />
                       </div>
                     </div>
@@ -181,10 +180,9 @@ export default function LeadershipContent() {
                 >
                   <div className="relative mb-5">
                     <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden ring-4 ring-muted/30 group-hover:ring-primary/25 shadow-md transition-all duration-300">
-                      <img
-                        src={leader.photo}
-                        alt={leader.name}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      <DefaultAvatar
+                        gender={leader.gender}
+                        className="transition-transform duration-500 group-hover:scale-110"
                       />
                     </div>
                   </div>

@@ -4,13 +4,14 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import DefaultAvatar from "@/components/ui/DefaultAvatar";
 
 interface RosterMember {
   name: string;
   role: string;
   department: string;
   description: string;
-  photo: string;
+  gender: "male" | "female";
   href?: string;
 }
 
@@ -31,10 +32,9 @@ function TeamCard({ member }: { member: RosterMember }) {
 
       <div className="relative mb-5">
         <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden ring-4 ring-muted/30 group-hover:ring-primary/25 shadow-md transition-all duration-300">
-          <img
-            src={member.photo}
-            alt={member.name}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          <DefaultAvatar
+            gender={member.gender}
+            className="transition-transform duration-500 group-hover:scale-110"
           />
         </div>
         <span className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-background ring-2 ring-background shadow-sm">
