@@ -167,15 +167,6 @@ export default function Footer() {
                 <span className="sr-only">LinkedIn</span>
                 <LinkedinIcon className="h-4 w-4" />
               </a>
-              <a
-                href={mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-background/10 border border-secondary-foreground/15 dark:border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary hover:scale-110 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300"
-              >
-                <span className="sr-only">Location</span>
-                <MapPin className="h-4 w-4" aria-hidden="true" />
-              </a>             
               </div>
             </div>
           </div>
