@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import ServicesContent from "./Content";
 import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
 
-const title = "Our Services — Web, Mobile & AI Development | YashOrbit";
+const title = "Our Services — Software, Training, Staffing & AI | YashOrbit";
 const description =
-  "Custom web, mobile, and desktop app development, AI agents, AI/ML solutions, vision intelligence, prediction & forecasting, and AR/VR — engineered for scale.";
+  "Explore YashOrbit's 5 specialized service pillars: Software Development, Industrial Training, Resource Augmentation, Internship Program, and AI & Automations — engineered for scale.";
 const path = "/services";
 const image = "https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=1200&auto=format&fit=crop";
 
@@ -13,14 +13,13 @@ export const metadata: Metadata = {
   description,
   keywords: [
     "YashOrbit services",
-    "web app development",
-    "mobile app development",
-    "desktop app development",
-    "AI agent development",
-    "AI/ML solutions",
-    "vision intelligence",
-    "prediction and forecasting",
-    "AR/VR development",
+    "software development",
+    "industrial training",
+    "resource augmentation",
+    "internship program",
+    "AI and automations",
+    "custom software solutions",
+    "IT services India",
   ],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),

@@ -1,21 +1,58 @@
 "use client";
 
 import React from "react";
-import { Layers, Globe, Smartphone, Monitor, LineChart, Bot, Cpu, Eye, Glasses } from "lucide-react";
+import { Layers, Code2, GraduationCap, UserPlus, Briefcase, BrainCircuit } from "lucide-react";
 import ListingHero from "@/components/sections/ListingHero";
 import FeaturedListingCard from "@/components/sections/FeaturedListingCard";
 import ListingCard from "@/components/sections/ListingCard";
 import DetailCTA from "@/components/sections/DetailCTA";
 
 const items = [
-  { title: "Web App Development", subtitle: "Scalable platforms for the modern web.", description: "We engineer lightning-fast, highly secure web applications using React, Next.js, and modern cloud architectures that provide seamless experiences across all devices.", href: "/services/web-app-development", icon: Globe, image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1200&auto=format&fit=crop", highlights: ["Cloud Native", "SEO Optimized", "Enterprise Ready"] },
-  { title: "Mobile App Development", subtitle: "Native and cross-platform mobile solutions.", description: "Reach your audience wherever they are. We build intuitive, high-performance mobile apps for iOS and Android that users love to engage with.", href: "/services/mobile-app-development", icon: Smartphone, image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=1200&auto=format&fit=crop", highlights: ["iOS & Android", "Offline-First", "App Store Ready"] },
-  { title: "Desktop App Development", subtitle: "Powerful applications for macOS and Windows.", description: "When web browsers aren't enough, we build robust desktop software using frameworks like Electron and Tauri to deliver raw performance and deep system access.", href: "/services/desktop-app-development", icon: Monitor, image: "https://images.unsplash.com/photo-1547082299-de196ea013d6?q=80&w=1200&auto=format&fit=crop", highlights: ["Cross-Platform", "Auto-Updating", "Native Performance"] },
-  { title: "Prediction & Forecasting", subtitle: "Data-driven foresight for your business.", description: "Stop guessing and start knowing. Our predictive analytics solutions use historical data and advanced algorithms to forecast trends, demand, and user behavior.", href: "/services/prediction-and-forecasting", icon: LineChart, image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop", highlights: ["Data-Driven", "AI Powered", "Real-Time Insights"] },
-  { title: "AI Agent", subtitle: "Autonomous assistants for your enterprise.", description: "Deploy intelligent, autonomous AI agents that can handle customer support, automate internal workflows, and act as 24/7 digital employees.", href: "/services/ai-agent", icon: Bot, image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1200&auto=format&fit=crop", highlights: ["24/7 Automation", "AI Powered", "Workflow Integration"] },
-  { title: "AI/ML Solutions", subtitle: "Custom machine learning architecture.", description: "We design, train, and deploy bespoke machine learning models that solve highly specific problems—from natural language processing to complex recommendation engines.", href: "/services/ai-ml-solutions", icon: Cpu, image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1200&auto=format&fit=crop", highlights: ["Custom Models", "AI Powered", "Production-Grade"] },
-  { title: "Vision Intelligence", subtitle: "Advanced image and video analysis.", description: "Give your software the ability to see. Our computer vision solutions can identify objects, track movement, and analyze visual data in real-time.", href: "/services/vision-intelligence", icon: Eye, image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200&auto=format&fit=crop", highlights: ["Real-Time Detection", "Edge Deployment", "AI Powered"] },
-  { title: "AR/VR", subtitle: "Immersive virtual experiences.", description: "Transport your users to new worlds. We build augmented and virtual reality applications for training simulations, virtual showrooms, and interactive marketing.", href: "/services/ar-vr", icon: Glasses, image: "https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?q=80&w=1200&auto=format&fit=crop", highlights: ["Immersive UX", "Cross-Platform", "Interactive 3D"] },
+  {
+    title: "Software Development",
+    subtitle: "Custom web, mobile, desktop & cloud platforms.",
+    description: "We design, build, and ship production-grade custom software — from web platforms and cross-platform mobile apps to desktop software and custom cloud solutions built for massive scale.",
+    href: "/software-development",
+    icon: Code2,
+    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1200&auto=format&fit=crop",
+    highlights: ["Web & Mobile Apps", "Desktop & Cloud", "Enterprise Ready"],
+  },
+  {
+    title: "Industrial Training",
+    subtitle: "Mentor-led, project-based developer training.",
+    description: "Practical training programs built around live projects, real tooling, and internship exposure — taking candidates from fundamentals to job-ready in weeks.",
+    href: "/industrial-training",
+    icon: GraduationCap,
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop",
+    highlights: ["MERN & MEAN Stack", "Generative & Agentic AI", "Job Assistance"],
+  },
+  {
+    title: "Resource Augmentation",
+    subtitle: "Flexible developer & dedicated team hiring.",
+    description: "Scale your engineering team instantly. Hire vetted individual developers or complete pre-built teams on flexible hourly, project, or retainer engagement models.",
+    href: "/resource-augmentation",
+    icon: UserPlus,
+    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop",
+    highlights: ["Pre-Vetted Talent", "Fast Onboarding", "Flexible Engagement"],
+  },
+  {
+    title: "Internship Program",
+    subtitle: "Paid internships working on real client codebases.",
+    description: "Work on real feature tickets alongside senior engineering mentors in MERN, MEAN, AI, and Computer Vision development tracks — preparing you for real tech careers.",
+    href: "/internship-program",
+    icon: Briefcase,
+    image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1200&auto=format&fit=crop",
+    highlights: ["Live Codebases", "Senior Mentorship", "Career Pathway"],
+  },
+  {
+    title: "AI & Automations",
+    subtitle: "Workflows, chatbots, document pipelines & RPA.",
+    description: "Deploy production-grade intelligent process automation, RAG chatbots, predictive triggers, document extraction pipelines, and UI software robots.",
+    href: "/ai-automations",
+    icon: BrainCircuit,
+    image: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?q=80&w=1200&auto=format&fit=crop",
+    highlights: ["Process Automation", "RAG & Chatbots", "RPA & Document AI"],
+  },
 ];
 
 const [featured, ...rest] = items;
@@ -24,9 +61,9 @@ export default function ServicesContent() {
   return (
     <div className="flex flex-col min-h-screen selection:bg-primary/30 overflow-hidden">
       <ListingHero
-        eyebrow="services portfolio"
+        eyebrow="our services portfolio"
         title="Our Services"
-        description="From custom web and mobile applications to AI integrations built where they genuinely create value — not just where it's trendy — explore the services we offer to accelerate your digital growth."
+        description="Explore YashOrbit's five specialized service pillars — engineered to deliver custom software, enterprise AI & automations, industry-ready training, talent augmentation, and real-world internships."
         icon={Layers}
         image="https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=1400&auto=format&fit=crop"
       />
@@ -38,7 +75,7 @@ export default function ServicesContent() {
           <div className="mb-16 lg:mb-20">
             <FeaturedListingCard
               icon={featured.icon}
-              badge="Service"
+              badge="Services Pillar"
               badgeIcon={Layers}
               title={featured.title}
               subtitle={featured.subtitle}
@@ -46,21 +83,22 @@ export default function ServicesContent() {
               highlights={featured.highlights}
               href={featured.href}
               image={featured.image}
+              ctaLabel="Explore Software Development"
             />
           </div>
 
           <div className="flex items-center gap-3 mb-10">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">More Services</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">More Service Pillars</h2>
             <div className="h-px flex-1 bg-border/50" />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-8">
             {rest.map((item, i) => (
               <ListingCard
                 key={item.href}
                 index={i}
                 icon={item.icon}
-                badge="Service"
+                badge="Service Pillar"
                 badgeIcon={Layers}
                 title={item.title}
                 subtitle={item.subtitle}
@@ -75,8 +113,9 @@ export default function ServicesContent() {
       </section>
 
       <DetailCTA
-        heading="Didn't find what you're looking for?"
-        description="We specialize in custom enterprise solutions. Contact our technical team to discuss your specific requirements."
+        heading="Looking for custom enterprise solutions?"
+        description="Whether you need software development, AI automations, training, or staff augmentation, our technical team is ready to deliver."
+        checklist={["5 Specialized Divisions", "Agile & Transparent", "100% Code Ownership"]}
       />
     </div>
   );

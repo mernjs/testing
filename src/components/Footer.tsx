@@ -178,6 +178,11 @@ export default function Footer() {
               </h3>
               <ul role="list" className="mt-6 space-y-4">
                 <li>
+                  <Link href="/software-development" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Software Development
+                  </Link>
+                </li>
+                <li>
                   <Link href="/services/web-app-development" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
                     Web Development
                   </Link>
@@ -188,11 +193,6 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/services/desktop-app-development" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Desktop Apps
-                  </Link>
-                </li>
-                <li>
                   <Link href="/services/ai-ml-solutions" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
                     AI & ML
                   </Link>
@@ -200,11 +200,6 @@ export default function Footer() {
                 <li>
                   <Link href="/services/ai-agent" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
                     AI Agent
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/services/ar-vr" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    AR/VR
                   </Link>
                 </li>
                 <li>

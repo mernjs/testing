@@ -30,8 +30,8 @@ const coreDepartments = [
       "AI Agent", "AI/ML Solutions", "Vision Intelligence", "AR/VR",
     ],
     icon: Code,
-    href: "/services",
-    cta: "Explore Services",
+    href: "/software-development",
+    cta: "Explore Software Development",
     badge: "Core Engineering",
   },
   {
