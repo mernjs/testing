@@ -170,7 +170,7 @@ export default function Footer() {
               </div>
             </div>
           </div>
-          <div className="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5 xl:col-span-2 xl:mt-0">
+          <div className="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6 xl:col-span-2 xl:mt-0">
             <div>
               <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
@@ -210,6 +210,50 @@ export default function Footer() {
                 <li>
                   <Link href="/services" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
                     View All Services
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-primary">
+                <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
+                AI & Automations
+              </h3>
+              <ul role="list" className="mt-6 space-y-4">
+                <li>
+                  <Link href="/ai-automations/intelligent-process-automation" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Process Automation
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/ai-automations/conversational-ai-chatbots" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Conversational AI
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/ai-automations/ai-powered-data-analytics" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    AI Data Analytics
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/ai-automations/document-intelligence" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Document Intelligence
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/ai-automations/predictive-ai-workflows" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Predictive Workflows
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/ai-automations/ai-integration-services" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    AI Integration
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/ai-automations" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
+                    View All AI Automations
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </li>

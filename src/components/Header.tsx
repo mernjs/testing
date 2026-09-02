@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Users2, Newspaper } from "lucide-react";
+import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Users2, Newspaper, Workflow, BarChart3, FileSearch, TrendingUp, Plug, BrainCircuit } from "lucide-react";
 import { useTheme } from "next-themes";
 import { InstagramIcon, XIcon, FacebookIcon, GithubIcon, YoutubeIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
 import { socialLinks as socialLinksData, whatsapp } from "@/lib/contact";
@@ -82,6 +82,19 @@ const navigation = [
       { name: "AI/ML Solutions", href: "/services/ai-ml-solutions", description: "Custom machine learning", icon: Cpu },
       { name: "AI Agent", href: "/services/ai-agent", description: "Autonomous digital workers", icon: Bot },
       { name: "Vision Intelligence", href: "/services/vision-intelligence", description: "Computer vision at scale", icon: Eye },
+    ],
+  },
+  {
+    name: "AI & Automations",
+    href: "/ai-automations",
+    featured: { title: "AI-Driven Automation", description: "Automate workflows, documents, and decisions with AI.", image: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?q=80&w=600&auto=format&fit=crop" },
+    items: [
+      { name: "Intelligent Process Automation", href: "/ai-automations/intelligent-process-automation", description: "End-to-end workflow automation", icon: Workflow },
+      { name: "Conversational AI & Chatbots", href: "/ai-automations/conversational-ai-chatbots", description: "24/7 intelligent engagement", icon: MessageSquare },
+      { name: "AI-Powered Data Analytics", href: "/ai-automations/ai-powered-data-analytics", description: "Turn data into intelligence", icon: BarChart3 },
+      { name: "Document Intelligence", href: "/ai-automations/document-intelligence", description: "Automate document extraction", icon: FileSearch },
+      { name: "Predictive AI Workflows", href: "/ai-automations/predictive-ai-workflows", description: "Act before problems surface", icon: TrendingUp },
+      { name: "AI Integration Services", href: "/ai-automations/ai-integration-services", description: "Embed AI into your stack", icon: Plug },
     ],
   },
   {
@@ -211,6 +224,20 @@ const mobileNavigation = [
       { name: "Vision Intelligence", href: "/services/vision-intelligence", icon: Eye },
       { name: "Prediction & Forecasting", href: "/services/prediction-and-forecasting", icon: LineChart },
       { name: "AR/VR", href: "/services/ar-vr", icon: Glasses },
+    ],
+  },
+  {
+    name: "AI & Automations",
+    href: "/ai-automations",
+    icon: BrainCircuit,
+    items: [
+      { name: "Intelligent Process Automation", href: "/ai-automations/intelligent-process-automation", icon: Workflow },
+      { name: "Conversational AI & Chatbots", href: "/ai-automations/conversational-ai-chatbots", icon: MessageSquare },
+      { name: "AI-Powered Data Analytics", href: "/ai-automations/ai-powered-data-analytics", icon: BarChart3 },
+      { name: "Document Intelligence", href: "/ai-automations/document-intelligence", icon: FileSearch },
+      { name: "Predictive AI Workflows", href: "/ai-automations/predictive-ai-workflows", icon: TrendingUp },
+      { name: "AI Integration Services", href: "/ai-automations/ai-integration-services", icon: Plug },
+      { name: "Robotic Process Automation", href: "/ai-automations/robotic-process-automation", icon: Bot },
     ],
   },
   {

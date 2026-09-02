@@ -24,7 +24,7 @@ const coreDepartments = [
   {
     tag: "Department 01",
     title: "Software Development",
-    description: "Our engineering department designs, builds, and ships custom software — web, mobile, cloud, and AI-powered products.",
+    description: "Our engineering department designs, builds, and ships custom software — web, mobile, desktop, and cloud platforms.",
     services: [
       "Web App Development", "Mobile App Development", "Desktop App Development", "Prediction & Forecasting",
       "AI Agent", "AI/ML Solutions", "Vision Intelligence", "AR/VR",
@@ -32,9 +32,24 @@ const coreDepartments = [
     icon: Code,
     href: "/services",
     cta: "Explore Services",
+    badge: "Core Engineering",
   },
   {
     tag: "Department 02",
+    title: "AI & Automations",
+    description: "Our AI & Automation department delivers production-grade intelligent workflows, RAG chatbots, document pipelines, predictive triggers, and RPA bots.",
+    services: [
+      "Process Automation", "Conversational AI", "AI Data Analytics", "Document Intelligence",
+      "Predictive Workflows", "AI Integration", "RPA Solutions",
+    ],
+    icon: BrainCircuit,
+    href: "/ai-automations",
+    cta: "Explore AI & Automations",
+    badge: "New & Featured Division",
+    featured: true,
+  },
+  {
+    tag: "Department 03",
     title: "Industrial Training",
     description: "Our training department runs mentor-led, project-based programs that take developers from fundamentals to job-ready.",
     services: [
@@ -45,7 +60,7 @@ const coreDepartments = [
     cta: "Explore Training",
   },
   {
-    tag: "Department 03",
+    tag: "Department 04",
     title: "Resource Augmentation",
     description: "Our staffing department places pre-vetted developers and full teams directly inside your workflow, fast.",
     services: engagementCategories.map((category) => category.title),
@@ -54,7 +69,7 @@ const coreDepartments = [
     cta: "Explore Hiring",
   },
   {
-    tag: "Department 04",
+    tag: "Department 05",
     title: "Internship Program",
     description: "Our internship department places students and freshers directly onto live engagements, working real feature tickets under a dedicated mentor.",
     services: [
@@ -442,7 +457,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* 3. Our 4 Core Service Departments — What we offer */}
+      {/* 3. Our Specialized Service Departments — What we offer */}
       <section className="py-24 sm:py-32 bg-muted/10 relative overflow-hidden border-b border-border/50">
         <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[900px] h-[500px] bg-primary/10 rounded-full blur-[140px] pointer-events-none"></div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
@@ -450,73 +465,94 @@ export default function HomeContent() {
             align="center"
             category="How We're Structured"
             icon={Layers}
-            heading="Our 4 Core Service Departments"
-            description="YashOrbit operates through four core service categories — each one managed by its own specialized, dedicated department. Explore the individual services delivered under each department below."
+            heading="Our Specialized Service Departments"
+            description="YashOrbit operates through five specialized departments — engineered to deliver custom software, enterprise AI & automations, industry-ready training, talent augmentation, and real-world internships."
             className="mx-auto"
           />
 
-          {/* Featured department — our primary offering, given a distinct, larger treatment */}
-          {(() => {
-            const featured = coreDepartments[0];
-            const FeaturedIcon = featured.icon;
-            return (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.5 }}
-            className="group relative mb-8"
-          >
-            <div className="absolute -inset-1 rounded-[2.5rem] bg-gradient-to-br from-primary/40 via-primary/0 to-secondary/40 opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 pointer-events-none" />
+          {/* Top 2 Featured Bento Cards — Software Engineering & AI & Automations */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {coreDepartments.slice(0, 2).map((department) => {
+              const IconComponent = department.icon;
+              const isAI = department.featured;
+              return (
+                <motion.div
+                  key={department.title}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.5 }}
+                  className="group relative"
+                >
+                  <div className={`absolute -inset-1 rounded-[2.5rem] bg-gradient-to-br ${
+                    isAI ? "from-primary/50 via-[#ff8e75]/20 to-secondary/40" : "from-primary/30 via-primary/0 to-secondary/30"
+                  } opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 pointer-events-none`} />
 
-            <Link
-              href={featured.href}
-              className="relative flex flex-col lg:flex-row lg:items-center gap-10 lg:gap-16 rounded-[2.5rem] bg-gradient-to-br from-neutral-900 to-neutral-800 p-10 sm:p-14 overflow-hidden shadow-xl group-hover:shadow-2xl group-hover:shadow-primary/20 group-hover:-translate-y-1 transition-all duration-300"
-            >
-              <div className="absolute -top-32 -right-16 w-96 h-96 bg-primary/40 rounded-full blur-[120px] pointer-events-none" />
-              <div className="absolute -bottom-24 -left-16 w-72 h-72 bg-secondary/20 rounded-full blur-[100px] pointer-events-none" />
+                  <Link
+                    href={department.href}
+                    className="relative flex flex-col justify-between h-full rounded-[2.5rem] bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 p-8 sm:p-11 border border-white/10 overflow-hidden shadow-xl group-hover:shadow-2xl group-hover:shadow-primary/20 group-hover:-translate-y-1 transition-all duration-300"
+                  >
+                    {/* Ambient glow blobs */}
+                    <div className={`absolute -top-32 -right-16 w-80 h-80 ${isAI ? "bg-primary/40" : "bg-secondary/30"} rounded-full blur-[110px] pointer-events-none`} />
+                    <div className="absolute -bottom-24 -left-16 w-64 h-64 bg-primary/20 rounded-full blur-[90px] pointer-events-none" />
 
-              <div className="relative z-10 flex-1">
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-primary-foreground mb-6 rounded-full bg-primary px-3 py-1.5 shadow-lg shadow-primary/30">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Our Flagship Department
-                </span>
-                <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                  <FeaturedIcon className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4 leading-snug">{featured.title}</h3>
-                <p className="text-white/70 text-lg leading-relaxed mb-8 max-w-xl">{featured.description}</p>
+                    <div className="relative z-10 mb-8">
+                      <div className="flex items-center justify-between gap-4 mb-6">
+                        <span className={`inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest ${
+                          isAI
+                            ? "text-primary-foreground bg-gradient-to-r from-primary to-[#ff8e75] shadow-lg shadow-primary/30"
+                            : "text-white bg-white/10 border border-white/15"
+                        } px-3.5 py-1.5 rounded-full`}>
+                          <Sparkles className="w-3.5 h-3.5" />
+                          {department.badge}
+                        </span>
+                        <span className="text-xs font-extrabold uppercase tracking-widest text-white/40">{department.tag}</span>
+                      </div>
 
-                <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white group-hover:bg-primary px-6 py-3 text-sm font-bold text-foreground group-hover:text-primary-foreground transition-all duration-300">
-                  {featured.cta}
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </div>
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className={`w-14 h-14 rounded-2xl ${
+                          isAI ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30" : "bg-white/10 text-white border border-white/15"
+                        } flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
+                          <IconComponent className="w-7 h-7" />
+                        </div>
+                        <h3 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">{department.title}</h3>
+                      </div>
 
-              <div className="relative z-10 lg:w-72 lg:flex-none">
-                <p className="text-xs font-bold uppercase tracking-widest text-white/50 mb-4">
-                  {featured.services.length} Services Under This Department
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {featured.services.map((service) => (
-                    <span
-                      key={service}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-white/10 border border-white/15 px-3 py-1.5 rounded-full group-hover:border-primary/50 group-hover:bg-white/15 transition-colors duration-300"
-                    >
-                      <CheckCircle2 className="w-3 h-3 text-primary flex-none" />
-                      {service}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </Link>
-          </motion.div>
-            );
-          })()}
+                      <p className="text-white/70 text-base leading-relaxed mb-6">{department.description}</p>
 
-          {/* Remaining departments — compact, uniform row */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {coreDepartments.slice(1).map((department, idx) => (
+                      <div className="pt-2">
+                        <p className="text-[11px] font-bold uppercase tracking-widest text-white/50 mb-3">
+                          Featured Capabilities ({department.services.length})
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {department.services.map((service) => (
+                            <span
+                              key={service}
+                              className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-white/10 border border-white/15 px-3 py-1 rounded-full group-hover:border-primary/50 group-hover:bg-white/15 transition-colors duration-300"
+                            >
+                              <CheckCircle2 className="w-3 h-3 text-primary flex-none" />
+                              {service}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="relative z-10 pt-4 border-t border-white/10">
+                      <span className="inline-flex items-center gap-2 rounded-full bg-white group-hover:bg-primary px-6 py-3 text-sm font-bold text-foreground group-hover:text-primary-foreground transition-all duration-300">
+                        {department.cta}
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    </div>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* Remaining 3 Departments Grid — Compact & Clean */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {coreDepartments.slice(2).map((department, idx) => (
               <motion.div
                 key={department.title}
                 initial={{ opacity: 0, y: 30 }}
@@ -532,7 +568,7 @@ export default function HomeContent() {
                   className="relative flex flex-col h-full p-7 rounded-[1.75rem] bg-background border border-border/50 overflow-hidden shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300"
                 >
                   <span className="pointer-events-none absolute -top-4 -right-2 text-6xl font-black leading-none text-muted-foreground/[0.07] group-hover:text-primary/10 transition-colors duration-500 select-none">
-                    0{idx + 2}
+                    0{idx + 3}
                   </span>
 
                   <div className="relative z-10 flex flex-col h-full">
