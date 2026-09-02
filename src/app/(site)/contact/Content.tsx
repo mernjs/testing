@@ -194,7 +194,7 @@ export default function ContactContent() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground text-lg">Visit our HQ</h3>
-                    <p className="text-muted-foreground"><span className="font-semibold"><span className="text-foreground">Yash</span><span className="text-primary">Orbit</span></span> Technologies<br/>4th Floor, Tower B, Logix Cyber Park<br/>Sector 62, Noida, Uttar Pradesh 201309<br/>India</p>
+                    <p className="text-muted-foreground"><span className="font-semibold"><span className="text-foreground">Yash</span><span className="text-primary">Orbit</span></span> Technologies<br/>Bhoomi, Golden Avenue, Shahpur Bamheta,<br/> Ghaziabad, Uttar Pradesh 203207<br/>India</p>
                   </div>
                 </div>
               </div>
