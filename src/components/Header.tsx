@@ -83,19 +83,19 @@ const navigation = [
       { name: "AI & Automations", href: "/ai-automations", description: "Workflows, chatbots, RAG & RPA bots", icon: BrainCircuit },
     ],
   },
-  {
-    name: "AI & Automations",
-    href: "/ai-automations",
-    featured: { title: "AI-Driven Automation", description: "Automate workflows, documents, and decisions with AI.", image: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?q=80&w=600&auto=format&fit=crop" },
-    items: [
-      { name: "Intelligent Process Automation", href: "/ai-automations/intelligent-process-automation", description: "End-to-end workflow automation", icon: Workflow },
-      { name: "Conversational AI & Chatbots", href: "/ai-automations/conversational-ai-chatbots", description: "24/7 intelligent engagement", icon: MessageSquare },
-      { name: "AI-Powered Data Analytics", href: "/ai-automations/ai-powered-data-analytics", description: "Turn data into intelligence", icon: BarChart3 },
-      { name: "Document Intelligence", href: "/ai-automations/document-intelligence", description: "Automate document extraction", icon: FileSearch },
-      { name: "Predictive AI Workflows", href: "/ai-automations/predictive-ai-workflows", description: "Act before problems surface", icon: TrendingUp },
-      { name: "AI Integration Services", href: "/ai-automations/ai-integration-services", description: "Embed AI into your stack", icon: Plug },
-    ],
-  },
+  // {
+  //   name: "AI & Automations",
+  //   href: "/ai-automations",
+  //   featured: { title: "AI-Driven Automation", description: "Automate workflows, documents, and decisions with AI.", image: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?q=80&w=600&auto=format&fit=crop" },
+  //   items: [
+  //     { name: "Intelligent Process Automation", href: "/ai-automations/intelligent-process-automation", description: "End-to-end workflow automation", icon: Workflow },
+  //     { name: "Conversational AI & Chatbots", href: "/ai-automations/conversational-ai-chatbots", description: "24/7 intelligent engagement", icon: MessageSquare },
+  //     { name: "AI-Powered Data Analytics", href: "/ai-automations/ai-powered-data-analytics", description: "Turn data into intelligence", icon: BarChart3 },
+  //     { name: "Document Intelligence", href: "/ai-automations/document-intelligence", description: "Automate document extraction", icon: FileSearch },
+  //     { name: "Predictive AI Workflows", href: "/ai-automations/predictive-ai-workflows", description: "Act before problems surface", icon: TrendingUp },
+  //     { name: "AI Integration Services", href: "/ai-automations/ai-integration-services", description: "Embed AI into your stack", icon: Plug },
+  //   ],
+  // },
   {
     name: "Products",
     href: "/products",
@@ -109,17 +109,17 @@ const navigation = [
       { name: "AI Job Board Portal", href: "/products/ai-job-board-portal", description: "ATS with AI matching", icon: Briefcase },
     ],
   },
-  {
-    name: "Resource Augmentation",
-    href: "/resource-augmentation",
-    featured: { title: "Resource Augmentation", description: "Flexible engagement models, vetted talent.", image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop" },
-    items: [
-      { name: "Single Resource", href: "/resource-augmentation/single-resource", description: "Hire an individual developer", icon: UserCheck },
-      { name: "Package-Based Team", href: "/resource-augmentation/package-based-team", description: "A complete, pre-built team", icon: Users },
-      { name: "Hourly / On-Demand", href: "/resource-augmentation/hourly-on-demand", description: "Pay only for hours used", icon: Clock },
-      { name: "Project-Based", href: "/resource-augmentation/project-based", description: "Fixed-scope, milestone-priced", icon: Target },
-    ],
-  },
+  // {
+  //   name: "Resource Augmentation",
+  //   href: "/resource-augmentation",
+  //   featured: { title: "Resource Augmentation", description: "Flexible engagement models, vetted talent.", image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop" },
+  //   items: [
+  //     { name: "Single Resource", href: "/resource-augmentation/single-resource", description: "Hire an individual developer", icon: UserCheck },
+  //     { name: "Package-Based Team", href: "/resource-augmentation/package-based-team", description: "A complete, pre-built team", icon: Users },
+  //     { name: "Hourly / On-Demand", href: "/resource-augmentation/hourly-on-demand", description: "Pay only for hours used", icon: Clock },
+  //     { name: "Project-Based", href: "/resource-augmentation/project-based", description: "Fixed-scope, milestone-priced", icon: Target },
+  //   ],
+  // },
   // Hidden from nav; page still exists, just not linked or indexed via the menu.
   // {
   //   name: "Live Demos",
@@ -147,32 +147,32 @@ const navigation = [
       // { name: "Finance", href: "/industries/finance", description: "Secure financial tech", icon: Landmark },
     ],
   },
-  {
-    name: "Training",
-    href: "/industrial-training",
-    featured: { title: "Become Industry-Ready", description: "Hands-on, mentor-led training programs.", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop" },
-    items: [
-      { name: "MERN Stack", href: "/industrial-training/mern-stack", description: "MongoDB, Express, React, Node", icon: Code2 },
-      { name: "MEAN Stack", href: "/industrial-training/mean-stack", description: "MongoDB, Express, Angular, Node", icon: Database },
-      { name: "Generative AI", href: "/industrial-training/generative-ai", description: "LLMs, prompting, fine-tuning", icon: Sparkles },
-      { name: "Agentic AI", href: "/industrial-training/agentic-ai", description: "Autonomous, tool-using agents", icon: Bot },
-      { name: "Conversational AI", href: "/industrial-training/conversational-ai", description: "Chatbots & voice assistants", icon: MessageSquare },
-      { name: "Computer Vision", href: "/industrial-training/computer-vision", description: "Image & video intelligence", icon: ScanEye },
-    ],
-  },
-  {
-    name: "Internship",
-    href: "/internship-program",
-    featured: { title: "Intern on Real Work", description: "Paid, mentor-led internships across six tracks.", image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=600&auto=format&fit=crop" },
-    items: [
-      { name: "MERN Stack Internship", href: "/internship-program/mern-stack", description: "MongoDB, Express, React, Node", icon: Code2 },
-      { name: "MEAN Stack Internship", href: "/internship-program/mean-stack", description: "MongoDB, Express, Angular, Node", icon: Database },
-      { name: "Generative AI Internship", href: "/internship-program/generative-ai", description: "LLM pipelines & RAG systems", icon: Sparkles },
-      { name: "Agentic AI Internship", href: "/internship-program/agentic-ai", description: "Autonomous, tool-using agents", icon: Bot },
-      { name: "Conversational AI Internship", href: "/internship-program/conversational-ai", description: "Chatbots & voice assistants", icon: MessageSquare },
-      { name: "Computer Vision Internship", href: "/internship-program/computer-vision", description: "Image & video intelligence", icon: ScanEye },
-    ],
-  },
+  // {
+  //   name: "Training",
+  //   href: "/industrial-training",
+  //   featured: { title: "Become Industry-Ready", description: "Hands-on, mentor-led training programs.", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop" },
+  //   items: [
+  //     { name: "MERN Stack", href: "/industrial-training/mern-stack", description: "MongoDB, Express, React, Node", icon: Code2 },
+  //     { name: "MEAN Stack", href: "/industrial-training/mean-stack", description: "MongoDB, Express, Angular, Node", icon: Database },
+  //     { name: "Generative AI", href: "/industrial-training/generative-ai", description: "LLMs, prompting, fine-tuning", icon: Sparkles },
+  //     { name: "Agentic AI", href: "/industrial-training/agentic-ai", description: "Autonomous, tool-using agents", icon: Bot },
+  //     { name: "Conversational AI", href: "/industrial-training/conversational-ai", description: "Chatbots & voice assistants", icon: MessageSquare },
+  //     { name: "Computer Vision", href: "/industrial-training/computer-vision", description: "Image & video intelligence", icon: ScanEye },
+  //   ],
+  // },
+  // {
+  //   name: "Internship",
+  //   href: "/internship-program",
+  //   featured: { title: "Intern on Real Work", description: "Paid, mentor-led internships across six tracks.", image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=600&auto=format&fit=crop" },
+  //   items: [
+  //     { name: "MERN Stack Internship", href: "/internship-program/mern-stack", description: "MongoDB, Express, React, Node", icon: Code2 },
+  //     { name: "MEAN Stack Internship", href: "/internship-program/mean-stack", description: "MongoDB, Express, Angular, Node", icon: Database },
+  //     { name: "Generative AI Internship", href: "/internship-program/generative-ai", description: "LLM pipelines & RAG systems", icon: Sparkles },
+  //     { name: "Agentic AI Internship", href: "/internship-program/agentic-ai", description: "Autonomous, tool-using agents", icon: Bot },
+  //     { name: "Conversational AI Internship", href: "/internship-program/conversational-ai", description: "Chatbots & voice assistants", icon: MessageSquare },
+  //     { name: "Computer Vision Internship", href: "/internship-program/computer-vision", description: "Image & video intelligence", icon: ScanEye },
+  //   ],
+  // },
   {
     name: "Careers",
     href: "/careers",
@@ -222,20 +222,20 @@ const mobileNavigation = [
       { name: "AI & Automations", href: "/ai-automations", icon: BrainCircuit },
     ],
   },
-  {
-    name: "AI & Automations",
-    href: "/ai-automations",
-    icon: BrainCircuit,
-    items: [
-      { name: "Intelligent Process Automation", href: "/ai-automations/intelligent-process-automation", icon: Workflow },
-      { name: "Conversational AI & Chatbots", href: "/ai-automations/conversational-ai-chatbots", icon: MessageSquare },
-      { name: "AI-Powered Data Analytics", href: "/ai-automations/ai-powered-data-analytics", icon: BarChart3 },
-      { name: "Document Intelligence", href: "/ai-automations/document-intelligence", icon: FileSearch },
-      { name: "Predictive AI Workflows", href: "/ai-automations/predictive-ai-workflows", icon: TrendingUp },
-      { name: "AI Integration Services", href: "/ai-automations/ai-integration-services", icon: Plug },
-      { name: "Robotic Process Automation", href: "/ai-automations/robotic-process-automation", icon: Bot },
-    ],
-  },
+  // {
+  //   name: "AI & Automations",
+  //   href: "/ai-automations",
+  //   icon: BrainCircuit,
+  //   items: [
+  //     { name: "Intelligent Process Automation", href: "/ai-automations/intelligent-process-automation", icon: Workflow },
+  //     { name: "Conversational AI & Chatbots", href: "/ai-automations/conversational-ai-chatbots", icon: MessageSquare },
+  //     { name: "AI-Powered Data Analytics", href: "/ai-automations/ai-powered-data-analytics", icon: BarChart3 },
+  //     { name: "Document Intelligence", href: "/ai-automations/document-intelligence", icon: FileSearch },
+  //     { name: "Predictive AI Workflows", href: "/ai-automations/predictive-ai-workflows", icon: TrendingUp },
+  //     { name: "AI Integration Services", href: "/ai-automations/ai-integration-services", icon: Plug },
+  //     { name: "Robotic Process Automation", href: "/ai-automations/robotic-process-automation", icon: Bot },
+  //   ],
+  // },
   {
     name: "Products",
     href: "/products",
@@ -249,17 +249,17 @@ const mobileNavigation = [
       { name: "AI Job Board Portal", href: "/products/ai-job-board-portal", icon: Briefcase },
     ],
   },
-  {
-    name: "Resource Augmentation",
-    href: "/resource-augmentation",
-    icon: UserPlus,
-    items: [
-      { name: "Single Resource", href: "/resource-augmentation/single-resource", icon: UserCheck },
-      { name: "Package-Based Team", href: "/resource-augmentation/package-based-team", icon: Users },
-      { name: "Hourly / On-Demand", href: "/resource-augmentation/hourly-on-demand", icon: Clock },
-      { name: "Project-Based", href: "/resource-augmentation/project-based", icon: Target },
-    ],
-  },
+  // {
+  //   name: "Resource Augmentation",
+  //   href: "/resource-augmentation",
+  //   icon: UserPlus,
+  //   items: [
+  //     { name: "Single Resource", href: "/resource-augmentation/single-resource", icon: UserCheck },
+  //     { name: "Package-Based Team", href: "/resource-augmentation/package-based-team", icon: Users },
+  //     { name: "Hourly / On-Demand", href: "/resource-augmentation/hourly-on-demand", icon: Clock },
+  //     { name: "Project-Based", href: "/resource-augmentation/project-based", icon: Target },
+  //   ],
+  // },
   // Hidden from nav; page still exists, just not linked or indexed via the menu.
   // {
   //   name: "Live Demos",
@@ -287,32 +287,32 @@ const mobileNavigation = [
       { name: "Finance", href: "/industries/finance", icon: Landmark },
     ],
   },
-  {
-    name: "Training",
-    href: "/industrial-training",
-    icon: Code2,
-    items: [
-      { name: "MERN Stack", href: "/industrial-training/mern-stack", icon: Code2 },
-      { name: "MEAN Stack", href: "/industrial-training/mean-stack", icon: Database },
-      { name: "Generative AI", href: "/industrial-training/generative-ai", icon: Sparkles },
-      { name: "Agentic AI", href: "/industrial-training/agentic-ai", icon: Bot },
-      { name: "Conversational AI", href: "/industrial-training/conversational-ai", icon: MessageSquare },
-      { name: "Computer Vision", href: "/industrial-training/computer-vision", icon: ScanEye },
-    ],
-  },
-  {
-    name: "Internship",
-    href: "/internship-program",
-    icon: Briefcase,
-    items: [
-      { name: "MERN Stack Internship", href: "/internship-program/mern-stack", icon: Code2 },
-      { name: "MEAN Stack Internship", href: "/internship-program/mean-stack", icon: Database },
-      { name: "Generative AI Internship", href: "/internship-program/generative-ai", icon: Sparkles },
-      { name: "Agentic AI Internship", href: "/internship-program/agentic-ai", icon: Bot },
-      { name: "Conversational AI Internship", href: "/internship-program/conversational-ai", icon: MessageSquare },
-      { name: "Computer Vision Internship", href: "/internship-program/computer-vision", icon: ScanEye },
-    ],
-  },
+  // {
+  //   name: "Training",
+  //   href: "/industrial-training",
+  //   icon: Code2,
+  //   items: [
+  //     { name: "MERN Stack", href: "/industrial-training/mern-stack", icon: Code2 },
+  //     { name: "MEAN Stack", href: "/industrial-training/mean-stack", icon: Database },
+  //     { name: "Generative AI", href: "/industrial-training/generative-ai", icon: Sparkles },
+  //     { name: "Agentic AI", href: "/industrial-training/agentic-ai", icon: Bot },
+  //     { name: "Conversational AI", href: "/industrial-training/conversational-ai", icon: MessageSquare },
+  //     { name: "Computer Vision", href: "/industrial-training/computer-vision", icon: ScanEye },
+  //   ],
+  // },
+  // {
+  //   name: "Internship",
+  //   href: "/internship-program",
+  //   icon: Briefcase,
+  //   items: [
+  //     { name: "MERN Stack Internship", href: "/internship-program/mern-stack", icon: Code2 },
+  //     { name: "MEAN Stack Internship", href: "/internship-program/mean-stack", icon: Database },
+  //     { name: "Generative AI Internship", href: "/internship-program/generative-ai", icon: Sparkles },
+  //     { name: "Agentic AI Internship", href: "/internship-program/agentic-ai", icon: Bot },
+  //     { name: "Conversational AI Internship", href: "/internship-program/conversational-ai", icon: MessageSquare },
+  //     { name: "Computer Vision Internship", href: "/internship-program/computer-vision", icon: ScanEye },
+  //   ],
+  // },
   {
     name: "Careers",
     href: "/careers",
@@ -422,8 +422,8 @@ export default function Header() {
   return (
     <>
     <header className="fixed inset-x-0 top-0 z-50 h-[88px] bg-background/80 backdrop-blur-xl border-b border-border/50">
-      <nav className="mx-auto flex h-full max-w-[1600px] items-center justify-between px-6 lg:px-8" aria-label="Global">
-        <div className="flex lg:flex-1">
+      <nav className="mx-auto flex h-full max-w-7xl items-center justify-between px-6 lg:px-8" aria-label="Global">
+        <div className="flex shrink-0">
           <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2.5 group">
             <Logo className="w-9 h-9 shrink-0 transition-transform duration-300 group-hover:scale-105" />
             <span className="flex flex-col leading-none">
@@ -437,7 +437,7 @@ export default function Header() {
           </Link>
         </div>
 
-        <div className="flex xl:hidden gap-4 items-center">
+        <div className="flex xl:hidden gap-4 items-center ml-auto">
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
@@ -461,94 +461,96 @@ export default function Header() {
           </button>
         </div>
 
-        <div className="hidden xl:flex xl:gap-x-0.5 items-center relative h-full">
-          {navigation.map((item) => {
-            const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
-            return (
-            <div
-              key={item.name}
-              className="relative py-2"
-              onMouseEnter={() => setActiveMenu(item.name)}
-              onMouseLeave={() => setActiveMenu(null)}
-            >
-              <Link
-                href={item.href}
-                className={`relative flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-2 text-sm font-semibold transition-colors duration-200 xl:px-2.5 ${isActive || activeMenu === item.name ? "text-primary" : "text-foreground hover:text-primary hover:bg-muted/40"
-                  }`}
+        <div className="hidden xl:flex xl:items-center xl:gap-x-3 ml-auto relative h-full">
+          <div className="flex items-center gap-x-0.5 relative h-full">
+            {navigation.map((item) => {
+              const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
+              return (
+              <div
+                key={item.name}
+                className="relative py-2"
+                onMouseEnter={() => setActiveMenu(item.name)}
+                onMouseLeave={() => setActiveMenu(null)}
               >
-                {activeMenu === item.name && (
-                  <motion.span
-                    layoutId="nav-hover-pill"
-                    transition={{ type: "spring", stiffness: 420, damping: 32 }}
-                    className="absolute inset-0 -z-10 rounded-full bg-muted/60"
-                  />
-                )}
-                {item.name}
-                <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${activeMenu === item.name ? "rotate-180" : ""}`} />
-              </Link>
+                <Link
+                  href={item.href}
+                  className={`relative flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-2 text-sm font-semibold transition-colors duration-200 xl:px-2.5 ${isActive || activeMenu === item.name ? "text-primary" : "text-foreground hover:text-primary hover:bg-muted/40"
+                    }`}
+                >
+                  {activeMenu === item.name && (
+                    <motion.span
+                      layoutId="nav-hover-pill"
+                      transition={{ type: "spring", stiffness: 420, damping: 32 }}
+                      className="absolute inset-0 -z-10 rounded-full bg-muted/60"
+                    />
+                  )}
+                  {item.name}
+                  <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${activeMenu === item.name ? "rotate-180" : ""}`} />
+                </Link>
 
-              <AnimatePresence>
-                {activeMenu === item.name && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 15, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="absolute left-1/2 z-50 mt-4 flex w-screen max-w-3xl -translate-x-1/2 px-4"
-                  >
-                    <div className="relative w-full flex-auto">
-                      <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-primary/20 via-primary/0 to-secondary/20 blur-2xl pointer-events-none" />
+                <AnimatePresence>
+                  {activeMenu === item.name && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 15, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="absolute left-1/2 z-50 mt-4 flex w-screen max-w-3xl -translate-x-1/2 px-4"
+                    >
+                      <div className="relative w-full flex-auto">
+                        <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-primary/20 via-primary/0 to-secondary/20 blur-2xl pointer-events-none" />
 
-                      <div className="relative w-full flex-auto overflow-hidden rounded-3xl bg-background/95 backdrop-blur-2xl shadow-2xl ring-1 ring-border border border-border/50">
-                        <div className="h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
-                        <div className="grid grid-cols-5 p-2">
-                          <FeaturedCard item={item} />
-                          <div className="col-span-3 p-6 grid grid-cols-2 gap-4">
-                            {item.items.map((subItem) => (
-                              <Link
-                                key={subItem.name}
-                                href={subItem.href}
-                                className="group relative flex items-start gap-4 rounded-xl p-3 hover:bg-muted/50 transition-colors"
-                              >
-                                <div className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-border/50 group-hover:from-primary group-hover:to-[#ff8e75] group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                                  <subItem.icon className="h-5 w-5 text-muted-foreground group-hover:text-white transition-colors duration-300" />
-                                </div>
-                                <div>
-                                  <div className="font-semibold text-foreground text-sm mb-1 group-hover:text-primary transition-colors">
-                                    {subItem.name}
+                        <div className="relative w-full flex-auto overflow-hidden rounded-3xl bg-background/95 backdrop-blur-2xl shadow-2xl ring-1 ring-border border border-border/50">
+                          <div className="h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+                          <div className="grid grid-cols-5 p-2">
+                            <FeaturedCard item={item} />
+                            <div className="col-span-3 p-6 grid grid-cols-2 gap-4">
+                              {item.items.map((subItem) => (
+                                <Link
+                                  key={subItem.name}
+                                  href={subItem.href}
+                                  className="group relative flex items-start gap-4 rounded-xl p-3 hover:bg-muted/50 transition-colors"
+                                >
+                                  <div className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-border/50 group-hover:from-primary group-hover:to-[#ff8e75] group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                                    <subItem.icon className="h-5 w-5 text-muted-foreground group-hover:text-white transition-colors duration-300" />
                                   </div>
-                                  <p className="text-xs text-muted-foreground line-clamp-1">{subItem.description}</p>
-                                </div>
-                              </Link>
-                            ))}
+                                  <div>
+                                    <div className="font-semibold text-foreground text-sm mb-1 group-hover:text-primary transition-colors">
+                                      {subItem.name}
+                                    </div>
+                                    <p className="text-xs text-muted-foreground line-clamp-1">{subItem.description}</p>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-            );
-          })}
-        </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+              );
+            })}
+          </div>
 
-        <div className="hidden xl:flex xl:flex-1 xl:justify-end xl:items-center xl:gap-3">
-          <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            className="p-2.5 rounded-full bg-muted/30 hover:bg-muted/80 backdrop-blur-sm transition-all border border-border/50"
-          >
-            {isDark ? <Sun className="w-4 h-4 text-foreground" /> : <Moon className="w-4 h-4 text-foreground" />}
-          </button>
-          <Link
-            href="/contact"
-            className="group relative inline-flex flex-none items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-all hover:scale-105 active:scale-95"
-          >
-            <span className="relative z-10 flex items-center gap-2 whitespace-nowrap">
-              Let&apos;s Talk <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </span>
-          </Link>
+          <div className="flex items-center gap-3 pl-2 border-l border-border/40">
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              className="p-2.5 rounded-full bg-muted/30 hover:bg-muted/80 backdrop-blur-sm transition-all border border-border/50"
+            >
+              {isDark ? <Sun className="w-4 h-4 text-foreground" /> : <Moon className="w-4 h-4 text-foreground" />}
+            </button>
+            <Link
+              href="/contact"
+              className="group relative inline-flex flex-none items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-all hover:scale-105 active:scale-95"
+            >
+              <span className="relative z-10 flex items-center gap-2 whitespace-nowrap">
+                Let&apos;s Talk <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </Link>
+          </div>
         </div>
       </nav>
     </header>
