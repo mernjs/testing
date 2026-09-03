@@ -9,17 +9,7 @@ import { useTheme } from "next-themes";
 import { InstagramIcon, XIcon, FacebookIcon, GithubIcon, YoutubeIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
 import { socialLinks as socialLinksData, whatsapp } from "@/lib/contact";
 import { blogPosts } from "@/lib/blog";
-
-declare global {
-  interface Window {
-    Tawk_API?: {
-      toggle?: () => void;
-      hideWidget?: () => void;
-      showWidget?: () => void;
-      onLoad?: () => void;
-    };
-  }
-}
+import { loadAndToggleTawk } from "@/lib/tawk";
 
 function Logo({ className }: { className?: string }) {
   return (
@@ -686,7 +676,7 @@ export default function Header() {
                             key={link.name}
                             type="button"
                             onClick={() => {
-                              window.Tawk_API?.toggle?.();
+                              loadAndToggleTawk();
                               setMobileMenuOpen(false);
                             }}
                             className={tileClassName}

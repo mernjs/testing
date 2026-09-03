@@ -5,23 +5,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircle, X } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/SocialIcons";
 import { whatsapp } from "@/lib/contact";
-
-declare global {
-  interface Window {
-    Tawk_API?: {
-      toggle?: () => void;
-      hideWidget?: () => void;
-      showWidget?: () => void;
-      onLoad?: () => void;
-    };
-  }
-}
+import { loadAndToggleTawk } from "@/lib/tawk";
 
 export default function FloatingContactButtons() {
   const [open, setOpen] = React.useState(false);
 
   const openLiveChat = () => {
-    window.Tawk_API?.toggle?.();
+    loadAndToggleTawk();
     setOpen(false);
   };
 
