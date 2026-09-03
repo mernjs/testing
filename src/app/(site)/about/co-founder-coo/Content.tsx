@@ -18,7 +18,7 @@ export default function CoFounderCooContent() {
       photo={PHOTO}
       bioParagraphs={[
         "Priyanka spent years in program and operations management roles at services and technology companies, learning how to keep complex, multi-team delivery on schedule without sacrificing quality.",
-        brandify("She co-founded YashOrbit in 2026 alongside [NAME_OF_CEO], taking on the COO role from day one — designing the company's delivery workflows, hiring process, and the operating rhythms that keep engineering, AI, and training teams coordinated as the company grows."),
+        brandify("She co-founded YashOrbit in 2026 alongside Yashita Singh, taking on the COO role from day one — designing the company's delivery workflows, hiring process, and the operating rhythms that keep engineering, AI, and training teams coordinated as the company grows."),
       ]}
       bioStats={[
         { label: "Years in Operations", value: "9+", icon: Calendar },

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import ProductsContent from "./Content";
-import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { socialMetadata, breadcrumbJsonLd, siteUrl } from "@/lib/seo";
 
 const title = "Our Products — AI Platforms & Software Solutions | YashOrbit";
 const description =
@@ -24,15 +24,42 @@ export const metadata: Metadata = {
   ...socialMetadata({ title, description, path, image }),
 };
 
+const productsList = [
+  { name: "AI Construction Platform", path: "/products/ai-construction-platform" },
+  { name: "Smart Spam Filter", path: "/products/smart-spam-filter" },
+  { name: "AI Voice Assistant", path: "/products/ai-voice-assistant" },
+  { name: "Predictive Analytics Engine", path: "/products/predictive-analytics-engine" },
+  { name: "Image Recognition System", path: "/products/image-recognition-system" },
+  { name: "AI Job Board Portal", path: "/products/ai-job-board-portal" },
+];
+
 export default function ProductsPage() {
-  const breadcrumbs = breadcrumbJsonLd([
-    { name: "Home", path: "/" },
-    { name: "Products", path },
-  ]);
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "YashOrbit Software Products",
+      description,
+      url: `${siteUrl}${path}`,
+      numberOfItems: productsList.length,
+      itemListElement: productsList.map((prod, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `${siteUrl}${prod.path}`,
+        name: prod.name,
+      })),
+    },
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Products", path },
+    ]),
+  ];
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />
+      {jsonLd.map((schema, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      ))}
       <ProductsContent />
     </>
   );

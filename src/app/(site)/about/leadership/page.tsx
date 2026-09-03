@@ -4,7 +4,7 @@ import { socialMetadata, breadcrumbJsonLd, personJsonLd } from "@/lib/seo";
 
 const title = "Our Founders & Leadership Team | YashOrbit";
 const description =
-  "Meet the co-founders and leadership team behind YashOrbit — [NAME_OF_CEO] (CEO), Priyanka Singh (COO), Tej Pratap Singh (CTO), Shikha Singh (CFO), and Pooja Singh (CHRO).";
+  "Meet the co-founders and leadership team behind YashOrbit — Yashita Singh (CEO), Priyanka Singh (COO), Tej Pratap Singh (CTO), Shikha Singh (CFO), and Pooja Singh (CHRO).";
 const path = "/about/leadership";
 
 const image = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop";
@@ -25,7 +25,7 @@ export default function LeadershipPage() {
       { name: "Founders & Leadership", path },
     ]),
     personJsonLd({
-      name: "[NAME_OF_CEO]",
+      name: "Yashita Singh",
       jobTitle: "Co-Founder & CEO",
       path: "/about/co-founder-ceo",
       description: "Co-Founder & CEO of YashOrbit, leading company strategy, culture, and long-term vision.",

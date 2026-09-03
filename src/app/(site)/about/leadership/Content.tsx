@@ -10,10 +10,10 @@ import { brandify } from "@/lib/brand";
 
 const founders = [
   {
-    name: "[NAME_OF_CEO]",
+    name: "Yashita Singh",
     role: "Co-Founder & CEO",
     gender: "female" as const,
-    bio: "[NAME_OF_CEO] co-founded YashOrbit in 2026 as CEO, setting company strategy and culture while staying closely involved in the leadership team and the company's most important client relationships.",
+    bio: "Yashita Singh co-founded YashOrbit in 2026 as CEO, setting company strategy and culture while staying closely involved in the leadership team and the company's most important client relationships.",
     highlights: [
       { label: "Years in Leadership", value: "12+", icon: Calendar },
       { label: "Companies Co-Founded", value: "1", icon: Rocket },

@@ -4,7 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import FloatingContactButtons from "@/components/FloatingContactButtons";
-import { siteUrl, siteName, defaultOgImage, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
+import { siteUrl, siteName, defaultOgImage, organizationJsonLd, localBusinessJsonLd, websiteJsonLd } from "@/lib/seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +44,9 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
   robots: {
     index: true,
     follow: true,
@@ -80,7 +83,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const jsonLd = [organizationJsonLd(), websiteJsonLd()];
+  const jsonLd = [organizationJsonLd(), localBusinessJsonLd(), websiteJsonLd()];
 
   return (
     <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>

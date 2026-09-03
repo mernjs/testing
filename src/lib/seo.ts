@@ -6,9 +6,19 @@ export const siteName = "YashOrbit";
 export const defaultOgImage = `${siteUrl}/brand/social-avatar.png`;
 
 export const organizationInfo = {
-  name: siteName,
+  name: "YashOrbit Technologies Pvt. Ltd.",
+  legalName: "YashOrbit Technologies Private Limited",
   url: siteUrl,
   logo: `${siteUrl}/brand/icon-tile-512.png`,
+  email: "contact@yashorbit.com",
+  telephone: "+91 93159 47683",
+  address: {
+    streetAddress: "Sector 62",
+    addressLocality: "Noida",
+    addressRegion: "Uttar Pradesh",
+    postalCode: "201309",
+    addressCountry: "IN",
+  },
 };
 
 export function organizationJsonLd() {
@@ -16,8 +26,47 @@ export function organizationJsonLd() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: organizationInfo.name,
+    legalName: organizationInfo.legalName,
     url: organizationInfo.url,
     logo: organizationInfo.logo,
+    email: organizationInfo.email,
+    telephone: organizationInfo.telephone,
+    address: {
+      "@type": "PostalAddress",
+      ...organizationInfo.address,
+    },
+    sameAs: [siteUrl],
+  };
+}
+
+export function localBusinessJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ITService",
+    name: organizationInfo.name,
+    image: organizationInfo.logo,
+    "@id": `${siteUrl}/#localbusiness`,
+    url: siteUrl,
+    telephone: organizationInfo.telephone,
+    email: organizationInfo.email,
+    priceRange: "$$",
+    address: {
+      "@type": "PostalAddress",
+      ...organizationInfo.address,
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 28.6273,
+      longitude: 77.3725,
+    },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        opens: "09:00",
+        closes: "18:30",
+      },
+    ],
   };
 }
 
@@ -27,6 +76,11 @@ export function websiteJsonLd() {
     "@type": "WebSite",
     name: siteName,
     url: siteUrl,
+    publisher: {
+      "@type": "Organization",
+      name: organizationInfo.name,
+      url: organizationInfo.url,
+    },
   };
 }
 

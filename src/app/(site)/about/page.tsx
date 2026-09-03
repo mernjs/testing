@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import AboutContent from "./Content";
-import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { socialMetadata, breadcrumbJsonLd, organizationJsonLd } from "@/lib/seo";
 
 const title = "About YashOrbit — Mission, Team & Values | YashOrbit";
 const description =
@@ -24,14 +24,19 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
-  const breadcrumbs = breadcrumbJsonLd([
-    { name: "Home", path: "/" },
-    { name: "About", path },
-  ]);
+  const jsonLd = [
+    organizationJsonLd(),
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "About", path },
+    ]),
+  ];
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />
+      {jsonLd.map((schema, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      ))}
       <AboutContent />
     </>
   );
