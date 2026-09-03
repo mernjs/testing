@@ -67,10 +67,10 @@ const navigation = [
     featured: { title: "Digital Transformation", description: "End-to-end tech solutions.", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop" },
     items: [
       { name: "Software Development", href: "/software-development", description: "Custom web, mobile & desktop software", icon: Code2 },
+      { name: "AI & Automations", href: "/ai-automations", description: "Workflows, chatbots, RAG & RPA bots", icon: BrainCircuit },
       { name: "Industrial Training", href: "/industrial-training", description: "Mentor-led, project-based learning", icon: GraduationCap },
       { name: "Resource Augmentation", href: "/resource-augmentation", description: "Dedicated developers & team hiring", icon: UserPlus },
       { name: "Internship Program", href: "/internship-program", description: "Hands-on live project internships", icon: Briefcase },
-      { name: "AI & Automations", href: "/ai-automations", description: "Workflows, chatbots, RAG & RPA bots", icon: BrainCircuit },
     ],
   },
   // {
@@ -206,10 +206,10 @@ const mobileNavigation = [
     icon: Layers,
     items: [
       { name: "Software Development", href: "/software-development", icon: Code2 },
+      { name: "AI & Automations", href: "/ai-automations", icon: BrainCircuit },
       { name: "Industrial Training", href: "/industrial-training", icon: GraduationCap },
       { name: "Resource Augmentation", href: "/resource-augmentation", icon: UserPlus },
       { name: "Internship Program", href: "/internship-program", icon: Briefcase },
-      { name: "AI & Automations", href: "/ai-automations", icon: BrainCircuit },
     ],
   },
   // {
@@ -270,11 +270,11 @@ const mobileNavigation = [
       { name: "Agriculture", href: "/industries/agriculture", icon: Tractor },
       { name: "Education", href: "/industries/education", icon: GraduationCap },
       { name: "Real Estate", href: "/industries/real-estate", icon: Building2 },
-      { name: "Social Media", href: "/industries/social-media", icon: Share2 },
-      { name: "Travel", href: "/industries/travel", icon: Plane },
-      { name: "Construction", href: "/industries/construction", icon: HardHat },
-      { name: "Hotels", href: "/industries/hotels", icon: Hotel },
-      { name: "Finance", href: "/industries/finance", icon: Landmark },
+      // { name: "Social Media", href: "/industries/social-media", icon: Share2 },
+      // { name: "Travel", href: "/industries/travel", icon: Plane },
+      // { name: "Construction", href: "/industries/construction", icon: HardHat },
+      // { name: "Hotels", href: "/industries/hotels", icon: Hotel },
+      // { name: "Finance", href: "/industries/finance", icon: Landmark },
     ],
   },
   // {
