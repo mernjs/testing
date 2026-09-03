@@ -24,13 +24,38 @@ export const organizationInfo = {
 export function organizationJsonLd() {
   return {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    name: organizationInfo.name,
+    "@type": ["Organization", "Corporation", "Brand"],
+    "@id": `${siteUrl}/#organization`,
+    name: "YashOrbit",
     legalName: organizationInfo.legalName,
+    alternateName: [
+      "YashOrbit Technologies",
+      "YashOrbit Tech",
+      "YashOrbit Technologies Pvt Ltd",
+      "YashOrbit Technologies Private Limited",
+      "Yash Orbit",
+    ],
     url: organizationInfo.url,
     logo: organizationInfo.logo,
+    image: defaultOgImage,
     email: organizationInfo.email,
     telephone: organizationInfo.telephone,
+    slogan: "Tech Solutions Built Around Your Business",
+    foundingDate: "2026",
+    knowsAbout: [
+      "Custom Software Development",
+      "Artificial Intelligence & Machine Learning",
+      "Web App Development",
+      "Mobile App Development",
+      "Resource Augmentation",
+      "Industrial Training Programs",
+    ],
+    brand: {
+      "@type": "Brand",
+      "@id": `${siteUrl}/#brand`,
+      name: "YashOrbit",
+      logo: organizationInfo.logo,
+    },
     address: {
       "@type": "PostalAddress",
       ...organizationInfo.address,
@@ -43,13 +68,17 @@ export function localBusinessJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "ITService",
-    name: organizationInfo.name,
-    image: organizationInfo.logo,
     "@id": `${siteUrl}/#localbusiness`,
+    name: organizationInfo.name,
+    alternateName: "YashOrbit Headquarters",
+    image: organizationInfo.logo,
     url: siteUrl,
     telephone: organizationInfo.telephone,
     email: organizationInfo.email,
     priceRange: "$$",
+    parentOrganization: {
+      "@id": `${siteUrl}/#organization`,
+    },
     address: {
       "@type": "PostalAddress",
       ...organizationInfo.address,
@@ -74,12 +103,12 @@ export function websiteJsonLd() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": `${siteUrl}/#website`,
     name: siteName,
+    alternateName: ["YashOrbit Official Website", "YashOrbit Technologies Website"],
     url: siteUrl,
     publisher: {
-      "@type": "Organization",
-      name: organizationInfo.name,
-      url: organizationInfo.url,
+      "@id": `${siteUrl}/#organization`,
     },
   };
 }

@@ -83,6 +83,7 @@ export function jobPostingJsonLd(job: Job) {
     employmentType: mapEmploymentType(job.employmentType),
     hiringOrganization: {
       "@type": "Organization",
+      "@id": `${siteUrl}/#organization`,
       name: "YashOrbit Technologies Pvt. Ltd.",
       sameAs: siteUrl,
       logo: `${siteUrl}/brand/icon-tile-512.png`,

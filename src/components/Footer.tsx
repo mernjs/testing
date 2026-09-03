@@ -120,7 +120,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm leading-6 text-secondary-foreground/85 max-w-xs">
-              Tech solutions built around your business goals — web, mobile, and AI/ML systems engineered to accelerate growth and deliver measurable results.
+              YashOrbit Technologies Pvt. Ltd. builds custom web, mobile, and AI/ML software solutions engineered to accelerate business growth and deliver measurable competitive advantage.
             </p>
 
             <div className="space-y-2.5">
