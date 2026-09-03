@@ -7,18 +7,33 @@ interface DefaultAvatarProps {
 export default function DefaultAvatar({ gender, className = "" }: DefaultAvatarProps) {
   return (
     <div className={`w-full h-full bg-muted flex items-center justify-center ${className}`}>
-      <svg viewBox="0 0 100 100" className="w-full h-full text-muted-foreground/60" aria-hidden="true">
-        <circle cx="50" cy="38" r="17" fill="currentColor" />
-        <path d="M14,100 A36,36 0 0 1 86,100 Z" fill="currentColor" />
-        {gender === "male" ? (
-          <path d="M31,38 A19,19 0 0 1 69,38 Z" fill="currentColor" opacity="0.55" />
-        ) : (
-          <>
-            <path d="M29,40 A21,21 0 0 1 71,40 Z" fill="currentColor" opacity="0.55" />
-            <rect x="27" y="30" width="6" height="26" rx="3" fill="currentColor" opacity="0.55" />
-            <rect x="67" y="30" width="6" height="26" rx="3" fill="currentColor" opacity="0.55" />
-          </>
-        )}
+      <svg viewBox="0 0 64 64" className="w-full h-full" aria-hidden="true">
+        <path d="M4,50 C0,60 40,38 50,26" fill="none" stroke="#ECF2FD" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
+        <circle cx="32" cy="32" r="25.5" fill="#1D428A" />
+        <g fill="#ECF2FD" opacity="0.4">
+          <circle cx="29.4" cy="24.6" r="0.92" />
+          <circle cx="34.6" cy="24.6" r="0.92" />
+          <circle cx="26.8" cy="29.8" r="0.98" />
+          <circle cx="32.0" cy="29.8" r="1.09" />
+          <circle cx="37.2" cy="29.8" r="0.98" />
+          <circle cx="24.2" cy="35.0" r="0.9" />
+          <circle cx="29.4" cy="35.0" r="1.03" />
+          <circle cx="34.6" cy="35.0" r="1.03" />
+          <circle cx="39.8" cy="35.0" r="0.9" />
+          <circle cx="21.6" cy="19.4" r="0.75" />
+          <circle cx="32.0" cy="19.4" r="0.78" />
+          <circle cx="42.4" cy="19.4" r="0.75" />
+          <circle cx="19.0" cy="45.4" r="0.6" />
+          <circle cx="29.4" cy="45.4" r="0.75" />
+          <circle cx="34.6" cy="45.4" r="0.75" />
+          <circle cx="45.0" cy="45.4" r="0.6" />
+        </g>
+        <path d="M17.6,17.6 L32,33.6" fill="none" stroke="#ECF2FD" strokeWidth="8" strokeLinecap="round" />
+        <path d="M32,33.6 L32,48" fill="none" stroke="#ECF2FD" strokeWidth="8" strokeLinecap="round" />
+        <path d="M46.4,17.6 L36,29.2" fill="none" stroke="#ECF2FD" strokeWidth="8" strokeLinecap="round" />
+        <circle cx="34.4" cy="30.4" r="4.8" fill="#E56043" />
+        <path d="M8,44 C2,57 45,31 56,12" fill="none" stroke="#E56043" strokeWidth="3" strokeLinecap="round" />
+        <polygon points="58.6,15.8 51.4,11.6 59.8,5.5" fill="#E56043" />
       </svg>
     </div>
   );
