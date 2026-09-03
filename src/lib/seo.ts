@@ -284,21 +284,44 @@ interface ArticleJsonLdInput {
   description: string;
   path: string;
   image: string;
+  imageAlt?: string;
   datePublished: string;
   dateModified?: string;
   author?: string;
+  keywords?: string[];
+  articleSection?: string;
 }
 
-export function articleJsonLd({ title, description, path, image, datePublished, dateModified, author = siteName }: ArticleJsonLdInput) {
+export function articleJsonLd({
+  title,
+  description,
+  path,
+  image,
+  imageAlt,
+  datePublished,
+  dateModified,
+  author = siteName,
+  keywords = [],
+  articleSection,
+}: ArticleJsonLdInput) {
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: title,
     description,
-    image,
+    image: imageAlt
+      ? {
+          "@type": "ImageObject",
+          url: image,
+          description: imageAlt,
+        }
+      : image,
     url: `${siteUrl}${path}`,
     datePublished,
     dateModified: dateModified ?? datePublished,
+    inLanguage: "en-IN",
+    ...(articleSection ? { articleSection } : {}),
+    ...(keywords.length > 0 ? { keywords: keywords.join(", ") } : {}),
     author: {
       "@type": "Organization",
       name: author,

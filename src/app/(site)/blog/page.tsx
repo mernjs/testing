@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import BlogContent from "./Content";
-import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { socialMetadata, breadcrumbJsonLd, siteUrl } from "@/lib/seo";
+import { blogPosts } from "@/lib/blog";
 
 const title = "Blog | Web, Mobile & AI Development Insights | YashOrbit";
 const description =
@@ -18,6 +19,20 @@ export const metadata: Metadata = {
 
 export default function BlogPage() {
   const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "YashOrbit Blog",
+      description,
+      url: `${siteUrl}${path}`,
+      numberOfItems: blogPosts.length,
+      itemListElement: blogPosts.map((post, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `${siteUrl}/blog/${post.slug}`,
+        name: post.title,
+      })),
+    },
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Blog", path },

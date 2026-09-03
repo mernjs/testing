@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   const jsonLd = [
-    articleJsonLd({ title: post.title, description: post.description, path, image: post.image, datePublished: post.date, author: post.author }),
+    articleJsonLd({ title: post.title, description: post.description, path, image: post.image, imageAlt: post.imageAlt, datePublished: post.date, author: post.author, keywords: post.keywords, articleSection: post.category }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Blog", path: "/blog" },
