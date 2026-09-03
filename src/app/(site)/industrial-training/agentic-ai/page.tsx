@@ -20,7 +20,13 @@ export const metadata: Metadata = {
 
 export default function AgenticAiTrainingPage() {
   const jsonLd = [
-    courseJsonLd({ name: "Agentic AI Training", description, path }),
+    courseJsonLd({
+      name: "Agentic AI Training",
+      description,
+      path,
+      duration: "P6W",
+      credential: "Agentic AI Industrial Training Certificate of Completion",
+    }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Training", path: "/industrial-training" },

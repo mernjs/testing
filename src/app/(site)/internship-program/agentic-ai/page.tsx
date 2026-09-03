@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import AgenticAiInternshipContent from "./Content";
 import { agenticAiInternshipFaqs } from "./faqs";
-import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, courseJsonLd, internshipJobPostingJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Agentic AI Internship | YashOrbit";
 const description =
@@ -20,7 +20,19 @@ export const metadata: Metadata = {
 
 export default function AgenticAiInternshipPage() {
   const jsonLd = [
-    courseJsonLd({ name: "Agentic AI Internship", description, path }),
+    internshipJobPostingJsonLd({
+      title: "Agentic AI Developer Intern",
+      description,
+      path,
+      skills: ["Python", "LangGraph", "AutoGen", "Function Calling", "Vector DBs"],
+      responsibilities: [
+        "Develop custom tools and function-calling modules for AI agents.",
+        "Build multi-agent graph workflows using LangGraph / AutoGen.",
+        "Test agent decision-making loops and memory persistence.",
+        "Document agent architectures and API interfaces.",
+      ],
+    }),
+    courseJsonLd({ name: "Agentic AI Internship", description, path, duration: "P12W", credential: "Agentic AI Internship Certificate" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Internship Program", path: "/internship-program" },

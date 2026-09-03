@@ -68,24 +68,113 @@ interface CourseJsonLdInput {
   description: string;
   path: string;
   mode?: string[];
+  duration?: string;
+  credential?: string;
 }
 
-export function courseJsonLd({ name, description, path, mode = ["Online", "Offline"] }: CourseJsonLdInput) {
+export function courseJsonLd({
+  name,
+  description,
+  path,
+  mode = ["Online", "Offline"],
+  duration = "P6W",
+  credential = "Industrial Training Certificate of Completion",
+}: CourseJsonLdInput) {
   return {
     "@context": "https://schema.org",
     "@type": "Course",
     name,
     description,
     url: `${siteUrl}${path}`,
+    educationalCredentialAwarded: credential,
     provider: {
       "@type": "Organization",
       name: organizationInfo.name,
       sameAs: organizationInfo.url,
+      logo: organizationInfo.logo,
     },
     hasCourseInstance: mode.map((courseMode) => ({
       "@type": "CourseInstance",
       courseMode,
+      courseWorkload: duration,
+      location: {
+        "@type": "Place",
+        name: "YashOrbit Noida Campus",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "Sector 62",
+          addressLocality: "Noida",
+          addressRegion: "Uttar Pradesh",
+          postalCode: "201309",
+          addressCountry: "IN",
+        },
+      },
     })),
+  };
+}
+
+interface InternshipJsonLdInput {
+  title: string;
+  description: string;
+  path: string;
+  datePosted?: string;
+  skills?: string[];
+  responsibilities?: string[];
+}
+
+export function internshipJobPostingJsonLd({
+  title,
+  description,
+  path,
+  datePosted = "2026-01-15T09:00:00+05:30",
+  skills = [],
+  responsibilities = [],
+}: InternshipJsonLdInput) {
+  const respList = responsibilities.map((r) => `<li>${r}</li>`).join("");
+  const skillsList = skills.map((s) => `<li>${s}</li>`).join("");
+
+  const fullDescriptionHtml = `
+    <p>${description}</p>
+    ${respList ? `<h3>Key Internship Responsibilities</h3><ul>${respList}</ul>` : ""}
+    ${skillsList ? `<h3>Skills & Technologies</h3><ul>${skillsList}</ul>` : ""}
+  `.trim();
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title,
+    description: fullDescriptionHtml,
+    datePosted,
+    employmentType: ["INTERN"],
+    hiringOrganization: {
+      "@type": "Organization",
+      name: organizationInfo.name,
+      sameAs: organizationInfo.url,
+      logo: organizationInfo.logo,
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "Sector 62",
+        addressLocality: "Noida",
+        addressRegion: "Uttar Pradesh",
+        postalCode: "201309",
+        addressCountry: "IN",
+      },
+    },
+    jobLocationType: "TELECOMMUTE",
+    applicantLocationRequirements: {
+      "@type": "Country",
+      name: "IN",
+    },
+    directApply: true,
+    url: `${siteUrl}${path}`,
+    ...(skills.length > 0 ? { skills: skills.join(", ") } : {}),
+    experienceRequirements: {
+      "@type": "OccupationalExperienceRequirements",
+      monthsOfExperience: 0,
+    },
   };
 }
 

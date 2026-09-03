@@ -20,7 +20,13 @@ export const metadata: Metadata = {
 
 export default function ComputerVisionTrainingPage() {
   const jsonLd = [
-    courseJsonLd({ name: "Computer Vision Training", description, path }),
+    courseJsonLd({
+      name: "Computer Vision Training",
+      description,
+      path,
+      duration: "P6W",
+      credential: "Computer Vision Industrial Training Certificate of Completion",
+    }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Training", path: "/industrial-training" },

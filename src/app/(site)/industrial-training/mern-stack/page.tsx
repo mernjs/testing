@@ -20,7 +20,13 @@ export const metadata: Metadata = {
 
 export default function MernStackTrainingPage() {
   const jsonLd = [
-    courseJsonLd({ name: "MERN Stack Training", description, path }),
+    courseJsonLd({
+      name: "MERN Stack Training",
+      description,
+      path,
+      duration: "P6W",
+      credential: "MERN Stack Industrial Training Certificate of Completion",
+    }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Training", path: "/industrial-training" },

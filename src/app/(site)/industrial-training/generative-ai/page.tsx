@@ -20,7 +20,13 @@ export const metadata: Metadata = {
 
 export default function GenerativeAiTrainingPage() {
   const jsonLd = [
-    courseJsonLd({ name: "Generative AI Training", description, path }),
+    courseJsonLd({
+      name: "Generative AI Training",
+      description,
+      path,
+      duration: "P6W",
+      credential: "Generative AI Industrial Training Certificate of Completion",
+    }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Training", path: "/industrial-training" },

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import MeanInternshipContent from "./Content";
 import { meanInternshipFaqs } from "./faqs";
-import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, courseJsonLd, internshipJobPostingJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "MEAN Stack Internship | YashOrbit";
 const description =
@@ -20,7 +20,19 @@ export const metadata: Metadata = {
 
 export default function MeanInternshipPage() {
   const jsonLd = [
-    courseJsonLd({ name: "MEAN Stack Internship", description, path }),
+    internshipJobPostingJsonLd({
+      title: "MEAN Stack Developer Intern",
+      description,
+      path,
+      skills: ["MongoDB", "Express", "Angular", "Node.js", "TypeScript", "Git"],
+      responsibilities: [
+        "Build dynamic Angular components and TypeScript services.",
+        "Integrate backend REST APIs with Express and Node.js.",
+        "Participate in database schema modeling and query optimization.",
+        "Collaborate with senior developers on real client projects.",
+      ],
+    }),
+    courseJsonLd({ name: "MEAN Stack Internship", description, path, duration: "P12W", credential: "MEAN Stack Internship Certificate" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Internship Program", path: "/internship-program" },

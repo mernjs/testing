@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import ComputerVisionInternshipContent from "./Content";
 import { computerVisionInternshipFaqs } from "./faqs";
-import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, courseJsonLd, internshipJobPostingJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Computer Vision Internship | YashOrbit";
 const description =
@@ -20,7 +20,19 @@ export const metadata: Metadata = {
 
 export default function ComputerVisionInternshipPage() {
   const jsonLd = [
-    courseJsonLd({ name: "Computer Vision Internship", description, path }),
+    internshipJobPostingJsonLd({
+      title: "Computer Vision Intern",
+      description,
+      path,
+      skills: ["Python", "OpenCV", "PyTorch", "YOLO", "OCR", "Image Processing"],
+      responsibilities: [
+        "Annotate and preprocess image datasets for model training.",
+        "Train and evaluate object detection and OCR models.",
+        "Optimize model inference speeds for web and edge deployment.",
+        "Support senior engineers with model benchmarking.",
+      ],
+    }),
+    courseJsonLd({ name: "Computer Vision Internship", description, path, duration: "P12W", credential: "Computer Vision Internship Certificate" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Internship Program", path: "/internship-program" },
