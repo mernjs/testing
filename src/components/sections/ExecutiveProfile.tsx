@@ -8,6 +8,8 @@ import ChecklistGrid from "@/components/sections/ChecklistGrid";
 import ProjectShowcase from "@/components/sections/ProjectShowcase";
 import DetailCTA from "@/components/sections/DetailCTA";
 
+import DefaultAvatar from "@/components/ui/DefaultAvatar";
+
 interface ChecklistItem {
   title: string;
   description: ReactNode;
@@ -31,7 +33,8 @@ interface ExecutiveProfileProps {
   tagline: ReactNode;
   heroDescription: ReactNode;
   heroIcon: LucideIcon;
-  photo: string;
+  photo?: string;
+  gender?: "male" | "female";
   bioParagraphs: ReactNode[];
   bioStats: StatItem[];
   overviewTitle: string;
@@ -54,6 +57,7 @@ export default function ExecutiveProfile({
   heroDescription,
   heroIcon,
   photo,
+  gender = "female",
   bioParagraphs,
   bioStats,
   overviewTitle,
@@ -77,13 +81,13 @@ export default function ExecutiveProfile({
         subtitle={tagline}
         description={heroDescription}
         icon={heroIcon}
-        image={photo}
+        image={photo ?? "/images/placeholders/leadership-hero-placeholder.png"}
       />
 
-      <section className="py-20 sm:py-24 bg-background relative">
+      <section className="py-16 sm:py-20 bg-background relative">
         <div className="mx-auto max-w-4xl px-6 lg:px-8 text-center">
-          <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center text-white font-bold text-3xl shadow-xl mb-6 overflow-hidden">
-            <img src={photo} alt={name} className="w-full h-full object-cover" />
+          <div className="w-28 h-28 sm:w-32 sm:h-32 mx-auto rounded-full ring-4 ring-primary/25 shadow-xl mb-6 overflow-hidden">
+            <DefaultAvatar gender={gender} />
           </div>
           <h2 className="text-2xl font-bold text-foreground mb-1">{name}</h2>
           <p className="text-sm font-semibold text-primary uppercase tracking-wider mb-6">{role}</p>

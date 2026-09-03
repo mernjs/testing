@@ -5,13 +5,14 @@ import ExecutiveProfile from "@/components/sections/ExecutiveProfile";
 import { brandify } from "@/lib/brand";
 
 // Temporary placeholder photo — swap for Pooja's actual headshot when available.
-const PHOTO = "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?q=80&w=1200&auto=format&fit=crop";
+const PHOTO = "/images/placeholders/leadership-hero-placeholder.png";
 
 export default function ChroContent() {
   return (
     <ExecutiveProfile
       name="Pooja Singh"
       role="Chief Human Resources Officer"
+      gender="female"
       tagline={brandify("Chief Human Resources Officer, YashOrbit")}
       heroDescription={brandify("Building the culture and people practices behind YashOrbit's growth — hiring, career development, and the environment that lets senior talent do their best work here.")}
       heroIcon={Users2}

@@ -5,13 +5,14 @@ import ExecutiveProfile from "@/components/sections/ExecutiveProfile";
 import { brandify } from "@/lib/brand";
 
 // Temporary placeholder photo — swap for Tej Pratap's actual headshot when available.
-const PHOTO = "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1200&auto=format&fit=crop";
+const PHOTO = "/images/placeholders/leadership-hero-placeholder.png";
 
 export default function CtoContent() {
   return (
     <ExecutiveProfile
       name="Tej Pratap Singh"
       role="Chief Technology Officer"
+      gender="male"
       tagline={brandify("Chief Technology Officer, YashOrbit")}
       heroDescription={brandify("Owning the technical bar every YashOrbit engagement is held to — architecture standards, engineering practice, and where the company places its bets on applied AI.")}
       heroIcon={Cpu}

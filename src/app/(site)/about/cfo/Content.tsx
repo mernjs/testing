@@ -5,13 +5,14 @@ import ExecutiveProfile from "@/components/sections/ExecutiveProfile";
 import { brandify } from "@/lib/brand";
 
 // Temporary placeholder photo — swap for Shikha's actual headshot when available.
-const PHOTO = "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?q=80&w=1200&auto=format&fit=crop";
+const PHOTO = "/images/placeholders/leadership-hero-placeholder.png";
 
 export default function CfoContent() {
   return (
     <ExecutiveProfile
       name="Shikha Singh"
       role="Chief Financial Officer"
+      gender="female"
       tagline={brandify("Chief Financial Officer, YashOrbit")}
       heroDescription={brandify("Keeping YashOrbit's growth financially disciplined — the compliance, reporting, and pricing structures that let ambition and financial control move together, not against each other.")}
       heroIcon={Calculator}

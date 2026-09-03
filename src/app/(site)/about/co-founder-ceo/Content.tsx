@@ -5,13 +5,14 @@ import ExecutiveProfile from "@/components/sections/ExecutiveProfile";
 import { brandify } from "@/lib/brand";
 
 // Temporary placeholder photo — swap for [NAME_OF_CEO]'s actual headshot when available.
-const PHOTO = "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?q=80&w=1200&auto=format&fit=crop";
+const PHOTO = "/images/placeholders/leadership-hero-placeholder.png";
 
 export default function CoFounderCeoContent() {
   return (
     <ExecutiveProfile
       name="Yashita Singh"
       role="Co-Founder & CEO"
+      gender="female"
       tagline={brandify("Co-Founder & CEO, YashOrbit")}
       heroDescription={brandify("Setting the direction for YashOrbit — company strategy, culture, and the long-term bets that decide what this business becomes.")}
       heroIcon={Compass}
