@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import DocumentIntelligenceContent from "./Content";
-import { socialMetadata, breadcrumbJsonLd, serviceJsonLd } from "@/lib/seo";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 const title = "Document Intelligence | YashOrbit AI & Automations";
 const description =
@@ -25,17 +25,20 @@ export const metadata: Metadata = {
 };
 
 export default function DocumentIntelligencePage() {
-  const breadcrumbs = breadcrumbJsonLd([
-    { name: "Home", path: "/" },
-    { name: "AI & Automations", path: "/ai-automations" },
-    { name: "Document Intelligence", path },
-  ]);
-  const service = serviceJsonLd({ name: "Document Intelligence", description, path });
+  const jsonLd = [
+    serviceJsonLd({ name: "Document Intelligence", description, path, category: "AI & Process Automation" }),
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "AI & Automations", path: "/ai-automations" },
+      { name: "Document Intelligence", path },
+    ]),
+  ];
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(service) }} />
+      {jsonLd.map((schema, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      ))}
       <DocumentIntelligenceContent />
     </>
   );

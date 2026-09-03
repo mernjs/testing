@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function DesktopAppDevelopmentPage() {
   const jsonLd = [
-    serviceJsonLd({ name: "Desktop App Development", description, path }),
+    serviceJsonLd({ name: "Desktop App Development", description, path, category: "Desktop App Development" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Services", path: "/services" },

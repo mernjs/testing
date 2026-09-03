@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Content from "./Content";
-import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 import { getCategoryBySlug } from "../resources-data";
 
 const category = getCategoryBySlug("single-resource")!;
@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   const jsonLd = [
+    serviceJsonLd({ name: category.title, description, path, category: "IT Staff Augmentation" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Resource Augmentation", path: "/resource-augmentation" },

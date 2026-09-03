@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function ARVRPage() {
   const jsonLd = [
-    serviceJsonLd({ name: "AR/VR Development", description, path }),
+    serviceJsonLd({ name: "AR/VR Development", description, path, category: "AR & VR Development" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Services", path: "/services" },

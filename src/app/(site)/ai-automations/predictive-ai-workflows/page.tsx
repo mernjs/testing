@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import PredictiveAIWorkflowsContent from "./Content";
-import { socialMetadata, breadcrumbJsonLd, serviceJsonLd } from "@/lib/seo";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 const title = "Predictive AI Workflows | YashOrbit AI & Automations";
 const description =
@@ -25,17 +25,20 @@ export const metadata: Metadata = {
 };
 
 export default function PredictiveAIWorkflowsPage() {
-  const breadcrumbs = breadcrumbJsonLd([
-    { name: "Home", path: "/" },
-    { name: "AI & Automations", path: "/ai-automations" },
-    { name: "Predictive AI Workflows", path },
-  ]);
-  const service = serviceJsonLd({ name: "Predictive AI Workflows", description, path });
+  const jsonLd = [
+    serviceJsonLd({ name: "Predictive AI Workflows", description, path, category: "AI & Machine Learning" }),
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "AI & Automations", path: "/ai-automations" },
+      { name: "Predictive AI Workflows", path },
+    ]),
+  ];
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(service) }} />
+      {jsonLd.map((schema, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      ))}
       <PredictiveAIWorkflowsContent />
     </>
   );

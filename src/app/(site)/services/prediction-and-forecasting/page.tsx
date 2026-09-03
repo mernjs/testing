@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function PredictionForecastingPage() {
   const jsonLd = [
-    serviceJsonLd({ name: "Prediction & Forecasting", description, path }),
+    serviceJsonLd({ name: "Prediction & Forecasting", description, path, category: "AI & Machine Learning" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Services", path: "/services" },

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import AIAutomationsContent from "./Content";
-import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 const title = "AI & Automations — Intelligent Workflow & Process Automation | YashOrbit";
 const description =
@@ -28,14 +28,19 @@ export const metadata: Metadata = {
 };
 
 export default function AIAutomationsPage() {
-  const breadcrumbs = breadcrumbJsonLd([
-    { name: "Home", path: "/" },
-    { name: "AI & Automations", path },
-  ]);
+  const jsonLd = [
+    serviceJsonLd({ name: "AI & Process Automation Services", description, path, category: "AI & Machine Learning" }),
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "AI & Automations", path },
+    ]),
+  ];
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />
+      {jsonLd.map((schema, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      ))}
       <AIAutomationsContent />
     </>
   );

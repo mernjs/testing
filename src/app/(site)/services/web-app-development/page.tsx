@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function WebAppDevelopmentPage() {
   const jsonLd = [
-    serviceJsonLd({ name: "Web App Development", description, path }),
+    serviceJsonLd({ name: "Web App Development", description, path, category: "Web App Development" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Services", path: "/services" },

@@ -27,22 +27,25 @@ export const metadata: Metadata = {
 };
 
 export default function SoftwareDevelopmentPage() {
-  const breadcrumbs = breadcrumbJsonLd([
-    { name: "Home", path: "/" },
-    { name: "Services", path: "/services" },
-    { name: "Software Development", path },
-  ]);
-
-  const service = serviceJsonLd({
-    name: "Software Development",
-    description,
-    path,
-  });
+  const jsonLd = [
+    serviceJsonLd({
+      name: "Software Development",
+      description,
+      path,
+      category: "Custom Software Development",
+    }),
+    breadcrumbJsonLd([
+      { name: "Home", path: "/" },
+      { name: "Services", path: "/services" },
+      { name: "Software Development", path },
+    ]),
+  ];
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(service) }} />
+      {jsonLd.map((schema, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      ))}
       <SoftwareDevelopmentContent />
     </>
   );

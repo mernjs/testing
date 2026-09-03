@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function AIMLSolutionsPage() {
   const jsonLd = [
-    serviceJsonLd({ name: "AI/ML Solutions", description, path }),
+    serviceJsonLd({ name: "AI/ML Solutions", description, path, category: "AI & Machine Learning" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Services", path: "/services" },

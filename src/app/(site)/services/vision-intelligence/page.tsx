@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function VisionIntelligencePage() {
   const jsonLd = [
-    serviceJsonLd({ name: "Vision Intelligence", description, path }),
+    serviceJsonLd({ name: "Vision Intelligence", description, path, category: "AI & Machine Learning" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Services", path: "/services" },

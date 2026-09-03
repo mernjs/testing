@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function AIAgentPage() {
   const jsonLd = [
-    serviceJsonLd({ name: "AI Agent Development", description, path }),
+    serviceJsonLd({ name: "AI Agent Development", description, path, category: "AI & Machine Learning" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Services", path: "/services" },

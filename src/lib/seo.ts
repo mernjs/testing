@@ -182,21 +182,29 @@ interface ServiceJsonLdInput {
   name: string;
   description: string;
   path: string;
+  category?: string;
 }
 
-export function serviceJsonLd({ name, description, path }: ServiceJsonLdInput) {
+export function serviceJsonLd({ name, description, path, category = "IT & Software Services" }: ServiceJsonLdInput) {
   return {
     "@context": "https://schema.org",
     "@type": "Service",
     serviceType: name,
     name,
     description,
+    category,
     url: `${siteUrl}${path}`,
     provider: {
       "@type": "Organization",
       name: organizationInfo.name,
       sameAs: organizationInfo.url,
+      logo: organizationInfo.logo,
     },
+    areaServed: {
+      "@type": "Country",
+      name: "Worldwide",
+    },
+    termsOfService: `${siteUrl}/about/terms-and-conditions`,
   };
 }
 
