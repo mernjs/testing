@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import FinanceContent from "./Content";
 import { financeFaqs } from "./faqs";
-import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Finance Software Development | YashOrbit";
 const description =
@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 export default function FinancePage() {
   const jsonLd = [
+    serviceJsonLd({ name: "FinTech & Financial Software Development", description, path, category: "Financial Technology" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Industries", path: "/industries" },

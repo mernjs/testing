@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import AgricultureContent from "./Content";
 import { agricultureFaqs } from "./faqs";
-import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Agriculture Software Development | YashOrbit";
 const description =
@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 export default function AgriculturePage() {
   const jsonLd = [
+    serviceJsonLd({ name: "AgriTech & Agriculture Software Development", description, path, category: "Agriculture Technology" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Industries", path: "/industries" },

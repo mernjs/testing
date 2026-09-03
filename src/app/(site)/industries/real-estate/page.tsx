@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import RealEstateContent from "./Content";
 import { realEstateFaqs } from "./faqs";
-import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Real Estate Software Development | YashOrbit";
 const description =
@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 export default function RealEstatePage() {
   const jsonLd = [
+    serviceJsonLd({ name: "Real Estate Software Development", description, path, category: "PropTech & Real Estate Technology" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Industries", path: "/industries" },

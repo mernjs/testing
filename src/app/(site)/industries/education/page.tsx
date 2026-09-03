@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import EducationContent from "./Content";
 import { educationFaqs } from "./faqs";
-import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Education Software Development | YashOrbit";
 const description =
@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 export default function EducationPage() {
   const jsonLd = [
+    serviceJsonLd({ name: "EdTech & Education Software Development", description, path, category: "Educational Technology" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Industries", path: "/industries" },

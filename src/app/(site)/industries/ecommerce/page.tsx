@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import EcommerceContent from "./Content";
 import { ecommerceFaqs } from "./faqs";
-import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Ecommerce Software Development | YashOrbit";
 const description =
@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 export default function EcommercePage() {
   const jsonLd = [
+    serviceJsonLd({ name: "E-Commerce Software Development", description, path, category: "E-Commerce & Retail Technology" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Industries", path: "/industries" },

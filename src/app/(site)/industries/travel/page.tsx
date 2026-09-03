@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import TravelContent from "./Content";
 import { travelFaqs } from "./faqs";
-import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Travel Software Development | YashOrbit";
 const description =
@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 export default function TravelPage() {
   const jsonLd = [
+    serviceJsonLd({ name: "Travel & Tourism Software Development", description, path, category: "Travel & Tourism Technology" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Industries", path: "/industries" },

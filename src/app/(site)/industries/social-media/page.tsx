@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import SocialMediaContent from "./Content";
 import { socialMediaFaqs } from "./faqs";
-import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Social Media Platform Development | YashOrbit";
 const description =
@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 export default function SocialMediaPage() {
   const jsonLd = [
+    serviceJsonLd({ name: "Social Media App & Platform Development", description, path, category: "Media & Social Technology" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Industries", path: "/industries" },

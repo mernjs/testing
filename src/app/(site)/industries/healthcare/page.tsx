@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import HealthcareContent from "./Content";
 import { healthcareFaqs } from "./faqs";
-import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Healthcare Software Development | YashOrbit";
 const description =
@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 export default function HealthcarePage() {
   const jsonLd = [
+    serviceJsonLd({ name: "Healthcare Software Development", description, path, category: "Healthcare Technology" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Industries", path: "/industries" },

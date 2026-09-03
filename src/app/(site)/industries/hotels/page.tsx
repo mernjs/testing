@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import HotelsContent from "./Content";
 import { hotelsFaqs } from "./faqs";
-import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 const title = "Hotel & Hospitality Software Development | YashOrbit";
 const description =
@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 export default function HotelsPage() {
   const jsonLd = [
+    serviceJsonLd({ name: "Hospitality & Hotel Software Development", description, path, category: "Hospitality Technology" }),
     breadcrumbJsonLd([
       { name: "Home", path: "/" },
       { name: "Industries", path: "/industries" },
