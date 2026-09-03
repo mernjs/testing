@@ -34,6 +34,16 @@ export interface JobListItem {
   description: string;
 }
 
+export type JobStatus = "published" | "draft" | "closed" | "expired";
+
+export interface BaseSalary {
+  currency: string;
+  minValue?: number;
+  maxValue?: number;
+  value?: number;
+  unitText: "HOUR" | "DAY" | "WEEK" | "MONTH" | "YEAR";
+}
+
 export interface Job {
   slug: string;
   title: string;
@@ -47,6 +57,11 @@ export interface Job {
   qualifications: JobListItem[];
   niceToHave: string[];
   skills: string[];
+  status?: JobStatus;
+  datePosted?: string;
+  validThrough?: string;
+  baseSalary?: BaseSalary;
+  isRemote?: boolean;
 }
 
 export interface Perk {
@@ -528,6 +543,14 @@ export const jobs: Job[] = [
 
 export function getJobBySlug(slug: string): Job | undefined {
   return jobs.find((job) => job.slug === slug);
+}
+
+export function getPublishedJobs(): Job[] {
+  return jobs.filter((job) => (job.status ?? "published") === "published");
+}
+
+export function getAllJobSlugs(): string[] {
+  return jobs.map((job) => job.slug);
 }
 
 export function mailtoApplyHref(role: string) {

@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { siteUrl } from "@/lib/seo";
 import { blogPosts } from "@/lib/blog";
+import { jobs } from "@/app/(site)/careers/jobs-data";
 
 const APP_DIR = path.join(process.cwd(), "src/app/(site)");
 
@@ -38,18 +39,35 @@ function discoverRoutes(dir: string, base = ""): string[] {
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const blogDates = new Map(blogPosts.map((post) => [`/blog/${post.slug}`, post.date]));
+  const jobMap = new Map(jobs.map((job) => [`/careers/${job.slug}`, job]));
+
+  // Dynamically filter out draft, closed, or expired job postings from sitemap
+  const excludedJobRoutes = new Set(
+    jobs
+      .filter((job) => job.status === "draft" || job.status === "closed" || job.status === "expired")
+      .map((job) => `/careers/${job.slug}`)
+  );
 
   const routes = discoverRoutes(APP_DIR)
-    .filter((route) => !EXCLUDED_ROUTES.has(route))
+    .filter((route) => !EXCLUDED_ROUTES.has(route) && !excludedJobRoutes.has(route))
     .sort();
 
   return routes.map((route) => {
     const blogDate = blogDates.get(route);
+    const job = jobMap.get(route);
+
+    let lastModified = new Date();
+    if (blogDate) {
+      lastModified = new Date(blogDate);
+    } else if (job && job.datePosted) {
+      lastModified = new Date(job.datePosted);
+    }
+
     return {
       url: `${siteUrl}${route}`,
-      lastModified: blogDate ? new Date(blogDate) : new Date(),
-      changeFrequency: blogDate ? "monthly" : "weekly",
-      priority: route === "/" ? 1 : blogDate ? 0.6 : 0.7,
+      lastModified,
+      changeFrequency: blogDate ? "monthly" : job ? "weekly" : "weekly",
+      priority: route === "/" ? 1 : blogDate ? 0.6 : job ? 0.7 : 0.7,
     };
   });
 }
