@@ -172,7 +172,7 @@ export default function Footer() {
           </div>
           <div className="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6 xl:col-span-2 xl:mt-0">
             <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-primary">
+              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 Services
               </h3>
@@ -211,7 +211,7 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-primary">
+              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 AI & Automations
               </h3>
@@ -255,7 +255,7 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-primary">
+              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 Products
               </h3>
@@ -299,7 +299,7 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-primary">
+              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 Company
               </h3>
@@ -348,7 +348,7 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-primary">
+              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 Training
               </h3>
@@ -392,7 +392,7 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-primary">
+              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 Careers
               </h3>
