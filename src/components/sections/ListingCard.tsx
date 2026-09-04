@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { ArrowRight, CheckCircle2, LucideIcon } from "lucide-react";
+import BrandMark from "@/components/BrandMark";
 
 interface ListingCardProps {
   icon: LucideIcon;
@@ -102,6 +103,7 @@ export default function ListingCard({
               <Icon className="w-6 h-6 text-primary group-hover/card:text-white transition-colors duration-300" />
             </div>
             <span className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-background/70 border border-border/50 px-2.5 py-1 rounded-full backdrop-blur-sm group-hover/card:border-primary/30 group-hover/card:text-foreground transition-colors duration-300">
+              <BrandMark className="w-3.5 h-3.5" />
               <BadgeIcon className="w-3 h-3 text-primary flex-none" />
               {String(index + 1).padStart(2, "0")}
             </span>

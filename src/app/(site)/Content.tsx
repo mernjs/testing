@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, Code, Cpu, LineChart, Globe, Sparkles, CheckCircle2, Play, Users, Zap, Layers,
@@ -16,6 +17,7 @@ import ProcessOrbit from "@/components/sections/ProcessOrbit";
 import FAQAccordion from "@/components/sections/FAQAccordion";
 import SectionHeader from "@/components/sections/SectionHeader";
 import SubscriptionCard from "@/components/sections/SubscriptionCard";
+import BrandMark from "@/components/BrandMark";
 import { brandify } from "@/lib/brand";
 import { homeFaqs } from "./faqs";
 import { engagementCategories } from "./resource-augmentation/resources-data";
@@ -33,6 +35,7 @@ const coreDepartments = [
     href: "/software-development",
     cta: "Explore Software Development",
     badge: "Core Engineering",
+    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1200&auto=format&fit=crop",
   },
   {
     tag: "Department 02",
@@ -47,6 +50,7 @@ const coreDepartments = [
     cta: "Explore AI & Automations",
     badge: "New & Featured Division",
     featured: true,
+    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop",
   },
   {
     tag: "Department 03",
@@ -58,6 +62,7 @@ const coreDepartments = [
     icon: GraduationCap,
     href: "/industrial-training",
     cta: "Explore Training",
+    image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200&auto=format&fit=crop",
   },
   {
     tag: "Department 04",
@@ -67,6 +72,7 @@ const coreDepartments = [
     icon: UserPlus,
     href: "/resource-augmentation",
     cta: "Explore Hiring",
+    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop",
   },
   {
     tag: "Department 05",
@@ -78,6 +84,7 @@ const coreDepartments = [
     icon: Briefcase,
     href: "/internship-program",
     cta: "Explore Internships",
+    image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop",
   },
 ];
 
@@ -485,50 +492,65 @@ export default function HomeContent() {
                   className="group relative"
                 >
                   <div className={`absolute -inset-1 rounded-[2.5rem] bg-gradient-to-br ${
-                    isAI ? "from-primary/50 via-[#ff8e75]/20 to-secondary/40" : "from-primary/30 via-primary/0 to-secondary/30"
-                  } opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 pointer-events-none`} />
+                    isAI ? "from-primary/40 via-primary/10 to-secondary/30" : "from-primary/30 via-primary/0 to-secondary/30"
+                  } opacity-60 group-hover:opacity-100 blur-2xl transition-opacity duration-500 pointer-events-none`} />
 
                   <Link
                     href={department.href}
-                    className="relative flex flex-col justify-between h-full rounded-[2.5rem] bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 p-8 sm:p-11 border border-white/10 overflow-hidden shadow-xl group-hover:shadow-2xl group-hover:shadow-primary/20 group-hover:-translate-y-1 transition-all duration-300"
+                    className="relative flex flex-col justify-between h-full rounded-[2.5rem] bg-muted/10 p-8 sm:p-11 border border-border/50 hover:border-primary/40 overflow-hidden shadow-xl group-hover:shadow-2xl group-hover:shadow-primary/10 group-hover:-translate-y-1 transition-all duration-300"
                   >
+                    {/* Ambient color wash */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                      <Image
+                        src={department.image}
+                        alt=""
+                        fill
+                        sizes="(min-width: 1024px) 600px, 100vw"
+                        className="object-cover scale-125 blur-2xl opacity-[0.09] group-hover:opacity-[0.18] transition-opacity duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/5 to-muted/20" />
+                    </div>
+
                     {/* Ambient glow blobs */}
-                    <div className={`absolute -top-32 -right-16 w-80 h-80 ${isAI ? "bg-primary/40" : "bg-secondary/30"} rounded-full blur-[110px] pointer-events-none`} />
-                    <div className="absolute -bottom-24 -left-16 w-64 h-64 bg-primary/20 rounded-full blur-[90px] pointer-events-none" />
+                    <div className={`absolute -top-32 -right-16 w-80 h-80 ${isAI ? "bg-primary/25" : "bg-secondary/20"} rounded-full blur-[100px] pointer-events-none`} />
+                    <div className="absolute -bottom-24 -left-16 w-64 h-64 bg-primary/15 rounded-full blur-[90px] pointer-events-none" />
 
                     <div className="relative z-10 mb-8">
                       <div className="flex items-center justify-between gap-4 mb-6">
                         <span className={`inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest ${
                           isAI
                             ? "text-primary-foreground bg-gradient-to-r from-primary to-[#ff8e75] shadow-lg shadow-primary/30"
-                            : "text-white bg-white/10 border border-white/15"
+                            : "text-foreground bg-background border border-border/50"
                         } px-3.5 py-1.5 rounded-full`}>
                           <Sparkles className="w-3.5 h-3.5" />
                           {department.badge}
                         </span>
-                        <span className="text-xs font-extrabold uppercase tracking-widest text-white/40">{department.tag}</span>
+                        <div className="flex items-center gap-2 bg-background/80 border border-border/50 px-3 py-1 rounded-full backdrop-blur-sm shadow-sm">
+                          <BrandMark className="w-4 h-4 shrink-0" />
+                          <span className="text-xs font-extrabold uppercase tracking-widest text-muted-foreground">{department.tag}</span>
+                        </div>
                       </div>
 
                       <div className="flex items-center gap-4 mb-6">
                         <div className={`w-14 h-14 rounded-2xl ${
-                          isAI ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30" : "bg-white/10 text-white border border-white/15"
+                          isAI ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30" : "bg-primary/10 text-primary border border-border/50"
                         } flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                           <IconComponent className="w-7 h-7" />
                         </div>
-                        <h3 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">{department.title}</h3>
+                        <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight group-hover:text-primary transition-colors">{department.title}</h3>
                       </div>
 
-                      <p className="text-white/70 text-base leading-relaxed mb-6">{department.description}</p>
+                      <p className="text-muted-foreground text-base leading-relaxed mb-6">{department.description}</p>
 
                       <div className="pt-2">
-                        <p className="text-[11px] font-bold uppercase tracking-widest text-white/50 mb-3">
+                        <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
                           Featured Capabilities ({department.services.length})
                         </p>
                         <div className="flex flex-wrap gap-2">
                           {department.services.map((service) => (
                             <span
                               key={service}
-                              className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-white/10 border border-white/15 px-3 py-1 rounded-full group-hover:border-primary/50 group-hover:bg-white/15 transition-colors duration-300"
+                              className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground bg-background border border-border/60 px-3 py-1 rounded-full group-hover:border-primary/40 group-hover:bg-primary/5 transition-colors duration-300"
                             >
                               <CheckCircle2 className="w-3 h-3 text-primary flex-none" />
                               {service}
@@ -538,8 +560,8 @@ export default function HomeContent() {
                       </div>
                     </div>
 
-                    <div className="relative z-10 pt-4 border-t border-white/10">
-                      <span className="inline-flex items-center gap-2 rounded-full bg-white group-hover:bg-primary px-6 py-3 text-sm font-bold text-foreground group-hover:text-primary-foreground transition-all duration-300">
+                    <div className="relative z-10 pt-4 border-t border-border/50">
+                      <span className="inline-flex items-center gap-2 rounded-full bg-foreground group-hover:bg-primary px-6 py-3 text-sm font-bold text-background group-hover:text-primary-foreground transition-all duration-300">
                         {department.cta}
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </span>
@@ -565,16 +587,35 @@ export default function HomeContent() {
 
                 <Link
                   href={department.href}
-                  className="relative flex flex-col h-full p-7 rounded-[1.75rem] bg-background border border-border/50 overflow-hidden shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300"
+                  className="relative flex flex-col h-full p-7 rounded-[1.75rem] bg-muted/10 border border-border/50 overflow-hidden shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300"
                 >
+                  {/* Ambient color wash, sampled from the item's real image */}
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <Image
+                      src={department.image}
+                      alt=""
+                      fill
+                      sizes="400px"
+                      className="object-cover scale-125 blur-2xl opacity-[0.08] group-hover:opacity-[0.16] transition-opacity duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/5 to-muted/20" />
+                  </div>
+
                   <span className="pointer-events-none absolute -top-4 -right-2 text-6xl font-black leading-none text-muted-foreground/[0.07] group-hover:text-primary/10 transition-colors duration-500 select-none">
                     0{idx + 3}
                   </span>
 
                   <div className="relative z-10 flex flex-col h-full">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
-                      <department.icon className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
+                        <department.icon className="w-5 h-5 text-primary group-hover:text-primary-foreground transition-colors" />
+                      </div>
+                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-background/70 border border-border/50 px-2.5 py-1 rounded-full backdrop-blur-sm group-hover:border-primary/30 group-hover:text-foreground transition-colors duration-300">
+                        <BrandMark className="w-3.5 h-3.5" />
+                        <span>0{idx + 3}</span>
+                      </span>
                     </div>
+
                     <h3 className="text-lg font-bold text-foreground mb-2 leading-snug">{department.title}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed mb-6">{department.description}</p>
 
@@ -648,14 +689,25 @@ export default function HomeContent() {
               >
                 <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
 
-                <div className="relative h-full p-6 rounded-3xl bg-background border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/30 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                <div className="relative h-full p-6 rounded-3xl bg-muted/10 border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  {/* Ambient color wash matching listing card background */}
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/5 to-muted/20" />
+                  </div>
+
                   <span className="pointer-events-none absolute -top-3 -right-1 text-5xl font-black leading-none text-muted-foreground/[0.06] group-hover:text-primary/10 transition-colors duration-500 select-none">
                     0{i + 1}
                   </span>
 
                   <div className="relative z-10">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center mb-5 shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                      <reason.icon className="w-5 h-5 text-white" />
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                        <reason.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-background/70 border border-border/50 px-2.5 py-1 rounded-full backdrop-blur-sm group-hover:border-primary/30 group-hover:text-foreground transition-colors duration-300">
+                        <BrandMark className="w-3.5 h-3.5" />
+                        <span>0{i + 1}</span>
+                      </span>
                     </div>
                     <h3 className="font-bold text-foreground mb-2 leading-snug">{reason.name}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">{reason.desc}</p>
@@ -692,14 +744,25 @@ export default function HomeContent() {
               >
                 <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
 
-                <div className="relative h-full p-7 rounded-3xl bg-background border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/30 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                <div className="relative h-full p-7 rounded-3xl bg-muted/10 border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  {/* Ambient color wash matching listing card background */}
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/5 to-muted/20" />
+                  </div>
+
                   <span className="pointer-events-none absolute -top-4 -right-2 text-6xl font-black leading-none text-muted-foreground/[0.06] group-hover:text-primary/10 transition-colors duration-500 select-none">
                     {String(i + 1).padStart(2, "0")}
                   </span>
 
                   <div className="relative z-10">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center mb-5 shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                      <step.icon className="w-5 h-5 text-white" />
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                        <step.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-background/70 border border-border/50 px-2.5 py-1 rounded-full backdrop-blur-sm group-hover:border-primary/30 group-hover:text-foreground transition-colors duration-300">
+                        <BrandMark className="w-3.5 h-3.5" />
+                        <span>Step {i + 1}</span>
+                      </span>
                     </div>
                     <h3 className="font-bold text-foreground mb-2 leading-snug">{step.title}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
@@ -760,7 +823,12 @@ export default function HomeContent() {
               >
                 <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
 
-                <div className="relative h-full flex flex-col p-6 rounded-3xl bg-background border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/30 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                <div className="relative h-full flex flex-col p-6 rounded-3xl bg-muted/10 border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  {/* Ambient color wash matching listing card background */}
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/5 to-muted/20" />
+                  </div>
+
                   <span className="pointer-events-none absolute -top-4 -right-2 text-6xl font-black leading-none text-muted-foreground/[0.06] group-hover:text-primary/10 transition-colors duration-500 select-none">
                     {String(i + 1).padStart(2, "0")}
                   </span>
@@ -770,7 +838,8 @@ export default function HomeContent() {
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                         <phase.icon className="w-5 h-5 text-white" />
                       </div>
-                      <span className="text-[11px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-full">
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
+                        <BrandMark className="w-3.5 h-3.5" />
                         {phase.duration}
                       </span>
                     </div>
@@ -825,14 +894,25 @@ export default function HomeContent() {
               >
                 <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
 
-                <div className="relative h-full p-7 rounded-3xl bg-background border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/30 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                <div className="relative h-full p-7 rounded-3xl bg-muted/10 border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  {/* Ambient color wash matching listing card background */}
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/5 to-muted/20" />
+                  </div>
+
                   <span className="pointer-events-none absolute -top-4 -right-2 text-6xl font-black leading-none text-muted-foreground/[0.06] group-hover:text-primary/10 transition-colors duration-500 select-none">
                     {String(i + 1).padStart(2, "0")}
                   </span>
 
                   <div className="relative z-10">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center mb-5 shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                      <item.icon className="w-5 h-5 text-white" />
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                        <item.icon className="w-5 h-5 text-white" />
+                      </div>
+                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-background/70 border border-border/50 px-2.5 py-1 rounded-full backdrop-blur-sm group-hover:border-primary/30 group-hover:text-foreground transition-colors duration-300">
+                        <BrandMark className="w-3.5 h-3.5" />
+                        <span>0{i + 1}</span>
+                      </span>
                     </div>
                     <h3 className="font-bold text-foreground mb-2 leading-snug">{item.title}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
@@ -1147,11 +1227,20 @@ export default function HomeContent() {
               >
                 <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
 
-                <div className="relative h-full flex flex-col items-center text-center gap-3 p-6 rounded-3xl bg-background border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/30 group-hover:-translate-y-1 transition-all duration-300">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                    <item.icon className="w-5 h-5 text-white" />
+                <div className="relative h-full flex flex-col items-center text-center gap-3 p-6 rounded-3xl bg-muted/10 border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  {/* Ambient color wash matching listing card background */}
+                  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/5 to-muted/20" />
                   </div>
-                  <div className="text-sm font-bold text-foreground">{item.title}</div>
+                  <div className="w-full flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                      <item.icon className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-muted-foreground bg-background/70 border border-border/50 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                      <BrandMark className="w-3 h-3" />
+                    </span>
+                  </div>
+                  <div className="text-sm font-bold text-foreground mt-1">{item.title}</div>
                   <div className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{item.desc}</div>
                 </div>
               </motion.div>

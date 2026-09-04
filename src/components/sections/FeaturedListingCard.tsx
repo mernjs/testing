@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2, Sparkles, LucideIcon } from "lucide-react";
+import BrandMark from "@/components/BrandMark";
 
 interface FeaturedListingCardProps {
   icon: LucideIcon;
@@ -74,6 +75,7 @@ export default function FeaturedListingCard({
               {subtitle}
             </span>
             <span className="hidden lg:inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-background/70 border border-border/50 px-2.5 py-1 rounded-full backdrop-blur-sm">
+              <BrandMark className="w-3.5 h-3.5" />
               <BadgeIcon className="w-3 h-3 text-primary flex-none" />
               {badge}
             </span>
