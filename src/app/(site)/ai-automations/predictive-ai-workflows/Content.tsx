@@ -220,6 +220,8 @@ export default function PredictiveAIWorkflowsContent() {
         description="Tell us about the business outcome you want to predict and prevent — and we'll design an ML workflow system that turns your operational data into proactive intelligence."
         ctaLabel="Start a Conversation"
         checklist={["Free data & opportunity assessment", "Closed-loop prediction-to-action design", "Production model monitoring included"]}
+        category="ai-automations"
+        subService="predictive-ai-workflows"
       />
     </div>
   );

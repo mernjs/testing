@@ -220,6 +220,8 @@ export default function DocumentIntelligenceContent() {
         description="Tell us about your highest-volume document type and we'll design an extraction pipeline that processes it accurately and routes data into your systems automatically."
         ctaLabel="Start a Conversation"
         checklist={["Free document corpus assessment", "Accuracy-benchmarked delivery", "Any document type or format"]}
+        category="ai-automations"
+        subService="document-intelligence"
       />
     </div>
   );

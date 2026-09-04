@@ -230,6 +230,8 @@ export default function ARVRContent() {
         heading="Ready to build an experience people remember?"
         description="Let's talk about your audience, your hardware target, and how we can help you build something truly immersive."
         ctaLabel="Get a Quote"
+        category="software-development"
+        subService="ar-vr"
       />
     </div>
   );

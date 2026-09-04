@@ -178,6 +178,8 @@ export default function AgenticAiContent() {
         heading="Ready to build agents that plan and act on their own?"
         description="Join the next batch and go from single prompts to deployed, autonomous multi-agent systems."
         ctaLabel="Enroll Now"
+        category="industrial-training"
+        subService="agentic-ai"
       />
     </div>
   );

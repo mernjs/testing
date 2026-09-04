@@ -220,6 +220,8 @@ export default function AIIntegrationServicesContent() {
         description="Tell us about the system you want to augment with AI and we'll design an integration that adds genuine value without requiring a platform replacement."
         ctaLabel="Start a Conversation"
         checklist={["Free integration discovery session", "API-first, no platform replacement", "Cost-optimised from day one"]}
+        category="ai-automations"
+        subService="ai-integration-services"
       />
     </div>
   );

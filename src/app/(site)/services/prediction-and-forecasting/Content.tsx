@@ -230,6 +230,8 @@ export default function PredictionForecastingContent() {
         heading="Ready to forecast with confidence instead of guessing?"
         description="Let's talk about your data, your planning cycles, and how we can help you see further ahead."
         ctaLabel="Get a Quote"
+        category="software-development"
+        subService="prediction-and-forecasting"
       />
     </div>
   );

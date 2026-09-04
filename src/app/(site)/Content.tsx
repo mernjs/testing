@@ -12,6 +12,7 @@ import {
   Mail, Phone, Workflow, Building2, GraduationCap, HelpCircle,
   Eye, Wallet, FileSignature, Copyright, BadgeCheck,
   UserPlus, MonitorPlay, UserCheck, ArrowLeftRight, CalendarClock, Handshake, LifeBuoy, Briefcase,
+  Loader2,
 } from "lucide-react";
 import ProcessOrbit from "@/components/sections/ProcessOrbit";
 import FAQAccordion from "@/components/sections/FAQAccordion";
@@ -21,6 +22,10 @@ import BrandMark from "@/components/BrandMark";
 import { brandify } from "@/lib/brand";
 import { homeFaqs } from "./faqs";
 import { engagementCategories } from "./resource-augmentation/resources-data";
+import { CATEGORIES, categoryAcceptsResume, getSubServices, type CategorySlug } from "@/lib/categories";
+import { SUCCESS_AUTO_HIDE_MS, useLeadSubmit } from "@/lib/useLeadSubmit";
+import { useStableCardHeight } from "@/lib/useStableCardHeight";
+import LeadSuccessState from "@/components/sections/LeadSuccessState";
 
 const coreDepartments = [
   {
@@ -161,6 +166,39 @@ export default function HomeContent() {
 
   const [activeService, setActiveService] = useState(0);
   const [activeIndustry, setActiveIndustry] = useState(0);
+
+  const [heroCategory, setHeroCategory] = useState<CategorySlug>(CATEGORIES[0].slug);
+  const [heroSubService, setHeroSubService] = useState<string>(getSubServices(CATEGORIES[0].slug)[0].slug);
+  const [heroName, setHeroName] = useState("");
+  const [heroPhone, setHeroPhone] = useState("");
+  const [heroMessage, setHeroMessage] = useState("");
+  const [heroResumeFile, setHeroResumeFile] = useState<File | null>(null);
+  const heroLead = useLeadSubmit();
+  const { ref: heroCardBodyRef, minHeight: heroCardMinHeight } = useStableCardHeight(heroLead.status === "success");
+  const heroWantsResume = categoryAcceptsResume(heroCategory);
+
+  function handleHeroCategoryChange(next: CategorySlug) {
+    setHeroCategory(next);
+    setHeroSubService(getSubServices(next)[0].slug);
+  }
+
+  async function handleHeroSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const ok = await heroLead.submit(heroCategory, {
+      name: heroName,
+      phone: heroPhone,
+      message: heroWantsResume ? undefined : heroMessage,
+      subService: heroSubService,
+      resume: heroWantsResume ? heroResumeFile : undefined,
+      source: "homepage-hero",
+    });
+    if (ok) {
+      setHeroName("");
+      setHeroPhone("");
+      setHeroMessage("");
+      setHeroResumeFile(null);
+    }
+  }
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -1325,35 +1363,107 @@ export default function HomeContent() {
 
               <div className="p-8 sm:p-10 rounded-[2rem] bg-muted/20 border border-border/50 shadow-2xl relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
-                <p className="relative z-10 text-sm text-muted-foreground mb-6 flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-primary flex-none" />
-                  We reply to every consultation request within one business day.
-                </p>
-                <form className="relative z-10 space-y-5" onSubmit={(e) => e.preventDefault()}>
+                <div ref={heroCardBodyRef} style={{ minHeight: heroCardMinHeight }} className="relative flex flex-col justify-center">
+                {heroLead.status !== "success" && (
+                  <p className="relative z-10 text-sm text-muted-foreground mb-6 flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-primary flex-none" />
+                    We reply to every consultation request within one business day.
+                  </p>
+                )}
+                <AnimatePresence mode="wait">
+                {heroLead.status === "success" ? (
+                  <LeadSuccessState
+                    key="success"
+                    title="Request sent!"
+                    description="Thanks — our team will reach out within one business day."
+                    onDismiss={heroLead.reset}
+                    autoHideMs={SUCCESS_AUTO_HIDE_MS}
+                    compact
+                  />
+                ) : (
+                <form key="form" className="relative z-10 space-y-5" onSubmit={handleHeroSubmit} noValidate>
+                  <select
+                    value={heroCategory}
+                    onChange={(e) => handleHeroCategoryChange(e.target.value as CategorySlug)}
+                    aria-label="I'm interested in"
+                    className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                  >
+                    {CATEGORIES.map((c) => (
+                      <option key={c.slug} value={c.slug}>{c.label}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={heroSubService}
+                    onChange={(e) => setHeroSubService(e.target.value)}
+                    aria-label="Specific service"
+                    className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                  >
+                    {getSubServices(heroCategory).map((s) => (
+                      <option key={s.slug} value={s.slug}>{s.label}</option>
+                    ))}
+                  </select>
+                  {heroLead.fieldErrors.subService && <p className="text-xs text-red-500 -mt-3">{heroLead.fieldErrors.subService}</p>}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <input
-                      type="text"
-                      placeholder="Your name"
-                      className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
-                    />
-                    <input
-                      type="email"
-                      placeholder="Work email"
-                      className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
-                    />
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Your Name"
+                        value={heroName}
+                        onChange={(e) => setHeroName(e.target.value)}
+                        required
+                        className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                      />
+                      {heroLead.fieldErrors.name && <p className="text-xs text-red-500 mt-1">{heroLead.fieldErrors.name}</p>}
+                    </div>
+                    <div>
+                      <input
+                        type="text"
+                        placeholder="Phone Number"
+                        value={heroPhone}
+                        onChange={(e) => setHeroPhone(e.target.value)}
+                        required
+                        className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                      />
+                      {heroLead.fieldErrors.phone && <p className="text-xs text-red-500 mt-1">{heroLead.fieldErrors.phone}</p>}
+                    </div>
                   </div>
-                  <textarea
-                    rows={3}
-                    placeholder="Tell us about your project..."
-                    className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors resize-none"
-                  ></textarea>
+                  {heroWantsResume ? (
+                    <div>
+                      <input
+                        type="file"
+                        aria-label="Resume / CV"
+                        accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        onChange={(e) => setHeroResumeFile(e.target.files?.[0] ?? null)}
+                        className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-sm text-foreground file:mr-4 file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-2 file:text-xs file:font-semibold file:text-primary-foreground hover:file:bg-primary/90 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                      />
+                      {heroResumeFile && <p className="text-xs text-muted-foreground mt-1">Selected: {heroResumeFile.name}</p>}
+                      {heroLead.fieldErrors.resume && <p className="text-xs text-red-500 mt-1">{heroLead.fieldErrors.resume}</p>}
+                    </div>
+                  ) : (
+                    <textarea
+                      rows={3}
+                      placeholder="Tell us about your project..."
+                      value={heroMessage}
+                      onChange={(e) => setHeroMessage(e.target.value)}
+                      className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors resize-none"
+                    ></textarea>
+                  )}
+                  {heroLead.error && <p className="text-xs text-red-500 text-center">{heroLead.error}</p>}
                   <button
                     type="submit"
-                    className="group w-full rounded-xl bg-primary px-8 py-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                    disabled={heroLead.status === "submitting"}
+                    className="group w-full rounded-xl bg-primary px-8 py-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    Start a Project <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    {heroLead.status === "submitting" ? (
+                      <>Sending <Loader2 className="w-4 h-4 animate-spin" /></>
+                    ) : (
+                      <>Start a Project <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
+                    )}
                   </button>
                 </form>
+                )}
+                </AnimatePresence>
+                </div>
               </div>
             </motion.div>
           </div>

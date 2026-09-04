@@ -77,6 +77,7 @@ export default function IndustrialTrainingContent() {
         heading="Not sure which program fits you?"
         description="Talk to our training team and we'll help you pick the right track based on your background and career goals."
         ctaLabel="Enroll Now"
+        category="industrial-training"
       />
     </div>
   );

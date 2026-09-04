@@ -178,6 +178,8 @@ export default function ConversationalAiContent() {
         heading="Ready to design conversations people actually enjoy?"
         description="Join the next batch and build deployed chatbot and voice assistant experiences from scratch."
         ctaLabel="Enroll Now"
+        category="industrial-training"
+        subService="conversational-ai"
       />
     </div>
   );

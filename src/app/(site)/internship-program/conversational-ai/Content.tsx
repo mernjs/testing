@@ -162,6 +162,8 @@ export default function ConversationalAiInternshipContent() {
         heading="Ready to intern on real Conversational AI work?"
         description="Apply for the Conversational AI internship and start shipping assistants that actually go live."
         ctaLabel="Apply Now"
+        category="internship-program"
+        subService="conversational-ai"
       />
     </div>
   );

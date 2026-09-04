@@ -220,6 +220,8 @@ export default function AIPoweredDataAnalyticsContent() {
         description="Tell us what decisions you're trying to make faster — and we'll design an AI analytics system that surfaces the right signals from your existing data."
         ctaLabel="Start a Conversation"
         checklist={["Free data readiness assessment", "Business-context ML modelling", "End-to-end delivery"]}
+        category="ai-automations"
+        subService="ai-powered-data-analytics"
       />
     </div>
   );

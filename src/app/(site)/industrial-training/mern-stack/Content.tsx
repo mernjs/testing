@@ -178,6 +178,8 @@ export default function MernStackContent() {
         heading="Ready to start building with the MERN stack?"
         description="Join the next batch and go from fundamentals to a deployed full-stack portfolio."
         ctaLabel="Enroll Now"
+        category="industrial-training"
+        subService="mern-stack"
       />
     </div>
   );

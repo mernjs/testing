@@ -162,6 +162,8 @@ export default function MeanInternshipContent() {
         heading="Ready to intern on real MEAN Stack work?"
         description="Apply for the MEAN Stack internship and start shipping enterprise-grade Angular features that actually go live."
         ctaLabel="Apply Now"
+        category="internship-program"
+        subService="mean-stack"
       />
     </div>
   );

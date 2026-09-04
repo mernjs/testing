@@ -65,6 +65,7 @@ export default function ResourceAugmentationContent() {
         description="Tell us what you're building and we'll recommend the right engagement model, team size, and pricing — no obligation."
         ctaLabel="Get a Custom Quote"
         checklist={["Free consultation", "Fast onboarding", "Replacement guarantee"]}
+        category="resource-augmentation"
       />
     </div>
   );

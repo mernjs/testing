@@ -1,10 +1,11 @@
+import type { ReactNode } from "react";
 import { brandify } from "./brand";
 
 export interface Testimonial {
   name: string;
   role: string;
   company: string;
-  quote: string;
+  quote: ReactNode;
   rating: number;
   initials: string;
   color: string;

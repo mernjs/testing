@@ -178,6 +178,8 @@ export default function ComputerVisionContent() {
         heading="Ready to build systems that see and understand images?"
         description="Join the next batch and go from image basics to deployed detection, OCR, and video analytics projects."
         ctaLabel="Enroll Now"
+        category="industrial-training"
+        subService="computer-vision"
       />
     </div>
   );

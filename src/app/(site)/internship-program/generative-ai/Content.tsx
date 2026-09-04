@@ -162,6 +162,8 @@ export default function GenerativeAiInternshipContent() {
         heading="Ready to intern on real Generative AI work?"
         description="Apply for the Generative AI internship and start shipping LLM-powered features that actually go live."
         ctaLabel="Apply Now"
+        category="internship-program"
+        subService="generative-ai"
       />
     </div>
   );

@@ -178,6 +178,8 @@ export default function MeanStackContent() {
         heading="Ready to master enterprise-grade Angular development?"
         description="Join the next batch and build a portfolio of structured, production-style MEAN applications."
         ctaLabel="Enroll Now"
+        category="industrial-training"
+        subService="mean-stack"
       />
     </div>
   );

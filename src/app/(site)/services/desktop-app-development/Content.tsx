@@ -230,6 +230,8 @@ export default function DesktopAppDevelopmentContent() {
         heading="Ready to build software that lives on the desktop?"
         description="Let's talk about your platform requirements, your users' workflows, and how we can help you ship reliable desktop software."
         ctaLabel="Get a Quote"
+        category="software-development"
+        subService="desktop-app-development"
       />
     </div>
   );

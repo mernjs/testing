@@ -162,6 +162,8 @@ export default function ComputerVisionInternshipContent() {
         heading="Ready to intern on real Computer Vision work?"
         description="Apply for the Computer Vision internship and start shipping vision systems that actually go live."
         ctaLabel="Apply Now"
+        category="internship-program"
+        subService="computer-vision"
       />
     </div>
   );

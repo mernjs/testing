@@ -133,6 +133,7 @@ export default function AIAutomationsContent() {
         heading="Not sure which automation fits your business?"
         description="Tell us about the process you want to automate and we'll design a solution around your existing systems, team, and scale — no generic templates."
         checklist={["Free discovery call", "System-agnostic approach", "Production-ready delivery"]}
+        category="ai-automations"
       />
     </div>
   );

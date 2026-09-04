@@ -220,6 +220,8 @@ export default function IntelligentProcessAutomationContent() {
         description="Let's map your workflow, identify where AI genuinely helps, and build an automation system that runs reliably in your real production environment."
         ctaLabel="Start a Conversation"
         checklist={["Free process discovery call", "No platform lock-in", "Production-first delivery"]}
+        category="ai-automations"
+        subService="intelligent-process-automation"
       />
     </div>
   );

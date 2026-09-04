@@ -230,6 +230,8 @@ export default function WebAppDevelopmentContent() {
         heading="Ready to build a web app that scales?"
         description="Let's talk about your product, your users, and how we can help you ship something built to last."
         ctaLabel="Get a Quote"
+        category="software-development"
+        subService="web-app-development"
       />
     </div>
   );

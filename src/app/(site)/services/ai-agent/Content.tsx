@@ -230,6 +230,8 @@ export default function AIAgentContent() {
         heading="Ready to put an AI agent to work in your business?"
         description="Let's talk about the workflow you want to automate and how we can build an agent that actually gets it done."
         ctaLabel="Get a Quote"
+        category="software-development"
+        subService="ai-agent"
       />
     </div>
   );

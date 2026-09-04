@@ -178,6 +178,8 @@ export default function GenerativeAiContent() {
         heading="Ready to build products on top of generative AI?"
         description="Join the next batch and go from prompting to shipping deployed, retrieval-grounded AI applications."
         ctaLabel="Enroll Now"
+        category="industrial-training"
+        subService="generative-ai"
       />
     </div>
   );

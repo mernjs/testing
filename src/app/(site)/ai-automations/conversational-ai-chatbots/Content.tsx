@@ -220,6 +220,8 @@ export default function ConversationalAIChatbotsContent() {
         description="Tell us about your most common customer or employee queries, and we'll design a conversational AI system that handles them end-to-end."
         ctaLabel="Start a Conversation"
         checklist={["Free intent discovery session", "Omnichannel from day one", "Production-ready RAG pipelines"]}
+        category="ai-automations"
+        subService="conversational-ai-chatbots"
       />
     </div>
   );

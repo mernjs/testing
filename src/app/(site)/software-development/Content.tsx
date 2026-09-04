@@ -77,6 +77,7 @@ export default function SoftwareDevelopmentContent() {
       <DetailCTA
         heading="Need custom software engineered for your business?"
         description="Our senior technical team is ready to analyze your requirements and build a scalable solution."
+        category="software-development"
       />
     </div>
   );

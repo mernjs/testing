@@ -1,10 +1,14 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
-import { Mail, MapPin, Phone, ArrowRight, MessageCircle, Clock, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Mail, MapPin, Phone, ArrowRight, MessageCircle, Clock, Sparkles, Loader2 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/SocialIcons";
 import { emails, phone, whatsapp } from "@/lib/contact";
+import { CATEGORIES, categoryAcceptsResume, getSubServices, type CategorySlug } from "@/lib/categories";
+import { SUCCESS_AUTO_HIDE_MS, useLeadSubmit } from "@/lib/useLeadSubmit";
+import { useStableCardHeight } from "@/lib/useStableCardHeight";
+import LeadSuccessState from "@/components/sections/LeadSuccessState";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -13,7 +17,13 @@ const fadeIn = {
 
 const stagger = { visible: { transition: { staggerChildren: 0.1 } } };
 
-export default function ContactContent() {
+export default function ContactContent({
+  initialCategory,
+  initialSubService,
+}: {
+  initialCategory?: CategorySlug;
+  initialSubService?: string;
+}) {
   const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
 
   React.useEffect(() => {
@@ -21,6 +31,44 @@ export default function ContactContent() {
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
+
+  const initialCat = initialCategory ?? CATEGORIES[0].slug;
+  const [category, setCategory] = React.useState<CategorySlug>(initialCat);
+  const [subService, setSubService] = React.useState<string>(initialSubService ?? getSubServices(initialCat)[0].slug);
+  const [name, setName] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [phoneNumber, setPhoneNumber] = React.useState("");
+  const [message, setMessage] = React.useState("");
+  const [resumeFile, setResumeFile] = React.useState<File | null>(null);
+  const { status, error, fieldErrors, submit, reset } = useLeadSubmit();
+  const { ref: cardBodyRef, minHeight: cardMinHeight } = useStableCardHeight(status === "success");
+
+  const wantsResume = categoryAcceptsResume(category);
+
+  function handleCategoryChange(next: CategorySlug) {
+    setCategory(next);
+    setSubService(getSubServices(next)[0].slug);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const ok = await submit(category, {
+      name,
+      email,
+      phone: phoneNumber,
+      message: wantsResume ? undefined : message,
+      subService,
+      resume: wantsResume ? resumeFile : undefined,
+      source: "contact-page",
+    });
+    if (ok) {
+      setName("");
+      setEmail("");
+      setPhoneNumber("");
+      setMessage("");
+      setResumeFile(null);
+    }
+  }
 
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">
@@ -203,42 +251,96 @@ export default function ContactContent() {
             <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
               <div className="p-8 sm:p-12 rounded-3xl bg-muted/20 border border-border/50 shadow-2xl backdrop-blur-sm relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent"></div>
-                <form className="relative z-10 space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div ref={cardBodyRef} style={{ minHeight: cardMinHeight }} className="relative flex flex-col justify-center">
+                <AnimatePresence mode="wait">
+                {status === "success" ? (
+                  <LeadSuccessState
+                    key="success"
+                    description="Thanks for reaching out. Our team will get back to you within one business day."
+                    onDismiss={reset}
+                    autoHideMs={SUCCESS_AUTO_HIDE_MS}
+                  />
+                ) : (
+                <form key="form" className="relative z-10 space-y-6" onSubmit={handleSubmit} noValidate>
                     <div>
-                      <label htmlFor="firstName" className="block text-sm font-semibold text-foreground mb-2">First Name</label>
-                      <input type="text" id="firstName" className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" placeholder="Enter your first name" />
+                      <label htmlFor="category" className="block text-sm font-semibold text-foreground mb-2">I&apos;m interested in</label>
+                      <select
+                        id="category"
+                        value={category}
+                        onChange={(e) => handleCategoryChange(e.target.value as CategorySlug)}
+                        className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                      >
+                        {CATEGORIES.map((c) => (
+                          <option key={c.slug} value={c.slug}>{c.label}</option>
+                        ))}
+                      </select>
                     </div>
                     <div>
-                      <label htmlFor="lastName" className="block text-sm font-semibold text-foreground mb-2">Last Name</label>
-                      <input type="text" id="lastName" className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" placeholder="Enter your last name" />
+                      <label htmlFor="subService" className="block text-sm font-semibold text-foreground mb-2">Specific Service</label>
+                      <select
+                        id="subService"
+                        value={subService}
+                        onChange={(e) => setSubService(e.target.value)}
+                        className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                      >
+                        {getSubServices(category).map((s) => (
+                          <option key={s.slug} value={s.slug}>{s.label}</option>
+                        ))}
+                      </select>
+                      {fieldErrors.subService && <p className="text-xs text-red-500 mt-1">{fieldErrors.subService}</p>}
                     </div>
-                  </div>
+                    <div>
+                      <label htmlFor="firstName" className="block text-sm font-semibold text-foreground mb-2">Name</label>
+                      <input type="text" id="firstName" value={name} onChange={(e) => setName(e.target.value)} required className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" placeholder="Enter your first name" />
+                      {fieldErrors.name && <p className="text-xs text-red-500 mt-1">{fieldErrors.name}</p>}
+                    </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-2">Work Email</label>
-                      <input type="email" id="email" className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" placeholder="Enter your work email" />
+                      <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-2">Email</label>
+                      <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" placeholder="Enter your work email" />
+                      {fieldErrors.email && <p className="text-xs text-red-500 mt-1">{fieldErrors.email}</p>}
                     </div>
                     <div>
                       <label htmlFor="phone" className="block text-sm font-semibold text-foreground mb-2">Phone Number</label>
-                      <input type="tel" id="phone" className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" placeholder="Enter your phone number" />
+                      <input type="tel" id="phone" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} required className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" placeholder="Enter your phone number" />
+                      {fieldErrors.phone && <p className="text-xs text-red-500 mt-1">{fieldErrors.phone}</p>}
                     </div>
                   </div>
-                  <div>
-                    <label htmlFor="company" className="block text-sm font-semibold text-foreground mb-2">Company Name</label>
-                    <input type="text" id="company" className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" placeholder="Enter your organization name" />
-                  </div>
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-semibold text-foreground mb-2">Project Details</label>
-                    <textarea id="message" rows={5} className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors resize-none" placeholder="Tell us about your goals, timeline, and requirements..."></textarea>
-                  </div>
-                  <button type="button" className="group w-full rounded-xl bg-primary px-8 py-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 mt-4">
-                    Send Message <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  {wantsResume ? (
+                    <div>
+                      <label htmlFor="resume" className="block text-sm font-semibold text-foreground mb-2">Resume / CV (PDF or Word, optional)</label>
+                      <input
+                        type="file"
+                        id="resume"
+                        accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
+                        className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-sm text-foreground file:mr-4 file:rounded-lg file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-primary-foreground hover:file:bg-primary/90 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                      />
+                      {resumeFile && <p className="text-xs text-muted-foreground mt-1">Selected: {resumeFile.name}</p>}
+                      {fieldErrors.resume && <p className="text-xs text-red-500 mt-1">{fieldErrors.resume}</p>}
+                    </div>
+                  ) : (
+                    <div>
+                      <label htmlFor="message" className="block text-sm font-semibold text-foreground mb-2">Project Details</label>
+                      <textarea id="message" rows={5} value={message} onChange={(e) => setMessage(e.target.value)} className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors resize-none" placeholder="Tell us about your goals, timeline, and requirements..."></textarea>
+                      {fieldErrors.message && <p className="text-xs text-red-500 mt-1">{fieldErrors.message}</p>}
+                    </div>
+                  )}
+                  {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+                  <button type="submit" disabled={status === "submitting"} className="group w-full rounded-xl bg-primary px-8 py-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 mt-4 disabled:opacity-60 disabled:cursor-not-allowed">
+                    {status === "submitting" ? (
+                      <>Sending <Loader2 className="w-4 h-4 animate-spin" /></>
+                    ) : (
+                      <>Send Message <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
+                    )}
                   </button>
                   <p className="text-xs text-center text-muted-foreground mt-4">
                     By submitting this form, you agree to our <a href="/about/privacy-policy" className="underline hover:text-primary transition-colors">Privacy Policy</a>.
                   </p>
                 </form>
+                )}
+                </AnimatePresence>
+                </div>
               </div>
             </motion.div>
           </div>

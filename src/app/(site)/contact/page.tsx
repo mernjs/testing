@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ContactContent from "./Content";
 import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { getSubServices, isValidCategory, type CategorySlug } from "@/lib/categories";
 
 const title = "Contact Us — Start Your Project | YashOrbit";
 const description =
@@ -22,16 +23,27 @@ export const metadata: Metadata = {
   ...socialMetadata({ title, description, path, image }),
 };
 
-export default function ContactPage() {
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; subService?: string }>;
+}) {
   const breadcrumbs = breadcrumbJsonLd([
     { name: "Home", path: "/" },
     { name: "Contact", path },
   ]);
 
+  const { category, subService } = await searchParams;
+  const initialCategory: CategorySlug | undefined = category && isValidCategory(category) ? category : undefined;
+  const initialSubService: string | undefined =
+    initialCategory && subService && getSubServices(initialCategory).some((s) => s.slug === subService)
+      ? subService
+      : undefined;
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }} />
-      <ContactContent />
+      <ContactContent initialCategory={initialCategory} initialSubService={initialSubService} />
     </>
   );
 }

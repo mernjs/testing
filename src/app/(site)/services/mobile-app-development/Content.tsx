@@ -230,6 +230,8 @@ export default function MobileAppDevelopmentContent() {
         heading="Ready to put your product in your users' pockets?"
         description="Let's talk about your app idea, your platform priorities, and how we can help you launch with confidence."
         ctaLabel="Get a Quote"
+        category="software-development"
+        subService="mobile-app-development"
       />
     </div>
   );

@@ -230,6 +230,8 @@ export default function AIMLSolutionsContent() {
         heading="Ready to build a model tuned to your exact problem?"
         description="Let's talk about your data, your goals, and how we can help you turn it into a working model."
         ctaLabel="Get a Quote"
+        category="software-development"
+        subService="ai-ml-solutions"
       />
     </div>
   );

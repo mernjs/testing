@@ -77,6 +77,7 @@ export default function InternshipProgramContent() {
         heading="Not sure which track fits you?"
         description="Talk to our internship team and we'll help you pick the right track based on your background and goals."
         ctaLabel="Apply Now"
+        category="internship-program"
       />
     </div>
   );

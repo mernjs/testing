@@ -162,6 +162,8 @@ export default function AgenticAiInternshipContent() {
         heading="Ready to intern on real Agentic AI work?"
         description="Apply for the Agentic AI internship and start shipping autonomous systems that actually go live."
         ctaLabel="Apply Now"
+        category="internship-program"
+        subService="agentic-ai"
       />
     </div>
   );

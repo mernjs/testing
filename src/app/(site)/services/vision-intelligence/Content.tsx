@@ -231,6 +231,8 @@ export default function VisionIntelligenceContent() {
         heading="Ready to give your systems the ability to see?"
         description="Let's talk about your cameras, your documents, and how we can help you automate what's currently done by eye."
         ctaLabel="Get a Quote"
+        category="software-development"
+        subService="vision-intelligence"
       />
     </div>
   );

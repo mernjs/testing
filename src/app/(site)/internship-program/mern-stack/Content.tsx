@@ -162,6 +162,8 @@ export default function MernInternshipContent() {
         heading="Ready to intern on real MERN Stack work?"
         description="Apply for the MERN Stack internship and start shipping features that actually go live."
         ctaLabel="Apply Now"
+        category="internship-program"
+        subService="mern-stack"
       />
     </div>
   );

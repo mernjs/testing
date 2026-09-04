@@ -220,6 +220,8 @@ export default function RoboticProcessAutomationContent() {
         description="Tell us about the repetitive desktop or web tasks slowing your team down, and we'll build software robots to handle them 24/7."
         ctaLabel="Start a Conversation"
         checklist={["Free RPA opportunity assessment", "Resilient UI selectors", "Fast 2–4 week delivery"]}
+        category="ai-automations"
+        subService="robotic-process-automation"
       />
     </div>
   );

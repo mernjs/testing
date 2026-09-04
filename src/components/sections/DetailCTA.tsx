@@ -18,16 +18,27 @@ interface DetailCTAProps {
   external?: boolean;
   /** Overrides the default trio of trust bullets under the button. */
   checklist?: string[];
+  /** Category slug (e.g. "software-development") to pre-select on the contact form. Ignored when ctaHref is overridden. */
+  category?: string;
+  /** Sub-service slug (e.g. "web-app-development") to pre-select on the contact form. Requires `category`; ignored when ctaHref is overridden. */
+  subService?: string;
 }
 
 export default function DetailCTA({
   heading,
   description,
   ctaLabel = "Start a Conversation",
-  ctaHref = "/contact",
+  ctaHref,
   external = false,
   checklist = ["Free consultation", "Dedicated team", "Agile methodology"],
+  category,
+  subService,
 }: DetailCTAProps) {
+  const resolvedHref =
+    ctaHref ??
+    (category
+      ? `/contact?category=${encodeURIComponent(category)}${subService ? `&subService=${encodeURIComponent(subService)}` : ""}`
+      : "/contact");
   return (
     <section id="contact" className="relative overflow-hidden border-t border-border/50 py-24 sm:py-28 bg-primary/5">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
@@ -38,14 +49,14 @@ export default function DetailCTA({
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {external ? (
               <a
-                href={ctaHref}
+                href={resolvedHref}
                 className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground hover:scale-105 transition-all shadow-lg shadow-primary/20 w-full sm:w-auto"
               >
                 {ctaLabel} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </a>
             ) : (
               <Link
-                href={ctaHref}
+                href={resolvedHref}
                 className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground hover:scale-105 transition-all shadow-lg shadow-primary/20 w-full sm:w-auto"
               >
                 {ctaLabel} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
