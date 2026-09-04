@@ -411,7 +411,7 @@ export default function Header() {
 
   return (
     <>
-    <header className="fixed inset-x-0 top-0 z-50 h-[88px] bg-background/80 backdrop-blur-xl border-b border-border/50">
+    <header className="fixed inset-x-0 top-0 z-50 h-[88px] bg-background/80 dark:bg-muted/20 backdrop-blur-xl border-b border-border/50">
       <nav className="mx-auto flex h-full max-w-7xl items-center justify-between px-6 lg:px-8" aria-label="Global">
         <div className="flex shrink-0">
           <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2.5 group">
@@ -490,7 +490,7 @@ export default function Header() {
                       <div className="relative w-full flex-auto">
                         <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-primary/20 via-primary/0 to-secondary/20 blur-2xl pointer-events-none" />
 
-                        <div className="relative w-full flex-auto overflow-hidden rounded-3xl bg-background/95 backdrop-blur-2xl shadow-2xl ring-1 ring-border border border-border/50">
+                        <div className="relative w-full flex-auto overflow-hidden rounded-3xl bg-background/95 dark:bg-muted/20 backdrop-blur-2xl shadow-2xl ring-1 ring-border border border-border/50">
                           <div className="h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
                           <div className="grid grid-cols-5 p-2">
                             <FeaturedCard item={item} />
@@ -560,7 +560,7 @@ export default function Header() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-              className="fixed inset-y-0 right-0 z-[100] w-full overflow-y-auto bg-background px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-border/50"
+              className="fixed inset-y-0 right-0 z-[100] w-full overflow-y-auto bg-background dark:bg-muted/20 backdrop-blur-2xl px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-border/50"
             >
               <div className="flex items-center justify-between">
                 <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
