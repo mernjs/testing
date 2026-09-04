@@ -1,3 +1,5 @@
+import { isValidLeadStatus, type LeadStatus } from "@/lib/lead-status";
+
 export interface LeadInput {
   name?: unknown;
   email?: unknown;
@@ -7,6 +9,12 @@ export interface LeadInput {
   source?: unknown;
 }
 
+/** Admin-only fields accepted on updates, never on public creation. */
+export interface LeadAdminInput {
+  status?: unknown;
+  notes?: unknown;
+}
+
 export interface LeadRecord {
   name: string;
   email?: string;
@@ -14,6 +22,8 @@ export interface LeadRecord {
   message?: string;
   subService?: string;
   source?: string;
+  status?: LeadStatus;
+  notes?: string;
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -55,7 +65,7 @@ export function validateLeadInput(input: LeadInput): { valid: true; data: LeadRe
   return { valid: true, data: { name, phone, email, message, subService, source } };
 }
 
-export function validateLeadUpdate(input: LeadInput): { valid: true; data: Partial<LeadRecord> } | { valid: false; errors: Record<string, string> } {
+export function validateLeadUpdate(input: LeadInput & LeadAdminInput): { valid: true; data: Partial<LeadRecord> } | { valid: false; errors: Record<string, string> } {
   const errors: Record<string, string> = {};
   const data: Partial<LeadRecord> = {};
 
@@ -89,6 +99,18 @@ export function validateLeadUpdate(input: LeadInput): { valid: true; data: Parti
     const subService = typeof input.subService === "string" ? input.subService.trim() : "";
     if (subService.length > 120) errors.subService = "Invalid service selection.";
     else data.subService = subService || undefined;
+  }
+
+  if (input.status !== undefined) {
+    const status = typeof input.status === "string" ? input.status.trim() : "";
+    if (!isValidLeadStatus(status)) errors.status = "Invalid status.";
+    else data.status = status;
+  }
+
+  if (input.notes !== undefined) {
+    const notes = typeof input.notes === "string" ? input.notes.trim() : "";
+    if (notes.length > 5000) errors.notes = "Notes must be 5000 characters or fewer.";
+    else data.notes = notes || undefined;
   }
 
   if (Object.keys(errors).length > 0) return { valid: false, errors };

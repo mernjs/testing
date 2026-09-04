@@ -75,7 +75,7 @@ export async function POST(req: NextRequest, { params }: Context) {
 }
 
 export async function GET(req: NextRequest, { params }: Context) {
-  if (!isAuthorizedAdminRequest(req)) {
+  if (!(await isAuthorizedAdminRequest(req))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

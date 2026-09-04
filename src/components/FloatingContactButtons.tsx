@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { MessageCircle, X } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/SocialIcons";
@@ -9,11 +10,14 @@ import { loadAndToggleTawk } from "@/lib/tawk";
 
 export default function FloatingContactButtons() {
   const [open, setOpen] = React.useState(false);
+  const pathname = usePathname();
 
   const openLiveChat = () => {
     loadAndToggleTawk();
     setOpen(false);
   };
+
+  if (pathname?.startsWith("/admin")) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
