@@ -1,15 +1,14 @@
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button, buttonVariants } from "@/components/ui/button";
 import StatusBadge from "@/components/admin/StatusBadge";
+import KpiCard from "@/components/admin/KpiCard";
+import Breadcrumbs from "@/components/admin/Breadcrumbs";
+import DashboardFilters from "@/components/admin/DashboardFilters";
 import CategoryBarChart from "@/components/admin/CategoryBarChart";
 import SubmissionsTimeChart from "@/components/admin/SubmissionsTimeChart";
 import { getDashboardStats, CATEGORIES, isValidCategory, getCategoryLabel } from "@/lib/leads";
 import { LEAD_STATUSES, isValidLeadStatus } from "@/lib/lead-status";
-
-function toDateInputValue(d: Date) {
-  return d.toISOString().slice(0, 10);
-}
+import { formatDateTime } from "@/lib/utils";
 
 function parseDateParam(value: string | undefined, endOfDay = false): Date | undefined {
   if (!value) return undefined;
@@ -39,63 +38,25 @@ export default async function AdminDashboardPage({
   const hasActiveFilters = Boolean(sp.category || sp.status || sp.dateFrom || sp.dateTo);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      <Breadcrumbs items={[{ label: "Dashboard" }]} />
       <div>
         <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
         <p className="text-sm text-muted-foreground">Overview of form submissions across all categories.</p>
       </div>
 
-      <Card>
-        <CardContent>
-          <form className="flex flex-wrap items-end gap-4" method="GET">
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="category" className="text-xs font-medium text-muted-foreground">Category</label>
-              <select id="category" name="category" defaultValue={category ?? ""} className="h-8 rounded-lg border border-input bg-background px-2 text-sm">
-                <option value="">All categories</option>
-                {CATEGORIES.map((c) => (
-                  <option key={c.slug} value={c.slug}>{c.label}</option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="status" className="text-xs font-medium text-muted-foreground">Status</label>
-              <select id="status" name="status" defaultValue={status ?? ""} className="h-8 rounded-lg border border-input bg-background px-2 text-sm">
-                <option value="">All statuses</option>
-                {LEAD_STATUSES.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="dateFrom" className="text-xs font-medium text-muted-foreground">From</label>
-              <input id="dateFrom" name="dateFrom" type="date" defaultValue={toDateInputValue(dateFrom)} className="h-8 rounded-lg border border-input bg-background px-2 text-sm" />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="dateTo" className="text-xs font-medium text-muted-foreground">To</label>
-              <input id="dateTo" name="dateTo" type="date" defaultValue={toDateInputValue(dateTo)} className="h-8 rounded-lg border border-input bg-background px-2 text-sm" />
-            </div>
-            <Button type="submit" size="sm">Apply</Button>
-            {hasActiveFilters && (
-              <Link href="/admin" className={buttonVariants({ variant: "ghost", size: "sm" })}>Reset</Link>
-            )}
-          </form>
-        </CardContent>
-      </Card>
+      <DashboardFilters
+        category={category ?? ""}
+        status={status ?? ""}
+        dateFrom={dateFrom.toISOString().slice(0, 10)}
+        dateTo={dateTo.toISOString().slice(0, 10)}
+        hasActiveFilters={hasActiveFilters}
+      />
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-medium text-muted-foreground">Total</CardTitle>
-          </CardHeader>
-          <CardContent><p className="text-2xl font-bold">{stats.totalOverall}</p></CardContent>
-        </Card>
+        <KpiCard label="Total" value={stats.totalOverall} accent />
         {LEAD_STATUSES.map((s) => (
-          <Card key={s.value}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-medium text-muted-foreground">{s.label}</CardTitle>
-            </CardHeader>
-            <CardContent><p className="text-2xl font-bold">{stats.byStatus[s.value] ?? 0}</p></CardContent>
-          </Card>
+          <KpiCard key={s.value} label={s.label} value={stats.byStatus[s.value] ?? 0} />
         ))}
       </div>
 
@@ -118,12 +79,12 @@ export default async function AdminDashboardPage({
             <Link
               key={String(lead._id)}
               href={`/admin/submissions/${lead.category}/${lead._id}`}
-              className="flex items-center justify-between gap-4 rounded-lg border border-border/60 p-3 text-sm hover:bg-muted/50"
+              className="flex items-center justify-between gap-4 rounded-lg border border-border/60 p-3 text-sm transition-colors hover:border-primary/30 hover:bg-muted/50"
             >
               <div className="min-w-0">
                 <p className="truncate font-medium">{lead.name}</p>
                 <p className="truncate text-xs text-muted-foreground">
-                  {getCategoryLabel(lead.category)} · {new Date(lead.createdAt).toLocaleString()}
+                  {getCategoryLabel(lead.category)} · {formatDateTime(lead.createdAt)}
                 </p>
               </div>
               <StatusBadge status={lead.status} />

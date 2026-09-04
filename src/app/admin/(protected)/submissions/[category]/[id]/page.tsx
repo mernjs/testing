@@ -1,13 +1,14 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Mail, Phone, Calendar, Tag, Download, ArrowLeft } from "lucide-react";
+import { Mail, Phone, Calendar, Tag, Download } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import StatusBadge from "@/components/admin/StatusBadge";
+import Breadcrumbs from "@/components/admin/Breadcrumbs";
 import StatusSelect from "./StatusSelect";
 import NotesEditor from "./NotesEditor";
 import DeleteButton from "./DeleteButton";
 import { getLead, isValidCategory, getCategoryLabel, categoryAcceptsResume, DEFAULT_LEAD_STATUS } from "@/lib/leads";
+import { formatDateTime } from "@/lib/utils";
 
 export default async function SubmissionDetailPage({
   params,
@@ -21,15 +22,16 @@ export default async function SubmissionDetailPage({
   if (!lead) notFound();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      <Breadcrumbs
+        items={[
+          { label: "Dashboard", href: "/admin" },
+          { label: getCategoryLabel(category), href: `/admin/submissions/${category}` },
+          { label: lead.name },
+        ]}
+      />
       <div className="flex items-center justify-between gap-4">
-        <div>
-          <Link href={`/admin/submissions/${category}`} className="mb-1 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="size-3" />
-            Back to {getCategoryLabel(category)}
-          </Link>
-          <h1 className="text-2xl font-bold text-foreground">{lead.name}</h1>
-        </div>
+        <h1 className="text-2xl font-bold text-foreground">{lead.name}</h1>
         <StatusBadge status={lead.status} />
       </div>
 
@@ -51,7 +53,7 @@ export default async function SubmissionDetailPage({
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="size-4 shrink-0 text-muted-foreground" />
-              <span>{new Date(lead.createdAt).toLocaleString()}</span>
+              <span>{formatDateTime(lead.createdAt)}</span>
             </div>
 
             {categoryAcceptsResume(category) ? (

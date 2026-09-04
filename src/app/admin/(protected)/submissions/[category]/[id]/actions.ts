@@ -53,3 +53,17 @@ export async function deleteSubmissionAction(category: string, id: string): Prom
   revalidatePath("/admin");
   redirect(`/admin/submissions/${category}`);
 }
+
+/** Same delete, but for callers already on the list (e.g. the row Sheet) that
+ * want to close/refresh in place instead of being navigated. */
+export async function deleteSubmissionInPlaceAction(category: string, id: string): Promise<{ error?: string }> {
+  await requireAdmin();
+  if (!isValidCategory(category)) return { error: "Invalid category." };
+
+  const deleted = await deleteLead(category as CategorySlug, id);
+  if (!deleted) return { error: "Submission not found." };
+
+  revalidatePath(`/admin/submissions/${category}`);
+  revalidatePath("/admin");
+  return {};
+}

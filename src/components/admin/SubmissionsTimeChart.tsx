@@ -1,3 +1,7 @@
+"use client";
+
+import { motion } from "framer-motion";
+
 interface TimeSeriesPoint {
   date: string;
   count: number;
@@ -42,10 +46,36 @@ export default function SubmissionsTimeChart({ data }: { data: TimeSeriesPoint[]
             <stop offset="100%" stopColor="#ff8e75" />
           </linearGradient>
         </defs>
-        <path d={areaPath} fill="url(#timeChartFill)" stroke="none" />
-        <path d={linePath} fill="none" stroke="url(#timeChartLine)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        <motion.path
+          d={areaPath}
+          fill="url(#timeChartFill)"
+          stroke="none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        />
+        <motion.path
+          d={linePath}
+          fill="none"
+          stroke="url(#timeChartLine)"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 0.7, ease: "easeInOut" }}
+        />
         {points.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r={3} fill="#E56043" />
+          <motion.circle
+            key={i}
+            cx={p.x}
+            cy={p.y}
+            r={3}
+            fill="#E56043"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, delay: 0.5 + i * 0.02 }}
+          />
         ))}
       </svg>
       <div className="flex justify-between text-[11px] text-muted-foreground">
