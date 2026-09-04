@@ -81,8 +81,8 @@ export default function ListingCard({
       <Link
         href={href}
         aria-label={`${title} — ${ctaLabel}`}
-        className={`relative flex flex-col h-full overflow-hidden rounded-3xl bg-muted/10 p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-          featured ? "border-2 border-primary shadow-lg shadow-primary/10" : "border border-border/50 hover:border-primary/40"
+        className={`relative flex flex-col h-full overflow-hidden rounded-3xl bg-background/90 dark:bg-muted/10 backdrop-blur-md p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+          featured ? "border-2 border-primary shadow-lg shadow-primary/10" : "border border-border/60 shadow-md hover:border-primary/40"
         }`}
       >
         {/* Ambient color wash, sampled from the item's real image, kept abstract and soft */}

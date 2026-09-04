@@ -689,9 +689,10 @@ export default function HomeContent() {
               >
                 <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
 
-                <div className="relative h-full p-6 rounded-3xl bg-muted/10 border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-                  {/* Ambient color wash matching listing card background */}
+                <div className="relative h-full p-6 rounded-3xl bg-background/90 dark:bg-muted/10 backdrop-blur-md border border-border/60 shadow-md group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  {/* Ambient color wash matching department card background */}
                   <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/15 opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/5 to-muted/20" />
                   </div>
 
@@ -744,9 +745,10 @@ export default function HomeContent() {
               >
                 <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
 
-                <div className="relative h-full p-7 rounded-3xl bg-muted/10 border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-                  {/* Ambient color wash matching listing card background */}
+                <div className="relative h-full p-7 rounded-3xl bg-background/90 dark:bg-muted/10 backdrop-blur-md border border-border/60 shadow-md group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  {/* Ambient color wash matching department card background */}
                   <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute inset-0 bg-gradient-to-br from-secondary/15 via-transparent to-primary/10 opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/5 to-muted/20" />
                   </div>
 
@@ -823,9 +825,10 @@ export default function HomeContent() {
               >
                 <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
 
-                <div className="relative h-full flex flex-col p-6 rounded-3xl bg-muted/10 border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-                  {/* Ambient color wash matching listing card background */}
+                <div className="relative h-full flex flex-col p-6 rounded-3xl bg-background/90 dark:bg-muted/10 backdrop-blur-md border border-border/60 shadow-md group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  {/* Ambient color wash matching department card background */}
                   <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/15 opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/5 to-muted/20" />
                   </div>
 
@@ -894,9 +897,10 @@ export default function HomeContent() {
               >
                 <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
 
-                <div className="relative h-full p-7 rounded-3xl bg-muted/10 border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-                  {/* Ambient color wash matching listing card background */}
+                <div className="relative h-full p-7 rounded-3xl bg-background/90 dark:bg-muted/10 backdrop-blur-md border border-border/60 shadow-md group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  {/* Ambient color wash matching department card background */}
                   <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/15 opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/5 to-muted/20" />
                   </div>
 
@@ -1227,9 +1231,10 @@ export default function HomeContent() {
               >
                 <div className="absolute -inset-1 rounded-[1.75rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
 
-                <div className="relative h-full flex flex-col items-center text-center gap-3 p-6 rounded-3xl bg-muted/10 border border-border/50 shadow-sm group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-                  {/* Ambient color wash matching listing card background */}
+                <div className="relative h-full flex flex-col items-center text-center gap-3 p-6 rounded-3xl bg-background/90 dark:bg-muted/10 backdrop-blur-md border border-border/60 shadow-md group-hover:shadow-xl group-hover:shadow-primary/10 group-hover:border-primary/40 group-hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                  {/* Ambient color wash matching department card background */}
                   <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/15 opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/5 to-muted/20" />
                   </div>
                   <div className="w-full flex items-center justify-between">

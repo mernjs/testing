@@ -47,7 +47,7 @@ export default function FeaturedListingCard({
       <Link
         href={href}
         aria-label={`${title} — ${ctaLabel}`}
-        className="relative grid grid-cols-1 lg:grid-cols-2 overflow-hidden rounded-[2.5rem] bg-muted/10 border border-border/50 hover:border-primary/40 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="relative grid grid-cols-1 lg:grid-cols-2 overflow-hidden rounded-[2.5rem] bg-background/90 dark:bg-muted/10 backdrop-blur-md border border-border/60 shadow-md hover:border-primary/40 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <div className="relative aspect-[16/10] lg:aspect-auto overflow-hidden">
           <Image

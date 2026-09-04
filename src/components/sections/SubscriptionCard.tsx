@@ -51,7 +51,7 @@ export default function SubscriptionCard({
       className={`relative flex flex-col h-full rounded-3xl transition-all duration-300 ${compact ? "p-6" : "p-8"} ${
         featured
           ? "bg-foreground text-background border-2 border-primary shadow-2xl shadow-primary/20 lg:-translate-y-3"
-          : "bg-muted/20 border border-border/50 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
+          : "bg-background/90 dark:bg-muted/20 backdrop-blur-md border border-border/60 shadow-md hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10"
       }`}
     >
       {featured && (
