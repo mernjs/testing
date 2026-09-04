@@ -8,6 +8,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuItem,
@@ -36,10 +37,12 @@ export default function AdminTopbar({ adminEmail }: { adminEmail: string }) {
           <span className="hidden max-w-[160px] truncate text-muted-foreground sm:inline">{adminEmail}</span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuLabel className="flex items-center gap-2 font-normal text-muted-foreground">
-            <User className="size-3.5" />
-            <span className="truncate">{adminEmail}</span>
-          </DropdownMenuLabel>
+          <DropdownMenuGroup>
+            <DropdownMenuLabel className="flex items-center gap-2 font-normal text-muted-foreground">
+              <User className="size-3.5" />
+              <span className="truncate">{adminEmail}</span>
+            </DropdownMenuLabel>
+          </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             variant="destructive"
