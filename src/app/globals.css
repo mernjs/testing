@@ -96,28 +96,35 @@
 }
 
 /* One shared surface treatment for every admin panel section — cards, sidebar,
-   topbar, filters, tables, popovers, detail pages — matching the exact
-   technique the public site's own department cards use (see the "Ambient
-   color wash" / "Ambient glow blobs" comments in src/app/(site)/Content.tsx):
-   a warm corner glow + a cool corner glow + a subtle bottom muted wash,
-   layered as radial/linear gradients. The site uses a blurred photo for part
-   of its per-card color variation — admin content has no per-card photo, so
-   this reproduces the same corner-glow structure from tokens via color-mix()
-   only (no hardcoded hex). Light mode's cool corner blends --secondary-
-   foreground (navy) rather than --secondary itself, since --secondary is
-   near-white in light mode and would be invisible; dark mode's --secondary
-   (navy) already has real chroma so it's used directly. */
+   topbar, filters, tables, chart containers, KPI/dashboard widgets, popovers,
+   detail pages. It is the EXACT gradient + color combination from the login
+   screen's hero panel:
+
+       bg-gradient-to-br from-primary/10 via-background to-secondary/20
+       (see src/app/admin/login/page.tsx)
+
+   rebuilt from the same design tokens so it tracks Light and Dark mode
+   automatically and identically to the login page. The only deliberate change
+   is the mid stop: the login panel is a solid page background, so it uses an
+   opaque `via-background`; a card/table/widget instead keeps its own --card
+   surface and backdrop-blur, so here the mid stop is transparent and the two
+   tinted corners — primary (top-left) fading to secondary (bottom-right) —
+   are layered over it. The corner tints, direction and ratios are the login
+   page's, and — exactly like the login page — there is no separate dark
+   override: the shared --primary / --secondary tokens already shift the wash
+   for Dark mode the same way they do on the login screen. A coral accent glow
+   (the login panel's second ambient blob colour) is layered under the tints
+   so the full primary → background → secondary → coral palette matches end to
+   end in both themes. */
 .admin-surface {
   background-image:
-    radial-gradient(ellipse 75% 65% at 100% 0%, color-mix(in oklch, var(--primary) 10%, transparent), transparent 70%),
-    radial-gradient(ellipse 70% 65% at 0% 100%, color-mix(in oklch, var(--secondary-foreground) 8%, transparent), transparent 70%),
-    linear-gradient(to bottom, transparent, color-mix(in oklch, var(--muted) 20%, transparent) 100%);
-}
-.dark .admin-surface {
-  background-image:
-    radial-gradient(ellipse 75% 65% at 100% 0%, color-mix(in oklch, var(--primary) 22%, transparent), transparent 70%),
-    radial-gradient(ellipse 70% 65% at 0% 100%, color-mix(in oklch, var(--secondary) 38%, transparent), transparent 70%),
-    linear-gradient(to bottom, transparent, color-mix(in oklch, var(--muted) 30%, transparent) 100%);
+    radial-gradient(ellipse 60% 55% at 0% 100%, color-mix(in oklch, var(--color-yashorbit-coral) 12%, transparent), transparent 70%),
+    linear-gradient(
+      to bottom right,
+      color-mix(in oklch, var(--primary) 10%, transparent),
+      transparent 50%,
+      color-mix(in oklch, var(--secondary) 20%, transparent)
+    );
 }
 
 @layer base {
