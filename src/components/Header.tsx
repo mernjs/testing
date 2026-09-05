@@ -522,6 +522,18 @@ export default function Header() {
               </div>
               );
             })}
+
+            <Link
+              href="/ask"
+              className={`relative ml-1 flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-2 text-sm font-semibold transition-colors duration-200 ${
+                pathname === "/ask"
+                  ? "text-primary"
+                  : "text-foreground hover:text-primary hover:bg-muted/40"
+              }`}
+            >
+              <Bot className="h-4 w-4 text-primary" />
+              Ask YashOrbit AI
+            </Link>
           </div>
 
           <div className="flex items-center gap-3 pl-2 border-l border-border/40">
@@ -655,6 +667,25 @@ export default function Header() {
                       </div>
                     );
                   })}
+
+                  <Link
+                    href="/ask"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 border-t border-border/50 py-4 ${
+                      pathname === "/ask" ? "text-primary" : "text-foreground"
+                    }`}
+                  >
+                    <span
+                      className={`flex h-9 w-9 flex-none items-center justify-center rounded-lg border transition-colors ${
+                        pathname === "/ask"
+                          ? "border-primary/30 bg-primary/5 text-primary"
+                          : "border-border/50 text-muted-foreground"
+                      }`}
+                    >
+                      <Bot className="h-4 w-4" />
+                    </span>
+                    <span className="text-base font-bold">Ask YashOrbit Chatbot</span>
+                  </Link>
                 </div>
 
                 <div className="border-b border-border/50 py-4">

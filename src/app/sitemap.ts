@@ -14,6 +14,7 @@ const APP_DIR = path.join(process.cwd(), "src/app/(site)");
 // automatically, so a new page can never be silently left out again.
 const EXCLUDED_ROUTES = new Set<string>([
   "/services/prediction-forecasting", // duplicate of /services/prediction-and-forecasting, noindex
+  "/ask", // AI chatbot page — thin app shell, sets robots: { index: false }
 ]);
 
 /** Recursively finds every route that has a page.tsx under the (site) route group. */
