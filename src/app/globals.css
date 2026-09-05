@@ -87,44 +87,146 @@
 /* Admin panel only: dark mode's --card/--popover otherwise equal --background
    (#1b1a1a), so cards/dropdowns have zero color separation from the page and
    rely on shadow/blur alone. Elevate them a step for a readable, layered dark
-   surface — scoped to .admin-shell so the public site's dark mode is untouched. */
+   surface — and tint that elevation toward the brand blue (--secondary,
+   #1D428A) so the admin's dark surfaces carry the same coral+blue palette the
+   Services page does (where dark cards sit on `dark:bg-muted/10`). Scoped to
+   .admin-shell so the public site's dark mode is untouched. */
 .dark .admin-shell {
-  --card: #232228;
+  --card: #1c2740;
   --card-foreground: #ECF2FD;
-  --popover: #232228;
+  --popover: #1c2740;
   --popover-foreground: #ECF2FD;
 }
 
-/* One shared surface treatment for every admin panel section — cards, sidebar,
-   topbar, filters, tables, chart containers, KPI/dashboard widgets, popovers,
-   detail pages. It is the EXACT gradient + color combination from the login
-   screen's hero panel:
+/* ---------------------------------------------------------------------------
+   Admin panel theme — matches the public Services Listing page
+   (src/components/sections/ListingCard.tsx / FeaturedListingCard.tsx /
+   ListingHero.tsx / DetailCTA.tsx). Every admin surface uses the same card
+   treatment, the same coral -> blue hover glow, and the same ambient blob
+   background the Services page does, in both Light and Dark mode.
+   --------------------------------------------------------------------------- */
 
-       bg-gradient-to-br from-primary/10 via-background to-secondary/20
-       (see src/app/admin/login/page.tsx)
+@layer components {
 
-   rebuilt from the same design tokens so it tracks Light and Dark mode
-   automatically and identically to the login page. The only deliberate change
-   is the mid stop: the login panel is a solid page background, so it uses an
-   opaque `via-background`; a card/table/widget instead keeps its own --card
-   surface and backdrop-blur, so here the mid stop is transparent and the two
-   tinted corners — primary (top-left) fading to secondary (bottom-right) —
-   are layered over it. The corner tints, direction and ratios are the login
-   page's, and — exactly like the login page — there is no separate dark
-   override: the shared --primary / --secondary tokens already shift the wash
-   for Dark mode the same way they do on the login screen. A coral accent glow
-   (the login panel's second ambient blob colour) is layered under the tints
-   so the full primary → background → secondary → coral palette matches end to
-   end in both themes. */
+/* A whisper of brand warmth layered UNDER the Services card face
+   (bg-background/90). Far lighter than the old login-hero wash — the card's
+   own translucent surface + border + shadow do the real work, exactly like a
+   ListingCard. Applied to cards, the sidebar and the topbar. */
 .admin-surface {
-  background-image:
-    radial-gradient(ellipse 60% 55% at 0% 100%, color-mix(in oklch, var(--color-yashorbit-coral) 12%, transparent), transparent 70%),
-    linear-gradient(
-      to bottom right,
-      color-mix(in oklch, var(--primary) 10%, transparent),
-      transparent 50%,
-      color-mix(in oklch, var(--secondary) 20%, transparent)
-    );
+  background-image: linear-gradient(
+    to bottom right,
+    color-mix(in oklch, var(--primary) 3%, transparent),
+    transparent 55%,
+    color-mix(in oklch, var(--secondary) 6%, transparent)
+  );
+}
+
+/* The Services card hover glow: a blurred coral -> blue gradient bleeding out
+   from behind the card. Sits as an absolutely-positioned sibling; the parent
+   is `group/gcard relative`. Mirrors ListingCard's `-inset-1 ... from-primary/30
+   via-primary/0 to-secondary/30 blur-xl` element. */
+.admin-card-glow {
+  position: absolute;
+  inset: -0.25rem;
+  border-radius: 2rem;
+  background-image: linear-gradient(
+    to bottom right,
+    color-mix(in oklch, var(--primary) 30%, transparent),
+    transparent 50%,
+    color-mix(in oklch, var(--secondary) 30%, transparent)
+  );
+  filter: blur(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+/* The Services ListingHero ambient background: three brand blobs + a faint
+   grid, `mix-blend-multiply` in light and `screen` in dark. One element,
+   dropped once into the admin workspace. */
+.admin-ambient::before,
+.admin-ambient::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(120px);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+:is(.dark) .admin-ambient::before,
+:is(.dark) .admin-ambient::after {
+  mix-blend-mode: screen;
+}
+.admin-ambient::before {
+  top: -15%;
+  left: 12%;
+  width: 55%;
+  height: 55%;
+  background: color-mix(in oklch, var(--primary) 15%, transparent);
+  animation: blob 7s infinite;
+}
+.admin-ambient::after {
+  bottom: -20%;
+  right: 8%;
+  width: 55%;
+  height: 55%;
+  background: color-mix(in oklch, var(--color-yashorbit-coral) 15%, transparent);
+  animation: blob 7s infinite;
+  animation-delay: 4s;
+}
+.admin-ambient > .admin-ambient-mid {
+  position: absolute;
+  top: 15%;
+  right: 22%;
+  width: 45%;
+  height: 45%;
+  border-radius: 9999px;
+  background: color-mix(in oklch, var(--secondary) 15%, transparent);
+  filter: blur(120px);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  animation: blob 7s infinite;
+  animation-delay: 2s;
+}
+:is(.dark) .admin-ambient > .admin-ambient-mid {
+  mix-blend-mode: screen;
+}
+
+/* The Services pill/tag chip (bg-background/70 + border + rounded-full). */
+.admin-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  border: 1px solid color-mix(in oklch, var(--border) 50%, transparent);
+  background: color-mix(in oklch, var(--background) 70%, transparent);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  backdrop-filter: blur(4px);
+  transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+}
+.admin-chip:hover {
+  border-color: color-mix(in oklch, var(--primary) 30%, transparent);
+  background: color-mix(in oklch, var(--primary) 5%, transparent);
+  color: var(--foreground);
+}
+
+} /* @layer components */
+
+/* Primitive nudges, scoped to the admin shell only so the public site's
+   inputs/buttons are untouched. Radii + border tint to match the Services
+   page's softer, rounder controls; a coral drop-shadow on primary buttons to
+   echo DetailCTA's `shadow-primary/20`. */
+.admin-shell [data-slot="input"],
+.admin-shell [data-slot="textarea"],
+.admin-shell [data-slot="select-trigger"] {
+  border-radius: var(--radius-xl);
+  border-color: color-mix(in oklch, var(--border) 65%, transparent);
+}
+.admin-shell [data-slot="button"].bg-primary {
+  box-shadow: 0 10px 22px -10px color-mix(in oklch, var(--primary) 45%, transparent);
 }
 
 @layer base {

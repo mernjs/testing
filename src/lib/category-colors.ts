@@ -6,16 +6,15 @@ export interface ThemedColor {
 }
 
 /**
- * Fixed-order categorical palette (dataviz-skill validated: CVD Delta E >= 8,
- * normal-vision Delta E >= 15 on adjacent pairs, both light AND dark steps
- * validated against their respective surfaces). Used only for charts/cards
- * that compare categories against each other — single-series charts keep the
- * existing brand-orange treatment.
+ * Fixed-order categorical ramp built only from the YashOrbit brand palette —
+ * blue -> coral -> coral-light -> blue-light -> slate — so category-comparison
+ * charts match the rest of the admin panel. Distinct enough to read apart at a
+ * glance; single-series charts keep the plain brand-coral treatment.
  */
 export const CATEGORY_CHART_COLORS: Record<CategorySlug, ThemedColor> = {
-  "software-development": { light: "#2a78d6", dark: "#3987e5" },
-  "ai-automations": { light: "#eb6834", dark: "#d95926" },
-  "industrial-training": { light: "#1baf7a", dark: "#199e70" },
-  "resource-augmentation": { light: "#eda100", dark: "#c98500" },
-  "internship-program": { light: "#e87ba4", dark: "#d55181" },
+  "software-development": { light: "#1D428A", dark: "#3b6fd4" },
+  "ai-automations": { light: "#E56043", dark: "#E56043" },
+  "industrial-training": { light: "#ff8e75", dark: "#ff8e75" },
+  "resource-augmentation": { light: "#7ba0d9", dark: "#5f84c2" },
+  "internship-program": { light: "#94a3b8", dark: "#94a3b8" },
 };

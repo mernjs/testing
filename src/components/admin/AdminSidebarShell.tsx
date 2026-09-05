@@ -28,11 +28,11 @@ export default function AdminSidebarShell({
       animate={{ width: collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH }}
       initial={false}
       transition={hydrated ? { type: "spring", stiffness: 320, damping: 32 } : { duration: 0 }}
-      className="admin-surface hidden shrink-0 flex-col overflow-hidden rounded-2xl border border-border/50 bg-card/70 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_32px_-8px_rgba(0,0,0,0.12)] backdrop-blur-xl md:flex dark:bg-card/40"
+      className="admin-surface hidden shrink-0 flex-col overflow-hidden rounded-3xl border border-border/60 bg-background/90 shadow-md backdrop-blur-md md:flex dark:bg-card/85"
     >
       <div
         className={cn(
-          "admin-surface sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b border-border/50 bg-card/70 px-4 backdrop-blur-xl dark:bg-card/40",
+          "sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b border-border/60 bg-background/70 px-4 backdrop-blur-md dark:bg-card/60",
           collapsed ? "justify-center gap-1.5 px-2" : "justify-between"
         )}
       >

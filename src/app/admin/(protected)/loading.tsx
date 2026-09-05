@@ -11,7 +11,7 @@ export default function DashboardLoading() {
         <Skeleton className="mt-2 h-4 w-72" />
       </div>
 
-      <GlassCard>
+      <GlassCard interactive={false}>
         <CardContent>
           <div className="flex flex-wrap gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -23,7 +23,7 @@ export default function DashboardLoading() {
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
         {Array.from({ length: 5 }).map((_, i) => (
-          <GlassCard key={i}>
+          <GlassCard interactive={false} key={i}>
             <CardHeader className="pb-2"><Skeleton className="h-3 w-16" /></CardHeader>
             <CardContent><Skeleton className="h-7 w-12" /></CardContent>
           </GlassCard>
@@ -31,17 +31,17 @@ export default function DashboardLoading() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <GlassCard>
+        <GlassCard interactive={false}>
           <CardHeader><Skeleton className="h-4 w-40" /></CardHeader>
           <CardContent><Skeleton className="h-48 w-full" /></CardContent>
         </GlassCard>
-        <GlassCard>
+        <GlassCard interactive={false}>
           <CardHeader><Skeleton className="h-4 w-40" /></CardHeader>
           <CardContent><Skeleton className="h-48 w-full" /></CardContent>
         </GlassCard>
       </div>
 
-      <GlassCard>
+      <GlassCard interactive={false}>
         <CardHeader><Skeleton className="h-4 w-40" /></CardHeader>
         <CardContent className="space-y-2">
           {Array.from({ length: 4 }).map((_, i) => (

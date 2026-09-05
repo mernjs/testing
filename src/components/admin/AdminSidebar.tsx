@@ -3,7 +3,18 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Briefcase, Megaphone, Bot, MessagesSquare, BookOpen, SlidersHorizontal } from "lucide-react";
+import {
+  LayoutDashboard,
+  Briefcase,
+  Megaphone,
+  Bot,
+  MessagesSquare,
+  BookOpen,
+  SlidersHorizontal,
+  AudioLines,
+  Mic,
+  Settings2,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CATEGORIES } from "@/lib/categories";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
@@ -92,7 +103,11 @@ export default function AdminSidebar({ onNavigate, collapsed = false }: { onNavi
       <NavLink href="/admin/chatbot" label="Dashboard" icon={Bot} exact collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/admin/chatbot/conversations" label="Conversations" icon={MessagesSquare} collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/admin/chatbot/knowledge-base" label="Knowledge Base" icon={BookOpen} collapsed={collapsed} onNavigate={onNavigate} />
-      <NavLink href="/admin/chatbot/config" label="AI Config" icon={SlidersHorizontal} collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/admin/chatbot/config" label="AI Config" icon={SlidersHorizontal} exact collapsed={collapsed} onNavigate={onNavigate} />
+      <SectionLabel collapsed={collapsed}>Conversation AI</SectionLabel>
+      <NavLink href="/admin/chatbot/voice" label="Voice Dashboard" icon={AudioLines} exact collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/admin/chatbot/voice/conversations" label="Voice Conversations" icon={Mic} collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/admin/chatbot/voice/config" label="ElevenLabs Config" icon={Settings2} collapsed={collapsed} onNavigate={onNavigate} />
     </nav>
   );
 }

@@ -26,7 +26,6 @@ import { listSavedFilters } from "@/lib/saved-filters";
 import { formatDateTime } from "@/lib/utils";
 import { isValidDateRangePreset, resolveDateRangePreset, type DateRangePreset } from "@/lib/date-ranges";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
-import { CATEGORY_CHART_COLORS } from "@/lib/category-colors";
 import type { SerializedLead } from "@/components/admin/types";
 
 function parseDateParam(value: string | undefined, endOfDay = false): Date | undefined {
@@ -143,11 +142,6 @@ export default async function AdminDashboardPage({
   return (
     <div className="relative space-y-4">
       <DashboardAutoRefresh />
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-[-10%] right-[-5%] h-[40%] w-[40%] rounded-full bg-primary/[0.04] blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-5%] h-[40%] w-[40%] rounded-full bg-yashorbit-coral/[0.04] blur-[120px]" />
-      </div>
-
       <Breadcrumbs items={[{ label: "Dashboard" }]} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -234,7 +228,6 @@ export default async function AdminDashboardPage({
                 label={cat.label}
                 value={cat.total}
                 icon={<Icon className="size-4" />}
-                accentColor={CATEGORY_CHART_COLORS[cat.slug]}
                 trend={cat.growthPercent}
               />
             );

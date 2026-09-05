@@ -15,7 +15,7 @@ const STATUS_LABEL: Record<CampaignImportSummary["status"], string> = {
 
 export default function CampaignImportsHistory({ imports }: { imports: CampaignImportSummary[] }) {
   return (
-    <GlassCard>
+    <GlassCard interactive={false}>
       <CardHeader><CardTitle>Recent Imports</CardTitle></CardHeader>
       <CardContent className="space-y-2">
         {imports.length === 0 && <p className="text-sm text-muted-foreground">No imports yet.</p>}

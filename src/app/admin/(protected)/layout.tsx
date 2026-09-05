@@ -55,10 +55,10 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
   return (
     <TooltipProvider delay={200}>
       <SidebarCollapseProvider>
-        <div className="relative flex h-screen gap-3 overflow-hidden bg-muted/30 p-3">
-          <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-            <div className="absolute top-[-15%] left-[20%] h-[50%] w-[50%] rounded-full bg-primary/[0.05] blur-[140px]" />
-            <div className="absolute bottom-[-15%] right-[10%] h-[45%] w-[45%] rounded-full bg-yashorbit-coral/[0.05] blur-[140px]" />
+        <div className="relative flex h-screen gap-3 overflow-hidden bg-background p-3">
+          <div className="admin-ambient pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+            <div className="admin-ambient-mid" />
+            <div className="absolute inset-0 bg-grid-slate-900/[0.015] dark:bg-grid-slate-400/[0.02] [mask-image:linear-gradient(to_bottom,black,transparent_80%)]" />
           </div>
 
           <AdminSidebarShell
@@ -68,7 +68,7 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
           />
 
           <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
-            <div className="admin-surface relative z-30 shrink-0 rounded-2xl border border-border/50 bg-card/70 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_32px_-8px_rgba(0,0,0,0.12)] backdrop-blur-xl dark:bg-card/40">
+            <div className="admin-surface relative z-30 shrink-0 rounded-3xl border border-border/60 bg-background/90 shadow-md backdrop-blur-md dark:bg-card/85">
               <AdminTopbar
                 staleLeads={staleLeads}
                 staleLeadsCount={staleLeadsSummary.count}

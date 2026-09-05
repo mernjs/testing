@@ -47,7 +47,7 @@ export default function ChatbotDashboardFilters({
   }
 
   return (
-    <GlassCard>
+    <GlassCard interactive={false}>
       <CardContent>
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1.5">

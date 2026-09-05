@@ -62,7 +62,7 @@ export default function CampaignFilters({
   }
 
   return (
-    <GlassCard>
+    <GlassCard interactive={false}>
       <CardContent>
         <div className="flex flex-wrap items-end gap-3">
           <Field label="Platform">

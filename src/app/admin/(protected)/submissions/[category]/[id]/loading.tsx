@@ -12,7 +12,7 @@ export default function SubmissionDetailLoading() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <GlassCard className="lg:col-span-2">
+        <GlassCard interactive={false} className="lg:col-span-2">
           <CardHeader><Skeleton className="h-4 w-32" /></CardHeader>
           <CardContent className="space-y-3">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -20,7 +20,7 @@ export default function SubmissionDetailLoading() {
             ))}
           </CardContent>
         </GlassCard>
-        <GlassCard>
+        <GlassCard interactive={false}>
           <CardHeader><Skeleton className="h-4 w-16" /></CardHeader>
           <CardContent className="space-y-3">
             <Skeleton className="h-9 w-full" />
@@ -29,7 +29,7 @@ export default function SubmissionDetailLoading() {
         </GlassCard>
       </div>
 
-      <GlassCard>
+      <GlassCard interactive={false}>
         <CardHeader><Skeleton className="h-4 w-32" /></CardHeader>
         <CardContent><Skeleton className="h-24 w-full" /></CardContent>
       </GlassCard>

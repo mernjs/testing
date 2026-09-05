@@ -4,8 +4,18 @@ import * as React from "react";
 import { AnimatePresence } from "framer-motion";
 import { Bot, PanelLeft, Plus } from "lucide-react";
 import { useChat } from "@/components/chat/ChatProvider";
+import { useVoice } from "@/components/chat/VoiceProvider";
 import { ChatSidebar, ChatSidebarDrawer } from "@/components/chat/ChatSidebar";
 import { ChatConversation } from "@/components/chat/ChatConversation";
+import { VoiceModeToggle } from "@/components/chat/voice/VoiceModeToggle";
+import { VoicePanel } from "@/components/chat/voice/VoicePanel";
+
+function WorkspaceVoiceSlot() {
+  const { voiceMode, supported } = useVoice();
+  const { needsIdentification } = useChat();
+  if (!supported || !voiceMode || needsIdentification) return null;
+  return <VoicePanel />;
+}
 
 export function ChatWorkspace() {
   const { newConversation, messages, needsIdentification, ready } = useChat();
@@ -52,20 +62,23 @@ export function ChatWorkspace() {
             </div>
           </div>
 
-          {showSidebar && (
-            <button
-              type="button"
-              onClick={() => void newConversation()}
-              disabled={messages.length === 0}
-              className="flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/60 px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-40 lg:hidden"
-            >
-              <Plus className="size-3.5" />
-              New
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            <VoiceModeToggle />
+            {showSidebar && (
+              <button
+                type="button"
+                onClick={() => void newConversation()}
+                disabled={messages.length === 0}
+                className="flex items-center gap-1.5 rounded-lg border border-border/60 bg-background/60 px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground disabled:opacity-40 lg:hidden"
+              >
+                <Plus className="size-3.5" />
+                New
+              </button>
+            )}
+          </div>
         </header>
 
-        <ChatConversation wide />
+        <ChatConversation wide voiceSlot={<WorkspaceVoiceSlot />} />
       </div>
     </div>
   );

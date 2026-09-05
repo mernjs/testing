@@ -11,7 +11,7 @@ export default function ChatbotConfigLoading() {
         <Skeleton className="mt-2 h-4 w-96" />
       </div>
       {Array.from({ length: 4 }).map((_, i) => (
-        <GlassCard key={i}>
+        <GlassCard interactive={false} key={i}>
           <CardHeader>
             <Skeleton className="h-4 w-40" />
           </CardHeader>

@@ -103,9 +103,9 @@ export default function ChatbotConfigForm({
   return (
     <div className="space-y-4">
       {!openAiConfigured && (
-        <GlassCard className="border-amber-500/30">
+        <GlassCard interactive={false} className="border-primary/40 bg-primary/5">
           <CardContent className="flex items-start gap-3 py-3 text-sm">
-            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-amber-500" />
+            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-primary" />
             <p className="text-muted-foreground">
               <span className="font-medium text-foreground">OPENAI_API_KEY is not set.</span> Settings save
               normally, but the assistant stays offline until the key is added to the server environment.

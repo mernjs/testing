@@ -96,11 +96,6 @@ export default async function CareersDashboardPage({
 
   return (
     <div className="relative space-y-4">
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-[-10%] right-[-5%] h-[40%] w-[40%] rounded-full bg-primary/[0.04] blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-5%] h-[40%] w-[40%] rounded-full bg-yashorbit-coral/[0.04] blur-[120px]" />
-      </div>
-
       <Breadcrumbs items={[{ label: "Dashboard", href: "/admin" }, { label: "Careers" }]} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -143,12 +138,11 @@ export default async function CareersDashboardPage({
                 label={s.label}
                 value={stats.byStatus[s.value] ?? 0}
                 icon={<Icon className="size-4" />}
-                accentColor={CAREER_STATUS_COLORS[s.value]}
                 trend={stats.growthByStatus[s.value]}
               />
             );
           })}
-          <KpiCard label="Conversion Rate" value={stats.hiringConversionRate} suffix="%" accentColor="#0ca30c" />
+          <KpiCard label="Conversion Rate" value={stats.hiringConversionRate} suffix="%" />
         </div>
       </div>
 

@@ -27,12 +27,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { message?: unknown; sourcePage?: unknown };
+  let body: { message?: unknown; sourcePage?: unknown; voice?: unknown };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
+  const isVoice = body.voice === true;
 
   const config = await getChatbotConfig();
   const sanitized = sanitizeUserMessage(body.message, config.rateLimit.maxMessageChars);
@@ -71,8 +72,9 @@ export async function POST(req: NextRequest) {
   }
 
   // Persist the user's message up front so it survives a mid-stream failure.
-  await recordUserMessage(session.sessionId, sanitized.text, {
+  const userMsg = await recordUserMessage(session.sessionId, sanitized.text, {
     flaggedInjection: sanitized.flaggedInjection,
+    voice: isVoice,
   });
 
   const historyWithNew = await getConversationHistory(session.sessionId, config.contextMessageLimit + 4);
@@ -89,6 +91,7 @@ export async function POST(req: NextRequest) {
       content: "",
       error: err instanceof Error ? err.message : "stream start failed",
       model: config.model,
+      voice: isVoice,
     });
     const res = NextResponse.json({ error: GENERIC_ERROR }, { status: 502 });
     return applyChatCookies(res, cookiesToSet);
@@ -139,8 +142,14 @@ export async function POST(req: NextRequest) {
           responseTimeMs: Date.now() - startedAt,
           promptTokens: usage?.input_tokens,
           completionTokens: usage?.output_tokens,
+          voice: isVoice,
         });
-        send({ type: "done", messageId: String(assistantMsg._id), citations });
+        send({
+          type: "done",
+          messageId: String(assistantMsg._id),
+          userMessageId: String(userMsg._id),
+          citations,
+        });
       } catch (err) {
         console.error("chat: stream error", err);
         await recordAssistantMessage(session.sessionId, {
@@ -148,6 +157,7 @@ export async function POST(req: NextRequest) {
           error: err instanceof Error ? err.message : "stream error",
           model,
           responseTimeMs: Date.now() - startedAt,
+          voice: isVoice,
         });
         send({ type: "error", message: GENERIC_ERROR });
       } finally {

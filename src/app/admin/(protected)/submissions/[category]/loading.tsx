@@ -11,7 +11,7 @@ export default function SubmissionsListLoading() {
         <Skeleton className="mt-2 h-4 w-32" />
       </div>
 
-      <GlassCard>
+      <GlassCard interactive={false}>
         <CardContent>
           <div className="flex flex-wrap gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -21,7 +21,7 @@ export default function SubmissionsListLoading() {
         </CardContent>
       </GlassCard>
 
-      <GlassCard>
+      <GlassCard interactive={false}>
         <CardContent className="space-y-3">
           {Array.from({ length: 8 }).map((_, i) => (
             <Skeleton key={i} className="h-10 w-full" />

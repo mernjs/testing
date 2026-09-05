@@ -14,7 +14,7 @@ export default function ConversationDetailLoading() {
         <Skeleton className="h-8 w-40" />
       </div>
       <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
-        <GlassCard className="h-fit">
+        <GlassCard interactive={false} className="h-fit">
           <CardHeader>
             <Skeleton className="h-4 w-32" />
           </CardHeader>
@@ -24,7 +24,7 @@ export default function ConversationDetailLoading() {
             ))}
           </CardContent>
         </GlassCard>
-        <GlassCard>
+        <GlassCard interactive={false}>
           <CardHeader>
             <Skeleton className="h-4 w-28" />
           </CardHeader>

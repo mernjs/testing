@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Bot, ExternalLink, FileText, User } from "lucide-react";
+import { AudioLines, Bot, ExternalLink, FileText, User } from "lucide-react";
 import { cn, formatDateTime } from "@/lib/utils";
 import { Markdown } from "@/components/chat/Markdown";
 import { TypingIndicator } from "@/components/chat/TypingIndicator";
@@ -91,7 +91,10 @@ export function ChatMessage({ message, wide = false }: { message: ChatMessageTyp
           {!isUser && !message.streaming && <Citations citations={message.citations} />}
         </div>
         {!message.streaming && (
-          <span className="px-1 text-[10px] text-muted-foreground/60">{formatDateTime(message.createdAt)}</span>
+          <span className="flex items-center gap-1 px-1 text-[10px] text-muted-foreground/60">
+            {message.voice && <AudioLines className="size-2.5 text-primary/70" />}
+            {formatDateTime(message.createdAt)}
+          </span>
         )}
       </div>
     </motion.div>

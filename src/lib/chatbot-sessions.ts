@@ -79,6 +79,8 @@ export interface ChatMessageDoc {
   promptTokens?: number;
   completionTokens?: number;
   flaggedInjection?: boolean;
+  /** True when this turn originated from / was delivered as voice. */
+  voice?: boolean;
   error?: string;
   createdAt: Date;
 }
@@ -92,6 +94,7 @@ export interface SerializedChatMessage {
   model: string | null;
   responseTimeMs: number | null;
   flaggedInjection: boolean;
+  voice: boolean;
   error: string | null;
   createdAt: string;
 }
@@ -261,7 +264,7 @@ export async function startNewConversation(req: NextRequest): Promise<ResolvedSe
 export async function recordUserMessage(
   sessionId: string,
   content: string,
-  meta: { flaggedInjection?: boolean } = {}
+  meta: { flaggedInjection?: boolean; voice?: boolean } = {}
 ): Promise<ChatMessageDoc> {
   const messages = await getMessagesCollection();
   const sessions = await getSessionsCollection();
@@ -272,6 +275,7 @@ export async function recordUserMessage(
     role: "user",
     content,
     flaggedInjection: meta.flaggedInjection || false,
+    voice: meta.voice || undefined,
     createdAt: now,
   };
   await messages.insertOne(doc);
@@ -300,6 +304,7 @@ export async function recordAssistantMessage(
     responseTimeMs?: number;
     promptTokens?: number;
     completionTokens?: number;
+    voice?: boolean;
     error?: string;
   }
 ): Promise<ChatMessageDoc> {
@@ -316,6 +321,7 @@ export async function recordAssistantMessage(
     responseTimeMs: data.responseTimeMs,
     promptTokens: data.promptTokens,
     completionTokens: data.completionTokens,
+    voice: data.voice || undefined,
     error: data.error,
     createdAt: now,
   };
@@ -357,6 +363,7 @@ export function serializeChatMessage(doc: ChatMessageDoc): SerializedChatMessage
     model: doc.model ?? null,
     responseTimeMs: doc.responseTimeMs ?? null,
     flaggedInjection: doc.flaggedInjection ?? false,
+    voice: doc.voice ?? false,
     error: doc.error ?? null,
     createdAt: new Date(doc.createdAt).toISOString(),
   };

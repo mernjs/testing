@@ -112,7 +112,7 @@ export default function CampaignLeadsTable({
 
   return (
     <div className="space-y-4">
-      <GlassCard>
+      <GlassCard interactive={false}>
         <CardContent>
           <div className="flex flex-wrap items-end gap-3">
             <div className="flex flex-col gap-1.5">
@@ -143,7 +143,7 @@ export default function CampaignLeadsTable({
         </CardContent>
       </GlassCard>
 
-      <GlassCard>
+      <GlassCard interactive={false}>
         <CardContent className="max-h-[65vh] overflow-auto">
           <Table>
             <TableHeader>

@@ -56,7 +56,7 @@ type Status = SerializedKbWebsitePage["status"];
 function StatusBadge({ status }: { status: Status }) {
   const map: Record<Status, string> = {
     indexed: "bg-green-500/15 text-green-600 dark:text-green-400",
-    pending: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+    pending: "bg-primary/15 text-primary",
     failed: "bg-destructive/15 text-destructive",
     stale: "bg-muted text-muted-foreground",
   };
@@ -212,9 +212,9 @@ export default function KnowledgeBaseManager({
   return (
     <div className="space-y-4">
       {!openAiConfigured && (
-        <GlassCard className="border-amber-500/30">
+        <GlassCard interactive={false} className="border-primary/40 bg-primary/5">
           <CardContent className="flex items-start gap-3 py-3 text-sm">
-            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-amber-500" />
+            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-primary" />
             <p className="text-muted-foreground">
               <span className="font-medium text-foreground">OPENAI_API_KEY is not set.</span> Indexing is disabled
               until it is configured in the server environment.
@@ -525,7 +525,7 @@ export default function KnowledgeBaseManager({
                     key={i}
                     className={cn(
                       l.level === "error" && "text-destructive",
-                      l.level === "warn" && "text-amber-600 dark:text-amber-400"
+                      l.level === "warn" && "text-primary"
                     )}
                   >
                     [{l.level}] {l.message}

@@ -153,7 +153,7 @@ export default function ConversationsDataTable({
 
   return (
     <div className="space-y-3">
-      <GlassCard>
+      <GlassCard interactive={false}>
         <CardContent>
           <div className="flex flex-wrap items-end gap-3">
             <div className="flex flex-col gap-1.5">
@@ -253,7 +253,7 @@ export default function ConversationsDataTable({
         </CardContent>
       </GlassCard>
 
-      <GlassCard>
+      <GlassCard interactive={false}>
         <CardContent className="max-h-[65vh] overflow-auto p-0">
           <Table>
             <TableHeader>

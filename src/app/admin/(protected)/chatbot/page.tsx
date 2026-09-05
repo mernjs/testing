@@ -68,11 +68,6 @@ export default async function ChatbotDashboardPage({
 
   return (
     <div className="relative space-y-4">
-      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-[-10%] right-[-5%] h-[40%] w-[40%] rounded-full bg-primary/[0.04] blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-5%] h-[40%] w-[40%] rounded-full bg-yashorbit-coral/[0.04] blur-[120px]" />
-      </div>
-
       <Breadcrumbs items={[{ label: "Dashboard", href: "/admin" }, { label: "AI Chatbot" }]} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -90,9 +85,9 @@ export default async function ChatbotDashboardPage({
       </div>
 
       {!isOpenAIConfigured() && (
-        <GlassCard className="border-amber-500/30">
+        <GlassCard interactive={false} className="border-primary/40 bg-primary/5">
           <CardContent className="flex items-start gap-3 py-3 text-sm">
-            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-amber-500" />
+            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-primary" />
             <p className="text-muted-foreground">
               <span className="font-medium text-foreground">OPENAI_API_KEY is not set.</span> The public chatbot
               returns a friendly “unavailable” message until it is configured in the server environment.
@@ -112,14 +107,14 @@ export default async function ChatbotDashboardPage({
         <h2 className="mb-3 text-lg font-semibold text-foreground">Overview</h2>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
           <KpiCard label="Chat Sessions" value={stats.totalSessions} accent trend={stats.growth.sessions} icon={<MessageSquare className="size-4" />} />
-          <KpiCard label="Total Messages" value={stats.totalMessages} trend={stats.growth.messages} icon={<Bot className="size-4" />} accentColor="#6366f1" />
-          <KpiCard label="Active Now" value={stats.activeSessions} icon={<Activity className="size-4" />} accentColor="#0ca30c" />
-          <KpiCard label="Unique Visitors" value={stats.uniqueVisitors} trend={stats.growth.visitors} icon={<Users className="size-4" />} accentColor="#0ea5e9" />
-          <KpiCard label="Identified Visitors" value={stats.identifiedVisitors} icon={<UserCheck className="size-4" />} accentColor="#14b8a6" />
-          <KpiCard label="Avg. Msgs / Chat" value={stats.avgConversationLength} icon={<Gauge className="size-4" />} accentColor="#8b5cf6" />
-          <KpiCard label="Avg. Response" value={avgRespSeconds} suffix="s" icon={<Clock className="size-4" />} accentColor="#f59e0b" />
-          <KpiCard label="Error Rate" value={stats.errorRate} suffix="%" icon={<TriangleAlert className="size-4" />} accentColor="#ef4444" />
-          <KpiCard label="Flagged" value={stats.flaggedCount} icon={<ShieldAlert className="size-4" />} accentColor="#ec4899" />
+          <KpiCard label="Total Messages" value={stats.totalMessages} trend={stats.growth.messages} icon={<Bot className="size-4" />} />
+          <KpiCard label="Active Now" value={stats.activeSessions} icon={<Activity className="size-4" />} />
+          <KpiCard label="Unique Visitors" value={stats.uniqueVisitors} trend={stats.growth.visitors} icon={<Users className="size-4" />} />
+          <KpiCard label="Identified Visitors" value={stats.identifiedVisitors} icon={<UserCheck className="size-4" />} />
+          <KpiCard label="Avg. Msgs / Chat" value={stats.avgConversationLength} icon={<Gauge className="size-4" />} />
+          <KpiCard label="Avg. Response" value={avgRespSeconds} suffix="s" icon={<Clock className="size-4" />} />
+          <KpiCard label="Error Rate" value={stats.errorRate} suffix="%" icon={<TriangleAlert className="size-4" />} />
+          <KpiCard label="Flagged" value={stats.flaggedCount} icon={<ShieldAlert className="size-4" />} />
         </div>
       </div>
 

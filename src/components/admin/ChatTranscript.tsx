@@ -1,4 +1,4 @@
-import { Bot, ExternalLink, FileText, TriangleAlert, User } from "lucide-react";
+import { AudioLines, Bot, ExternalLink, FileText, TriangleAlert, User } from "lucide-react";
 import { cn, formatDateTime } from "@/lib/utils";
 import { Markdown } from "@/components/chat/Markdown";
 import type { SerializedChatMessage } from "@/lib/chatbot-sessions";
@@ -80,7 +80,8 @@ export default function ChatTranscript({
                   </div>
                 )}
               </div>
-              <span className="px-1 text-[10px] text-muted-foreground/60">
+              <span className="flex items-center gap-1 px-1 text-[10px] text-muted-foreground/60">
+                {m.voice && <AudioLines className="size-2.5 text-primary/70" />}
                 {formatDateTime(m.createdAt)}
                 {!isUser && m.responseTimeMs != null && ` · ${(m.responseTimeMs / 1000).toFixed(1)}s`}
                 {!isUser && m.model && ` · ${m.model}`}

@@ -52,7 +52,7 @@ export default function SidebarProfileMenu({
   const initials = initialsFor(adminEmail);
 
   return (
-    <div className="admin-surface shrink-0 border-t border-border/50 p-2">
+    <div className="shrink-0 border-t border-border/60 p-2">
       <DropdownMenu>
         <DropdownMenuTrigger
           className={cn(

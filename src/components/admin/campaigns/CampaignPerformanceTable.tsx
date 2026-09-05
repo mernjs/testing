@@ -68,7 +68,7 @@ export default function CampaignPerformanceTable({ rows, currency }: { rows: Cam
   const headProps = { activeKey: sortKey, dir: sortDir, onSort: toggleSort };
 
   return (
-    <GlassCard>
+    <GlassCard interactive={false}>
       <CardContent className="overflow-x-auto">
         <Table>
           <TableHeader>

@@ -13,6 +13,7 @@ import {
 import { isOpenAIConfigured } from "@/lib/openai";
 import { beginWebsiteIndex, runWebsiteIndex, urlsForPageIds } from "@/lib/kb-website";
 import { reindexPdf, deletePdf } from "@/lib/kb-pdf";
+import { deleteVoiceConversation, bulkDeleteVoiceConversations } from "@/lib/voice-conversations";
 import { siteUrl } from "@/lib/seo";
 
 // Every action re-checks the session — render-time gating on the page alone
@@ -116,4 +117,47 @@ export async function saveChatbotConfigAction(
   revalidatePath("/admin/chatbot/config");
   revalidatePath("/admin/chatbot");
   return {};
+}
+
+// ---------------------------------------------------------------------------
+// Conversation AI (voice)
+// ---------------------------------------------------------------------------
+
+export async function saveVoiceConfigAction(
+  voice: unknown
+): Promise<{ error?: string; fieldErrors?: Record<string, string> }> {
+  const admin = await requireAdmin();
+  const validation = validateChatbotConfig({ voice });
+  if (!validation.valid) {
+    return { error: validation.errors.voice ?? "Please fix the highlighted fields.", fieldErrors: validation.errors };
+  }
+  await updateChatbotConfig(validation.data, admin.email);
+  revalidatePath("/admin/chatbot/voice/config");
+  revalidatePath("/admin/chatbot/voice");
+  return {};
+}
+
+export async function deleteVoiceConversationAction(id: string): Promise<void> {
+  await requireAdmin();
+  await deleteVoiceConversation(id);
+  revalidatePath("/admin/chatbot/voice/conversations");
+  revalidatePath("/admin/chatbot/voice");
+  redirect("/admin/chatbot/voice/conversations");
+}
+
+export async function deleteVoiceConversationInPlaceAction(id: string): Promise<{ error?: string }> {
+  await requireAdmin();
+  const ok = await deleteVoiceConversation(id);
+  if (!ok) return { error: "Conversation not found." };
+  revalidatePath("/admin/chatbot/voice/conversations");
+  revalidatePath("/admin/chatbot/voice");
+  return {};
+}
+
+export async function bulkDeleteVoiceConversationsAction(ids: string[]): Promise<{ deleted: number }> {
+  await requireAdmin();
+  const deleted = await bulkDeleteVoiceConversations(ids);
+  revalidatePath("/admin/chatbot/voice/conversations");
+  revalidatePath("/admin/chatbot/voice");
+  return { deleted };
 }

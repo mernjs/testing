@@ -18,7 +18,7 @@ function LeadRow({ lead, icon: Icon }: { lead: SerializedLead; icon: typeof Aler
       className="flex items-center justify-between gap-2 rounded-md px-1.5 py-1.5 text-sm hover:bg-muted/60"
     >
       <div className="flex min-w-0 items-center gap-2">
-        <Icon className="size-3.5 shrink-0 text-amber-500" />
+        <Icon className="size-3.5 shrink-0 text-primary" />
         <div className="min-w-0">
           <p className="truncate font-medium">{lead.name}</p>
           <p className="truncate text-xs text-muted-foreground">
@@ -38,7 +38,7 @@ function ApplicationRow({ application, icon: Icon }: { application: SerializedCa
       className="flex items-center justify-between gap-2 rounded-md px-1.5 py-1.5 text-sm hover:bg-muted/60"
     >
       <div className="flex min-w-0 items-center gap-2">
-        <Icon className="size-3.5 shrink-0 text-amber-500" />
+        <Icon className="size-3.5 shrink-0 text-primary" />
         <div className="min-w-0">
           <p className="truncate font-medium">{application.name}</p>
           <p className="truncate text-xs text-muted-foreground">

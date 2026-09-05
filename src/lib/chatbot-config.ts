@@ -31,6 +31,18 @@ export interface PreChatConfig {
   consentText: string;
 }
 
+/** ElevenLabs voice-mode settings for the Ask YashOrbit page. */
+export interface VoiceConfig {
+  enabled: boolean;
+  voiceId: string;
+  modelId: string;
+  stability: number;
+  similarityBoost: number;
+  style: number;
+  speed: number;
+  streaming: boolean;
+}
+
 export interface ChatbotConfig {
   _id: string;
   /** OpenAI model id used for answer generation (Responses API). */
@@ -54,6 +66,8 @@ export interface ChatbotConfig {
   suggestedQuestions: string[];
   /** Visitor identification form shown before the first message. */
   preChat: PreChatConfig;
+  /** ElevenLabs voice-mode settings. */
+  voice: VoiceConfig;
   updatedBy: string | null;
   updatedAt: Date;
   createdAt: Date;
@@ -103,6 +117,17 @@ const DEFAULT_CONFIG: Omit<ChatbotConfig, "_id" | "createdAt" | "updatedAt"> = {
     consentText:
       "By continuing you agree that YashOrbit may contact you about your enquiry. We never share your details.",
   },
+  voice: {
+    enabled: false,
+    // "Rachel" — a widely-available stock ElevenLabs voice; change in AI Config.
+    voiceId: "21m00Tcm4TlvDq8ikWAM",
+    modelId: "eleven_flash_v2_5",
+    stability: 0.5,
+    similarityBoost: 0.75,
+    style: 0,
+    speed: 1.0,
+    streaming: true,
+  },
   updatedBy: null,
 };
 
@@ -135,6 +160,7 @@ export async function getChatbotConfig(): Promise<ChatbotConfig> {
         ...existing.preChat,
         fields: { ...DEFAULT_CONFIG.preChat.fields, ...existing.preChat?.fields },
       },
+      voice: { ...DEFAULT_CONFIG.voice, ...existing.voice },
       _id: CONFIG_ID,
     };
   }
@@ -170,6 +196,42 @@ export interface ChatbotConfigInput {
   welcomeMessage?: unknown;
   suggestedQuestions?: unknown;
   preChat?: unknown;
+  voice?: unknown;
+}
+
+const VOICE_MODELS = ["eleven_flash_v2_5", "eleven_turbo_v2_5", "eleven_multilingual_v2"];
+
+function validateVoice(input: unknown): { ok: true; value: VoiceConfig } | { ok: false; error: string } {
+  if (!input || typeof input !== "object") return { ok: false, error: "Invalid voice settings." };
+  const raw = input as Record<string, unknown>;
+
+  const clamp = (v: unknown, min: number, max: number, fallback: number): number => {
+    const n = typeof v === "number" ? v : Number(v);
+    if (!Number.isFinite(n)) return fallback;
+    return Math.min(max, Math.max(min, Math.round(n * 100) / 100));
+  };
+
+  const voiceId = typeof raw.voiceId === "string" ? raw.voiceId.trim().slice(0, 100) : "";
+  if (!voiceId) return { ok: false, error: "A default voice is required." };
+
+  const modelId =
+    typeof raw.modelId === "string" && VOICE_MODELS.includes(raw.modelId)
+      ? raw.modelId
+      : "eleven_flash_v2_5";
+
+  return {
+    ok: true,
+    value: {
+      enabled: raw.enabled === true,
+      voiceId,
+      modelId,
+      stability: clamp(raw.stability, 0, 1, 0.5),
+      similarityBoost: clamp(raw.similarityBoost, 0, 1, 0.75),
+      style: clamp(raw.style, 0, 1, 0),
+      speed: clamp(raw.speed, 0.7, 1.2, 1.0),
+      streaming: raw.streaming !== false,
+    },
+  };
 }
 
 const FIELD_MODES: PreChatFieldMode[] = ["required", "optional", "off"];
@@ -301,6 +363,12 @@ export function validateChatbotConfig(
     const result = validatePreChat(input.preChat);
     if (!result.ok) errors.preChat = result.error;
     else data.preChat = result.value;
+  }
+
+  if (input.voice !== undefined) {
+    const result = validateVoice(input.voice);
+    if (!result.ok) errors.voice = result.error;
+    else data.voice = result.value;
   }
 
   if (Object.keys(retrieval).length > 0) data.retrieval = retrieval as ChatbotConfig["retrieval"];

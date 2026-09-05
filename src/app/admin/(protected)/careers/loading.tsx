@@ -14,7 +14,7 @@ export default function CareersDashboardLoading() {
         <Skeleton className="h-8 w-32" />
       </div>
 
-      <GlassCard>
+      <GlassCard interactive={false}>
         <CardContent>
           <div className="flex flex-wrap gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -26,7 +26,7 @@ export default function CareersDashboardLoading() {
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-8">
         {Array.from({ length: 8 }).map((_, i) => (
-          <GlassCard key={i}>
+          <GlassCard interactive={false} key={i}>
             <CardHeader className="pb-2"><Skeleton className="h-3 w-16" /></CardHeader>
             <CardContent><Skeleton className="h-7 w-12" /></CardContent>
           </GlassCard>
@@ -34,7 +34,7 @@ export default function CareersDashboardLoading() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <GlassCard>
+        <GlassCard interactive={false}>
           <CardHeader><Skeleton className="h-4 w-32" /></CardHeader>
           <CardContent className="space-y-3">
             {Array.from({ length: 4 }).map((_, i) => (
@@ -42,7 +42,7 @@ export default function CareersDashboardLoading() {
             ))}
           </CardContent>
         </GlassCard>
-        <GlassCard>
+        <GlassCard interactive={false}>
           <CardHeader><Skeleton className="h-4 w-40" /></CardHeader>
           <CardContent className="space-y-2">
             {Array.from({ length: 4 }).map((_, i) => (

@@ -14,7 +14,7 @@ export default function ChatbotDashboardLoading() {
         <Skeleton className="h-8 w-40" />
       </div>
 
-      <GlassCard>
+      <GlassCard interactive={false}>
         <CardContent>
           <Skeleton className="h-8 w-40" />
         </CardContent>
@@ -22,7 +22,7 @@ export default function ChatbotDashboardLoading() {
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-8">
         {Array.from({ length: 8 }).map((_, i) => (
-          <GlassCard key={i}>
+          <GlassCard interactive={false} key={i}>
             <CardHeader className="pb-2">
               <Skeleton className="h-3 w-16" />
             </CardHeader>
@@ -34,7 +34,7 @@ export default function ChatbotDashboardLoading() {
       </div>
 
       {Array.from({ length: 2 }).map((_, i) => (
-        <GlassCard key={i}>
+        <GlassCard interactive={false} key={i}>
           <CardHeader>
             <Skeleton className="h-4 w-40" />
           </CardHeader>

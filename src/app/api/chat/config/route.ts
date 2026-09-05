@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getChatbotConfig } from "@/lib/chatbot-config";
 import { isOpenAIConfigured } from "@/lib/openai";
+import { isElevenLabsConfigured } from "@/lib/elevenlabs";
 import { getVisitorIdFromRequest } from "@/lib/chatbot-sessions";
 import { getVisitorProfile } from "@/lib/chat-visitors";
 
@@ -25,5 +26,10 @@ export async function GET(req: NextRequest) {
     },
     identified: Boolean(profile),
     visitorName: profile?.name ?? null,
+    voice: {
+      enabled: config.voice.enabled,
+      available: config.voice.enabled && isElevenLabsConfigured(),
+      streaming: config.voice.streaming,
+    },
   });
 }

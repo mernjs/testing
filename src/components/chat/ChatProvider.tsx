@@ -18,6 +18,19 @@ export interface ChatMessage {
   createdAt: string;
   streaming?: boolean;
   error?: boolean;
+  /** This turn originated from / was delivered as voice. */
+  voice?: boolean;
+}
+
+export interface AssistantDoneInfo {
+  text: string;
+  messageId: string;
+  userMessageId: string;
+}
+
+export interface SendOptions {
+  voice?: boolean;
+  onAssistantDone?: (info: AssistantDoneInfo) => void;
 }
 
 export interface ChatSessionSummary {
@@ -45,13 +58,22 @@ export interface IdentityInput {
   company: string;
 }
 
+export interface VoicePublicConfig {
+  enabled: boolean;
+  available: boolean;
+  streaming: boolean;
+}
+
 export interface ChatPublicConfig {
   available: boolean;
   welcomeMessage: string;
   suggestedQuestions: string[];
   maxMessageChars: number;
   preChat: PreChatFormConfig;
+  voice: VoicePublicConfig;
 }
+
+const DEFAULT_VOICE: VoicePublicConfig = { enabled: false, available: false, streaming: true };
 
 const DEFAULT_PRECHAT: PreChatFormConfig = {
   enabled: false,
@@ -78,7 +100,7 @@ interface ChatContextValue {
   /** True when the pre-chat form must be completed before chatting. */
   needsIdentification: boolean;
   identify: (data: IdentityInput) => Promise<{ ok: boolean; fieldErrors?: Record<string, string> }>;
-  send: (text: string) => void;
+  send: (text: string, opts?: SendOptions) => void;
   newConversation: () => Promise<void>;
   switchSession: (sessionId: string) => Promise<void>;
   renameSession: (sessionId: string, title: string) => Promise<void>;
@@ -100,6 +122,7 @@ const DEFAULT_CONFIG: ChatPublicConfig = {
   suggestedQuestions: [],
   maxMessageChars: 2000,
   preChat: DEFAULT_PRECHAT,
+  voice: DEFAULT_VOICE,
 };
 
 function uid(): string {
@@ -113,6 +136,7 @@ interface HistoryMessage {
   citations?: ChatCitation[];
   createdAt: string;
   error?: string | null;
+  voice?: boolean;
 }
 
 function mapHistory(raw: HistoryMessage[]): ChatMessage[] {
@@ -125,6 +149,7 @@ function mapHistory(raw: HistoryMessage[]): ChatMessage[] {
       citations: m.citations ?? [],
       createdAt: m.createdAt,
       error: Boolean(m.error),
+      voice: Boolean(m.voice),
     }));
 }
 
@@ -177,7 +202,12 @@ export function ChatProvider({
         const hist = histRes.ok ? await histRes.json() : { messages: [], sessionId: null };
         if (cancelled) return;
 
-        setConfig({ ...DEFAULT_CONFIG, ...cfg, preChat: { ...DEFAULT_PRECHAT, ...cfg.preChat } });
+        setConfig({
+          ...DEFAULT_CONFIG,
+          ...cfg,
+          preChat: { ...DEFAULT_PRECHAT, ...cfg.preChat },
+          voice: { ...DEFAULT_VOICE, ...cfg.voice },
+        });
         setIdentified(Boolean(cfg.identified));
         setVisitorName(cfg.visitorName ?? null);
         setMessages(mapHistory(hist.messages ?? []));
@@ -201,7 +231,7 @@ export function ChatProvider({
   }, [withHistorySidebar]);
 
   const send = React.useCallback(
-    (raw: string) => {
+    (raw: string, opts?: SendOptions) => {
       const text = raw.trim();
       if (!text || status === "streaming") return;
 
@@ -215,12 +245,21 @@ export function ChatProvider({
         content: text,
         citations: [],
         createdAt: new Date().toISOString(),
+        voice: opts?.voice,
       };
       const assistantId = uid();
       setMessages((prev) => [
         ...prev,
         userMsg,
-        { id: assistantId, role: "assistant", content: "", citations: [], createdAt: new Date().toISOString(), streaming: true },
+        {
+          id: assistantId,
+          role: "assistant",
+          content: "",
+          citations: [],
+          createdAt: new Date().toISOString(),
+          streaming: true,
+          voice: opts?.voice,
+        },
       ]);
 
       const patchAssistant = (patch: Partial<ChatMessage>) =>
@@ -236,6 +275,7 @@ export function ChatProvider({
             headers: { "content-type": "application/json" },
             body: JSON.stringify({
               message: text,
+              voice: opts?.voice ?? undefined,
               sourcePage: typeof window !== "undefined" ? window.location.pathname : undefined,
             }),
             signal: controller.signal,
@@ -279,12 +319,20 @@ export function ChatProvider({
                 setThinking(false);
                 patchAssistant({ content: acc, streaming: true });
               } else if (evt.type === "done") {
+                const resolvedId = typeof evt.messageId === "string" ? evt.messageId : assistantId;
                 patchAssistant({
-                  id: typeof evt.messageId === "string" ? evt.messageId : assistantId,
+                  id: resolvedId,
                   content: acc,
                   citations: Array.isArray(evt.citations) ? (evt.citations as ChatCitation[]) : [],
                   streaming: false,
                 });
+                if (opts?.onAssistantDone && acc.trim()) {
+                  opts.onAssistantDone({
+                    text: acc,
+                    messageId: resolvedId,
+                    userMessageId: typeof evt.userMessageId === "string" ? evt.userMessageId : "",
+                  });
+                }
               } else if (evt.type === "error") {
                 patchAssistant({
                   content: acc || (typeof evt.message === "string" ? evt.message : "Something went wrong."),
