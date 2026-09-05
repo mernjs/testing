@@ -1,30 +1,49 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 interface CategoryBarChartProps {
   data: { label: string; value: number }[];
 }
 
 export default function CategoryBarChart({ data }: CategoryBarChartProps) {
-  const max = Math.max(...data.map((d) => d.value), 1);
-
   return (
-    <div className="flex h-48 items-stretch gap-3">
-      {data.map((d, i) => (
-        <div key={d.label} className="flex flex-1 flex-col items-center gap-2">
-          <span className="text-xs font-semibold text-foreground">{d.value}</span>
-          <div className="flex w-full flex-1 items-end">
-            <motion.div
-              initial={{ height: 0 }}
-              animate={{ height: `${d.value > 0 ? Math.max((d.value / max) * 100, 4) : 0}%` }}
-              transition={{ duration: 0.5, delay: i * 0.05, ease: "easeOut" }}
-              className="w-full rounded-t-md bg-gradient-to-t from-primary to-[#ff8e75]"
-            />
-          </div>
-          <span className="text-center text-[11px] leading-tight text-muted-foreground">{d.label}</span>
-        </div>
-      ))}
-    </div>
+    <ResponsiveContainer width="100%" height={260}>
+      <BarChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+        <defs>
+          <linearGradient id="categoryBarFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#E56043" />
+            <stop offset="100%" stopColor="#ff8e75" />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />
+        <XAxis
+          dataKey="label"
+          tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+          tickLine={false}
+          axisLine={false}
+          interval={0}
+          angle={-15}
+          textAnchor="end"
+          height={50}
+        />
+        <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} width={32} />
+        <Tooltip
+          contentStyle={{
+            background: "var(--popover)",
+            border: "1px solid var(--border)",
+            borderRadius: 12,
+            fontSize: 12,
+            color: "var(--popover-foreground)",
+          }}
+          cursor={{ fill: "var(--muted)", opacity: 0.4 }}
+        />
+        <Bar dataKey="value" radius={[6, 6, 0, 0]} animationDuration={600}>
+          {data.map((_, i) => (
+            <Cell key={i} fill="url(#categoryBarFill)" />
+          ))}
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
   );
 }

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Mail, Phone, Calendar, Tag, Download } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import GlassCard from "@/components/admin/GlassCard";
 import { buttonVariants } from "@/components/ui/button";
 import StatusBadge from "@/components/admin/StatusBadge";
 import Breadcrumbs from "@/components/admin/Breadcrumbs";
@@ -36,7 +37,7 @@ export default async function SubmissionDetailPage({
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+        <GlassCard className="lg:col-span-2">
           <CardHeader><CardTitle>Contact Details</CardTitle></CardHeader>
           <CardContent className="space-y-3 text-sm">
             <div className="flex items-center gap-2">
@@ -78,23 +79,23 @@ export default async function SubmissionDetailPage({
               </div>
             )}
           </CardContent>
-        </Card>
+        </GlassCard>
 
-        <Card>
+        <GlassCard>
           <CardHeader><CardTitle>Status</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <StatusSelect category={category} id={id} initialStatus={lead.status ?? DEFAULT_LEAD_STATUS} />
             <DeleteButton category={category} id={id} />
           </CardContent>
-        </Card>
+        </GlassCard>
       </div>
 
-      <Card>
+      <GlassCard>
         <CardHeader><CardTitle>Internal Notes</CardTitle></CardHeader>
         <CardContent>
           <NotesEditor category={category} id={id} initialNotes={lead.notes ?? ""} />
         </CardContent>
-      </Card>
+      </GlassCard>
     </div>
   );
 }

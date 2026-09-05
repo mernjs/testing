@@ -24,7 +24,7 @@ export default function AdminTopbar({ adminEmail }: { adminEmail: string }) {
   const [isPending, startTransition] = useTransition();
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur-sm">
+    <header className="flex h-14 shrink-0 items-center justify-between px-4">
       <MobileSidebar />
       <div className="flex-1" />
       <DropdownMenu>

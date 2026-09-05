@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/admin/Breadcrumbs";
 import SubmissionsDataTable from "@/components/admin/SubmissionsDataTable";
+import ExportButton from "@/components/admin/ExportButton";
 import { searchLeads, isValidCategory, getCategoryLabel } from "@/lib/leads";
 import { isValidLeadStatus } from "@/lib/lead-status";
 import type { SerializedLead } from "@/components/admin/types";
@@ -58,9 +59,22 @@ export default async function SubmissionsListPage({
   return (
     <div className="space-y-4">
       <Breadcrumbs items={[{ label: "Dashboard", href: "/admin" }, { label: getCategoryLabel(category) }]} />
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">{getCategoryLabel(category)}</h1>
-        <p className="text-sm text-muted-foreground">{total} submission{total === 1 ? "" : "s"}</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">{getCategoryLabel(category)}</h1>
+          <p className="text-sm text-muted-foreground">{total} submission{total === 1 ? "" : "s"}</p>
+        </div>
+        <ExportButton
+          params={{
+            category,
+            search: sp.search,
+            status,
+            dateFrom: sp.dateFrom,
+            dateTo: sp.dateTo,
+            sortBy,
+            sortDir,
+          }}
+        />
       </div>
 
       <SubmissionsDataTable

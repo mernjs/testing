@@ -17,7 +17,8 @@ import {
   Trash2,
   Eye,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
+import GlassCard from "@/components/admin/GlassCard";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -36,6 +37,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import StatusBadge from "@/components/admin/StatusBadge";
 import SubmissionSheet from "@/components/admin/SubmissionSheet";
+import ExportButton from "@/components/admin/ExportButton";
 import { LEAD_STATUSES } from "@/lib/lead-status";
 import type { SerializedLead } from "@/components/admin/types";
 import { bulkDeleteAction, bulkUpdateStatusAction } from "@/app/admin/(protected)/submissions/[category]/actions";
@@ -180,7 +182,7 @@ export default function SubmissionsDataTable({
 
   return (
     <div className="space-y-4">
-      <Card>
+      <GlassCard>
         <CardContent>
           <div className="flex flex-wrap items-end gap-3">
             <div className="flex flex-col gap-1.5">
@@ -243,9 +245,9 @@ export default function SubmissionsDataTable({
             )}
           </div>
         </CardContent>
-      </Card>
+      </GlassCard>
 
-      <Card>
+      <GlassCard>
         <CardContent className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -329,7 +331,7 @@ export default function SubmissionsDataTable({
             </TableBody>
           </Table>
         </CardContent>
-      </Card>
+      </GlassCard>
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between text-sm text-muted-foreground">
@@ -380,6 +382,7 @@ export default function SubmissionsDataTable({
                   ))}
                 </SelectContent>
               </Select>
+              <ExportButton params={{ category, ids: Array.from(selected) }} label="Export" />
               <AlertDialog>
                 <AlertDialogTrigger
                   render={

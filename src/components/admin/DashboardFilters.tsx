@@ -1,23 +1,30 @@
 "use client";
 
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { X } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Search, X } from "lucide-react";
+import { CardContent } from "@/components/ui/card";
+import GlassCard from "@/components/admin/GlassCard";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { CATEGORIES } from "@/lib/categories";
 import { LEAD_STATUSES } from "@/lib/lead-status";
+import { LEAD_SOURCES } from "@/lib/lead-sources";
 
 export default function DashboardFilters({
   category,
   status,
+  source,
+  search,
   dateFrom,
   dateTo,
   hasActiveFilters,
 }: {
   category: string;
   status: string;
+  source: string;
+  search: string;
   dateFrom: string;
   dateTo: string;
   hasActiveFilters: boolean;
@@ -26,6 +33,7 @@ export default function DashboardFilters({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
+  const [searchInput, setSearchInput] = useState(search);
 
   function updateParams(updates: Record<string, string | undefined>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -36,14 +44,34 @@ export default function DashboardFilters({
     startTransition(() => router.replace(`${pathname}?${params.toString()}`));
   }
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== search) updateParams({ search: searchInput || undefined });
+    }, 350);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchInput]);
+
   return (
-    <Card>
+    <GlassCard>
       <CardContent>
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Search</label>
+            <div className="relative">
+              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Name, email, or phone"
+                className="h-8 w-48 pl-8"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">Category</label>
             <Select value={category || "all"} onValueChange={(v) => updateParams({ category: !v || v === "all" ? undefined : v })}>
-              <SelectTrigger className="w-48">
+              <SelectTrigger className="w-44">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -57,12 +85,26 @@ export default function DashboardFilters({
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">Status</label>
             <Select value={status || "all"} onValueChange={(v) => updateParams({ status: !v || v === "all" ? undefined : v })}>
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-36">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All statuses</SelectItem>
                 {LEAD_STATUSES.map((s) => (
+                  <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Source</label>
+            <Select value={source || "all"} onValueChange={(v) => updateParams({ source: !v || v === "all" ? undefined : v })}>
+              <SelectTrigger className="w-36">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All sources</SelectItem>
+                {LEAD_SOURCES.map((s) => (
                   <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                 ))}
               </SelectContent>
@@ -87,13 +129,13 @@ export default function DashboardFilters({
             />
           </div>
           {hasActiveFilters && (
-            <Button type="button" variant="ghost" size="sm" onClick={() => router.replace(pathname)}>
+            <Button type="button" variant="ghost" size="sm" onClick={() => { setSearchInput(""); router.replace(pathname); }}>
               <X className="size-3.5" data-icon="inline-start" />
               Reset
             </Button>
           )}
         </div>
       </CardContent>
-    </Card>
+    </GlassCard>
   );
 }
