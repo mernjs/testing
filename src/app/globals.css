@@ -95,30 +95,29 @@
   --popover-foreground: #ECF2FD;
 }
 
-/* One shared surface gradient for every admin panel section — cards, sidebar,
-   topbar, filters, tables, popovers, detail pages — so the whole panel reads
-   as one consistent theme instead of some sections getting it and others not.
-   Built from color-mix() over existing tokens only, so nothing here is a
-   hardcoded hex. Light mode blends toward --secondary-foreground (the navy
-   token) rather than --secondary itself — --secondary is near-white in light
-   mode, so mixing it into --card produces almost no visible gradient; the
-   *-foreground token actually carries chroma. Dark mode's --secondary (navy)
-   already has real chroma, so it's used directly there. */
+/* One shared surface treatment for every admin panel section — cards, sidebar,
+   topbar, filters, tables, popovers, detail pages — matching the exact
+   technique the public site's own department cards use (see the "Ambient
+   color wash" / "Ambient glow blobs" comments in src/app/(site)/Content.tsx):
+   a warm corner glow + a cool corner glow + a subtle bottom muted wash,
+   layered as radial/linear gradients. The site uses a blurred photo for part
+   of its per-card color variation — admin content has no per-card photo, so
+   this reproduces the same corner-glow structure from tokens via color-mix()
+   only (no hardcoded hex). Light mode's cool corner blends --secondary-
+   foreground (navy) rather than --secondary itself, since --secondary is
+   near-white in light mode and would be invisible; dark mode's --secondary
+   (navy) already has real chroma so it's used directly. */
 .admin-surface {
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in oklch, var(--card), var(--primary) 5%) 0%,
-    var(--card) 40%,
-    color-mix(in oklch, var(--card), var(--secondary-foreground) 10%) 100%
-  );
+  background-image:
+    radial-gradient(ellipse 75% 65% at 100% 0%, color-mix(in oklch, var(--primary) 10%, transparent), transparent 70%),
+    radial-gradient(ellipse 70% 65% at 0% 100%, color-mix(in oklch, var(--secondary-foreground) 8%, transparent), transparent 70%),
+    linear-gradient(to bottom, transparent, color-mix(in oklch, var(--muted) 20%, transparent) 100%);
 }
 .dark .admin-surface {
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in oklch, var(--card), var(--primary) 16%) 0%,
-    var(--card) 45%,
-    color-mix(in oklch, var(--card), var(--secondary) 55%) 100%
-  );
+  background-image:
+    radial-gradient(ellipse 75% 65% at 100% 0%, color-mix(in oklch, var(--primary) 22%, transparent), transparent 70%),
+    radial-gradient(ellipse 70% 65% at 0% 100%, color-mix(in oklch, var(--secondary) 38%, transparent), transparent 70%),
+    linear-gradient(to bottom, transparent, color-mix(in oklch, var(--muted) 30%, transparent) 100%);
 }
 
 @layer base {
