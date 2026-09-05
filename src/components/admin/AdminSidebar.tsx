@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Briefcase } from "lucide-react";
+import { LayoutDashboard, Briefcase, Megaphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CATEGORIES } from "@/lib/categories";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
@@ -84,6 +84,8 @@ export default function AdminSidebar({ onNavigate, collapsed = false }: { onNavi
           onNavigate={onNavigate}
         />
       ))}
+      <SectionLabel collapsed={collapsed}>Marketing</SectionLabel>
+      <NavLink href="/admin/campaigns" label="Campaign Analytics" icon={Megaphone} collapsed={collapsed} onNavigate={onNavigate} />
       <SectionLabel collapsed={collapsed}>Careers</SectionLabel>
       <NavLink href="/admin/careers" label="Applicants" icon={Briefcase} collapsed={collapsed} onNavigate={onNavigate} />
     </nav>

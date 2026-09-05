@@ -30,6 +30,22 @@ export async function updateStatusAction(category: string, id: string, status: s
   return {};
 }
 
+export async function updateDealValueAction(category: string, id: string, dealValue: string): Promise<{ error?: string }> {
+  await requireAdmin();
+  if (!isValidCategory(category)) return { error: "Invalid category." };
+
+  const validation = validateLeadUpdate({ dealValue: dealValue === "" ? null : dealValue });
+  if (!validation.valid) return { error: validation.errors.dealValue ?? "Invalid amount." };
+
+  const updated = await updateLead(category as CategorySlug, id, validation.data);
+  if (!updated) return { error: "Submission not found." };
+
+  revalidatePath(`/admin/submissions/${category}/${id}`);
+  revalidatePath("/admin/campaigns");
+  revalidatePath("/admin/campaigns/leads");
+  return {};
+}
+
 export async function updateNotesAction(category: string, id: string, notes: string): Promise<{ error?: string }> {
   await requireAdmin();
   if (!isValidCategory(category)) return { error: "Invalid category." };

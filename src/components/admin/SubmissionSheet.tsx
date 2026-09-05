@@ -17,8 +17,10 @@ import StatusBadge from "@/components/admin/StatusBadge";
 import StatusSelect from "@/app/admin/(protected)/submissions/[category]/[id]/StatusSelect";
 import NotesEditor from "@/app/admin/(protected)/submissions/[category]/[id]/NotesEditor";
 import DeleteButton from "@/app/admin/(protected)/submissions/[category]/[id]/DeleteButton";
+import DealValueEditor from "@/app/admin/(protected)/submissions/[category]/[id]/DealValueEditor";
 import { categoryAcceptsResume, getCategoryLabel, type CategorySlug } from "@/lib/categories";
 import { DEFAULT_LEAD_STATUS } from "@/lib/lead-status";
+import { getLeadSourceLabel } from "@/lib/lead-sources";
 import type { SerializedLead } from "@/components/admin/types";
 import { formatDateTime } from "@/lib/utils";
 
@@ -90,9 +92,25 @@ export default function SubmissionSheet({
 
           <Separator />
 
+          {(lead.campaign || (lead.source && lead.source !== "contact-page" && lead.source !== "homepage-hero")) && (
+            <>
+              <div className="space-y-1 text-sm">
+                <h3 className="mb-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">Attribution</h3>
+                <p><span className="text-muted-foreground">Source:</span> {getLeadSourceLabel(lead.source)}</p>
+                {lead.campaign && <p><span className="text-muted-foreground">Campaign:</span> {lead.campaign}</p>}
+              </div>
+              <Separator />
+            </>
+          )}
+
           <div>
             <h3 className="mb-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">Status</h3>
             <StatusSelect category={category} id={lead._id} initialStatus={lead.status ?? DEFAULT_LEAD_STATUS} />
+          </div>
+
+          <div>
+            <h3 className="mb-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">Deal Value</h3>
+            <DealValueEditor category={category} id={lead._id} initialValue={lead.dealValue ?? null} />
           </div>
 
           <div>

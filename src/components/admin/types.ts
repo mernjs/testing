@@ -11,6 +11,11 @@ export interface SerializedLead {
   notes?: string;
   resume?: { storageKey: string; filename: string; contentType: string; size: number };
   source?: string;
+  campaign?: string;
+  campaignKey?: string;
+  utm?: { source?: string; medium?: string; campaign?: string; content?: string; term?: string };
+  dealValue?: number;
+  attribution?: { method: "utm" | "csv" | "manual"; at?: string | Date };
   createdAt: string;
   updatedAt: string;
 }

@@ -37,6 +37,11 @@ export async function POST(req: NextRequest, { params }: Context) {
     message: formData.get("message"),
     subService: formData.get("subService"),
     source: formData.get("source"),
+    utmSource: formData.get("utmSource"),
+    utmMedium: formData.get("utmMedium"),
+    utmCampaign: formData.get("utmCampaign"),
+    utmContent: formData.get("utmContent"),
+    utmTerm: formData.get("utmTerm"),
   });
   if (!validation.valid) {
     return NextResponse.json({ error: "Validation failed.", fields: validation.errors }, { status: 422 });

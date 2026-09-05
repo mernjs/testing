@@ -8,7 +8,9 @@ import Breadcrumbs from "@/components/admin/Breadcrumbs";
 import StatusSelect from "./StatusSelect";
 import NotesEditor from "./NotesEditor";
 import DeleteButton from "./DeleteButton";
+import DealValueEditor from "./DealValueEditor";
 import { getLead, isValidCategory, getCategoryLabel, categoryAcceptsResume, DEFAULT_LEAD_STATUS } from "@/lib/leads";
+import { getLeadSourceLabel } from "@/lib/lead-sources";
 import { formatDateTime } from "@/lib/utils";
 
 export default async function SubmissionDetailPage({
@@ -85,10 +87,43 @@ export default async function SubmissionDetailPage({
           <CardHeader><CardTitle>Status</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <StatusSelect category={category} id={id} initialStatus={lead.status ?? DEFAULT_LEAD_STATUS} />
+            <DealValueEditor category={category} id={id} initialValue={lead.dealValue ?? null} />
             <DeleteButton category={category} id={id} />
           </CardContent>
         </GlassCard>
       </div>
+
+      {(lead.campaign || lead.source || lead.utm) && (
+        <GlassCard>
+          <CardHeader><CardTitle>Attribution</CardTitle></CardHeader>
+          <CardContent className="grid gap-3 text-sm sm:grid-cols-2">
+            <div>
+              <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Source</p>
+              <p>{getLeadSourceLabel(lead.source)}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Campaign</p>
+              <p>{lead.campaign ?? "—"}</p>
+            </div>
+            {lead.utm?.medium && (
+              <div>
+                <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Medium</p>
+                <p>{lead.utm.medium}</p>
+              </div>
+            )}
+            {lead.attribution && (
+              <div>
+                <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Attributed</p>
+                <p>
+                  {lead.attribution.method === "utm" ? "From landing URL (UTM)" : lead.attribution.method === "csv" ? "From imported lead list" : "Assigned manually"}
+                  {" · "}
+                  {formatDateTime(lead.attribution.at)}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </GlassCard>
+      )}
 
       <GlassCard>
         <CardHeader><CardTitle>Internal Notes</CardTitle></CardHeader>

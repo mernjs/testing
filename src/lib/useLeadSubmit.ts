@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { CategorySlug } from "@/lib/categories";
+import { useUtmParams } from "@/lib/useUtmParams";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -21,6 +22,7 @@ export function useLeadSubmit() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const utm = useUtmParams();
 
   async function submit(category: CategorySlug, data: LeadFormData) {
     setStatus("submitting");
@@ -35,6 +37,11 @@ export function useLeadSubmit() {
     if (data.subService) body.set("subService", data.subService);
     if (data.resume) body.set("resume", data.resume);
     if (data.source) body.set("source", data.source);
+    if (utm?.source) body.set("utmSource", utm.source);
+    if (utm?.medium) body.set("utmMedium", utm.medium);
+    if (utm?.campaign) body.set("utmCampaign", utm.campaign);
+    if (utm?.content) body.set("utmContent", utm.content);
+    if (utm?.term) body.set("utmTerm", utm.term);
 
     try {
       const res = await fetch(`/api/leads/${category}`, {

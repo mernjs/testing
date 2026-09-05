@@ -1,8 +1,9 @@
 import "server-only";
 import { Collection, Document, ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
-import { CATEGORIES, collectionNameFor, getCategoryLabel, getSubServices, type CategorySlug } from "@/lib/categories";
-import type { LeadRecord } from "@/lib/lead-validation";
+import { CATEGORIES, collectionNameFor, getCategoryLabel, getSubServices, isValidCategory, type CategorySlug } from "@/lib/categories";
+import type { LeadRecord, LeadAttribution } from "@/lib/lead-validation";
+import type { Utm } from "@/lib/utm";
 import { DEFAULT_LEAD_STATUS, type LeadStatus } from "@/lib/lead-status";
 import { deleteResumeFile, readResumeFile, saveResumeFile } from "@/lib/resume-storage";
 import { escapeRegExp } from "@/lib/text-search";
@@ -13,7 +14,7 @@ import { dateFormatFor, type DashboardGranularity } from "@/lib/granularity";
 export type { DashboardGranularity } from "@/lib/granularity";
 
 export { CATEGORIES, isValidCategory, getCategoryLabel, categoryAcceptsResume, getSubServices, type CategorySlug, type SubService } from "@/lib/categories";
-export { validateLeadInput, validateLeadUpdate, validateResumeFile, type LeadInput, type LeadAdminInput, type LeadRecord } from "@/lib/lead-validation";
+export { validateLeadInput, validateLeadUpdate, validateResumeFile, DEAL_VALUE_MAX, type LeadInput, type LeadAdminInput, type LeadRecord, type LeadAttribution } from "@/lib/lead-validation";
 export { LEAD_STATUSES, DEFAULT_LEAD_STATUS, isValidLeadStatus, getStatusMeta, type LeadStatus } from "@/lib/lead-status";
 
 export interface ResumeMeta {
@@ -35,6 +36,11 @@ export interface Lead {
   status?: LeadStatus;
   notes?: string;
   source?: string;
+  campaign?: string;
+  campaignKey?: string;
+  utm?: Utm;
+  dealValue?: number;
+  attribution?: LeadAttribution;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -172,10 +178,22 @@ export async function getLead(category: CategorySlug, id: string) {
 export async function updateLead(category: CategorySlug, id: string, data: Partial<LeadRecord>) {
   if (!ObjectId.isValid(id)) return null;
   const collection = await getLeadsCollection(category);
-  const update: Partial<LeadRecord> & { updatedAt: Date } = { ...data, updatedAt: new Date() };
+
+  // Keys explicitly set to `undefined` mean "clear this field" — route them to
+  // $unset so the document doesn't keep a stale value (or store a literal null).
+  const set: Record<string, unknown> = { updatedAt: new Date() };
+  const unset: Record<string, ""> = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (value === undefined) unset[key] = "";
+    else set[key] = value;
+  }
+
+  const update: Record<string, unknown> = { $set: set };
+  if (Object.keys(unset).length > 0) update.$unset = unset;
+
   const result = await collection.findOneAndUpdate(
     { _id: new ObjectId(id) },
-    { $set: update },
+    update,
     { returnDocument: "after" }
   );
   return result;
@@ -538,4 +556,409 @@ export async function getRecentLeadsSummary(days = 2): Promise<RecentLeadsSummar
 
   items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   return { count, items: items.slice(0, 10) };
+}
+
+// ---------------------------------------------------------------------------
+// Campaign attribution — reads leads across all 5 category collections, joined
+// by `campaignKey` / `source` to imported ad-campaign data. Used by the Campaign
+// Analytics module (src/lib/campaigns.ts) and its leads sub-view.
+// ---------------------------------------------------------------------------
+
+/** Lead `source` values that denote a paid ad platform. */
+export const PLATFORM_LEAD_SOURCES = ["meta", "google", "linkedin"] as const;
+
+export interface AttributedCampaignRollup {
+  total: number;
+  qualified: number;
+  completed: number;
+  /** Σ dealValue over attributed leads that reached `completed`. */
+  revenue: number;
+}
+
+export interface AttributedLeadStats {
+  /** Keyed by `campaignKey`. */
+  byCampaignKey: Record<string, AttributedCampaignRollup>;
+  bySource: Record<string, number>;
+  byStatus: Record<string, number>;
+  total: number;
+  qualified: number;
+  completed: number;
+  revenue: number;
+  timeSeries: { date: string; count: number }[];
+  previousTotal: number | null;
+}
+
+interface AttributedFilter {
+  campaignKeys?: string[];
+  sources?: string[];
+  /** Extra AND constraint on `lead.source` (e.g. the page's Source filter). */
+  sourceFilter?: string;
+  dateFrom?: Date;
+  dateTo?: Date;
+  granularity?: DashboardGranularity;
+}
+
+function attributedMatch(opts: AttributedFilter): Record<string, unknown> {
+  const match: Record<string, unknown> = {};
+  const or: Record<string, unknown>[] = [];
+  if (opts.campaignKeys && opts.campaignKeys.length > 0) or.push({ campaignKey: { $in: opts.campaignKeys } });
+  if (opts.sources && opts.sources.length > 0) or.push({ source: { $in: opts.sources } });
+  if (or.length === 0) {
+    // "everything attributable": has a campaign, or came from a paid platform.
+    or.push({ campaignKey: { $exists: true, $nin: [null, ""] } });
+    or.push({ source: { $in: [...PLATFORM_LEAD_SOURCES] } });
+  }
+  match.$or = or;
+  if (opts.sourceFilter) match.source = opts.sourceFilter;
+  if (opts.dateFrom || opts.dateTo) {
+    const range: Record<string, Date> = {};
+    if (opts.dateFrom) range.$gte = opts.dateFrom;
+    if (opts.dateTo) range.$lte = opts.dateTo;
+    match.createdAt = range;
+  }
+  return match;
+}
+
+interface AttributedFacet extends Document {
+  byCampaign: { _id: string | null; total: number; qualified: number; completed: number; revenue: number }[];
+  bySource: { _id: string | null; count: number }[];
+  byStatus: { _id: string | null; count: number }[];
+  byBucket: { _id: string; count: number }[];
+  total: { count: number }[];
+}
+
+export async function aggregateAttributedLeads(opts: AttributedFilter = {}): Promise<AttributedLeadStats> {
+  const dateFormat = dateFormatFor(opts.granularity ?? "day");
+  const match = attributedMatch(opts);
+  const prevRange = previousPeriodRange(opts.dateFrom, opts.dateTo);
+  const prevMatch = prevRange ? attributedMatch({ ...opts, dateFrom: prevRange.from, dateTo: prevRange.to }) : null;
+
+  const perCat = await Promise.all(
+    CATEGORIES.map(async (c) => {
+      const collection = await getLeadsCollection(c.slug);
+      const [facet] = await collection
+        .aggregate<AttributedFacet>([
+          { $match: match },
+          {
+            $facet: {
+              byCampaign: [
+                {
+                  $group: {
+                    _id: { $ifNull: ["$campaignKey", null] },
+                    total: { $sum: 1 },
+                    qualified: { $sum: { $cond: [{ $in: ["$status", ["in_progress", "completed"]] }, 1, 0] } },
+                    completed: { $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] } },
+                    revenue: { $sum: { $cond: [{ $eq: ["$status", "completed"] }, { $ifNull: ["$dealValue", 0] }, 0] } },
+                  },
+                },
+              ],
+              bySource: [{ $group: { _id: { $ifNull: ["$source", "unknown"] }, count: { $sum: 1 } } }],
+              byStatus: [{ $group: { _id: { $ifNull: ["$status", DEFAULT_LEAD_STATUS] }, count: { $sum: 1 } } }],
+              byBucket: [{ $group: { _id: { $dateToString: { format: dateFormat, date: "$createdAt" } }, count: { $sum: 1 } } }],
+              total: [{ $count: "count" }],
+            },
+          },
+        ])
+        .toArray();
+
+      const prevCount = prevMatch
+        ? await collection.countDocuments(prevMatch)
+        : null;
+
+      return { facet, prevCount };
+    })
+  );
+
+  const byCampaignKey: Record<string, AttributedCampaignRollup> = {};
+  const bySource: Record<string, number> = {};
+  const byStatus: Record<string, number> = { new: 0, in_progress: 0, completed: 0, rejected: 0 };
+  const bucket = new Map<string, number>();
+  let total = 0;
+  let qualified = 0;
+  let completed = 0;
+  let revenue = 0;
+  let previousTotal: number | null = prevMatch ? 0 : null;
+
+  for (const { facet, prevCount } of perCat) {
+    for (const c of facet?.byCampaign ?? []) {
+      if (!c._id) continue;
+      const row = (byCampaignKey[c._id] ??= { total: 0, qualified: 0, completed: 0, revenue: 0 });
+      row.total += c.total;
+      row.qualified += c.qualified;
+      row.completed += c.completed;
+      row.revenue += c.revenue;
+    }
+    for (const s of facet?.bySource ?? []) bySource[s._id ?? "unknown"] = (bySource[s._id ?? "unknown"] ?? 0) + s.count;
+    for (const s of facet?.byStatus ?? []) byStatus[s._id ?? DEFAULT_LEAD_STATUS] = (byStatus[s._id ?? DEFAULT_LEAD_STATUS] ?? 0) + s.count;
+    for (const b of facet?.byBucket ?? []) bucket.set(b._id, (bucket.get(b._id) ?? 0) + b.count);
+    total += facet?.total?.[0]?.count ?? 0;
+    for (const c of facet?.byCampaign ?? []) {
+      qualified += c.qualified;
+      completed += c.completed;
+      revenue += c.revenue;
+    }
+    if (prevCount !== null) previousTotal = (previousTotal ?? 0) + prevCount;
+  }
+
+  const timeSeries = Array.from(bucket.entries())
+    .map(([date, count]) => ({ date, count }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  return { byCampaignKey, bySource, byStatus, total, qualified, completed, revenue, timeSeries, previousTotal };
+}
+
+export interface SearchAttributedLeadsOptions {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  status?: LeadStatus;
+  source?: string;
+  campaignKey?: string;
+  dateFrom?: Date;
+  dateTo?: Date;
+  sortDir?: "asc" | "desc";
+}
+
+/** Paginated, filtered list of attributed leads merged across every category. */
+export async function searchAttributedLeads(opts: SearchAttributedLeadsOptions = {}) {
+  const page = Math.max(opts.page ?? 1, 1);
+  const pageSize = Math.min(Math.max(opts.pageSize ?? 20, 1), 100);
+  const dir = opts.sortDir === "asc" ? 1 : -1;
+
+  const base = attributedMatch({
+    campaignKeys: opts.campaignKey ? [opts.campaignKey] : undefined,
+    sourceFilter: opts.source,
+    dateFrom: opts.dateFrom,
+    dateTo: opts.dateTo,
+  });
+  if (opts.status) base.status = opts.status;
+  if (opts.search && opts.search.trim()) {
+    const regex = new RegExp(escapeRegExp(opts.search.trim()), "i");
+    base.$and = [{ $or: [{ name: regex }, { email: regex }, { phone: regex }, { campaign: regex }] }];
+  }
+
+  const fetchCount = page * pageSize;
+  const perCat = await Promise.all(
+    CATEGORIES.map(async (c) => {
+      const collection = await getLeadsCollection(c.slug);
+      const [items, count] = await Promise.all([
+        collection.find(base).sort({ createdAt: dir }).limit(fetchCount).toArray(),
+        collection.countDocuments(base),
+      ]);
+      return { items: items.map((d) => ({ ...d, category: c.slug })) as Lead[], count };
+    })
+  );
+
+  const merged = perCat.flatMap((r) => r.items);
+  merged.sort((a, b) => (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) * dir);
+  const total = perCat.reduce((sum, r) => sum + r.count, 0);
+
+  return {
+    items: merged.slice((page - 1) * pageSize, page * pageSize),
+    total,
+    page,
+    pageSize,
+    totalPages: Math.max(Math.ceil(total / pageSize), 1),
+  };
+}
+
+export interface LeadAttributionRevert {
+  category: CategorySlug;
+  id: string;
+  previous: {
+    source?: string;
+    campaign?: string;
+    campaignKey?: string;
+    utm?: Utm;
+    attribution?: LeadAttribution;
+  };
+}
+
+export interface AttributeLeadsResult {
+  /** Number of CSV rows that matched at least one lead. */
+  rowsMatched: number;
+  /** Number of CSV rows that matched no lead. */
+  rowsUnmatched: number;
+  /** A capped sample of the unmatched rows, for the import report. */
+  unmatchedSample: { campaign: string; email?: string; phone?: string }[];
+  /** Distinct leads updated (for undo). */
+  reverts: LeadAttributionRevert[];
+}
+
+const CONTACT_INDEX_CAP = 50_000;
+
+/**
+ * Match imported lead-list rows to existing leads by email / last-10-digits of
+ * phone, across all 5 category collections, and stamp them with the campaign.
+ * Loads a lightweight contact index once rather than querying per row.
+ */
+export async function attributeLeadsByContact(
+  rows: { email?: string; phone?: string; campaignName: string; campaignKey: string; createdAt?: Date }[],
+  source: string
+): Promise<AttributeLeadsResult> {
+  const byEmail = new Map<string, { category: CategorySlug; id: string }[]>();
+  const byPhone = new Map<string, { category: CategorySlug; id: string }[]>();
+
+  await Promise.all(
+    CATEGORIES.map(async (c) => {
+      const collection = await getLeadsCollection(c.slug);
+      const docs = await collection
+        .find({}, { projection: { email: 1, phone: 1 } })
+        .limit(CONTACT_INDEX_CAP)
+        .toArray();
+      for (const d of docs) {
+        const ref = { category: c.slug, id: String(d._id) };
+        if (d.email) {
+          const k = d.email.trim().toLowerCase();
+          (byEmail.get(k) ?? byEmail.set(k, []).get(k)!).push(ref);
+        }
+        if (d.phone) {
+          const digits = d.phone.replace(/\D/g, "");
+          if (digits.length >= 7) {
+            const k = digits.slice(-10);
+            (byPhone.get(k) ?? byPhone.set(k, []).get(k)!).push(ref);
+          }
+        }
+      }
+    })
+  );
+
+  // lead id -> the campaign to stamp (last row wins if a lead matches several)
+  type Assignment = { category: CategorySlug; id: string; campaignName: string; campaignKey: string };
+  const assignments = new Map<string, Assignment>();
+  let rowsMatched = 0;
+  let rowsUnmatched = 0;
+  const unmatchedSample: { campaign: string; email?: string; phone?: string }[] = [];
+
+  for (const row of rows) {
+    const hits: { category: CategorySlug; id: string }[] = [];
+    if (row.email) hits.push(...(byEmail.get(row.email) ?? []));
+    if (row.phone) hits.push(...(byPhone.get(row.phone) ?? []));
+    if (hits.length === 0) {
+      rowsUnmatched += 1;
+      if (unmatchedSample.length < 25) unmatchedSample.push({ campaign: row.campaignName, email: row.email, phone: row.phone });
+      continue;
+    }
+    rowsMatched += 1;
+    for (const h of hits) {
+      assignments.set(`${h.category}:${h.id}`, { ...h, campaignName: row.campaignName, campaignKey: row.campaignKey });
+    }
+  }
+
+  const now = new Date();
+  const reverts: LeadAttributionRevert[] = [];
+
+  const byCat = new Map<CategorySlug, Assignment[]>();
+  for (const a of assignments.values()) {
+    const list = byCat.get(a.category) ?? [];
+    list.push(a);
+    byCat.set(a.category, list);
+  }
+
+  await Promise.all(
+    Array.from(byCat.entries()).map(async ([category, list]) => {
+      const collection = await getLeadsCollection(category);
+      for (const a of list) {
+        const existing = await collection.findOne({ _id: new ObjectId(a.id) });
+        if (!existing) continue;
+        reverts.push({
+          category,
+          id: a.id,
+          previous: {
+            source: existing.source,
+            campaign: existing.campaign,
+            campaignKey: existing.campaignKey,
+            utm: existing.utm,
+            attribution: existing.attribution,
+          },
+        });
+        const utm = { ...(existing.utm ?? {}) };
+        if (!utm.campaign) utm.campaign = a.campaignName;
+        if (!utm.source) utm.source = source;
+        await collection.updateOne(
+          { _id: new ObjectId(a.id) },
+          {
+            $set: {
+              source,
+              campaign: a.campaignName,
+              campaignKey: a.campaignKey,
+              utm,
+              attribution: { method: "csv", at: now },
+              updatedAt: now,
+            },
+          }
+        );
+      }
+    })
+  );
+
+  return { rowsMatched, rowsUnmatched, unmatchedSample, reverts };
+}
+
+/** Restore leads to their pre-import attribution state (undo of a lead-list import). */
+export async function revertLeadAttribution(reverts: LeadAttributionRevert[]): Promise<number> {
+  const now = new Date();
+  let restored = 0;
+  const byCat = new Map<CategorySlug, LeadAttributionRevert[]>();
+  for (const r of reverts) {
+    if (!isValidCategory(r.category) || !ObjectId.isValid(r.id)) continue;
+    (byCat.get(r.category) ?? byCat.set(r.category, []).get(r.category)!).push(r);
+  }
+  await Promise.all(
+    Array.from(byCat.entries()).map(async ([category, list]) => {
+      const collection = await getLeadsCollection(category);
+      for (const r of list) {
+        const set: Record<string, unknown> = { updatedAt: now };
+        const unset: Record<string, ""> = {};
+        for (const key of ["source", "campaign", "campaignKey", "utm", "attribution"] as const) {
+          const v = r.previous[key];
+          if (v === undefined || v === null) unset[key] = "";
+          else set[key] = v;
+        }
+        const update: Record<string, unknown> = { $set: set };
+        if (Object.keys(unset).length > 0) update.$unset = unset;
+        const res = await collection.updateOne({ _id: new ObjectId(r.id) }, update);
+        restored += res.modifiedCount;
+      }
+    })
+  );
+  return restored;
+}
+
+/** Set `source` + `campaign` on specific leads (manual bulk assignment). */
+export async function assignLeadsCampaign(
+  targets: { category: CategorySlug; id: string }[],
+  source: string,
+  campaign: string | undefined,
+  campaignKey: string | undefined
+): Promise<number> {
+  const now = new Date();
+  let updated = 0;
+  const byCategory = new Map<CategorySlug, ObjectId[]>();
+  for (const t of targets) {
+    if (!isValidCategory(t.category) || !ObjectId.isValid(t.id)) continue;
+    const list = byCategory.get(t.category) ?? [];
+    list.push(new ObjectId(t.id));
+    byCategory.set(t.category, list);
+  }
+
+  await Promise.all(
+    Array.from(byCategory.entries()).map(async ([category, ids]) => {
+      const collection = await getLeadsCollection(category);
+      const set: Record<string, unknown> = { source, updatedAt: now, attribution: { method: "manual", at: now } };
+      const unset: Record<string, ""> = {};
+      if (campaign) {
+        set.campaign = campaign;
+        set.campaignKey = campaignKey;
+      } else {
+        unset.campaign = "";
+        unset.campaignKey = "";
+      }
+      const update: Record<string, unknown> = { $set: set };
+      if (Object.keys(unset).length > 0) update.$unset = unset;
+      const res = await collection.updateMany({ _id: { $in: ids } }, update);
+      updated += res.modifiedCount;
+    })
+  );
+  return updated;
 }
