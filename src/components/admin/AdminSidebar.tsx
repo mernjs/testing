@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Code, Bot, GraduationCap, Users, Briefcase } from "lucide-react";
+import { LayoutDashboard, Code, Bot, GraduationCap, Users, Award, Briefcase } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CATEGORIES, type CategorySlug } from "@/lib/categories";
 
@@ -12,7 +12,7 @@ const CATEGORY_ICONS: Record<CategorySlug, React.ComponentType<{ className?: str
   "ai-automations": Bot,
   "industrial-training": GraduationCap,
   "resource-augmentation": Users,
-  "internship-program": Briefcase,
+  "internship-program": Award,
 };
 
 function NavLink({
@@ -69,6 +69,10 @@ export default function AdminSidebar({ onNavigate }: { onNavigate?: () => void }
           onNavigate={onNavigate}
         />
       ))}
+      <div className="mt-4 mb-1 px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+        Careers
+      </div>
+      <NavLink href="/admin/careers" label="Applicants" icon={Briefcase} onNavigate={onNavigate} />
     </nav>
   );
 }

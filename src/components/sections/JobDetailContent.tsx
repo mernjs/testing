@@ -8,7 +8,7 @@ import TrainingMeta from "@/components/sections/TrainingMeta";
 import ChecklistGrid from "@/components/sections/ChecklistGrid";
 import DetailCTA from "@/components/sections/DetailCTA";
 import type { Job } from "@/app/(site)/careers/jobs-data";
-import { mailtoApplyHref, perks, applicationSteps } from "@/app/(site)/careers/jobs-data";
+import { perks, applicationSteps } from "@/app/(site)/careers/jobs-data";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -18,7 +18,7 @@ const fadeIn = {
 const CAREERS_IMAGE = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop";
 
 export default function JobDetailContent({ job }: { job: Job }) {
-  const applyHref = mailtoApplyHref(job.title);
+  const applyHref = `/careers/apply?position=${encodeURIComponent(job.slug)}`;
 
   return (
     <div className="flex flex-col min-h-screen selection:bg-primary/30 overflow-hidden">
@@ -30,7 +30,7 @@ export default function JobDetailContent({ job }: { job: Job }) {
         description={job.summary}
         icon={job.icon}
         image={CAREERS_IMAGE}
-        primaryCta={{ label: "Apply Now", href: applyHref, external: true }}
+        primaryCta={{ label: "Apply Now", href: applyHref }}
       />
 
       <TrainingMeta
@@ -161,7 +161,6 @@ export default function JobDetailContent({ job }: { job: Job }) {
         description="Send us your resume and a short note about why you're a fit. Our hiring team reviews every application personally."
         ctaLabel="Apply Now"
         ctaHref={applyHref}
-        external
         checklist={["Quick response", "Direct to our hiring team", "No account required"]}
       />
     </div>

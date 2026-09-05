@@ -1,4 +1,3 @@
-import { emails } from "@/lib/contact";
 import {
   Code2,
   Sparkles,
@@ -551,12 +550,4 @@ export function getPublishedJobs(): Job[] {
 
 export function getAllJobSlugs(): string[] {
   return jobs.map((job) => job.slug);
-}
-
-export function mailtoApplyHref(role: string) {
-  const subject = encodeURIComponent(`Application: ${role}`);
-  const body = encodeURIComponent(
-    `Hi YashOrbit team,\n\nI'm interested in applying for the ${role} role. Please find my resume attached.\n\nThanks,`
-  );
-  return `mailto:${emails.support}?subject=${subject}&body=${body}`;
 }

@@ -108,7 +108,8 @@ export default function CareersContent() {
       <DetailCTA
         heading="Don't see your role listed?"
         description="We're always looking for great people. Send us your resume and tell us how you'd like to contribute — we'll reach out when the right role opens up."
-        ctaLabel="Get in Touch"
+        ctaLabel="Send General Application"
+        ctaHref="/careers/apply"
         checklist={["Open to referrals", "Quick response", "No account required"]}
       />
     </div>
