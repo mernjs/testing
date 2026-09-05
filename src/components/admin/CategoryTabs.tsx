@@ -49,6 +49,7 @@ export default function CategoryTabs({ categories }: { categories: CategoryPanel
           {categories.map((c) => {
             const Icon = CATEGORY_ICONS[c.slug];
             const isActive = activeCategory.slug === c.slug;
+            const accentColor = isDark ? CATEGORY_CHART_COLORS[c.slug].dark : CATEGORY_CHART_COLORS[c.slug].light;
             return (
               <button
                 key={c.slug}
@@ -61,7 +62,7 @@ export default function CategoryTabs({ categories }: { categories: CategoryPanel
               >
                 <Icon
                   className="size-3.5"
-                  style={{ color: isActive ? (isDark ? CATEGORY_CHART_COLORS[c.slug].dark : CATEGORY_CHART_COLORS[c.slug].light) : undefined }}
+                  style={{ color: isActive ? accentColor : undefined }}
                 />
                 {c.label}
                 <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] tabular-nums text-muted-foreground">{c.total}</span>

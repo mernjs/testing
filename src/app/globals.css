@@ -95,6 +95,32 @@
   --popover-foreground: #ECF2FD;
 }
 
+/* One shared surface gradient for every admin panel section — cards, sidebar,
+   topbar, filters, tables, popovers, detail pages — so the whole panel reads
+   as one consistent theme instead of some sections getting it and others not.
+   Built from color-mix() over existing tokens only, so nothing here is a
+   hardcoded hex. Light mode blends toward --secondary-foreground (the navy
+   token) rather than --secondary itself — --secondary is near-white in light
+   mode, so mixing it into --card produces almost no visible gradient; the
+   *-foreground token actually carries chroma. Dark mode's --secondary (navy)
+   already has real chroma, so it's used directly there. */
+.admin-surface {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in oklch, var(--card), var(--primary) 5%) 0%,
+    var(--card) 40%,
+    color-mix(in oklch, var(--card), var(--secondary-foreground) 10%) 100%
+  );
+}
+.dark .admin-surface {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in oklch, var(--card), var(--primary) 16%) 0%,
+    var(--card) 45%,
+    color-mix(in oklch, var(--card), var(--secondary) 55%) 100%
+  );
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

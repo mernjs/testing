@@ -90,7 +90,8 @@ export default function KpiCard({
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
-  const resolvedAccentColor = resolveColor(accentColor, mounted && resolvedTheme === "dark");
+  const isDark = mounted && resolvedTheme === "dark";
+  const resolvedAccentColor = resolveColor(accentColor, isDark);
 
   return (
     <motion.div

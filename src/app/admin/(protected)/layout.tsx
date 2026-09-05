@@ -68,7 +68,7 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
           />
 
           <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
-            <div className="shrink-0 rounded-2xl border border-border/50 bg-card/70 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_32px_-8px_rgba(0,0,0,0.12)] backdrop-blur-xl dark:bg-card/40">
+            <div className="admin-surface shrink-0 rounded-2xl border border-border/50 bg-card/70 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_32px_-8px_rgba(0,0,0,0.12)] backdrop-blur-xl dark:bg-card/40">
               <AdminTopbar
                 staleLeads={staleLeads}
                 staleLeadsCount={staleLeadsSummary.count}
