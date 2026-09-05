@@ -15,11 +15,19 @@ import GranularityToggle from "@/components/admin/GranularityToggle";
 import ExportButton from "@/components/admin/ExportButton";
 import SavedFiltersMenu from "@/components/admin/SavedFiltersMenu";
 import DashboardAutoRefresh from "@/components/admin/DashboardAutoRefresh";
+import CategoryTabs, { type CategoryPanelData } from "@/components/admin/CategoryTabs";
+import StackedCategoryStatusChart, { type StackedRow } from "@/components/admin/StackedCategoryStatusChart";
+import PendingTasksWidget from "@/components/admin/PendingTasksWidget";
+import QuickActions from "@/components/admin/QuickActions";
 import { getDashboardStats, CATEGORIES, isValidCategory, getCategoryLabel, type DashboardGranularity } from "@/lib/leads";
 import { LEAD_STATUSES, isValidLeadStatus, getStatusMeta } from "@/lib/lead-status";
 import { getCurrentAdmin } from "@/lib/admin-auth";
 import { listSavedFilters } from "@/lib/saved-filters";
 import { formatDateTime } from "@/lib/utils";
+import { isValidDateRangePreset, resolveDateRangePreset, type DateRangePreset } from "@/lib/date-ranges";
+import { CATEGORY_ICONS } from "@/lib/category-icons";
+import { CATEGORY_CHART_COLORS } from "@/lib/category-colors";
+import type { SerializedLead } from "@/components/admin/types";
 
 function parseDateParam(value: string | undefined, endOfDay = false): Date | undefined {
   if (!value) return undefined;
@@ -37,6 +45,7 @@ export default async function AdminDashboardPage({
     status?: string;
     source?: string;
     search?: string;
+    range?: string;
     dateFrom?: string;
     dateTo?: string;
     granularity?: string;
@@ -53,12 +62,28 @@ export default async function AdminDashboardPage({
     ? (sp.granularity as DashboardGranularity)
     : "day";
 
-  const defaultTo = new Date();
-  const defaultFrom = new Date();
-  defaultFrom.setDate(defaultFrom.getDate() - 29);
+  // A preset drives the query when valid; otherwise fall back to explicit dateFrom/dateTo
+  // (back-compat with links/saved filters from before presets existed), defaulting to last30.
+  const rangeParam: DateRangePreset =
+    sp.range && isValidDateRangePreset(sp.range)
+      ? sp.range
+      : sp.dateFrom || sp.dateTo
+        ? "custom"
+        : "last30";
 
-  const dateFrom = parseDateParam(sp.dateFrom) ?? defaultFrom;
-  const dateTo = parseDateParam(sp.dateTo, true) ?? defaultTo;
+  let dateFrom: Date;
+  let dateTo: Date;
+  if (rangeParam === "custom") {
+    const defaultTo = new Date();
+    const defaultFrom = new Date();
+    defaultFrom.setDate(defaultFrom.getDate() - 29);
+    dateFrom = parseDateParam(sp.dateFrom) ?? defaultFrom;
+    dateTo = parseDateParam(sp.dateTo, true) ?? defaultTo;
+  } else {
+    const resolved = resolveDateRangePreset(rangeParam)!;
+    dateFrom = resolved.from;
+    dateTo = resolved.to;
+  }
 
   const [stats, savedFilters] = await Promise.all([
     getDashboardStats({ category, status, source, search, dateFrom, dateTo, granularity }),
@@ -67,13 +92,14 @@ export default async function AdminDashboardPage({
 
   const categoryChartData = CATEGORIES.map((c) => ({ label: c.label, value: stats.byCategory[c.slug] ?? 0 }));
   const statusPieData = LEAD_STATUSES.map((s) => ({ status: s.value, label: s.label, count: stats.byStatus[s.value] ?? 0 }));
-  const hasActiveFilters = Boolean(sp.category || sp.status || sp.source || sp.search || sp.dateFrom || sp.dateTo);
+  const hasActiveFilters = Boolean(sp.category || sp.status || sp.source || sp.search || sp.dateFrom || sp.dateTo || sp.range);
 
   const currentParams: Record<string, string> = {};
   if (sp.category) currentParams.category = sp.category;
   if (sp.status) currentParams.status = sp.status;
   if (sp.source) currentParams.source = sp.source;
   if (sp.search) currentParams.search = sp.search;
+  if (sp.range) currentParams.range = sp.range;
   if (sp.dateFrom) currentParams.dateFrom = sp.dateFrom;
   if (sp.dateTo) currentParams.dateTo = sp.dateTo;
   if (sp.granularity) currentParams.granularity = sp.granularity;
@@ -87,12 +113,39 @@ export default async function AdminDashboardPage({
     dateTo: dateTo.toISOString().slice(0, 10),
   };
 
+  const perCategoryStats = Object.values(stats.perCategory);
+  const categoryPanelData: CategoryPanelData[] = perCategoryStats.map((cat) => ({
+    slug: cat.slug,
+    label: cat.label,
+    total: cat.total,
+    growthPercent: cat.growthPercent,
+    byStatus: cat.byStatus,
+    bySubService: cat.bySubService,
+    timeSeries: cat.timeSeries,
+    previousTimeSeries: cat.previousTimeSeries,
+    funnel: cat.funnel,
+  }));
+  const stackedCategoryData: StackedRow[] = perCategoryStats.map((cat) => ({
+    category: cat.slug,
+    label: cat.label,
+    new: cat.byStatus.new ?? 0,
+    in_progress: cat.byStatus.in_progress ?? 0,
+    completed: cat.byStatus.completed ?? 0,
+    rejected: cat.byStatus.rejected ?? 0,
+  }));
+  const serializedStaleLeads: SerializedLead[] = stats.staleLeads.map((lead) => ({
+    ...lead,
+    _id: String(lead._id),
+    createdAt: new Date(lead.createdAt).toISOString(),
+    updatedAt: new Date(lead.updatedAt).toISOString(),
+  }));
+
   return (
     <div className="relative space-y-4">
       <DashboardAutoRefresh />
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute top-[-10%] right-[-5%] h-[40%] w-[40%] rounded-full bg-primary/[0.04] blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-5%] h-[40%] w-[40%] rounded-full bg-[#ff8e75]/[0.04] blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[-5%] h-[40%] w-[40%] rounded-full bg-yashorbit-coral/[0.04] blur-[120px]" />
       </div>
 
       <Breadcrumbs items={[{ label: "Dashboard" }]} />
@@ -112,56 +165,112 @@ export default async function AdminDashboardPage({
         status={status ?? ""}
         source={source ?? ""}
         search={search ?? ""}
+        range={rangeParam}
         dateFrom={dateFrom.toISOString().slice(0, 10)}
         dateTo={dateTo.toISOString().slice(0, 10)}
         hasActiveFilters={hasActiveFilters}
       />
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
-        <KpiCard label="Total" value={stats.totalOverall} accent />
-        {LEAD_STATUSES.map((s) => (
-          <KpiCard key={s.value} label={s.label} value={stats.byStatus[s.value] ?? 0} />
-        ))}
+      {/* Overview — the at-a-glance numbers, first thing on the page. */}
+      <div>
+        <h2 className="mb-3 text-lg font-semibold text-foreground">Overview</h2>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
+          <KpiCard label="Total" value={stats.totalOverall} accent trend={stats.growthPercent} />
+          {LEAD_STATUSES.map((s) => (
+            <KpiCard key={s.value} label={s.label} value={stats.byStatus[s.value] ?? 0} />
+          ))}
+        </div>
       </div>
 
-      <GlassCard>
-        <CardHeader><CardTitle>Performance Insights</CardTitle></CardHeader>
-        <CardContent>
-          <MonthlyInsights
-            growthPercent={stats.growthPercent}
-            previousPeriodTotal={stats.previousPeriodTotal}
-            totalOverall={stats.totalOverall}
-            byWeekday={stats.byWeekday}
-          />
-        </CardContent>
-      </GlassCard>
+      {/* Attention Needed — what to act on, right after the numbers. */}
+      <div>
+        <h2 className="mb-3 text-lg font-semibold text-foreground">Attention Needed</h2>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <GlassCard>
+            <CardHeader><CardTitle>Pending Tasks</CardTitle></CardHeader>
+            <CardContent><PendingTasksWidget count={stats.staleCount} leads={serializedStaleLeads} /></CardContent>
+          </GlassCard>
+          <GlassCard>
+            <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
+            <CardContent>
+              <QuickActions exportParams={exportParams} hasActiveFilters={hasActiveFilters} resetHref="/admin" />
+            </CardContent>
+          </GlassCard>
+        </div>
+      </div>
 
-      <GlassCard>
-        <CardHeader className="flex-row items-center justify-between space-y-0">
-          <CardTitle>Submissions Over Time</CardTitle>
-          <GranularityToggle value={granularity} />
-        </CardHeader>
-        <CardContent><TimeSeriesChart data={stats.timeSeries} /></CardContent>
-      </GlassCard>
+      {/* Trends — how volume is moving over time. */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Trends</h2>
+        <GlassCard>
+          <CardHeader><CardTitle>Performance Insights</CardTitle></CardHeader>
+          <CardContent>
+            <MonthlyInsights
+              growthPercent={stats.growthPercent}
+              previousPeriodTotal={stats.previousPeriodTotal}
+              totalOverall={stats.totalOverall}
+              byWeekday={stats.byWeekday}
+            />
+          </CardContent>
+        </GlassCard>
+        <GlassCard>
+          <CardHeader className="flex-row items-center justify-between space-y-0">
+            <CardTitle>Submissions Over Time</CardTitle>
+            <GranularityToggle value={granularity} />
+          </CardHeader>
+          <CardContent><TimeSeriesChart data={stats.timeSeries} /></CardContent>
+        </GlassCard>
+      </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      {/* Category Performance — every category-level view grouped together. */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Category Performance</h2>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+          {perCategoryStats.map((cat) => {
+            const Icon = CATEGORY_ICONS[cat.slug];
+            return (
+              <KpiCard
+                key={cat.slug}
+                label={cat.label}
+                value={cat.total}
+                icon={<Icon className="size-4" />}
+                accentColor={CATEGORY_CHART_COLORS[cat.slug]}
+                trend={cat.growthPercent}
+              />
+            );
+          })}
+        </div>
+
         <GlassCard>
           <CardHeader><CardTitle>Submissions by Category</CardTitle></CardHeader>
           <CardContent><CategoryBarChart data={categoryChartData} /></CardContent>
         </GlassCard>
-        <GlassCard>
-          <CardHeader><CardTitle>Status Distribution</CardTitle></CardHeader>
-          <CardContent><StatusPieChart data={statusPieData} /></CardContent>
-        </GlassCard>
+
+        <CategoryTabs categories={categoryPanelData} />
+
+        {stackedCategoryData.length > 1 && (
+          <GlassCard>
+            <CardHeader><CardTitle>Category Comparison by Status</CardTitle></CardHeader>
+            <CardContent><StackedCategoryStatusChart data={stackedCategoryData} /></CardContent>
+          </GlassCard>
+        )}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <GlassCard>
-          <CardHeader><CardTitle>Conversion Funnel</CardTitle></CardHeader>
-          <CardContent>
-            <ConversionFunnel stages={stats.funnel} rejectedCount={stats.byStatus.rejected ?? 0} />
-          </CardContent>
-        </GlassCard>
+      {/* Status & Conversion — where leads sit in the pipeline. */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Status &amp; Conversion</h2>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <GlassCard>
+            <CardHeader><CardTitle>Status Distribution</CardTitle></CardHeader>
+            <CardContent><StatusPieChart data={statusPieData} /></CardContent>
+          </GlassCard>
+          <GlassCard>
+            <CardHeader><CardTitle>Conversion Funnel</CardTitle></CardHeader>
+            <CardContent>
+              <ConversionFunnel stages={stats.funnel} rejectedCount={stats.byStatus.rejected ?? 0} />
+            </CardContent>
+          </GlassCard>
+        </div>
         <GlassCard>
           <CardHeader><CardTitle>Top Categories</CardTitle></CardHeader>
           <CardContent><TopCategories data={stats.topCategories} /></CardContent>

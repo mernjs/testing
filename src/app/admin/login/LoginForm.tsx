@@ -3,11 +3,14 @@
 import { useActionState, useId, useState } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import GlassCard from "@/components/admin/GlassCard";
+import BrandMark from "@/components/BrandMark";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { brandify } from "@/lib/brand";
 import { loginAction, type LoginState } from "./actions";
 
 const initialState: LoginState = {};
@@ -25,11 +28,11 @@ export default function LoginForm() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-sm">
-      <Card className="shadow-lg">
+      <GlassCard className="shadow-lg">
         <CardHeader>
-          <div className="mb-1 flex items-center gap-2 text-xs font-medium text-primary lg:hidden">
-            <span className="text-foreground">Yash</span>
-            <span className="text-primary">Orbit</span> Admin
+          <div className="mb-1 flex items-center gap-1.5 text-xs font-medium text-primary lg:hidden">
+            <BrandMark className="size-4 shrink-0" />
+            {brandify("YashOrbit")} <span className="text-foreground">Admin</span>
           </div>
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>Sign in to manage submissions.</CardDescription>
@@ -64,15 +67,17 @@ export default function LoginForm() {
                   autoComplete="current-password"
                   className="pr-9"
                 />
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="icon-xs"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute top-1/2 right-2 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                  className="absolute top-1/2 right-1 -translate-y-1/2"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                </button>
+                </Button>
               </div>
             </div>
             {state?.error && (
@@ -85,7 +90,7 @@ export default function LoginForm() {
             </Button>
           </form>
         </CardContent>
-      </Card>
+      </GlassCard>
       <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
         <ShieldCheck className="size-3.5" />
         Access is logged and rate-limited.

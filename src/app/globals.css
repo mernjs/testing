@@ -11,6 +11,7 @@
   --font-mono: var(--font-geist-mono);
   
   --color-yashorbit-orange: #E56043;
+  --color-yashorbit-coral: #ff8e75;
   --color-yashorbit-light: #ECF2FD;
   --color-yashorbit-blue: #1D428A;
   --color-yashorbit-dark: #1b1a1a;
@@ -81,6 +82,17 @@
   --border: #334155;
   --input: #334155;
   --ring: #E56043;
+}
+
+/* Admin panel only: dark mode's --card/--popover otherwise equal --background
+   (#1b1a1a), so cards/dropdowns have zero color separation from the page and
+   rely on shadow/blur alone. Elevate them a step for a readable, layered dark
+   surface — scoped to .admin-shell so the public site's dark mode is untouched. */
+.dark .admin-shell {
+  --card: #232228;
+  --card-foreground: #ECF2FD;
+  --popover: #232228;
+  --popover-foreground: #ECF2FD;
 }
 
 @layer base {

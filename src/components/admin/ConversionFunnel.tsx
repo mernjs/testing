@@ -33,7 +33,7 @@ export default function ConversionFunnel({ stages, rejectedCount }: { stages: Fu
                 initial={{ width: 0 }}
                 animate={{ width: `${widthPercent}%` }}
                 transition={{ duration: 0.6, delay: i * 0.1, ease: "easeOut" }}
-                className="h-full rounded-lg bg-gradient-to-r from-primary to-[#ff8e75]"
+                className="h-full rounded-lg bg-gradient-to-r from-primary to-yashorbit-coral"
               />
             </div>
           </div>

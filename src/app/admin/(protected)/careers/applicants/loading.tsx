@@ -2,7 +2,7 @@ import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/admin/GlassCard";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function SubmissionsListLoading() {
+export default function ApplicantsListLoading() {
   return (
     <div className="space-y-4">
       <Skeleton className="h-4 w-56" />
@@ -14,7 +14,7 @@ export default function SubmissionsListLoading() {
       <GlassCard>
         <CardContent>
           <div className="flex flex-wrap gap-3">
-            {Array.from({ length: 4 }).map((_, i) => (
+            {Array.from({ length: 5 }).map((_, i) => (
               <Skeleton key={i} className="h-8 w-40" />
             ))}
           </div>

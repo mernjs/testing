@@ -36,7 +36,7 @@ export default function CareerApplicationSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full gap-0 overflow-y-auto sm:max-w-lg">
+      <SheetContent className="w-full gap-0 overflow-y-auto">
         <SheetHeader className="border-b border-border/60">
           <div className="flex items-center justify-between gap-3 pr-8">
             <SheetTitle className="truncate text-lg">{application.name}</SheetTitle>

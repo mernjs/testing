@@ -21,12 +21,12 @@ export default function TimeSeriesChart({ data }: { data: TimeSeriesPoint[] }) {
       <AreaChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
         <defs>
           <linearGradient id="timeSeriesFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#E56043" stopOpacity={0.35} />
-            <stop offset="100%" stopColor="#E56043" stopOpacity={0} />
+            <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.35} />
+            <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
           </linearGradient>
           <linearGradient id="timeSeriesStroke" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#E56043" />
-            <stop offset="100%" stopColor="#ff8e75" />
+            <stop offset="0%" stopColor="var(--primary)" />
+            <stop offset="100%" stopColor="var(--color-yashorbit-coral)" />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />

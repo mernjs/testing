@@ -213,20 +213,20 @@ export default function SubmissionsDataTable({
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-muted-foreground">From</label>
-              <input
+              <Input
                 type="date"
                 defaultValue={initialDateFrom}
                 onChange={(e) => updateParams({ dateFrom: e.target.value || undefined })}
-                className="h-8 rounded-lg border border-input bg-background px-2 text-sm"
+                className="w-auto"
               />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-muted-foreground">To</label>
-              <input
+              <Input
                 type="date"
                 defaultValue={initialDateTo}
                 onChange={(e) => updateParams({ dateTo: e.target.value || undefined })}
-                className="h-8 rounded-lg border border-input bg-background px-2 text-sm"
+                className="w-auto"
               />
             </div>
             {hasActiveFilters && (
@@ -248,7 +248,7 @@ export default function SubmissionsDataTable({
       </GlassCard>
 
       <GlassCard>
-        <CardContent className="overflow-x-auto">
+        <CardContent className="max-h-[65vh] overflow-auto">
           <Table>
             <TableHeader>
               <TableRow>

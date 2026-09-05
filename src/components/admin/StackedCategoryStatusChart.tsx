@@ -1,21 +1,21 @@
 "use client";
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { LEAD_STATUSES } from "@/lib/lead-status";
 
-interface CategoryBarChartProps {
-  data: { label: string; value: number }[];
+export interface StackedRow {
+  category: string;
+  label: string;
+  new: number;
+  in_progress: number;
+  completed: number;
+  rejected: number;
 }
 
-export default function CategoryBarChart({ data }: CategoryBarChartProps) {
+export default function StackedCategoryStatusChart({ data }: { data: StackedRow[] }) {
   return (
-    <ResponsiveContainer width="100%" height={260}>
+    <ResponsiveContainer width="100%" height={300}>
       <BarChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-        <defs>
-          <linearGradient id="categoryBarFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--primary)" />
-            <stop offset="100%" stopColor="var(--color-yashorbit-coral)" />
-          </linearGradient>
-        </defs>
         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />
         <XAxis
           dataKey="label"
@@ -38,11 +38,10 @@ export default function CategoryBarChart({ data }: CategoryBarChartProps) {
           }}
           cursor={{ fill: "var(--muted)", opacity: 0.4 }}
         />
-        <Bar dataKey="value" radius={[6, 6, 0, 0]} animationDuration={600}>
-          {data.map((_, i) => (
-            <Cell key={i} fill="url(#categoryBarFill)" />
-          ))}
-        </Bar>
+        <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, color: "var(--muted-foreground)" }} />
+        {LEAD_STATUSES.map((s) => (
+          <Bar key={s.value} dataKey={s.value} name={s.label} stackId="a" fill={s.chartColor} animationDuration={600} />
+        ))}
       </BarChart>
     </ResponsiveContainer>
   );

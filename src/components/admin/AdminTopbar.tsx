@@ -1,59 +1,55 @@
 "use client";
 
-import { useTransition } from "react";
-import { LogOut, User } from "lucide-react";
+import { Globe } from "lucide-react";
 import MobileSidebar from "@/components/admin/MobileSidebar";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import { logoutAction } from "@/app/admin/(protected)/actions";
+import GlobalSearch from "@/components/admin/GlobalSearch";
+import NotificationsBell from "@/components/admin/NotificationsBell";
+import ThemeToggle from "@/components/admin/ThemeToggle";
+import { buttonVariants } from "@/components/ui/button";
+import type { SerializedLead, SerializedCareerApplication } from "@/components/admin/types";
 
-function initialsFor(email: string) {
-  const name = email.split("@")[0];
-  return name.slice(0, 2).toUpperCase();
-}
-
-export default function AdminTopbar({ adminEmail }: { adminEmail: string }) {
-  const [isPending, startTransition] = useTransition();
-
+export default function AdminTopbar({
+  staleLeads,
+  staleLeadsCount,
+  staleApplications,
+  staleApplicationsCount,
+  recentLeads,
+  recentApplications,
+}: {
+  staleLeads: SerializedLead[];
+  staleLeadsCount: number;
+  staleApplications: SerializedCareerApplication[];
+  staleApplicationsCount: number;
+  recentLeads: SerializedLead[];
+  recentApplications: SerializedCareerApplication[];
+}) {
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between px-4">
+    <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <MobileSidebar />
-      <div className="flex-1" />
-      <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center gap-2.5 rounded-full py-1 pr-3 pl-1 text-sm transition-colors hover:bg-muted focus-visible:outline-none">
-          <Avatar className="size-7">
-            <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
-              {initialsFor(adminEmail)}
-            </AvatarFallback>
-          </Avatar>
-          <span className="hidden max-w-[160px] truncate text-muted-foreground sm:inline">{adminEmail}</span>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuGroup>
-            <DropdownMenuLabel className="flex items-center gap-2 font-normal text-muted-foreground">
-              <User className="size-3.5" />
-              <span className="truncate">{adminEmail}</span>
-            </DropdownMenuLabel>
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            variant="destructive"
-            disabled={isPending}
-            onClick={() => startTransition(() => logoutAction())}
-          >
-            <LogOut className="size-3.5" data-icon="inline-start" />
-            Log out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="min-w-0 flex-1 sm:max-w-md">
+        <GlobalSearch />
+      </div>
+      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <a
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
+          aria-label="Visit website"
+        >
+          <Globe className="size-3.5" data-icon="inline-start" />
+          <span className="hidden sm:inline">Visit Website</span>
+        </a>
+        <ThemeToggle />
+        <NotificationsBell
+          staleLeads={staleLeads}
+          staleLeadsCount={staleLeadsCount}
+          staleApplications={staleApplications}
+          staleApplicationsCount={staleApplicationsCount}
+          recentLeads={recentLeads}
+          recentApplications={recentApplications}
+        />
+      </div>
     </header>
   );
 }

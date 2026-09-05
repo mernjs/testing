@@ -7,9 +7,17 @@ import Breadcrumbs from "@/components/admin/Breadcrumbs";
 import CareerDashboardFilters from "@/components/admin/CareerDashboardFilters";
 import TopPositions from "@/components/admin/TopPositions";
 import CareersExportButton from "@/components/admin/CareersExportButton";
+import TimeSeriesChart from "@/components/admin/TimeSeriesChart";
+import GranularityToggle from "@/components/admin/GranularityToggle";
+import CategoryBarChart from "@/components/admin/CategoryBarChart";
+import StatusPieChart from "@/components/admin/StatusPieChart";
+import ConversionFunnel from "@/components/admin/ConversionFunnel";
 import { buttonVariants } from "@/components/ui/button";
-import { getCareerDashboardStats, getAllJobPositions } from "@/lib/career-applications";
+import { getCareerDashboardStats, getAllJobPositions, getExperienceOptions, getLocationOptions } from "@/lib/career-applications";
 import { CAREER_APPLICATION_STATUSES, isValidCareerApplicationStatus, getCareerApplicationStatusMeta } from "@/lib/career-application-status";
+import { CAREER_STATUS_ICONS, CAREER_STATUS_COLORS } from "@/lib/career-status-icons";
+import { isValidDateRangePreset, resolveDateRangePreset, type DateRangePreset } from "@/lib/date-ranges";
+import type { DashboardGranularity } from "@/lib/granularity";
 import { formatDateTime } from "@/lib/utils";
 
 function parseDateParam(value: string | undefined, endOfDay = false): Date | undefined {
@@ -18,44 +26,79 @@ function parseDateParam(value: string | undefined, endOfDay = false): Date | und
   return Number.isNaN(d.getTime()) ? undefined : d;
 }
 
+const VALID_GRANULARITIES: DashboardGranularity[] = ["day", "week", "month", "year"];
+
 export default async function CareersDashboardPage({
   searchParams,
 }: {
   searchParams: Promise<{
     status?: string;
     position?: string;
+    experience?: string;
+    location?: string;
     search?: string;
+    range?: string;
     dateFrom?: string;
     dateTo?: string;
+    granularity?: string;
   }>;
 }) {
   const sp = await searchParams;
 
   const status = sp.status && isValidCareerApplicationStatus(sp.status) ? sp.status : undefined;
   const positionSlug = sp.position || undefined;
+  const experience = sp.experience || undefined;
+  const location = sp.location || undefined;
   const search = sp.search || undefined;
-  const dateFrom = parseDateParam(sp.dateFrom);
-  const dateTo = parseDateParam(sp.dateTo, true);
+  const granularity: DashboardGranularity = VALID_GRANULARITIES.includes(sp.granularity as DashboardGranularity)
+    ? (sp.granularity as DashboardGranularity)
+    : "day";
+
+  const rangeParam: DateRangePreset =
+    sp.range && isValidDateRangePreset(sp.range)
+      ? sp.range
+      : sp.dateFrom || sp.dateTo
+        ? "custom"
+        : "last30";
+
+  let dateFrom: Date | undefined;
+  let dateTo: Date | undefined;
+  if (rangeParam === "custom") {
+    dateFrom = parseDateParam(sp.dateFrom);
+    dateTo = parseDateParam(sp.dateTo, true);
+  } else {
+    const resolved = resolveDateRangePreset(rangeParam)!;
+    dateFrom = resolved.from;
+    dateTo = resolved.to;
+  }
 
   const [stats, positions] = await Promise.all([
-    getCareerDashboardStats({ status, positionSlug, search, dateFrom, dateTo }),
+    getCareerDashboardStats({ status, positionSlug, experience, location, search, dateFrom, dateTo, granularity }),
     getAllJobPositions(),
   ]);
+  const experienceOptions = getExperienceOptions();
+  const locationOptions = getLocationOptions();
 
-  const hasActiveFilters = Boolean(sp.status || sp.position || sp.search || sp.dateFrom || sp.dateTo);
+  const hasActiveFilters = Boolean(
+    sp.status || sp.position || sp.experience || sp.location || sp.search || sp.dateFrom || sp.dateTo || sp.range
+  );
 
   const exportParams: Record<string, string | undefined> = {};
   if (sp.status) exportParams.status = sp.status;
   if (sp.position) exportParams.position = sp.position;
   if (sp.search) exportParams.search = sp.search;
-  if (sp.dateFrom) exportParams.dateFrom = sp.dateFrom;
-  if (sp.dateTo) exportParams.dateTo = sp.dateTo;
+  exportParams.dateFrom = dateFrom?.toISOString().slice(0, 10);
+  exportParams.dateTo = dateTo?.toISOString().slice(0, 10);
+
+  const positionBarData = stats.topPositions.map((p) => ({ label: p.positionTitle, value: p.count }));
+  const experienceBarData = stats.experienceDistribution.map((e) => ({ label: e.label, value: e.count }));
+  const statusPieData = CAREER_APPLICATION_STATUSES.map((s) => ({ status: s.value, label: s.label, count: stats.byStatus[s.value] ?? 0 }));
 
   return (
     <div className="relative space-y-4">
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute top-[-10%] right-[-5%] h-[40%] w-[40%] rounded-full bg-primary/[0.04] blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-5%] h-[40%] w-[40%] rounded-full bg-[#ff8e75]/[0.04] blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[-5%] h-[40%] w-[40%] rounded-full bg-yashorbit-coral/[0.04] blur-[120px]" />
       </div>
 
       <Breadcrumbs items={[{ label: "Dashboard", href: "/admin" }, { label: "Careers" }]} />
@@ -76,53 +119,121 @@ export default async function CareersDashboardPage({
         status={status ?? ""}
         position={positionSlug ?? ""}
         positions={positions}
+        experience={experience ?? ""}
+        experienceOptions={experienceOptions}
+        location={location ?? ""}
+        locationOptions={locationOptions}
         search={search ?? ""}
-        dateFrom={sp.dateFrom ?? ""}
-        dateTo={sp.dateTo ?? ""}
+        range={rangeParam}
+        dateFrom={(dateFrom ?? new Date()).toISOString().slice(0, 10)}
+        dateTo={(dateTo ?? new Date()).toISOString().slice(0, 10)}
         hasActiveFilters={hasActiveFilters}
       />
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-8">
-        <KpiCard label="Total" value={stats.total} accent />
-        {CAREER_APPLICATION_STATUSES.map((s) => (
-          <KpiCard key={s.value} label={s.label} value={stats.byStatus[s.value] ?? 0} />
-        ))}
+      {/* Overview */}
+      <div>
+        <h2 className="mb-3 text-lg font-semibold text-foreground">Overview</h2>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-8">
+          <KpiCard label="Total" value={stats.total} accent trend={stats.growthPercent} />
+          {CAREER_APPLICATION_STATUSES.map((s) => {
+            const Icon = CAREER_STATUS_ICONS[s.value];
+            return (
+              <KpiCard
+                key={s.value}
+                label={s.label}
+                value={stats.byStatus[s.value] ?? 0}
+                icon={<Icon className="size-4" />}
+                accentColor={CAREER_STATUS_COLORS[s.value]}
+                trend={stats.growthByStatus[s.value]}
+              />
+            );
+          })}
+          <KpiCard label="Conversion Rate" value={stats.hiringConversionRate} suffix="%" accentColor="#0ca30c" />
+        </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      {/* Trends */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Trends</h2>
         <GlassCard>
-          <CardHeader><CardTitle>Top Positions</CardTitle></CardHeader>
-          <CardContent><TopPositions data={stats.topPositions} /></CardContent>
+          <CardHeader className="flex-row items-center justify-between space-y-0">
+            <CardTitle>Applications Over Time</CardTitle>
+            <GranularityToggle value={granularity} />
+          </CardHeader>
+          <CardContent><TimeSeriesChart data={stats.timeSeries} /></CardContent>
         </GlassCard>
-
         <GlassCard>
-          <CardHeader><CardTitle>Recent Applications</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            {stats.recent.length === 0 && <p className="text-sm text-muted-foreground">No applications yet.</p>}
-            {stats.recent.map((application) => {
-              const meta = getCareerApplicationStatusMeta(application.status);
-              return (
-                <Link
-                  key={String(application._id)}
-                  href={`/admin/careers/applicants/${application._id}`}
-                  className="flex items-center justify-between gap-4 rounded-lg border border-border/60 p-3 text-sm transition-colors hover:border-primary/30 hover:bg-muted/50"
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span className={`size-2 shrink-0 rounded-full ${meta.dotClass}`} />
-                    <div className="min-w-0">
-                      <p className="truncate font-medium">{application.name}</p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {application.positionTitle} · {formatDateTime(application.createdAt)}
-                      </p>
-                    </div>
+          <CardHeader><CardTitle>Monthly Hiring Trends</CardTitle></CardHeader>
+          <CardContent><TimeSeriesChart data={stats.hiredTimeSeries} /></CardContent>
+        </GlassCard>
+      </div>
+
+      {/* Positions & Experience */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Positions &amp; Experience</h2>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <GlassCard>
+            <CardHeader><CardTitle>Applicants by Position</CardTitle></CardHeader>
+            <CardContent><CategoryBarChart data={positionBarData} /></CardContent>
+          </GlassCard>
+          <GlassCard>
+            <CardHeader><CardTitle>Experience Level Distribution</CardTitle></CardHeader>
+            <CardContent>
+              <CategoryBarChart data={experienceBarData} />
+              <p className="mt-1 text-xs text-muted-foreground">Reflects the applied-to role&apos;s stated requirement, not the candidate&apos;s own experience.</p>
+            </CardContent>
+          </GlassCard>
+        </div>
+        <GlassCard>
+          <CardHeader><CardTitle>Top Hiring Positions</CardTitle></CardHeader>
+          <CardContent><TopPositions data={stats.topHiringPositions} /></CardContent>
+        </GlassCard>
+      </div>
+
+      {/* Status & Funnel */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">Status &amp; Funnel</h2>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <GlassCard>
+            <CardHeader><CardTitle>Application Status Distribution</CardTitle></CardHeader>
+            <CardContent><StatusPieChart data={statusPieData} colors={CAREER_STATUS_COLORS} /></CardContent>
+          </GlassCard>
+          <GlassCard>
+            <CardHeader><CardTitle>Hiring Funnel</CardTitle></CardHeader>
+            <CardContent>
+              <ConversionFunnel stages={stats.funnel} rejectedCount={stats.byStatus.rejected ?? 0} />
+            </CardContent>
+          </GlassCard>
+        </div>
+      </div>
+
+      <GlassCard>
+        <CardHeader><CardTitle>Recent Applications</CardTitle></CardHeader>
+        <CardContent className="space-y-2">
+          {stats.recent.length === 0 && <p className="text-sm text-muted-foreground">No applications yet.</p>}
+          {stats.recent.map((application) => {
+            const meta = getCareerApplicationStatusMeta(application.status);
+            return (
+              <Link
+                key={String(application._id)}
+                href={`/admin/careers/applicants/${application._id}`}
+                className="flex items-center justify-between gap-4 rounded-lg border border-border/60 p-3 text-sm transition-colors hover:border-primary/30 hover:bg-muted/50"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className={`size-2 shrink-0 rounded-full ${meta.dotClass}`} />
+                  <div className="min-w-0">
+                    <p className="truncate font-medium">{application.name}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {application.positionTitle} · {formatDateTime(application.createdAt)}
+                    </p>
                   </div>
-                  <CareerStatusBadge status={application.status} />
-                </Link>
-              );
-            })}
-          </CardContent>
-        </GlassCard>
-      </div>
+                </div>
+                <CareerStatusBadge status={application.status} />
+              </Link>
+            );
+          })}
+        </CardContent>
+      </GlassCard>
     </div>
   );
 }

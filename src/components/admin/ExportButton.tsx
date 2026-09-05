@@ -26,7 +26,10 @@ export default function ExportButton({ params, label = "Export CSV" }: { params:
   if (params.ids && params.ids.length > 0) query.set("ids", params.ids.join(","));
 
   return (
-    <a href={`/api/admin/export?${query.toString()}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+    <a
+      href={`/api/admin/export?${query.toString()}`}
+      className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
+    >
       <Download className="size-3.5" data-icon="inline-start" />
       {label}
     </a>

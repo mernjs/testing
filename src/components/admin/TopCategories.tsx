@@ -8,6 +8,7 @@ interface TopCategoryDatum {
   total: number;
   completed: number;
   completionRate: number;
+  growthPercent?: number | null;
 }
 
 export default function TopCategories({ data }: { data: TopCategoryDatum[] }) {
@@ -21,6 +22,12 @@ export default function TopCategories({ data }: { data: TopCategoryDatum[] }) {
             <span className="font-medium text-foreground">{d.label}</span>
             <span className="text-muted-foreground">
               {d.total} <span className="text-xs">· {d.completionRate}% completed</span>
+              {typeof d.growthPercent === "number" && (
+                <span className={`ml-1.5 text-xs font-medium ${d.growthPercent >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive"}`}>
+                  {d.growthPercent >= 0 ? "+" : ""}
+                  {d.growthPercent}%
+                </span>
+              )}
             </span>
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
@@ -28,7 +35,7 @@ export default function TopCategories({ data }: { data: TopCategoryDatum[] }) {
               initial={{ width: 0 }}
               animate={{ width: `${(d.total / max) * 100}%` }}
               transition={{ duration: 0.5, delay: i * 0.05, ease: "easeOut" }}
-              className="h-full rounded-full bg-gradient-to-r from-primary to-[#ff8e75]"
+              className="h-full rounded-full bg-gradient-to-r from-primary to-yashorbit-coral"
             />
           </div>
         </div>

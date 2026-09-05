@@ -2,7 +2,7 @@ import { CardContent, CardHeader } from "@/components/ui/card";
 import GlassCard from "@/components/admin/GlassCard";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function SubmissionDetailLoading() {
+export default function ApplicantDetailLoading() {
   return (
     <div className="space-y-4">
       <Skeleton className="h-4 w-64" />

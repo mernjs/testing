@@ -1,13 +1,9 @@
 "use client";
 
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { LEAD_STATUSES } from "@/lib/lead-status";
 
-const STATUS_COLORS: Record<string, string> = {
-  new: "#94a3b8",
-  in_progress: "#f59e0b",
-  completed: "#22c55e",
-  rejected: "#ef4444",
-};
+const STATUS_COLORS: Record<string, string> = Object.fromEntries(LEAD_STATUSES.map((s) => [s.value, s.chartColor]));
 
 export interface StatusPieDatum {
   status: string;
@@ -15,7 +11,8 @@ export interface StatusPieDatum {
   count: number;
 }
 
-export default function StatusPieChart({ data }: { data: StatusPieDatum[] }) {
+export default function StatusPieChart({ data, colors }: { data: StatusPieDatum[]; colors?: Record<string, string> }) {
+  const palette = colors ?? STATUS_COLORS;
   const total = data.reduce((sum, d) => sum + d.count, 0);
 
   if (total === 0) {
@@ -40,7 +37,7 @@ export default function StatusPieChart({ data }: { data: StatusPieDatum[] }) {
           animationDuration={600}
         >
           {data.map((d) => (
-            <Cell key={d.status} fill={STATUS_COLORS[d.status] ?? "#94a3b8"} stroke="var(--card)" strokeWidth={2} />
+            <Cell key={d.status} fill={palette[d.status] ?? "#94a3b8"} stroke="var(--card)" strokeWidth={2} />
           ))}
         </Pie>
         <Tooltip

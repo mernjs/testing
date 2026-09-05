@@ -26,7 +26,7 @@ export default function TopPositions({ data }: { data: TopPositionDatum[] }) {
               initial={{ width: 0 }}
               animate={{ width: `${(d.count / max) * 100}%` }}
               transition={{ duration: 0.5, delay: i * 0.05, ease: "easeOut" }}
-              className="h-full rounded-full bg-gradient-to-r from-primary to-[#ff8e75]"
+              className="h-full rounded-full bg-gradient-to-r from-primary to-yashorbit-coral"
             />
           </div>
         </div>

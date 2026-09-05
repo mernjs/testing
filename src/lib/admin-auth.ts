@@ -31,6 +31,8 @@ interface AdminSessionDoc {
 export interface CurrentAdmin {
   id: string;
   email: string;
+  createdAt: Date;
+  lastLoginAt: Date | null;
 }
 
 let indexesEnsured = false;
@@ -129,7 +131,7 @@ export async function getSessionAdmin(token: string | undefined | null): Promise
   const user = await users.findOne({ _id: session.adminId });
   if (!user) return null;
 
-  return { id: user._id.toString(), email: user.email };
+  return { id: user._id.toString(), email: user.email, createdAt: user.createdAt, lastLoginAt: user.lastLoginAt };
 }
 
 export async function setSessionCookie(token: string): Promise<void> {

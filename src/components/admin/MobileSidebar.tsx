@@ -5,6 +5,8 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import BrandMark from "@/components/BrandMark";
+import { brandify } from "@/lib/brand";
 
 export default function MobileSidebar() {
   const [open, setOpen] = useState(false);
@@ -18,10 +20,10 @@ export default function MobileSidebar() {
         <SheetContent side="left" className="w-72 p-0 sm:max-w-72">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
           <SheetDescription className="sr-only">Admin panel navigation menu</SheetDescription>
-          <div className="flex h-14 items-center border-b border-border/60 px-4">
+          <div className="flex h-14 items-center gap-2 border-b border-border/60 px-4">
+            <BrandMark className="size-6 shrink-0" />
             <span className="text-sm font-bold">
-              <span className="text-foreground">Yash</span>
-              <span className="text-primary">Orbit</span> Admin
+              {brandify("YashOrbit")} <span className="text-foreground"></span>
             </span>
           </div>
           <AdminSidebar onNavigate={() => setOpen(false)} />
