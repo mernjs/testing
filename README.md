@@ -20,6 +20,55 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## HRMS panel
+
+A separate HR management panel lives at `/hrms` (own login, own session cookie
+`hrms_session`). HRMS users are `admin_users` documents with an HRMS `roles`
+array — grant access with:
+
+```bash
+npm run hrms:grant   # prompts for email + roles (super_admin | hr | manager)
+```
+
+Then sign in at [http://localhost:3000/hrms/login](http://localhost:3000/hrms/login).
+
+Phase 1: HR dashboard, employee directory + profiles, departments / designations
+/ teams, org hierarchy, payroll-ready salary/bank records, converting shortlisted
+Careers applicants into employees.
+
+Phase 2a: org work schedule + leave-type config (`/hrms/settings`, super-admin),
+holiday calendar (`/hrms/holidays`), attendance daily register + monthly report
+with late/early detection (`/hrms/attendance`), leave requests / approval /
+balances / calendar / analytics (`/hrms/leave`). HR-operated — HR and managers
+act on employees' behalf; managers are scoped to their reporting line.
+
+Phase 2b-i: **employee self-service portal** at `/hrms/me` (new `employee`
+role — HR creates a portal login from the employee profile, employee sets their
+own password on first sign-in). Employees clock in/out, apply for and withdraw
+leave, edit their own contact details, upload documents, and view payslips +
+salary. **Full payroll engine** at `/hrms/payroll` — monthly runs from
+effective-dated salary structures, statutory deductions (PF/EPS/ESI/PT + TDS via
+India new-regime slabs), employer contributions, attendance-based loss of pay,
+arrears; lifecycle `draft → approved → paid` (paid locks the month); bank
+transfer CSV; printable payslips. **Employee documents** — secure per-employee
+store with categories, versioning and expiry, managed by HR and (limited
+categories) by the employee.
+
+Phase 2b-ii: **HR notification centre** — in-app notifications with a topbar
+bell on both the staff panel and the employee portal (`/hrms/notifications`,
+`/hrms/me/notifications`). Event-driven (leave filed / decided, new employee,
+payslip published, employee document upload, offer status) plus a lazily-run,
+once-per-hour sweep for document expiry, birthdays and probation completion.
+**Recruitment offer tracking** — an `hrms_offers` record per shortlisted
+candidate with a `draft → extended → accepted / declined / withdrawn → joined`
+lifecycle on the `/hrms/recruitment` Offers tab; converting the applicant to an
+employee flips the offer to `joined` and links the record.
+
+The HRMS is now feature-complete against the original brief.
+
+Optional `HRMS_API_SECRET` (see `.env.example`) allows bearer-token access to
+`/api/hrms/*` endpoints for cron / tooling.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

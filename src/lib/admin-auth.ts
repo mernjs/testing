@@ -18,6 +18,10 @@ interface AdminUserDoc {
   lockedUntil: Date | null;
   createdAt: Date;
   lastLoginAt: Date | null;
+  /** HRMS panel access — empty/absent means no HRMS access. See `hrms-roles.ts`. */
+  roles?: string[];
+  /** Links this login to an `hrms_employees` record, when applicable. */
+  employeeId?: string | null;
 }
 
 interface AdminSessionDoc {

@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "create-admin": "node --env-file=.env scripts/create-admin.mjs",
+    "hrms:grant": "node --env-file=.env scripts/grant-hrms-role.mjs",
     "index-kb": "node --env-file=.env scripts/index-knowledge-base.mjs",
     "seed-demo": "node --env-file=.env scripts/seed-demo-data.mjs"
   },
