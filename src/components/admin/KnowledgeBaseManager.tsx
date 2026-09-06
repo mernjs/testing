@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import GlassCard from "@/components/admin/GlassCard";
+import KpiCard from "@/components/admin/KpiCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -72,22 +73,6 @@ function bytes(n: number | null): string {
   if (n < 1024) return `${n} B`;
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
   return `${(n / 1024 / 1024).toFixed(1)} MB`;
-}
-
-function StatTile({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) {
-  return (
-    <GlassCard>
-      <CardContent className="flex items-center gap-3 py-4">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-yashorbit-coral text-white">
-          {icon}
-        </div>
-        <div>
-          <p className="text-xs text-muted-foreground">{label}</p>
-          <p className="text-lg font-bold tabular-nums text-foreground">{value}</p>
-        </div>
-      </CardContent>
-    </GlassCard>
-  );
 }
 
 export default function KnowledgeBaseManager({
@@ -223,11 +208,11 @@ export default function KnowledgeBaseManager({
         </GlassCard>
       )}
 
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatTile icon={<Globe className="size-4" />} label="Pages indexed" value={`${websiteSummary.indexedPages}/${websiteSummary.totalPages}`} />
-        <StatTile icon={<FileText className="size-4" />} label="Documents indexed" value={`${pdfSummary.indexedDocs}/${pdfSummary.totalDocs}`} />
-        <StatTile icon={<Database className="size-4" />} label="Total chunks" value={websiteSummary.totalChunks + pdfSummary.totalChunks} />
-        <StatTile
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <KpiCard icon={<Globe className="size-4" />} label="Pages indexed" value={`${websiteSummary.indexedPages}/${websiteSummary.totalPages}`} />
+        <KpiCard icon={<FileText className="size-4" />} label="Documents indexed" value={`${pdfSummary.indexedDocs}/${pdfSummary.totalDocs}`} />
+        <KpiCard icon={<Database className="size-4" />} label="Total chunks" value={websiteSummary.totalChunks + pdfSummary.totalChunks} />
+        <KpiCard
           icon={<BookOpen className="size-4" />}
           label="Vector store"
           value={<span className="text-xs font-mono">{vectorStoreId ? `${vectorStoreId.slice(0, 14)}…` : "not created"}</span>}

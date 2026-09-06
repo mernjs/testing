@@ -66,7 +66,7 @@ export default function GlobalSearch() {
       />
 
       {showDropdown && (
-        <div className="absolute top-full left-0 z-50 mt-1.5 max-h-96 w-[min(22rem,calc(100vw-2rem))] overflow-y-auto rounded-lg border border-border bg-popover p-1.5 text-sm text-popover-foreground shadow-lg ring-1 ring-foreground/10">
+        <div className="admin-surface absolute top-full left-0 z-50 mt-1.5 max-h-96 w-[min(22rem,calc(100vw-2rem))] overflow-y-auto rounded-lg border border-border bg-popover/95 p-1.5 text-sm text-popover-foreground shadow-lg ring-1 ring-foreground/10 backdrop-blur-xl">
           {loading && (
             <div className="flex items-center justify-center py-4">
               <Loader2 className="size-4 animate-spin text-muted-foreground" />

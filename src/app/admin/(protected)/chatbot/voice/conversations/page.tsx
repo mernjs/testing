@@ -54,7 +54,7 @@ export default async function VoiceConversationsListPage({
         ]}
       />
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Voice Conversations</h1>
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Voice Conversations</h1>
         <p className="text-sm text-muted-foreground">
           {total} voice conversation{total === 1 ? "" : "s"} · open one to listen to the AI responses
         </p>

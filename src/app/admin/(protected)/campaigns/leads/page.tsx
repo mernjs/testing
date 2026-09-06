@@ -51,7 +51,7 @@ export default async function AttributedLeadsPage({
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Attributed Leads</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Attributed Leads</h1>
           <p className="text-sm text-muted-foreground">{total} lead{total === 1 ? "" : "s"} tied to a campaign or paid source.</p>
         </div>
         <Link href="/admin/campaigns" className="flex items-center gap-1 text-sm text-primary hover:underline">

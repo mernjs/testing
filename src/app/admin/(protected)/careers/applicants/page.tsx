@@ -69,7 +69,7 @@ export default async function ApplicantsListPage({
       <Breadcrumbs items={[{ label: "Dashboard", href: "/admin" }, { label: "Applicants" }]} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Applicants</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Applicants</h1>
           <p className="text-sm text-muted-foreground">{total} application{total === 1 ? "" : "s"}</p>
         </div>
         <CareersExportButton

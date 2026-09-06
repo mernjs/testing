@@ -30,7 +30,7 @@ export default function GranularityToggle({ value }: { value: string }) {
           onClick={() => setGranularity(opt.value)}
           className={cn(
             "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
-            value === opt.value ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            value === opt.value ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground"
           )}
         >
           {opt.label}

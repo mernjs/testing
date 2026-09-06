@@ -89,7 +89,7 @@ export default async function VoiceDashboardPage({
       />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Conversation AI</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Conversation AI</h1>
           <p className="text-sm text-muted-foreground">ElevenLabs voice mode — real-time speech analytics.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -127,7 +127,7 @@ export default async function VoiceDashboardPage({
 
       <div>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Overview</h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           <KpiCard label="Voice Conversations" value={stats.totalConversations} accent trend={stats.growth.conversations} icon={<AudioLines className="size-4" />} />
           <KpiCard label="Voice Messages" value={stats.voiceMessages} trend={stats.growth.voiceMessages} icon={<MessageSquare className="size-4" />} />
           <KpiCard label="Avg. Call Duration" value={fmtDuration(stats.avgCallDurationMs)} suffix="s" icon={<Clock className="size-4" />} />

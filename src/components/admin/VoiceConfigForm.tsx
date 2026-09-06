@@ -229,7 +229,7 @@ export default function VoiceConfigForm({
         </CardContent>
       </GlassCard>
 
-      <div className={cn("sticky bottom-0 flex justify-end rounded-xl border border-border/50 bg-card/80 p-3 backdrop-blur-xl")}>
+      <div className={cn("sticky bottom-0 flex justify-end gap-2 rounded-xl border border-border/50 bg-card/80 p-3 backdrop-blur-xl")}>
         <Button type="button" onClick={submit} disabled={saving}>
           {saving ? <Loader2 className="size-4 animate-spin" data-icon="inline-start" /> : <Save className="size-4" data-icon="inline-start" />}
           Save voice settings

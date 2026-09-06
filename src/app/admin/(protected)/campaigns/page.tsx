@@ -51,7 +51,7 @@ export default async function CampaignAnalyticsPage({
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Campaign Analytics</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Campaign Analytics</h1>
           <p className="text-sm text-muted-foreground">Spend, attributed leads and ROI from your imported Meta, Google &amp; LinkedIn reports.</p>
         </div>
         <div className="flex items-center gap-2">

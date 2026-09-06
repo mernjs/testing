@@ -36,7 +36,7 @@ export default async function VoiceConversationDetailPage({ params }: { params: 
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Voice conversation</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Voice conversation</h1>
           <p className="text-sm text-muted-foreground">Session {s.sessionId}</p>
         </div>
         <div className="flex items-center gap-2">

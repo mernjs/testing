@@ -24,7 +24,7 @@ export default function PendingTasksWidget({ count, leads }: { count: number; le
           <Link
             key={lead._id}
             href={`/admin/submissions/${lead.category}/${lead._id}`}
-            className="flex items-center justify-between gap-4 rounded-lg border border-border/60 p-3 text-sm transition-colors hover:border-primary/30 hover:bg-muted/50"
+            className="flex items-center justify-between gap-4 rounded-lg border border-border/60 p-3 text-sm transition-colors hover:bg-muted/50"
           >
             <div className="flex min-w-0 items-center gap-3">
               <AlertTriangle className="size-3.5 shrink-0 text-primary" />

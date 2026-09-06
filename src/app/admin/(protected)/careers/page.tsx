@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Inbox, Percent } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/admin/GlassCard";
 import KpiCard from "@/components/admin/KpiCard";
@@ -99,7 +100,7 @@ export default async function CareersDashboardPage({
       <Breadcrumbs items={[{ label: "Dashboard", href: "/admin" }, { label: "Careers" }]} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Careers</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Careers</h1>
           <p className="text-sm text-muted-foreground">Applicant overview across every open and closed role.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -128,8 +129,8 @@ export default async function CareersDashboardPage({
       {/* Overview */}
       <div>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Overview</h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-8">
-          <KpiCard label="Total" value={stats.total} accent trend={stats.growthPercent} />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          <KpiCard label="Total" value={stats.total} accent trend={stats.growthPercent} icon={<Inbox className="size-4" />} />
           {CAREER_APPLICATION_STATUSES.map((s) => {
             const Icon = CAREER_STATUS_ICONS[s.value];
             return (
@@ -142,7 +143,7 @@ export default async function CareersDashboardPage({
               />
             );
           })}
-          <KpiCard label="Conversion Rate" value={stats.hiringConversionRate} suffix="%" />
+          <KpiCard label="Conversion Rate" value={stats.hiringConversionRate} suffix="%" icon={<Percent className="size-4" />} />
         </div>
       </div>
 
@@ -211,7 +212,7 @@ export default async function CareersDashboardPage({
               <Link
                 key={String(application._id)}
                 href={`/admin/careers/applicants/${application._id}`}
-                className="flex items-center justify-between gap-4 rounded-lg border border-border/60 p-3 text-sm transition-colors hover:border-primary/30 hover:bg-muted/50"
+                className="flex items-center justify-between gap-4 rounded-lg border border-border/60 p-3 text-sm transition-colors hover:bg-muted/50"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <span className={`size-2 shrink-0 rounded-full ${meta.dotClass}`} />

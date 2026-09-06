@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import GlassCard from "@/components/admin/GlassCard";
 import { cn } from "@/lib/utils";
@@ -60,41 +60,57 @@ export default function KpiCard({
   icon,
   trend,
   suffix,
+  tone,
 }: {
   label: string;
-  value: number;
+  /** A pre-formatted string or element (e.g. `"₹12,340"`, `"3/10"`, a `<span>`)
+   * skips the count-up animation and renders as-is — for values that can't be
+   * a plain counted integer (currency, ratios, "no data" placeholders). */
+  value: number | ReactNode;
   accent?: boolean;
   /** A rendered icon element (e.g. `<Code className="size-4" />`) — pass an element, not a component reference, so this can be sent from a Server Component. */
   icon?: ReactNode;
   /** Growth % vs the previous period; null means "no prior period to compare" (badge is hidden). */
   trend?: number | null;
-  /** Appended after the animated number, e.g. `"%"`. */
+  /** Appended after the animated number, e.g. `"%"`. Ignored for string values — format those into the string itself. */
   suffix?: string;
+  /** Colors the value green/red directly — for metrics where the sign itself is the signal (e.g. ROI), distinct from `trend`'s period-over-period badge. */
+  tone?: "up" | "down";
 }) {
-  const animated = useCountUp(value);
+  const animated = useCountUp(typeof value === "number" ? value : 0);
+  const displayValue = typeof value === "number" ? (
+    <>
+      {animated}
+      {suffix}
+    </>
+  ) : (
+    value
+  );
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="h-full">
-      <GlassCard className="h-full">
-        <CardHeader className="flex-row items-start justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs font-medium text-muted-foreground">{label}</CardTitle>
+      <GlassCard>
+        <CardContent className="flex h-full items-center gap-3 py-4">
           {icon && (
-            <motion.div
-              whileHover={{ scale: 1.08 }}
-              className="flex size-8 shrink-0 items-center justify-center rounded-2xl border border-primary/20 text-white shadow-lg shadow-primary/20"
-              style={{ background: "linear-gradient(135deg, var(--primary), var(--color-yashorbit-coral))" }}
-            >
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-yashorbit-coral text-white">
               {icon}
-            </motion.div>
+            </div>
           )}
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-end justify-between gap-2">
-            <p className={cn("text-2xl font-bold tabular-nums", accent && "text-primary")}>
-              {animated}
-              {suffix}
-            </p>
-            {typeof trend === "number" && <TrendBadge value={trend} />}
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-xs text-muted-foreground">{label}</p>
+            <div className="flex items-center gap-2">
+              <p
+                className={cn(
+                  "text-lg font-bold tabular-nums text-foreground",
+                  accent && "bg-gradient-to-r from-primary to-[color:var(--color-yashorbit-coral)] bg-clip-text text-transparent",
+                  tone === "up" && "text-green-600 dark:text-green-400",
+                  tone === "down" && "text-destructive"
+                )}
+              >
+                {displayValue}
+              </p>
+              {typeof trend === "number" && <TrendBadge value={trend} />}
+            </div>
           </div>
         </CardContent>
       </GlassCard>

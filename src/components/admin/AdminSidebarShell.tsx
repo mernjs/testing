@@ -28,7 +28,7 @@ export default function AdminSidebarShell({
       animate={{ width: collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH }}
       initial={false}
       transition={hydrated ? { type: "spring", stiffness: 320, damping: 32 } : { duration: 0 }}
-      className="admin-surface hidden shrink-0 flex-col overflow-hidden rounded-3xl border border-border/60 bg-background/90 shadow-md backdrop-blur-md md:flex dark:bg-card/85"
+      className="admin-surface hidden shrink-0 flex-col overflow-hidden rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md md:flex dark:bg-card/85"
     >
       <div
         className={cn(
@@ -48,7 +48,7 @@ export default function AdminSidebarShell({
           type="button"
           onClick={toggle}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="flex size-6 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-primary/8 hover:text-primary"
         >
           {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
         </button>

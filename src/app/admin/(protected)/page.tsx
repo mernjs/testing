@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Inbox } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/admin/GlassCard";
 import StatusBadge from "@/components/admin/StatusBadge";
@@ -21,6 +22,7 @@ import PendingTasksWidget from "@/components/admin/PendingTasksWidget";
 import QuickActions from "@/components/admin/QuickActions";
 import { getDashboardStats, CATEGORIES, isValidCategory, getCategoryLabel, type DashboardGranularity } from "@/lib/leads";
 import { LEAD_STATUSES, isValidLeadStatus, getStatusMeta } from "@/lib/lead-status";
+import { LEAD_STATUS_ICONS } from "@/lib/lead-status-icons";
 import { getCurrentAdmin } from "@/lib/admin-auth";
 import { listSavedFilters } from "@/lib/saved-filters";
 import { formatDateTime } from "@/lib/utils";
@@ -145,7 +147,7 @@ export default async function AdminDashboardPage({
       <Breadcrumbs items={[{ label: "Dashboard" }]} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Dashboard</h1>
           <p className="text-sm text-muted-foreground">Real-time overview across all categories.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -168,11 +170,12 @@ export default async function AdminDashboardPage({
       {/* Overview — the at-a-glance numbers, first thing on the page. */}
       <div>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Overview</h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
-          <KpiCard label="Total" value={stats.totalOverall} accent trend={stats.growthPercent} />
-          {LEAD_STATUSES.map((s) => (
-            <KpiCard key={s.value} label={s.label} value={stats.byStatus[s.value] ?? 0} />
-          ))}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          <KpiCard label="Total" value={stats.totalOverall} accent trend={stats.growthPercent} icon={<Inbox className="size-4" />} />
+          {LEAD_STATUSES.map((s) => {
+            const Icon = LEAD_STATUS_ICONS[s.value];
+            return <KpiCard key={s.value} label={s.label} value={stats.byStatus[s.value] ?? 0} icon={<Icon className="size-4" />} />;
+          })}
         </div>
       </div>
 
@@ -219,7 +222,7 @@ export default async function AdminDashboardPage({
       {/* Category Performance — every category-level view grouped together. */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Category Performance</h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-5">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {perCategoryStats.map((cat) => {
             const Icon = CATEGORY_ICONS[cat.slug];
             return (
@@ -280,7 +283,7 @@ export default async function AdminDashboardPage({
               <Link
                 key={String(lead._id)}
                 href={`/admin/submissions/${lead.category}/${lead._id}`}
-                className="flex items-center justify-between gap-4 rounded-lg border border-border/60 p-3 text-sm transition-colors hover:border-primary/30 hover:bg-muted/50"
+                className="flex items-center justify-between gap-4 rounded-lg border border-border/60 p-3 text-sm transition-colors hover:bg-muted/50"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <span className={`size-2 shrink-0 rounded-full ${meta.dotClass}`} />

@@ -71,7 +71,7 @@ export default async function ChatbotDashboardPage({
       <Breadcrumbs items={[{ label: "Dashboard", href: "/admin" }, { label: "AI Chatbot" }]} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">AI Chatbot</h1>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">AI Chatbot</h1>
           <p className="text-sm text-muted-foreground">
             Public assistant analytics · model <span className="font-medium text-foreground">{config.model}</span>
           </p>
@@ -105,7 +105,7 @@ export default async function ChatbotDashboardPage({
 
       <div>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Overview</h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           <KpiCard label="Chat Sessions" value={stats.totalSessions} accent trend={stats.growth.sessions} icon={<MessageSquare className="size-4" />} />
           <KpiCard label="Total Messages" value={stats.totalMessages} trend={stats.growth.messages} icon={<Bot className="size-4" />} />
           <KpiCard label="Active Now" value={stats.activeSessions} icon={<Activity className="size-4" />} />

@@ -28,7 +28,7 @@ export default function LoginForm() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-sm">
-      <GlassCard className="shadow-lg">
+      <GlassCard>
         <CardHeader>
           <div className="mb-1 flex items-center gap-1.5 text-xs font-medium text-primary lg:hidden">
             <BrandMark className="size-4 shrink-0" />

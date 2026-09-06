@@ -16,7 +16,7 @@ export default async function ChatbotConfigPage() {
         ]}
       />
       <div>
-        <h1 className="text-2xl font-bold text-foreground">AI Configuration</h1>
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">AI Configuration</h1>
         <p className="text-sm text-muted-foreground">
           Model, generation, retrieval, rate limiting, and the welcome experience. The OpenAI API key is read
           from the server environment only and is never shown or editable here.

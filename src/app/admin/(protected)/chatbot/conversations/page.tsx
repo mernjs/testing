@@ -56,7 +56,7 @@ export default async function ConversationsListPage({
         ]}
       />
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Conversations</h1>
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Conversations</h1>
         <p className="text-sm text-muted-foreground">
           {total} conversation{total === 1 ? "" : "s"} · click a row for the full transcript
         </p>

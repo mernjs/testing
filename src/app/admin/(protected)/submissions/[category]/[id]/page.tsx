@@ -34,7 +34,7 @@ export default async function SubmissionDetailPage({
         ]}
       />
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-foreground">{lead.name}</h1>
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">{lead.name}</h1>
         <StatusBadge status={lead.status} />
       </div>
 

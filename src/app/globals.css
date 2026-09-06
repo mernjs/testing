@@ -96,6 +96,23 @@
   --card-foreground: #ECF2FD;
   --popover: #1c2740;
   --popover-foreground: #ECF2FD;
+  --border: color-mix(in oklch, #334155 82%, var(--primary) 10%);
+  --muted-foreground: color-mix(in oklch, #94a3b8 88%, var(--primary) 8%);
+}
+
+/* Light mode's --border/--muted-foreground are plain cool Tailwind slate
+   (#e2e8f0 / #64748b) — barely visible on the Services page because its
+   cards sit over colorful hero/section backdrops, but exposed constantly in
+   the admin's dense borders/labels, where the coldness reads as generic
+   "corporate dashboard gray". Mix a touch of --primary into each so the same
+   neutral role reads warm, scoped to .admin-shell so the public site's own
+   gray tokens are untouched.
+   --muted stays plain neutral (not warmed) — it backs FILLED surfaces
+   (loading skeletons, table row hover, badge hover) where a coral tint reads
+   as a stray pink cast rather than a neutral "not loaded yet"/"hovered" state. */
+.admin-shell {
+  --border: color-mix(in oklch, #e2e8f0 82%, var(--primary) 10%);
+  --muted-foreground: color-mix(in oklch, #64748b 88%, var(--primary) 10%);
 }
 
 /* ---------------------------------------------------------------------------
@@ -111,8 +128,12 @@
 /* A whisper of brand warmth layered UNDER the Services card face
    (bg-background/90). Far lighter than the old login-hero wash — the card's
    own translucent surface + border + shadow do the real work, exactly like a
-   ListingCard. Applied to cards, the sidebar and the topbar. */
+   ListingCard. Applied to cards, the sidebar and the topbar.
+   Light mode: flat, no gradient — dark mode keeps the wash. */
 .admin-surface {
+  background-image: none;
+}
+.dark .admin-surface {
   background-image: linear-gradient(
     to bottom right,
     color-mix(in oklch, var(--primary) 3%, transparent),
@@ -121,29 +142,17 @@
   );
 }
 
-/* The Services card hover glow: a blurred coral -> blue gradient bleeding out
-   from behind the card. Sits as an absolutely-positioned sibling; the parent
-   is `group/gcard relative`. Mirrors ListingCard's `-inset-1 ... from-primary/30
-   via-primary/0 to-secondary/30 blur-xl` element. */
-.admin-card-glow {
-  position: absolute;
-  inset: -0.25rem;
-  border-radius: 2rem;
-  background-image: linear-gradient(
-    to bottom right,
-    color-mix(in oklch, var(--primary) 30%, transparent),
-    transparent 50%,
-    color-mix(in oklch, var(--secondary) 30%, transparent)
-  );
-  filter: blur(16px);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s ease;
-}
-
 /* The Services ListingHero ambient background: three brand blobs + a faint
    grid, `mix-blend-multiply` in light and `screen` in dark. One element,
-   dropped once into the admin workspace. */
+   dropped once into the admin workspace.
+   Light mode: off entirely — flat gray canvas, no gradient. Dark mode keeps
+   the glow since it wasn't the ask. */
+.admin-ambient {
+  display: none;
+}
+.dark .admin-ambient {
+  display: block;
+}
 .admin-ambient::before,
 .admin-ambient::after {
   content: "";
@@ -157,12 +166,18 @@
 :is(.dark) .admin-ambient::after {
   mix-blend-mode: screen;
 }
+/* Light mode's page canvas is now a neutral gray (Stripe/Linear-style: gray
+   canvas + white floating cards), not white — so the same blob opacity that
+   read as a tasteful glow on a white/hero backdrop turns into a much
+   stronger `multiply`-blended pink wash on gray. Keep it as a faint whisper
+   in light mode; dark mode (`screen` blend, still on a near-black canvas)
+   keeps the fuller strength since that's already well-calibrated. */
 .admin-ambient::before {
   top: -15%;
   left: 12%;
   width: 55%;
   height: 55%;
-  background: color-mix(in oklch, var(--primary) 15%, transparent);
+  background: color-mix(in oklch, var(--primary) 5%, transparent);
   animation: blob 7s infinite;
 }
 .admin-ambient::after {
@@ -170,9 +185,15 @@
   right: 8%;
   width: 55%;
   height: 55%;
-  background: color-mix(in oklch, var(--color-yashorbit-coral) 15%, transparent);
+  background: color-mix(in oklch, var(--color-yashorbit-coral) 5%, transparent);
   animation: blob 7s infinite;
   animation-delay: 4s;
+}
+.dark .admin-ambient::before {
+  background: color-mix(in oklch, var(--primary) 15%, transparent);
+}
+.dark .admin-ambient::after {
+  background: color-mix(in oklch, var(--color-yashorbit-coral) 15%, transparent);
 }
 .admin-ambient > .admin-ambient-mid {
   position: absolute;
@@ -181,14 +202,15 @@
   width: 45%;
   height: 45%;
   border-radius: 9999px;
-  background: color-mix(in oklch, var(--secondary) 15%, transparent);
+  background: color-mix(in oklch, var(--secondary) 5%, transparent);
   filter: blur(120px);
   mix-blend-mode: multiply;
   pointer-events: none;
   animation: blob 7s infinite;
   animation-delay: 2s;
 }
-:is(.dark) .admin-ambient > .admin-ambient-mid {
+.dark .admin-ambient > .admin-ambient-mid {
+  background: color-mix(in oklch, var(--secondary) 15%, transparent);
   mix-blend-mode: screen;
 }
 
@@ -217,16 +239,43 @@
 
 /* Primitive nudges, scoped to the admin shell only so the public site's
    inputs/buttons are untouched. Radii + border tint to match the Services
-   page's softer, rounder controls; a coral drop-shadow on primary buttons to
-   echo DetailCTA's `shadow-primary/20`. */
+   page's softer, rounder controls; primary buttons get the same coral->coral
+   gradient + lift the site's own CTAs use (DetailCTA / FeaturedListingCard's
+   `shadow-primary/20` + `hover:scale-105`), and outline/ghost buttons get the
+   same coral hover tint as `.admin-chip` and the ListingCard highlight tags. */
 .admin-shell [data-slot="input"],
 .admin-shell [data-slot="textarea"],
 .admin-shell [data-slot="select-trigger"] {
   border-radius: var(--radius-xl);
-  border-color: color-mix(in oklch, var(--border) 65%, transparent);
+  /* Plain neutral gray, not the warm coral-tinted --border used elsewhere —
+     input borders read as a stray pink cast when tinted. */
+  border-color: #e2e8f0;
+}
+.dark .admin-shell [data-slot="input"],
+.dark .admin-shell [data-slot="textarea"],
+.dark .admin-shell [data-slot="select-trigger"] {
+  border-color: #334155;
+}
+.admin-shell [data-slot="button"] {
+  border-radius: var(--radius-xl);
+  transition: background-color 0.2s ease, background-image 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 .admin-shell [data-slot="button"].bg-primary {
-  box-shadow: 0 10px 22px -10px color-mix(in oklch, var(--primary) 45%, transparent);
+  background-image: linear-gradient(135deg, var(--primary), var(--color-yashorbit-coral));
+  box-shadow: 0 10px 25px -8px color-mix(in oklch, var(--primary) 50%, transparent);
+}
+.admin-shell [data-slot="button"].bg-primary:hover {
+  box-shadow: 0 14px 32px -8px color-mix(in oklch, var(--primary) 60%, transparent);
+  transform: translateY(-1px);
+}
+.admin-shell [data-slot="button"][data-variant="outline"]:hover {
+  border-color: color-mix(in oklch, var(--primary) 35%, transparent);
+  background: color-mix(in oklch, var(--primary) 6%, transparent);
+  color: var(--primary);
+}
+.admin-shell [data-slot="button"][data-variant="ghost"]:hover {
+  background: color-mix(in oklch, var(--primary) 8%, transparent);
+  color: var(--primary);
 }
 
 @layer base {

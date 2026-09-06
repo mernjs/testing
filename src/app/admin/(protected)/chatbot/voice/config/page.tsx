@@ -17,7 +17,7 @@ export default async function VoiceConfigPage() {
         ]}
       />
       <div>
-        <h1 className="text-2xl font-bold text-foreground">ElevenLabs Configuration</h1>
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">ElevenLabs Configuration</h1>
         <p className="text-sm text-muted-foreground">
           Voice, model and delivery settings for voice mode on the Ask YashOrbit page. The API key is read from
           the server environment only.

@@ -26,7 +26,7 @@ export default async function KnowledgeBasePage() {
         ]}
       />
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Knowledge Base</h1>
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Knowledge Base</h1>
         <p className="text-sm text-muted-foreground">
           Index website content and documents into the OpenAI vector store the assistant retrieves from.
         </p>
