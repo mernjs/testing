@@ -12,6 +12,7 @@ import {
   CalendarDays,
   CalendarCheck,
   Wallet,
+  Banknote,
   ScrollText,
   Bell,
   Settings,
@@ -137,7 +138,10 @@ export default function HrmsSidebar({
       <NavLink href="/hrms/leave" label="Leave" icon={CalendarDays} collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/hrms/holidays" label="Holidays" icon={CalendarCheck} collapsed={collapsed} onNavigate={onNavigate} />
       {canRunPayroll(roles) && (
-        <NavLink href="/hrms/payroll" label="Payroll" icon={Wallet} collapsed={collapsed} onNavigate={onNavigate} />
+        <>
+          <NavLink href="/hrms/payroll" label="Payroll" icon={Wallet} collapsed={collapsed} onNavigate={onNavigate} />
+          <NavLink href="/hrms/payroll/payouts" label="Salary Payouts" icon={Banknote} collapsed={collapsed} onNavigate={onNavigate} />
+        </>
       )}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>

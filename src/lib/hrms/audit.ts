@@ -26,7 +26,9 @@ export type AuditEntity =
   | "salary_revision"
   | "employee_document"
   | "employee_login"
-  | "offer";
+  | "offer"
+  | "bank_account"
+  | "salary_payout";
 
 export type AuditAction =
   | "create"
@@ -42,7 +44,11 @@ export type AuditAction =
   | "generate"
   | "pay"
   | "clock_in"
-  | "clock_out";
+  | "clock_out"
+  | "view_sensitive"
+  | "initiate"
+  | "reconcile"
+  | "verify";
 
 export interface AuditLog {
   _id: string;

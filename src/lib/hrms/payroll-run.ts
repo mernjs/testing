@@ -12,7 +12,6 @@ import {
 } from "@/lib/hrms/employees";
 import { ACTIVE_EMPLOYEE_STATUSES } from "@/lib/hrms/employee-status";
 import { ATTENDANCE_COLLECTION } from "@/lib/hrms/attendance";
-import { getPayrollProfile } from "@/lib/hrms/payroll";
 import { effectiveStructure, structureGross } from "@/lib/hrms/salary-revisions";
 import { getPayrollConfig, monthsRemainingInFY, fyStartMonthString } from "@/lib/hrms/payroll-config";
 import { monthlyTds } from "@/lib/hrms/payroll-tax";
@@ -63,8 +62,11 @@ export interface Payslip {
   employerCost: number;
   netPay: number;
   overrides: { arrears: number; manualTds: number | null; otherDeductions: number };
-  bankAccountNumber: string | null;
-  bankIfsc: string | null;
+  /** Snapshot of the employee's primary bank account at generation. */
+  bankAccountId: string | null;
+  bankAccountLast4: string | null;
+  bankName: string | null;
+  ifsc: string | null;
   updatedAt: Date;
 }
 
@@ -188,10 +190,11 @@ async function computePayslipFor(
   overrides: { arrears: number; manualTds: number | null; otherDeductions: number }
 ): Promise<Payslip | null> {
   const { to } = monthBounds(month);
-  const [structure, profile, config] = await Promise.all([
+  const { getPrimaryBankAccount } = await import("@/lib/hrms/bank-accounts");
+  const [structure, config, bankAccount] = await Promise.all([
     effectiveStructure(employee._id, to),
-    getPayrollProfile(employee._id),
     getPayrollConfig(),
+    getPrimaryBankAccount(employee._id),
   ]);
   if (!structure) return null;
 
@@ -278,8 +281,10 @@ async function computePayslipFor(
     employerCost,
     netPay,
     overrides,
-    bankAccountNumber: profile?.bank.accountNumber ?? null,
-    bankIfsc: profile?.bank.ifsc ?? null,
+    bankAccountId: bankAccount?._id ?? null,
+    bankAccountLast4: bankAccount?.accountNumberLast4 ?? null,
+    bankName: bankAccount?.bankName ?? null,
+    ifsc: bankAccount?.ifsc ?? null,
     updatedAt: new Date(),
   };
 }
@@ -423,8 +428,14 @@ export async function approveRun(runId: string, actorId: string): Promise<{ ok: 
   if (!run) return { ok: false, error: "Run not found." };
   if (run.status !== "draft") return { ok: false, error: `Run is already ${run.status}.` };
   await runs.updateOne({ _id: runId }, { $set: { status: "approved", approvedBy: actorId, approvedAt: new Date() } });
+  const approvedRun = { ...run, status: "approved" as const };
 
   const slips = await payslips.find({ runId }).toArray();
+
+  // Create one salary payout per payslip (status: pending).
+  const { createPayoutsForRun } = await import("@/lib/hrms/salary-payouts");
+  await createPayoutsForRun(approvedRun, slips, actorId);
+
   const { notifyEmployee } = await import("@/lib/hrms/notifications");
   for (const s of slips) {
     await notifyEmployee(s.employeeId, {
@@ -439,20 +450,18 @@ export async function approveRun(runId: string, actorId: string): Promise<{ ok: 
   return { ok: true };
 }
 
-export async function markRunPaid(runId: string, actorId: string): Promise<{ ok: boolean; error?: string }> {
-  const { runs } = await collections();
-  const run = await runs.findOne({ _id: runId });
-  if (!run) return { ok: false, error: "Run not found." };
-  if (run.status !== "approved") return { ok: false, error: "Approve the run before marking it paid." };
-  await runs.updateOne({ _id: runId }, { $set: { status: "paid", paidBy: actorId, paidAt: new Date() } });
-  return { ok: true };
-}
-
 export async function deleteRun(runId: string): Promise<{ ok: boolean; error?: string }> {
-  const { runs, payslips } = await collections();
+  const { db, runs, payslips } = await collections();
   const run = await runs.findOne({ _id: runId });
   if (!run) return { ok: false, error: "Run not found." };
   if (run.status === "paid") return { ok: false, error: "A paid run cannot be deleted." };
+
+  const inFlight = await db
+    .collection("hrms_salary_payouts")
+    .countDocuments({ runId, status: { $in: ["initiated", "processing", "paid"] } });
+  if (inFlight > 0) return { ok: false, error: "This run has payouts that are initiated or paid. Delete is blocked." };
+
+  await db.collection("hrms_salary_payouts").deleteMany({ runId });
   await payslips.deleteMany({ runId });
   await runs.deleteOne({ _id: runId });
   return { ok: true };

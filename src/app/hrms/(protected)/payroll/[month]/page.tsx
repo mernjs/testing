@@ -6,6 +6,7 @@ import PayrollRunDetail from "@/components/hrms/PayrollRunDetail";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 import { canRunPayroll } from "@/lib/hrms-roles";
 import { getRunByMonth, getPayslipsForRun, serializeRun, serializePayslip } from "@/lib/hrms/payroll-run";
+import { payoutsForRun, serializePayout } from "@/lib/hrms/salary-payouts";
 
 export default async function PayrollRunPage({ params }: { params: Promise<{ month: string }> }) {
   const user = await getCurrentHrmsUser();
@@ -14,7 +15,10 @@ export default async function PayrollRunPage({ params }: { params: Promise<{ mon
   const { month } = await params;
   const run = await getRunByMonth(month);
   if (!run) notFound();
-  const slips = (await getPayslipsForRun(run._id)).map(serializePayslip);
+  const [slips, payouts] = await Promise.all([
+    getPayslipsForRun(run._id).then((s) => s.map(serializePayslip)),
+    payoutsForRun(run._id).then((p) => p.map(serializePayout)),
+  ]);
   const r = serializeRun(run);
 
   return (
@@ -49,8 +53,22 @@ export default async function PayrollRunPage({ params }: { params: Promise<{ mon
           employerCost: s.employerCost,
           netPay: s.netPay,
           overrides: s.overrides,
-          bankAccountNumber: s.bankAccountNumber,
-          bankIfsc: s.bankIfsc,
+          bankAccountLast4: s.bankAccountLast4,
+          bankName: s.bankName,
+          ifsc: s.ifsc,
+        }))}
+        payouts={payouts.map((p) => ({
+          _id: p._id,
+          employeeName: p.employeeName,
+          employeeCode: p.employeeCode,
+          netPayable: p.netPayable,
+          paymentAmount: p.paymentAmount,
+          bankAccountMasked: p.bankAccountMasked,
+          bankName: p.bankName,
+          status: p.status,
+          paymentProvider: p.paymentProvider,
+          utr: p.utr,
+          failureReason: p.failureReason,
         }))}
       />
     </div>

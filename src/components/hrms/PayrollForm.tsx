@@ -37,13 +37,6 @@ export default function PayrollForm({ employeeId, profile, canEdit }: Props) {
   const [pfNumber, setPfNumber] = useState(profile?.pfNumber ?? "");
   const [esiNumber, setEsiNumber] = useState(profile?.esiNumber ?? "");
   const [uan, setUan] = useState(profile?.uan ?? "");
-  const [bank, setBank] = useState({
-    accountName: profile?.bank.accountName ?? "",
-    accountNumber: profile?.bank.accountNumber ?? "",
-    ifsc: profile?.bank.ifsc ?? "",
-    bankName: profile?.bank.bankName ?? "",
-    branch: profile?.bank.branch ?? "",
-  });
 
   const gross = useMemo(() => {
     const b = Number(basic) || 0;
@@ -66,7 +59,6 @@ export default function PayrollForm({ employeeId, profile, canEdit }: Props) {
         pfNumber,
         esiNumber,
         uan,
-        bank,
       });
       if (!result.ok) {
         if (result.fieldErrors) setErrors(result.fieldErrors);
@@ -164,33 +156,6 @@ export default function PayrollForm({ employeeId, profile, canEdit }: Props) {
           <div className="space-y-1.5">
             <Label>UAN</Label>
             <Input value={uan} disabled={!canEdit} onChange={(e) => setUan(e.target.value)} />
-          </div>
-        </CardContent>
-      </GlassCard>
-
-      <GlassCard interactive={false}>
-        <CardHeader><CardTitle>Bank Details</CardTitle></CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label>Account holder name</Label>
-            <Input value={bank.accountName} disabled={!canEdit} onChange={(e) => setBank((b) => ({ ...b, accountName: e.target.value }))} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Account number</Label>
-            <Input value={bank.accountNumber} disabled={!canEdit} onChange={(e) => setBank((b) => ({ ...b, accountNumber: e.target.value }))} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>IFSC</Label>
-            <Input value={bank.ifsc} disabled={!canEdit} onChange={(e) => setBank((b) => ({ ...b, ifsc: e.target.value }))} aria-invalid={!!errors.ifsc || undefined} />
-            {errors.ifsc && <p className="text-xs text-destructive">{errors.ifsc}</p>}
-          </div>
-          <div className="space-y-1.5">
-            <Label>Bank name</Label>
-            <Input value={bank.bankName} disabled={!canEdit} onChange={(e) => setBank((b) => ({ ...b, bankName: e.target.value }))} />
-          </div>
-          <div className="space-y-1.5">
-            <Label>Branch</Label>
-            <Input value={bank.branch} disabled={!canEdit} onChange={(e) => setBank((b) => ({ ...b, branch: e.target.value }))} />
           </div>
         </CardContent>
       </GlassCard>

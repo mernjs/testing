@@ -3,9 +3,13 @@ import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/admin/GlassCard";
 import { Badge } from "@/components/ui/badge";
 import SalaryStructureView from "@/components/hrms/SalaryStructureView";
+import BankAccountBadge from "@/components/hrms/BankAccountBadge";
+import PayoutStatusBadge from "@/components/hrms/PayoutStatusBadge";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 import { getPayrollProfile } from "@/lib/hrms/payroll";
 import { payslipsForEmployee } from "@/lib/hrms/payroll-run";
+import { getPrimaryBankAccount, serializeBankAccount } from "@/lib/hrms/bank-accounts";
+import { payoutsForEmployee, serializePayout } from "@/lib/hrms/salary-payouts";
 import { payrollRunStatusMeta, monthLabelLong } from "@/lib/hrms/payroll-status";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
@@ -13,22 +17,42 @@ export default async function MySalaryPage() {
   const user = await getCurrentHrmsUser();
   const employeeId = user!.employeeId!;
 
-  const [profile, payslips] = await Promise.all([getPayrollProfile(employeeId), payslipsForEmployee(employeeId)]);
+  const [profile, payslips, primaryBank, payouts] = await Promise.all([
+    getPayrollProfile(employeeId),
+    payslipsForEmployee(employeeId),
+    getPrimaryBankAccount(employeeId),
+    payoutsForEmployee(employeeId),
+  ]);
+  const bank = primaryBank ? serializeBankAccount(primaryBank) : null;
 
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground">Salary &amp; Payslips</h1>
-        <p className="text-sm text-muted-foreground">Your current structure and published payslips.</p>
+        <h1 className="text-2xl font-black tracking-tight text-foreground">Salary &amp; Payments</h1>
+        <p className="text-sm text-muted-foreground">Your structure, payslips and salary payment history.</p>
       </div>
+
+      <GlassCard interactive={false}>
+        <CardHeader><CardTitle>Salary Bank Account</CardTitle></CardHeader>
+        <CardContent className="text-sm">
+          {bank ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-medium">{bank.bankName}</span>
+              <span className="font-mono text-xs text-muted-foreground">{bank.accountNumberMasked}</span>
+              <span className="text-xs text-muted-foreground">{bank.ifsc}</span>
+              <BankAccountBadge status={bank.verificationStatus} />
+            </div>
+          ) : (
+            <p className="text-muted-foreground">No bank account on file — contact HR to add one.</p>
+          )}
+        </CardContent>
+      </GlassCard>
 
       {profile ? (
         <SalaryStructureView basic={profile.basic} hra={profile.hra} allowances={profile.allowances} deductions={profile.deductions} />
       ) : (
         <GlassCard interactive={false}>
-          <CardContent className="py-8 text-center text-sm text-muted-foreground">
-            Your salary structure has not been set up yet.
-          </CardContent>
+          <CardContent className="py-8 text-center text-sm text-muted-foreground">Your salary structure has not been set up yet.</CardContent>
         </GlassCard>
       )}
 
@@ -57,6 +81,29 @@ export default async function MySalaryPage() {
               </Link>
             );
           })}
+        </CardContent>
+      </GlassCard>
+
+      <GlassCard interactive={false}>
+        <CardHeader><CardTitle>Payment History</CardTitle></CardHeader>
+        <CardContent className="space-y-2">
+          {payouts.length === 0 && <p className="text-sm text-muted-foreground">No salary payments yet.</p>}
+          {payouts.map(serializePayout).map((p) => (
+            <div key={p._id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border/60 p-3 text-sm">
+              <div>
+                <p className="font-medium">{monthLabelLong(p.month)}</p>
+                <p className="text-xs text-muted-foreground">
+                  {p.bankAccountMasked}
+                  {p.utr ? ` · UTR ${p.utr}` : ""}
+                  {p.paidAt ? ` · ${formatDate(p.paidAt)}` : ""}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="font-semibold text-foreground tabular-nums">{formatCurrency(p.paymentAmount)}</span>
+                <PayoutStatusBadge status={p.status} />
+              </div>
+            </div>
+          ))}
         </CardContent>
       </GlassCard>
     </div>

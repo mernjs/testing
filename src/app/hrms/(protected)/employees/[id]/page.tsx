@@ -17,12 +17,15 @@ import FileLeaveSheet from "@/components/hrms/FileLeaveSheet";
 import EmployeeDocumentsManager from "@/components/hrms/EmployeeDocumentsManager";
 import SalaryRevisionManager from "@/components/hrms/SalaryRevisionManager";
 import CreatePortalLoginPanel from "@/components/hrms/CreatePortalLoginPanel";
+import BankAccountsManager from "@/components/hrms/BankAccountsManager";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 import { canManageEmployees, canManagePayroll, canApproveLeave, canRunPayroll, canManageEmployeeDocuments } from "@/lib/hrms-roles";
 import { getEmployee, employeeFullName } from "@/lib/hrms/employees";
 import { masterLookups } from "@/lib/hrms/departments";
 import { listEmployeeOptions } from "@/lib/hrms/employees";
 import { getPayrollProfile, serializePayrollProfile } from "@/lib/hrms/payroll";
+import { listBankAccounts, serializeBankAccount } from "@/lib/hrms/bank-accounts";
+import { isEncryptionConfigured } from "@/lib/hrms/crypto";
 import { listRevisions, serializeRevision } from "@/lib/hrms/salary-revisions";
 import { listDocuments, serializeDocument } from "@/lib/hrms/documents";
 import { loginStatusForEmployee } from "@/lib/hrms/employee-auth";
@@ -61,7 +64,7 @@ export default async function EmployeeProfilePage({
   const year = currentYear();
   const attMonth = /^\d{4}-\d{2}$/.test(sp.month ?? "") ? sp.month! : todayDateString().slice(0, 7);
 
-  const [lookups, managers, payroll, activity, attMonthData, balances, leaveHistory, leaveTypes, revisions, documents, loginStatus] = await Promise.all([
+  const [lookups, managers, payroll, activity, attMonthData, balances, leaveHistory, leaveTypes, revisions, documents, loginStatus, bankAccounts] = await Promise.all([
     masterLookups(),
     listEmployeeOptions(),
     getPayrollProfile(id),
@@ -73,6 +76,7 @@ export default async function EmployeeProfilePage({
     listRevisions(id),
     listDocuments(id),
     loginStatusForEmployee(id),
+    canManagePayroll(user?.roles ?? []) ? listBankAccounts(id) : Promise.resolve([]),
   ]);
 
   const canEdit = !!user && canManageEmployees(user.roles);
@@ -149,6 +153,26 @@ export default async function EmployeeProfilePage({
   const salaryTab = canPayroll || payroll ? (
     <div className="space-y-4">
       <PayrollForm employeeId={id} profile={payroll ? serializePayrollProfile(payroll) : null} canEdit={canPayroll} />
+      {canPayroll && (
+        <BankAccountsManager
+          employeeId={id}
+          encryptionReady={isEncryptionConfigured()}
+          accounts={bankAccounts.map(serializeBankAccount).map((a) => ({
+            _id: a._id,
+            accountHolderName: a.accountHolderName,
+            bankName: a.bankName,
+            branch: a.branch,
+            accountType: a.accountType,
+            accountNumberMasked: a.accountNumberMasked,
+            ifsc: a.ifsc,
+            hasUpi: a.hasUpi,
+            isPrimary: a.isPrimary,
+            verificationStatus: a.verificationStatus,
+            verifiedAt: a.verifiedAt,
+            verificationNote: a.verificationNote,
+          }))}
+        />
+      )}
       {canRevise && (
         <SalaryRevisionManager
           employeeId={id}

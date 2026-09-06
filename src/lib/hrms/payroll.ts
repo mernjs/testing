@@ -99,10 +99,12 @@ export interface PayrollWriteData {
   pfNumber: string | null;
   esiNumber: string | null;
   uan: string | null;
-  bank: BankDetails;
+  /** Legacy — bank details now live in `hrms_bank_accounts`. Ignored on write. */
+  bank?: BankDetails;
 }
 
-/** Creates or replaces the payroll profile for an employee. */
+/** Creates or replaces the payroll profile for an employee. Bank details are
+ *  managed separately in `hrms_bank_accounts` and never touched here. */
 export async function upsertPayrollProfile(
   employeeId: string,
   data: PayrollWriteData,
@@ -110,11 +112,13 @@ export async function upsertPayrollProfile(
 ): Promise<PayrollProfile> {
   const collection = await getCollection();
   const existing = await collection.findOne({ employeeId });
+  const { bank: _ignored, ...persist } = data;
+  void _ignored;
 
   if (existing) {
     const updated = await collection.findOneAndUpdate(
       { _id: existing._id },
-      { $set: { ...data, deletedAt: null, ...updateStamp(actorId) } },
+      { $set: { ...persist, deletedAt: null, ...updateStamp(actorId) } },
       { returnDocument: "after" }
     );
     return updated!;
@@ -123,7 +127,8 @@ export async function upsertPayrollProfile(
   const doc: PayrollProfile = {
     _id: newId(),
     employeeId,
-    ...data,
+    ...persist,
+    bank: emptyBank(),
     ...createStamp(actorId),
   };
   await collection.insertOne(doc);

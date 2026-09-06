@@ -23,14 +23,10 @@ export interface PayslipViewData {
   employerContributions: Line[];
   employerCost: number;
   netPay: number;
-  bankAccountNumber: string | null;
-  bankIfsc: string | null;
+  bankAccountLast4: string | null;
+  bankName: string | null;
+  ifsc: string | null;
   runStatus: string;
-}
-
-function maskAccount(acct: string | null): string {
-  if (!acct) return "—";
-  return acct.length > 4 ? `••••${acct.slice(-4)}` : acct;
 }
 
 export default function PayslipView({ data, showPrint = true }: { data: PayslipViewData; showPrint?: boolean }) {
@@ -61,8 +57,8 @@ export default function PayslipView({ data, showPrint = true }: { data: PayslipV
         <div className="grid grid-cols-2 gap-4 border-b border-border/60 py-3 text-xs text-muted-foreground sm:grid-cols-4">
           <div>Working days<span className="block text-sm font-medium text-foreground">{data.workingDays}</span></div>
           <div>Loss of pay days<span className="block text-sm font-medium text-foreground">{data.lopDays}</span></div>
-          <div>Bank A/C<span className="block text-sm font-medium text-foreground">{maskAccount(data.bankAccountNumber)}</span></div>
-          <div>IFSC<span className="block text-sm font-medium text-foreground">{data.bankIfsc ?? "—"}</span></div>
+          <div>Bank A/C<span className="block text-sm font-medium text-foreground">{data.bankAccountLast4 ? `XXXXXX${data.bankAccountLast4}` : "—"}</span></div>
+          <div>IFSC<span className="block text-sm font-medium text-foreground">{data.ifsc ?? "—"}</span></div>
         </div>
 
         <div className="grid gap-6 py-4 sm:grid-cols-2">

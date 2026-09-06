@@ -3,10 +3,10 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Check, Banknote, Download, Loader2, Pencil } from "lucide-react";
+import { Check, Loader2, Pencil } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/admin/GlassCard";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -24,9 +24,10 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import PayslipView, { type PayslipViewData } from "@/components/hrms/PayslipView";
+import RunPayoutsPanel from "@/components/hrms/RunPayoutsPanel";
 import { payrollRunStatusMeta, monthLabelLong } from "@/lib/hrms/payroll-status";
 import { formatCurrency } from "@/lib/utils";
-import { approveRunAction, markRunPaidAction, savePayslipOverridesAction } from "@/app/hrms/(protected)/payroll/actions";
+import { approveRunAction, savePayslipOverridesAction } from "@/app/hrms/(protected)/payroll/actions";
 
 interface Line {
   name: string;
@@ -47,8 +48,9 @@ interface Slip {
   employerCost: number;
   netPay: number;
   overrides: { arrears: number; manualTds: number | null; otherDeductions: number };
-  bankAccountNumber: string | null;
-  bankIfsc: string | null;
+  bankAccountLast4: string | null;
+  bankName: string | null;
+  ifsc: string | null;
 }
 interface Run {
   _id: string;
@@ -59,8 +61,21 @@ interface Run {
   totalDeductions: number;
   totalEmployerCost: number;
 }
+interface Payout {
+  _id: string;
+  employeeName: string;
+  employeeCode: string;
+  netPayable: number;
+  paymentAmount: number;
+  bankAccountMasked: string;
+  bankName: string | null;
+  status: string;
+  paymentProvider: "manual" | "razorpay";
+  utr: string | null;
+  failureReason: string | null;
+}
 
-export default function PayrollRunDetail({ run, slips }: { run: Run; slips: Slip[] }) {
+export default function PayrollRunDetail({ run, slips, payouts }: { run: Run; slips: Slip[]; payouts: Payout[] }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [viewSlip, setViewSlip] = useState<Slip | null>(null);
@@ -108,18 +123,7 @@ export default function PayrollRunDetail({ run, slips }: { run: Run; slips: Slip
         toast.error(result.error ?? "Could not approve.");
         return;
       }
-      toast.success("Run approved — payslips are now visible to employees");
-      router.refresh();
-    });
-  }
-  function pay() {
-    startTransition(async () => {
-      const result = await markRunPaidAction(run._id);
-      if (!result.ok) {
-        toast.error(result.error ?? "Could not mark paid.");
-        return;
-      }
-      toast.success("Run marked paid — the month is now locked");
+      toast.success("Run approved — payslips are visible and payouts are ready");
       router.refresh();
     });
   }
@@ -137,8 +141,9 @@ export default function PayrollRunDetail({ run, slips }: { run: Run; slips: Slip
     employerContributions: s.employerContributions,
     employerCost: s.employerCost,
     netPay: s.netPay,
-    bankAccountNumber: s.bankAccountNumber,
-    bankIfsc: s.bankIfsc,
+    bankAccountLast4: s.bankAccountLast4,
+    bankName: s.bankName,
+    ifsc: s.ifsc,
     runStatus: run.status,
   });
 
@@ -149,45 +154,26 @@ export default function PayrollRunDetail({ run, slips }: { run: Run; slips: Slip
           <div className="flex items-center gap-3">
             <span className="text-lg font-bold text-foreground">{monthLabelLong(run.month)}</span>
             <Badge className={meta.badgeClass}>{meta.label}</Badge>
+            {run.status === "paid" && <span className="text-xs text-muted-foreground">Month locked</span>}
           </div>
-          <div className="flex items-center gap-2">
-            {run.status === "approved" && (
-              <a href={`/api/hrms/payroll/runs/${run._id}/bank-csv`} className={buttonVariants({ variant: "outline", size: "sm" })}>
-                <Download className="size-3.5" data-icon="inline-start" />
-                Bank CSV
-              </a>
-            )}
-            {isDraft && (
-              <AlertDialog>
-                <AlertDialogTrigger render={<Button type="button" size="sm" disabled={pending}><Check className="size-3.5" data-icon="inline-start" />Approve Run</Button>} />
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Approve the {monthLabelLong(run.month)} run?</AlertDialogTitle>
-                    <AlertDialogDescription>Payslips become visible to employees. You can still make corrections until the run is marked paid.</AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={approve}>Approve</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-            {run.status === "approved" && (
-              <AlertDialog>
-                <AlertDialogTrigger render={<Button type="button" size="sm" disabled={pending}><Banknote className="size-3.5" data-icon="inline-start" />Mark Paid</Button>} />
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Mark this run as paid?</AlertDialogTitle>
-                    <AlertDialogDescription>This locks {monthLabelLong(run.month)} — attendance and leave for that month can no longer be edited.</AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={pay}>Mark Paid</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-          </div>
+          {isDraft && (
+            <AlertDialog>
+              <AlertDialogTrigger render={<Button type="button" size="sm" disabled={pending}><Check className="size-3.5" data-icon="inline-start" />Approve Run</Button>} />
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Approve the {monthLabelLong(run.month)} run?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Payslips become visible to employees and one salary payout is created per employee. Corrections are still possible until a
+                    payout is initiated.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={approve}>Approve</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </CardContent>
       </GlassCard>
 
@@ -208,7 +194,7 @@ export default function PayrollRunDetail({ run, slips }: { run: Run; slips: Slip
       </div>
 
       <GlassCard interactive={false}>
-        <CardContent className="max-h-[60vh] overflow-auto">
+        <CardContent className="max-h-[55vh] overflow-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -217,7 +203,7 @@ export default function PayrollRunDetail({ run, slips }: { run: Run; slips: Slip
                 <TableHead>Gross</TableHead>
                 <TableHead>Deductions</TableHead>
                 <TableHead>Net</TableHead>
-                <TableHead className="w-24" />
+                <TableHead className="w-12" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -232,13 +218,11 @@ export default function PayrollRunDetail({ run, slips }: { run: Run; slips: Slip
                   <TableCell className="tabular-nums text-muted-foreground">{formatCurrency(s.totalDeductions)}</TableCell>
                   <TableCell className="tabular-nums font-medium">{formatCurrency(s.netPay)}</TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-1">
-                      {isDraft && (
-                        <Button type="button" variant="ghost" size="icon-sm" onClick={() => openEdit(s)} aria-label="Adjust">
-                          <Pencil className="size-3.5" />
-                        </Button>
-                      )}
-                    </div>
+                    {isDraft && (
+                      <Button type="button" variant="ghost" size="icon-sm" onClick={() => openEdit(s)} aria-label="Adjust">
+                        <Pencil className="size-3.5" />
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -247,15 +231,15 @@ export default function PayrollRunDetail({ run, slips }: { run: Run; slips: Slip
         </CardContent>
       </GlassCard>
 
+      <RunPayoutsPanel runId={run._id} payouts={payouts} />
+
       <Sheet open={!!viewSlip} onOpenChange={(o) => !o && setViewSlip(null)}>
         <SheetContent className="sm:max-w-2xl">
           <SheetHeader className="border-b border-border/60">
             <SheetTitle>Payslip preview</SheetTitle>
             <SheetDescription>{viewSlip?.employeeName}</SheetDescription>
           </SheetHeader>
-          <div className="flex-1 overflow-y-auto p-4">
-            {viewSlip && <PayslipView data={toView(viewSlip)} showPrint={false} />}
-          </div>
+          <div className="flex-1 overflow-y-auto p-4">{viewSlip && <PayslipView data={toView(viewSlip)} showPrint={false} />}</div>
         </SheetContent>
       </Sheet>
 

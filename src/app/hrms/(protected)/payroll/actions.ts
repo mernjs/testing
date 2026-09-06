@@ -7,13 +7,20 @@ import {
   createRun,
   deleteRun,
   approveRun,
-  markRunPaid,
   getRun,
   getPayslip,
   recomputePayslip,
   updatePayslipOverrides,
 } from "@/lib/hrms/payroll-run";
-import { validatePayslipOverrides } from "@/lib/hrms/validation-payroll";
+import {
+  initiatePayout,
+  bulkInitiate,
+  recordManualResult,
+  retryPayout,
+  cancelPayout,
+  reconcilePayouts,
+} from "@/lib/hrms/salary-payouts";
+import { validatePayslipOverrides, validateManualPayoutResult } from "@/lib/hrms/validation-payroll";
 import { recordAudit } from "@/lib/hrms/audit";
 
 export interface PayrollActionResult {
@@ -32,6 +39,7 @@ async function requirePayroll() {
 
 function revalidate(month?: string) {
   revalidatePath("/hrms/payroll");
+  revalidatePath("/hrms/payroll/payouts");
   if (month) revalidatePath(`/hrms/payroll/${month}`);
   revalidatePath("/hrms");
 }
@@ -71,29 +79,73 @@ export async function approveRunAction(runId: string): Promise<PayrollActionResu
   const run = await getRun(runId);
   const result = await approveRun(runId, user.id);
   if (!result.ok) return { ok: false, error: result.error };
-  await recordAudit({ actorId: user.id, actorEmail: user.email, action: "approve", entity: "payroll_run", entityId: runId, entityLabel: run?.month });
+  await recordAudit({
+    actorId: user.id,
+    actorEmail: user.email,
+    action: "approve",
+    entity: "payroll_run",
+    entityId: runId,
+    entityLabel: run?.month,
+    summary: "Run approved — salary payouts created",
+  });
   revalidate(run?.month);
   return { ok: true };
 }
 
-export async function markRunPaidAction(runId: string): Promise<PayrollActionResult> {
-  const user = await requirePayroll();
-  const run = await getRun(runId);
-  const result = await markRunPaid(runId, user.id);
-  if (!result.ok) return { ok: false, error: result.error };
-  await recordAudit({
-    actorId: user.id,
-    actorEmail: user.email,
-    action: "pay",
-    entity: "payroll_run",
-    entityId: runId,
-    entityLabel: run?.month,
-    summary: "Run marked paid — month locked",
-  });
-  revalidate(run?.month);
+// ---- Payouts --------------------------------------------------------------
+
+function revalidatePayouts(month?: string) {
+  revalidate(month);
   revalidatePath("/hrms/attendance");
   revalidatePath("/hrms/leave");
+}
+
+export async function initiatePayoutAction(payoutId: string): Promise<PayrollActionResult> {
+  const user = await requirePayroll();
+  const result = await initiatePayout(payoutId, user);
+  if (!result.ok) return { ok: false, error: result.error };
+  revalidatePayouts();
   return { ok: true };
+}
+
+export async function bulkInitiatePayoutsAction(ids: string[]): Promise<PayrollActionResult & { initiated?: number }> {
+  const user = await requirePayroll();
+  const result = await bulkInitiate(ids, user);
+  revalidatePayouts();
+  return { ok: true, initiated: result.initiated, error: result.errors[0] };
+}
+
+export async function recordPayoutResultAction(payoutId: string, input: Record<string, unknown>): Promise<PayrollActionResult> {
+  const user = await requirePayroll();
+  const v = validateManualPayoutResult(input);
+  if (!v.valid) return { ok: false, fieldErrors: v.errors };
+  const result = await recordManualResult(payoutId, v.data, user);
+  if (!result.ok) return { ok: false, error: result.error };
+  revalidatePayouts();
+  return { ok: true };
+}
+
+export async function retryPayoutAction(payoutId: string): Promise<PayrollActionResult> {
+  const user = await requirePayroll();
+  const result = await retryPayout(payoutId, user);
+  if (!result.ok) return { ok: false, error: result.error };
+  revalidatePayouts();
+  return { ok: true };
+}
+
+export async function cancelPayoutAction(payoutId: string): Promise<PayrollActionResult> {
+  const user = await requirePayroll();
+  const result = await cancelPayout(payoutId, user);
+  if (!result.ok) return { ok: false, error: result.error };
+  revalidatePayouts();
+  return { ok: true };
+}
+
+export async function reconcilePayoutsAction(ids: string[]): Promise<PayrollActionResult & { reconciled?: number }> {
+  const user = await requirePayroll();
+  const n = await reconcilePayouts(ids, user);
+  revalidate();
+  return { ok: true, reconciled: n };
 }
 
 export async function recomputePayslipAction(payslipId: string): Promise<PayrollActionResult> {

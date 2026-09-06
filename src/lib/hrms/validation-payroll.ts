@@ -4,6 +4,11 @@ import type { PayComponent } from "@/lib/hrms/payroll";
 import type { PayrollConfigInput } from "@/lib/hrms/payroll-config";
 import type { SalaryStructure } from "@/lib/hrms/salary-revisions";
 import { isValidDocumentCategory, EMPLOYEE_UPLOADABLE_CATEGORIES, type DocumentCategory } from "@/lib/hrms/document-categories";
+import { isValidAccountType, type AccountType } from "@/lib/hrms/payout-status";
+
+const IFSC_RE = /^[A-Za-z]{4}0[A-Za-z0-9]{6}$/;
+const ACCOUNT_NUMBER_RE = /^\d{6,18}$/;
+const UTR_RE = /^[A-Za-z0-9]{6,22}$/;
 
 type Ok<T> = { valid: true; data: T };
 type Err = { valid: false; errors: Record<string, string> };
@@ -216,6 +221,86 @@ export function validateOwnContact(input: Record<string, unknown>): Ok<{
       state: optStr(input.state, 100),
       postalCode: optStr(input.postalCode, 20),
       emergencyContacts,
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Bank accounts + payouts
+// ---------------------------------------------------------------------------
+
+export function validateBankAccount(input: Record<string, unknown>): Ok<{
+  accountHolderName: string;
+  bankName: string;
+  branch: string | null;
+  accountType: AccountType;
+  accountNumber: string;
+  ifsc: string;
+  upiId: string | null;
+  isPrimary: boolean;
+}> | Err {
+  const errors: Record<string, string> = {};
+
+  const accountHolderName = str(input.accountHolderName);
+  if (!accountHolderName) errors.accountHolderName = "Account holder name is required.";
+  else if (accountHolderName.length > 120) errors.accountHolderName = "Must be 120 characters or fewer.";
+
+  const bankName = str(input.bankName);
+  if (!bankName) errors.bankName = "Bank name is required.";
+
+  const accountType = str(input.accountType);
+  if (!isValidAccountType(accountType)) errors.accountType = "Choose an account type.";
+
+  const accountNumber = str(input.accountNumber).replace(/\s+/g, "");
+  if (!accountNumber) errors.accountNumber = "Account number is required.";
+  else if (!ACCOUNT_NUMBER_RE.test(accountNumber)) errors.accountNumber = "Enter a valid account number (6–18 digits).";
+
+  const ifsc = str(input.ifsc).toUpperCase();
+  if (!ifsc) errors.ifsc = "IFSC is required.";
+  else if (!IFSC_RE.test(ifsc)) errors.ifsc = "Enter a valid IFSC code.";
+
+  const upiRaw = str(input.upiId);
+  if (upiRaw && !/^[\w.\-]{2,64}@[a-zA-Z]{2,32}$/.test(upiRaw)) errors.upiId = "Enter a valid UPI ID (name@bank).";
+
+  if (Object.keys(errors).length > 0) return { valid: false, errors };
+  return {
+    valid: true,
+    data: {
+      accountHolderName,
+      bankName: bankName.slice(0, 120),
+      branch: optStr(input.branch, 120),
+      accountType: accountType as AccountType,
+      accountNumber,
+      ifsc,
+      upiId: upiRaw || null,
+      isPrimary: input.isPrimary === true || input.isPrimary === "true" || input.isPrimary === "on",
+    },
+  };
+}
+
+export function validateManualPayoutResult(
+  input: Record<string, unknown>
+): Ok<{ status: "paid" | "failed"; utr: string | null; failureReason: string | null; remarks: string | null }> | Err {
+  const errors: Record<string, string> = {};
+  const status = str(input.status);
+  if (status !== "paid" && status !== "failed") errors.status = "Choose Paid or Failed.";
+
+  const utr = str(input.utr);
+  if (status === "paid") {
+    if (!utr) errors.utr = "Enter the payment reference / UTR.";
+    else if (!UTR_RE.test(utr)) errors.utr = "UTR must be 6–22 letters or digits.";
+  }
+  const failureReason = str(input.failureReason);
+  if (status === "failed" && !failureReason) errors.failureReason = "Give a failure reason.";
+
+  if (Object.keys(errors).length > 0) return { valid: false, errors };
+  return {
+    valid: true,
+    data: {
+      status: status as "paid" | "failed",
+      utr: status === "paid" ? utr : null,
+      failureReason: status === "failed" ? failureReason.slice(0, 500) : null,
+      remarks: optStr(input.remarks, 500),
     },
   };
 }

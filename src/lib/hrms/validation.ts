@@ -12,7 +12,7 @@ import type {
   EmployeePersonal,
   EmployeeProfessional,
 } from "@/lib/hrms/employees";
-import type { PayrollWriteData, PayComponent, BankDetails } from "@/lib/hrms/payroll";
+import type { PayrollWriteData, PayComponent } from "@/lib/hrms/payroll";
 import { emptyBank } from "@/lib/hrms/payroll";
 
 /**
@@ -24,7 +24,6 @@ import { emptyBank } from "@/lib/hrms/payroll";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^[+]?[\d\s\-()]{7,20}$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
-const IFSC_RE = /^[A-Za-z]{4}0[A-Za-z0-9]{6}$/;
 
 type Ok<T> = { valid: true; data: T };
 type Err = { valid: false; errors: Record<string, string> };
@@ -217,19 +216,6 @@ function parseComponents(input: unknown, errors: Record<string, string>, key: st
   return out;
 }
 
-function parseBank(input: unknown, errors: Record<string, string>): BankDetails {
-  const rec = (input ?? {}) as Record<string, unknown>;
-  const ifsc = str(rec.ifsc).toUpperCase();
-  if (ifsc && !IFSC_RE.test(ifsc)) errors.ifsc = "Enter a valid IFSC code.";
-  const bank = emptyBank();
-  bank.accountName = optStr(rec.accountName, 120);
-  bank.accountNumber = optStr(rec.accountNumber, 30);
-  bank.ifsc = ifsc || null;
-  bank.bankName = optStr(rec.bankName, 120);
-  bank.branch = optStr(rec.branch, 120);
-  return bank;
-}
-
 export function validatePayrollProfile(input: Record<string, unknown>): Ok<PayrollWriteData> | Err {
   const errors: Record<string, string> = {};
 
@@ -241,7 +227,6 @@ export function validatePayrollProfile(input: Record<string, unknown>): Ok<Payro
 
   const allowances = parseComponents(input.allowances, errors, "allowances");
   const deductions = parseComponents(input.deductions, errors, "deductions");
-  const bank = parseBank(input.bank, errors);
 
   if (Object.keys(errors).length > 0) return { valid: false, errors };
   return {
@@ -255,7 +240,8 @@ export function validatePayrollProfile(input: Record<string, unknown>): Ok<Payro
       pfNumber: optStr(input.pfNumber, 40),
       esiNumber: optStr(input.esiNumber, 40),
       uan: optStr(input.uan, 40),
-      bank,
+      // Bank details now live in `hrms_bank_accounts`, not the payroll profile.
+      bank: emptyBank(),
     },
   };
 }

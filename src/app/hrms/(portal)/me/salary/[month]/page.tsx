@@ -33,8 +33,9 @@ export default async function MyPayslipPage({ params }: { params: Promise<{ mont
           employerContributions: payslip.employerContributions,
           employerCost: payslip.employerCost,
           netPay: payslip.netPay,
-          bankAccountNumber: payslip.bankAccountNumber,
-          bankIfsc: payslip.bankIfsc,
+          bankAccountLast4: payslip.bankAccountLast4,
+          bankName: payslip.bankName,
+          ifsc: payslip.ifsc,
           runStatus: run.status,
         }}
       />
