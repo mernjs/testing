@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Globe, Users, FolderKanban } from "lucide-react";
+import { Globe, Users, FolderKanban, GraduationCap } from "lucide-react";
 import MobileSidebar from "@/components/lms/MobileSidebar";
 import GlobalSearch from "@/components/lms/GlobalSearch";
 import NotificationsBell from "@/components/lms/NotificationsBell";
@@ -46,6 +46,14 @@ export default function LmsTopbar({
         >
           <Users className="size-3.5" data-icon="inline-start" />
           <span className="hidden sm:inline">HRMS</span>
+        </Link>
+        <Link
+          href="/tms"
+          className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
+          aria-label="Open TMS"
+        >
+          <GraduationCap className="size-3.5" data-icon="inline-start" />
+          <span className="hidden sm:inline">TMS</span>
         </Link>
         <a
           href="/"

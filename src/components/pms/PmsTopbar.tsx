@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Users, LayoutGrid, Globe } from "lucide-react";
+import { Users, LayoutGrid, Globe, GraduationCap } from "lucide-react";
 import PmsMobileSidebar from "@/components/pms/PmsMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
 import PmsNotificationsBell, { type BellItem } from "@/components/pms/PmsNotificationsBell";
@@ -34,6 +34,14 @@ export default function PmsTopbar({
         >
           <Users className="size-3.5" data-icon="inline-start" />
           <span className="hidden sm:inline">HRMS</span>
+        </Link>
+        <Link
+          href="/tms"
+          className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
+          aria-label="Open TMS"
+        >
+          <GraduationCap className="size-3.5" data-icon="inline-start" />
+          <span className="hidden sm:inline">TMS</span>
         </Link>
         <Link
           href="/lms"

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LayoutGrid, FolderKanban } from "lucide-react";
+import { LayoutGrid, FolderKanban, GraduationCap } from "lucide-react";
 import HrmsMobileSidebar from "@/components/hrms/HrmsMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
 import HrmsNotificationsBell, { type BellItem } from "@/components/hrms/HrmsNotificationsBell";
@@ -38,6 +38,14 @@ export default function HrmsTopbar({
             >
               <FolderKanban className="size-3.5" data-icon="inline-start" />
               <span className="hidden sm:inline">PMS</span>
+            </Link>
+            <Link
+              href="/tms"
+              className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
+              aria-label="Open TMS"
+            >
+              <GraduationCap className="size-3.5" data-icon="inline-start" />
+              <span className="hidden sm:inline">TMS</span>
             </Link>
             <Link
               href="/lms"
