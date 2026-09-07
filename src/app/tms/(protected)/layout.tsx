@@ -6,12 +6,17 @@ import TmsTopbar from "@/components/tms/TmsTopbar";
 import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { listNotifications, unreadCount, runTmsSweep } from "@/lib/tms/notifications";
 
 export default async function ProtectedTmsLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentTmsUser();
   if (!user) redirect("/tms/login");
   if (user.mustChangePassword) redirect("/tms/change-password");
   if (!hasTmsAccess(user.roles)) redirect("/tms/login");
+
+  // Throttled internally to once/hour across the app.
+  await runTmsSweep();
+  const [notifications, unread] = await Promise.all([listNotifications(user.id, 10), unreadCount(user.id)]);
 
   return (
     <TooltipProvider delay={200}>
@@ -32,7 +37,20 @@ export default async function ProtectedTmsLayout({ children }: { children: React
 
           <div className="relative flex min-h-0 min-w-0 flex-1 flex-col gap-3">
             <div className="lms-surface relative z-30 shrink-0 rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md dark:bg-card/85">
-              <TmsTopbar roles={user.roles} studentId={user.studentId} />
+              <TmsTopbar
+                roles={user.roles}
+                studentId={user.studentId}
+                notifications={notifications.map((n) => ({
+                  _id: n._id,
+                  type: n.type,
+                  title: n.title,
+                  body: n.body,
+                  link: n.link,
+                  createdAt: n.createdAt.toISOString(),
+                  read: n.read,
+                }))}
+                unread={unread}
+              />
             </div>
             <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">{children}</main>
           </div>

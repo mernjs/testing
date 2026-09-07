@@ -102,6 +102,18 @@ export async function listProgramOptions(): Promise<
   return docs.map((d) => ({ _id: d._id, programCode: d.programCode, name: d.name, category: d.category }));
 }
 
+/** Program options with fee info — for the payment plan form. */
+export async function listProgramFeeOptions(): Promise<
+  { _id: string; name: string; fees: number | null; currency: string }[]
+> {
+  const collection = await getCollection();
+  const docs = await collection
+    .find(notDeleted, { projection: { name: 1, fees: 1, currency: 1 } })
+    .sort({ name: 1 })
+    .toArray();
+  return docs.map((d) => ({ _id: d._id, name: d.name, fees: d.fees ?? null, currency: d.currency ?? "INR" }));
+}
+
 export interface ProgramFilter {
   search?: string;
   category?: ProgramCategory;

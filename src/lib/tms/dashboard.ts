@@ -4,9 +4,9 @@ import { notDeleted } from "@/lib/tms/db";
 import { dateFormatFor, type DashboardGranularity } from "@/lib/granularity";
 import { previousPeriodRange, computeGrowthPercent } from "@/lib/period-comparison";
 import { PROGRAMS_COLLECTION } from "@/lib/tms/programs";
+import { BATCHES_COLLECTION, enrolledCountByBatch } from "@/lib/tms/batches";
 import { PROGRAM_CATEGORIES, type TrainingMode } from "@/lib/tms/constants";
 
-const BATCHES_COLLECTION = "training_batches";
 const STUDENTS_COLLECTION = "training_students";
 const APPLICATIONS_COLLECTION = "training_applications";
 const ENROLLMENTS_COLLECTION = "student_enrollments";
@@ -175,7 +175,7 @@ export async function getTmsDashboardStats(filters: TmsDashboardFilters = {}): P
     batchesCol
       .find(
         { ...notDeleted, ...(filters.programId ? { programId: filters.programId } : {}), status: { $in: ["upcoming", "running"] } },
-        { projection: { name: 1, batchCode: 1, capacity: 1, seatsFilled: 1 } }
+        { projection: { name: 1, batchCode: 1, capacity: 1 } }
       )
       .sort({ createdAt: -1 })
       .limit(14)
@@ -189,7 +189,8 @@ export async function getTmsDashboardStats(filters: TmsDashboardFilters = {}): P
     placementsCol
       .aggregate<{ _id: string; count: number }>([
         { $match: { ...notDeleted, ...rangeMatch } },
-        { $group: { _id: { $dateToString: { format: dateFormat, date: "$placedOn" } }, count: { $sum: 1 } } },
+        // `placedOn` is stored as an ISO yyyy-mm-dd string, not a Date.
+        { $group: { _id: { $substrBytes: ["$placedOn", 0, 7] }, count: { $sum: 1 } } },
       ])
       .toArray(),
   ]);
@@ -224,9 +225,10 @@ export async function getTmsDashboardStats(filters: TmsDashboardFilters = {}): P
     .map((d) => ({ date: d._id, count: Math.round(d.total) }))
     .sort((a, b) => a.date.localeCompare(b.date));
 
+  const occByBatch = await enrolledCountByBatch(batchDocs.map((b) => b._id));
   const batchOccupancy = batchDocs.map((b) => {
     const cap = Number(b.capacity) || 0;
-    const filled = Number(b.seatsFilled) || 0;
+    const filled = occByBatch.get(b._id) ?? 0;
     const pct = cap > 0 ? Math.round((filled / cap) * 100) : 0;
     return { label: (b.batchCode as string) ?? (b.name as string) ?? "Batch", value: pct };
   });

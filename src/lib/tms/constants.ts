@@ -143,6 +143,87 @@ export function getStudentStatusMeta(status: string | undefined) {
 }
 
 // ---------------------------------------------------------------------------
+// Class schedule status
+// ---------------------------------------------------------------------------
+
+export const CLASS_STATUSES = [
+  { value: "scheduled", label: "Scheduled", badgeClass: "bg-primary/10 text-primary", dotClass: "bg-primary/70" },
+  { value: "completed", label: "Completed", badgeClass: "bg-green-500/15 text-green-600 dark:text-green-400", dotClass: "bg-green-500" },
+  { value: "cancelled", label: "Cancelled", badgeClass: "bg-destructive/15 text-destructive", dotClass: "bg-destructive" },
+] as const;
+
+export type ClassStatus = (typeof CLASS_STATUSES)[number]["value"];
+
+export function isValidClassStatus(value: unknown): value is ClassStatus {
+  return typeof value === "string" && CLASS_STATUSES.some((s) => s.value === value);
+}
+
+export function getClassStatusMeta(status: string | undefined) {
+  return CLASS_STATUSES.find((s) => s.value === status) ?? CLASS_STATUSES[0];
+}
+
+// ---------------------------------------------------------------------------
+// Class attendance status
+// ---------------------------------------------------------------------------
+
+export const ATTENDANCE_STATUSES = [
+  { value: "present", label: "Present", badgeClass: "bg-green-500/15 text-green-600 dark:text-green-400", dotClass: "bg-green-500", attended: true },
+  { value: "late", label: "Late", badgeClass: "bg-amber-500/15 text-amber-600 dark:text-amber-400", dotClass: "bg-amber-500", attended: true },
+  { value: "absent", label: "Absent", badgeClass: "bg-destructive/15 text-destructive", dotClass: "bg-destructive", attended: false },
+  { value: "excused", label: "Excused", badgeClass: "bg-blue-500/15 text-blue-600 dark:text-blue-400", dotClass: "bg-blue-500", attended: true },
+] as const;
+
+export type AttendanceStatus = (typeof ATTENDANCE_STATUSES)[number]["value"];
+
+export function isValidAttendanceStatus(v: unknown): v is AttendanceStatus {
+  return typeof v === "string" && ATTENDANCE_STATUSES.some((s) => s.value === v);
+}
+
+export function getAttendanceMeta(status: string | undefined) {
+  return ATTENDANCE_STATUSES.find((s) => s.value === status) ?? ATTENDANCE_STATUSES[2];
+}
+
+// ---------------------------------------------------------------------------
+// Live project status
+// ---------------------------------------------------------------------------
+
+export const LIVE_PROJECT_STATUSES = [
+  { value: "planned", label: "Planned", badgeClass: "bg-secondary/60 text-secondary-foreground", dotClass: "bg-secondary-foreground/50" },
+  { value: "in_progress", label: "In Progress", badgeClass: "bg-primary/10 text-primary", dotClass: "bg-primary/70" },
+  { value: "review", label: "In Review", badgeClass: "bg-blue-500/15 text-blue-600 dark:text-blue-400", dotClass: "bg-blue-500" },
+  { value: "completed", label: "Completed", badgeClass: "bg-green-500/15 text-green-600 dark:text-green-400", dotClass: "bg-green-500" },
+] as const;
+
+export type LiveProjectStatus = (typeof LIVE_PROJECT_STATUSES)[number]["value"];
+
+export function getLiveProjectStatusMeta(status: string | undefined) {
+  return LIVE_PROJECT_STATUSES.find((s) => s.value === status) ?? LIVE_PROJECT_STATUSES[0];
+}
+export function isValidLiveProjectStatus(v: unknown): v is LiveProjectStatus {
+  return typeof v === "string" && LIVE_PROJECT_STATUSES.some((s) => s.value === v);
+}
+
+// ---------------------------------------------------------------------------
+// Assignment submission status
+// ---------------------------------------------------------------------------
+
+export const SUBMISSION_STATUSES = [
+  { value: "pending", label: "Not Submitted", badgeClass: "bg-muted text-muted-foreground", dotClass: "bg-muted-foreground/50" },
+  { value: "submitted", label: "Submitted", badgeClass: "bg-blue-500/15 text-blue-600 dark:text-blue-400", dotClass: "bg-blue-500" },
+  { value: "reviewed", label: "Reviewed", badgeClass: "bg-green-500/15 text-green-600 dark:text-green-400", dotClass: "bg-green-500" },
+  { value: "resubmit", label: "Needs Rework", badgeClass: "bg-amber-500/15 text-amber-600 dark:text-amber-400", dotClass: "bg-amber-500" },
+] as const;
+
+export type SubmissionStatus = (typeof SUBMISSION_STATUSES)[number]["value"];
+
+export function getSubmissionStatusMeta(status: string | undefined) {
+  return SUBMISSION_STATUSES.find((s) => s.value === status) ?? SUBMISSION_STATUSES[0];
+}
+export function isValidSubmissionStatus(v: unknown): v is SubmissionStatus {
+  return typeof v === "string" && SUBMISSION_STATUSES.some((s) => s.value === v);
+}
+
+// ---------------------------------------------------------------------------
 // Certificate types
 // ---------------------------------------------------------------------------
 
@@ -163,6 +244,33 @@ export function isValidCertificateType(value: unknown): value is CertificateType
 
 export function getCertificateTypeLabel(value: string | undefined): string {
   return CERTIFICATE_TYPES.find((t) => t.value === value)?.label ?? "Certificate";
+}
+
+// ---------------------------------------------------------------------------
+// Payment methods
+// ---------------------------------------------------------------------------
+
+export const PAYMENT_METHODS = ["UPI", "Bank Transfer", "Card", "Cash", "Cheque", "EMI", "Other"] as const;
+export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+
+// ---------------------------------------------------------------------------
+// Placement types
+// ---------------------------------------------------------------------------
+
+export const PLACEMENT_TYPES = [
+  { value: "campus", label: "Campus Placement" },
+  { value: "off_campus", label: "Off-campus" },
+  { value: "internship_conversion", label: "Internship Conversion" },
+  { value: "referral", label: "Referral" },
+] as const;
+
+export type PlacementType = (typeof PLACEMENT_TYPES)[number]["value"];
+
+export function isValidPlacementType(v: unknown): v is PlacementType {
+  return typeof v === "string" && PLACEMENT_TYPES.some((t) => t.value === v);
+}
+export function getPlacementTypeLabel(v: string | undefined): string {
+  return PLACEMENT_TYPES.find((t) => t.value === v)?.label ?? "Placement";
 }
 
 // ---------------------------------------------------------------------------

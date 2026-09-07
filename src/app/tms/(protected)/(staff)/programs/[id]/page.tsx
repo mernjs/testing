@@ -7,26 +7,35 @@ import {
   Briefcase,
   Layers,
 } from "lucide-react";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import Link from "next/link";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import KpiCard from "@/components/lms/KpiCard";
 import KpiGrid from "@/components/lms/KpiGrid";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
-import { ProgramCategoryBadge, ProgramStatusBadge, TrainingModeBadge } from "@/components/tms/StatusBadges";
+import { ProgramCategoryBadge, ProgramStatusBadge, TrainingModeBadge, BatchStatusBadge } from "@/components/tms/StatusBadges";
 import ProgramActions from "@/components/tms/ProgramActions";
 import { getCurrentTmsUser } from "@/lib/tms-auth";
 import { canManageProgramsBatches } from "@/lib/tms-roles";
 import { getProgram, serializeProgram } from "@/lib/tms/programs";
+import { listBatchesForProgram } from "@/lib/tms/batches";
 import { getTmsSettings } from "@/lib/tms/settings";
-import { formatCurrency, formatDateTime } from "@/lib/utils";
+import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils";
 
 export default async function ProgramDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [program, user, settings] = await Promise.all([getProgram(id), getCurrentTmsUser(), getTmsSettings()]);
+  const [program, user, settings, batches] = await Promise.all([
+    getProgram(id),
+    getCurrentTmsUser(),
+    getTmsSettings(),
+    listBatchesForProgram(id),
+  ]);
   if (!program) notFound();
 
   const canManage = user ? canManageProgramsBatches(user.roles) : false;
   const p = serializeProgram(program);
+  const totalEnrolled = batches.reduce((s, b) => s + b.enrolled, 0);
 
   return (
     <div className="space-y-4">
@@ -58,8 +67,8 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
           format="currency"
           icon={<IndianRupee className="size-4" />}
         />
-        <KpiCard label="Live Projects" value={p.liveProjectCount} icon={<FolderGit2 className="size-4" />} />
-        <KpiCard label="Batches" value={0} icon={<Layers className="size-4" />} />
+        <KpiCard label="Batches" value={batches.length} icon={<Layers className="size-4" />} />
+        <KpiCard label="Students Enrolled" value={totalEnrolled} icon={<FolderGit2 className="size-4" />} />
       </KpiGrid>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -115,8 +124,47 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
         </GlassCard>
       </div>
 
+      <GlassCard interactive={false}>
+        <CardHeader><CardTitle>Batches ({batches.length})</CardTitle></CardHeader>
+        <CardContent className="overflow-x-auto">
+          {batches.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              No batches for this program yet.{" "}
+              {canManage ? (
+                <Link href="/tms/batches" className="text-primary hover:underline">Schedule one</Link>
+              ) : null}
+            </p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Code</TableHead>
+                  <TableHead>Batch</TableHead>
+                  <TableHead>Starts</TableHead>
+                  <TableHead>Seats</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {batches.map((b) => (
+                  <TableRow key={b._id}>
+                    <TableCell className="font-mono text-xs text-muted-foreground">{b.batchCode}</TableCell>
+                    <TableCell>
+                      <Link href={`/tms/batches/${b._id}`} className="font-medium hover:underline">{b.name}</Link>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{b.startDate ? formatDate(b.startDate) : "—"}</TableCell>
+                    <TableCell className="tabular-nums">{b.enrolled}/{b.capacity}</TableCell>
+                    <TableCell><BatchStatusBadge status={b.status} /></TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </GlassCard>
+
       <p className="text-xs text-muted-foreground">
-        Batches, enrolments and revenue for this program appear here as later TMS phases land.
+        Enrolments and revenue for this program appear here as later TMS phases land.
       </p>
     </div>
   );

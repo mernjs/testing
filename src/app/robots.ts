@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: "/lms",
+      disallow: ["/lms", "/tms", "/verify"],
     },
     sitemap: "https://www.yashorbit.com/sitemap.xml",
   };

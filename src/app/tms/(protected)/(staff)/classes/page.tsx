@@ -1,12 +1,96 @@
-import PhasePlaceholder from "@/components/tms/PhasePlaceholder";
+import { Plus, CalendarDays, CheckCircle2, Video, Users } from "lucide-react";
+import { CardContent } from "@/components/ui/card";
+import GlassCard from "@/components/lms/GlassCard";
+import { Button } from "@/components/ui/button";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
+import KpiCard from "@/components/lms/KpiCard";
+import KpiGrid from "@/components/lms/KpiGrid";
+import ClassScheduleView from "@/components/tms/ClassScheduleView";
+import ClassForm from "@/components/tms/ClassForm";
+import { getCurrentTmsUser } from "@/lib/tms-auth";
+import { canManageTraining } from "@/lib/tms-roles";
+import { listClasses, countClasses } from "@/lib/tms/classes";
+import { listBatchPickerOptions } from "@/lib/tms/batches";
+import { listMentorOptions } from "@/lib/tms/mentors";
+import { getTmsSettings } from "@/lib/tms/settings";
 
-export default function ClassesPage() {
+export default async function ClassesPage() {
+  const user = await getCurrentTmsUser();
+  const canManage = user ? canManageTraining(user.roles) : false;
+
+  const [classes, batches, mentors, settings, total, upcoming, completed] = await Promise.all([
+    listClasses({}, 800),
+    listBatchPickerOptions(),
+    listMentorOptions(),
+    getTmsSettings(),
+    countClasses(),
+    countClasses({ from: new Date().toISOString().slice(0, 10), status: "scheduled" }),
+    countClasses({ status: "completed" }),
+  ]);
+
+  const withLinks = classes.filter((c) => c.meetingLink).length;
+
   return (
-    <PhasePlaceholder
-      title="Classes"
-      description="Daily class scheduling — batch, mentor, topic, meeting link, recordings — with calendar and agenda views."
-      phase="Phase 5"
-      breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Classes" }]}
-    />
+    <div className="space-y-4">
+      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Classes" }]} />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Classes &amp; Schedule</h1>
+          <p className="text-sm text-muted-foreground">{total} class{total === 1 ? "" : "es"} scheduled across all batches.</p>
+        </div>
+        {canManage && (
+          <ClassForm
+            batches={batches.map((b) => ({ _id: b._id, name: b.name, programName: b.programName }))}
+            mentors={mentors.map((m) => ({ _id: m._id, name: m.name }))}
+            defaultDuration={settings.defaultClassDurationMinutes}
+            trigger={
+              <Button type="button" size="sm">
+                <Plus className="size-3.5" data-icon="inline-start" />
+                Schedule Class
+              </Button>
+            }
+          />
+        )}
+      </div>
+
+      <KpiGrid>
+        <KpiCard label="Total Classes" value={total} accent icon={<CalendarDays className="size-4" />} />
+        <KpiCard label="Upcoming" value={upcoming} icon={<CalendarDays className="size-4" />} />
+        <KpiCard label="Completed" value={completed} icon={<CheckCircle2 className="size-4" />} />
+        <KpiCard label="With Meeting Link" value={withLinks} icon={<Video className="size-4" />} />
+      </KpiGrid>
+
+      <GlassCard interactive={false}>
+        <CardContent className="py-5">
+          {classes.length === 0 ? (
+            <p className="flex flex-col items-center gap-2 py-12 text-center text-sm text-muted-foreground">
+              <Users className="size-6" />
+              No classes scheduled yet.{" "}
+              {canManage
+                ? batches.length > 0
+                  ? "Use “Schedule Class”."
+                  : "Create a batch first."
+                : "Your mentors will schedule classes here."}
+            </p>
+          ) : (
+            <ClassScheduleView
+              classes={classes.map((c) => ({
+                _id: c._id,
+                topic: c.topic,
+                batchName: c.batchName,
+                batchCode: c.batchCode,
+                programName: c.programName,
+                mentorName: c.mentorName,
+                date: c.date,
+                startTime: c.startTime,
+                durationMinutes: c.durationMinutes,
+                meetingLink: c.meetingLink,
+                status: c.status,
+              }))}
+            />
+          )}
+        </CardContent>
+      </GlassCard>
+    </div>
   );
 }

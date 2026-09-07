@@ -4,10 +4,21 @@ import Link from "next/link";
 import { Users, LayoutGrid, FolderKanban, Globe } from "lucide-react";
 import TmsMobileSidebar from "@/components/tms/TmsMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import TmsNotificationsBell, { type BellItem } from "@/components/tms/TmsNotificationsBell";
 import { buttonVariants } from "@/components/ui/button";
 import { primaryTmsRoleLabel, hasTmsStaffRole, type TmsRole } from "@/lib/tms-roles";
 
-export default function TmsTopbar({ roles, studentId }: { roles: TmsRole[]; studentId: string | null }) {
+export default function TmsTopbar({
+  roles,
+  studentId,
+  notifications,
+  unread,
+}: {
+  roles: TmsRole[];
+  studentId: string | null;
+  notifications: BellItem[];
+  unread: number;
+}) {
   const isStaff = hasTmsStaffRole(roles);
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
@@ -56,6 +67,7 @@ export default function TmsTopbar({ roles, studentId }: { roles: TmsRole[]; stud
           <span className="hidden sm:inline">Website</span>
         </a>
         <ThemeToggle />
+        <TmsNotificationsBell items={notifications} unread={unread} />
       </div>
     </header>
   );

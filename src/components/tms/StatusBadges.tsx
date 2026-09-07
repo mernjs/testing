@@ -7,6 +7,10 @@ import {
   getApplicationStatusMeta,
   getStudentStatusMeta,
   getPaymentStatusMeta,
+  getClassStatusMeta,
+  getAttendanceMeta,
+  getLiveProjectStatusMeta,
+  getSubmissionStatusMeta,
 } from "@/lib/tms/constants";
 
 function Dot({ className }: { className: string }) {
@@ -75,6 +79,47 @@ export function StudentStatusBadge({ status }: { status?: string }) {
 
 export function PaymentStatusBadge({ status }: { status?: string }) {
   const meta = getPaymentStatusMeta(status);
+  return (
+    <Badge className={meta.badgeClass}>
+      <Dot className={meta.dotClass} />
+      {meta.label}
+    </Badge>
+  );
+}
+
+export function ClassStatusBadge({ status }: { status?: string }) {
+  const meta = getClassStatusMeta(status);
+  return (
+    <Badge className={meta.badgeClass}>
+      <Dot className={meta.dotClass} />
+      {meta.label}
+    </Badge>
+  );
+}
+
+export function AttendanceBadge({ status }: { status?: string | null }) {
+  if (!status) return <span className="text-xs text-muted-foreground">Not marked</span>;
+  const meta = getAttendanceMeta(status);
+  return (
+    <Badge className={meta.badgeClass}>
+      <Dot className={meta.dotClass} />
+      {meta.label}
+    </Badge>
+  );
+}
+
+export function LiveProjectStatusBadge({ status }: { status?: string }) {
+  const meta = getLiveProjectStatusMeta(status);
+  return (
+    <Badge className={meta.badgeClass}>
+      <Dot className={meta.dotClass} />
+      {meta.label}
+    </Badge>
+  );
+}
+
+export function SubmissionStatusBadge({ status }: { status?: string }) {
+  const meta = getSubmissionStatusMeta(status);
   return (
     <Badge className={meta.badgeClass}>
       <Dot className={meta.dotClass} />

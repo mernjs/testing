@@ -1,12 +1,54 @@
-import PhasePlaceholder from "@/components/tms/PhasePlaceholder";
+import { redirect } from "next/navigation";
+import { FileText, FileSpreadsheet, FileType } from "lucide-react";
+import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import GlassCard from "@/components/lms/GlassCard";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
+import { buttonVariants } from "@/components/ui/button";
+import { getCurrentTmsUser } from "@/lib/tms-auth";
+import { canManageTraining } from "@/lib/tms-roles";
+import { REPORT_TYPES } from "@/lib/tms/reports";
 
-export default function ReportsPage() {
+export default async function ReportsPage() {
+  const user = await getCurrentTmsUser();
+  if (!user || !canManageTraining(user.roles)) redirect("/tms");
+
   return (
-    <PhasePlaceholder
-      title="Reports"
-      description="Student, batch, program, revenue, placement, certificate and attendance reports — exported to PDF, Excel and CSV."
-      phase="Phase 9"
-      breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Reports" }]}
-    />
+    <div className="space-y-4">
+      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Reports" }]} />
+      <div>
+        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Reports</h1>
+        <p className="text-sm text-muted-foreground">Export training data to CSV, Excel or PDF.</p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        {REPORT_TYPES.map((r) => (
+          <GlassCard key={r.value} interactive={false}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <FileText className="size-4 text-primary" />
+                {r.label}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">{r.description}</p>
+              <div className="flex flex-wrap gap-2">
+                <a href={`/api/tms/reports/${r.value}?format=csv`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                  <FileText className="size-3.5" data-icon="inline-start" />
+                  CSV
+                </a>
+                <a href={`/api/tms/reports/${r.value}?format=xlsx`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                  <FileSpreadsheet className="size-3.5" data-icon="inline-start" />
+                  Excel
+                </a>
+                <a href={`/api/tms/reports/${r.value}?format=pdf`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                  <FileType className="size-3.5" data-icon="inline-start" />
+                  PDF
+                </a>
+              </div>
+            </CardContent>
+          </GlassCard>
+        ))}
+      </div>
+    </div>
   );
 }

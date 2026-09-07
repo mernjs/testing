@@ -14,10 +14,12 @@ import {
   ClipboardList,
   BadgeCheck,
   Wallet,
+  Briefcase,
   BarChart3,
   ScrollText,
   Settings,
   CircleUser,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -103,12 +105,22 @@ export default function TmsSidebar({
   );
   const isStaff = hasTmsStaffRole(roles);
 
-  // Student-only portal. The full portal (program, batch, schedule, assignments,
-  // projects, certificates, payments, profile) lands in Phase 4.
+  // Student-only portal. Schedule / assignments / projects / certificates /
+  // payments tabs light up with their respective phases (5–8).
   if (!isStaff) {
     return (
       <nav className="flex h-full flex-col gap-1 p-3">
         {nav({ href: "/tms/me", label: "My Dashboard", icon: LayoutDashboard, exact: true })}
+        {nav({ href: "/tms/me/program", label: "My Program", icon: GraduationCap })}
+        {nav({ href: "/tms/me/batch", label: "My Batch", icon: Layers })}
+        {nav({ href: "/tms/me/schedule", label: "Class Schedule", icon: CalendarDays })}
+        {nav({ href: "/tms/me/assignments", label: "Assignments", icon: ClipboardList })}
+        {nav({ href: "/tms/me/projects", label: "Live Projects", icon: FolderGit2 })}
+        {nav({ href: "/tms/me/certificates", label: "Certificates", icon: BadgeCheck })}
+        {nav({ href: "/tms/me/payments", label: "Payments", icon: Wallet })}
+        <SectionLabel collapsed={collapsed}>Account</SectionLabel>
+        {nav({ href: "/tms/notifications", label: "Notifications", icon: Bell })}
+        {nav({ href: "/tms/me/profile", label: "Profile", icon: CircleUser })}
       </nav>
     );
   }
@@ -131,9 +143,11 @@ export default function TmsSidebar({
       <SectionLabel collapsed={collapsed}>Records</SectionLabel>
       {nav({ href: "/tms/certificates", label: "Certificates", icon: BadgeCheck })}
       {canManagePayments(roles) && nav({ href: "/tms/payments", label: "Payments", icon: Wallet })}
+      {nav({ href: "/tms/placements", label: "Placements", icon: Briefcase })}
       {nav({ href: "/tms/reports", label: "Reports", icon: BarChart3 })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
+      {nav({ href: "/tms/notifications", label: "Notifications", icon: Bell })}
       {canViewAuditLog(roles) && nav({ href: "/tms/activity", label: "Activity Log", icon: ScrollText })}
       {canManageSettings(roles) && nav({ href: "/tms/settings", label: "Settings", icon: Settings })}
 
