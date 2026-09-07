@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FileDown } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/admin/GlassCard";
 import { Badge } from "@/components/ui/badge";
@@ -63,22 +64,29 @@ export default async function MySalaryPage() {
           {payslips.map(({ payslip, run }) => {
             const meta = payrollRunStatusMeta(run.status);
             return (
-              <Link
+              <div
                 key={payslip._id}
-                href={`/hrms/me/salary/${payslip.month}`}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border/60 p-3 text-sm transition-colors hover:bg-muted/50"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border/60 p-3 text-sm"
               >
-                <div>
+                <Link href={`/hrms/me/salary/${payslip.month}`} className="min-w-0 flex-1 hover:underline">
                   <p className="font-medium">{monthLabelLong(payslip.month)}</p>
                   <p className="text-xs text-muted-foreground">
                     {run.paidAt ? `Paid ${formatDate(run.paidAt)}` : `Approved ${run.approvedAt ? formatDate(run.approvedAt) : ""}`}
                   </p>
-                </div>
+                </Link>
                 <div className="flex items-center gap-3">
                   <span className="font-semibold text-foreground tabular-nums">{formatCurrency(payslip.netPay)}</span>
                   <Badge className={meta.badgeClass}>{meta.label}</Badge>
+                  <a
+                    href={`/api/hrms/payslips/${payslip._id}/pdf`}
+                    className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-primary"
+                    title="Download PDF"
+                    aria-label={`Download ${monthLabelLong(payslip.month)} payslip PDF`}
+                  >
+                    <FileDown className="size-4" />
+                  </a>
                 </div>
-              </Link>
+              </div>
             );
           })}
         </CardContent>

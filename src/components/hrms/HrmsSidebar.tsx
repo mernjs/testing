@@ -16,11 +16,14 @@ import {
   ScrollText,
   Bell,
   Settings,
+  FileText,
+  UserRound,
+  Network,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { HrmsRole } from "@/lib/hrms-roles";
-import { canViewAuditLog, canManageSettings, canRunPayroll } from "@/lib/hrms-roles";
+import { canViewAuditLog, canManageSettings, canRunPayroll, hasStaffRole } from "@/lib/hrms-roles";
 
 function NavLink({
   href,
@@ -117,40 +120,77 @@ function SectionLabel({ children, collapsed }: { children: React.ReactNode; coll
 
 export default function HrmsSidebar({
   roles,
+  employeeId,
   onNavigate,
   collapsed = false,
 }: {
   roles: HrmsRole[];
+  employeeId: string | null;
   onNavigate?: () => void;
   collapsed?: boolean;
 }) {
+  const isStaff = hasStaffRole(roles);
+  const nav = (props: { href: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean }) => (
+    <NavLink {...props} collapsed={collapsed} onNavigate={onNavigate} />
+  );
+
+  // Employee-only: a single flat personal menu, no admin sections.
+  if (!isStaff) {
+    return (
+      <nav className="flex h-full flex-col gap-1 p-3">
+        {nav({ href: "/hrms/me", label: "Dashboard", icon: LayoutDashboard, exact: true })}
+        {nav({ href: "/hrms/me/attendance", label: "My Attendance", icon: CalendarClock })}
+        {nav({ href: "/hrms/me/leave", label: "My Leave", icon: CalendarDays })}
+        {nav({ href: "/hrms/me/salary", label: "My Salary", icon: Wallet })}
+        {nav({ href: "/hrms/me/documents", label: "My Documents", icon: FileText })}
+        {nav({ href: "/hrms/me/profile", label: "My Profile", icon: UserRound })}
+
+        <SectionLabel collapsed={collapsed}>Company</SectionLabel>
+        {nav({ href: "/hrms/me/directory", label: "Directory", icon: Network })}
+        {nav({ href: "/hrms/holidays", label: "Holidays", icon: CalendarCheck })}
+        {nav({ href: "/hrms/notifications", label: "Notifications", icon: Bell })}
+      </nav>
+    );
+  }
+
+  // Staff (super_admin / hr / manager) — full panel, plus a "Me" section when
+  // the account is also linked to an employee record.
   return (
     <nav className="flex h-full flex-col gap-1 p-3">
-      <NavLink href="/hrms" label="Dashboard" icon={LayoutDashboard} exact collapsed={collapsed} onNavigate={onNavigate} />
+      {nav({ href: "/hrms", label: "Dashboard", icon: LayoutDashboard, exact: true })}
 
       <SectionLabel collapsed={collapsed}>People</SectionLabel>
-      <NavLink href="/hrms/employees" label="Employees" icon={Users} collapsed={collapsed} onNavigate={onNavigate} />
-      <NavLink href="/hrms/departments" label="Departments & Teams" icon={Building2} collapsed={collapsed} onNavigate={onNavigate} />
-      <NavLink href="/hrms/recruitment" label="Recruitment" icon={UserPlus} collapsed={collapsed} onNavigate={onNavigate} />
+      {nav({ href: "/hrms/employees", label: "Employees", icon: Users })}
+      {nav({ href: "/hrms/departments", label: "Departments & Teams", icon: Building2 })}
+      {nav({ href: "/hrms/recruitment", label: "Recruitment", icon: UserPlus })}
 
       <SectionLabel collapsed={collapsed}>Operations</SectionLabel>
-      <NavLink href="/hrms/attendance" label="Attendance" icon={CalendarClock} collapsed={collapsed} onNavigate={onNavigate} />
-      <NavLink href="/hrms/leave" label="Leave" icon={CalendarDays} collapsed={collapsed} onNavigate={onNavigate} />
-      <NavLink href="/hrms/holidays" label="Holidays" icon={CalendarCheck} collapsed={collapsed} onNavigate={onNavigate} />
+      {nav({ href: "/hrms/attendance", label: "Attendance", icon: CalendarClock })}
+      {nav({ href: "/hrms/leave", label: "Leave", icon: CalendarDays })}
+      {nav({ href: "/hrms/holidays", label: "Holidays", icon: CalendarCheck })}
       {canRunPayroll(roles) && (
         <>
-          <NavLink href="/hrms/payroll" label="Payroll" icon={Wallet} collapsed={collapsed} onNavigate={onNavigate} />
-          <NavLink href="/hrms/payroll/payouts" label="Salary Payouts" icon={Banknote} collapsed={collapsed} onNavigate={onNavigate} />
+          {nav({ href: "/hrms/payroll", label: "Payroll", icon: Wallet })}
+          {nav({ href: "/hrms/payroll/payouts", label: "Salary Payouts", icon: Banknote })}
         </>
       )}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      <NavLink href="/hrms/notifications" label="Notifications" icon={Bell} collapsed={collapsed} onNavigate={onNavigate} />
-      {canManageSettings(roles) && (
-        <NavLink href="/hrms/settings" label="Settings" icon={Settings} collapsed={collapsed} onNavigate={onNavigate} />
-      )}
-      {canViewAuditLog(roles) && (
-        <NavLink href="/hrms/audit" label="Audit Log" icon={ScrollText} collapsed={collapsed} onNavigate={onNavigate} />
+      {nav({ href: "/hrms/notifications", label: "Notifications", icon: Bell })}
+      {canManageSettings(roles) && nav({ href: "/hrms/settings", label: "Settings", icon: Settings })}
+      {canViewAuditLog(roles) && nav({ href: "/hrms/audit", label: "Audit Log", icon: ScrollText })}
+
+      {employeeId && (
+        <>
+          <SectionLabel collapsed={collapsed}>Me</SectionLabel>
+          {nav({ href: "/hrms/me", label: "My Dashboard", icon: LayoutDashboard, exact: true })}
+          {nav({ href: "/hrms/me/attendance", label: "My Attendance", icon: CalendarClock })}
+          {nav({ href: "/hrms/me/leave", label: "My Leave", icon: CalendarDays })}
+          {nav({ href: "/hrms/me/salary", label: "My Salary", icon: Wallet })}
+          {nav({ href: "/hrms/me/documents", label: "My Documents", icon: FileText })}
+          {nav({ href: "/hrms/me/profile", label: "My Profile", icon: UserRound })}
+          {nav({ href: "/hrms/me/directory", label: "Directory", icon: Network })}
+        </>
       )}
     </nav>
   );

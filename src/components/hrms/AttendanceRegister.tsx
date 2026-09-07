@@ -17,7 +17,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { getAttendanceStatusMeta, MANUAL_ATTENDANCE_STATUSES } from "@/lib/hrms/attendance-status";
 import { formatMinutesAsDuration } from "@/lib/hrms/time";
 import { formatDate } from "@/lib/utils";
-import { recordAttendanceAction, bulkMarkAttendanceAction } from "@/app/hrms/(protected)/attendance/actions";
+import { recordAttendanceAction, bulkMarkAttendanceAction } from "@/app/hrms/(protected)/(staff)/attendance/actions";
 
 interface Row {
   employeeId: string;

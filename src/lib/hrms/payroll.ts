@@ -33,6 +33,7 @@ export interface PayrollProfile extends AuditFields {
   pfNumber: string | null;
   esiNumber: string | null;
   uan: string | null;
+  panNumber: string | null;
   bank: BankDetails;
 }
 
@@ -99,6 +100,7 @@ export interface PayrollWriteData {
   pfNumber: string | null;
   esiNumber: string | null;
   uan: string | null;
+  panNumber: string | null;
   /** Legacy — bank details now live in `hrms_bank_accounts`. Ignored on write. */
   bank?: BankDetails;
 }

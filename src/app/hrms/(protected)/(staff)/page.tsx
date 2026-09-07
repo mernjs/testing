@@ -3,6 +3,7 @@ import { Users, UserCheck, UserPlus, Building2, Clock3, CalendarOff, AlarmClock,
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/admin/GlassCard";
 import KpiCard from "@/components/admin/KpiCard";
+import KpiGrid from "@/components/admin/KpiGrid";
 import Breadcrumbs from "@/components/admin/Breadcrumbs";
 import TimeSeriesChart from "@/components/admin/TimeSeriesChart";
 import CategoryBarChart from "@/components/admin/CategoryBarChart";
@@ -99,7 +100,7 @@ export default async function HrmsDashboardPage({
       {/* Workforce KPIs */}
       <div>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Workforce</h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <KpiGrid>
           <KpiCard label="Total Employees" value={stats.totalEmployees} accent icon={<Users className="size-4" />} />
           <KpiCard label="Active Employees" value={stats.activeEmployees} icon={<UserCheck className="size-4" />} />
           <KpiCard
@@ -109,18 +110,18 @@ export default async function HrmsDashboardPage({
             icon={<UserPlus className="size-4" />}
           />
           <KpiCard label="Departments" value={stats.departments} icon={<Building2 className="size-4" />} />
-        </div>
+        </KpiGrid>
       </div>
 
       {/* Attendance & Leave KPIs */}
       <div>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Today &amp; Pending</h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        <KpiGrid>
           <KpiCard label="Present Today" value={ops.presentToday} icon={<Clock3 className="size-4" />} />
           <KpiCard label="On Leave" value={ops.onLeaveToday} icon={<CalendarOff className="size-4" />} />
           <KpiCard label="Late Check-ins" value={ops.lateToday} icon={<AlarmClock className="size-4" />} />
           <KpiCard label="Pending Leave Requests" value={ops.pendingLeaveRequests} icon={<MailQuestion className="size-4" />} />
-        </div>
+        </KpiGrid>
       </div>
 
       {/* Operations analytics */}

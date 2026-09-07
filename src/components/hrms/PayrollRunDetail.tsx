@@ -3,9 +3,11 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Check, Loader2, Pencil } from "lucide-react";
+import { Check, Loader2, Pencil, FileDown, Wallet, Receipt, Banknote, Building2 } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/admin/GlassCard";
+import KpiCard from "@/components/admin/KpiCard";
+import KpiGrid from "@/components/admin/KpiGrid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,7 +29,7 @@ import PayslipView, { type PayslipViewData } from "@/components/hrms/PayslipView
 import RunPayoutsPanel from "@/components/hrms/RunPayoutsPanel";
 import { payrollRunStatusMeta, monthLabelLong } from "@/lib/hrms/payroll-status";
 import { formatCurrency } from "@/lib/utils";
-import { approveRunAction, savePayslipOverridesAction } from "@/app/hrms/(protected)/payroll/actions";
+import { approveRunAction, savePayslipOverridesAction } from "@/app/hrms/(protected)/(staff)/payroll/actions";
 
 interface Line {
   name: string;
@@ -129,6 +131,7 @@ export default function PayrollRunDetail({ run, slips, payouts }: { run: Run; sl
   }
 
   const toView = (s: Slip): PayslipViewData => ({
+    payslipId: s._id,
     month: run.month,
     employeeName: s.employeeName,
     employeeCode: s.employeeCode,
@@ -177,21 +180,12 @@ export default function PayrollRunDetail({ run, slips, payouts }: { run: Run; sl
         </CardContent>
       </GlassCard>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {[
-          { label: "Gross", value: run.totalGross },
-          { label: "Deductions", value: run.totalDeductions },
-          { label: "Net Payout", value: run.totalNet },
-          { label: "Cost to Company", value: run.totalEmployerCost },
-        ].map((k) => (
-          <GlassCard key={k.label} interactive={false}>
-            <CardContent className="py-3">
-              <p className="text-xs text-muted-foreground">{k.label}</p>
-              <p className="text-lg font-bold tabular-nums text-foreground">{formatCurrency(k.value)}</p>
-            </CardContent>
-          </GlassCard>
-        ))}
-      </div>
+      <KpiGrid>
+        <KpiCard label="Gross" value={run.totalGross} format="currency" icon={<Wallet className="size-4" />} />
+        <KpiCard label="Deductions" value={run.totalDeductions} format="currency" icon={<Receipt className="size-4" />} />
+        <KpiCard label="Net Payout" value={run.totalNet} format="currency" accent icon={<Banknote className="size-4" />} />
+        <KpiCard label="Cost to Company" value={run.totalEmployerCost} format="currency" icon={<Building2 className="size-4" />} />
+      </KpiGrid>
 
       <GlassCard interactive={false}>
         <CardContent className="max-h-[55vh] overflow-auto">
@@ -218,11 +212,21 @@ export default function PayrollRunDetail({ run, slips, payouts }: { run: Run; sl
                   <TableCell className="tabular-nums text-muted-foreground">{formatCurrency(s.totalDeductions)}</TableCell>
                   <TableCell className="tabular-nums font-medium">{formatCurrency(s.netPay)}</TableCell>
                   <TableCell>
-                    {isDraft && (
-                      <Button type="button" variant="ghost" size="icon-sm" onClick={() => openEdit(s)} aria-label="Adjust">
-                        <Pencil className="size-3.5" />
-                      </Button>
-                    )}
+                    <div className="flex items-center gap-1">
+                      <a
+                        href={`/api/hrms/payslips/${s._id}/pdf`}
+                        className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-primary"
+                        aria-label="Download payslip PDF"
+                        title="Download PDF"
+                      >
+                        <FileDown className="size-3.5" />
+                      </a>
+                      {isDraft && (
+                        <Button type="button" variant="ghost" size="icon-sm" onClick={() => openEdit(s)} aria-label="Adjust">
+                          <Pencil className="size-3.5" />
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

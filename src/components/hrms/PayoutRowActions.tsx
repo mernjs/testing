@@ -26,7 +26,7 @@ import {
   recordPayoutResultAction,
   retryPayoutAction,
   cancelPayoutAction,
-} from "@/app/hrms/(protected)/payroll/actions";
+} from "@/app/hrms/(protected)/(staff)/payroll/actions";
 
 interface Row {
   _id: string;

@@ -27,7 +27,7 @@ export default async function MyLeavePage() {
         <MyLeaveSheet leaveTypes={leaveTypes.map((t) => ({ code: t.code, label: t.label }))} />
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {balances.map((b) => (
           <GlassCard key={b.leaveTypeCode} interactive={false}>
             <CardContent className="py-4">

@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
-import { hasStaffRole } from "@/lib/hrms-roles";
 import HrmsSidebarShell from "@/components/hrms/HrmsSidebarShell";
 import HrmsTopbar from "@/components/hrms/HrmsTopbar";
 import { SidebarCollapseProvider } from "@/components/admin/SidebarCollapseContext";
@@ -12,7 +11,7 @@ export default async function ProtectedHrmsLayout({ children }: { children: Reac
   const user = await getCurrentHrmsUser();
   if (!user) redirect("/hrms/login");
   if (user.mustChangePassword) redirect("/hrms/change-password");
-  if (!hasStaffRole(user.roles)) redirect(user.employeeId ? "/hrms/me" : "/hrms/login");
+  // Role gating happens in the nested (staff) / me layouts — this shell is shared.
 
   // Throttled internally to once/hour across the app.
   await runNotificationSweep();
@@ -33,6 +32,7 @@ export default async function ProtectedHrmsLayout({ children }: { children: Reac
           <HrmsSidebarShell
             email={user.email}
             roles={user.roles}
+            employeeId={user.employeeId}
             createdAt={user.createdAt.toISOString()}
             lastLoginAt={user.lastLoginAt ? user.lastLoginAt.toISOString() : null}
           />
@@ -41,6 +41,7 @@ export default async function ProtectedHrmsLayout({ children }: { children: Reac
             <div className="admin-surface relative z-30 shrink-0 rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md dark:bg-card/85">
               <HrmsTopbar
                 roles={user.roles}
+                employeeId={user.employeeId}
                 notifications={notifications.items.map((n) => ({
                   _id: n._id,
                   type: n.type,

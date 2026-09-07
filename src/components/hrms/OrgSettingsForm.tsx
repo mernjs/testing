@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { WEEKDAY_LABELS } from "@/lib/hrms/time";
-import { saveOrgSettingsAction } from "@/app/hrms/(protected)/settings/actions";
+import { saveOrgSettingsAction } from "@/app/hrms/(protected)/(staff)/settings/actions";
 
 interface Settings {
   workingDays: number[];

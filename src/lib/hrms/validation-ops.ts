@@ -2,6 +2,7 @@ import "server-only";
 import { isDateString, isTimeString, parseHHmm } from "@/lib/hrms/time";
 import { isValidHolidayType, type HolidayType } from "@/lib/hrms/holiday-types";
 import { isValidAttendanceStatus, MANUAL_ATTENDANCE_STATUSES, type AttendanceStatus } from "@/lib/hrms/attendance-status";
+import type { CompanyDetailsInput } from "@/lib/hrms/company";
 
 /**
  * Server-side validators for the Phase 2a modules — same
@@ -163,6 +164,56 @@ export function validateLeaveRequest(
       halfDayStart: bool(input.halfDayStart),
       halfDayEnd: bool(input.halfDayEnd),
       reason,
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Company details (payslip identity)
+// ---------------------------------------------------------------------------
+
+const PAN_RE = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
+const GSTIN_RE = /^[0-9A-Z]{15}$/;
+
+export function validateCompanyDetails(input: Record<string, unknown>): Ok<CompanyDetailsInput> | Err {
+  const errors: Record<string, string> = {};
+  const cap = (v: unknown, max: number) => str(v).slice(0, max);
+
+  const name = cap(input.name, 120);
+  if (!name) errors.name = "Company name is required.";
+
+  const pan = cap(input.pan, 15).toUpperCase();
+  if (pan && !PAN_RE.test(pan)) errors.pan = "PAN looks invalid (ABCDE1234F).";
+  const gstin = cap(input.gstin, 20).toUpperCase();
+  if (gstin && !GSTIN_RE.test(gstin)) errors.gstin = "GSTIN must be 15 characters.";
+
+  const email = cap(input.email, 254);
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Enter a valid email.";
+
+  if (Object.keys(errors).length > 0) return { valid: false, errors };
+  return {
+    valid: true,
+    data: {
+      name,
+      legalName: cap(input.legalName, 160) || name,
+      addressLine1: cap(input.addressLine1, 160),
+      addressLine2: cap(input.addressLine2, 160),
+      city: cap(input.city, 80),
+      state: cap(input.state, 80),
+      postalCode: cap(input.postalCode, 12),
+      country: cap(input.country, 60) || "India",
+      email,
+      phone: cap(input.phone, 40),
+      website: cap(input.website, 120),
+      pan,
+      gstin,
+      cin: cap(input.cin, 40).toUpperCase(),
+      pfEstablishmentCode: cap(input.pfEstablishmentCode, 40),
+      esiEstablishmentCode: cap(input.esiEstablishmentCode, 40),
+      lin: cap(input.lin, 40),
+      signatoryName: cap(input.signatoryName, 120),
+      signatoryDesignation: cap(input.signatoryDesignation, 80) || "Authorised Signatory",
+      payslipNote: cap(input.payslipNote, 400),
     },
   };
 }

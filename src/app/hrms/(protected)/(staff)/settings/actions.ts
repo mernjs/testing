@@ -6,7 +6,8 @@ import { canManageSettings } from "@/lib/hrms-roles";
 import { updateOrgSettings } from "@/lib/hrms/settings";
 import { upsertLeaveType, deleteLeaveType } from "@/lib/hrms/leave";
 import { updatePayrollConfig } from "@/lib/hrms/payroll-config";
-import { validateOrgSettings, validateLeaveType } from "@/lib/hrms/validation-ops";
+import { updateCompanyDetails } from "@/lib/hrms/company";
+import { validateOrgSettings, validateLeaveType, validateCompanyDetails } from "@/lib/hrms/validation-ops";
 import { validatePayrollConfig } from "@/lib/hrms/validation-payroll";
 import { recordAudit } from "@/lib/hrms/audit";
 
@@ -74,6 +75,25 @@ export async function deleteLeaveTypeAction(id: string): Promise<SettingsActionR
   await recordAudit({ actorId: user.id, actorEmail: user.email, action: "delete", entity: "leave_type", entityId: id });
   revalidatePath("/hrms/settings");
   revalidatePath("/hrms/leave");
+  return { ok: true };
+}
+
+export async function saveCompanyDetailsAction(input: Record<string, unknown>): Promise<SettingsActionResult> {
+  const user = await requireSettings();
+  const v = validateCompanyDetails(input);
+  if (!v.valid) return { ok: false, fieldErrors: v.errors };
+
+  await updateCompanyDetails(v.data, user.id);
+  await recordAudit({
+    actorId: user.id,
+    actorEmail: user.email,
+    action: "update",
+    entity: "company",
+    entityId: "org",
+    entityLabel: "Company details",
+    summary: `${v.data.name}${v.data.pan ? ` · PAN ${v.data.pan}` : ""}`,
+  });
+  revalidatePath("/hrms/settings");
   return { ok: true };
 }
 

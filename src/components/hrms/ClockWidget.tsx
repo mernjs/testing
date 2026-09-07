@@ -8,7 +8,7 @@ import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/admin/GlassCard";
 import { Button } from "@/components/ui/button";
 import { formatMinutesAsDuration } from "@/lib/hrms/time";
-import { clockInAction, clockOutAction } from "@/app/hrms/(portal)/me/attendance/actions";
+import { clockInAction, clockOutAction } from "@/app/hrms/(protected)/me/attendance/actions";
 
 export default function ClockWidget({
   dayLabel,

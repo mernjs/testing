@@ -17,7 +17,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import OfferStatusBadge from "@/components/hrms/OfferStatusBadge";
 import { OFFER_TRANSITIONS, type OfferStatus } from "@/lib/hrms/offers-status";
 import { formatDate, formatCurrency } from "@/lib/utils";
-import { createOfferAction, updateOfferStatusAction, updateOfferDetailsAction } from "@/app/hrms/(protected)/recruitment/actions";
+import { createOfferAction, updateOfferStatusAction, updateOfferDetailsAction } from "@/app/hrms/(protected)/(staff)/recruitment/actions";
 
 interface Offer {
   _id: string;

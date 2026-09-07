@@ -28,7 +28,8 @@ export type AuditEntity =
   | "employee_login"
   | "offer"
   | "bank_account"
-  | "salary_payout";
+  | "salary_payout"
+  | "company";
 
 export type AuditAction =
   | "create"

@@ -25,7 +25,7 @@ import {
 import LeaveStatusBadge from "@/components/hrms/LeaveStatusBadge";
 import { LEAVE_REQUEST_STATUSES } from "@/lib/hrms/leave-status";
 import { formatDate, formatDateTime } from "@/lib/utils";
-import { decideLeaveAction, cancelLeaveAction } from "@/app/hrms/(protected)/leave/actions";
+import { decideLeaveAction, cancelLeaveAction } from "@/app/hrms/(protected)/(staff)/leave/actions";
 
 interface Req {
   _id: string;

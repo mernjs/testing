@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import LeaveStatusBadge from "@/components/hrms/LeaveStatusBadge";
 import { formatDate } from "@/lib/utils";
-import { cancelMyLeaveAction } from "@/app/hrms/(portal)/me/leave/actions";
+import { cancelMyLeaveAction } from "@/app/hrms/(protected)/me/leave/actions";
 
 interface Row {
   _id: string;

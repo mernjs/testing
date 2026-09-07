@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { EMPLOYEE_STATUSES, EXITED_EMPLOYEE_STATUSES } from "@/lib/hrms/employee-status";
-import { changeEmployeeStatusAction } from "@/app/hrms/(protected)/employees/actions";
+import { changeEmployeeStatusAction } from "@/app/hrms/(protected)/(staff)/employees/actions";
 
 export default function EmployeeStatusControl({
   employeeId,

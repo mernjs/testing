@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { fileLeaveAction, previewLeaveDaysAction } from "@/app/hrms/(protected)/leave/actions";
+import { fileLeaveAction, previewLeaveDaysAction } from "@/app/hrms/(protected)/(staff)/leave/actions";
 import { todayDateString } from "@/lib/hrms/time";
 
 interface Props {

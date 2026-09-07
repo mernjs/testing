@@ -92,6 +92,7 @@ export async function createRevision(
         pfNumber: existing?.pfNumber ?? null,
         esiNumber: existing?.esiNumber ?? null,
         uan: existing?.uan ?? null,
+        panNumber: existing?.panNumber ?? null,
         bank: existing?.bank ?? { accountName: null, accountNumber: null, ifsc: null, bankName: null, branch: null },
       },
       actorId

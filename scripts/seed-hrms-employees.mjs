@@ -137,8 +137,8 @@ function hashInt(str) {
 function dobFor(name, isLeadership) {
   const h = hashInt(name);
   const year = isLeadership ? 1980 + (h % 9) : 1990 + (h % 10); // leaders 1980-88, others 1990-99
-  const month = 1 + ((h >> 4) % 12);
-  const day = 1 + ((h >> 8) % 28);
+  const month = 1 + ((h >>> 4) % 12);
+  const day = 1 + ((h >>> 8) % 28);
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
@@ -149,7 +149,7 @@ function joiningFor(name, department) {
     return `${year}-04-01`;
   }
   const year = 2022 + (h % 3); // 2022-2024
-  const month = 1 + ((h >> 4) % 12);
+  const month = 1 + ((h >>> 4) % 12);
   return `${year}-${String(month).padStart(2, "0")}-10`;
 }
 

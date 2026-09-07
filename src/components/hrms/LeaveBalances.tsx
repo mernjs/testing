@@ -7,7 +7,7 @@ import { Pencil, Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { setLeaveAllocationAction } from "@/app/hrms/(protected)/leave/actions";
+import { setLeaveAllocationAction } from "@/app/hrms/(protected)/(staff)/leave/actions";
 
 export interface BalanceRow {
   leaveTypeCode: string;
@@ -50,7 +50,7 @@ export default function LeaveBalances({
   }
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {balances.map((b) => (
         <div key={b.leaveTypeCode} className="rounded-xl border border-border/60 p-4">
           <div className="flex items-center justify-between gap-2">

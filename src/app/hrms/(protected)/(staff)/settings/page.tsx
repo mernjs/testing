@@ -4,23 +4,26 @@ import Tabs from "@/components/hrms/Tabs";
 import OrgSettingsForm from "@/components/hrms/OrgSettingsForm";
 import LeaveTypesManager from "@/components/hrms/LeaveTypesManager";
 import PayrollConfigForm from "@/components/hrms/PayrollConfigForm";
+import CompanyDetailsForm from "@/components/hrms/CompanyDetailsForm";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 import { canManageSettings } from "@/lib/hrms-roles";
 import { getOrgSettings } from "@/lib/hrms/settings";
 import { listLeaveTypes } from "@/lib/hrms/leave";
 import { getPayrollConfig } from "@/lib/hrms/payroll-config";
+import { getCompanyDetails } from "@/lib/hrms/company";
 
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
   const user = await getCurrentHrmsUser();
   if (!user || !canManageSettings(user.roles)) redirect("/hrms");
 
   const sp = await searchParams;
-  const tab = ["schedule", "leave", "payroll"].includes(sp.tab ?? "") ? sp.tab! : "schedule";
+  const tab = ["company", "schedule", "leave", "payroll"].includes(sp.tab ?? "") ? sp.tab! : "company";
 
-  const [settings, leaveTypes, payrollConfig] = await Promise.all([
+  const [settings, leaveTypes, payrollConfig, company] = await Promise.all([
     getOrgSettings(),
     listLeaveTypes(true),
     getPayrollConfig(),
+    getCompanyDetails(),
   ]);
 
   return (
@@ -29,7 +32,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Settings</h1>
         <p className="text-sm text-muted-foreground">
-          Work schedule, leave configuration and statutory payroll rates.
+          Company identity, work schedule, leave configuration and statutory payroll rates.
         </p>
       </div>
 
@@ -37,6 +40,36 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         initial={tab}
         syncParam="tab"
         tabs={[
+          {
+            key: "company",
+            label: "Company",
+            content: (
+              <CompanyDetailsForm
+                details={{
+                  name: company.name,
+                  legalName: company.legalName,
+                  addressLine1: company.addressLine1,
+                  addressLine2: company.addressLine2,
+                  city: company.city,
+                  state: company.state,
+                  postalCode: company.postalCode,
+                  country: company.country,
+                  email: company.email,
+                  phone: company.phone,
+                  website: company.website,
+                  pan: company.pan,
+                  gstin: company.gstin,
+                  cin: company.cin,
+                  pfEstablishmentCode: company.pfEstablishmentCode,
+                  esiEstablishmentCode: company.esiEstablishmentCode,
+                  lin: company.lin,
+                  signatoryName: company.signatoryName,
+                  signatoryDesignation: company.signatoryDesignation,
+                  payslipNote: company.payslipNote,
+                }}
+              />
+            ),
+          },
           {
             key: "schedule",
             label: "Work Schedule",

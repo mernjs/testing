@@ -24,7 +24,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-import { saveLeaveTypeAction, deleteLeaveTypeAction } from "@/app/hrms/(protected)/settings/actions";
+import { saveLeaveTypeAction, deleteLeaveTypeAction } from "@/app/hrms/(protected)/(staff)/settings/actions";
 
 interface LeaveTypeRow {
   _id: string;

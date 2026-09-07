@@ -17,7 +17,7 @@ import {
   WORK_LOCATIONS,
   DEFAULT_EMPLOYEE_STATUS,
 } from "@/lib/hrms/employee-status";
-import { createEmployeeAction, updateEmployeeAction, type EmployeeActionResult } from "@/app/hrms/(protected)/employees/actions";
+import { createEmployeeAction, updateEmployeeAction, type EmployeeActionResult } from "@/app/hrms/(protected)/(staff)/employees/actions";
 import type { SerializedEmployee } from "@/lib/hrms/employees";
 
 type Option = { _id: string; name?: string; title?: string; label?: string };

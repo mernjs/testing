@@ -4,10 +4,11 @@ import { useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Send, CheckCheck, Download, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { Send, CheckCheck, Download, ChevronLeft, ChevronRight, Search, Clock, Loader, CircleCheck, CircleX, Ban } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/admin/GlassCard";
 import KpiCard from "@/components/admin/KpiCard";
+import KpiGrid from "@/components/admin/KpiGrid";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,9 +17,18 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import PayoutStatusBadge from "@/components/hrms/PayoutStatusBadge";
 import PayoutRowActions from "@/components/hrms/PayoutRowActions";
 import { PAYOUT_STATUSES } from "@/lib/hrms/payout-status";
+
+const STATUS_ICON: Record<string, React.ReactNode> = {
+  pending: <Clock className="size-4" />,
+  initiated: <Send className="size-4" />,
+  processing: <Loader className="size-4" />,
+  paid: <CircleCheck className="size-4" />,
+  failed: <CircleX className="size-4" />,
+  cancelled: <Ban className="size-4" />,
+};
 import { monthLabelLong } from "@/lib/hrms/payroll-status";
 import { formatCurrency } from "@/lib/utils";
-import { bulkInitiatePayoutsAction, reconcilePayoutsAction } from "@/app/hrms/(protected)/payroll/actions";
+import { bulkInitiatePayoutsAction, reconcilePayoutsAction } from "@/app/hrms/(protected)/(staff)/payroll/actions";
 
 interface Payout {
   _id: string;
@@ -108,15 +118,17 @@ export default function PayoutsDashboard({
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <KpiGrid cols={6}>
         {PAYOUT_STATUSES.map((s) => (
           <KpiCard
             key={s.value}
             label={s.label}
             value={byStatus[s.value]?.count ?? 0}
+            accent={s.value === "paid"}
+            icon={STATUS_ICON[s.value]}
           />
         ))}
-      </div>
+      </KpiGrid>
 
       <GlassCard interactive={false}>
         <CardContent className="flex flex-wrap items-end gap-3">

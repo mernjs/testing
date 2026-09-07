@@ -50,11 +50,14 @@ export default function AttendanceCalendar({
   cells,
   summary,
   paramKey = "month",
+  readOnly = false,
 }: {
   month: string;
   cells: CalCell[];
   summary: CalSummary;
   paramKey?: string;
+  /** Hide the month navigation — for embedding a fixed month (e.g. the dashboard). */
+  readOnly?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -72,15 +75,19 @@ export default function AttendanceCalendar({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-1">
-          <Button type="button" variant="outline" size="icon-sm" onClick={() => setMonth(shiftMonth(month, -1))} aria-label="Previous month">
-            <ChevronLeft className="size-4" />
-          </Button>
-          <span className="min-w-40 text-center text-sm font-medium">{monthLabel(month)}</span>
-          <Button type="button" variant="outline" size="icon-sm" onClick={() => setMonth(shiftMonth(month, 1))} aria-label="Next month">
-            <ChevronRight className="size-4" />
-          </Button>
-        </div>
+        {readOnly ? (
+          <span className="text-sm font-medium">{monthLabel(month)}</span>
+        ) : (
+          <div className="flex items-center gap-1">
+            <Button type="button" variant="outline" size="icon-sm" onClick={() => setMonth(shiftMonth(month, -1))} aria-label="Previous month">
+              <ChevronLeft className="size-4" />
+            </Button>
+            <span className="min-w-40 text-center text-sm font-medium">{monthLabel(month)}</span>
+            <Button type="button" variant="outline" size="icon-sm" onClick={() => setMonth(shiftMonth(month, 1))} aria-label="Next month">
+              <ChevronRight className="size-4" />
+            </Button>
+          </div>
+        )}
         <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
           <span className="text-green-600 dark:text-green-400">Present {summary.present}</span>
           <span className="text-amber-600 dark:text-amber-400">Half {summary.halfDay}</span>

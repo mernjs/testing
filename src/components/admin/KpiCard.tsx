@@ -6,7 +6,13 @@ import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import GlassCard from "@/components/admin/GlassCard";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
+import { formatMinutesAsDuration } from "@/lib/hrms/time";
+
+const FORMATTERS = {
+  currency: formatCurrency,
+  duration: formatMinutesAsDuration,
+} as const;
 
 function useCountUp(target: number, durationMs = 600) {
   const [value, setValue] = useState(0);
@@ -61,11 +67,13 @@ export default function KpiCard({
   trend,
   suffix,
   tone,
+  format,
 }: {
   label: string;
   /** A pre-formatted string or element (e.g. `"₹12,340"`, `"3/10"`, a `<span>`)
    * skips the count-up animation and renders as-is — for values that can't be
-   * a plain counted integer (currency, ratios, "no data" placeholders). */
+   * a plain counted integer (ratios, "no data" placeholders). Prefer passing a
+   * number + `format` so the metric still counts up. */
   value: number | ReactNode;
   accent?: boolean;
   /** A rendered icon element (e.g. `<Code className="size-4" />`) — pass an element, not a component reference, so this can be sent from a Server Component. */
@@ -76,16 +84,19 @@ export default function KpiCard({
   suffix?: string;
   /** Colors the value green/red directly — for metrics where the sign itself is the signal (e.g. ROI), distinct from `trend`'s period-over-period badge. */
   tone?: "up" | "down";
+  /** Formats the animated number each frame so currency / duration KPIs still count up and read consistently across the app. */
+  format?: keyof typeof FORMATTERS;
 }) {
   const animated = useCountUp(typeof value === "number" ? value : 0);
-  const displayValue = typeof value === "number" ? (
-    <>
-      {animated}
-      {suffix}
-    </>
-  ) : (
-    value
-  );
+  const displayValue =
+    typeof value === "number" ? (
+      <>
+        {format ? FORMATTERS[format](animated) : animated}
+        {suffix}
+      </>
+    ) : (
+      value
+    );
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="h-full">

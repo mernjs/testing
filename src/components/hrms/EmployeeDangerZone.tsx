@@ -16,7 +16,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-import { deleteEmployeeAction } from "@/app/hrms/(protected)/employees/actions";
+import { deleteEmployeeAction } from "@/app/hrms/(protected)/(staff)/employees/actions";
 
 export default function EmployeeDangerZone({ employeeId, name }: { employeeId: string; name: string }) {
   const router = useRouter();

@@ -6,7 +6,17 @@ import { ChevronRight } from "lucide-react";
 import { getEmployeeStatusMeta } from "@/lib/hrms/employee-status";
 import type { OrgNode } from "@/lib/hrms/hierarchy";
 
-function Node({ node, depth, titleFor }: { node: OrgNode; depth: number; titleFor: (id: string | null) => string }) {
+function Node({
+  node,
+  depth,
+  titleFor,
+  linkEmployees,
+}: {
+  node: OrgNode;
+  depth: number;
+  titleFor: (id: string | null) => string;
+  linkEmployees: boolean;
+}) {
   const [open, setOpen] = useState(depth < 2);
   const meta = getEmployeeStatusMeta(node.status);
   const hasChildren = node.children.length > 0;
@@ -22,9 +32,13 @@ function Node({ node, depth, titleFor }: { node: OrgNode; depth: number; titleFo
           <span className="inline-block size-4" />
         )}
         <span className={`size-2 shrink-0 rounded-full ${meta.dotClass}`} />
-        <Link href={`/hrms/employees/${node.id}`} className="text-sm font-medium hover:underline">
-          {node.name}
-        </Link>
+        {linkEmployees ? (
+          <Link href={`/hrms/employees/${node.id}`} className="text-sm font-medium hover:underline">
+            {node.name}
+          </Link>
+        ) : (
+          <span className="text-sm font-medium">{node.name}</span>
+        )}
         <span className="text-xs text-muted-foreground">
           {titleFor(node.title)} · {node.code}
         </span>
@@ -32,7 +46,7 @@ function Node({ node, depth, titleFor }: { node: OrgNode; depth: number; titleFo
       {open && hasChildren && (
         <div>
           {node.children.map((c) => (
-            <Node key={c.id} node={c} depth={depth + 1} titleFor={titleFor} />
+            <Node key={c.id} node={c} depth={depth + 1} titleFor={titleFor} linkEmployees={linkEmployees} />
           ))}
         </div>
       )}
@@ -43,9 +57,12 @@ function Node({ node, depth, titleFor }: { node: OrgNode; depth: number; titleFo
 export default function OrgTree({
   roots,
   designations,
+  linkEmployees = true,
 }: {
   roots: OrgNode[];
   designations: { _id: string; title: string }[];
+  /** When false, names render as plain text (employees can't open staff profiles). */
+  linkEmployees?: boolean;
 }) {
   const titleFor = (id: string | null) => designations.find((d) => d._id === id)?.title ?? "—";
 
@@ -56,7 +73,7 @@ export default function OrgTree({
   return (
     <div className="space-y-0.5">
       {roots.map((r) => (
-        <Node key={r.id} node={r} depth={0} titleFor={titleFor} />
+        <Node key={r.id} node={r} depth={0} titleFor={titleFor} linkEmployees={linkEmployees} />
       ))}
     </div>
   );

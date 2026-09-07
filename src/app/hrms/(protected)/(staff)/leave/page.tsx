@@ -1,6 +1,8 @@
+import { Inbox, CalendarCheck, CheckCircle2, Tags } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/admin/GlassCard";
 import KpiCard from "@/components/admin/KpiCard";
+import KpiGrid from "@/components/admin/KpiGrid";
 import Breadcrumbs from "@/components/admin/Breadcrumbs";
 import CategoryBarChart from "@/components/admin/CategoryBarChart";
 import TimeSeriesChart from "@/components/admin/TimeSeriesChart";
@@ -136,12 +138,12 @@ export default async function LeavePage({
             label: "Analytics",
             content: (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                  <KpiCard label="Requests (YTD)" value={analytics.totalRequests} />
-                  <KpiCard label="Days Approved" value={analytics.totalDaysApproved} />
-                  <KpiCard label="Approval Rate" value={analytics.approvalRate} suffix="%" />
-                  <KpiCard label="Leave Types" value={leaveTypes.length} />
-                </div>
+                <KpiGrid>
+                  <KpiCard label="Requests (YTD)" value={analytics.totalRequests} accent icon={<Inbox className="size-4" />} />
+                  <KpiCard label="Days Approved" value={analytics.totalDaysApproved} icon={<CalendarCheck className="size-4" />} />
+                  <KpiCard label="Approval Rate" value={analytics.approvalRate} suffix="%" icon={<CheckCircle2 className="size-4" />} />
+                  <KpiCard label="Leave Types" value={leaveTypes.length} icon={<Tags className="size-4" />} />
+                </KpiGrid>
                 <div className="grid gap-4 lg:grid-cols-2">
                   <GlassCard>
                     <CardHeader><CardTitle>Requests by Type</CardTitle></CardHeader>

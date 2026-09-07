@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { todayDateString } from "@/lib/hrms/time";
-import { applyMyLeaveAction, previewMyLeaveDaysAction } from "@/app/hrms/(portal)/me/leave/actions";
+import { applyMyLeaveAction, previewMyLeaveDaysAction } from "@/app/hrms/(protected)/me/leave/actions";
 
 export default function MyLeaveSheet({ leaveTypes }: { leaveTypes: { code: string; label: string }[] }) {
   const router = useRouter();

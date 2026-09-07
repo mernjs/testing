@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { createSalaryRevisionAction } from "@/app/hrms/(protected)/employees/[id]/actions";
+import { createSalaryRevisionAction } from "@/app/hrms/(protected)/(staff)/employees/[id]/actions";
 
 interface Line {
   name: string;

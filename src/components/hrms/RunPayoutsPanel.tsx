@@ -12,7 +12,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import PayoutStatusBadge from "@/components/hrms/PayoutStatusBadge";
 import PayoutRowActions from "@/components/hrms/PayoutRowActions";
 import { formatCurrency } from "@/lib/utils";
-import { bulkInitiatePayoutsAction } from "@/app/hrms/(protected)/payroll/actions";
+import { bulkInitiatePayoutsAction } from "@/app/hrms/(protected)/(staff)/payroll/actions";
 
 interface Payout {
   _id: string;

@@ -32,7 +32,7 @@ import {
   setBankVerificationAction,
   deleteBankAccountAction,
   revealBankAccountAction,
-} from "@/app/hrms/(protected)/employees/[id]/bank-actions";
+} from "@/app/hrms/(protected)/(staff)/employees/[id]/bank-actions";
 
 interface Account {
   _id: string;

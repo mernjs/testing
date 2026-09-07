@@ -31,7 +31,7 @@ import {
   deleteDesignationAction,
   saveTeamAction,
   deleteTeamAction,
-} from "@/app/hrms/(protected)/departments/actions";
+} from "@/app/hrms/(protected)/(staff)/departments/actions";
 
 interface DeptRow {
   _id: string;

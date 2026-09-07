@@ -25,7 +25,7 @@ import {
   createEmployeeLoginAction,
   resetEmployeeLoginAction,
   revokeEmployeeLoginAction,
-} from "@/app/hrms/(protected)/employees/[id]/actions";
+} from "@/app/hrms/(protected)/(staff)/employees/[id]/actions";
 
 interface Status {
   hasLogin: boolean;

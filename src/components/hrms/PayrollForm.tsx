@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatCurrency } from "@/lib/utils";
-import { savePayrollProfileAction } from "@/app/hrms/(protected)/employees/[id]/actions";
+import { savePayrollProfileAction } from "@/app/hrms/(protected)/(staff)/employees/[id]/actions";
 import type { SerializedPayrollProfile } from "@/lib/hrms/payroll";
 
 interface Props {
@@ -37,6 +37,7 @@ export default function PayrollForm({ employeeId, profile, canEdit }: Props) {
   const [pfNumber, setPfNumber] = useState(profile?.pfNumber ?? "");
   const [esiNumber, setEsiNumber] = useState(profile?.esiNumber ?? "");
   const [uan, setUan] = useState(profile?.uan ?? "");
+  const [panNumber, setPanNumber] = useState(profile?.panNumber ?? "");
 
   const gross = useMemo(() => {
     const b = Number(basic) || 0;
@@ -59,6 +60,7 @@ export default function PayrollForm({ employeeId, profile, canEdit }: Props) {
         pfNumber,
         esiNumber,
         uan,
+        panNumber,
       });
       if (!result.ok) {
         if (result.fieldErrors) setErrors(result.fieldErrors);
@@ -144,7 +146,11 @@ export default function PayrollForm({ employeeId, profile, canEdit }: Props) {
 
       <GlassCard interactive={false}>
         <CardHeader><CardTitle>Statutory</CardTitle></CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-3">
+        <CardContent className="grid gap-4 sm:grid-cols-4">
+          <div className="space-y-1.5">
+            <Label>PAN</Label>
+            <Input value={panNumber} disabled={!canEdit} onChange={(e) => setPanNumber(e.target.value.toUpperCase())} placeholder="ABCDE1234F" />
+          </div>
           <div className="space-y-1.5">
             <Label>PF number</Label>
             <Input value={pfNumber} disabled={!canEdit} onChange={(e) => setPfNumber(e.target.value)} />

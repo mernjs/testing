@@ -240,6 +240,10 @@ export function validatePayrollProfile(input: Record<string, unknown>): Ok<Payro
       pfNumber: optStr(input.pfNumber, 40),
       esiNumber: optStr(input.esiNumber, 40),
       uan: optStr(input.uan, 40),
+      panNumber: (() => {
+        const p = str(input.panNumber).toUpperCase();
+        return p ? p.slice(0, 15) : null;
+      })(),
       // Bank details now live in `hrms_bank_accounts`, not the payroll profile.
       bank: emptyBank(),
     },

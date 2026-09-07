@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { payrollRunStatusMeta, monthLabelLong } from "@/lib/hrms/payroll-status";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { createRunAction, deleteRunAction } from "@/app/hrms/(protected)/payroll/actions";
+import { createRunAction, deleteRunAction } from "@/app/hrms/(protected)/(staff)/payroll/actions";
 
 interface Run {
   _id: string;

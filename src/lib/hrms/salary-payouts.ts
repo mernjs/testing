@@ -143,6 +143,11 @@ export async function getPayout(id: string): Promise<SalaryPayout | null> {
   return collection.findOne({ _id: id, ...notDeleted });
 }
 
+export async function getPayoutForPayslip(payslipId: string): Promise<SalaryPayout | null> {
+  const collection = await getCollection();
+  return collection.findOne({ payslipId, ...notDeleted });
+}
+
 export async function payoutsForRun(runId: string): Promise<SalaryPayout[]> {
   const collection = await getCollection();
   return collection.find({ runId, ...notDeleted }).sort({ employeeName: 1 }).toArray();

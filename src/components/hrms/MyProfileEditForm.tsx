@@ -9,7 +9,7 @@ import GlassCard from "@/components/admin/GlassCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { updateMyContactAction } from "@/app/hrms/(portal)/me/profile/actions";
+import { updateMyContactAction } from "@/app/hrms/(protected)/me/profile/actions";
 
 interface Contact {
   name: string;

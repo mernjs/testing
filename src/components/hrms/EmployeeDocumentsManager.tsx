@@ -22,7 +22,7 @@ import {
 import DocumentUploadSheet from "@/components/hrms/DocumentUploadSheet";
 import { DOCUMENT_CATEGORIES, documentCategoryLabel, isInlinePreviewable } from "@/lib/hrms/document-categories";
 import { formatDate } from "@/lib/utils";
-import { deleteDocumentAction } from "@/app/hrms/(protected)/employees/[id]/document-actions";
+import { deleteDocumentAction } from "@/app/hrms/(protected)/(staff)/employees/[id]/document-actions";
 
 interface Doc {
   _id: string;
