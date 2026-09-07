@@ -7,14 +7,16 @@ import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import ProjectTabs from "@/components/pms/ProjectTabs";
 import GanttChart from "@/components/pms/timeline/GanttChart";
 import { getCurrentPmsUser } from "@/lib/pms-auth";
+import { checkProjectAccess } from "@/lib/pms/access";
 import { getProject } from "@/lib/pms/projects";
 import { getProjectTimeline, getUpcomingDeadlines } from "@/lib/pms/timeline";
 import { cn, formatDate } from "@/lib/utils";
 
 export default async function ProjectTimelinePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [, project] = await Promise.all([getCurrentPmsUser(), getProject(id)]);
+  const [user, project] = await Promise.all([getCurrentPmsUser(), getProject(id)]);
   if (!project) notFound();
+  if (user && !(await checkProjectAccess(user, id)).allowed) notFound();
 
   const [timeline, deadlines] = await Promise.all([
     getProjectTimeline(id),

@@ -13,7 +13,7 @@ import { stdin, stdout } from "node:process";
 
 const SCRYPT_KEYLEN = 64;
 const MIN_PASSWORD_LENGTH = 10;
-const PMS_ROLES = ["super_admin", "pms_admin", "pms_manager"];
+const PMS_ROLES = ["super_admin", "pms_admin", "pms_manager", "pms_employee"];
 const CTRL_C = String.fromCharCode(3);
 const BACKSPACE = String.fromCharCode(127);
 
@@ -109,6 +109,17 @@ async function main() {
     process.exit(1);
   }
 
+  // pms_employee logins must be linked to an hrms_employees record so the
+  // portal can scope projects / tasks / timesheets to that person.
+  let employeeId = null;
+  if (roles.includes("pms_employee")) {
+    employeeId = (await askLine("Linked hrms_employees id (required for pms_employee): ")).trim();
+    if (!employeeId) {
+      console.error("An employee id is required when granting pms_employee.");
+      process.exit(1);
+    }
+  }
+
   const client = new MongoClient(uri);
   try {
     await client.connect();
@@ -129,7 +140,9 @@ async function main() {
       if ((existing.roles ?? []).includes("super_admin") && !roles.includes("super_admin")) {
         nextRoles.push("super_admin");
       }
-      await users.updateOne({ _id: existing._id }, { $set: { roles: Array.from(new Set(nextRoles)) } });
+      const set = { roles: Array.from(new Set(nextRoles)) };
+      if (employeeId) set.employeeId = employeeId;
+      await users.updateOne({ _id: existing._id }, { $set: set });
       console.log(
         roles.length > 0
           ? `\nUpdated ${email}: roles = [${Array.from(new Set(nextRoles)).join(", ")}].`
@@ -163,6 +176,7 @@ async function main() {
       createdAt: new Date(),
       lastLoginAt: null,
       roles,
+      ...(employeeId ? { employeeId } : {}),
     });
     console.log(`\nCreated account ${email} with roles [${roles.join(", ")}].`);
     console.log("They can sign in at /pms/login.");

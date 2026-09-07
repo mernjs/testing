@@ -13,6 +13,7 @@ import ProjectTabs from "@/components/pms/ProjectTabs";
 import MilestonesManager from "@/components/pms/MilestonesManager";
 import { getCurrentPmsUser } from "@/lib/pms-auth";
 import { canManageProjects } from "@/lib/pms-roles";
+import { checkProjectAccess } from "@/lib/pms/access";
 import { getProject, serializeProject } from "@/lib/pms/projects";
 import { getClient } from "@/lib/pms/clients";
 import { listProjectMembers, availableEmployees } from "@/lib/pms/project-members";
@@ -27,6 +28,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   const { id } = await params;
   const [user, project] = await Promise.all([getCurrentPmsUser(), getProject(id)]);
   if (!project) notFound();
+  if (user && !(await checkProjectAccess(user, id)).allowed) notFound();
 
   const canManage = user ? canManageProjects(user.roles) : false;
   const serialized = serializeProject(project);
@@ -79,6 +81,11 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             <ProjectStatusControl projectId={id} status={project.status} />
           ) : (
             <ProjectStatusBadge status={project.status} />
+          )}
+          {canManage && (
+            <Link href={`/pms/costing/${id}`} className="text-sm font-medium text-primary hover:underline">
+              Costing &amp; Reports →
+            </Link>
           )}
           {canManage && <ProjectActions projectId={id} projectName={project.name} />}
         </div>
@@ -183,6 +190,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           role: m.role,
           allocationPercent: m.allocationPercent,
           billableRate: m.billableRate,
+          costRate: m.costRate,
           active: m.active,
         }))}
         employees={employees.map((e) => ({ _id: e._id, name: e.name, employeeCode: e.employeeCode }))}

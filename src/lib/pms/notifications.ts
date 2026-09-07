@@ -21,7 +21,9 @@ export type PmsNotificationType =
   | "deadline_approaching"
   | "milestone_completed"
   | "project_status_changed"
-  | "comment_added";
+  | "comment_added"
+  | "timesheet_submitted"
+  | "timesheet_reviewed";
 
 export interface PmsNotification {
   _id: string;

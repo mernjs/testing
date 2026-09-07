@@ -51,6 +51,7 @@ function fromProject(p: SerializedProject | undefined, defaults: { clientId?: st
     startDate: p.startDate ?? "",
     endDate: p.endDate ?? "",
     estimatedBudget: p.estimatedBudget != null ? String(p.estimatedBudget) : "",
+    estimatedHours: p.estimatedHours != null ? String(p.estimatedHours) : "",
     currency: p.currency,
     projectManagerId: p.projectManagerId ?? "",
     progressPercent: String(p.progressPercent),
@@ -205,6 +206,11 @@ export default function ProjectForm({
             <Label>Estimated budget</Label>
             <Input type="number" min={0} value={form.estimatedBudget ?? ""} onChange={(e) => set("estimatedBudget", e.target.value)} />
             {err("estimatedBudget")}
+          </div>
+          <div className="space-y-1.5">
+            <Label>Estimated hours</Label>
+            <Input type="number" min={0} value={form.estimatedHours ?? ""} onChange={(e) => set("estimatedHours", e.target.value)} placeholder="Defaults to sum of task estimates" />
+            {err("estimatedHours")}
           </div>
           <div className="space-y-1.5">
             <Label>Currency</Label>

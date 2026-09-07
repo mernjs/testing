@@ -9,7 +9,7 @@ import BrandMark from "@/components/BrandMark";
 import { brandify } from "@/lib/brand";
 import type { PmsRole } from "@/lib/pms-roles";
 
-export default function PmsMobileSidebar({ roles }: { roles: PmsRole[] }) {
+export default function PmsMobileSidebar({ roles, employeeId }: { roles: PmsRole[]; employeeId: string | null }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -27,7 +27,7 @@ export default function PmsMobileSidebar({ roles }: { roles: PmsRole[] }) {
               {brandify("YashOrbit")} <span className="text-foreground">PMS</span>
             </span>
           </div>
-          <PmsSidebar roles={roles} onNavigate={() => setOpen(false)} />
+          <PmsSidebar roles={roles} employeeId={employeeId} onNavigate={() => setOpen(false)} />
         </SheetContent>
       </Sheet>
     </>

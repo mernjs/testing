@@ -8,6 +8,7 @@ import TaskList from "@/components/pms/tasks/TaskList";
 import TaskSheet from "@/components/pms/tasks/TaskSheet";
 import { getCurrentPmsUser } from "@/lib/pms-auth";
 import { canManageProjects } from "@/lib/pms-roles";
+import { checkProjectAccess } from "@/lib/pms/access";
 import { getProject } from "@/lib/pms/projects";
 import { listTasks, listProjectLabels, serializeTask } from "@/lib/pms/tasks";
 import { availableEmployees } from "@/lib/pms/project-members";
@@ -16,6 +17,7 @@ export default async function ProjectTasksPage({ params }: { params: Promise<{ i
   const { id } = await params;
   const [user, project] = await Promise.all([getCurrentPmsUser(), getProject(id)]);
   if (!project) notFound();
+  if (user && !(await checkProjectAccess(user, id)).allowed) notFound();
   const canManage = user ? canManageProjects(user.roles) : false;
 
   const [topTasks, allTasks, employees, labels] = await Promise.all([

@@ -162,13 +162,15 @@ export interface AssigneeTaskRow extends Task {
   projectCode: string;
 }
 
-/** Open tasks assigned to an employee across every project — powers "My Work". */
-export async function tasksForAssignee(employeeId: string): Promise<AssigneeTaskRow[]> {
+/** Tasks assigned to an employee across every project — powers "My Work" / "My Tasks". */
+export async function tasksForAssignee(
+  employeeId: string,
+  opts: { includeDone?: boolean } = {}
+): Promise<AssigneeTaskRow[]> {
   const collection = await getCollection();
-  const rows = await collection
-    .find({ assigneeId: employeeId, status: { $ne: "done" }, ...notDeleted })
-    .sort({ dueDate: 1, orderKey: 1 })
-    .toArray();
+  const filter: Record<string, unknown> = { assigneeId: employeeId, ...notDeleted };
+  if (!opts.includeDone) filter.status = { $ne: "done" };
+  const rows = await collection.find(filter).sort({ dueDate: 1, orderKey: 1 }).toArray();
   if (rows.length === 0) return [];
 
   const db = await getDb();

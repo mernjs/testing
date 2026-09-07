@@ -19,7 +19,10 @@ export interface ProjectMember extends AuditFields {
   employeeId: string;
   role: ProjectMemberRole;
   allocationPercent: number;
+  /** What the client is billed per hour for this person. */
   billableRate: number | null;
+  /** What the company pays per hour for this person (drives profit/loss). */
+  costRate: number | null;
   active: boolean;
 }
 
@@ -158,6 +161,7 @@ export interface MemberWriteData {
   role: ProjectMemberRole;
   allocationPercent: number;
   billableRate: number | null;
+  costRate: number | null;
   active: boolean;
 }
 
@@ -177,6 +181,7 @@ export async function upsertMember(
           role: data.role,
           allocationPercent: clampAllocation(data.allocationPercent),
           billableRate: data.billableRate,
+          costRate: data.costRate,
           active: data.active,
           ...updateStamp(actorId),
         },
@@ -191,6 +196,7 @@ export async function upsertMember(
     role: data.role ?? DEFAULT_MEMBER_ROLE,
     allocationPercent: clampAllocation(data.allocationPercent),
     billableRate: data.billableRate,
+    costRate: data.costRate,
     active: data.active,
     ...createStamp(actorId),
   });

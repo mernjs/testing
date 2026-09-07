@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getCurrentPmsUser } from "@/lib/pms-auth";
 import { canManageProjects, isPmsAdmin } from "@/lib/pms-roles";
 import { getProject } from "@/lib/pms/projects";
+import { checkProjectAccess } from "@/lib/pms/access";
 import {
   createTask,
   updateTask,
@@ -169,10 +170,15 @@ export async function setTaskStatusAction(
   taskId: string,
   status: string
 ): Promise<TaskActionResult> {
-  const user = await requireManage();
+  const user = await getCurrentPmsUser();
+  if (!user) return { ok: false, error: "Unauthorized." };
   if (!isValidTaskStatus(status)) return { ok: false, error: "Unknown status." };
   const before = await getTask(taskId);
   if (!before || before.projectId !== projectId) return { ok: false, error: "Task not found." };
+
+  // Staff can set any task's status; an employee only on a project they belong to.
+  const access = await checkProjectAccess(user, projectId);
+  if (!access.allowed) return { ok: false, error: "You’re not assigned to this project." };
   if (before.status === status) return { ok: true, id: taskId };
 
   await updateTask(taskId, { status }, user.id);
@@ -223,6 +229,7 @@ export async function addTaskCommentAction(
 
   const task = await getTask(taskId);
   if (!task || task.projectId !== projectId) return { ok: false, error: "Task not found." };
+  if (!(await checkProjectAccess(user, projectId)).allowed) return { ok: false, error: "Forbidden." };
 
   await addComment({ taskId, projectId, authorId: user.id, authorEmail: user.email, body: text });
 

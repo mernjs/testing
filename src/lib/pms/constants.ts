@@ -111,6 +111,45 @@ export function getPriorityMeta(value: string | undefined) {
 }
 
 // ---------------------------------------------------------------------------
+// Timesheet entry status
+// ---------------------------------------------------------------------------
+
+export const TIMESHEET_STATUSES = [
+  { value: "draft", label: "Draft", badgeClass: "bg-muted text-muted-foreground", dotClass: "bg-muted-foreground/50" },
+  { value: "submitted", label: "Submitted", badgeClass: "bg-blue-500/15 text-blue-600 dark:text-blue-400", dotClass: "bg-blue-500" },
+  { value: "approved", label: "Approved", badgeClass: "bg-green-500/15 text-green-600 dark:text-green-400", dotClass: "bg-green-500" },
+  { value: "rejected", label: "Rejected", badgeClass: "bg-destructive/15 text-destructive", dotClass: "bg-destructive" },
+] as const;
+
+export type TimesheetStatus = (typeof TIMESHEET_STATUSES)[number]["value"];
+
+export const DEFAULT_TIMESHEET_STATUS: TimesheetStatus = "draft";
+
+/** Statuses whose hours count toward project actual cost / costing. */
+export const COSTED_TIMESHEET_STATUSES: TimesheetStatus[] = ["submitted", "approved"];
+
+/** Statuses the employee can still edit / delete themselves. */
+export const EDITABLE_TIMESHEET_STATUSES: TimesheetStatus[] = ["draft", "rejected"];
+
+export function isValidTimesheetStatus(value: unknown): value is TimesheetStatus {
+  return typeof value === "string" && TIMESHEET_STATUSES.some((s) => s.value === value);
+}
+
+export function getTimesheetStatusMeta(status: string | undefined) {
+  return TIMESHEET_STATUSES.find((s) => s.value === status) ?? TIMESHEET_STATUSES[0];
+}
+
+export const MAX_TIMESHEET_HOURS_PER_DAY = 16;
+
+/** "HH:mm" → minutes since midnight, or null. */
+export function parseHHmm(value: string | null | undefined): number | null {
+  if (!value || !/^\d{2}:\d{2}$/.test(value)) return null;
+  const [h, m] = value.split(":").map(Number);
+  if (h > 23 || m > 59) return null;
+  return h * 60 + m;
+}
+
+// ---------------------------------------------------------------------------
 // Milestone status
 // ---------------------------------------------------------------------------
 

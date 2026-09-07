@@ -8,22 +8,29 @@
  * grants full PMS access.
  */
 
-export const PMS_ROLES = ["super_admin", "pms_admin", "pms_manager"] as const;
+export const PMS_ROLES = ["super_admin", "pms_admin", "pms_manager", "pms_employee"] as const;
 
 export type PmsRole = (typeof PMS_ROLES)[number];
+
+/** Roles that open the full staff panel (dashboard, clients, projects, costing…). */
+export const PMS_STAFF_ROLES: PmsRole[] = ["super_admin", "pms_admin", "pms_manager"];
 
 export const PMS_ROLE_META: Record<PmsRole, { label: string; description: string }> = {
   super_admin: {
     label: "Super Admin",
-    description: "Full access: clients, projects, teams, settings and the activity log.",
+    description: "Full access: clients, projects, teams, costing, settings and the activity log.",
   },
   pms_admin: {
     label: "PMS Admin",
-    description: "Manage every client and project, configure settings, read the activity log.",
+    description: "Manage every client and project, costing, configure settings, read the activity log.",
   },
   pms_manager: {
     label: "Project Manager",
-    description: "Create and run projects, manage clients and project teams. No settings or audit.",
+    description: "Create and run projects, assign tasks, review timesheets and monitor project costing.",
+  },
+  pms_employee: {
+    label: "Employee",
+    description: "Self-service portal only — assigned projects, assigned tasks and timesheets.",
   },
 };
 
@@ -37,23 +44,43 @@ export function normalizePmsRoles(value: unknown): PmsRole[] {
   return Array.from(new Set(value.filter(isPmsRole)));
 }
 
-/** Can open the PMS panel at `/pms/*`. */
+/** Can open the PMS panel at `/pms/*` (staff panel or employee portal). */
 export function hasPmsAccess(roles: readonly string[] | undefined | null): boolean {
   return normalizePmsRoles(roles).length > 0;
+}
+
+/** Can open the full staff panel (dashboard, clients, projects, costing, settings). */
+export function hasPmsStaffRole(roles: readonly PmsRole[]): boolean {
+  return roles.some((r) => PMS_STAFF_ROLES.includes(r));
+}
+
+/** Only the `pms_employee` role — belongs in the `/pms/me` portal. */
+export function isPmsEmployeeOnly(roles: readonly PmsRole[]): boolean {
+  return roles.length > 0 && !hasPmsStaffRole(roles);
 }
 
 export function isPmsAdmin(roles: readonly PmsRole[]): boolean {
   return roles.includes("super_admin") || roles.includes("pms_admin");
 }
 
-/** Create / edit / archive any client. */
-export function canManageClients(roles: readonly PmsRole[]): boolean {
-  return roles.length > 0; // every PMS role can manage clients
+/** View the project-costing / financial dashboards + project reports. */
+export function canViewCosting(roles: readonly PmsRole[]): boolean {
+  return hasPmsStaffRole(roles);
 }
 
-/** Create / edit / delete any project + manage any project's team. */
+/** Review, approve and reject submitted timesheets. */
+export function canReviewTimesheets(roles: readonly PmsRole[]): boolean {
+  return hasPmsStaffRole(roles);
+}
+
+/** Create / edit / archive any client. */
+export function canManageClients(roles: readonly PmsRole[]): boolean {
+  return hasPmsStaffRole(roles);
+}
+
+/** Create / edit / delete any project, task and milestone + manage any project's team. */
 export function canManageProjects(roles: readonly PmsRole[]): boolean {
-  return roles.length > 0;
+  return hasPmsStaffRole(roles);
 }
 
 /** See every project vs. only projects the user manages / is a member of. */
@@ -75,5 +102,6 @@ export function primaryPmsRoleLabel(roles: readonly PmsRole[]): string {
   if (roles.includes("super_admin")) return PMS_ROLE_META.super_admin.label;
   if (roles.includes("pms_admin")) return PMS_ROLE_META.pms_admin.label;
   if (roles.includes("pms_manager")) return PMS_ROLE_META.pms_manager.label;
+  if (roles.includes("pms_employee")) return PMS_ROLE_META.pms_employee.label;
   return "No Access";
 }

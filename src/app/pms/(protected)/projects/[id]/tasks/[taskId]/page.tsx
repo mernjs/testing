@@ -1,18 +1,22 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarClock, Clock, Tag, User } from "lucide-react";
+import { CalendarClock, Clock, Paperclip, Tag, User } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { PriorityBadge, TaskStatusBadge } from "@/components/pms/StatusBadges";
 import TaskDetailActions from "@/components/pms/tasks/TaskDetailActions";
+import EmployeeTaskControls from "@/components/pms/tasks/EmployeeTaskControls";
 import SubtaskList from "@/components/pms/tasks/SubtaskList";
 import TaskComments from "@/components/pms/tasks/TaskComments";
+import TaskAttachments from "@/components/pms/tasks/TaskAttachments";
 import { getCurrentPmsUser } from "@/lib/pms-auth";
 import { canManageProjects, isPmsAdmin } from "@/lib/pms-roles";
+import { checkProjectAccess } from "@/lib/pms/access";
 import { getProject } from "@/lib/pms/projects";
-import { getTask, listSubtasks, listProjectLabels, serializeTask } from "@/lib/pms/tasks";
+import { getTask, listSubtasks, listProjectLabels, listTasks, serializeTask } from "@/lib/pms/tasks";
 import { listComments, serializeComment } from "@/lib/pms/task-comments";
+import { listAttachments, serializeAttachment } from "@/lib/pms/task-attachments";
 import { availableEmployees } from "@/lib/pms/project-members";
 import { formatDate, formatDateTime } from "@/lib/utils";
 
@@ -24,21 +28,29 @@ export default async function TaskDetailPage({
   const { id, taskId } = await params;
   const [user, project, task] = await Promise.all([getCurrentPmsUser(), getProject(id), getTask(taskId)]);
   if (!project || !task || task.projectId !== id) notFound();
+  if (user && !(await checkProjectAccess(user, id)).allowed) notFound();
 
   const canManage = user ? canManageProjects(user.roles) : false;
   const admin = user ? isPmsAdmin(user.roles) : false;
 
-  const [subtasks, comments, employees, labels, parent] = await Promise.all([
+  const [subtasks, comments, employees, labels, parent, attachments, projectTasks] = await Promise.all([
     listSubtasks(taskId),
     listComments(taskId),
     availableEmployees(),
     listProjectLabels(id),
     task.parentTaskId ? getTask(task.parentTaskId) : Promise.resolve(null),
+    listAttachments(taskId),
+    listTasks(id, { includeSubtasks: true }),
   ]);
 
   const empName = new Map(employees.map((e) => [e._id, e.name]));
   const serialized = serializeTask(task);
   const employeeOpts = employees.map((e) => ({ _id: e._id, name: e.name, employeeCode: e.employeeCode }));
+  const timesheetProjects = [
+    { _id: id, name: project.name, tasks: projectTasks.map((t) => ({ _id: t._id, title: t.title })) },
+  ];
+  const isPortalUser = Boolean(user?.employeeId) && !canManage;
+  const canUpload = canManage || isPortalUser;
 
   return (
     <div className="space-y-4">
@@ -71,13 +83,23 @@ export default async function TaskDetailPage({
             )}
           </p>
         </div>
-        {canManage && (
+        {canManage ? (
           <TaskDetailActions
             task={serialized}
             employees={employeeOpts}
             labelSuggestions={labels}
             redirectOnDelete={`/pms/projects/${id}/tasks`}
           />
+        ) : (
+          isPortalUser && (
+            <EmployeeTaskControls
+              projectId={id}
+              taskId={taskId}
+              status={task.status}
+              canUpdateStatus
+              timesheetProjects={timesheetProjects}
+            />
+          )
         )}
       </div>
 
@@ -120,10 +142,24 @@ export default async function TaskDetailPage({
               employees={employeeOpts}
               labelSuggestions={labels}
               canManage={canManage}
+              canToggle={canManage || isPortalUser}
             />
           </CardContent>
         </GlassCard>
       )}
+
+      <GlassCard>
+        <CardHeader><CardTitle className="flex items-center gap-2"><Paperclip className="size-4" /> Attachments ({attachments.length})</CardTitle></CardHeader>
+        <CardContent>
+          <TaskAttachments
+            taskId={taskId}
+            attachments={attachments.map((a) => serializeAttachment(a))}
+            currentUserId={user?.id ?? ""}
+            canUpload={canUpload}
+            canManage={canManage}
+          />
+        </CardContent>
+      </GlassCard>
 
       <GlassCard>
         <CardHeader><CardTitle>Comments ({comments.length})</CardTitle></CardHeader>

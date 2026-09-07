@@ -19,20 +19,24 @@ export default function SubtaskList({
   employees,
   labelSuggestions,
   canManage,
+  canToggle = canManage,
 }: {
   projectId: string;
   parentTaskId: string;
   subtasks: SerializedTask[];
   employees: { _id: string; name: string; employeeCode: string }[];
   labelSuggestions: string[];
+  /** Add / edit subtasks (staff only). */
   canManage: boolean;
+  /** Tick a subtask done — staff, or any project member in the portal. */
+  canToggle?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const doneCount = subtasks.filter((s) => isTaskDone(s.status)).length;
 
   function toggle(sub: SerializedTask) {
-    if (!canManage) return;
+    if (!canToggle) return;
     const next = isTaskDone(sub.status) ? "todo" : "done";
     startTransition(async () => {
       const result = await setTaskStatusAction(projectId, sub._id, next);
@@ -54,7 +58,7 @@ export default function SubtaskList({
           <button
             type="button"
             onClick={() => toggle(s)}
-            disabled={!canManage || pending}
+            disabled={!canToggle || pending}
             aria-label={isTaskDone(s.status) ? "Mark not done" : "Mark done"}
             className={cn(
               "flex size-4 shrink-0 items-center justify-center rounded border",

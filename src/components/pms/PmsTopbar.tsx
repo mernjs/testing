@@ -10,16 +10,18 @@ import { primaryPmsRoleLabel, type PmsRole } from "@/lib/pms-roles";
 
 export default function PmsTopbar({
   roles,
+  employeeId,
   notifications,
   unread,
 }: {
   roles: PmsRole[];
+  employeeId: string | null;
   notifications: BellItem[];
   unread: number;
 }) {
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
-      <PmsMobileSidebar roles={roles} />
+      <PmsMobileSidebar roles={roles} employeeId={employeeId} />
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold text-foreground">Project Management</p>
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryPmsRoleLabel(roles)}</p>

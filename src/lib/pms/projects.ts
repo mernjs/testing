@@ -37,6 +37,7 @@ export interface Project extends AuditFields {
   startDate: string | null; // ISO yyyy-mm-dd
   endDate: string | null; // ISO yyyy-mm-dd
   estimatedBudget: number | null;
+  estimatedHours: number | null;
   currency: string;
   /** `hrms_employees` _id of the project manager. */
   projectManagerId: string | null;
@@ -232,6 +233,7 @@ export interface ProjectWriteData {
   startDate: string | null;
   endDate: string | null;
   estimatedBudget: number | null;
+  estimatedHours: number | null;
   currency: string;
   projectManagerId: string | null;
   technologies: string[];
@@ -252,6 +254,7 @@ export async function createProject(data: ProjectWriteData, actorId: string): Pr
     startDate: data.startDate,
     endDate: data.endDate,
     estimatedBudget: data.estimatedBudget,
+    estimatedHours: data.estimatedHours,
     currency: data.currency,
     projectManagerId: data.projectManagerId,
     technologies: data.technologies ?? [],

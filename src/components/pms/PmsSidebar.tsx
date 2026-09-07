@@ -12,11 +12,14 @@ import {
   CircleUser,
   CalendarDays,
   Bell,
+  Coins,
+  Clock,
+  CheckSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { PmsRole } from "@/lib/pms-roles";
-import { canManageSettings, canViewActivityLog } from "@/lib/pms-roles";
+import { canManageSettings, canViewActivityLog, canViewCosting, hasPmsStaffRole } from "@/lib/pms-roles";
 
 function NavLink({
   href,
@@ -83,16 +86,33 @@ function SectionLabel({ children, collapsed }: { children: React.ReactNode; coll
 
 export default function PmsSidebar({
   roles,
+  employeeId,
   onNavigate,
   collapsed = false,
 }: {
   roles: PmsRole[];
+  employeeId: string | null;
   onNavigate?: () => void;
   collapsed?: boolean;
 }) {
   const nav = (props: { href: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean }) => (
     <NavLink {...props} collapsed={collapsed} onNavigate={onNavigate} />
   );
+  const isStaff = hasPmsStaffRole(roles);
+
+  // Employee-only portal.
+  if (!isStaff) {
+    return (
+      <nav className="flex h-full flex-col gap-1 p-3">
+        {nav({ href: "/pms/me", label: "Dashboard", icon: LayoutDashboard, exact: true })}
+        {nav({ href: "/pms/me/projects", label: "My Projects", icon: FolderKanban })}
+        {nav({ href: "/pms/me/tasks", label: "My Tasks", icon: CheckSquare })}
+        {nav({ href: "/pms/me/timesheet", label: "Timesheet", icon: Clock })}
+        <SectionLabel collapsed={collapsed}>General</SectionLabel>
+        {nav({ href: "/pms/notifications", label: "Notifications", icon: Bell })}
+      </nav>
+    );
+  }
 
   return (
     <nav className="flex h-full flex-col gap-1 p-3">
@@ -102,12 +122,24 @@ export default function PmsSidebar({
       {nav({ href: "/pms/projects", label: "Projects", icon: FolderKanban })}
       {nav({ href: "/pms/clients", label: "Clients", icon: Building2 })}
       {nav({ href: "/pms/calendar", label: "Calendar", icon: CalendarDays })}
-      {nav({ href: "/pms/me", label: "My Work", icon: CircleUser })}
+
+      <SectionLabel collapsed={collapsed}>Finance</SectionLabel>
+      {canViewCosting(roles) && nav({ href: "/pms/costing", label: "Costing", icon: Coins })}
+      {canViewCosting(roles) && nav({ href: "/pms/timesheets", label: "Timesheet Review", icon: Clock })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
       {nav({ href: "/pms/notifications", label: "Notifications", icon: Bell })}
       {canViewActivityLog(roles) && nav({ href: "/pms/activity", label: "Activity Log", icon: ScrollText })}
       {canManageSettings(roles) && nav({ href: "/pms/settings", label: "Settings", icon: Settings })}
+
+      {employeeId && (
+        <>
+          <SectionLabel collapsed={collapsed}>Me</SectionLabel>
+          {nav({ href: "/pms/me", label: "My Dashboard", icon: CircleUser, exact: true })}
+          {nav({ href: "/pms/me/tasks", label: "My Tasks", icon: CheckSquare })}
+          {nav({ href: "/pms/me/timesheet", label: "My Timesheet", icon: Clock })}
+        </>
+      )}
     </nav>
   );
 }

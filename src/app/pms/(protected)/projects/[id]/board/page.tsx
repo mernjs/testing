@@ -5,6 +5,7 @@ import ProjectTabs from "@/components/pms/ProjectTabs";
 import TaskBoard from "@/components/pms/tasks/TaskBoard";
 import { getCurrentPmsUser } from "@/lib/pms-auth";
 import { canManageProjects } from "@/lib/pms-roles";
+import { checkProjectAccess } from "@/lib/pms/access";
 import { getProject } from "@/lib/pms/projects";
 import { boardTasks, listProjectLabels, serializeTask } from "@/lib/pms/tasks";
 import { availableEmployees } from "@/lib/pms/project-members";
@@ -15,6 +16,7 @@ export default async function ProjectBoardPage({ params }: { params: Promise<{ i
   const { id } = await params;
   const [user, project] = await Promise.all([getCurrentPmsUser(), getProject(id)]);
   if (!project) notFound();
+  if (user && !(await checkProjectAccess(user, id)).allowed) notFound();
   const canManage = user ? canManageProjects(user.roles) : false;
 
   const [board, employees, labels] = await Promise.all([

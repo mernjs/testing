@@ -6,6 +6,8 @@ import {
   isValidMemberRole,
   isValidTaskStatus,
   isValidMilestoneStatus,
+  parseHHmm,
+  MAX_TIMESHEET_HOURS_PER_DAY,
   DEFAULT_CLIENT_STATUS,
   DEFAULT_PROJECT_STATUS,
   DEFAULT_PRIORITY,
@@ -20,6 +22,8 @@ import type { ProjectWriteData } from "@/lib/pms/projects";
 import type { MemberWriteData } from "@/lib/pms/project-members";
 import type { TaskWriteData } from "@/lib/pms/tasks";
 import type { MilestoneWriteData } from "@/lib/pms/milestones";
+import type { EntryWriteData } from "@/lib/pms/timesheets";
+import type { CostingConfigInput } from "@/lib/pms/costing";
 
 /**
  * Hand-rolled server-side validators. Same `{ valid, data } | { valid, errors }`
@@ -160,6 +164,7 @@ export function validateProject(input: Record<string, unknown>): Ok<ProjectWrite
   if (startDate && endDate && endDate < startDate) errors.endDate = "End date is before the start date.";
 
   const estimatedBudget = optNum(input.estimatedBudget, errors, "estimatedBudget", { min: 0 });
+  const estimatedHours = optNum(input.estimatedHours, errors, "estimatedHours", { min: 0 });
   const progressPercent = optNum(input.progressPercent, errors, "progressPercent", { min: 0 }) ?? 0;
   if (progressPercent > 100) errors.progressPercent = "Progress cannot exceed 100%.";
 
@@ -177,6 +182,7 @@ export function validateProject(input: Record<string, unknown>): Ok<ProjectWrite
       startDate,
       endDate,
       estimatedBudget,
+      estimatedHours,
       currency: currency(input.currency),
       projectManagerId: str(input.projectManagerId) || null,
       technologies: tags(input.technologies),
@@ -273,6 +279,7 @@ export function validateMember(input: Record<string, unknown>): Ok<MemberWriteDa
   if (allocationPercent > 100) errors.allocationPercent = "Allocation cannot exceed 100%.";
 
   const billableRate = optNum(input.billableRate, errors, "billableRate", { min: 0 });
+  const costRate = optNum(input.costRate, errors, "costRate", { min: 0 });
 
   if (Object.keys(errors).length > 0) return { valid: false, errors };
 
@@ -283,7 +290,76 @@ export function validateMember(input: Record<string, unknown>): Ok<MemberWriteDa
       role: isValidMemberRole(roleRaw) ? roleRaw : DEFAULT_MEMBER_ROLE,
       allocationPercent: Math.min(100, Math.max(0, Math.round(allocationPercent))),
       billableRate,
+      costRate,
       active: input.active === undefined ? true : input.active === true || input.active === "true",
     },
   };
+}
+
+// ---------------------------------------------------------------------------
+// Timesheet entry
+// ---------------------------------------------------------------------------
+
+export function validateTimesheet(input: Record<string, unknown>): Ok<EntryWriteData> | Err {
+  const errors: Record<string, string> = {};
+
+  const projectId = str(input.projectId);
+  if (!projectId) errors.projectId = "Select a project.";
+
+  const date = optDate(input.date, errors, "date");
+  if (!date) errors.date = errors.date ?? "Select a date.";
+
+  const startTime = str(input.startTime) || null;
+  const endTime = str(input.endTime) || null;
+  const TIME_RE = /^\d{2}:\d{2}$/;
+  if (startTime && !TIME_RE.test(startTime)) errors.startTime = "Use HH:MM.";
+  if (endTime && !TIME_RE.test(endTime)) errors.endTime = "Use HH:MM.";
+
+  const sMin = parseHHmm(startTime);
+  const eMin = parseHHmm(endTime);
+
+  let hours: number;
+  if (sMin !== null && eMin !== null) {
+    if (eMin <= sMin) {
+      errors.endTime = "End time must be after the start time.";
+      hours = 0;
+    } else {
+      hours = Math.round(((eMin - sMin) / 60) * 100) / 100;
+    }
+  } else {
+    hours = optNum(input.hours, errors, "hours", { min: 0 }) ?? 0;
+  }
+
+  if (hours <= 0) errors.hours = errors.hours ?? "Enter the hours worked (or a start and end time).";
+  if (hours > MAX_TIMESHEET_HOURS_PER_DAY) errors.hours = `That's more than ${MAX_TIMESHEET_HOURS_PER_DAY} hours in one entry.`;
+
+  if (Object.keys(errors).length > 0) return { valid: false, errors };
+
+  return {
+    valid: true,
+    data: {
+      projectId,
+      taskId: str(input.taskId) || null,
+      date: date as string,
+      startTime,
+      endTime,
+      hours,
+      description: optStr(input.description, 2000),
+      billable: input.billable === true || input.billable === "true" || input.billable === "on",
+    },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Costing config
+// ---------------------------------------------------------------------------
+
+export function validateCostingConfig(input: Record<string, unknown>): Ok<CostingConfigInput> | Err {
+  const errors: Record<string, string> = {};
+  const contractValue = optNum(input.contractValue, errors, "contractValue", { min: 0 });
+  const otherCosts = optNum(input.otherCosts, errors, "otherCosts", { min: 0 }) ?? 0;
+  const defaultCostRate = optNum(input.defaultCostRate, errors, "defaultCostRate", { min: 0 }) ?? 0;
+  const defaultBillRate = optNum(input.defaultBillRate, errors, "defaultBillRate", { min: 0 }) ?? 0;
+  if (Object.keys(errors).length > 0) return { valid: false, errors };
+  return { valid: true, data: { contractValue, otherCosts, defaultCostRate, defaultBillRate } };
 }

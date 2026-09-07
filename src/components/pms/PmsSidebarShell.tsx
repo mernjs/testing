@@ -16,11 +16,13 @@ const COLLAPSED_WIDTH = 68;
 export default function PmsSidebarShell({
   email,
   roles,
+  employeeId,
   createdAt,
   lastLoginAt,
 }: {
   email: string;
   roles: PmsRole[];
+  employeeId: string | null;
   createdAt: string;
   lastLoginAt: string | null;
 }) {
@@ -58,7 +60,7 @@ export default function PmsSidebarShell({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <PmsSidebar roles={roles} collapsed={collapsed} />
+        <PmsSidebar roles={roles} employeeId={employeeId} collapsed={collapsed} />
       </div>
 
       <PmsProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />

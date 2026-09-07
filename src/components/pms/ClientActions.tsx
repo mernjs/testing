@@ -17,7 +17,7 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import ClientForm from "@/components/pms/ClientForm";
-import { deleteClientAction } from "@/app/pms/(protected)/clients/actions";
+import { deleteClientAction } from "@/app/pms/(protected)/(staff)/clients/actions";
 import type { SerializedClient } from "@/lib/pms/clients";
 
 export default function ClientActions({ client }: { client: SerializedClient }) {

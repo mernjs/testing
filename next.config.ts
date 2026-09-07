@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Node-only libs used inside route handlers — keep them out of the bundler.
+  serverExternalPackages: ["exceljs"],
   images: {
     remotePatterns: [
       {

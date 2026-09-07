@@ -4,6 +4,7 @@ import ProjectTabs from "@/components/pms/ProjectTabs";
 import DocumentsManager from "@/components/pms/DocumentsManager";
 import { getCurrentPmsUser } from "@/lib/pms-auth";
 import { canManageProjects } from "@/lib/pms-roles";
+import { checkProjectAccess } from "@/lib/pms/access";
 import { getProject } from "@/lib/pms/projects";
 import { listCurrentDocuments, documentVersions, serializeDocument } from "@/lib/pms/documents";
 
@@ -11,6 +12,7 @@ export default async function ProjectDocumentsPage({ params }: { params: Promise
   const { id } = await params;
   const [user, project] = await Promise.all([getCurrentPmsUser(), getProject(id)]);
   if (!project) notFound();
+  if (user && !(await checkProjectAccess(user, id)).allowed) notFound();
   const canManage = user ? canManageProjects(user.roles) : false;
 
   const current = await listCurrentDocuments(id);

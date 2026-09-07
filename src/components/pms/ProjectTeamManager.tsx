@@ -35,6 +35,7 @@ interface MemberRow {
   role: string;
   allocationPercent: number;
   billableRate: number | null;
+  costRate: number | null;
   active: boolean;
 }
 
@@ -79,6 +80,7 @@ export default function ProjectTeamManager({
       role: m.role,
       allocationPercent: String(m.allocationPercent),
       billableRate: m.billableRate != null ? String(m.billableRate) : "",
+      costRate: m.costRate != null ? String(m.costRate) : "",
       active: m.active ? "true" : "false",
     });
     setErrors({});
@@ -252,15 +254,27 @@ export default function ProjectTeamManager({
               />
               {err("allocationPercent")}
             </div>
-            <div className="space-y-1.5">
-              <Label>Billable rate ({currency}, optional)</Label>
-              <Input
-                type="number"
-                min={0}
-                value={form.billableRate ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, billableRate: e.target.value }))}
-              />
-              {err("billableRate")}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Billable rate / hr ({currency})</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={form.billableRate ?? ""}
+                  onChange={(e) => setForm((f) => ({ ...f, billableRate: e.target.value }))}
+                />
+                {err("billableRate")}
+              </div>
+              <div className="space-y-1.5">
+                <Label>Cost rate / hr ({currency})</Label>
+                <Input
+                  type="number"
+                  min={0}
+                  value={form.costRate ?? ""}
+                  onChange={(e) => setForm((f) => ({ ...f, costRate: e.target.value }))}
+                />
+                {err("costRate")}
+              </div>
             </div>
             <div className="space-y-1.5">
               <Label>Status</Label>

@@ -84,6 +84,9 @@ async function main() {
     const documentsCol = db.collection("pms_documents");
     const notificationsCol = db.collection("pms_notifications");
     const metaCol = db.collection("pms_meta");
+    const timesheetsCol = db.collection("pms_timesheets");
+    const costingCol = db.collection("pms_project_costing");
+    const attachmentsCol = db.collection("pms_task_attachments");
 
     console.log("Wiping PMS collections…");
     await Promise.all([
@@ -96,6 +99,9 @@ async function main() {
       commentsCol.deleteMany({}),
       milestonesCol.deleteMany({}),
       documentsCol.deleteMany({}),
+      timesheetsCol.deleteMany({}),
+      costingCol.deleteMany({}),
+      attachmentsCol.deleteMany({}),
       notificationsCol.deleteMany({}),
       metaCol.deleteMany({ _id: "deadline_sweep" }),
       counters.deleteMany({ _id: { $in: ["client_code", "project_code", "task_code"] } }),
@@ -198,6 +204,7 @@ async function main() {
         startDate: isoDate(startDate),
         endDate: isoDate(endDate),
         estimatedBudget: randInt(8, 120) * 100000,
+        estimatedHours: randInt(200, 2400),
         currency: clientDoc.billing.currency,
         projectManagerId: pmId,
         technologies: pick(TECH, randInt(3, 6)),
@@ -218,6 +225,7 @@ async function main() {
           role: "manager",
           allocationPercent: randInt(20, 50),
           billableRate: randInt(40, 120) * 100,
+          costRate: randInt(25, 70) * 100,
           active: true,
           ...stamp(createdOffset),
         });
@@ -230,6 +238,7 @@ async function main() {
           role: MEMBER_ROLES[randInt(0, MEMBER_ROLES.length - 1)],
           allocationPercent: randInt(25, 100),
           billableRate: randInt(20, 90) * 100,
+          costRate: randInt(12, 55) * 100,
           active: status !== "completed" && status !== "cancelled" ? true : Math.random() > 0.5,
           ...stamp(createdOffset - randInt(0, 10)),
         });
@@ -394,14 +403,74 @@ async function main() {
       }
     }
 
+    // ---- Timesheets -----------------------------------------------------
+    const TS_STATUSES = ["draft", "submitted", "approved", "approved", "approved", "rejected"];
+    const timesheetDocs = [];
+    const costingDocs = [];
+    for (const pm of projectMeta) {
+      const projTaskDocs = taskDocs.filter((t) => t.projectId === pm.pid && !t.parentTaskId);
+      const contributors = [pm.pmId, ...pm.team].filter(Boolean);
+      // ~6-20 entries per project spread over the last 60 days.
+      const entryCount = pm.status === "planning" ? randInt(0, 4) : randInt(8, 22);
+      for (let k = 0; k < entryCount; k++) {
+        const emp = contributors[randInt(0, contributors.length - 1)];
+        if (!emp) continue;
+        const dayOffset = -randInt(0, 60);
+        const startH = randInt(9, 15);
+        const durH = randInt(1, 4);
+        const st = pm.status === "completed" ? "approved" : TS_STATUSES[randInt(0, TS_STATUSES.length - 1)];
+        const task = projTaskDocs.length ? projTaskDocs[randInt(0, projTaskDocs.length - 1)] : null;
+        const created = new Date(now.getTime() + dayOffset * 86400000);
+        timesheetDocs.push({
+          _id: randomUUID(),
+          projectId: pm.pid,
+          taskId: task ? task._id : null,
+          employeeId: emp,
+          date: isoDate(daysFromNow(dayOffset)),
+          startTime: `${String(startH).padStart(2, "0")}:00`,
+          endTime: `${String(startH + durH).padStart(2, "0")}:00`,
+          hours: durH,
+          description: pick(["Implementation", "Code review", "Bug fixing", "Client call", "Testing", "Deployment prep", "Documentation"], 1)[0],
+          billable: Math.random() < 0.75,
+          status: st,
+          submittedAt: st === "draft" ? null : created,
+          reviewedBy: st === "approved" || st === "rejected" ? "pms-seed" : null,
+          reviewedAt: st === "approved" || st === "rejected" ? created : null,
+          reviewNote: st === "rejected" ? "Please split by task." : null,
+          createdAt: created,
+          updatedAt: created,
+          createdBy: "pms-seed",
+          updatedBy: "pms-seed",
+          deletedAt: null,
+        });
+      }
+      costingDocs.push({
+        _id: pm.pid,
+        contractValue: null,
+        otherCosts: randInt(0, 8) * 25000,
+        defaultCostRate: randInt(15, 40) * 100,
+        defaultBillRate: randInt(35, 85) * 100,
+        updatedAt: now,
+        updatedBy: "pms-seed",
+      });
+    }
+
     await projects.insertMany(projectDocs);
     if (memberDocs.length) await members.insertMany(memberDocs);
     await activity.insertMany(activityDocs);
     if (taskDocs.length) await tasksCol.insertMany(taskDocs);
     if (commentDocs.length) await commentsCol.insertMany(commentDocs);
     if (milestoneDocs.length) await milestonesCol.insertMany(milestoneDocs);
+    if (timesheetDocs.length) await timesheetsCol.insertMany(timesheetDocs);
+    if (costingDocs.length) await costingCol.insertMany(costingDocs);
     await counters.updateOne({ _id: "project_code" }, { $set: { seq: projectDocs.length } }, { upsert: true });
     await counters.updateOne({ _id: "task_code" }, { $set: { seq: taskSeq } }, { upsert: true });
+
+    // ---- Grant pms_employee to existing HRMS portal logins --------------
+    const empLoginRes = await db.collection("admin_users").updateMany(
+      { employeeId: { $ne: null }, roles: "employee" },
+      { $addToSet: { roles: "pms_employee" } }
+    );
 
     // ---- Notifications for PMS logins ------------------------------------
     const pmsLogins = await db
@@ -433,6 +502,7 @@ async function main() {
 
     console.log(`\nSeeded:`);
     console.log(`  ${clientDocs.length} clients`);
+    console.log(`  ${timesheetDocs.length} timesheet entries · granted pms_employee to ${empLoginRes.modifiedCount} logins`);
     console.log(`  ${projectDocs.length} projects (every status + priority)`);
     console.log(`  ${memberDocs.length} team allocations`);
     console.log(`  ${taskDocs.length} tasks (incl. subtasks) + ${commentDocs.length} comments`);

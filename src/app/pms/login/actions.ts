@@ -7,6 +7,7 @@ import {
   setPmsSessionCookie,
   getSessionPmsUser,
 } from "@/lib/pms-auth";
+import { hasPmsStaffRole } from "@/lib/pms-roles";
 
 export interface PmsLoginState {
   error?: string;
@@ -30,5 +31,6 @@ export async function pmsLoginAction(_prevState: PmsLoginState, formData: FormDa
 
   const user = await getSessionPmsUser(token);
   if (user?.mustChangePassword) redirect("/pms/change-password");
+  if (user && !hasPmsStaffRole(user.roles)) redirect("/pms/me");
   redirect("/pms");
 }

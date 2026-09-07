@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { SUPPORTED_CURRENCIES } from "@/lib/pms/constants";
-import { savePmsSettingsAction } from "@/app/pms/(protected)/settings/actions";
+import { savePmsSettingsAction } from "@/app/pms/(protected)/(staff)/settings/actions";
 
 export default function PmsSettingsForm({
   categories,

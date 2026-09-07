@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { CLIENT_STATUSES, SUPPORTED_CURRENCIES } from "@/lib/pms/constants";
-import { saveClientAction } from "@/app/pms/(protected)/clients/actions";
+import { saveClientAction } from "@/app/pms/(protected)/(staff)/clients/actions";
 import type { SerializedClient } from "@/lib/pms/clients";
 
 type FormState = Record<string, string>;
