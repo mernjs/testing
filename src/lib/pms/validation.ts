@@ -4,16 +4,22 @@ import {
   isValidProjectStatus,
   isValidPriority,
   isValidMemberRole,
+  isValidTaskStatus,
+  isValidMilestoneStatus,
   DEFAULT_CLIENT_STATUS,
   DEFAULT_PROJECT_STATUS,
   DEFAULT_PRIORITY,
   DEFAULT_MEMBER_ROLE,
+  DEFAULT_TASK_STATUS,
+  DEFAULT_MILESTONE_STATUS,
   SUPPORTED_CURRENCIES,
   DEFAULT_CURRENCY,
 } from "@/lib/pms/constants";
 import type { ClientWriteData } from "@/lib/pms/clients";
 import type { ProjectWriteData } from "@/lib/pms/projects";
 import type { MemberWriteData } from "@/lib/pms/project-members";
+import type { TaskWriteData } from "@/lib/pms/tasks";
+import type { MilestoneWriteData } from "@/lib/pms/milestones";
 
 /**
  * Hand-rolled server-side validators. Same `{ valid, data } | { valid, errors }`
@@ -182,6 +188,77 @@ export function validateProject(input: Record<string, unknown>): Ok<ProjectWrite
 // ---------------------------------------------------------------------------
 // Project member
 // ---------------------------------------------------------------------------
+
+export function validateTask(input: Record<string, unknown>): Ok<TaskWriteData> | Err {
+  const errors: Record<string, string> = {};
+
+  const title = str(input.title);
+  if (!title) errors.title = "Task title is required.";
+  if (title.length > 300) errors.title = "Task title is too long.";
+
+  const statusRaw = str(input.status) || DEFAULT_TASK_STATUS;
+  if (!isValidTaskStatus(statusRaw)) errors.status = "Unknown status.";
+
+  const priorityRaw = str(input.priority) || DEFAULT_PRIORITY;
+  if (!isValidPriority(priorityRaw)) errors.priority = "Unknown priority.";
+
+  const startDate = optDate(input.startDate, errors, "startDate");
+  const dueDate = optDate(input.dueDate, errors, "dueDate");
+  if (startDate && dueDate && dueDate < startDate) errors.dueDate = "Due date is before the start date.";
+
+  const estimateHours = optNum(input.estimateHours, errors, "estimateHours", { min: 0 });
+
+  if (Object.keys(errors).length > 0) return { valid: false, errors };
+
+  return {
+    valid: true,
+    data: {
+      title,
+      description: optStr(input.description, 8000),
+      status: isValidTaskStatus(statusRaw) ? statusRaw : DEFAULT_TASK_STATUS,
+      priority: isValidPriority(priorityRaw) ? priorityRaw : DEFAULT_PRIORITY,
+      assigneeId: str(input.assigneeId) || null,
+      labels: tags(input.labels),
+      startDate,
+      dueDate,
+      estimateHours,
+      parentTaskId: str(input.parentTaskId) || null,
+    },
+  };
+}
+
+export function validateMilestone(input: Record<string, unknown>): Ok<MilestoneWriteData> | Err {
+  const errors: Record<string, string> = {};
+
+  const name = str(input.name);
+  if (!name) errors.name = "Milestone name is required.";
+  if (name.length > 200) errors.name = "Milestone name is too long.";
+
+  const statusRaw = str(input.status) || DEFAULT_MILESTONE_STATUS;
+  if (!isValidMilestoneStatus(statusRaw)) errors.status = "Unknown status.";
+
+  const dueDate = optDate(input.dueDate, errors, "dueDate");
+  const manualProgressPercent = optNum(input.manualProgressPercent, errors, "manualProgressPercent", { min: 0 }) ?? 0;
+  if (manualProgressPercent > 100) errors.manualProgressPercent = "Progress cannot exceed 100%.";
+
+  const linkedTaskIds = Array.isArray(input.linkedTaskIds)
+    ? Array.from(new Set(input.linkedTaskIds.map((x) => String(x)).filter(Boolean))).slice(0, 200)
+    : [];
+
+  if (Object.keys(errors).length > 0) return { valid: false, errors };
+
+  return {
+    valid: true,
+    data: {
+      name,
+      description: optStr(input.description, 4000),
+      dueDate,
+      status: isValidMilestoneStatus(statusRaw) ? statusRaw : DEFAULT_MILESTONE_STATUS,
+      manualProgressPercent: Math.min(100, Math.max(0, Math.round(manualProgressPercent))),
+      linkedTaskIds,
+    },
+  };
+}
 
 export function validateMember(input: Record<string, unknown>): Ok<MemberWriteData> | Err {
   const errors: Record<string, string> = {};

@@ -9,7 +9,14 @@ import { newId } from "@/lib/pms/db";
 
 export const ACTIVITY_LOGS_COLLECTION = "pms_activity_logs";
 
-export type ActivityEntity = "client" | "project" | "project_member" | "settings";
+export type ActivityEntity =
+  | "client"
+  | "project"
+  | "project_member"
+  | "settings"
+  | "task"
+  | "task_comment"
+  | "milestone";
 
 export type ActivityAction =
   | "create"
@@ -19,7 +26,10 @@ export type ActivityAction =
   | "member_add"
   | "member_update"
   | "member_remove"
-  | "progress_update";
+  | "progress_update"
+  | "assign"
+  | "comment"
+  | "move";
 
 export interface ActivityLog {
   _id: string;

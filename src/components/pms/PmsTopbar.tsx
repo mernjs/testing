@@ -4,10 +4,19 @@ import Link from "next/link";
 import { Users, LayoutGrid, Globe } from "lucide-react";
 import PmsMobileSidebar from "@/components/pms/PmsMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import PmsNotificationsBell, { type BellItem } from "@/components/pms/PmsNotificationsBell";
 import { buttonVariants } from "@/components/ui/button";
 import { primaryPmsRoleLabel, type PmsRole } from "@/lib/pms-roles";
 
-export default function PmsTopbar({ roles }: { roles: PmsRole[] }) {
+export default function PmsTopbar({
+  roles,
+  notifications,
+  unread,
+}: {
+  roles: PmsRole[];
+  notifications: BellItem[];
+  unread: number;
+}) {
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <PmsMobileSidebar roles={roles} />
@@ -43,6 +52,7 @@ export default function PmsTopbar({ roles }: { roles: PmsRole[] }) {
           <span className="hidden sm:inline">Website</span>
         </a>
         <ThemeToggle />
+        <PmsNotificationsBell items={notifications} unread={unread} />
       </div>
     </header>
   );

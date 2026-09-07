@@ -13,14 +13,25 @@ export default function ProjectProgressControl({
   projectId,
   progressPercent,
   editable,
+  taskDriven = false,
 }: {
   projectId: string;
   progressPercent: number;
   editable: boolean;
+  taskDriven?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [value, setValue] = useState(progressPercent);
+
+  if (taskDriven) {
+    return (
+      <div className="space-y-1.5">
+        <ProgressBar value={progressPercent} />
+        <p className="text-xs text-muted-foreground">Calculated automatically from task completion.</p>
+      </div>
+    );
+  }
 
   if (!editable) return <ProgressBar value={progressPercent} />;
 

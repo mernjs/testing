@@ -78,6 +78,12 @@ async function main() {
     const activity = db.collection("pms_activity_logs");
     const settings = db.collection("pms_settings");
     const counters = db.collection("pms_counters");
+    const tasksCol = db.collection("pms_tasks");
+    const commentsCol = db.collection("pms_task_comments");
+    const milestonesCol = db.collection("pms_milestones");
+    const documentsCol = db.collection("pms_documents");
+    const notificationsCol = db.collection("pms_notifications");
+    const metaCol = db.collection("pms_meta");
 
     console.log("Wiping PMS collections…");
     await Promise.all([
@@ -86,7 +92,13 @@ async function main() {
       members.deleteMany({}),
       activity.deleteMany({}),
       settings.deleteMany({}),
-      counters.deleteMany({ _id: { $in: ["client_code", "project_code"] } }),
+      tasksCol.deleteMany({}),
+      commentsCol.deleteMany({}),
+      milestonesCol.deleteMany({}),
+      documentsCol.deleteMany({}),
+      notificationsCol.deleteMany({}),
+      metaCol.deleteMany({ _id: "deadline_sweep" }),
+      counters.deleteMany({ _id: { $in: ["client_code", "project_code", "task_code"] } }),
     ]);
 
     const now = new Date();
@@ -153,6 +165,7 @@ async function main() {
     const projectDocs = [];
     const memberDocs = [];
     const activityDocs = [];
+    const projectMeta = [];
 
     for (let i = 0; i < PROJECT_NAMES.length; i++) {
       const clientDoc = activeClients[i % activeClients.length];
@@ -196,6 +209,7 @@ async function main() {
       const memberPool = empIds.filter((id) => id !== pmId);
       const teamSize = Math.min(memberPool.length, randInt(3, 6));
       const team = pick(memberPool, teamSize);
+      projectMeta.push({ pid, status, pmId, team, createdOffset, startDate, endDate, name: PROJECT_NAMES[i], code: `PRJ-${String(i + 1).padStart(4, "0")}` });
       if (pmId) {
         memberDocs.push({
           _id: randomUUID(),
@@ -251,16 +265,179 @@ async function main() {
       }
     }
 
+    // ---- Tasks + subtasks + comments -------------------------------------
+    const TASK_STATUSES = ["todo", "in_progress", "review", "testing", "done"];
+    const TASK_TITLES = [
+      "Set up CI/CD pipeline", "Design database schema", "Build authentication flow",
+      "Implement dashboard UI", "Write API integration tests", "Accessibility audit",
+      "Performance profiling", "Draft user documentation", "Configure monitoring & alerts",
+      "Security review", "Load-test the checkout path", "Migrate legacy data",
+      "Wire up payment gateway", "Set up feature flags", "Localization pass",
+    ];
+    const LABELS = ["frontend", "backend", "infra", "bug", "spike", "docs", "design", "urgent"];
+    const taskDocs = [];
+    const commentDocs = [];
+    const milestoneDocs = [];
+    let taskSeq = 0;
+
+    for (const pm of projectMeta) {
+      const taskCount = pm.status === "planning" ? randInt(2, 5) : randInt(6, 14);
+      const orderByStatus = {};
+      const createdTasks = [];
+      for (let k = 0; k < taskCount; k++) {
+        let st;
+        if (pm.status === "completed") st = Math.random() < 0.85 ? "done" : pick(TASK_STATUSES, 1)[0];
+        else if (pm.status === "planning") st = Math.random() < 0.7 ? "todo" : "in_progress";
+        else st = TASK_STATUSES[randInt(0, 4)];
+        orderByStatus[st] = (orderByStatus[st] ?? 0) + 1024;
+
+        const assignee = pm.team.length && Math.random() < 0.8 ? pick(pm.team, 1)[0] : null;
+        const dueOffset = randInt(-25, 50);
+        const tid = randomUUID();
+        taskSeq += 1;
+        const created = new Date(now.getTime() - randInt(1, Math.max(pm.createdOffset, 2)) * 86400000);
+        taskDocs.push({
+          _id: tid,
+          taskCode: `TSK-${String(taskSeq).padStart(4, "0")}`,
+          projectId: pm.pid,
+          parentTaskId: null,
+          title: TASK_TITLES[(k + taskSeq) % TASK_TITLES.length],
+          description: Math.random() < 0.5 ? "Acceptance criteria tracked in the linked doc." : null,
+          status: st,
+          priority: PRIORITIES[randInt(0, 3)],
+          assigneeId: assignee,
+          labels: pick(LABELS, randInt(0, 2)),
+          startDate: null,
+          dueDate: st === "done" ? null : isoDate(daysFromNow(dueOffset)),
+          estimateHours: Math.random() < 0.6 ? randInt(2, 40) : null,
+          orderKey: orderByStatus[st],
+          completedAt: st === "done" ? created : null,
+          createdAt: created,
+          updatedAt: created,
+          createdBy: "pms-seed",
+          updatedBy: "pms-seed",
+          deletedAt: null,
+        });
+        createdTasks.push({ _id: tid, status: st });
+
+        // subtasks
+        if (Math.random() < 0.4) {
+          const subN = randInt(1, 3);
+          for (let s = 0; s < subN; s++) {
+            taskSeq += 1;
+            const subDone = Math.random() < 0.5;
+            taskDocs.push({
+              _id: randomUUID(),
+              taskCode: `TSK-${String(taskSeq).padStart(4, "0")}`,
+              projectId: pm.pid,
+              parentTaskId: tid,
+              title: `Subtask ${s + 1}`,
+              description: null,
+              status: subDone ? "done" : "todo",
+              priority: "medium",
+              assigneeId: assignee,
+              labels: [],
+              startDate: null,
+              dueDate: null,
+              estimateHours: null,
+              orderKey: (s + 1) * 1024,
+              completedAt: subDone ? created : null,
+              createdAt: created,
+              updatedAt: created,
+              createdBy: "pms-seed",
+              updatedBy: "pms-seed",
+              deletedAt: null,
+            });
+          }
+        }
+
+        // comments
+        if (Math.random() < 0.3) {
+          commentDocs.push({
+            _id: randomUUID(),
+            taskId: tid,
+            projectId: pm.pid,
+            authorId: "pms-seed",
+            authorEmail: "seed@yashorbit.com",
+            body: pick(["Blocked on the API contract.", "Looks good, moving to review.", "Can we split this?", "Reproduced — fixing now."], 1)[0],
+            createdAt: created,
+            editedAt: null,
+            deletedAt: null,
+          });
+        }
+      }
+
+      // recompute project progress from top-level tasks
+      const topDone = createdTasks.filter((t) => t.status === "done").length;
+      const pct = createdTasks.length ? Math.round((topDone / createdTasks.length) * 100) : null;
+      const pDoc = projectDocs.find((p) => p._id === pm.pid);
+      if (pct !== null && pDoc) pDoc.progressPercent = pct;
+
+      // milestones
+      const msCount = randInt(2, 4);
+      for (let m = 0; m < msCount; m++) {
+        const linked = pick(createdTasks.map((t) => t._id), randInt(0, Math.min(4, createdTasks.length)));
+        const msStatus = m === 0 && pm.status !== "planning" ? "completed" : m === 1 ? "in_progress" : "pending";
+        milestoneDocs.push({
+          _id: randomUUID(),
+          projectId: pm.pid,
+          name: ["Discovery complete", "MVP delivered", "Beta launch", "Production go-live"][m] ?? `Milestone ${m + 1}`,
+          description: null,
+          dueDate: isoDate(daysFromNow(randInt(-40, 90))),
+          status: msStatus,
+          manualProgressPercent: msStatus === "completed" ? 100 : msStatus === "in_progress" ? randInt(30, 70) : 0,
+          linkedTaskIds: linked,
+          orderKey: (m + 1) * 1024,
+          completedAt: msStatus === "completed" ? new Date(now.getTime() - randInt(5, 60) * 86400000) : null,
+          ...stamp(pm.createdOffset - randInt(0, 15)),
+        });
+      }
+    }
+
     await projects.insertMany(projectDocs);
     if (memberDocs.length) await members.insertMany(memberDocs);
     await activity.insertMany(activityDocs);
+    if (taskDocs.length) await tasksCol.insertMany(taskDocs);
+    if (commentDocs.length) await commentsCol.insertMany(commentDocs);
+    if (milestoneDocs.length) await milestonesCol.insertMany(milestoneDocs);
     await counters.updateOne({ _id: "project_code" }, { $set: { seq: projectDocs.length } }, { upsert: true });
+    await counters.updateOne({ _id: "task_code" }, { $set: { seq: taskSeq } }, { upsert: true });
+
+    // ---- Notifications for PMS logins ------------------------------------
+    const pmsLogins = await db
+      .collection("admin_users")
+      .find(
+        { roles: { $in: ["super_admin", "pms_admin", "pms_manager"] }, employeeId: { $ne: null } },
+        { projection: { employeeId: 1 } }
+      )
+      .toArray();
+    const notificationDocs = [];
+    for (const login of pmsLogins) {
+      const theirTasks = taskDocs.filter((t) => t.assigneeId === login.employeeId && t.status !== "done").slice(0, 3);
+      for (const t of theirTasks) {
+        notificationDocs.push({
+          _id: randomUUID(),
+          recipientUserId: login._id.toString(),
+          type: "task_assigned",
+          title: `You were assigned: ${t.title}`,
+          body: `${t.taskCode}`,
+          link: `/pms/projects/${t.projectId}/tasks/${t._id}`,
+          projectId: t.projectId,
+          read: Math.random() < 0.4,
+          dedupeKey: null,
+          createdAt: new Date(now.getTime() - randInt(1, 20) * 86400000),
+        });
+      }
+    }
+    if (notificationDocs.length) await notificationsCol.insertMany(notificationDocs);
 
     console.log(`\nSeeded:`);
     console.log(`  ${clientDocs.length} clients`);
     console.log(`  ${projectDocs.length} projects (every status + priority)`);
     console.log(`  ${memberDocs.length} team allocations`);
-    console.log(`  ${activityDocs.length} activity-log entries`);
+    console.log(`  ${taskDocs.length} tasks (incl. subtasks) + ${commentDocs.length} comments`);
+    console.log(`  ${milestoneDocs.length} milestones`);
+    console.log(`  ${activityDocs.length} activity-log entries · ${notificationDocs.length} notifications`);
     console.log(`\nSign in at /pms/login (grant a role first with: npm run pms:grant).`);
   } finally {
     await client.close();

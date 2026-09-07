@@ -1,0 +1,77 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
+import ProjectTabs from "@/components/pms/ProjectTabs";
+import TaskList from "@/components/pms/tasks/TaskList";
+import TaskSheet from "@/components/pms/tasks/TaskSheet";
+import { getCurrentPmsUser } from "@/lib/pms-auth";
+import { canManageProjects } from "@/lib/pms-roles";
+import { getProject } from "@/lib/pms/projects";
+import { listTasks, listProjectLabels, serializeTask } from "@/lib/pms/tasks";
+import { availableEmployees } from "@/lib/pms/project-members";
+
+export default async function ProjectTasksPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const [user, project] = await Promise.all([getCurrentPmsUser(), getProject(id)]);
+  if (!project) notFound();
+  const canManage = user ? canManageProjects(user.roles) : false;
+
+  const [topTasks, allTasks, employees, labels] = await Promise.all([
+    listTasks(id, {}),
+    listTasks(id, { includeSubtasks: true }),
+    availableEmployees(),
+    listProjectLabels(id),
+  ]);
+
+  const subtaskCount = new Map<string, number>();
+  for (const t of allTasks) {
+    if (t.parentTaskId) subtaskCount.set(t.parentTaskId, (subtaskCount.get(t.parentTaskId) ?? 0) + 1);
+  }
+
+  const empName = new Map(employees.map((e) => [e._id, e.name]));
+
+  return (
+    <div className="space-y-4">
+      <Breadcrumbs
+        items={[
+          { label: "PMS", href: "/pms" },
+          { label: "Projects", href: "/pms/projects" },
+          { label: project.name, href: `/pms/projects/${id}` },
+          { label: "Tasks" },
+        ]}
+      />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{project.name} · Tasks</h1>
+        <div className="flex items-center gap-2">
+          <Link href={`/pms/projects/${id}/board`} className="text-sm font-medium text-primary hover:underline">Board view →</Link>
+          {canManage && (
+            <TaskSheet
+              projectId={id}
+              employees={employees.map((e) => ({ _id: e._id, name: e.name, employeeCode: e.employeeCode }))}
+              labelSuggestions={labels}
+              trigger={
+                <Button type="button" size="sm">
+                  <Plus className="size-3.5" data-icon="inline-start" />
+                  New Task
+                </Button>
+              }
+            />
+          )}
+        </div>
+      </div>
+      <ProjectTabs projectId={id} />
+
+      <TaskList
+        projectId={id}
+        tasks={topTasks.map((t) => ({
+          ...serializeTask(t),
+          assigneeName: t.assigneeId ? empName.get(t.assigneeId) ?? null : null,
+          subtaskCount: subtaskCount.get(t._id) ?? 0,
+        }))}
+        labels={labels}
+      />
+    </div>
+  );
+}

@@ -3,9 +3,20 @@ import {
   getProjectStatusMeta,
   getPriorityMeta,
   getClientStatusMeta,
+  getTaskStatusMeta,
   PROJECT_HEALTH_META,
   type ProjectHealth,
 } from "@/lib/pms/constants";
+
+export function TaskStatusBadge({ status }: { status?: string }) {
+  const meta = getTaskStatusMeta(status);
+  return (
+    <Badge className={meta.badgeClass}>
+      <span className={`size-1.5 rounded-full ${meta.dotClass}`} />
+      {meta.label}
+    </Badge>
+  );
+}
 
 export function ProjectStatusBadge({ status }: { status?: string }) {
   const meta = getProjectStatusMeta(status);

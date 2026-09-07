@@ -57,6 +57,37 @@ export function canTransitionProject(from: string, to: string): boolean {
 }
 
 // ---------------------------------------------------------------------------
+// Task status (Kanban columns, in board order)
+// ---------------------------------------------------------------------------
+
+export const TASK_STATUSES = [
+  { value: "todo", label: "To Do", badgeClass: "bg-muted text-muted-foreground", dotClass: "bg-muted-foreground/50", done: false },
+  { value: "in_progress", label: "In Progress", badgeClass: "bg-primary/10 text-primary", dotClass: "bg-primary/70", done: false },
+  { value: "review", label: "Review", badgeClass: "bg-blue-500/15 text-blue-600 dark:text-blue-400", dotClass: "bg-blue-500", done: false },
+  { value: "testing", label: "Testing", badgeClass: "bg-purple-500/15 text-purple-600 dark:text-purple-400", dotClass: "bg-purple-500", done: false },
+  { value: "done", label: "Done", badgeClass: "bg-green-500/15 text-green-600 dark:text-green-400", dotClass: "bg-green-500", done: true },
+] as const;
+
+export type TaskStatus = (typeof TASK_STATUSES)[number]["value"];
+
+export const DEFAULT_TASK_STATUS: TaskStatus = "todo";
+
+/** Board column order. */
+export const TASK_STATUS_ORDER: TaskStatus[] = TASK_STATUSES.map((s) => s.value);
+
+export function isValidTaskStatus(value: unknown): value is TaskStatus {
+  return typeof value === "string" && TASK_STATUSES.some((s) => s.value === value);
+}
+
+export function getTaskStatusMeta(status: string | undefined) {
+  return TASK_STATUSES.find((s) => s.value === status) ?? TASK_STATUSES[0];
+}
+
+export function isTaskDone(status: string | undefined): boolean {
+  return getTaskStatusMeta(status).done;
+}
+
+// ---------------------------------------------------------------------------
 // Priority
 // ---------------------------------------------------------------------------
 
@@ -77,6 +108,28 @@ export function isValidPriority(value: unknown): value is Priority {
 
 export function getPriorityMeta(value: string | undefined) {
   return PRIORITIES.find((p) => p.value === value) ?? PRIORITIES[1];
+}
+
+// ---------------------------------------------------------------------------
+// Milestone status
+// ---------------------------------------------------------------------------
+
+export const MILESTONE_STATUSES = [
+  { value: "pending", label: "Pending", badgeClass: "bg-muted text-muted-foreground", dotClass: "bg-muted-foreground/50" },
+  { value: "in_progress", label: "In Progress", badgeClass: "bg-primary/10 text-primary", dotClass: "bg-primary/70" },
+  { value: "completed", label: "Completed", badgeClass: "bg-green-500/15 text-green-600 dark:text-green-400", dotClass: "bg-green-500" },
+] as const;
+
+export type MilestoneStatus = (typeof MILESTONE_STATUSES)[number]["value"];
+
+export const DEFAULT_MILESTONE_STATUS: MilestoneStatus = "pending";
+
+export function isValidMilestoneStatus(value: unknown): value is MilestoneStatus {
+  return typeof value === "string" && MILESTONE_STATUSES.some((s) => s.value === value);
+}
+
+export function getMilestoneStatusMeta(status: string | undefined) {
+  return MILESTONE_STATUSES.find((s) => s.value === status) ?? MILESTONE_STATUSES[0];
 }
 
 // ---------------------------------------------------------------------------

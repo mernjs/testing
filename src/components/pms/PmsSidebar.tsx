@@ -9,6 +9,9 @@ import {
   Building2,
   ScrollText,
   Settings,
+  CircleUser,
+  CalendarDays,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -98,8 +101,11 @@ export default function PmsSidebar({
       <SectionLabel collapsed={collapsed}>Delivery</SectionLabel>
       {nav({ href: "/pms/projects", label: "Projects", icon: FolderKanban })}
       {nav({ href: "/pms/clients", label: "Clients", icon: Building2 })}
+      {nav({ href: "/pms/calendar", label: "Calendar", icon: CalendarDays })}
+      {nav({ href: "/pms/me", label: "My Work", icon: CircleUser })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
+      {nav({ href: "/pms/notifications", label: "Notifications", icon: Bell })}
       {canViewActivityLog(roles) && nav({ href: "/pms/activity", label: "Activity Log", icon: ScrollText })}
       {canManageSettings(roles) && nav({ href: "/pms/settings", label: "Settings", icon: Settings })}
     </nav>

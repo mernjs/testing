@@ -11,8 +11,10 @@ import {
   getProject,
 } from "@/lib/pms/projects";
 import { validateProject } from "@/lib/pms/validation";
-import { isValidProjectStatus } from "@/lib/pms/constants";
+import { isValidProjectStatus, getProjectStatusMeta } from "@/lib/pms/constants";
 import { recordActivity, diffSummary } from "@/lib/pms/activity";
+import { listProjectMembers } from "@/lib/pms/project-members";
+import { notifyEmployees } from "@/lib/pms/notifications";
 
 export interface ProjectActionResult {
   ok: boolean;
@@ -103,6 +105,22 @@ export async function changeStatusAction(id: string, status: string): Promise<Pr
     projectId: id,
     summary: `status: ${before?.status ?? "?"} → ${status}`,
   });
+
+  const members = await listProjectMembers(id);
+  const recipients = Array.from(
+    new Set([...members.map((m) => m.employeeId), res.project.projectManagerId].filter((x): x is string => Boolean(x)))
+  );
+  if (recipients.length > 0) {
+    await notifyEmployees(recipients, (uid) => ({
+      recipientUserId: uid,
+      type: "project_status_changed",
+      title: `${res.project.name} is now ${getProjectStatusMeta(status).label}`,
+      body: `Changed by ${user.email}`,
+      link: `/pms/projects/${id}`,
+      projectId: id,
+    }), user.id);
+  }
+
   revalidate(id);
   return { ok: true, id };
 }
