@@ -24,9 +24,9 @@ export default function FloatingContactButtons() {
     setOpen(false);
   };
 
-  // Hide on the admin panel and on the dedicated chat page (which has the full
+  // Hide on the LMS panel and on the dedicated chat page (which has the full
   // experience inline — no need for the floating duplicate there).
-  if (pathname?.startsWith("/admin") || pathname === "/ask") {
+  if (pathname?.startsWith("/lms") || pathname === "/ask") {
     return chatOpen ? <ChatWidget open={chatOpen} onClose={() => setChatOpen(false)} /> : null;
   }
 

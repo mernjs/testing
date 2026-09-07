@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { LogIn, LogOut, Loader2 } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/admin/GlassCard";
+import GlassCard from "@/components/lms/GlassCard";
 import { Button } from "@/components/ui/button";
 import { formatMinutesAsDuration } from "@/lib/hrms/time";
 import { clockInAction, clockOutAction } from "@/app/hrms/(protected)/me/attendance/actions";

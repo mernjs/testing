@@ -5,7 +5,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { ChevronLeft, ChevronRight, Loader2, Pencil, CalendarDays } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/admin/GlassCard";
+import GlassCard from "@/components/lms/GlassCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

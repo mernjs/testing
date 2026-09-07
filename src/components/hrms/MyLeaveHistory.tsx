@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Ban } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/admin/GlassCard";
+import GlassCard from "@/components/lms/GlassCard";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,

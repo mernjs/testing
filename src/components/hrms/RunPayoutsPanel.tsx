@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Download, Send, Loader2 } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/admin/GlassCard";
+import GlassCard from "@/components/lms/GlassCard";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";

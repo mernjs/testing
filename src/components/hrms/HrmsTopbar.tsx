@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { LayoutGrid } from "lucide-react";
 import HrmsMobileSidebar from "@/components/hrms/HrmsMobileSidebar";
-import ThemeToggle from "@/components/admin/ThemeToggle";
+import ThemeToggle from "@/components/lms/ThemeToggle";
 import HrmsNotificationsBell, { type BellItem } from "@/components/hrms/HrmsNotificationsBell";
 import { buttonVariants } from "@/components/ui/button";
 import type { HrmsRole } from "@/lib/hrms-roles";
@@ -31,12 +31,12 @@ export default function HrmsTopbar({
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
         {isStaff && (
           <Link
-            href="/admin"
+            href="/lms"
             className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
-            aria-label="Open Admin Panel"
+            aria-label="Open LMS"
           >
             <LayoutGrid className="size-3.5" data-icon="inline-start" />
-            <span className="hidden sm:inline">Admin Panel</span>
+            <span className="hidden sm:inline">LMS</span>
           </Link>
         )}
         <ThemeToggle />

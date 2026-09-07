@@ -9,9 +9,9 @@ export const metadata: Metadata = {
   },
 };
 
-// `admin-shell` is the shared dashboard design-system class (palette tokens,
+// `lms-shell` is the shared dashboard design-system class (palette tokens,
 // card treatment, ambient background, control nudges) — reused verbatim so the
-// HRMS panel is visually identical to the Admin panel.
+// HRMS panel is visually identical to the LMS panel.
 export default function HrmsLayout({ children }: { children: React.ReactNode }) {
-  return <div className="admin-shell min-h-screen bg-background text-foreground">{children}</div>;
+  return <div className="lms-shell min-h-screen bg-background text-foreground">{children}</div>;
 }

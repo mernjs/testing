@@ -14,7 +14,7 @@ import { getEmployee } from "@/lib/hrms/employees";
 const SCRYPT_KEYLEN = 64;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-interface AdminUserDoc {
+interface LmsUserDoc {
   _id: ObjectId;
   email: string;
   passwordHash: string;
@@ -40,7 +40,7 @@ export function generateTempPassword(): string {
 
 async function users() {
   const db = await getDb();
-  return db.collection<AdminUserDoc>("admin_users");
+  return db.collection<LmsUserDoc>("admin_users");
 }
 
 export interface LoginStatus {

@@ -1,5 +1,5 @@
 import { CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/admin/GlassCard";
+import GlassCard from "@/components/lms/GlassCard";
 import { Badge } from "@/components/ui/badge";
 import MyLeaveSheet from "@/components/hrms/MyLeaveSheet";
 import MyLeaveHistory from "@/components/hrms/MyLeaveHistory";

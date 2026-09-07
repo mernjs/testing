@@ -1,5 +1,5 @@
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/admin/GlassCard";
+import GlassCard from "@/components/lms/GlassCard";
 import { formatCurrency } from "@/lib/utils";
 
 interface Line {

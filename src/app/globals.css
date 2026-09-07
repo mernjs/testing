@@ -84,14 +84,14 @@
   --ring: #E56043;
 }
 
-/* Admin panel only: dark mode's --card/--popover otherwise equal --background
+/* LMS panel only: dark mode's --card/--popover otherwise equal --background
    (#1b1a1a), so cards/dropdowns have zero color separation from the page and
    rely on shadow/blur alone. Elevate them a step for a readable, layered dark
    surface — and tint that elevation toward the brand blue (--secondary,
-   #1D428A) so the admin's dark surfaces carry the same coral+blue palette the
+   #1D428A) so the LMS panel's dark surfaces carry the same coral+blue palette the
    Services page does (where dark cards sit on `dark:bg-muted/10`). Scoped to
-   .admin-shell so the public site's dark mode is untouched. */
-.dark .admin-shell {
+   .lms-shell so the public site's dark mode is untouched. */
+.dark .lms-shell {
   --card: #1c2740;
   --card-foreground: #ECF2FD;
   --popover: #1c2740;
@@ -103,22 +103,22 @@
 /* Light mode's --border/--muted-foreground are plain cool Tailwind slate
    (#e2e8f0 / #64748b) — barely visible on the Services page because its
    cards sit over colorful hero/section backdrops, but exposed constantly in
-   the admin's dense borders/labels, where the coldness reads as generic
+   the LMS panel's dense borders/labels, where the coldness reads as generic
    "corporate dashboard gray". Mix a touch of --primary into each so the same
-   neutral role reads warm, scoped to .admin-shell so the public site's own
+   neutral role reads warm, scoped to .lms-shell so the public site's own
    gray tokens are untouched.
    --muted stays plain neutral (not warmed) — it backs FILLED surfaces
    (loading skeletons, table row hover, badge hover) where a coral tint reads
    as a stray pink cast rather than a neutral "not loaded yet"/"hovered" state. */
-.admin-shell {
+.lms-shell {
   --border: color-mix(in oklch, #e2e8f0 82%, var(--primary) 10%);
   --muted-foreground: color-mix(in oklch, #64748b 88%, var(--primary) 10%);
 }
 
 /* ---------------------------------------------------------------------------
-   Admin panel theme — matches the public Services Listing page
+   LMS panel theme — matches the public Services Listing page
    (src/components/sections/ListingCard.tsx / FeaturedListingCard.tsx /
-   ListingHero.tsx / DetailCTA.tsx). Every admin surface uses the same card
+   ListingHero.tsx / DetailCTA.tsx). Every LMS surface uses the same card
    treatment, the same coral -> blue hover glow, and the same ambient blob
    background the Services page does, in both Light and Dark mode.
    --------------------------------------------------------------------------- */
@@ -130,10 +130,10 @@
    own translucent surface + border + shadow do the real work, exactly like a
    ListingCard. Applied to cards, the sidebar and the topbar.
    Light mode: flat, no gradient — dark mode keeps the wash. */
-.admin-surface {
+.lms-surface {
   background-image: none;
 }
-.dark .admin-surface {
+.dark .lms-surface {
   background-image: linear-gradient(
     to bottom right,
     color-mix(in oklch, var(--primary) 3%, transparent),
@@ -144,17 +144,17 @@
 
 /* The Services ListingHero ambient background: three brand blobs + a faint
    grid, `mix-blend-multiply` in light and `screen` in dark. One element,
-   dropped once into the admin workspace.
+   dropped once into the LMS workspace.
    Light mode: off entirely — flat gray canvas, no gradient. Dark mode keeps
    the glow since it wasn't the ask. */
-.admin-ambient {
+.lms-ambient {
   display: none;
 }
-.dark .admin-ambient {
+.dark .lms-ambient {
   display: block;
 }
-.admin-ambient::before,
-.admin-ambient::after {
+.lms-ambient::before,
+.lms-ambient::after {
   content: "";
   position: absolute;
   border-radius: 9999px;
@@ -162,8 +162,8 @@
   mix-blend-mode: multiply;
   pointer-events: none;
 }
-:is(.dark) .admin-ambient::before,
-:is(.dark) .admin-ambient::after {
+:is(.dark) .lms-ambient::before,
+:is(.dark) .lms-ambient::after {
   mix-blend-mode: screen;
 }
 /* Light mode's page canvas is now a neutral gray (Stripe/Linear-style: gray
@@ -172,7 +172,7 @@
    stronger `multiply`-blended pink wash on gray. Keep it as a faint whisper
    in light mode; dark mode (`screen` blend, still on a near-black canvas)
    keeps the fuller strength since that's already well-calibrated. */
-.admin-ambient::before {
+.lms-ambient::before {
   top: -15%;
   left: 12%;
   width: 55%;
@@ -180,7 +180,7 @@
   background: color-mix(in oklch, var(--primary) 5%, transparent);
   animation: blob 7s infinite;
 }
-.admin-ambient::after {
+.lms-ambient::after {
   bottom: -20%;
   right: 8%;
   width: 55%;
@@ -189,13 +189,13 @@
   animation: blob 7s infinite;
   animation-delay: 4s;
 }
-.dark .admin-ambient::before {
+.dark .lms-ambient::before {
   background: color-mix(in oklch, var(--primary) 15%, transparent);
 }
-.dark .admin-ambient::after {
+.dark .lms-ambient::after {
   background: color-mix(in oklch, var(--color-yashorbit-coral) 15%, transparent);
 }
-.admin-ambient > .admin-ambient-mid {
+.lms-ambient > .lms-ambient-mid {
   position: absolute;
   top: 15%;
   right: 22%;
@@ -209,13 +209,13 @@
   animation: blob 7s infinite;
   animation-delay: 2s;
 }
-.dark .admin-ambient > .admin-ambient-mid {
+.dark .lms-ambient > .lms-ambient-mid {
   background: color-mix(in oklch, var(--secondary) 15%, transparent);
   mix-blend-mode: screen;
 }
 
 /* The Services pill/tag chip (bg-background/70 + border + rounded-full). */
-.admin-chip {
+.lms-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
@@ -229,7 +229,7 @@
   backdrop-filter: blur(4px);
   transition: color 0.2s, border-color 0.2s, background-color 0.2s;
 }
-.admin-chip:hover {
+.lms-chip:hover {
   border-color: color-mix(in oklch, var(--primary) 30%, transparent);
   background: color-mix(in oklch, var(--primary) 5%, transparent);
   color: var(--foreground);
@@ -237,43 +237,43 @@
 
 } /* @layer components */
 
-/* Primitive nudges, scoped to the admin shell only so the public site's
+/* Primitive nudges, scoped to the LMS shell only so the public site's
    inputs/buttons are untouched. Radii + border tint to match the Services
    page's softer, rounder controls; primary buttons get the same coral->coral
    gradient + lift the site's own CTAs use (DetailCTA / FeaturedListingCard's
    `shadow-primary/20` + `hover:scale-105`), and outline/ghost buttons get the
-   same coral hover tint as `.admin-chip` and the ListingCard highlight tags. */
-.admin-shell [data-slot="input"],
-.admin-shell [data-slot="textarea"],
-.admin-shell [data-slot="select-trigger"] {
+   same coral hover tint as `.lms-chip` and the ListingCard highlight tags. */
+.lms-shell [data-slot="input"],
+.lms-shell [data-slot="textarea"],
+.lms-shell [data-slot="select-trigger"] {
   border-radius: var(--radius-xl);
   /* Plain neutral gray, not the warm coral-tinted --border used elsewhere —
      input borders read as a stray pink cast when tinted. */
   border-color: #e2e8f0;
 }
-.dark .admin-shell [data-slot="input"],
-.dark .admin-shell [data-slot="textarea"],
-.dark .admin-shell [data-slot="select-trigger"] {
+.dark .lms-shell [data-slot="input"],
+.dark .lms-shell [data-slot="textarea"],
+.dark .lms-shell [data-slot="select-trigger"] {
   border-color: #334155;
 }
-.admin-shell [data-slot="button"] {
+.lms-shell [data-slot="button"] {
   border-radius: var(--radius-xl);
   transition: background-color 0.2s ease, background-image 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
-.admin-shell [data-slot="button"].bg-primary {
+.lms-shell [data-slot="button"].bg-primary {
   background-image: linear-gradient(135deg, var(--primary), var(--color-yashorbit-coral));
   box-shadow: 0 10px 25px -8px color-mix(in oklch, var(--primary) 50%, transparent);
 }
-.admin-shell [data-slot="button"].bg-primary:hover {
+.lms-shell [data-slot="button"].bg-primary:hover {
   box-shadow: 0 14px 32px -8px color-mix(in oklch, var(--primary) 60%, transparent);
   transform: translateY(-1px);
 }
-.admin-shell [data-slot="button"][data-variant="outline"]:hover {
+.lms-shell [data-slot="button"][data-variant="outline"]:hover {
   border-color: color-mix(in oklch, var(--primary) 35%, transparent);
   background: color-mix(in oklch, var(--primary) 6%, transparent);
   color: var(--primary);
 }
-.admin-shell [data-slot="button"][data-variant="ghost"]:hover {
+.lms-shell [data-slot="button"][data-variant="ghost"]:hover {
   background: color-mix(in oklch, var(--primary) 8%, transparent);
   color: var(--primary);
 }

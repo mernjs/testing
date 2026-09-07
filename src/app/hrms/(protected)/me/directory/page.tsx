@@ -1,5 +1,5 @@
-import Breadcrumbs from "@/components/admin/Breadcrumbs";
-import GlassCard from "@/components/admin/GlassCard";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
+import GlassCard from "@/components/lms/GlassCard";
 import { CardContent } from "@/components/ui/card";
 import Tabs from "@/components/hrms/Tabs";
 import OrgTree from "@/components/hrms/OrgTree";

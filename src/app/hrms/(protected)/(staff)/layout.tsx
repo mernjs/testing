@@ -3,7 +3,7 @@ import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 import { hasStaffRole } from "@/lib/hrms-roles";
 
 /**
- * Staff-only admin pages (dashboard, employees, payroll, settings, audit …).
+ * Staff-only management pages (dashboard, employees, payroll, settings, audit …).
  * The shared shell + session check live in the parent `(protected)` layout;
  * this group only adds the role gate. Employees who reach one of these URLs are
  * bounced to their self-service home.

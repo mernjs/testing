@@ -38,7 +38,7 @@ interface RollupBump {
 }
 
 /**
- * Opportunistically maintains a per-day rollup so the admin dashboard can plot
+ * Opportunistically maintains a per-day rollup so the LMS dashboard can plot
  * trends without scanning every message. Detailed KPIs are still computed live
  * from `chat_sessions` / `chat_messages`; this is only for fast time-series.
  * Best-effort — never throws into the caller's hot path.

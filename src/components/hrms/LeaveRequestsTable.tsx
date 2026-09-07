@@ -6,7 +6,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Check, X, Ban, ChevronRight, ChevronLeft } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/admin/GlassCard";
+import GlassCard from "@/components/lms/GlassCard";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";

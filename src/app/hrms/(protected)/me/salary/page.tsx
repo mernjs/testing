@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { FileDown } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/admin/GlassCard";
+import GlassCard from "@/components/lms/GlassCard";
 import { Badge } from "@/components/ui/badge";
 import SalaryStructureView from "@/components/hrms/SalaryStructureView";
 import BankAccountBadge from "@/components/hrms/BankAccountBadge";

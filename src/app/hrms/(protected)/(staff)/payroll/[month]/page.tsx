@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import Breadcrumbs from "@/components/admin/Breadcrumbs";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import PayrollRunDetail from "@/components/hrms/PayrollRunDetail";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 import { canRunPayroll } from "@/lib/hrms-roles";

@@ -1,11 +1,11 @@
 import { Inbox, CalendarCheck, CheckCircle2, Tags } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/admin/GlassCard";
-import KpiCard from "@/components/admin/KpiCard";
-import KpiGrid from "@/components/admin/KpiGrid";
-import Breadcrumbs from "@/components/admin/Breadcrumbs";
-import CategoryBarChart from "@/components/admin/CategoryBarChart";
-import TimeSeriesChart from "@/components/admin/TimeSeriesChart";
+import GlassCard from "@/components/lms/GlassCard";
+import KpiCard from "@/components/lms/KpiCard";
+import KpiGrid from "@/components/lms/KpiGrid";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
+import CategoryBarChart from "@/components/lms/CategoryBarChart";
+import TimeSeriesChart from "@/components/lms/TimeSeriesChart";
 import Tabs from "@/components/hrms/Tabs";
 import FileLeaveSheet from "@/components/hrms/FileLeaveSheet";
 import LeaveRequestsTable from "@/components/hrms/LeaveRequestsTable";

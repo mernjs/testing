@@ -1,6 +1,6 @@
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/admin/GlassCard";
-import Breadcrumbs from "@/components/admin/Breadcrumbs";
+import GlassCard from "@/components/lms/GlassCard";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import DepartmentsManager from "@/components/hrms/DepartmentsManager";
 import OrgTree from "@/components/hrms/OrgTree";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";

@@ -1,4 +1,4 @@
-import Breadcrumbs from "@/components/admin/Breadcrumbs";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import NotificationList from "@/components/hrms/NotificationList";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 import { listNotifications } from "@/lib/hrms/notifications";

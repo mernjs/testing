@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { UserPlus, Download } from "lucide-react";
-import Breadcrumbs from "@/components/admin/Breadcrumbs";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { buttonVariants } from "@/components/ui/button";
 import EmployeesDataTable from "@/components/hrms/EmployeesDataTable";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";

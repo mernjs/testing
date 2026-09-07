@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import HrmsSidebar from "@/components/hrms/HrmsSidebar";
 import HrmsProfileMenu from "@/components/hrms/HrmsProfileMenu";
-import { useSidebarCollapse } from "@/components/admin/SidebarCollapseContext";
+import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
 import { brandify } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import type { HrmsRole } from "@/lib/hrms-roles";
@@ -33,7 +33,7 @@ export default function HrmsSidebarShell({
       animate={{ width: collapsed ? COLLAPSED_WIDTH : EXPANDED_WIDTH }}
       initial={false}
       transition={hydrated ? { type: "spring", stiffness: 320, damping: 32 } : { duration: 0 }}
-      className="admin-surface hidden shrink-0 flex-col overflow-hidden rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md md:flex dark:bg-card/85"
+      className="lms-surface hidden shrink-0 flex-col overflow-hidden rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md md:flex dark:bg-card/85"
     >
       <div
         className={cn(

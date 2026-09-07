@@ -1,5 +1,5 @@
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/admin/GlassCard";
+import GlassCard from "@/components/lms/GlassCard";
 import MyProfileEditForm from "@/components/hrms/MyProfileEditForm";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 import { getEmployee, employeeFullName } from "@/lib/hrms/employees";

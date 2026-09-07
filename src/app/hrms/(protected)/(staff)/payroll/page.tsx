@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Banknote } from "lucide-react";
-import Breadcrumbs from "@/components/admin/Breadcrumbs";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import PayrollRunManager from "@/components/hrms/PayrollRunManager";
 import { buttonVariants } from "@/components/ui/button";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";

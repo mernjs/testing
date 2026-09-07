@@ -1,5 +1,5 @@
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/admin/GlassCard";
+import GlassCard from "@/components/lms/GlassCard";
 import ClockWidget from "@/components/hrms/ClockWidget";
 import AttendanceCalendar from "@/components/hrms/AttendanceCalendar";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";

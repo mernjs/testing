@@ -1,4 +1,4 @@
-import Breadcrumbs from "@/components/admin/Breadcrumbs";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import Tabs from "@/components/hrms/Tabs";
 import AttendanceRegister from "@/components/hrms/AttendanceRegister";
 import MonthlyAttendanceReport from "@/components/hrms/MonthlyAttendanceReport";

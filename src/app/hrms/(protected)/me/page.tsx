@@ -17,13 +17,13 @@ import {
   CircleCheck,
 } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/admin/GlassCard";
-import KpiCard from "@/components/admin/KpiCard";
-import KpiGrid from "@/components/admin/KpiGrid";
+import GlassCard from "@/components/lms/GlassCard";
+import KpiCard from "@/components/lms/KpiCard";
+import KpiGrid from "@/components/lms/KpiGrid";
 import { Badge } from "@/components/ui/badge";
-import TimeSeriesChart from "@/components/admin/TimeSeriesChart";
-import CategoryBarChart from "@/components/admin/CategoryBarChart";
-import StatusPieChart from "@/components/admin/StatusPieChart";
+import TimeSeriesChart from "@/components/lms/TimeSeriesChart";
+import CategoryBarChart from "@/components/lms/CategoryBarChart";
+import StatusPieChart from "@/components/lms/StatusPieChart";
 import AttendanceOverviewChart from "@/components/hrms/AttendanceOverviewChart";
 import AttendanceCalendar from "@/components/hrms/AttendanceCalendar";
 import ClockWidget from "@/components/hrms/ClockWidget";

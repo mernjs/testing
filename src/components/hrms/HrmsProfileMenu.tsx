@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { LogOut, Settings, ShieldCheck, UserRound, Clock } from "lucide-react";
-import { useSidebarCollapse } from "@/components/admin/SidebarCollapseContext";
+import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,

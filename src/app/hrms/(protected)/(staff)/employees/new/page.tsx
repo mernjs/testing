@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import Breadcrumbs from "@/components/admin/Breadcrumbs";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import EmployeeForm from "@/components/hrms/EmployeeForm";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 import { canManageEmployees } from "@/lib/hrms-roles";

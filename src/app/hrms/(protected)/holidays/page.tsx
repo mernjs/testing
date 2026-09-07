@@ -1,4 +1,4 @@
-import Breadcrumbs from "@/components/admin/Breadcrumbs";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import HolidayManager from "@/components/hrms/HolidayManager";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 import { canManageHolidays } from "@/lib/hrms-roles";

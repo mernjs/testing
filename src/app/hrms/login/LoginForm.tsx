@@ -4,7 +4,7 @@ import { useActionState, useId, useState } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Loader2, ShieldCheck } from "lucide-react";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/admin/GlassCard";
+import GlassCard from "@/components/lms/GlassCard";
 import BrandMark from "@/components/BrandMark";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

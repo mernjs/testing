@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAuthorizedAdminRequest } from "@/lib/api-auth";
+import { isAuthorizedLmsRequest } from "@/lib/api-auth";
 import {
   CATEGORIES,
   createLead,
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest, { params }: Context) {
 }
 
 export async function GET(req: NextRequest, { params }: Context) {
-  if (!(await isAuthorizedAdminRequest(req))) {
+  if (!(await isAuthorizedLmsRequest(req))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

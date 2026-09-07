@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import Breadcrumbs from "@/components/admin/Breadcrumbs";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import Tabs from "@/components/hrms/Tabs";
 import OrgSettingsForm from "@/components/hrms/OrgSettingsForm";
 import LeaveTypesManager from "@/components/hrms/LeaveTypesManager";

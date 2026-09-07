@@ -3,12 +3,12 @@ import { randomBytes, createHash } from "node:crypto";
 import { cookies } from "next/headers";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
-import { verifyPassword, hashPassword } from "@/lib/admin-auth";
+import { verifyPassword, hashPassword } from "@/lib/lms-auth";
 import { HRMS_ROLES, normalizeRoles, type HrmsRole } from "@/lib/hrms-roles";
 
 /**
  * HRMS panel authentication. Deliberately a separate cookie / session store
- * from the marketing-admin panel (`admin-auth.ts`) so the two panels have
+ * from the LMS panel (`lms-auth.ts`) so the two panels have
  * independent sign-in state, but the *identity* store is shared: users live
  * in `admin_users`, and HRMS access is gated on the `roles` array there.
  */
@@ -18,7 +18,7 @@ const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes
 
-interface AdminUserDoc {
+interface LmsUserDoc {
   _id: ObjectId;
   email: string;
   passwordHash: string;
@@ -54,7 +54,7 @@ let sessionIndexEnsured = false;
 
 async function getAdminUsersCollection() {
   const db = await getDb();
-  const collection = db.collection<AdminUserDoc>("admin_users");
+  const collection = db.collection<LmsUserDoc>("admin_users");
   if (!userIndexEnsured) {
     userIndexEnsured = true;
     await collection.createIndex({ email: 1 }, { unique: true }).catch(() => {});

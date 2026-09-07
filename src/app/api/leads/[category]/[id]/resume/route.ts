@@ -1,12 +1,12 @@
 import { Readable } from "node:stream";
 import { NextRequest, NextResponse } from "next/server";
-import { isAuthorizedAdminRequest } from "@/lib/api-auth";
+import { isAuthorizedLmsRequest } from "@/lib/api-auth";
 import { getLead, isValidCategory, openResumeDownloadStream } from "@/lib/leads";
 
 type Context = { params: Promise<{ category: string; id: string }> };
 
 export async function GET(req: NextRequest, { params }: Context) {
-  if (!(await isAuthorizedAdminRequest(req))) {
+  if (!(await isAuthorizedLmsRequest(req))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
