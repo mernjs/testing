@@ -1,6 +1,7 @@
 "use client";
 
-import { Globe } from "lucide-react";
+import Link from "next/link";
+import { Globe, Users, FolderKanban } from "lucide-react";
 import MobileSidebar from "@/components/lms/MobileSidebar";
 import GlobalSearch from "@/components/lms/GlobalSearch";
 import NotificationsBell from "@/components/lms/NotificationsBell";
@@ -30,6 +31,22 @@ export default function LmsTopbar({
         <GlobalSearch />
       </div>
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <Link
+          href="/pms"
+          className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
+          aria-label="Open PMS"
+        >
+          <FolderKanban className="size-3.5" data-icon="inline-start" />
+          <span className="hidden sm:inline">PMS</span>
+        </Link>
+        <Link
+          href="/hrms"
+          className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
+          aria-label="Open HRMS"
+        >
+          <Users className="size-3.5" data-icon="inline-start" />
+          <span className="hidden sm:inline">HRMS</span>
+        </Link>
         <a
           href="/"
           target="_blank"
