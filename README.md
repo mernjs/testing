@@ -125,3 +125,17 @@ YO-0021	Pallavi Desai	pallavi.desai@yashorbit.com	Yashorbit@2026	employee	must c
 ready → signs straight in. must change → redirected to /hrms/change-password on first login (set any new password to continue).
 Staff/manager accounts land on /hrms; for their employee view open /hrms/me.
 Re-running npm run hrms:seed-demo recreates all 21 and resets passwords back to Yashorbit@2026.
+
+
+
+Staff panel — any existing super_admin account already has full TMS access, or:
+
+
+npm run tms:grant     # enter your email, roles: super_admin  (or tms_admin)
+then sign in at /tms/login.
+
+Student portal — sign in at /tms/login with (shown at the end of the seed run):
+
+
+aarav.verma.1@student.yashorbit.com   /   Yashorbit@2026
+diya.reddy.2@student.yashorbit.com    /   Yashorbit@2026
