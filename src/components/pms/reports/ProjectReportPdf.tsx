@@ -1,28 +1,12 @@
 import "server-only";
-import fs from "node:fs";
-import path from "node:path";
-import { Document, Page, View, Text, Image, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
 import type { ProjectReport } from "@/lib/pms/reports";
+import { PDF_COLORS } from "@/lib/pdf/brand";
+import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
 
 /** Server-only. A4 project report PDF. Never import from a client component. */
 
-const NAVY = "#1D428A";
-const INK = "#1f2937";
-const MUTE = "#6b7280";
-const LINE = "#e2e8f0";
-const SOFT = "#f4f6fb";
-
-let logoCache: string | null | undefined;
-function logoUri(): string | null {
-  if (logoCache !== undefined) return logoCache ?? null;
-  try {
-    const buf = fs.readFileSync(path.join(process.cwd(), "public/brand/icon-transparent.png"));
-    logoCache = `data:image/png;base64,${buf.toString("base64")}`;
-  } catch {
-    logoCache = null;
-  }
-  return logoCache;
-}
+const C = PDF_COLORS;
 
 function money(n: number, currency: string): string {
   return `${currency} ${Math.round(n || 0).toLocaleString("en-IN")}`;
@@ -34,25 +18,19 @@ function fmtDate(iso: string | null): string {
 }
 
 const s = StyleSheet.create({
-  page: { padding: 36, fontSize: 9, color: INK, fontFamily: "Helvetica" },
-  headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 4 },
-  logo: { width: 26, height: 26 },
-  brand: { fontSize: 13, fontFamily: "Helvetica-Bold", color: NAVY },
-  h1: { fontSize: 16, fontFamily: "Helvetica-Bold", color: INK, marginTop: 12 },
-  sub: { color: MUTE, marginBottom: 10 },
-  section: { fontSize: 11, fontFamily: "Helvetica-Bold", color: NAVY, marginTop: 16, marginBottom: 6 },
+  page: pdfSheet.pagePortrait,
+  section: pdfSheet.sectionTitle,
   grid: { flexDirection: "row", flexWrap: "wrap" },
   cell: { width: "50%", flexDirection: "row", paddingVertical: 2 },
-  key: { width: 120, color: MUTE },
+  key: { width: 120, color: C.mute },
   val: { flex: 1, fontFamily: "Helvetica-Bold" },
   kpiRow: { flexDirection: "row", flexWrap: "wrap", marginHorizontal: -4 },
   kpi: { width: "25%", padding: 4 },
-  kpiBox: { border: `1pt solid ${LINE}`, borderRadius: 4, padding: 8, backgroundColor: SOFT },
-  kpiLabel: { color: MUTE, fontSize: 7.5 },
-  kpiValue: { fontSize: 12, fontFamily: "Helvetica-Bold", marginTop: 2 },
-  tHead: { flexDirection: "row", backgroundColor: NAVY, color: "#fff", paddingVertical: 4, paddingHorizontal: 4, fontFamily: "Helvetica-Bold" },
-  tRow: { flexDirection: "row", borderBottom: `1pt solid ${LINE}`, paddingVertical: 3, paddingHorizontal: 4 },
-  foot: { position: "absolute", bottom: 24, left: 36, right: 36, textAlign: "center", color: MUTE, fontSize: 7.5 },
+  kpiBox: pdfSheet.kpiBox,
+  kpiLabel: pdfSheet.kpiLabel,
+  kpiValue: pdfSheet.kpiValue,
+  tHead: pdfSheet.tHead,
+  tRow: pdfSheet.tRow,
 });
 
 function Row({ k, v }: { k: string; v: string }) {
@@ -76,25 +54,22 @@ function Kpi({ label, value }: { label: string; value: string }) {
 
 function ReportDocument({ report }: { report: ProjectReport }) {
   const { summary: sm, financials: f } = report;
-  const logo = logoUri();
   const m = (n: number) => money(n, sm.currency);
+  const subtitle = [
+    `${sm.projectCode} · ${sm.client} · ${sm.statusLabel}`,
+    report.range.dateFrom ? `${report.range.dateFrom} to ${report.range.dateTo}` : null,
+  ]
+    .filter(Boolean)
+    .join("  ·  ");
 
   return (
     <Document title={`${sm.projectCode} — Project Report`}>
       <Page size="A4" style={s.page}>
-        <View style={s.headerRow}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf Image, not next/image */}
-            {logo ? <Image src={logo} style={s.logo} /> : null}
-            <Text style={[s.brand, { marginLeft: 6 }]}>YashOrbit</Text>
-          </View>
-          <Text style={{ color: MUTE }}>Generated {fmtDate(report.generatedAt)}</Text>
-        </View>
-        <Text style={s.h1}>{sm.name}</Text>
-        <Text style={s.sub}>
-          {sm.projectCode} · {sm.client} · {sm.statusLabel}
-          {report.range.dateFrom ? `  ·  ${report.range.dateFrom} to ${report.range.dateTo}` : ""}
-        </Text>
+        <PdfLetterhead
+          title={sm.name}
+          subtitle={subtitle}
+          reference={`Generated ${fmtDate(report.generatedAt)}`}
+        />
 
         <Text style={s.section}>Project Summary</Text>
         <View style={s.grid}>
@@ -146,7 +121,7 @@ function ReportDocument({ report }: { report: ProjectReport }) {
           <Text style={{ width: "15%" }}>Revenue</Text>
         </View>
         {report.contributions.length === 0 ? (
-          <View style={s.tRow}><Text style={{ color: MUTE }}>No logged hours in this range.</Text></View>
+          <View style={s.tRow}><Text style={{ color: C.mute }}>No logged hours in this range.</Text></View>
         ) : (
           report.contributions.map((c) => (
             <View key={c.employeeId} style={s.tRow}>
@@ -160,14 +135,12 @@ function ReportDocument({ report }: { report: ProjectReport }) {
           ))
         )}
 
-        <Text style={s.foot} fixed>
-          {sm.name} · {sm.projectCode} · YashOrbit PMS — computer-generated report
-        </Text>
+        <PdfFooter note={`${sm.name} · ${sm.projectCode} — YashOrbit PMS`} />
       </Page>
     </Document>
   );
 }
 
 export function renderProjectReportPdf(report: ProjectReport): Promise<Buffer> {
-  return renderToBuffer(<ReportDocument report={report} />) as Promise<Buffer>;
+  return renderToBuffer(<ReportDocument report={report} />);
 }

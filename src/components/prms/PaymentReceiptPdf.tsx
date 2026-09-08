@@ -1,26 +1,13 @@
 import "server-only";
-import fs from "node:fs";
-import path from "node:path";
-import { Document, Page, View, Text, Image, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
 import type { Payment } from "@/lib/prms/payments";
 import type { Invoice } from "@/lib/prms/invoices";
 import type { CompanyIdentity } from "@/lib/prms/settings";
+import { PDF_COLORS } from "@/lib/pdf/brand";
+import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
 
-const NAVY = "#1D428A";
-const INK = "#1f2937";
-const MUTE = "#6b7280";
+const C = PDF_COLORS;
 
-let logoCache: string | null | undefined;
-function logoUri(): string | null {
-  if (logoCache !== undefined) return logoCache ?? null;
-  try {
-    const buf = fs.readFileSync(path.join(process.cwd(), "public/brand/icon-transparent.png"));
-    logoCache = `data:image/png;base64,${buf.toString("base64")}`;
-  } catch {
-    logoCache = null;
-  }
-  return logoCache;
-}
 function money(n: number, c: string) {
   return `${c} ${(Math.round((n || 0) * 100) / 100).toLocaleString("en-IN")}`;
 }
@@ -30,41 +17,22 @@ function fmtDate(iso: string) {
 }
 
 const s = StyleSheet.create({
-  page: { padding: 44, fontSize: 10, fontFamily: "Helvetica", color: INK },
-  head: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 22 },
-  logoRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  logo: { width: 26, height: 26 },
-  brand: { fontSize: 13, fontFamily: "Helvetica-Bold", color: NAVY },
-  small: { fontSize: 8, color: MUTE },
-  title: { fontSize: 20, fontFamily: "Helvetica-Bold", color: NAVY, textAlign: "right" },
-  meta: { fontSize: 9, color: MUTE, textAlign: "right", marginTop: 2 },
-  row: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 4, borderBottomWidth: 0.5, borderBottomColor: "#e2e8f0" },
-  label: { fontSize: 8, color: MUTE, textTransform: "uppercase", letterSpacing: 1, marginTop: 16 },
-  grand: { flexDirection: "row", justifyContent: "space-between", marginTop: 10, paddingTop: 6, borderTopWidth: 1, borderTopColor: INK, fontFamily: "Helvetica-Bold", fontSize: 12 },
-  foot: { position: "absolute", bottom: 30, left: 44, right: 44, textAlign: "center", color: MUTE, fontSize: 8 },
+  page: pdfSheet.pagePortrait,
+  small: { fontSize: 8, color: C.mute },
+  row: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 4, borderBottomWidth: 0.5, borderBottomColor: C.line },
+  label: { ...pdfSheet.label, marginTop: 16 },
+  grand: { flexDirection: "row", justifyContent: "space-between", marginTop: 12, paddingTop: 6, borderTopWidth: 1, borderTopColor: C.ink, fontFamily: "Helvetica-Bold", fontSize: 12 },
 });
 
 function ReceiptDoc({ payment, invoice, company }: { payment: Payment; invoice: Invoice; company: CompanyIdentity }) {
-  const logo = logoUri();
   return (
     <Document title={`Payment Receipt ${payment.paymentCode}`}>
       <Page size="A4" style={s.page}>
-        <View style={s.head}>
-          <View>
-            <View style={s.logoRow}>
-              {/* eslint-disable-next-line jsx-a11y/alt-text */}
-              {logo ? <Image src={logo} style={s.logo} /> : null}
-              <Text style={s.brand}>{company.name}</Text>
-            </View>
-            <Text style={[s.small, { marginTop: 4 }]}>{[company.addressLine, company.city].filter(Boolean).join(", ")}</Text>
-            <Text style={s.small}>{company.gstin ? `GSTIN: ${company.gstin}` : ""}</Text>
-          </View>
-          <View>
-            <Text style={s.title}>PAYMENT RECEIPT</Text>
-            <Text style={s.meta}>{payment.paymentCode}</Text>
-            <Text style={s.meta}>{fmtDate(payment.paymentDate.toISOString().slice(0, 10))}</Text>
-          </View>
-        </View>
+        <PdfLetterhead
+          title="PAYMENT RECEIPT"
+          reference={`${payment.paymentCode}\n${fmtDate(payment.paymentDate.toISOString().slice(0, 10))}`}
+          registrations={company.gstin ? [`GSTIN: ${company.gstin}`] : undefined}
+        />
 
         <Text style={s.label}>Paid to</Text>
         <Text style={{ fontSize: 11, fontFamily: "Helvetica-Bold", marginTop: 2 }}>{payment.vendorName}</Text>
@@ -80,7 +48,7 @@ function ReceiptDoc({ payment, invoice, company }: { payment: Payment; invoice: 
         {payment.tdsDeducted > 0 && <View style={s.row}><Text style={s.small}>TDS deducted</Text><Text>{money(payment.tdsDeducted, invoice.currency)}</Text></View>}
         <View style={s.grand}><Text>Amount paid</Text><Text>{money(payment.amount, invoice.currency)}</Text></View>
 
-        <Text style={s.foot}>System-generated payment receipt from {company.name}.</Text>
+        <PdfFooter note="System-generated payment receipt." />
       </Page>
     </Document>
   );

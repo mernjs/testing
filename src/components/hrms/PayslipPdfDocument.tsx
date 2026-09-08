@@ -1,32 +1,16 @@
 import "server-only";
-import fs from "node:fs";
-import path from "node:path";
-import { Document, Page, View, Text, Image, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
 import type { PayslipPdfData, PayLine } from "@/lib/hrms/payslip-pdf";
+import { PDF_COLORS } from "@/lib/pdf/brand";
+import { PdfLetterhead, PdfFooter } from "@/lib/pdf/layout";
 
 /**
  * Server-only. Renders a professional A4 payslip PDF with @react-pdf/renderer.
- * Never import this from a client component — it is bundled server-side only.
+ * Uses the shared letterhead (`src/lib/pdf/layout.tsx`) so it matches every
+ * other generated document. Never import this from a client component.
  */
 
-const NAVY = "#1D428A";
-const CORAL = "#E56043";
-const INK = "#1f2937";
-const MUTE = "#6b7280";
-const LINE = "#e2e8f0";
-const SOFT = "#f4f6fb";
-
-let logoCache: string | null | undefined;
-function logoUri(): string | null {
-  if (logoCache !== undefined) return logoCache ?? null;
-  try {
-    const buf = fs.readFileSync(path.join(process.cwd(), "public/brand/icon-transparent.png"));
-    logoCache = `data:image/png;base64,${buf.toString("base64")}`;
-  } catch {
-    logoCache = null;
-  }
-  return logoCache;
-}
+const C = PDF_COLORS;
 
 const inr = (n: number) => `Rs. ${Math.round(n || 0).toLocaleString("en-IN")}`;
 function fmtDate(iso: string | null): string {
@@ -39,60 +23,45 @@ function fmtDay(day: string | null): string {
 }
 
 const s = StyleSheet.create({
-  page: { paddingTop: 30, paddingHorizontal: 34, paddingBottom: 40, fontFamily: "Helvetica", fontSize: 8.5, color: INK, lineHeight: 1.35 },
+  page: { paddingTop: 30, paddingHorizontal: 34, paddingBottom: 42, fontFamily: "Helvetica", fontSize: 8.5, color: C.ink, lineHeight: 1.35 },
 
-  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
-  headerLeft: { flexDirection: "row", gap: 10, maxWidth: 370 },
-  logo: { width: 34, height: 34 },
-  coName: { fontSize: 13, fontFamily: "Helvetica-Bold", color: NAVY },
-  coSub: { fontSize: 7.5, color: MUTE, marginTop: 1 },
-  coReg: { fontSize: 7, color: INK, marginTop: 2 },
-  headerRight: { alignItems: "flex-end" },
-  docTitle: { fontSize: 15, fontFamily: "Helvetica-Bold", color: INK, letterSpacing: 2 },
-  docMonth: { fontSize: 9, color: NAVY, fontFamily: "Helvetica-Bold", marginTop: 2 },
-  confidential: { fontSize: 7, color: MUTE, marginTop: 2, textTransform: "uppercase", letterSpacing: 1 },
+  sectionTitle: { fontSize: 8, fontFamily: "Helvetica-Bold", color: C.navy, textTransform: "uppercase", letterSpacing: 1, marginTop: 12, marginBottom: 5 },
 
-  bar: { height: 3, backgroundColor: NAVY, marginTop: 8 },
-  barAccent: { height: 3, backgroundColor: CORAL, width: 90, marginBottom: 10 },
+  grid: { flexDirection: "row", flexWrap: "wrap", borderWidth: 0.7, borderColor: C.line, borderRadius: 3 },
+  cell: { width: "33.333%", paddingVertical: 4, paddingHorizontal: 7, borderBottomWidth: 0.7, borderRightWidth: 0.7, borderColor: C.line },
+  cellLabel: { fontSize: 6.8, color: C.mute, textTransform: "uppercase", letterSpacing: 0.5 },
+  cellValue: { fontSize: 8.5, color: C.ink, marginTop: 1 },
 
-  sectionTitle: { fontSize: 8, fontFamily: "Helvetica-Bold", color: NAVY, textTransform: "uppercase", letterSpacing: 1, marginTop: 12, marginBottom: 5 },
-
-  grid: { flexDirection: "row", flexWrap: "wrap", borderWidth: 0.7, borderColor: LINE, borderRadius: 3 },
-  cell: { width: "33.333%", paddingVertical: 4, paddingHorizontal: 7, borderBottomWidth: 0.7, borderRightWidth: 0.7, borderColor: LINE },
-  cellLabel: { fontSize: 6.8, color: MUTE, textTransform: "uppercase", letterSpacing: 0.5 },
-  cellValue: { fontSize: 8.5, color: INK, marginTop: 1 },
-
-  strip: { flexDirection: "row", backgroundColor: SOFT, borderRadius: 3, paddingVertical: 6, marginTop: 4 },
+  strip: { flexDirection: "row", backgroundColor: C.soft, borderRadius: 3, paddingVertical: 6, marginTop: 4 },
   stripCell: { flex: 1, alignItems: "center" },
-  stripLabel: { fontSize: 6.8, color: MUTE, textTransform: "uppercase", letterSpacing: 0.5 },
-  stripValue: { fontSize: 9.5, color: INK, fontFamily: "Helvetica-Bold", marginTop: 1 },
+  stripLabel: { fontSize: 6.8, color: C.mute, textTransform: "uppercase", letterSpacing: 0.5 },
+  stripValue: { fontSize: 9.5, color: C.ink, fontFamily: "Helvetica-Bold", marginTop: 1 },
 
   tablesRow: { flexDirection: "row", gap: 12, marginTop: 12 },
-  tableCol: { flex: 1, borderWidth: 0.7, borderColor: LINE, borderRadius: 3 },
-  thead: { flexDirection: "row", backgroundColor: NAVY, paddingVertical: 4, paddingHorizontal: 7 },
-  th: { fontSize: 7, color: "#ffffff", fontFamily: "Helvetica-Bold", textTransform: "uppercase", letterSpacing: 0.5 },
-  tr: { flexDirection: "row", paddingVertical: 3.5, paddingHorizontal: 7, borderBottomWidth: 0.6, borderColor: LINE },
+  tableCol: { flex: 1, borderWidth: 0.7, borderColor: C.line, borderRadius: 3 },
+  thead: { flexDirection: "row", backgroundColor: C.navy, paddingVertical: 4, paddingHorizontal: 7 },
+  th: { fontSize: 7, color: C.white, fontFamily: "Helvetica-Bold", textTransform: "uppercase", letterSpacing: 0.5 },
+  tr: { flexDirection: "row", paddingVertical: 3.5, paddingHorizontal: 7, borderBottomWidth: 0.6, borderColor: C.line },
   tdName: { flex: 1, fontSize: 8 },
   tdNum: { width: 62, fontSize: 8, textAlign: "right" },
-  totalRow: { flexDirection: "row", paddingVertical: 5, paddingHorizontal: 7, backgroundColor: SOFT },
+  totalRow: { flexDirection: "row", paddingVertical: 5, paddingHorizontal: 7, backgroundColor: C.soft },
   totalName: { flex: 1, fontSize: 8, fontFamily: "Helvetica-Bold" },
   totalNum: { width: 62, fontSize: 8, textAlign: "right", fontFamily: "Helvetica-Bold" },
 
-  netBox: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: NAVY, borderRadius: 4, paddingVertical: 10, paddingHorizontal: 14, marginTop: 12 },
+  netBox: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: C.navy, borderRadius: 4, paddingVertical: 10, paddingHorizontal: 14, marginTop: 12 },
   netLabel: { fontSize: 8, color: "#c9d6f0", fontFamily: "Helvetica-Bold", textTransform: "uppercase", letterSpacing: 1.5 },
   netWords: { fontSize: 7.5, color: "#eef2fb", marginTop: 2, maxWidth: 360 },
-  netAmount: { fontSize: 16, color: "#ffffff", fontFamily: "Helvetica-Bold" },
+  netAmount: { fontSize: 16, color: C.white, fontFamily: "Helvetica-Bold" },
 
-  smallNote: { fontSize: 7, color: MUTE, marginTop: 8 },
+  smallNote: { fontSize: 7, color: C.mute, marginTop: 8 },
 
-  authRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginTop: 22, borderTopWidth: 0.7, borderColor: LINE, paddingTop: 10 },
+  authRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginTop: 22, borderTopWidth: 0.7, borderColor: C.line, paddingTop: 10 },
   sigBlock: { width: 190 },
-  sigLine: { borderBottomWidth: 0.8, borderColor: INK, height: 24 },
+  sigLine: { borderBottomWidth: 0.8, borderColor: C.ink, height: 24 },
   sigName: { fontSize: 8, fontFamily: "Helvetica-Bold", marginTop: 3 },
-  sigRole: { fontSize: 7, color: MUTE },
+  sigRole: { fontSize: 7, color: C.mute },
   authNote: { flex: 1, alignItems: "flex-end", marginLeft: 24 },
-  footNote: { fontSize: 6.8, color: MUTE, textAlign: "right", marginTop: 1 },
-  pageMeta: { position: "absolute", bottom: 16, left: 34, right: 34, fontSize: 6.5, color: MUTE, textAlign: "center" },
+  footNote: { fontSize: 6.8, color: C.mute, textAlign: "right", marginTop: 1 },
 
   watermark: { position: "absolute", top: 320, left: 70, fontSize: 82, color: "#ed6a4d", opacity: 0.12, fontFamily: "Helvetica-Bold", transform: "rotate(-32deg)", letterSpacing: 6 },
 });
@@ -130,35 +99,19 @@ function LineRows({ rows }: { rows: PayLine[] }) {
 function PayslipDocument({ data }: { data: PayslipPdfData }) {
   const c = data.company;
   const e = data.employee;
-  const logo = logoUri();
+  const registrations = c.registrations.map((r) => `${r.label}: ${r.value}`);
+  const state = data.isProvisional ? `Provisional (run ${data.runStatus})` : "Confidential";
 
   return (
     <Document title={`Payslip ${e.code} ${data.month}`} author={c.name}>
       <Page size="A4" style={s.page}>
         {data.isProvisional && <Text style={s.watermark} fixed>PROVISIONAL</Text>}
 
-        <View style={s.header}>
-          <View style={s.headerLeft}>
-            {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf/renderer Image, not an HTML img */}
-            {logo && <Image src={logo} style={s.logo} />}
-            <View>
-              <Text style={s.coName}>{c.name}</Text>
-              {c.legalName && c.legalName !== c.name && <Text style={s.coSub}>{c.legalName}</Text>}
-              {c.address && <Text style={s.coSub}>{c.address}</Text>}
-              <Text style={s.coSub}>{[c.email, c.phone, c.website].filter(Boolean).join("   |   ")}</Text>
-              {c.registrations.length > 0 && (
-                <Text style={s.coReg}>{c.registrations.map((r) => `${r.label}: ${r.value}`).join("      ")}</Text>
-              )}
-            </View>
-          </View>
-          <View style={s.headerRight}>
-            <Text style={s.docTitle}>PAYSLIP</Text>
-            <Text style={s.docMonth}>{data.monthLabel}</Text>
-            <Text style={s.confidential}>{data.isProvisional ? `Provisional · run ${data.runStatus}` : "Confidential"}</Text>
-          </View>
-        </View>
-        <View style={s.bar} />
-        <View style={s.barAccent} />
+        <PdfLetterhead
+          title="PAYSLIP"
+          reference={`${data.monthLabel}\n${state}`}
+          registrations={registrations}
+        />
 
         <Text style={s.sectionTitle}>Employee</Text>
         <View style={s.grid}>
@@ -240,7 +193,7 @@ function PayslipDocument({ data }: { data: PayslipPdfData }) {
         <View style={s.authRow}>
           <View style={s.sigBlock}>
             <View style={s.sigLine} />
-            <Text style={s.sigName}>{c.signatoryName || " "}</Text>
+            <Text style={s.sigName}>{c.signatoryName || " "}</Text>
             <Text style={s.sigRole}>{[c.signatoryDesignation, c.name].filter(Boolean).join(", ")}</Text>
           </View>
           <View style={s.authNote}>
@@ -249,13 +202,7 @@ function PayslipDocument({ data }: { data: PayslipPdfData }) {
           </View>
         </View>
 
-        <Text
-          style={s.pageMeta}
-          fixed
-          render={({ pageNumber, totalPages }) =>
-            `${c.name}   |   Payslip ${data.employee.code} ${data.monthLabel}   |   Generated ${fmtDate(data.generatedAt)}   |   Page ${pageNumber} of ${totalPages}`
-          }
-        />
+        <PdfFooter note={`Payslip ${data.employee.code} ${data.monthLabel} · generated ${fmtDate(data.generatedAt)}`} />
       </Page>
     </Document>
   );

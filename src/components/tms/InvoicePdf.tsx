@@ -1,14 +1,11 @@
 import "server-only";
-import fs from "node:fs";
-import path from "node:path";
-import { Document, Page, View, Text, Image, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { PDF_COLORS } from "@/lib/pdf/brand";
+import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
 
-/** Server-only. A4 payment receipt / invoice. Never import from a client component. */
+/** Server-only. A4 fee receipt. Never import from a client component. */
 
-const NAVY = "#1D428A";
-const INK = "#1f2937";
-const MUTE = "#6b7280";
-const LINE = "#e2e8f0";
+const C = PDF_COLORS;
 
 export interface InvoicePdfData {
   invoiceNumber: string;
@@ -34,18 +31,6 @@ export interface InvoicePdfData {
   };
 }
 
-let logoCache: string | null | undefined;
-function logoUri(): string | null {
-  if (logoCache !== undefined) return logoCache ?? null;
-  try {
-    const buf = fs.readFileSync(path.join(process.cwd(), "public/brand/icon-transparent.png"));
-    logoCache = `data:image/png;base64,${buf.toString("base64")}`;
-  } catch {
-    logoCache = null;
-  }
-  return logoCache;
-}
-
 function money(n: number, currency: string): string {
   return `${currency} ${Math.round(n || 0).toLocaleString("en-IN")}`;
 }
@@ -55,48 +40,20 @@ function fmtDate(iso: string): string {
 }
 
 const s = StyleSheet.create({
-  page: { padding: 40, fontSize: 10, fontFamily: "Helvetica", color: INK },
-  head: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 },
-  logoRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  logo: { width: 28, height: 28 },
-  brand: { fontSize: 14, fontFamily: "Helvetica-Bold", color: NAVY },
-  small: { fontSize: 8, color: MUTE },
-  title: { fontSize: 20, fontFamily: "Helvetica-Bold", color: NAVY, textAlign: "right" },
-  invMeta: { fontSize: 9, color: MUTE, textAlign: "right", marginTop: 2 },
+  page: pdfSheet.pagePortrait,
+  small: { fontSize: 8, color: C.mute },
   section: { marginTop: 16 },
-  label: { fontSize: 8, color: MUTE, textTransform: "uppercase", letterSpacing: 1 },
-  value: { fontSize: 10, fontFamily: "Helvetica-Bold", marginTop: 2 },
-  tHead: { flexDirection: "row", backgroundColor: NAVY, color: "#fff", paddingVertical: 5, paddingHorizontal: 6, marginTop: 18, fontFamily: "Helvetica-Bold" },
-  tRow: { flexDirection: "row", borderBottomWidth: 0.75, borderBottomColor: LINE, borderBottomStyle: "solid", paddingVertical: 5, paddingHorizontal: 6 },
-  totals: { marginTop: 14, alignSelf: "flex-end", width: 240 },
-  totalRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 2 },
-  grand: { flexDirection: "row", justifyContent: "space-between", borderTopWidth: 1, borderTopColor: INK, borderTopStyle: "solid", marginTop: 4, paddingTop: 4, fontFamily: "Helvetica-Bold" },
-  foot: { position: "absolute", bottom: 30, left: 40, right: 40, textAlign: "center", color: MUTE, fontSize: 8 },
+  label: pdfSheet.label,
+  value: pdfSheet.value,
+  tHead: { ...pdfSheet.tHead, marginTop: 18 },
+  tRow: pdfSheet.tRow,
 });
 
 function InvoiceDocument({ data }: { data: InvoicePdfData }) {
-  const logo = logoUri();
   return (
-    <Document title={`Invoice ${data.invoiceNumber}`}>
+    <Document title={`Receipt ${data.invoiceNumber}`}>
       <Page size="A4" style={s.page}>
-        <View style={s.head}>
-          <View>
-            <View style={s.logoRow}>
-              {/* eslint-disable-next-line jsx-a11y/alt-text -- @react-pdf/renderer Image, not an HTML img */}
-              {logo ? <Image src={logo} style={s.logo} /> : null}
-              <Text style={s.brand}>{data.institute.name}</Text>
-            </View>
-            <Text style={[s.small, { marginTop: 4 }]}>
-              {[data.institute.addressLine, data.institute.city].filter(Boolean).join(", ")}
-            </Text>
-            <Text style={s.small}>{[data.institute.email, data.institute.phone].filter(Boolean).join(" · ")}</Text>
-          </View>
-          <View>
-            <Text style={s.title}>RECEIPT</Text>
-            <Text style={s.invMeta}>{data.invoiceNumber}</Text>
-            <Text style={s.invMeta}>{fmtDate(data.paidOn)}</Text>
-          </View>
-        </View>
+        <PdfLetterhead title="FEE RECEIPT" reference={`${data.invoiceNumber}\n${fmtDate(data.paidOn)}`} />
 
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View style={s.section}>
@@ -123,32 +80,32 @@ function InvoiceDocument({ data }: { data: InvoicePdfData }) {
           <Text style={{ width: 100, textAlign: "right" }}>{money(data.amount, data.currency)}</Text>
         </View>
 
-        <View style={s.totals}>
-          <View style={s.totalRow}>
+        <View style={pdfSheet.totalsBox}>
+          <View style={pdfSheet.totalsRow}>
             <Text style={s.small}>Total course fees</Text>
             <Text style={s.small}>{money(data.totalFees, data.currency)}</Text>
           </View>
           {data.discount > 0 && (
-            <View style={s.totalRow}>
+            <View style={pdfSheet.totalsRow}>
               <Text style={s.small}>Discount</Text>
               <Text style={s.small}>- {money(data.discount, data.currency)}</Text>
             </View>
           )}
-          <View style={s.totalRow}>
+          <View style={pdfSheet.totalsRow}>
             <Text style={s.small}>Paid to date</Text>
             <Text style={s.small}>{money(data.paidToDate, data.currency)}</Text>
           </View>
-          <View style={s.grand}>
+          <View style={pdfSheet.grandRow}>
             <Text>This receipt</Text>
             <Text>{money(data.amount, data.currency)}</Text>
           </View>
-          <View style={[s.totalRow, { marginTop: 4 }]}>
+          <View style={[pdfSheet.totalsRow, { marginTop: 4 }]}>
             <Text style={s.small}>Balance pending</Text>
             <Text style={s.small}>{money(data.pending, data.currency)}</Text>
           </View>
         </View>
 
-        <Text style={s.foot}>Computer-generated receipt — no signature required. Thank you.</Text>
+        <PdfFooter note="Computer-generated receipt — thank you." />
       </Page>
     </Document>
   );

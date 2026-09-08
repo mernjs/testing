@@ -1,33 +1,29 @@
 import "server-only";
 import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
 import type { ReportData } from "@/lib/tms/reports";
+import { PDF_COLORS } from "@/lib/pdf/brand";
+import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
 
 /** Server-only. Generic landscape tabular report PDF. */
 
-const NAVY = "#1D428A";
-const INK = "#1f2937";
-const MUTE = "#6b7280";
-const LINE = "#e2e8f0";
+const C = PDF_COLORS;
 
 const s = StyleSheet.create({
-  page: { padding: 28, fontSize: 7.5, fontFamily: "Helvetica", color: INK },
-  h1: { fontSize: 15, fontFamily: "Helvetica-Bold", color: NAVY },
-  meta: { color: MUTE, marginBottom: 10, marginTop: 2, fontSize: 8 },
-  tHead: { flexDirection: "row", backgroundColor: NAVY, color: "#fff", paddingVertical: 4, paddingHorizontal: 3, fontFamily: "Helvetica-Bold" },
-  tRow: { flexDirection: "row", borderBottomWidth: 0.5, borderBottomColor: LINE, borderBottomStyle: "solid", paddingVertical: 3, paddingHorizontal: 3 },
+  page: pdfSheet.pageLandscape,
+  tHead: { ...pdfSheet.tHead, paddingVertical: 4, paddingHorizontal: 3, marginTop: 4 },
+  tRow: { ...pdfSheet.tRow, paddingVertical: 3, paddingHorizontal: 3 },
   cell: { paddingRight: 3 },
-  foot: { position: "absolute", bottom: 16, left: 28, right: 28, textAlign: "center", color: MUTE, fontSize: 7 },
 });
 
 function ReportDocument({ report }: { report: ReportData }) {
   const widths = report.columns.map((c) => c.width ?? 14);
   const totalW = widths.reduce((a, b) => a + b, 0);
+  const subtitle = report.meta.map(([k, v]) => `${k}: ${v}`).join("    ·    ");
 
   return (
     <Document title={report.title}>
       <Page size="A4" orientation="landscape" style={s.page}>
-        <Text style={s.h1}>{report.title}</Text>
-        <Text style={s.meta}>{report.meta.map(([k, v]) => `${k}: ${v}`).join("   ·   ")}</Text>
+        <PdfLetterhead title={report.title} subtitle={subtitle} landscape />
 
         <View style={s.tHead}>
           {report.columns.map((c, i) => (
@@ -45,12 +41,9 @@ function ReportDocument({ report }: { report: ReportData }) {
             ))}
           </View>
         ))}
+        {report.rows.length === 0 && <Text style={{ marginTop: 12, color: C.mute }}>No data.</Text>}
 
-        <Text
-          style={s.foot}
-          render={({ pageNumber, totalPages }) => `YashOrbit Training — page ${pageNumber} of ${totalPages}`}
-          fixed
-        />
+        <PdfFooter note={`${report.title} — YashOrbit Training`} />
       </Page>
     </Document>
   );
