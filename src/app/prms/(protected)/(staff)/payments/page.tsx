@@ -1,0 +1,89 @@
+import Link from "next/link";
+import { Banknote, CheckCircle2, CalendarClock, FileDown } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
+import KpiCard from "@/components/lms/KpiCard";
+import KpiGrid from "@/components/lms/KpiGrid";
+import PrmsDataTable from "@/components/prms/PrmsDataTable";
+import { PaymentStatusBadge } from "@/components/prms/StatusBadges";
+import PaymentRowActions from "@/components/prms/PaymentRowActions";
+import { getCurrentPrmsUser } from "@/lib/prms-auth";
+import { canManageFinance } from "@/lib/prms-roles";
+import { searchPayments, paymentsThisMonth, serializePayment } from "@/lib/prms/payments";
+import { listVendorOptions } from "@/lib/prms/vendors";
+import { formatMoney } from "@/lib/prms/constants";
+import { formatDate } from "@/lib/utils";
+
+export default async function PaymentsPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
+  const sp = await searchParams;
+  const user = await getCurrentPrmsUser();
+  const canManage = user ? canManageFinance(user.roles) : false;
+
+  const page = Math.max(Number(sp.page) || 1, 1);
+  const [result, vendors, monthTotal] = await Promise.all([
+    searchPayments({ search: sp.search, vendorId: sp.vendorId, page, pageSize: 20 }),
+    listVendorOptions(),
+    paymentsThisMonth(),
+  ]);
+
+  const scheduled = result.items.filter((p) => p.status === "scheduled").length;
+  const processed = result.items.filter((p) => p.status === "processed").length;
+  const vOpts = vendors.map((v) => ({ _id: v._id, companyName: v.companyName }));
+
+  return (
+    <div className="space-y-4">
+      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Payments" }]} />
+      <div>
+        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Payments</h1>
+        <p className="text-sm text-muted-foreground">{result.total} payment{result.total === 1 ? "" : "s"} recorded against invoices.</p>
+      </div>
+
+      <KpiGrid>
+        <KpiCard label="Paid This Month" value={<span>{formatMoney(monthTotal)}</span>} accent icon={<Banknote className="size-4" />} />
+        <KpiCard label="Processed (page)" value={processed} icon={<CheckCircle2 className="size-4" />} />
+        <KpiCard label="Scheduled (page)" value={scheduled} icon={<CalendarClock className="size-4" />} />
+      </KpiGrid>
+
+      <PrmsDataTable
+        columns={[
+          { key: "code", header: "Payment" },
+          { key: "invoice", header: "Invoice" },
+          { key: "vendor", header: "Vendor" },
+          { key: "amount", header: "Amount", align: "right" },
+          { key: "date", header: "Date" },
+          { key: "method", header: "Method" },
+          { key: "status", header: "Status" },
+          ...(canManage ? [{ key: "_actions", header: "", align: "right" as const }] : []),
+        ]}
+        rows={result.items.map(serializePayment).map((p) => ({
+          id: p._id,
+          cells: {
+            code: p.paymentCode,
+            invoice: <Link className="text-primary hover:underline" href={`/prms/invoices/${p.invoiceId}`}>{p.invoiceNumber}</Link>,
+            vendor: p.vendorName,
+            amount: formatMoney(p.amount),
+            date: formatDate(p.paymentDate),
+            method: p.method.replace(/_/g, " "),
+            status: <PaymentStatusBadge status={p.status} />,
+            _actions: canManage ? (
+              <span className="flex items-center justify-end gap-1.5">
+                <a href={`/api/prms/payments/${p.paymentCode}`} target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: "ghost", size: "icon-xs" })} aria-label="Receipt PDF">
+                  <FileDown className="size-3.5" />
+                </a>
+                <PaymentRowActions id={p._id} code={p.paymentCode} status={p.status} />
+              </span>
+            ) : null,
+          },
+        }))}
+        filters={[{ key: "vendorId", label: "Vendor", value: sp.vendorId ?? "", options: vOpts.map((v) => ({ value: v._id, label: v.companyName })) }]}
+        search={sp.search ?? ""}
+        searchPlaceholder="Payment #, invoice #, vendor"
+        page={result.page}
+        totalPages={result.totalPages}
+        total={result.total}
+        exportBase="/api/prms/export/payments"
+        emptyLabel="No payments recorded yet."
+      />
+    </div>
+  );
+}

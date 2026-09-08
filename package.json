@@ -16,7 +16,9 @@
     "pms:grant": "node --env-file=.env scripts/grant-pms-role.mjs",
     "pms:seed-demo": "node --env-file=.env scripts/seed-pms-demo.mjs",
     "tms:grant": "node --env-file=.env scripts/grant-tms-role.mjs",
-    "tms:seed-demo": "node --env-file=.env scripts/seed-tms-demo.mjs"
+    "tms:seed-demo": "node --env-file=.env scripts/seed-tms-demo.mjs",
+    "prms:grant": "node --env-file=.env scripts/grant-prms-role.mjs",
+    "prms:seed-demo": "node --env-file=.env scripts/seed-prms-demo.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
