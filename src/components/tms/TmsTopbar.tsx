@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Users, LayoutGrid, FolderKanban, Globe } from "lucide-react";
+import { Users, LayoutGrid, FolderKanban, Globe, MessagesSquare } from "lucide-react";
 import TmsMobileSidebar from "@/components/tms/TmsMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
 import TmsNotificationsBell, { type BellItem } from "@/components/tms/TmsNotificationsBell";
@@ -28,6 +28,14 @@ export default function TmsTopbar({
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryTmsRoleLabel(roles)}</p>
       </div>
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <Link
+          href="/messenger"
+          className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
+          aria-label="Open Messenger"
+        >
+          <MessagesSquare className="size-3.5" data-icon="inline-start" />
+          <span className="hidden sm:inline">Messenger</span>
+        </Link>
         {isStaff && (
           <>
             <Link

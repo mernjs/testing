@@ -18,7 +18,10 @@
     "tms:grant": "node --env-file=.env scripts/grant-tms-role.mjs",
     "tms:seed-demo": "node --env-file=.env scripts/seed-tms-demo.mjs",
     "prms:grant": "node --env-file=.env scripts/grant-prms-role.mjs",
-    "prms:seed-demo": "node --env-file=.env scripts/seed-prms-demo.mjs"
+    "prms:seed-demo": "node --env-file=.env scripts/seed-prms-demo.mjs",
+    "chat:grant": "node --env-file=.env scripts/grant-chat-role.mjs",
+    "chat:grant-hrms": "node --env-file=.env scripts/grant-messenger-to-hrms.mjs",
+    "chat:seed-demo": "node --env-file=.env scripts/seed-messenger-demo.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

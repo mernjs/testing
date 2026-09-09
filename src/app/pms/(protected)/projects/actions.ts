@@ -30,6 +30,16 @@ async function requireManage() {
   return user;
 }
 
+/** Best-effort: keep the Messenger project channel + membership in sync. Never throws. */
+async function syncMessengerChannel(projectId: string): Promise<void> {
+  try {
+    const { syncProjectChannel } = await import("@/lib/messenger/projects");
+    await syncProjectChannel(projectId);
+  } catch {
+    // Messenger integration is optional — a failure here must not affect PMS.
+  }
+}
+
 function revalidate(id?: string) {
   revalidatePath("/pms/projects");
   revalidatePath("/pms");
@@ -71,6 +81,7 @@ export async function saveProjectAction(
         ["name", "priority", "progress", "pm"]
       ),
     });
+    await syncMessengerChannel(id);
     revalidate(id);
     return { ok: true, id: updated?._id };
   }
@@ -85,6 +96,7 @@ export async function saveProjectAction(
     entityLabel: `${created.projectCode} · ${v.data.name}`,
     projectId: created._id,
   });
+  await syncMessengerChannel(created._id);
   revalidate(created._id);
   return { ok: true, id: created._id };
 }
@@ -121,6 +133,7 @@ export async function changeStatusAction(id: string, status: string): Promise<Pr
     }), user.id);
   }
 
+  await syncMessengerChannel(id);
   revalidate(id);
   return { ok: true, id };
 }
@@ -160,6 +173,7 @@ export async function deleteProjectAction(id: string): Promise<ProjectActionResu
     entityLabel: before?.name ?? null,
     projectId: id,
   });
+  await syncMessengerChannel(id);
   revalidate(id);
   return { ok: true };
 }

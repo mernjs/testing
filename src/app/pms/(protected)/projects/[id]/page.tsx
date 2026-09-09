@@ -22,6 +22,7 @@ import { taskCountsByStatus, projectHasTasks, listTasks } from "@/lib/pms/tasks"
 import { listMilestones } from "@/lib/pms/milestones";
 import { TASK_STATUSES } from "@/lib/pms/constants";
 import { employeeFullName, getEmployee } from "@/lib/hrms/employees";
+import { getProjectChannelSlug } from "@/lib/messenger/projects";
 import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils";
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -45,6 +46,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     listTasks(id, {}),
   ]);
   const totalTasks = Object.values(taskCounts).reduce((s, n) => s + n, 0);
+  const messengerSlug = await getProjectChannelSlug(id).catch(() => null);
 
   return (
     <div className="space-y-4">
@@ -85,6 +87,11 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           {canManage && (
             <Link href={`/pms/costing/${id}`} className="text-sm font-medium text-primary hover:underline">
               Costing &amp; Reports →
+            </Link>
+          )}
+          {messengerSlug && (
+            <Link href={`/messenger/projects/${messengerSlug}`} className="text-sm font-medium text-primary hover:underline">
+              Team channel →
             </Link>
           )}
           {canManage && <ProjectActions projectId={id} projectName={project.name} />}

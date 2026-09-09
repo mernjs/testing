@@ -22,6 +22,16 @@ async function requireManage() {
   return user;
 }
 
+/** Best-effort: keep the Messenger project channel membership in sync. Never throws. */
+async function syncMessengerChannel(projectId: string): Promise<void> {
+  try {
+    const { syncProjectChannel } = await import("@/lib/messenger/projects");
+    await syncProjectChannel(projectId);
+  } catch {
+    /* Messenger integration is optional */
+  }
+}
+
 export async function saveMemberAction(
   projectId: string,
   input: Record<string, unknown>,
@@ -61,6 +71,7 @@ export async function saveMemberAction(
     });
   }
 
+  await syncMessengerChannel(projectId);
   revalidatePath(`/pms/projects/${projectId}`);
   revalidatePath("/pms");
   return { ok: true };
@@ -79,6 +90,7 @@ export async function removeMemberAction(projectId: string, memberId: string): P
     entityId: memberId,
     projectId,
   });
+  await syncMessengerChannel(projectId);
   revalidatePath(`/pms/projects/${projectId}`);
   revalidatePath("/pms");
   return { ok: true };

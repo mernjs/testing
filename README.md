@@ -81,6 +81,115 @@ The HRMS is now feature-complete against the original brief.
 Optional `HRMS_API_SECRET` (see `.env.example`) allows bearer-token access to
 `/api/hrms/*` endpoints for cron / tooling.
 
+## Messenger panel
+
+A real-time Team Communication Platform (Slack / Teams style) lives at
+`/messenger` — own login, own session cookie `messenger_session`. Messenger
+users are `admin_users` documents with a Messenger `roles` array — grant access
+with:
+
+```bash
+npm run chat:grant       # prompts for email + roles
+                         # (super_admin | chat_admin | chat_pm | chat_hr | chat_employee)
+npm run chat:seed-demo    # creates the 7 standard team channels + syncs chat_users
+```
+
+**Onboard every HRMS employee at once** — grant `chat_employee` to every account
+that already has an HRMS portal login (an `admin_users` doc with `roles:
+["employee"]` + an `employeeId` link), and sync their `chat_users` profiles:
+
+```bash
+npm run chat:grant-hrms                        # dry run — shows what would change
+npm run chat:grant-hrms -- --apply             # apply
+npm run chat:grant-hrms -- --apply --create-missing   # also create logins for
+                                               # employees with no portal login yet
+                                               # (work email + printed temp password)
+npm run chat:grant-hrms -- --apply --revoke    # undo
+```
+
+Then sign in at [http://localhost:3000/messenger/login](http://localhost:3000/messenger/login).
+
+**Realtime transport:** Server-Sent Events. The SSE route `/api/messenger/stream`
+tails a `chat_events` log (ordered by a `chat_counters` sequence — no replica
+set / change streams needed) and pushes new events to each client, filtered to
+the channels / DMs / user scope they may see. `src/lib/messenger/events.ts`
+(`emit` / `pull`) is transport-agnostic, so a real WebSocket server can replace
+the SSE route later without touching feature code.
+
+**Phase 1 (done):** RBAC + auth, the full `chat_*` schema (chat_users,
+chat_channels, channel_members, direct_conversations, direct_messages,
+channel_messages, message_threads, message_reactions, chat_shared_files,
+chat_notifications, user_presence, chat_events, chat_activity_logs), the panel
+shell + sidebar + topbar, **Chat Dashboard** (8 KPIs + 6 analytics + date
+range), **Direct Messages** and **Team Channels** with real-time messaging,
+typing indicators, read receipts, reactions, threads, @mentions, edit / delete,
+pins, stars, image / PDF / document / voice-note sharing, the **presence system**
+(online / away / busy / in-meeting / offline + last-active), the **notification
+center**, and **global search** (messages / channels / people).
+
+**Phase 2 (done):**
+
+- **Group Chats** (`/messenger/groups`) — private `kind: "group"` channels with a
+  fixed member set; create, member management, threads, files.
+- **Project Channels** (`/messenger/projects`) — one private channel per PMS
+  project, auto-provisioned and kept in sync. `src/lib/messenger/projects.ts`
+  reconciles the channel + membership (project team + PM, mapped to Messenger
+  accounts); PMS project / member server actions call `syncProjectChannel`
+  best-effort and a throttled sweep is the backstop. The PMS project page links
+  straight to its channel.
+- **Shared Files hub** (`/messenger/files`) — every file in a channel / DM the
+  caller can see, filterable by type + category, name search, paginated.
+- **Message forwarding** — forward any message (body + attachments) into another
+  channel or DM from the hover menu; the copy is labelled "Forwarded from …".
+
+**Phase 3 (done):**
+
+- **Announcements** (`/messenger/announcements`) — `super_admin` / `chat_admin` /
+  `chat_hr` author; markdown composer with a formatting toolbar + live preview,
+  image / file attachments, priority levels (normal / important / critical),
+  audience targeting (everyone / by role / by **HRMS department** / by channel),
+  schedule-for-later with a publish sweep, optional cross-post to `#announcement`,
+  and per-recipient **read confirmation** with an author read-stats panel.
+- **Meetings** (`/messenger/meetings`) — instant + scheduled meetings, invitees +
+  RSVP, a linked group channel for meeting chat, "starting soon" reminders and an
+  auto-end sweep.
+
+**Phase 4 — Calling & Meeting System (done):**
+
+Real WebRTC audio / video calling inside DMs, Group Chats and Channels, plus the
+scheduled meetings from Phase 3, all sharing **one call room** at
+`/messenger/call/[id]`.
+
+- **Signaling over SSE** (no WS server needed). `src/lib/messenger/calls.ts` owns
+  the `call_sessions` / `call_participants` / `call_history` / `screen_share_logs`
+  / `call_notifications` collections + the lifecycle sweep. Offer/answer/ICE ride
+  a dedicated fast per-call channel: `POST /api/messenger/calls/[id]/signal` +
+  `GET /api/messenger/calls/[id]/signal-stream` (~350 ms poll, open only while in
+  a call). `src/lib/messenger/webrtc-transport.ts` is a mesh `RTCPeerConnection`
+  transport with perfect-negotiation; an SFU class drops in without touching the
+  room or the API.
+- **DM calls:** audio / video buttons in the DM header → the callee gets an
+  **incoming-call popup** (WebAudio ringtone) with Accept / Decline. Missed /
+  declined / ended calls leave a **call card in the conversation** with a
+  Call-back button.
+- **Group / Channel calls:** start from the header; group members ring, channel
+  members see a **"Meeting in progress · Join"** banner. Invite more people
+  mid-call.
+- **In-call:** mute + mic device + noise suppression, camera + device + switch,
+  **screen share** (screen / window / tab), **raise hand**, **emoji reactions**
+  (fly-ups), **active-speaker** highlight, participants panel, **meeting chat**
+  (the conversation's own messages), drag-drop file share, network-quality
+  indicator, call timer, fullscreen. Glassmorphism floating control bar.
+- **NAT:** STUN by default; set `MESSENGER_TURN_URL` / `_USERNAME` /
+  `_CREDENTIAL` (see `.env.example`) for calls across arbitrary networks.
+  `MESSENGER_CALL_MAX` caps mesh participants (default 12).
+- A compact **"upcoming meetings"** widget on the Chat Dashboard. The Phase 3
+  `/messenger/meetings/[id]/room` path now redirects into the unified call room.
+
+**Later phases:** TMS batch discussion groups + HRMS department channels, group /
+channel avatars, announcement templates, file version history, server-side call
+recording, SFU / webinar mode.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
@@ -139,3 +248,13 @@ Student portal — sign in at /tms/login with (shown at the end of the seed run)
 
 aarav.verma.1@student.yashorbit.com   /   Yashorbit@2026
 diya.reddy.2@student.yashorbit.com    /   Yashorbit@2026
+
+
+npm run chat:grant     # Messenger  — prompts for email + roles, sets a password if new
+npm run hrms:grant     # HRMS
+npm run pms:grant      # PMS
+npm run tms:grant      # TMS
+npm run prms:grant     # PRMS
+
+
+yashika.singh@yashorbit.com, priyanka.singh@…, tej.pratap.singh@…, shikha.singh@…, pooja.singh@…, arjun.mehta@…, ananya.sharma@…, karan.kulkarni@…, kavya.nair@…, divya.reddy@…, meera.joshi@…, ritika.verma@…, sneha.iyer@…, aditi.kapoor@…, rohan.malhotra@…, nisha.agarwal@…, swati.bansal@…, rashmi.pillai@…, vikram.rao@…, neha.chatterjee@…, pallavi.desai@yashorbit.com

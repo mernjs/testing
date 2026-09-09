@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Users, LayoutGrid, Globe, GraduationCap } from "lucide-react";
+import { Users, LayoutGrid, Globe, GraduationCap, MessagesSquare } from "lucide-react";
 import PmsMobileSidebar from "@/components/pms/PmsMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
 import PmsNotificationsBell, { type BellItem } from "@/components/pms/PmsNotificationsBell";
@@ -27,6 +27,14 @@ export default function PmsTopbar({
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryPmsRoleLabel(roles)}</p>
       </div>
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <Link
+          href="/messenger"
+          className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
+          aria-label="Open Messenger"
+        >
+          <MessagesSquare className="size-3.5" data-icon="inline-start" />
+          <span className="hidden sm:inline">Messenger</span>
+        </Link>
         <Link
           href="/hrms"
           className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
