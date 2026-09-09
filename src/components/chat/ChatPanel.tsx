@@ -3,6 +3,7 @@
 import { Bot, Plus, X } from "lucide-react";
 import { useChat } from "@/components/chat/ChatProvider";
 import { ChatConversation } from "@/components/chat/ChatConversation";
+import { ChatDock } from "@/components/chat/ChatDock";
 
 /** Widget chrome (used by the floating ChatWidget). The full-page /ask
  * experience uses ChatWorkspace instead. */
@@ -11,10 +12,11 @@ export function ChatPanel({ onClose }: { onClose?: () => void }) {
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="flex items-center justify-between border-b border-border/50 bg-background/70 px-4 py-3 backdrop-blur-xl">
+      <div className="flex items-center justify-between border-b border-border/60 bg-background/70 px-4 py-3 backdrop-blur-xl">
         <div className="flex items-center gap-2.5">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-yashorbit-coral text-white shadow-sm">
-            <Bot className="size-4" />
+          <div className="relative flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-yashorbit-coral text-white shadow-sm">
+            <Bot className="size-4" aria-hidden />
+            <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-background bg-emerald-500" aria-hidden />
           </div>
           <div className="leading-tight">
             <p className="text-sm font-bold text-foreground">Ask YashOrbit</p>
@@ -26,9 +28,9 @@ export function ChatPanel({ onClose }: { onClose?: () => void }) {
             <button
               type="button"
               onClick={newConversation}
-              className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background/60 px-2.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+              className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
-              <Plus className="size-3" /> New chat
+              <Plus className="size-3" aria-hidden /> New chat
             </button>
           )}
           {onClose && (
@@ -36,15 +38,15 @@ export function ChatPanel({ onClose }: { onClose?: () => void }) {
               type="button"
               onClick={onClose}
               aria-label="Close chat"
-              className="flex size-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted"
+              className="flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
-              <X className="size-4" />
+              <X className="size-4" aria-hidden />
             </button>
           )}
         </div>
       </div>
 
-      <ChatConversation />
+      <ChatConversation dock={<ChatDock />} />
     </div>
   );
 }

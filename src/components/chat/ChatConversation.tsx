@@ -36,17 +36,16 @@ export function ChatConversation({
         <PreChatForm wide={wide} />
       ) : messages.length === 0 ? (
         <div className="flex-1 overflow-y-auto">
-          <div className={cn(wide && "mx-auto max-w-2xl")}>
-            <WelcomeScreen
-              welcomeMessage={
-                unavailable
-                  ? "The assistant is being set up and isn't available just yet. Please check back soon or contact our team."
-                  : config?.welcomeMessage ?? "Hi! Ask me anything about YashOrbit."
-              }
-              suggestedQuestions={unavailable ? [] : config?.suggestedQuestions ?? []}
-              onPick={send}
-            />
-          </div>
+          <WelcomeScreen
+            welcomeMessage={
+              unavailable
+                ? "The assistant is being set up and isn't available just yet. Please check back soon or contact our team."
+                : config?.welcomeMessage ?? "Hi! Ask me anything about YashOrbit."
+            }
+            suggestedQuestions={unavailable ? [] : config?.suggestedQuestions ?? []}
+            onPick={send}
+            demo={Boolean(config?.demo)}
+          />
         </div>
       ) : (
         <ChatThread messages={messages} wide={wide} className={columnClass} />

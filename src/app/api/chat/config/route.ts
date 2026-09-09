@@ -4,6 +4,7 @@ import { isOpenAIConfigured } from "@/lib/openai";
 import { isElevenLabsConfigured } from "@/lib/elevenlabs";
 import { getVisitorIdFromRequest } from "@/lib/chatbot-sessions";
 import { getVisitorProfile } from "@/lib/chat-visitors";
+import { isDemoChat, isDemoVoice } from "@/lib/chat-demo";
 
 /** Public subset of the chatbot config, for the welcome screen / composer. */
 export async function GET(req: NextRequest) {
@@ -12,8 +13,13 @@ export async function GET(req: NextRequest) {
   const visitorId = getVisitorIdFromRequest(req);
   const profile = visitorId ? await getVisitorProfile(visitorId) : null;
 
+  const demo = isDemoChat();
+  const demoVoice = isDemoVoice();
+  const liveVoice = config.voice.enabled && isElevenLabsConfigured();
+
   return NextResponse.json({
-    available: isOpenAIConfigured(),
+    available: isOpenAIConfigured() || demo,
+    demo,
     welcomeMessage: config.welcomeMessage,
     suggestedQuestions: config.suggestedQuestions,
     maxMessageChars: config.rateLimit.maxMessageChars,
@@ -27,9 +33,11 @@ export async function GET(req: NextRequest) {
     identified: Boolean(profile),
     visitorName: profile?.name ?? null,
     voice: {
-      enabled: config.voice.enabled,
-      available: config.voice.enabled && isElevenLabsConfigured(),
+      enabled: config.voice.enabled || demoVoice,
+      available: liveVoice || demoVoice,
       streaming: config.voice.streaming,
+      // "browser" → Web Speech APIs (demo); "elevenlabs" → server STT/TTS.
+      mode: demoVoice ? "browser" : "elevenlabs",
     },
   });
 }

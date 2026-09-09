@@ -3,6 +3,7 @@
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChatProvider } from "@/components/chat/ChatProvider";
+import { VoiceProvider } from "@/components/chat/VoiceProvider";
 import { ChatPanel } from "@/components/chat/ChatPanel";
 
 /**
@@ -36,7 +37,9 @@ export function ChatWidget({ open, onClose }: { open: boolean; onClose: () => vo
           {/* Brand gradient wash */}
           <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-primary/10 via-transparent to-secondary/15" />
           <ChatProvider>
-            <ChatPanel onClose={onClose} />
+            <VoiceProvider>
+              <ChatPanel onClose={onClose} />
+            </VoiceProvider>
           </ChatProvider>
         </motion.div>
       )}

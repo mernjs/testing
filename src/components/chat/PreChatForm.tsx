@@ -65,7 +65,7 @@ export function PreChatForm({ wide = false }: { wide?: boolean }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         className={cn(
-          "w-full rounded-2xl border border-border/60 bg-background/70 p-5 shadow-lg shadow-black/5 backdrop-blur-xl sm:p-6",
+          "w-full rounded-2xl border-2 border-border bg-background p-5 shadow-xl shadow-black/5 sm:p-6",
           wide ? "max-w-md" : "max-w-full"
         )}
       >
@@ -98,8 +98,8 @@ export function PreChatForm({ wide = false }: { wide?: boolean }) {
                   onChange={(e) => set(f.key, e.target.value)}
                   aria-invalid={Boolean(errors[f.key])}
                   className={cn(
-                    "h-9 rounded-lg border bg-background/80 px-3 text-sm outline-none transition-colors placeholder:text-muted-foreground/60 focus-visible:ring-3 focus-visible:ring-primary/15",
-                    errors[f.key] ? "border-destructive focus-visible:border-destructive" : "border-border/60 focus-visible:border-primary/50"
+                    "h-10 rounded-lg border bg-background px-3 text-[15px] outline-none transition-colors placeholder:text-muted-foreground/60 focus-visible:ring-3 focus-visible:ring-primary/15",
+                    errors[f.key] ? "border-destructive focus-visible:border-destructive" : "border-border focus-visible:border-primary/50"
                   )}
                 />
                 {errors[f.key] && <p className="text-[11px] text-destructive">{errors[f.key]}</p>}
@@ -110,9 +110,9 @@ export function PreChatForm({ wide = false }: { wide?: boolean }) {
           <button
             type="submit"
             disabled={submitting}
-            className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60"
+            className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-yashorbit-coral px-4 py-3 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition-all hover:shadow-md hover:shadow-primary/30 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/40 disabled:opacity-60"
           >
-            {submitting ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
+            {submitting ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <ArrowRight className="size-4" aria-hidden />}
             Start chat
           </button>
 

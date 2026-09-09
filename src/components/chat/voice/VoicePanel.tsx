@@ -7,6 +7,7 @@ import { useVoice } from "@/components/chat/VoiceProvider";
 import { Waveform } from "@/components/chat/voice/Waveform";
 import { MicButton } from "@/components/chat/voice/MicButton";
 import { VoiceStatusBar } from "@/components/chat/voice/VoiceStatusBar";
+import { VoiceModeToggle } from "@/components/chat/voice/VoiceModeToggle";
 
 /**
  * The full Voice Mode surface, shown in place of the text composer while Voice
@@ -41,6 +42,10 @@ export function VoicePanel({ className }: { className?: string }) {
               : "opacity-0"
         )}
       />
+
+      <div className="mb-3 flex justify-center sm:mb-4">
+        <VoiceModeToggle size="sm" />
+      </div>
 
       <div className="flex flex-col items-center gap-3 sm:gap-4">
         <Waveform level={level} active={active} tone={speaking ? "blue" : "coral"} />

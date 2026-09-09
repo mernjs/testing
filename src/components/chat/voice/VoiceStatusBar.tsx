@@ -17,7 +17,7 @@ const PHASE: Record<
   },
   listening: {
     label: "Listening",
-    description: "Speak now — I'll stop automatically when you pause.",
+    description: "Go ahead — I'm listening. I'll stop automatically when you pause.",
     Icon: Ear,
     tone: "text-primary",
   },
@@ -78,7 +78,9 @@ export function VoiceStatusBar() {
             </span>
           )}
         </span>
-        <p className="max-w-xs text-sm text-muted-foreground">{meta.description}</p>
+        {meta.description && (
+          <p className="max-w-xs text-sm text-muted-foreground">{meta.description}</p>
+        )}
       </div>
 
       {/* Secondary controls — 44px targets, icon + text label */}

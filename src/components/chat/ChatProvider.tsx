@@ -62,10 +62,14 @@ export interface VoicePublicConfig {
   enabled: boolean;
   available: boolean;
   streaming: boolean;
+  /** "browser" runs Voice Mode on the Web Speech APIs (demo); "elevenlabs" uses server STT/TTS. */
+  mode: "browser" | "elevenlabs";
 }
 
 export interface ChatPublicConfig {
   available: boolean;
+  /** True when the assistant is running the built-in scripted demo (no live model configured). */
+  demo: boolean;
   welcomeMessage: string;
   suggestedQuestions: string[];
   maxMessageChars: number;
@@ -73,7 +77,12 @@ export interface ChatPublicConfig {
   voice: VoicePublicConfig;
 }
 
-const DEFAULT_VOICE: VoicePublicConfig = { enabled: false, available: false, streaming: true };
+const DEFAULT_VOICE: VoicePublicConfig = {
+  enabled: false,
+  available: false,
+  streaming: true,
+  mode: "elevenlabs",
+};
 
 const DEFAULT_PRECHAT: PreChatFormConfig = {
   enabled: false,
@@ -101,6 +110,8 @@ interface ChatContextValue {
   needsIdentification: boolean;
   identify: (data: IdentityInput) => Promise<{ ok: boolean; fieldErrors?: Record<string, string> }>;
   send: (text: string, opts?: SendOptions) => void;
+  /** Appends a local assistant message (not persisted) — used for the Voice Mode greeting. */
+  pushAssistantMessage: (content: string, opts?: { voice?: boolean }) => void;
   newConversation: () => Promise<void>;
   switchSession: (sessionId: string) => Promise<void>;
   renameSession: (sessionId: string, title: string) => Promise<void>;
@@ -118,6 +129,7 @@ export function useChat(): ChatContextValue {
 
 const DEFAULT_CONFIG: ChatPublicConfig = {
   available: true,
+  demo: false,
   welcomeMessage: "Hi! Ask me anything about YashOrbit.",
   suggestedQuestions: [],
   maxMessageChars: 2000,
@@ -365,6 +377,25 @@ export function ChatProvider({
     [status, refreshSessions]
   );
 
+  const pushAssistantMessage = React.useCallback(
+    (content: string, opts?: { voice?: boolean }) => {
+      const text = content.trim();
+      if (!text) return;
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: uid(),
+          role: "assistant",
+          content: text,
+          citations: [],
+          createdAt: new Date().toISOString(),
+          voice: opts?.voice,
+        },
+      ]);
+    },
+    []
+  );
+
   const newConversation = React.useCallback(async () => {
     abortRef.current?.abort();
     // If we're already on an empty chat, don't spawn another.
@@ -488,6 +519,7 @@ export function ChatProvider({
       needsIdentification,
       identify,
       send,
+      pushAssistantMessage,
       newConversation,
       switchSession,
       renameSession,
@@ -509,6 +541,7 @@ export function ChatProvider({
       needsIdentification,
       identify,
       send,
+      pushAssistantMessage,
       newConversation,
       switchSession,
       renameSession,

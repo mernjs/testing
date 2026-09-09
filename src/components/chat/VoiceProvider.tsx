@@ -25,6 +25,8 @@ export function toPhase(status: VoiceStatus): VoicePhase {
 interface VoiceContextValue {
   supported: boolean;
   available: boolean;
+  /** "browser" = Web Speech APIs (demo); "elevenlabs" = server STT/TTS. */
+  pipeline: "browser" | "elevenlabs";
   voiceMode: boolean;
   status: VoiceStatus;
   phase: VoicePhase;
@@ -78,8 +80,65 @@ function pickMimeType(): string {
   return "";
 }
 
+// --- Web Speech API (browser pipeline) ---------------------------------------
+
+interface SpeechRecognitionResultLike {
+  0: { transcript: string };
+  isFinal: boolean;
+}
+interface SpeechRecognitionEventLike {
+  resultIndex: number;
+  results: ArrayLike<SpeechRecognitionResultLike>;
+}
+interface SpeechRecognitionLike {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onresult: ((e: SpeechRecognitionEventLike) => void) | null;
+  onerror: ((e: { error?: string }) => void) | null;
+  onend: (() => void) | null;
+}
+
+function getSpeechRecognitionCtor(): (new () => SpeechRecognitionLike) | null {
+  if (typeof window === "undefined") return null;
+  const w = window as unknown as {
+    SpeechRecognition?: new () => SpeechRecognitionLike;
+    webkitSpeechRecognition?: new () => SpeechRecognitionLike;
+  };
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
+}
+
+/** Flattens Markdown to something a speech synthesiser reads cleanly. */
+function stripMarkdown(md: string): string {
+  return md
+    .replace(/```[\s\S]*?```/g, " code block ")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/[*_>#]/g, "")
+    .replace(/^\s*[-–]\s+/gm, ", ")
+    .replace(/\n{2,}/g, ". ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export function VoiceProvider({ children }: { children: React.ReactNode }) {
-  const { send, config } = useChat();
+  const { send, config, visitorName, pushAssistantMessage } = useChat();
+
+  const pipeline: "browser" | "elevenlabs" =
+    config?.voice?.mode === "browser" ? "browser" : "elevenlabs";
+
+  // Gate browser-capability checks until after mount so SSR and the first client
+  // render agree (both treat voice as unsupported).
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- mount gate for SSR-safe capability checks
+    setMounted(true);
+  }, []);
 
   const [voiceMode, setVoiceModeState] = React.useState(false);
   const [status, setStatus] = React.useState<VoiceStatus>("idle");
@@ -114,6 +173,23 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
   const mutedRef = React.useRef(false);
   const stopListeningRef = React.useRef<() => void>(() => {});
 
+  // Browser pipeline refs
+  const recognitionRef = React.useRef<SpeechRecognitionLike | null>(null);
+  const recognitionAbortedRef = React.useRef(false);
+  const browserTranscriptRef = React.useRef("");
+  const lastSpokenRef = React.useRef("");
+  const speakOscRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Voice Mode greeting.
+  const visitorNameRef = React.useRef<string | null>(null);
+
+  // Hands-free loop: after the assistant finishes speaking, reopen the mic so
+  // the visitor can just keep talking. `suppress` skips it once (Stop / replay /
+  // leaving Voice Mode); `voiceModeRef` keeps the check cheap inside callbacks.
+  const voiceModeRef = React.useRef(false);
+  const suppressAutoListenRef = React.useRef(false);
+  const maybeAutoListenRef = React.useRef<() => void>(() => {});
+
   // Mirror render state into refs for use inside RAF loops / recorder callbacks.
   React.useEffect(() => {
     statusRef.current = status;
@@ -121,28 +197,42 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     mutedRef.current = muted;
   }, [muted]);
+  React.useEffect(() => {
+    visitorNameRef.current = visitorName;
+  }, [visitorName]);
 
-  const supported =
+  const mediaRecorderSupported =
     typeof window !== "undefined" &&
     typeof navigator !== "undefined" &&
     !!navigator.mediaDevices?.getUserMedia &&
     typeof MediaRecorder !== "undefined";
+
+  const browserVoiceSupported =
+    typeof window !== "undefined" &&
+    !!getSpeechRecognitionCtor() &&
+    "speechSynthesis" in window &&
+    !!navigator.mediaDevices?.getUserMedia;
+
+  const supported =
+    mounted && (pipeline === "browser" ? browserVoiceSupported : mediaRecorderSupported);
   const available = supported && Boolean(config?.voice?.available);
 
-  // Restore persisted prefs after mount (kept out of the server render).
+  // Restore persisted prefs after mount (kept out of the server render). Voice
+  // Mode itself always starts OFF so that tapping "Voice" is a real transition
+  // — which is what triggers the spoken welcome + hands-free listening.
   React.useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from localStorage
-    setVoiceModeState(lsGet("yo_voice_mode", false));
     setMuted(lsGet("yo_voice_muted", false));
   }, []);
 
-  // One shared <audio> element + analyser graph for playback metering.
+  // One shared <audio> element + analyser graph for playback metering (elevenlabs).
   React.useEffect(() => {
     const el = new Audio();
     el.preload = "auto";
     audioElRef.current = el;
     const onEnded = () => {
       if (statusRef.current === "speaking") setStatus("idle");
+      maybeAutoListenRef.current();
     };
     el.addEventListener("ended", onEnded);
     return () => {
@@ -159,7 +249,7 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const runMeter = React.useCallback(
-    (analyser: AnalyserNode, mode: "listen" | "speak") => {
+    (analyser: AnalyserNode, meterMode: "listen" | "speak", autoStop = meterMode === "listen") => {
       const data = new Uint8Array(analyser.frequencyBinCount);
       const tick = () => {
         analyser.getByteTimeDomainData(data);
@@ -169,10 +259,10 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
           sum += v * v;
         }
         const rms = Math.sqrt(sum / data.length);
-        const scaled = Math.min(1, rms * (mode === "listen" ? 3.2 : 2.4));
+        const scaled = Math.min(1, rms * (meterMode === "listen" ? 3.2 : 2.4));
         setLevel(scaled);
 
-        if (mode === "listen") {
+        if (meterMode === "listen" && autoStop) {
           const now = performance.now();
           if (scaled > 0.06) {
             spokeAtRef.current = now;
@@ -201,7 +291,71 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
     streamRef.current = null;
   }, [stopMeter]);
 
-  // --- Playback -----------------------------------------------------------
+  // --- Browser speech synthesis ------------------------------------------
+
+  const stopSpeakOsc = React.useCallback(() => {
+    if (speakOscRef.current) clearInterval(speakOscRef.current);
+    speakOscRef.current = null;
+    setLevel(0);
+  }, []);
+
+  const startSpeakOsc = React.useCallback(() => {
+    stopSpeakOsc();
+    speakOscRef.current = setInterval(() => {
+      setLevel(0.28 + Math.random() * 0.45);
+    }, 110);
+  }, [stopSpeakOsc]);
+
+  const speakTextBrowser = React.useCallback(
+    (text: string, onEnd?: () => void) => {
+      const synth = typeof window !== "undefined" ? window.speechSynthesis : null;
+      if (!synth) {
+        setStatus("idle");
+        onEnd?.();
+        return;
+      }
+      synth.cancel();
+      const utter = new SpeechSynthesisUtterance(stripMarkdown(text).slice(0, 4000));
+      utter.rate = 1;
+      utter.pitch = 1;
+      const voices = synth.getVoices();
+      const preferred =
+        voices.find((v) => /en[-_]us/i.test(v.lang)) ?? voices.find((v) => /^en/i.test(v.lang));
+      if (preferred) utter.voice = preferred;
+      let ended = false;
+      const finish = () => {
+        if (ended) return;
+        ended = true;
+        stopSpeakOsc();
+        if (statusRef.current === "speaking") setStatus("idle");
+        onEnd?.();
+      };
+      utter.onend = finish;
+      utter.onerror = finish;
+      setStatus("speaking");
+      startSpeakOsc();
+      synth.speak(utter);
+    },
+    [startSpeakOsc, stopSpeakOsc]
+  );
+
+  const speakBrowser = React.useCallback(
+    (info: AssistantDoneInfo) => {
+      lastSpokenRef.current = info.text;
+      setCanReplay(true);
+      pendingTurnRef.current = null;
+      suppressAutoListenRef.current = false; // a fresh answer → keep the conversation going
+      if (mutedRef.current) {
+        setStatus("idle");
+        maybeAutoListenRef.current();
+        return;
+      }
+      speakTextBrowser(info.text, () => maybeAutoListenRef.current());
+    },
+    [speakTextBrowser]
+  );
+
+  // --- ElevenLabs playback ----------------------------------------------
 
   const cleanupLastBlob = React.useCallback(() => {
     if (lastBlobUrlRef.current) {
@@ -256,6 +410,7 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
         setStatus("idle");
         return;
       }
+      suppressAutoListenRef.current = false; // a fresh answer → reopen the mic after
       setStatus("speaking");
       spokeAtRef.current = 0;
       const controller = new AbortController();
@@ -282,8 +437,6 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
           setError("Couldn't play the voice reply.");
           return;
         }
-        // Read the whole stream (also lets the server persist the audio via its tee),
-        // then play. Short flash answers keep this well under ~2s.
         const buf = await res.arrayBuffer();
         if (controller.signal.aborted) return;
         playBlob(new Blob([buf], { type: "audio/mpeg" }));
@@ -298,7 +451,7 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
     [available, playBlob]
   );
 
-  // --- Recording --------------------------------------------------------
+  // --- Recording / transcription (elevenlabs) ---------------------------
 
   const transcribeAndSend = React.useCallback(
     async (blob: Blob) => {
@@ -335,20 +488,107 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
   );
 
   const stopListening = React.useCallback(() => {
-    const rec = mediaRecorderRef.current;
-    if (rec && rec.state !== "inactive") {
-      rec.stop();
+    if (pipeline === "browser") {
+      recognitionRef.current?.stop();
+      return;
     }
-  }, []);
+    const rec = mediaRecorderRef.current;
+    if (rec && rec.state !== "inactive") rec.stop();
+  }, [pipeline]);
   React.useEffect(() => {
     stopListeningRef.current = stopListening;
   }, [stopListening]);
+
+  const startListeningBrowser = React.useCallback(async () => {
+    if (statusRef.current === "listening") return;
+    setError(null);
+    setHint(null);
+    if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+    stopSpeakOsc();
+
+    const Ctor = getSpeechRecognitionCtor();
+    if (!Ctor) {
+      setError("Voice input isn't supported in this browser.");
+      return;
+    }
+
+    // Optional mic meter so the waveform reacts while the recogniser runs.
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true },
+      });
+      streamRef.current = stream;
+      const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      audioCtxRef.current ??= new Ctx();
+      const ctx = audioCtxRef.current;
+      if (ctx.state === "suspended") await ctx.resume();
+      const src = ctx.createMediaStreamSource(stream);
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+      src.connect(analyser);
+      analyserRef.current = analyser;
+      runMeter(analyser, "listen", false); // recogniser owns silence detection
+    } catch {
+      // Meter is optional; if the mic is blocked the recogniser will error below.
+    }
+
+    const rec = new Ctor();
+    rec.lang = typeof navigator !== "undefined" ? navigator.language || "en-US" : "en-US";
+    rec.continuous = false;
+    rec.interimResults = true;
+    recognitionAbortedRef.current = false;
+    browserTranscriptRef.current = "";
+
+    rec.onresult = (e) => {
+      let text = "";
+      for (let i = 0; i < e.results.length; i++) text += e.results[i][0].transcript;
+      browserTranscriptRef.current = text.trim();
+    };
+    rec.onerror = (ev) => {
+      if (ev?.error === "no-speech") setHint("Didn't catch that — try again.");
+      else if (ev?.error === "not-allowed" || ev?.error === "service-not-allowed")
+        setError("Microphone access was denied.");
+      else if (ev?.error !== "aborted") setError("Voice input error — please try again.");
+    };
+    rec.onend = () => {
+      recognitionRef.current = null;
+      teardownRecording();
+      setRecordingMs(0);
+      if (recognitionAbortedRef.current) {
+        recognitionAbortedRef.current = false;
+        return;
+      }
+      const text = browserTranscriptRef.current.trim();
+      if (!text) {
+        setStatus("idle");
+        return;
+      }
+      setStatus("thinking");
+      send(text, { voice: true, onAssistantDone: speakBrowser });
+    };
+
+    recognitionRef.current = rec;
+    try {
+      rec.start();
+    } catch {
+      /* start() throws if already running — ignore */
+    }
+
+    startedAtRef.current = performance.now();
+    setRecordingMs(0);
+    timerRef.current = setInterval(() => {
+      const ms = performance.now() - startedAtRef.current;
+      setRecordingMs(ms);
+      if (ms >= MAX_RECORDING_MS) recognitionRef.current?.stop();
+    }, 100);
+
+    setStatus("listening");
+  }, [runMeter, teardownRecording, stopSpeakOsc, send, speakBrowser]);
 
   const startListening = React.useCallback(async () => {
     if (!available || statusRef.current === "listening") return;
     setError(null);
     setHint(null);
-    // stop any current playback first
     audioElRef.current?.pause();
     speakAbortRef.current?.abort();
 
@@ -411,11 +651,23 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
   }, [available, runMeter, teardownRecording, transcribeAndSend]);
 
   const toggleListening = React.useCallback(() => {
-    if (statusRef.current === "listening") stopListening();
-    else if (statusRef.current === "idle") void startListening();
-  }, [startListening, stopListening]);
+    if (statusRef.current === "listening") {
+      stopListening();
+    } else if (statusRef.current === "idle") {
+      if (pipeline === "browser") void startListeningBrowser();
+      else void startListening();
+    }
+  }, [pipeline, startListening, startListeningBrowser, stopListening]);
 
   const interrupt = React.useCallback(() => {
+    suppressAutoListenRef.current = true; // an explicit Stop ends the hands-free loop
+    if (pipeline === "browser") {
+      recognitionAbortedRef.current = true;
+      recognitionRef.current?.abort();
+      recognitionRef.current = null;
+      if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+      stopSpeakOsc();
+    }
     speakAbortRef.current?.abort();
     const el = audioElRef.current;
     if (el) {
@@ -429,9 +681,15 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
     stopMeter();
     setRecordingMs(0);
     setStatus("idle");
-  }, [stopMeter, teardownRecording]);
+  }, [pipeline, stopMeter, stopSpeakOsc, teardownRecording]);
 
   const replayLast = React.useCallback(() => {
+    suppressAutoListenRef.current = true; // replaying isn't a new turn — don't reopen the mic
+    if (pipeline === "browser") {
+      if (!lastSpokenRef.current) return;
+      speakTextBrowser(lastSpokenRef.current);
+      return;
+    }
     const el = audioElRef.current;
     if (!el || !lastBlobUrlRef.current) return;
     el.src = lastBlobUrlRef.current;
@@ -439,24 +697,73 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
     setStatus("speaking");
     attachSpeakMeter();
     void el.play().catch(() => {});
-  }, [attachSpeakMeter]);
+  }, [pipeline, speakTextBrowser, attachSpeakMeter]);
 
   const toggleMute = React.useCallback(() => {
     setMuted((m) => {
       const next = !m;
       lsSet("yo_voice_muted", next);
       if (audioElRef.current) audioElRef.current.muted = next;
+      if (next && pipeline === "browser" && typeof window !== "undefined") {
+        window.speechSynthesis?.cancel();
+        stopSpeakOsc();
+        if (statusRef.current === "speaking") setStatus("idle");
+      }
       return next;
     });
-  }, []);
+  }, [pipeline, stopSpeakOsc]);
+
+  /** Opens the microphone using whichever pipeline is active. */
+  const startVoiceInput = React.useCallback(() => {
+    if (statusRef.current === "listening") return;
+    if (pipeline === "browser") void startListeningBrowser();
+    else void startListening();
+  }, [pipeline, startListeningBrowser, startListening]);
+
+  /** Reopen the mic after the assistant speaks, unless a Stop / replay / exit asked us not to. */
+  const maybeAutoListen = React.useCallback(() => {
+    if (suppressAutoListenRef.current) {
+      suppressAutoListenRef.current = false;
+      return;
+    }
+    if (!voiceModeRef.current) return;
+    startVoiceInput();
+  }, [startVoiceInput]);
+  React.useEffect(() => {
+    maybeAutoListenRef.current = maybeAutoListen;
+  }, [maybeAutoListen]);
+
+  const greet = React.useCallback(() => {
+    const full = visitorNameRef.current?.trim();
+    const first = full ? full.split(/\s+/)[0] : "";
+    const text = first
+      ? `Hi ${first}, welcome to YashOrbit. How may I help you?`
+      : `Welcome to YashOrbit. How may I help you?`;
+    lastSpokenRef.current = text;
+    setCanReplay(true);
+    suppressAutoListenRef.current = false;
+    pushAssistantMessage(text, { voice: true });
+    // Speak the greeting, then open the mic automatically so the visitor can
+    // just start talking — no tap needed.
+    if (mutedRef.current) maybeAutoListen();
+    else speakTextBrowser(text, () => maybeAutoListen());
+  }, [pushAssistantMessage, speakTextBrowser, maybeAutoListen]);
 
   const setVoiceMode = React.useCallback(
     (on: boolean) => {
+      const wasOn = voiceModeRef.current;
       setVoiceModeState(on);
+      voiceModeRef.current = on;
       lsSet("yo_voice_mode", on);
-      if (!on) interrupt();
+      if (!on) {
+        interrupt();
+        return;
+      }
+      // Every time the visitor switches INTO Voice Mode: speak the welcome
+      // message straight away and then open the mic — no tap needed anywhere.
+      if (!wasOn) greet();
     },
-    [interrupt]
+    [interrupt, greet]
   );
 
   const dismissHint = React.useCallback(() => setHint(null), []);
@@ -477,10 +784,13 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
     return () => {
       teardownRecording();
       stopMeter();
+      stopSpeakOsc();
+      recognitionRef.current?.abort();
       speakAbortRef.current?.abort();
+      if (typeof window !== "undefined") window.speechSynthesis?.cancel();
       cleanupLastBlob();
     };
-  }, [teardownRecording, stopMeter, cleanupLastBlob]);
+  }, [teardownRecording, stopMeter, stopSpeakOsc, cleanupLastBlob]);
 
   const phase = toPhase(status);
 
@@ -488,6 +798,7 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
     () => ({
       supported,
       available,
+      pipeline,
       voiceMode,
       status,
       phase,
@@ -508,6 +819,7 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
     [
       supported,
       available,
+      pipeline,
       voiceMode,
       status,
       phase,

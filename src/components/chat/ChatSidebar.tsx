@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { Check, MessageSquareText, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Check, MessagesSquare, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useChat, type ChatSessionSummary } from "@/components/chat/ChatProvider";
 
@@ -21,6 +21,18 @@ function bucketFor(iso: string): string {
   if (diffDays <= 7) return "Previous 7 Days";
   if (diffDays <= 30) return "Previous 30 Days";
   return "Older";
+}
+
+function timeAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.round(diff / 60_000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m}m ago`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.round(h / 24);
+  if (d < 7) return `${d}d ago`;
+  return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
 const BUCKET_ORDER = ["Today", "Yesterday", "Previous 7 Days", "Previous 30 Days", "Older"];
@@ -59,11 +71,6 @@ function SessionRow({
     }
   }, [editing]);
 
-  function startEditing() {
-    setDraft(session.title);
-    setEditing(true);
-  }
-
   function commit() {
     const next = draft.trim();
     if (next && next !== session.title) onRename(next);
@@ -72,7 +79,7 @@ function SessionRow({
 
   if (editing) {
     return (
-      <div className="flex items-center gap-1 rounded-lg bg-muted/60 px-2 py-1.5">
+      <div className="flex items-center gap-1 rounded-xl border-2 border-primary/40 bg-background px-2.5 py-1.5">
         <input
           ref={inputRef}
           value={draft}
@@ -83,10 +90,11 @@ function SessionRow({
           }}
           onBlur={commit}
           maxLength={80}
+          aria-label="Conversation title"
           className="min-w-0 flex-1 bg-transparent text-sm outline-none"
         />
         <button onClick={commit} className="text-muted-foreground hover:text-primary" aria-label="Save title">
-          <Check className="size-3.5" />
+          <Check className="size-4" aria-hidden />
         </button>
       </div>
     );
@@ -94,18 +102,18 @@ function SessionRow({
 
   if (confirmDelete) {
     return (
-      <div className="flex flex-col gap-1.5 rounded-lg border border-destructive/30 bg-destructive/5 px-2.5 py-2">
-        <p className="text-xs text-foreground">Delete this chat?</p>
+      <div className="flex flex-col gap-2 rounded-xl border border-destructive/40 bg-destructive/5 px-3 py-2.5">
+        <p className="text-xs font-medium text-foreground">Delete this conversation?</p>
         <div className="flex gap-1.5">
           <button
             onClick={onDelete}
-            className="rounded-md bg-destructive/15 px-2 py-1 text-[11px] font-semibold text-destructive hover:bg-destructive/25"
+            className="rounded-lg bg-destructive px-2.5 py-1 text-xs font-semibold text-white hover:bg-destructive/90"
           >
             Delete
           </button>
           <button
             onClick={() => setConfirmDelete(false)}
-            className="rounded-md px-2 py-1 text-[11px] font-medium text-muted-foreground hover:bg-muted"
+            className="rounded-lg px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-muted"
           >
             Cancel
           </button>
@@ -117,28 +125,42 @@ function SessionRow({
   return (
     <div
       className={cn(
-        "group/row flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm transition-colors",
-        active ? "bg-primary/10 text-primary" : "text-foreground/80 hover:bg-muted/60"
+        "group/row relative flex items-center gap-2 rounded-xl py-2 pl-3 pr-1.5 text-sm transition-colors",
+        active ? "bg-primary/10" : "hover:bg-muted"
       )}
     >
-      <button onClick={onSelect} className="flex min-w-0 flex-1 items-center gap-2 text-left">
-        <MessageSquareText className={cn("size-3.5 shrink-0", active ? "text-primary" : "text-muted-foreground")} />
-        <span className="truncate">{session.title}</span>
+      {active && (
+        <motion.span
+          layoutId="active-session-bar"
+          className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-primary"
+        />
+      )}
+      <button onClick={onSelect} className="flex min-w-0 flex-1 flex-col items-start gap-0.5 text-left">
+        <span className={cn("w-full truncate font-medium", active ? "text-primary" : "text-foreground/90")}>
+          {session.title}
+        </span>
+        <span className="text-[11px] text-muted-foreground/70">
+          {timeAgo(session.lastActivityAt)}
+          {session.messageCount > 0 && ` · ${session.messageCount} messages`}
+        </span>
       </button>
       <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover/row:opacity-100 group-focus-within/row:opacity-100 [@media(hover:none)]:opacity-100">
         <button
-          onClick={startEditing}
-          className="rounded p-1 text-muted-foreground hover:bg-background hover:text-foreground"
-          aria-label="Rename chat"
+          onClick={() => {
+            setDraft(session.title);
+            setEditing(true);
+          }}
+          className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          aria-label="Rename conversation"
         >
-          <Pencil className="size-3" />
+          <Pencil className="size-3.5" aria-hidden />
         </button>
         <button
           onClick={() => setConfirmDelete(true)}
-          className="rounded p-1 text-muted-foreground hover:bg-background hover:text-destructive"
-          aria-label="Delete chat"
+          className="rounded-lg p-1.5 text-muted-foreground hover:bg-background hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/40"
+          aria-label="Delete conversation"
         >
-          <Trash2 className="size-3" />
+          <Trash2 className="size-3.5" aria-hidden />
         </button>
       </div>
     </div>
@@ -147,51 +169,79 @@ function SessionRow({
 
 export function ChatSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const { sessions, activeSessionId, newConversation, switchSession, renameSession, deleteSession } = useChat();
-  const groups = groupSessions(sessions);
+  const [query, setQuery] = React.useState("");
+
+  const filtered = query.trim()
+    ? sessions.filter((s) => s.title.toLowerCase().includes(query.trim().toLowerCase()))
+    : sessions;
+  const groups = groupSessions(filtered);
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-2 p-3">
+    <div className="flex h-full min-h-0 flex-col gap-3 p-3">
       <button
         type="button"
         onClick={() => {
           void newConversation();
           onNavigate?.();
         }}
-        className="flex items-center justify-center gap-2 rounded-xl border border-border/60 bg-background/70 px-3 py-2.5 text-sm font-semibold text-foreground transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+        className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-yashorbit-coral px-3 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition-all hover:shadow-md hover:shadow-primary/30 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/40"
       >
-        <Plus className="size-4" />
+        <Plus className="size-4" aria-hidden />
         New chat
       </button>
 
+      {sessions.length > 3 && (
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/60" aria-hidden />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search conversations"
+            aria-label="Search conversations"
+            className="h-9 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-sm outline-none transition-colors placeholder:text-muted-foreground/60 focus-visible:border-primary/50 focus-visible:ring-3 focus-visible:ring-primary/15"
+          />
+        </div>
+      )}
+
       <div className="-mr-1 flex-1 space-y-4 overflow-y-auto pr-1">
-        {sessions.length === 0 && (
-          <p className="px-2 py-6 text-center text-xs text-muted-foreground">
-            Your conversations from this browser will appear here.
-          </p>
-        )}
-        {groups.map((group) => (
-          <div key={group.label} className="space-y-0.5">
-            <p className="px-2.5 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
-              {group.label}
+        {sessions.length === 0 ? (
+          <div className="flex flex-col items-center gap-2 px-3 py-10 text-center">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+              <MessagesSquare className="size-5" aria-hidden />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Your conversations from this browser will appear here.
             </p>
-            {group.sessions.map((s) => (
-              <SessionRow
-                key={s.sessionId}
-                session={s}
-                active={s.sessionId === activeSessionId}
-                onSelect={() => {
-                  void switchSession(s.sessionId);
-                  onNavigate?.();
-                }}
-                onRename={(title) => renameSession(s.sessionId, title)}
-                onDelete={() => deleteSession(s.sessionId)}
-              />
-            ))}
           </div>
-        ))}
+        ) : filtered.length === 0 ? (
+          <p className="px-3 py-6 text-center text-xs text-muted-foreground">
+            No conversations match “{query}”.
+          </p>
+        ) : (
+          groups.map((group) => (
+            <div key={group.label} className="space-y-1">
+              <p className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+                {group.label}
+              </p>
+              {group.sessions.map((s) => (
+                <SessionRow
+                  key={s.sessionId}
+                  session={s}
+                  active={s.sessionId === activeSessionId}
+                  onSelect={() => {
+                    void switchSession(s.sessionId);
+                    onNavigate?.();
+                  }}
+                  onRename={(title) => renameSession(s.sessionId, title)}
+                  onDelete={() => deleteSession(s.sessionId)}
+                />
+              ))}
+            </div>
+          ))
+        )}
       </div>
 
-      <p className="px-2 pt-1 text-[10px] leading-tight text-muted-foreground/60">
+      <p className="px-2 text-[11px] leading-tight text-muted-foreground/60">
         History is stored for this browser only — no account needed.
       </p>
     </div>
@@ -215,12 +265,16 @@ export function ChatSidebarDrawer({ onClose }: { onClose: () => void }) {
         animate={{ x: 0 }}
         exit={{ x: "-100%" }}
         transition={{ type: "spring", bounce: 0, duration: 0.35 }}
-        className="fixed inset-y-0 left-0 z-[71] flex w-[86%] max-w-xs flex-col border-r border-border/50 bg-background shadow-2xl"
+        className="fixed inset-y-0 left-0 z-[71] flex w-[86%] max-w-xs flex-col border-r border-border bg-background shadow-2xl"
       >
-        <div className="flex items-center justify-between border-b border-border/50 px-3 py-3">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <span className="text-sm font-bold text-foreground">Chat history</span>
-          <button onClick={onClose} aria-label="Close history" className="rounded-full p-1.5 text-muted-foreground hover:bg-muted">
-            <X className="size-4" />
+          <button
+            onClick={onClose}
+            aria-label="Close history"
+            className="rounded-full p-1.5 text-muted-foreground hover:bg-muted"
+          >
+            <X className="size-4" aria-hidden />
           </button>
         </div>
         <div className="min-h-0 flex-1">

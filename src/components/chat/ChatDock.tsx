@@ -8,10 +8,10 @@ import { VoiceModeToggle } from "@/components/chat/voice/VoiceModeToggle";
 import { VoicePanel } from "@/components/chat/voice/VoicePanel";
 
 /**
- * The bottom dock of the /ask workspace: an always-visible Text / Voice switch
- * sitting directly above the active input surface (text composer or the Voice
- * Mode console). Keeping the switch pinned here means either mode is one tap
- * away at any point in the conversation.
+ * The bottom dock of the /ask workspace. The Text / Voice switch lives inside
+ * the input surface itself — the composer's toolbar row in Text Mode, and the
+ * Voice Mode console header — so either mode is one tap away without adding a
+ * separate control bar.
  */
 export function ChatDock({ wide = false }: { wide?: boolean }) {
   const { send, status, config } = useChat();
@@ -35,13 +35,7 @@ export function ChatDock({ wide = false }: { wide?: boolean }) {
   }, [showVoice]);
 
   return (
-    <div className="flex flex-col gap-2 pb-3 pt-1 sm:gap-2.5">
-      {supported && (
-        <div className="flex justify-center">
-          <VoiceModeToggle size="lg" />
-        </div>
-      )}
-
+    <div className="pb-3 pt-1">
       {showVoice ? (
         <VoicePanel />
       ) : (
@@ -51,6 +45,7 @@ export function ChatDock({ wide = false }: { wide?: boolean }) {
           maxChars={maxChars}
           onSend={send}
           wide={wide}
+          modeToggle={supported ? <VoiceModeToggle size="sm" /> : undefined}
         />
       )}
     </div>
