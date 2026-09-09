@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 /**
@@ -22,6 +23,7 @@ export function Waveform({
   bars?: number;
   className?: string;
 }) {
+  const reduceMotion = useReducedMotion();
   const half = Math.ceil(bars / 2);
   const [heights, setHeights] = React.useState<number[]>(() => Array.from({ length: half }, () => 0.08));
   const levelRef = React.useRef(level);
@@ -33,6 +35,7 @@ export function Waveform({
   }, [level, active]);
 
   React.useEffect(() => {
+    if (reduceMotion) return;
     let raf = 0;
     const tick = () => {
       setHeights((prev) => {
@@ -51,14 +54,33 @@ export function Waveform({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [reduceMotion]);
 
   const color = tone === "coral" ? "bg-primary" : "bg-yashorbit-blue dark:bg-secondary-foreground";
   // mirror the half-array outward from the centre
   const mirrored = [...heights.slice(1).reverse(), ...heights];
 
+  // Under reduced-motion, show a calm static equaliser instead of the live ripple.
+  if (reduceMotion) {
+    return (
+      <div className={cn("flex h-12 items-center justify-center gap-[3px] sm:h-16", className)} aria-hidden>
+        {Array.from({ length: bars }).map((_, i) => {
+          const d = Math.abs(i - (bars - 1) / 2) / (bars / 2);
+          const h = active ? 0.85 - d * 0.6 : 0.14;
+          return (
+            <span
+              key={i}
+              className={cn("w-[3px] rounded-full", color, !active && "opacity-40")}
+              style={{ height: `${Math.round(h * 100)}%` }}
+            />
+          );
+        })}
+      </div>
+    );
+  }
+
   return (
-    <div className={cn("flex h-16 items-center justify-center gap-[3px]", className)} aria-hidden>
+    <div className={cn("flex h-12 items-center justify-center gap-[3px] sm:h-16", className)} aria-hidden>
       {mirrored.map((h, i) => (
         <span
           key={i}

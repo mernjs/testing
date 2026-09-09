@@ -48,17 +48,19 @@ export function ChatComposer({
     >
       <div
         className={cn(
-          "flex items-end gap-2 rounded-2xl border border-border/60 bg-background/80 px-3 py-2 shadow-sm transition-colors focus-within:border-primary/50 focus-within:ring-3 focus-within:ring-primary/15",
+          "flex items-end gap-2 rounded-2xl border-2 border-border bg-background px-3 py-2 shadow-sm transition-colors focus-within:border-primary/60 focus-within:ring-3 focus-within:ring-primary/20",
           wide && "shadow-lg shadow-black/5",
           disabled && "opacity-60"
         )}
       >
         <textarea
           ref={ref}
+          data-chat-input
           rows={1}
           value={value}
           disabled={disabled}
           maxLength={maxChars}
+          aria-label="Type your message to YashOrbit"
           placeholder="Ask about YashOrbit…"
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => {
@@ -67,24 +69,27 @@ export function ChatComposer({
               submit();
             }
           }}
-          className="max-h-52 flex-1 resize-none bg-transparent py-1 text-sm leading-relaxed outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
+          className="max-h-52 flex-1 resize-none bg-transparent py-1.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
         />
         <button
           type="button"
           onClick={submit}
           disabled={!value.trim() || streaming || disabled}
           aria-label="Send message"
-          className="flex size-8 flex-none items-center justify-center rounded-full bg-primary text-primary-foreground transition-all hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+          className="flex size-10 flex-none items-center justify-center rounded-full bg-primary text-primary-foreground transition-all focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-safe:hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
         >
-          {streaming ? <Loader2 className="size-4 animate-spin" /> : <ArrowUp className="size-4" />}
+          {streaming ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <ArrowUp className="size-5" aria-hidden />}
         </button>
       </div>
       <div className="mt-1.5 flex items-center justify-between px-1">
-        <p className="text-[10px] text-muted-foreground/60">
+        <p className="text-xs text-muted-foreground/70">
           AI-generated · verify important details with our team
         </p>
         {nearLimit && (
-          <p className={cn("text-[10px]", remaining < 0 ? "text-destructive" : "text-muted-foreground/70")}>
+          <p
+            aria-live="polite"
+            className={cn("text-xs", remaining < 0 ? "text-destructive" : "text-muted-foreground/70")}
+          >
             {remaining}
           </p>
         )}

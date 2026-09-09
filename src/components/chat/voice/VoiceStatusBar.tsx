@@ -1,16 +1,38 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { RotateCcw, Volume2, VolumeX, X } from "lucide-react";
+import { Ear, Loader2, RotateCcw, Volume2, VolumeX, Square, CircleDot } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useVoice, type VoiceStatus } from "@/components/chat/VoiceProvider";
+import { useVoice, type VoicePhase } from "@/components/chat/VoiceProvider";
 
-const STATUS_LABEL: Record<VoiceStatus, string> = {
-  idle: "Tap the mic and ask a question",
-  listening: "Listening…",
-  transcribing: "Transcribing…",
-  thinking: "Thinking…",
-  speaking: "Speaking",
+const PHASE: Record<
+  VoicePhase,
+  { label: string; description: string; Icon: typeof Ear; tone: string }
+> = {
+  ready: {
+    label: "Ready",
+    description: "Press the microphone button to ask a question.",
+    Icon: CircleDot,
+    tone: "text-foreground",
+  },
+  listening: {
+    label: "Listening",
+    description: "Speak now — I'll stop automatically when you pause.",
+    Icon: Ear,
+    tone: "text-primary",
+  },
+  processing: {
+    label: "Processing",
+    description: "Working on your answer…",
+    Icon: Loader2,
+    tone: "text-yashorbit-orange",
+  },
+  speaking: {
+    label: "Speaking",
+    description: "Playing the answer aloud. Press Stop to interrupt.",
+    Icon: Volume2,
+    tone: "text-yashorbit-blue dark:text-secondary-foreground",
+  },
 };
 
 function fmt(ms: number): string {
@@ -19,92 +41,102 @@ function fmt(ms: number): string {
 }
 
 export function VoiceStatusBar() {
-  const { status, recordingMs, muted, canReplay, hint, error, toggleMute, replayLast, interrupt, dismissHint } =
+  const { phase, recordingMs, muted, canReplay, hint, error, toggleMute, replayLast, interrupt } =
     useVoice();
 
-  const showTimer = status === "listening";
-  const showInterrupt = status === "speaking" || status === "thinking" || status === "listening";
+  const meta = PHASE[phase];
+  const showTimer = phase === "listening";
+  const canStop = phase === "speaking" || phase === "processing" || phase === "listening";
 
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div className="flex items-center gap-2 text-sm">
-        <span
-          className={cn(
-            "inline-flex items-center gap-2 font-medium",
-            status === "listening" && "text-primary",
-            status === "speaking" && "text-yashorbit-blue dark:text-secondary-foreground",
-            (status === "idle" || status === "transcribing" || status === "thinking") && "text-muted-foreground"
-          )}
-        >
-          {(status === "listening" || status === "speaking") && (
-            <span className="relative flex size-2">
+    <div className="flex w-full flex-col items-center gap-3">
+      {/* Large, high-contrast status indicator — announced to screen readers */}
+      <div
+        role="status"
+        aria-live="polite"
+        className="flex flex-col items-center gap-0.5 text-center"
+      >
+        <span className={cn("inline-flex items-center gap-2 text-xl font-bold", meta.tone)}>
+          <span className="relative flex size-3">
+            {(phase === "listening" || phase === "speaking") && (
               <span
                 className={cn(
-                  "absolute inline-flex size-full animate-ping rounded-full opacity-75",
-                  status === "listening" ? "bg-primary" : "bg-yashorbit-blue dark:bg-secondary-foreground"
+                  "absolute inline-flex size-full rounded-full opacity-75 motion-safe:animate-ping",
+                  phase === "listening" ? "bg-primary" : "bg-yashorbit-blue dark:bg-secondary-foreground"
                 )}
               />
-              <span
-                className={cn(
-                  "relative inline-flex size-2 rounded-full",
-                  status === "listening" ? "bg-primary" : "bg-yashorbit-blue dark:bg-secondary-foreground"
-                )}
-              />
+            )}
+            <meta.Icon
+              className={cn("relative size-3.5 -translate-x-px", phase === "processing" && "animate-spin")}
+              aria-hidden
+            />
+          </span>
+          {meta.label}
+          {showTimer && (
+            <span className="text-base font-medium tabular-nums text-muted-foreground">
+              {fmt(recordingMs)}
             </span>
           )}
-          {STATUS_LABEL[status]}
-          {showTimer && <span className="tabular-nums text-muted-foreground">{fmt(recordingMs)}</span>}
         </span>
+        <p className="max-w-xs text-sm text-muted-foreground">{meta.description}</p>
       </div>
 
-      <div className="flex items-center gap-1.5">
+      {/* Secondary controls — 44px targets, icon + text label */}
+      <div className="flex items-center justify-center gap-2">
         <button
           type="button"
           onClick={toggleMute}
-          aria-label={muted ? "Unmute the assistant" : "Mute the assistant"}
+          aria-pressed={muted}
           className={cn(
-            "flex size-8 items-center justify-center rounded-full border border-border/60 text-muted-foreground transition-colors hover:text-foreground",
-            muted && "border-primary/40 bg-primary/5 text-primary"
+            "inline-flex min-h-11 items-center gap-1.5 rounded-full border-2 border-border px-3.5 text-sm font-medium text-foreground/80 transition-colors",
+            "hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/50",
+            muted && "border-primary/50 bg-primary/10 text-primary"
           )}
         >
-          {muted ? <VolumeX className="size-3.5" /> : <Volume2 className="size-3.5" />}
+          {muted ? <VolumeX className="size-4" aria-hidden /> : <Volume2 className="size-4" aria-hidden />}
+          {muted ? "Muted" : "Sound on"}
         </button>
+
         <button
           type="button"
           onClick={replayLast}
-          disabled={!canReplay || status === "speaking"}
-          aria-label="Replay last response"
-          className="flex size-8 items-center justify-center rounded-full border border-border/60 text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+          disabled={!canReplay || phase === "speaking"}
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-full border-2 border-border px-3.5 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/50 disabled:opacity-40"
         >
-          <RotateCcw className="size-3.5" />
+          <RotateCcw className="size-4" aria-hidden />
+          Replay
         </button>
+
         <button
           type="button"
           onClick={interrupt}
-          disabled={!showInterrupt}
-          aria-label="Stop"
-          className="flex size-8 items-center justify-center rounded-full border border-destructive/40 text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-30"
+          disabled={!canStop}
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-full border-2 border-destructive/50 px-3.5 text-sm font-semibold text-destructive transition-colors hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-destructive/40 disabled:opacity-40"
         >
-          <X className="size-3.5" />
+          <Square className="size-4" fill="currentColor" aria-hidden />
+          Stop
         </button>
       </div>
 
-      <AnimatePresence>
-        {(hint || error) && (
-          <motion.button
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 4 }}
-            onClick={dismissHint}
-            className={cn(
-              "rounded-full px-3 py-1 text-xs",
-              error ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"
-            )}
-          >
-            {error || hint}
-          </motion.button>
-        )}
-      </AnimatePresence>
+      {/* Transient hint / error — announced politely / assertively */}
+      <div className="min-h-0" aria-live="polite">
+        <AnimatePresence>
+          {(hint || error) && (
+            <motion.p
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 4 }}
+              role={error ? "alert" : "status"}
+              className={cn(
+                "rounded-full px-3.5 py-1.5 text-sm font-medium",
+                error ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"
+              )}
+            >
+              {error || hint}
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

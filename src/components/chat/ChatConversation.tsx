@@ -9,14 +9,15 @@ import { WelcomeScreen } from "@/components/chat/WelcomeScreen";
 import { ChatComposer } from "@/components/chat/ChatComposer";
 import { PreChatForm } from "@/components/chat/PreChatForm";
 
-/** The shared middle of every chat surface: body + error banner + composer.
- * `voiceSlot` (the `/ask` page's voice controls) renders just above the composer. */
+/** The shared middle of every chat surface: body + error banner + input dock.
+ * `dock` (the `/ask` page's Text / Voice switch + input) replaces the default
+ * text composer when provided. */
 export function ChatConversation({
   wide = false,
-  voiceSlot,
+  dock,
 }: {
   wide?: boolean;
-  voiceSlot?: React.ReactNode;
+  dock?: React.ReactNode;
 }) {
   const { messages, status, error, config, ready, send, dismissError, switchingSession, needsIdentification } =
     useChat();
@@ -73,8 +74,9 @@ export function ChatConversation({
 
       {!needsIdentification && (
         <div className={columnClass}>
-          {voiceSlot && <div className="pb-2">{voiceSlot}</div>}
-          <ChatComposer disabled={unavailable} streaming={streaming} maxChars={maxChars} onSend={send} wide={wide} />
+          {dock ?? (
+            <ChatComposer disabled={unavailable} streaming={streaming} maxChars={maxChars} onSend={send} wide={wide} />
+          )}
         </div>
       )}
     </div>

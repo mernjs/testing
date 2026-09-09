@@ -5,11 +5,29 @@ import { useChat, type AssistantDoneInfo } from "@/components/chat/ChatProvider"
 
 export type VoiceStatus = "idle" | "listening" | "transcribing" | "thinking" | "speaking";
 
+/** Coarse, user-facing phase collapsed from {@link VoiceStatus} for status displays. */
+export type VoicePhase = "ready" | "listening" | "processing" | "speaking";
+
+export function toPhase(status: VoiceStatus): VoicePhase {
+  switch (status) {
+    case "listening":
+      return "listening";
+    case "transcribing":
+    case "thinking":
+      return "processing";
+    case "speaking":
+      return "speaking";
+    default:
+      return "ready";
+  }
+}
+
 interface VoiceContextValue {
   supported: boolean;
   available: boolean;
   voiceMode: boolean;
   status: VoiceStatus;
+  phase: VoicePhase;
   level: number;
   recordingMs: number;
   muted: boolean;
@@ -464,12 +482,15 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
     };
   }, [teardownRecording, stopMeter, cleanupLastBlob]);
 
+  const phase = toPhase(status);
+
   const value = React.useMemo<VoiceContextValue>(
     () => ({
       supported,
       available,
       voiceMode,
       status,
+      phase,
       level,
       recordingMs,
       muted,
@@ -489,6 +510,7 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
       available,
       voiceMode,
       status,
+      phase,
       level,
       recordingMs,
       muted,
