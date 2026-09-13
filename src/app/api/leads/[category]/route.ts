@@ -10,6 +10,9 @@ import {
   validateLeadInput,
   validateResumeFile,
 } from "@/lib/leads";
+import { provisionLeadAndAccount } from "@/lib/lead-management/provision";
+import { CATEGORY_TO_SOURCE } from "@/lib/lead-management/types";
+import { createPortalSession, setPortalSessionCookie } from "@/lib/portal-auth";
 
 type Context = { params: Promise<{ category: string }> };
 
@@ -72,7 +75,30 @@ export async function POST(req: NextRequest, { params }: Context) {
 
   try {
     const lead = await createLead(category, { ...validation.data, resume });
-    return NextResponse.json({ data: lead }, { status: 201 });
+
+    // Lead-driven portal: every inquiry becomes a Lead + a portal account the
+    // visitor is immediately signed into. Needs an email to own the account.
+    let portal: { redirect: string; isNewAccount: boolean; tempPassword: string | null } | undefined;
+    if (validation.data.email) {
+      try {
+        const result = await provisionLeadAndAccount({
+          source: CATEGORY_TO_SOURCE[category],
+          name: validation.data.name,
+          email: validation.data.email,
+          phone: validation.data.phone,
+          subService: validation.data.subService ?? null,
+          message: validation.data.message ?? null,
+          sourceRef: { kind: "category_lead", category, id: String(lead._id) },
+        });
+        const { token } = await createPortalSession(result.externalUserId, false);
+        await setPortalSessionCookie(token, false);
+        portal = { redirect: "/portal", isNewAccount: result.isNewAccount, tempPassword: result.tempPassword };
+      } catch (provErr) {
+        console.error("Lead provisioning failed (submission still saved)", provErr);
+      }
+    }
+
+    return NextResponse.json({ data: lead, portal }, { status: 201 });
   } catch (err) {
     console.error("Failed to create lead", err);
     return NextResponse.json({ error: "Failed to save submission. Please try again." }, { status: 500 });

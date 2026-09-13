@@ -58,6 +58,18 @@ export function useLeadSubmit() {
       }
 
       setStatus("success");
+      // Lead-driven portal: the API signed this visitor in — hand them off to
+      // their portal dashboard. A brief pause lets the success state render
+      // (and, for a brand-new account, the one-time temp password).
+      const portal = json?.portal as { redirect?: string; isNewAccount?: boolean; tempPassword?: string | null } | undefined;
+      if (portal?.redirect) {
+        if (portal.isNewAccount && portal.tempPassword) {
+          try {
+            sessionStorage.setItem("portalTempPassword", portal.tempPassword);
+          } catch {}
+        }
+        setTimeout(() => window.location.assign(portal.redirect as string), portal.isNewAccount ? 2600 : 1200);
+      }
       return true;
     } catch {
       setStatus("error");

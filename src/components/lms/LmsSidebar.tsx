@@ -14,6 +14,7 @@ import {
   AudioLines,
   Mic,
   Settings2,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CATEGORIES } from "@/lib/categories";
@@ -84,7 +85,9 @@ export default function LmsSidebar({ onNavigate, collapsed = false }: { onNaviga
   return (
     <nav className="flex h-full flex-col gap-1 p-3">
       <NavLink href="/lms" label="Dashboard" icon={LayoutDashboard} exact collapsed={collapsed} onNavigate={onNavigate} />
-      <SectionLabel collapsed={collapsed}>Submissions</SectionLabel>
+      <SectionLabel collapsed={collapsed}>Lead Management</SectionLabel>
+      <NavLink href="/lms/leads" label="Leads" icon={Users} collapsed={collapsed} onNavigate={onNavigate} />
+      <SectionLabel collapsed={collapsed}>Legacy intake</SectionLabel>
       {CATEGORIES.map((c) => (
         <NavLink
           key={c.slug}

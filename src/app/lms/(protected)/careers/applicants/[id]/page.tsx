@@ -8,7 +8,9 @@ import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import StatusSelect from "./StatusSelect";
 import NotesEditor from "./NotesEditor";
 import DeleteButton from "./DeleteButton";
+import InterviewSchedule from "./InterviewSchedule";
 import { getApplication } from "@/lib/career-applications";
+import { listInterviewsForApplication } from "@/lib/portal/interviews";
 import { DEFAULT_CAREER_APPLICATION_STATUS } from "@/lib/career-application-status";
 import { formatDateTime } from "@/lib/utils";
 
@@ -17,6 +19,8 @@ export default async function ApplicantDetailPage({ params }: { params: Promise<
 
   const application = await getApplication(id);
   if (!application) notFound();
+
+  const interviews = await listInterviewsForApplication(id);
 
   return (
     <div className="space-y-4">
@@ -79,6 +83,16 @@ export default async function ApplicantDetailPage({ params }: { params: Promise<
           </CardContent>
         </GlassCard>
       </div>
+
+      <GlassCard>
+        <CardHeader>
+          <CardTitle>Interview Schedule</CardTitle>
+          <p className="text-sm text-muted-foreground">Slots you add here appear in the applicant&apos;s portal and trigger a notification.</p>
+        </CardHeader>
+        <CardContent>
+          <InterviewSchedule applicationId={id} initial={interviews} />
+        </CardContent>
+      </GlassCard>
 
       <GlassCard>
         <CardHeader><CardTitle>Internal HR Notes</CardTitle></CardHeader>

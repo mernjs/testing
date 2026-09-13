@@ -187,8 +187,82 @@ scheduled meetings from Phase 3, all sharing **one call room** at
   `/messenger/meetings/[id]/room` path now redirects into the unified call room.
 
 **Later phases:** TMS batch discussion groups + HRMS department channels, group /
-channel avatars, announcement templates, file version history, server-side call
-recording, SFU / webinar mode.
+channel avatars, announcement templates, file version history, server-side call recording, SFU / webinar mode.
+
+## External User Portal
+
+`/portal` — the public front door for **external** people (job applicants,
+interns, industrial-training students, clients). One portal, **four completely
+different experiences**: the dashboard, sidebar, widgets, and available modules
+are generated from the authenticated user's role (`job_applicant` | `intern` |
+`trainee` | `client`) — not a shared UI with hidden sections. No company-internal
+data is ever exposed.
+
+- **Own identity store.** `external_users` (never `admin_users`) + session cookie
+  `portal_session`. Passwords are scrypt-hashed. **Remember Me** → 30-day cookie;
+  5 failed logins → 15-min lockout. **Self-registration**: a person registers
+  with the exact email + phone they gave YashOrbit; `matchDomainRecord` finds the
+  ERP record and derives the role. **Forgot password** re-verifies email + phone
+  (no mailer in the repo, so that pair is the identity assertion).
+- **Link + read live.** The account stores only auth + role + one link id
+  (`applicationId` / `studentId` / `clientId`). All domain data is read live from
+  the existing tables — `career_applications` + `hrms_offers` + `portal_interviews`
+  (applicant), `training_students` + TMS libs (learner), `pms_clients` +
+  `pms_projects` + milestones (client) — so staff changes appear instantly. New
+  portal-only collections: `portal_sessions`, `portal_documents`,
+  `external_notifications`, `portal_activity_logs`, `portal_interviews`.
+- **RBAC.** Every page calls `guardPortalPage(...roles)` (redirects the wrong
+  role home); data functions are keyed only by the caller's own link id.
+  `/api/portal/download/[type]/[id]` is the one authed file gate (own shared doc,
+  own résumé, or a document on one of the user's own projects).
+- **Client Invoices / Meetings are derived** from PMS (the ERP has no
+  client-facing invoicing): "invoiced" tracks milestone completion against an
+  even split of each project's budget; "meetings" are upcoming milestone review
+  and delivery dates.
+- **Staff touch-point:** the LMS careers applicant page
+  (`/lms/careers/applicants/[id]`) has an **Interview Schedule** section — slots
+  added there show in the applicant's portal and fire a notification.
+- **Demo accounts:** `node --env-file=.env scripts/seed-portal-demo.mjs` creates
+  one account per role matched to seeded records and prints the credentials
+  (password `Portal@2026`).
+
+`/tms/me` (the staff-created TMS student portal) stays as-is; `/portal` is the
+external front door onto the same `training_students` data.
+
+### Lead Management drives the portal
+
+`/lms/leads` — the staff hub that is the **single source of truth** for the
+external portal. Every public website form submission
+(`POST /api/careers/apply`, `POST /api/leads/[category]`) now:
+
+1. writes its existing record (`career_applications` / `leads_*`), then
+2. `provisionLeadAndAccount()` (`src/lib/lead-management/provision.ts`) creates a
+   `lead_records` row + an `external_users` account with a temp password,
+3. the route sets the `portal_session` cookie and returns a redirect — the
+   visitor lands on their portal dashboard **already signed in** (temp password
+   shown once via `sessionStorage` → `TempPasswordBanner`). A returning email
+   gets a second lead attached to the same account (portal shows a lead
+   switcher).
+
+**Per-type lifecycles** are code-defined in
+`src/lib/lead-management/workflows.ts` (`LEAD_WORKFLOWS`) — job applicant
+(new → contacted → shortlisted → interview → technical → HR → selected → offer →
+joined), intern, trainee, and client each get their own stages. Advancing a lead
+in `/lms/leads/[id]` writes a `lead_timeline` event, notifies the portal, and
+fires soft side-effects (e.g. "link a TMS student" reminder at `batch_assigned`).
+
+The lead detail page is the control centre: **stage control, owner assignment,
+Communication (internal notes vs portal-visible messages / document requests),
+Interview schedule** (job leads — writes `portal_interviews` + notifies),
+**Documents** (upload → `portal_documents` + notification), and **ERP links**
+(paste a `training_students` / `pms_clients` id → the portal's deep TMS/PMS
+widgets light up for that person). New portal-only collections:
+`lead_records`, `lead_timeline`, `lead_messages`, `portal_counters`.
+
+Portal side: `/portal/journey` (full vertical `lead_timeline`), `/portal/messages`
+(staff→user thread), and every dashboard's hero stepper is now driven by the
+lead's workflow. `scripts/seed-portal-demo.mjs` seeds a mid-workflow lead +
+timeline per demo account.
 
 ## Learn More
 
@@ -258,3 +332,21 @@ npm run prms:grant     # PRMS
 
 
 yashika.singh@yashorbit.com, priyanka.singh@…, tej.pratap.singh@…, shikha.singh@…, pooja.singh@…, arjun.mehta@…, ananya.sharma@…, karan.kulkarni@…, kavya.nair@…, divya.reddy@…, meera.joshi@…, ritika.verma@…, sneha.iyer@…, aditi.kapoor@…, rohan.malhotra@…, nisha.agarwal@…, swati.bansal@…, rashmi.pillai@…, vikram.rao@…, neha.chatterjee@…, pallavi.desai@yashorbit.com
+
+
+Build is green (next build exit 0, all 20 /portal pages compiled) and the demo seeder ran. Here are the dummy portal accounts:
+
+/portal demo logins
+Sign in at /portal/login — password is the same for all four:
+
+Role	Email	Password
+Job Applicant	roberttaylor4@gmail.com	Portal@2026
+Intern	rohan.reddy.37@example.com	Portal@2026
+Trainee (Industrial Training)	aarav.verma.1@example.com	Portal@2026
+Client	contact1@northwindretailgroup.com	Portal@2026
+Each lands on a completely different dashboard + sidebar for its role. Login only needs email + password; RBAC then bounces any cross-role URL (e.g. the applicant hitting /portal/invoices) back to their own dashboard.
+
+Phone numbers (only needed to test /portal/register or forgot-password, which verify email + phone):
+
+Applicant 9396348440 · Intern 1981000259 · Trainee 1981000007 · Client 0521836562
+The accounts are created by scripts/seed-portal-demo.mjs, matched live to existing seeded career_applications / training_students / pms_clients records — re-running it just resets their passwords. If a role's data looks thin, run the domain seeders first (seed-tms-demo.mjs, seed-pms-demo.mjs, seed-demo-data.mjs).

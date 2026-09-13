@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createApplication, getOpenJobPositionBySlug, uploadResume } from "@/lib/career-applications";
 import { validateApplicationInput, validateResumeFile } from "@/lib/career-application-validation";
+import { provisionLeadAndAccount } from "@/lib/lead-management/provision";
+import { createPortalSession, setPortalSessionCookie } from "@/lib/portal-auth";
 
 export async function POST(req: NextRequest) {
   let formData: FormData;
@@ -51,7 +53,29 @@ export async function POST(req: NextRequest) {
 
   try {
     const application = await createApplication({ ...validation.data, resume });
-    return NextResponse.json({ data: application }, { status: 201 });
+
+    // Lead-driven portal: every application becomes a Lead + a portal account the
+    // applicant is immediately signed into.
+    let portal: { redirect: string; isNewAccount: boolean; tempPassword: string | null } | undefined;
+    try {
+      const result = await provisionLeadAndAccount({
+        source: "job_portal",
+        name: validation.data.name,
+        email: validation.data.email,
+        phone: validation.data.phone,
+        subService: application.positionTitle ?? null,
+        message: validation.data.coverNote ?? null,
+        sourceRef: { kind: "career_application", id: String(application._id) },
+        applicationId: String(application._id),
+      });
+      const { token } = await createPortalSession(result.externalUserId, false);
+      await setPortalSessionCookie(token, false);
+      portal = { redirect: "/portal", isNewAccount: result.isNewAccount, tempPassword: result.tempPassword };
+    } catch (provErr) {
+      console.error("Lead provisioning failed (application still saved)", provErr);
+    }
+
+    return NextResponse.json({ data: application, portal }, { status: 201 });
   } catch (err) {
     if (err instanceof Error && err.message === "INVALID_POSITION") {
       return NextResponse.json(

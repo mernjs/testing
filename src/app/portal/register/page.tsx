@@ -1,0 +1,23 @@
+import { redirect } from "next/navigation";
+import { getCurrentPortalUser } from "@/lib/portal-auth";
+import PortalAuthShell from "@/components/portal/PortalAuthShell";
+import RegisterForm from "./RegisterForm";
+
+export const metadata = { title: "Create account · YashOrbit Portal", robots: { index: false } };
+
+export default async function PortalRegisterPage() {
+  if (await getCurrentPortalUser()) redirect("/portal");
+  return (
+    <PortalAuthShell
+      headline={
+        <>
+          One account,{" "}
+          <span className="bg-gradient-to-r from-primary to-yashorbit-coral bg-clip-text text-transparent">built for you.</span>
+        </>
+      }
+      sub="Register once with the email and phone we have on file. We'll recognise whether you're an applicant, an intern, a trainee or a client and load the right portal."
+    >
+      <RegisterForm />
+    </PortalAuthShell>
+  );
+}
