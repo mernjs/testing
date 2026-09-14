@@ -22,7 +22,8 @@ export async function GET(req: NextRequest) {
 
 // Indexing can take several minutes; the crawl runs in `after()` so the
 // response returns immediately with a run id the caller can poll.
-export const maxDuration = 800;
+// Capped at 300 (Vercel Hobby plan's max serverless function duration).
+export const maxDuration = 300;
 
 /**
  * Triggers a knowledge-base re-index of the website content. Authorised by
