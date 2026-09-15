@@ -7,7 +7,7 @@ import { getPrmsSettings } from "@/lib/prms/settings";
 
 export default async function PrmsSettingsPage() {
   const user = await getCurrentPrmsUser();
-  if (!user || !canManageSettings(user.roles)) redirect("/prms");
+  if (!user || !canManageSettings(user)) redirect("/prms");
 
   const settings = await getPrmsSettings();
 

@@ -21,7 +21,7 @@ export default async function PurchaseOrdersPage({
 }) {
   const sp = await searchParams;
   const user = await getCurrentPrmsUser();
-  const canManage = user ? canManageProcurement(user.roles) : false;
+  const canManage = user ? canManageProcurement(user) : false;
 
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidPoStatus(sp.status) ? (sp.status as PoStatus) : undefined;

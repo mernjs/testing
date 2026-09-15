@@ -13,7 +13,7 @@ export default async function NewEmployeePage({
   searchParams: Promise<{ fromApplication?: string }>;
 }) {
   const user = await getCurrentHrmsUser();
-  if (!user || !canManageEmployees(user.roles)) redirect("/hrms/employees");
+  if (!user || !canManageEmployees(user)) redirect("/hrms/employees");
 
   const sp = await searchParams;
   const [departments, designations, teams, managers, prefill] = await Promise.all([

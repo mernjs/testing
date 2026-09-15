@@ -9,7 +9,13 @@ import BrandMark from "@/components/BrandMark";
 import { brandify } from "@/lib/brand";
 import type { PrmsRole } from "@/lib/prms-roles";
 
-export default function PrmsMobileSidebar({ roles }: { roles: PrmsRole[] }) {
+export default function PrmsMobileSidebar({
+  roles,
+  permissionOverrides,
+}: {
+  roles: PrmsRole[];
+  permissionOverrides?: Record<string, boolean>;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -27,7 +33,7 @@ export default function PrmsMobileSidebar({ roles }: { roles: PrmsRole[] }) {
               {brandify("YashOrbit")} <span className="text-foreground">PRMS</span>
             </span>
           </div>
-          <PrmsSidebar roles={roles} onNavigate={() => setOpen(false)} />
+          <PrmsSidebar roles={roles} permissionOverrides={permissionOverrides} onNavigate={() => setOpen(false)} />
         </SheetContent>
       </Sheet>
     </>

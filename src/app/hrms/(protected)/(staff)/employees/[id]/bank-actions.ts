@@ -23,7 +23,7 @@ export interface BankActionResult {
 async function requireBank() {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManagePayroll(user.roles)) throw new Error("Forbidden");
+  if (!canManagePayroll(user)) throw new Error("Forbidden");
   return user;
 }
 

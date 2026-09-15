@@ -29,7 +29,7 @@ export interface TaskActionResult {
 async function requireManage() {
   const user = await getCurrentPmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageProjects(user.roles)) throw new Error("Forbidden");
+  if (!canManageProjects(user)) throw new Error("Forbidden");
   return user;
 }
 
@@ -265,7 +265,7 @@ export async function deleteTaskCommentAction(
 ): Promise<TaskActionResult> {
   const user = await getCurrentPmsUser();
   if (!user) throw new Error("Unauthorized");
-  const result = await deleteComment(commentId, user.id, isPmsAdmin(user.roles));
+  const result = await deleteComment(commentId, user.id, isPmsAdmin(user));
   if (!result.ok) return { ok: false, error: "Could not delete comment." };
   revalidateTask(projectId, taskId);
   return { ok: true };

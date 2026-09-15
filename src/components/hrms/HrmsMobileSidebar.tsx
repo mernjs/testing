@@ -9,7 +9,15 @@ import BrandMark from "@/components/BrandMark";
 import { brandify } from "@/lib/brand";
 import type { HrmsRole } from "@/lib/hrms-roles";
 
-export default function HrmsMobileSidebar({ roles, employeeId }: { roles: HrmsRole[]; employeeId: string | null }) {
+export default function HrmsMobileSidebar({
+  roles,
+  permissionOverrides,
+  employeeId,
+}: {
+  roles: HrmsRole[];
+  permissionOverrides?: Record<string, boolean>;
+  employeeId: string | null;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -27,7 +35,7 @@ export default function HrmsMobileSidebar({ roles, employeeId }: { roles: HrmsRo
               {brandify("YashOrbit")} <span className="text-foreground">HRMS</span>
             </span>
           </div>
-          <HrmsSidebar roles={roles} employeeId={employeeId} onNavigate={() => setOpen(false)} />
+          <HrmsSidebar roles={roles} permissionOverrides={permissionOverrides} employeeId={employeeId} onNavigate={() => setOpen(false)} />
         </SheetContent>
       </Sheet>
     </>

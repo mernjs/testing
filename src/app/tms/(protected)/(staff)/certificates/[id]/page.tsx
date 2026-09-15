@@ -18,7 +18,7 @@ export default async function CertificateDetailPage({ params }: { params: Promis
   if (!cert) notFound();
 
   const user = await getCurrentTmsUser();
-  const canManage = user ? canIssueCertificates(user.roles) : false;
+  const canManage = user ? canIssueCertificates(user) : false;
   const verifyUrl = `${siteUrl}/verify/${cert.verificationCode}`;
 
   return (

@@ -22,7 +22,7 @@ function fileResponse(body: Buffer | string, type: string, filename: string) {
 export async function GET(req: NextRequest, { params }: Context) {
   const user = await getCurrentPrmsUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!canViewReports(user.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!canViewReports(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { type } = await params;
   if (!isValidReportType(type)) return NextResponse.json({ error: "Unknown report" }, { status: 404 });

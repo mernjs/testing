@@ -128,18 +128,18 @@ export async function isMember(channelId: string, userId: string): Promise<boole
 /** Can this user read the channel at all? */
 export async function canAccessChannel(
   channel: Channel,
-  user: { id: string; roles: ChatRole[] }
+  user: { id: string; roles: ChatRole[]; permissionOverrides?: Record<string, boolean> }
 ): Promise<boolean> {
   if (await isMember(channel._id, user.id)) return true;
   if (channel.kind === "team" && channel.visibility === "public") return true;
-  if (isChatAdmin(user.roles)) return true;
+  if (isChatAdmin(user)) return true;
   return false;
 }
 
 /** Can this user post in the channel? (Archived channels are read-only.) */
 export async function canPostInChannel(
   channel: Channel,
-  user: { id: string; roles: ChatRole[] }
+  user: { id: string; roles: ChatRole[]; permissionOverrides?: Record<string, boolean> }
 ): Promise<boolean> {
   if (channel.archivedAt) return false;
   if (await isMember(channel._id, user.id)) return true;

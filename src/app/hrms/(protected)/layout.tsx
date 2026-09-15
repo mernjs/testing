@@ -32,6 +32,7 @@ export default async function ProtectedHrmsLayout({ children }: { children: Reac
           <HrmsSidebarShell
             email={user.email}
             roles={user.roles}
+            permissionOverrides={user.permissionOverrides}
             employeeId={user.employeeId}
             createdAt={user.createdAt.toISOString()}
             lastLoginAt={user.lastLoginAt ? user.lastLoginAt.toISOString() : null}
@@ -41,6 +42,7 @@ export default async function ProtectedHrmsLayout({ children }: { children: Reac
             <div className="lms-surface relative z-30 shrink-0 rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md dark:bg-card/85">
               <HrmsTopbar
                 roles={user.roles}
+                permissionOverrides={user.permissionOverrides}
                 employeeId={user.employeeId}
                 notifications={notifications.items.map((n) => ({
                   _id: n._id,

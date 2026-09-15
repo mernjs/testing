@@ -35,7 +35,7 @@ export default async function EmployeesPage({
   const sortDir = sp.sortDir === "asc" ? "asc" : "desc";
 
   const restrictToManagerId =
-    user && !canViewAllEmployees(user.roles) ? user.employeeId ?? "__no_such_employee__" : undefined;
+    user && !canViewAllEmployees(user) ? user.employeeId ?? "__no_such_employee__" : undefined;
 
   const [{ items, total, totalPages }, departments, designations] = await Promise.all([
     searchEmployees({
@@ -69,7 +69,7 @@ export default async function EmployeesPage({
             <Download className="size-3.5" data-icon="inline-start" />
             Export CSV
           </a>
-          {user && canManageEmployees(user.roles) && (
+          {user && canManageEmployees(user) && (
             <Link href="/hrms/employees/new" className={buttonVariants({ size: "sm" })}>
               <UserPlus className="size-3.5" data-icon="inline-start" />
               Add Employee

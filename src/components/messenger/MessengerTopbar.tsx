@@ -11,18 +11,20 @@ import { primaryChatRoleLabel, hasChatStaffRole, type ChatRole } from "@/lib/mes
 
 export default function MessengerTopbar({
   roles,
+  permissionOverrides,
   notifications,
   unread,
   unreadDms,
   unreadChannels,
 }: {
   roles: ChatRole[];
+  permissionOverrides?: Record<string, boolean>;
   notifications: BellItem[];
   unread: number;
   unreadDms: number;
   unreadChannels: number;
 }) {
-  const staff = hasChatStaffRole(roles);
+  const staff = hasChatStaffRole({ roles, permissionOverrides });
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <MessengerMobileSidebar

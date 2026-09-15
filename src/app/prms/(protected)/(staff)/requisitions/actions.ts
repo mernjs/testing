@@ -129,7 +129,7 @@ export async function decideRequisitionAction(
 ): Promise<RequisitionActionResult> {
   const user = await getCurrentPrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canApproveRequisitions(user.roles)) throw new Error("Forbidden");
+  if (!canApproveRequisitions(user)) throw new Error("Forbidden");
 
   const before = await getRequisition(id);
   if (!before) return { ok: false, error: "Requisition not found." };
@@ -138,6 +138,7 @@ export async function decideRequisitionAction(
     id: user.id,
     email: user.email,
     roles: user.roles,
+    permissionOverrides: user.permissionOverrides,
   });
   if (!res.ok) return { ok: false, error: res.reason };
 

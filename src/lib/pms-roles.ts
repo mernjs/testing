@@ -6,7 +6,14 @@
  *
  * `super_admin` is the same literal used by the HRMS/LMS panels and implicitly
  * grants full PMS access.
+ *
+ * The capability predicates below (everything except `hasPmsAccess`,
+ * `hasPmsStaffRole` and `isPmsEmployeeOnly`, the outer tier gates) are Super-
+ * Admin-override-aware: each checks `RoleContext.permissionOverrides` before
+ * falling back to its role-based default. See `src/lib/permission-overrides.ts`.
  */
+
+import { resolvePermission, type RoleContext } from "@/lib/permission-overrides";
 
 export const PMS_ROLES = ["super_admin", "pms_admin", "pms_manager", "pms_employee"] as const;
 
@@ -59,43 +66,43 @@ export function isPmsEmployeeOnly(roles: readonly PmsRole[]): boolean {
   return roles.length > 0 && !hasPmsStaffRole(roles);
 }
 
-export function isPmsAdmin(roles: readonly PmsRole[]): boolean {
-  return roles.includes("super_admin") || roles.includes("pms_admin");
+export function isPmsAdmin(user: RoleContext): boolean {
+  return resolvePermission(user, "pms.isPmsAdmin", () => user.roles.includes("pms_admin"));
 }
 
 /** View the project-costing / financial dashboards + project reports. */
-export function canViewCosting(roles: readonly PmsRole[]): boolean {
-  return hasPmsStaffRole(roles);
+export function canViewCosting(user: RoleContext): boolean {
+  return resolvePermission(user, "pms.canViewCosting", () => hasPmsStaffRole(user.roles as readonly PmsRole[]));
 }
 
 /** Review, approve and reject submitted timesheets. */
-export function canReviewTimesheets(roles: readonly PmsRole[]): boolean {
-  return hasPmsStaffRole(roles);
+export function canReviewTimesheets(user: RoleContext): boolean {
+  return resolvePermission(user, "pms.canReviewTimesheets", () => hasPmsStaffRole(user.roles as readonly PmsRole[]));
 }
 
 /** Create / edit / archive any client. */
-export function canManageClients(roles: readonly PmsRole[]): boolean {
-  return hasPmsStaffRole(roles);
+export function canManageClients(user: RoleContext): boolean {
+  return resolvePermission(user, "pms.canManageClients", () => hasPmsStaffRole(user.roles as readonly PmsRole[]));
 }
 
 /** Create / edit / delete any project, task and milestone + manage any project's team. */
-export function canManageProjects(roles: readonly PmsRole[]): boolean {
-  return hasPmsStaffRole(roles);
+export function canManageProjects(user: RoleContext): boolean {
+  return resolvePermission(user, "pms.canManageProjects", () => hasPmsStaffRole(user.roles as readonly PmsRole[]));
 }
 
 /** See every project vs. only projects the user manages / is a member of. */
-export function canViewAllProjects(roles: readonly PmsRole[]): boolean {
-  return isPmsAdmin(roles);
+export function canViewAllProjects(user: RoleContext): boolean {
+  return resolvePermission(user, "pms.canViewAllProjects", () => isPmsAdmin(user));
 }
 
 /** Edit PMS settings (categories, default currency, technology suggestions). */
-export function canManageSettings(roles: readonly PmsRole[]): boolean {
-  return isPmsAdmin(roles);
+export function canManageSettings(user: RoleContext): boolean {
+  return resolvePermission(user, "pms.canManageSettings", () => isPmsAdmin(user));
 }
 
 /** Read the activity log. */
-export function canViewActivityLog(roles: readonly PmsRole[]): boolean {
-  return isPmsAdmin(roles);
+export function canViewActivityLog(user: RoleContext): boolean {
+  return resolvePermission(user, "pms.canViewActivityLog", () => isPmsAdmin(user));
 }
 
 export function primaryPmsRoleLabel(roles: readonly PmsRole[]): string {

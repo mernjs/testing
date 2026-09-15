@@ -15,7 +15,7 @@ export default async function PayoutsPage({
   searchParams: Promise<{ month?: string; status?: string; department?: string; q?: string; page?: string }>;
 }) {
   const user = await getCurrentHrmsUser();
-  if (!user || !canRunPayroll(user.roles)) redirect("/hrms");
+  if (!user || !canRunPayroll(user)) redirect("/hrms");
 
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);

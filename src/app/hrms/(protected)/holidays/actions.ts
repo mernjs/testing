@@ -16,7 +16,7 @@ export interface HolidayActionResult {
 async function requireHolidays() {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageHolidays(user.roles)) throw new Error("Forbidden");
+  if (!canManageHolidays(user)) throw new Error("Forbidden");
   return user;
 }
 

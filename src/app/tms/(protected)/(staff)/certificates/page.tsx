@@ -18,7 +18,7 @@ import { formatDate } from "@/lib/utils";
 
 export default async function CertificatesPage() {
   const user = await getCurrentTmsUser();
-  const canIssue = user ? canIssueCertificates(user.roles) : false;
+  const canIssue = user ? canIssueCertificates(user) : false;
 
   const [certs, students, programs, batches, total, industrial, internship] = await Promise.all([
     listCertificates({}, 500),

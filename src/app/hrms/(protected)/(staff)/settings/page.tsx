@@ -14,7 +14,7 @@ import { getCompanyDetails } from "@/lib/hrms/company";
 
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
   const user = await getCurrentHrmsUser();
-  if (!user || !canManageSettings(user.roles)) redirect("/hrms");
+  if (!user || !canManageSettings(user)) redirect("/hrms");
 
   const sp = await searchParams;
   const tab = ["company", "schedule", "leave", "payroll"].includes(sp.tab ?? "") ? sp.tab! : "company";

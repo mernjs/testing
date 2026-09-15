@@ -4,7 +4,13 @@ import { cookies } from "next/headers";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 
-export const SESSION_COOKIE = "admin_session";
+// NOTE: was literally "admin_session" — an accidental exact collision with
+// the separate Super Admin Command Center's own cookie of the same name
+// (`ADMIN_SESSION_COOKIE` in `src/lib/admin-auth.ts`). Both use `path: "/"`,
+// so whichever was set last silently overwrote the other for any browser with
+// both sessions active. Renamed to fix the collision and to allow the Command
+// Center to safely mint a real LMS session alongside its own on login.
+export const SESSION_COOKIE = "lms_session";
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Bell, Target, Building2, Briefcase, FolderKanban, Clock, GraduationCap, ShoppingCart, Globe, CheckSquare, Flag, BookOpen, Layers, Award, Wallet, FileText, PackageCheck, Boxes, Warehouse, Receipt, ShieldCheck, History, Bot, Mic, IndianRupee, CreditCard, FolderOpen, MessageSquare, Hash, Video } from "lucide-react";
+import { LayoutDashboard, Bell, Target, Building2, Briefcase, FolderKanban, Clock, GraduationCap, ShoppingCart, Globe, CheckSquare, Flag, BookOpen, Layers, Award, Wallet, FileText, PackageCheck, Boxes, Warehouse, Receipt, ShieldCheck, History, Bot, Mic, IndianRupee, CreditCard, FolderOpen, MessageSquare, Hash, Video, FileSearch, Server, KeyRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
@@ -116,10 +116,13 @@ export default function AdminSidebar({
       <SectionLabel collapsed={collapsed}>Procurement</SectionLabel>
       {nav({ href: "/admin/prms/vendors", label: "Vendors", icon: ShoppingCart })}
       {nav({ href: "/admin/prms/requisitions", label: "Requisitions", icon: FileText })}
+      {nav({ href: "/admin/prms/rfqs", label: "RFQs", icon: FileSearch })}
       {nav({ href: "/admin/prms/purchase-orders", label: "Purchase Orders", icon: PackageCheck })}
       {nav({ href: "/admin/prms/assets", label: "Assets", icon: Boxes })}
       {nav({ href: "/admin/prms/inventory", label: "Inventory", icon: Warehouse })}
       {nav({ href: "/admin/prms/expenses", label: "Expenses", icon: Receipt })}
+      {nav({ href: "/admin/prms/infrastructure", label: "Infrastructure", icon: Server })}
+      {nav({ href: "/admin/prms/subscriptions", label: "SaaS Subscriptions", icon: KeyRound })}
 
       <SectionLabel collapsed={collapsed}>Finance</SectionLabel>
       {nav({ href: "/admin/prms/invoices", label: "Vendor Invoices", icon: IndianRupee })}

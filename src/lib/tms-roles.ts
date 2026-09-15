@@ -6,7 +6,14 @@
  *
  * `super_admin` is the same literal used by the LMS / HRMS / PMS panels and
  * implicitly grants full TMS access.
+ *
+ * The capability predicates below (everything except `hasTmsAccess`,
+ * `hasTmsStaffRole` and `isStudentOnly`, the outer tier gates) are Super-Admin-
+ * override-aware: each checks `RoleContext.permissionOverrides` before falling
+ * back to its role-based default. See `src/lib/permission-overrides.ts`.
  */
+
+import { resolvePermission, type RoleContext } from "@/lib/permission-overrides";
 
 export const TMS_ROLES = ["super_admin", "tms_admin", "tms_manager", "mentor", "training_student"] as const;
 
@@ -63,43 +70,45 @@ export function isStudentOnly(roles: readonly TmsRole[]): boolean {
   return roles.length > 0 && !hasTmsStaffRole(roles);
 }
 
-export function isTmsAdmin(roles: readonly TmsRole[]): boolean {
-  return roles.includes("super_admin") || roles.includes("tms_admin");
+export function isTmsAdmin(user: RoleContext): boolean {
+  return resolvePermission(user, "tms.isTmsAdmin", () => user.roles.includes("tms_admin"));
 }
 
 /** Full delivery-operations access: programs, batches, applications, students, classes, projects. */
-export function canManageTraining(roles: readonly TmsRole[]): boolean {
-  return roles.includes("super_admin") || roles.includes("tms_admin") || roles.includes("tms_manager");
+export function canManageTraining(user: RoleContext): boolean {
+  return resolvePermission(user, "tms.canManageTraining", () =>
+    user.roles.includes("tms_admin") || user.roles.includes("tms_manager")
+  );
 }
 
 /** Create / edit / archive any program or batch. */
-export function canManageProgramsBatches(roles: readonly TmsRole[]): boolean {
-  return canManageTraining(roles);
+export function canManageProgramsBatches(user: RoleContext): boolean {
+  return resolvePermission(user, "tms.canManageProgramsBatches", () => canManageTraining(user));
 }
 
 /** Create / edit students + move applications through the pipeline. */
-export function canManageStudents(roles: readonly TmsRole[]): boolean {
-  return canManageTraining(roles);
+export function canManageStudents(user: RoleContext): boolean {
+  return resolvePermission(user, "tms.canManageStudents", () => canManageTraining(user));
 }
 
 /** Issue, reissue and revoke certificates. */
-export function canIssueCertificates(roles: readonly TmsRole[]): boolean {
-  return isTmsAdmin(roles);
+export function canIssueCertificates(user: RoleContext): boolean {
+  return resolvePermission(user, "tms.canIssueCertificates", () => isTmsAdmin(user));
 }
 
 /** Record payments, edit fee structures and view revenue analytics. */
-export function canManagePayments(roles: readonly TmsRole[]): boolean {
-  return isTmsAdmin(roles);
+export function canManagePayments(user: RoleContext): boolean {
+  return resolvePermission(user, "tms.canManagePayments", () => isTmsAdmin(user));
 }
 
 /** Edit TMS settings (categories, technology suggestions, institute identity). */
-export function canManageSettings(roles: readonly TmsRole[]): boolean {
-  return isTmsAdmin(roles);
+export function canManageSettings(user: RoleContext): boolean {
+  return resolvePermission(user, "tms.canManageSettings", () => isTmsAdmin(user));
 }
 
 /** Read the audit log. */
-export function canViewAuditLog(roles: readonly TmsRole[]): boolean {
-  return isTmsAdmin(roles);
+export function canViewAuditLog(user: RoleContext): boolean {
+  return resolvePermission(user, "tms.canViewAuditLog", () => isTmsAdmin(user));
 }
 
 export function primaryTmsRoleLabel(roles: readonly TmsRole[]): string {

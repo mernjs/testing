@@ -22,6 +22,13 @@ export interface AdminUserDoc {
   email: string;
   passwordHash: string;
   roles?: string[];
+  /**
+   * Per-capability overrides on top of `roles`, keyed `"<module>.<predicateName>"`
+   * (e.g. `"pms.canManageProjects"`) — see `src/lib/permission-overrides.ts`.
+   * `true` = explicit grant, `false` = explicit deny, key absent = default
+   * role-based behavior. Inert on any account holding `super_admin`.
+   */
+  permissionOverrides?: Record<string, boolean>;
   employeeId?: string | null;
   mustChangePassword?: boolean;
   failedLoginAttempts?: number;
@@ -34,6 +41,7 @@ export interface AdminUserRow {
   _id: string;
   email: string;
   roles: string[];
+  permissionOverrides: Record<string, boolean>;
   employeeId: string | null;
   mustChangePassword: boolean;
   locked: boolean;
@@ -46,6 +54,7 @@ function serialize(u: AdminUserDoc): AdminUserRow {
     _id: u._id.toString(),
     email: u.email,
     roles: u.roles ?? [],
+    permissionOverrides: u.permissionOverrides ?? {},
     employeeId: u.employeeId ?? null,
     mustChangePassword: u.mustChangePassword === true,
     locked: Boolean(u.lockedUntil && u.lockedUntil > new Date()),
@@ -172,6 +181,26 @@ export async function updateAdminUserRoles(
   }
   const col = await collection();
   const res = await col.updateOne({ _id: new ObjectId(id) }, { $set: { roles } });
+  return { ok: res.matchedCount === 1 };
+}
+
+/**
+ * Full-replace write for `permissionOverrides`, mirroring `updateAdminUserRoles`'s
+ * shape. Key validation against the known permission catalog happens one layer
+ * up, in the admin server action (same "filter against the known-good list"
+ * precedent `sanitizeRoles()` uses for roles) — this function trusts its input.
+ * No self-protection guard is needed here: overrides are inert on any account
+ * holding `super_admin` (see `resolvePermission` in `permission-overrides.ts`),
+ * so a super_admin can never lock themselves — or another super_admin — out via
+ * a bad override.
+ */
+export async function updateAdminUserPermissionOverrides(
+  id: string,
+  overrides: Record<string, boolean>
+): Promise<{ ok: boolean; error?: string }> {
+  if (!ObjectId.isValid(id)) return { ok: false, error: "Unknown account." };
+  const col = await collection();
+  const res = await col.updateOne({ _id: new ObjectId(id) }, { $set: { permissionOverrides: overrides } });
   return { ok: res.matchedCount === 1 };
 }
 

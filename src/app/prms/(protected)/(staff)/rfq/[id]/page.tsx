@@ -17,7 +17,7 @@ import { listDepartments } from "@/lib/prms/pickers";
 export default async function RfqDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await getCurrentPrmsUser();
-  const canManage = user ? canManageProcurement(user.roles) : false;
+  const canManage = user ? canManageProcurement(user) : false;
 
   const rfq = await getRfq(id);
   if (!rfq) notFound();

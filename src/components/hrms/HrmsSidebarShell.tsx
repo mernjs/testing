@@ -16,12 +16,14 @@ const COLLAPSED_WIDTH = 68;
 export default function HrmsSidebarShell({
   email,
   roles,
+  permissionOverrides,
   employeeId,
   createdAt,
   lastLoginAt,
 }: {
   email: string;
   roles: HrmsRole[];
+  permissionOverrides?: Record<string, boolean>;
   employeeId: string | null;
   createdAt: string;
   lastLoginAt: string | null;
@@ -60,7 +62,7 @@ export default function HrmsSidebarShell({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <HrmsSidebar roles={roles} employeeId={employeeId} collapsed={collapsed} />
+        <HrmsSidebar roles={roles} permissionOverrides={permissionOverrides} employeeId={employeeId} collapsed={collapsed} />
       </div>
 
       <HrmsProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />

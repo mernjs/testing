@@ -7,7 +7,7 @@ import { getTmsSettings } from "@/lib/tms/settings";
 
 export default async function TmsSettingsPage() {
   const user = await getCurrentTmsUser();
-  if (!user || !canManageSettings(user.roles)) redirect("/tms");
+  if (!user || !canManageSettings(user)) redirect("/tms");
 
   const settings = await getTmsSettings();
 

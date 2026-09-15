@@ -31,7 +31,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   if (!project) notFound();
   if (user && !(await checkProjectAccess(user, id)).allowed) notFound();
 
-  const canManage = user ? canManageProjects(user.roles) : false;
+  const canManage = user ? canManageProjects(user) : false;
   const serialized = serializeProject(project);
 
   const [client, members, employees, activity, manager, taskCounts, hasTasks, milestones, topTasks] = await Promise.all([

@@ -23,7 +23,7 @@ import { formatCurrency, formatDateTime } from "@/lib/utils";
 export default async function PaymentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await getCurrentTmsUser();
-  if (!user || !canManagePayments(user.roles)) redirect("/tms");
+  if (!user || !canManagePayments(user)) redirect("/tms");
 
   const plan = await paymentWithMeta(id);
   if (!plan) notFound();

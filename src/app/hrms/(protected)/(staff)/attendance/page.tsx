@@ -14,8 +14,8 @@ export default async function AttendancePage({
   searchParams: Promise<{ tab?: string; date?: string; month?: string; department?: string }>;
 }) {
   const user = await getCurrentHrmsUser();
-  const canEdit = !!user && canManageAttendance(user.roles);
-  const restrictToManagerId = user && !canViewAllEmployees(user.roles) ? user.employeeId ?? "__none__" : undefined;
+  const canEdit = !!user && canManageAttendance(user);
+  const restrictToManagerId = user && !canViewAllEmployees(user) ? user.employeeId ?? "__none__" : undefined;
 
   const sp = await searchParams;
   const date = sp.date && isDateString(sp.date) ? sp.date : todayDateString();

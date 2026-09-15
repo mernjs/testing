@@ -86,15 +86,18 @@ function SectionLabel({ children, collapsed }: { children: React.ReactNode; coll
 
 export default function PmsSidebar({
   roles,
+  permissionOverrides,
   employeeId,
   onNavigate,
   collapsed = false,
 }: {
   roles: PmsRole[];
+  permissionOverrides?: Record<string, boolean>;
   employeeId: string | null;
   onNavigate?: () => void;
   collapsed?: boolean;
 }) {
+  const roleCtx = { roles, permissionOverrides };
   const nav = (props: { href: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean }) => (
     <NavLink {...props} collapsed={collapsed} onNavigate={onNavigate} />
   );
@@ -124,13 +127,13 @@ export default function PmsSidebar({
       {nav({ href: "/pms/calendar", label: "Calendar", icon: CalendarDays })}
 
       <SectionLabel collapsed={collapsed}>Finance</SectionLabel>
-      {canViewCosting(roles) && nav({ href: "/pms/costing", label: "Costing", icon: Coins })}
-      {canViewCosting(roles) && nav({ href: "/pms/timesheets", label: "Timesheet Review", icon: Clock })}
+      {canViewCosting(roleCtx) && nav({ href: "/pms/costing", label: "Costing", icon: Coins })}
+      {canViewCosting(roleCtx) && nav({ href: "/pms/timesheets", label: "Timesheet Review", icon: Clock })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
       {nav({ href: "/pms/notifications", label: "Notifications", icon: Bell })}
-      {canViewActivityLog(roles) && nav({ href: "/pms/activity", label: "Activity Log", icon: ScrollText })}
-      {canManageSettings(roles) && nav({ href: "/pms/settings", label: "Settings", icon: Settings })}
+      {canViewActivityLog(roleCtx) && nav({ href: "/pms/activity", label: "Activity Log", icon: ScrollText })}
+      {canManageSettings(roleCtx) && nav({ href: "/pms/settings", label: "Settings", icon: Settings })}
 
       {employeeId && (
         <>

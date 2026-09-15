@@ -26,7 +26,7 @@ export interface ProjectActionResult {
 async function requireManage() {
   const user = await getCurrentPmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageProjects(user.roles)) throw new Error("Forbidden");
+  if (!canManageProjects(user)) throw new Error("Forbidden");
   return user;
 }
 

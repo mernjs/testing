@@ -20,7 +20,7 @@ export async function saveCostingConfigAction(
 ): Promise<CostingActionResult> {
   const user = await getCurrentPmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canViewCosting(user.roles)) throw new Error("Forbidden");
+  if (!canViewCosting(user)) throw new Error("Forbidden");
 
   const project = await getProject(projectId);
   if (!project) return { ok: false, error: "Project not found." };

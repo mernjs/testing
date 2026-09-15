@@ -30,6 +30,7 @@ export default async function ProtectedTmsLayout({ children }: { children: React
           <TmsSidebarShell
             email={user.email}
             roles={user.roles}
+            permissionOverrides={user.permissionOverrides}
             studentId={user.studentId}
             createdAt={user.createdAt.toISOString()}
             lastLoginAt={user.lastLoginAt ? user.lastLoginAt.toISOString() : null}

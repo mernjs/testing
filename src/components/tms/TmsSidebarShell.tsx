@@ -16,12 +16,14 @@ const COLLAPSED_WIDTH = 68;
 export default function TmsSidebarShell({
   email,
   roles,
+  permissionOverrides,
   studentId,
   createdAt,
   lastLoginAt,
 }: {
   email: string;
   roles: TmsRole[];
+  permissionOverrides?: Record<string, boolean>;
   studentId: string | null;
   createdAt: string;
   lastLoginAt: string | null;
@@ -60,7 +62,7 @@ export default function TmsSidebarShell({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <TmsSidebar roles={roles} studentId={studentId} collapsed={collapsed} />
+        <TmsSidebar roles={roles} permissionOverrides={permissionOverrides} studentId={studentId} collapsed={collapsed} />
       </div>
 
       <TmsProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />

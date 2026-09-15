@@ -25,7 +25,7 @@ export interface AssignmentActionResult {
 async function requireManage() {
   const user = await getCurrentTmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageTraining(user.roles)) throw new Error("Forbidden");
+  if (!canManageTraining(user)) throw new Error("Forbidden");
   return user;
 }
 

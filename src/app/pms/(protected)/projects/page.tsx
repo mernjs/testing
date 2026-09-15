@@ -19,9 +19,9 @@ export default async function ProjectsPage({
 }) {
   const sp = await searchParams;
   const user = await getCurrentPmsUser();
-  const canManage = user ? canManageProjects(user.roles) : false;
+  const canManage = user ? canManageProjects(user) : false;
   const restrictToEmployeeId =
-    user && !canViewAllProjects(user.roles) ? user.employeeId ?? "__none__" : undefined;
+    user && !canViewAllProjects(user) ? user.employeeId ?? "__none__" : undefined;
 
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidProjectStatus(sp.status) ? (sp.status as ProjectStatus) : undefined;

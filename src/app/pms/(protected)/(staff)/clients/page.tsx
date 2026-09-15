@@ -20,7 +20,7 @@ export default async function ClientsPage({
 }) {
   const sp = await searchParams;
   const user = await getCurrentPmsUser();
-  const canManage = user ? canManageClients(user.roles) : false;
+  const canManage = user ? canManageClients(user) : false;
 
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidClientStatus(sp.status) ? (sp.status as ClientStatus) : undefined;

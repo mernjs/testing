@@ -28,7 +28,7 @@ export interface StudentActionResult {
 async function requireManage() {
   const user = await getCurrentTmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageStudents(user.roles)) throw new Error("Forbidden");
+  if (!canManageStudents(user)) throw new Error("Forbidden");
   return user;
 }
 

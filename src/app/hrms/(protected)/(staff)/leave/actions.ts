@@ -26,12 +26,12 @@ export interface LeaveActionResult {
 async function requireLeave() {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canApproveLeave(user.roles)) throw new Error("Forbidden");
+  if (!canApproveLeave(user)) throw new Error("Forbidden");
   return user;
 }
 
 async function inScope(user: CurrentHrmsUser, employeeId: string): Promise<boolean> {
-  if (canViewAllEmployees(user.roles)) return true;
+  if (canViewAllEmployees(user)) return true;
   if (!user.employeeId) return false;
   return (await descendantEmployeeIds(user.employeeId)).includes(employeeId);
 }
@@ -141,7 +141,7 @@ export async function setLeaveAllocationAction(
 ): Promise<LeaveActionResult> {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageEmployees(user.roles)) throw new Error("Forbidden");
+  if (!canManageEmployees(user)) throw new Error("Forbidden");
 
   if (!Number.isFinite(allocated) || allocated < 0 || allocated > 365) return { ok: false, error: "Enter an allocation between 0 and 365." };
 

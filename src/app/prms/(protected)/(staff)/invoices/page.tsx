@@ -16,7 +16,7 @@ import { INVOICE_STATUSES, isValidInvoiceStatus, formatMoney, type InvoiceStatus
 export default async function InvoicesPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams;
   const user = await getCurrentPrmsUser();
-  const canManage = user ? canManageFinance(user.roles) : false;
+  const canManage = user ? canManageFinance(user) : false;
 
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidInvoiceStatus(sp.status) ? (sp.status as InvoiceStatus) : undefined;

@@ -33,7 +33,7 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
   ]);
   if (!program) notFound();
 
-  const canManage = user ? canManageProgramsBatches(user.roles) : false;
+  const canManage = user ? canManageProgramsBatches(user) : false;
   const p = serializeProgram(program);
   const totalEnrolled = batches.reduce((s, b) => s + b.enrolled, 0);
 

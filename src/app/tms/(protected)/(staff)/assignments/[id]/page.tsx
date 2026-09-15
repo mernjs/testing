@@ -29,7 +29,7 @@ export default async function AssignmentDetailPage({ params }: { params: Promise
     listBatchPickerOptions(),
   ]);
 
-  const canManage = user ? canManageTraining(user.roles) : false;
+  const canManage = user ? canManageTraining(user) : false;
   const a = serializeAssignment(assignment);
   const submitted = submissions.filter((s) => s.status !== "pending").length;
   const reviewed = submissions.filter((s) => s.status === "reviewed").length;

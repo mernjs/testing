@@ -18,7 +18,7 @@ import { RESOURCE_STATUSES, CONTRACT_TYPES, isValidResourceStatus, formatMoney, 
 export default async function ContractsPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams;
   const user = await getCurrentPrmsUser();
-  const canManage = user ? canManageProcurement(user.roles) : false;
+  const canManage = user ? canManageProcurement(user) : false;
 
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidResourceStatus(sp.status) ? (sp.status as ResourceStatus) : undefined;

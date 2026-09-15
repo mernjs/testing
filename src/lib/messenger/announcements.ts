@@ -228,8 +228,11 @@ export async function getAnnouncement(id: string): Promise<Announcement | null> 
   return (await announcements()).findOne({ _id: id, ...notDeleted });
 }
 
-export async function canViewAnnouncement(a: Announcement, user: { id: string; roles: ChatRole[] }): Promise<boolean> {
-  if (canPostAnnouncements(user.roles)) return true;
+export async function canViewAnnouncement(
+  a: Announcement,
+  user: { id: string; roles: ChatRole[]; permissionOverrides?: Record<string, boolean> }
+): Promise<boolean> {
+  if (canPostAnnouncements(user)) return true;
   if (a.status !== "published") return false;
   return isRecipient(a, user.id);
 }

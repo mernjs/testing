@@ -33,7 +33,7 @@ export interface PayrollActionResult {
 async function requirePayroll() {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canRunPayroll(user.roles)) throw new Error("Forbidden");
+  if (!canRunPayroll(user)) throw new Error("Forbidden");
   return user;
 }
 

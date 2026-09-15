@@ -8,7 +8,7 @@ import { getEmployee, listEmployeeOptions, serializeEmployee, employeeFullName }
 
 export default async function EditEmployeePage({ params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentHrmsUser();
-  if (!user || !canManageEmployees(user.roles)) redirect("/hrms/employees");
+  if (!user || !canManageEmployees(user)) redirect("/hrms/employees");
 
   const { id } = await params;
   const employee = await getEmployee(id);

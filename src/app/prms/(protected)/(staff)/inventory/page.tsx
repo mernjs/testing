@@ -15,7 +15,7 @@ import { formatMoney } from "@/lib/prms/constants";
 export default async function InventoryPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams;
   const user = await getCurrentPrmsUser();
-  const canManage = user ? canManageProcurement(user.roles) : false;
+  const canManage = user ? canManageProcurement(user) : false;
 
   const page = Math.max(Number(sp.page) || 1, 1);
   const lowStock = sp.lowStock === "1";

@@ -63,7 +63,7 @@ export default async function HrmsDashboardPage({
     dateTo = resolved.to;
   }
 
-  const restrictToManagerId = user && !canViewAllEmployees(user.roles) ? user.employeeId ?? "__none__" : undefined;
+  const restrictToManagerId = user && !canViewAllEmployees(user) ? user.employeeId ?? "__none__" : undefined;
   const opsFrom = (dateFrom ?? new Date()).toISOString().slice(0, 10);
   const opsTo = (dateTo ?? new Date()).toISOString().slice(0, 10);
 

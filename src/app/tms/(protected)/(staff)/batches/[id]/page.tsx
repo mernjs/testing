@@ -36,7 +36,7 @@ export default async function BatchDetailPage({ params }: { params: Promise<{ id
     batchAttendanceSummary(id),
   ]);
 
-  const canManage = user ? canManageProgramsBatches(user.roles) : false;
+  const canManage = user ? canManageProgramsBatches(user) : false;
   const b = serializeBatch(batch);
   const available = Math.max(b.capacity - enrolled, 0);
   const occupancy = b.capacity > 0 ? Math.round((enrolled / b.capacity) * 100) : 0;

@@ -20,7 +20,7 @@ export interface SettingsActionResult {
 async function requireSettings() {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageSettings(user.roles)) throw new Error("Forbidden");
+  if (!canManageSettings(user)) throw new Error("Forbidden");
   return user;
 }
 

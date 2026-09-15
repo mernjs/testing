@@ -26,7 +26,7 @@ export interface CertActionResult {
 async function requireIssue() {
   const user = await getCurrentTmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canIssueCertificates(user.roles)) throw new Error("Forbidden");
+  if (!canIssueCertificates(user)) throw new Error("Forbidden");
   return user;
 }
 

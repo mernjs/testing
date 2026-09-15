@@ -18,7 +18,7 @@ export default async function AnnouncementsPage({ searchParams }: { searchParams
   if (!user) return null;
   const { page } = await searchParams;
 
-  const isAuthor = canPostAnnouncements(user.roles);
+  const isAuthor = canPostAnnouncements(user);
   const [feed, mine] = await Promise.all([
     listForViewer(user, { page: page ? Number(page) : 1 }),
     isAuthor ? listForAuthor(user.id, user.id) : Promise.resolve([]),

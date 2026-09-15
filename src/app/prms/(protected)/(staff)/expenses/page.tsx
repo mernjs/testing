@@ -25,7 +25,7 @@ import { formatDate } from "@/lib/utils";
 export default async function ExpensesPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams;
   const user = await getCurrentPrmsUser();
-  const canApprove = user ? canManageExpenses(user.roles) : false;
+  const canApprove = user ? canManageExpenses(user) : false;
 
   const page = Math.max(Number(sp.page) || 1, 1);
   const category = sp.category && isValidExpenseCategory(sp.category) ? sp.category : undefined;

@@ -14,7 +14,7 @@ export interface SettingsActionResult {
 export async function saveTmsSettingsAction(input: Record<string, unknown>): Promise<SettingsActionResult> {
   const user = await getCurrentTmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageSettings(user.roles)) throw new Error("Forbidden");
+  if (!canManageSettings(user)) throw new Error("Forbidden");
 
   const data = normalizeSettingsInput(input);
   await updateTmsSettings(data, user.id);

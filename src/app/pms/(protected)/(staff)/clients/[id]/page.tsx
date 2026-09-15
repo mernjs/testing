@@ -18,7 +18,7 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
   const [user, client] = await Promise.all([getCurrentPmsUser(), getClient(id)]);
   if (!client) notFound();
 
-  const canManage = user ? canManageClients(user.roles) : false;
+  const canManage = user ? canManageClients(user) : false;
   const projects = (await listProjectsForClient(id)).map((p) => serializeProject(p));
   const serialized = serializeClient(client);
 

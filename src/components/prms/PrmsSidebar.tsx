@@ -107,13 +107,16 @@ function SectionLabel({ children, collapsed }: { children: React.ReactNode; coll
 
 export default function PrmsSidebar({
   roles,
+  permissionOverrides,
   onNavigate,
   collapsed = false,
 }: {
   roles: PrmsRole[];
+  permissionOverrides?: Record<string, boolean>;
   onNavigate?: () => void;
   collapsed?: boolean;
 }) {
+  const roleCtx = { roles, permissionOverrides };
   const nav = (props: {
     href: string;
     label: string;
@@ -163,14 +166,14 @@ export default function PrmsSidebar({
 
       <SectionLabel collapsed={collapsed}>Finance</SectionLabel>
       {nav({ href: "/prms/invoices", label: "Invoices & Payments", icon: FileCheck2 })}
-      {canManageFinance(roles) && nav({ href: "/prms/payments", label: "Payments", icon: Wallet })}
-      {canManageFinance(roles) && nav({ href: "/prms/budgets", label: "Budget Management", icon: PiggyBank })}
-      {canViewReports(roles) && nav({ href: "/prms/reports", label: "Reports & Analytics", icon: BarChart3 })}
+      {canManageFinance(roleCtx) && nav({ href: "/prms/payments", label: "Payments", icon: Wallet })}
+      {canManageFinance(roleCtx) && nav({ href: "/prms/budgets", label: "Budget Management", icon: PiggyBank })}
+      {canViewReports(roleCtx) && nav({ href: "/prms/reports", label: "Reports & Analytics", icon: BarChart3 })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
       {nav({ href: "/prms/notifications", label: "Notifications", icon: Bell })}
-      {canViewAuditLog(roles) && nav({ href: "/prms/activity", label: "Activity Log", icon: ScrollText })}
-      {canManageSettings(roles) && nav({ href: "/prms/settings", label: "Settings", icon: Settings })}
+      {canViewAuditLog(roleCtx) && nav({ href: "/prms/activity", label: "Activity Log", icon: ScrollText })}
+      {canManageSettings(roleCtx) && nav({ href: "/prms/settings", label: "Settings", icon: Settings })}
 
       <SectionLabel collapsed={collapsed}>Me</SectionLabel>
       {nav({ href: "/prms/me", label: "My Requisitions", icon: CircleUser, exact: true })}

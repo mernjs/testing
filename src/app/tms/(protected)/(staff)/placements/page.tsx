@@ -20,7 +20,7 @@ import { formatDate } from "@/lib/utils";
 
 export default async function PlacementsPage() {
   const user = await getCurrentTmsUser();
-  if (!user || !canManageTraining(user.roles)) redirect("/tms");
+  if (!user || !canManageTraining(user)) redirect("/tms");
 
   const [rows, students, programs] = await Promise.all([
     listPlacements({}, 800),

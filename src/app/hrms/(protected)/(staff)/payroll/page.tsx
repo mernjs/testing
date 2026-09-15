@@ -10,7 +10,7 @@ import { listRuns, serializeRun } from "@/lib/hrms/payroll-run";
 
 export default async function PayrollPage() {
   const user = await getCurrentHrmsUser();
-  if (!user || !canRunPayroll(user.roles)) redirect("/hrms");
+  if (!user || !canRunPayroll(user)) redirect("/hrms");
 
   const runs = (await listRuns()).map(serializeRun);
 

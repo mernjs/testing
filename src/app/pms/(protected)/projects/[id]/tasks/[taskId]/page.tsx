@@ -30,8 +30,8 @@ export default async function TaskDetailPage({
   if (!project || !task || task.projectId !== id) notFound();
   if (user && !(await checkProjectAccess(user, id)).allowed) notFound();
 
-  const canManage = user ? canManageProjects(user.roles) : false;
-  const admin = user ? isPmsAdmin(user.roles) : false;
+  const canManage = user ? canManageProjects(user) : false;
+  const admin = user ? isPmsAdmin(user) : false;
 
   const [subtasks, comments, employees, labels, parent, attachments, projectTasks] = await Promise.all([
     listSubtasks(taskId),

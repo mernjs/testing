@@ -16,7 +16,7 @@ import { formatDate } from "@/lib/utils";
 
 export default async function AssignmentsPage() {
   const user = await getCurrentTmsUser();
-  const canManage = user ? canManageTraining(user.roles) : false;
+  const canManage = user ? canManageTraining(user) : false;
 
   const [assignments, batches, total] = await Promise.all([
     listAssignments({}, 500),

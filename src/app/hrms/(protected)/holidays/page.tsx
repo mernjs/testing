@@ -6,7 +6,7 @@ import { listHolidays, listHolidayYears, serializeHoliday } from "@/lib/hrms/hol
 
 export default async function HolidaysPage({ searchParams }: { searchParams: Promise<{ year?: string }> }) {
   const user = await getCurrentHrmsUser();
-  const canManage = !!user && canManageHolidays(user.roles);
+  const canManage = !!user && canManageHolidays(user);
 
   const sp = await searchParams;
   const thisYear = new Date().getUTCFullYear();

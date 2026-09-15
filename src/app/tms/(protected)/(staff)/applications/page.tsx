@@ -19,7 +19,7 @@ export default async function ApplicationsPage({
 }) {
   const sp = await searchParams;
   const user = await getCurrentTmsUser();
-  const canManage = user ? canManageStudents(user.roles) : false;
+  const canManage = user ? canManageStudents(user) : false;
 
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidApplicationStatus(sp.status) ? (sp.status as ApplicationStatus) : undefined;

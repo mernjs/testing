@@ -14,7 +14,7 @@ export interface ReviewActionResult {
 async function requireReviewer() {
   const user = await getCurrentPmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canReviewTimesheets(user.roles)) throw new Error("Forbidden");
+  if (!canReviewTimesheets(user)) throw new Error("Forbidden");
   return user;
 }
 

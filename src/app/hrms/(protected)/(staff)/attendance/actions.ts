@@ -25,13 +25,13 @@ export interface AttendanceActionResult {
 async function requireAttendance() {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageAttendance(user.roles)) throw new Error("Forbidden");
+  if (!canManageAttendance(user)) throw new Error("Forbidden");
   return user;
 }
 
 /** For managers, confirm the employee is inside their reporting line. */
 async function assertInScope(user: CurrentHrmsUser, employeeId: string): Promise<boolean> {
-  if (canViewAllEmployees(user.roles)) return true;
+  if (canViewAllEmployees(user)) return true;
   if (!user.employeeId) return false;
   const ids = await descendantEmployeeIds(user.employeeId);
   return ids.includes(employeeId);

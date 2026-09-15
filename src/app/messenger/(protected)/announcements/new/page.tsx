@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export default async function NewAnnouncementPage() {
   const user = await getCurrentChatUser();
   if (!user) return null;
-  if (!canPostAnnouncements(user.roles)) redirect("/messenger/announcements");
+  if (!canPostAnnouncements(user)) redirect("/messenger/announcements");
 
   const opts = await getAudienceOptions(user.id);
 

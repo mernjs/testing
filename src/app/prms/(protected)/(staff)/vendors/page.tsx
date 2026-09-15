@@ -23,7 +23,7 @@ export default async function VendorsPage({
 }) {
   const sp = await searchParams;
   const user = await getCurrentPrmsUser();
-  const canManage = user ? canManageProcurement(user.roles) : false;
+  const canManage = user ? canManageProcurement(user) : false;
 
   const page = Math.max(Number(sp.page) || 1, 1);
   const category = sp.category && isValidVendorCategory(sp.category) ? (sp.category as VendorCategory) : undefined;

@@ -34,7 +34,7 @@ export default async function ChannelsLayout({ children }: { children: React.Rea
           header="Team Channels"
           emptyLabel="You haven't joined any channels yet. Browse below."
           action={
-            canCreateTeamChannel(user.roles) ? (
+            canCreateTeamChannel(user) ? (
               <CreateChannelButton
                 users={directory.map((u) => ({ _id: u._id, displayName: u.displayName, title: u.title, department: u.department }))}
               />

@@ -17,7 +17,7 @@ export interface ProgramActionResult {
 async function requireManage() {
   const user = await getCurrentTmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageProgramsBatches(user.roles)) throw new Error("Forbidden");
+  if (!canManageProgramsBatches(user)) throw new Error("Forbidden");
   return user;
 }
 

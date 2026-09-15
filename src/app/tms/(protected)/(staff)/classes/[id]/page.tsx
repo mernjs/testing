@@ -34,7 +34,7 @@ export default async function ClassDetailPage({ params }: { params: Promise<{ id
     listMentorOptions(),
   ]);
 
-  const canManage = user ? canManageTraining(user.roles) : false;
+  const canManage = user ? canManageTraining(user) : false;
   const c = serializeClass(cls);
   const marked = roster.filter((r) => r.status).length;
   const present = roster.filter((r) => r.status === "present" || r.status === "late" || r.status === "excused").length;

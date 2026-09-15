@@ -11,11 +11,13 @@ import { primaryRoleLabel, hasStaffRole } from "@/lib/hrms-roles";
 
 export default function HrmsTopbar({
   roles,
+  permissionOverrides,
   employeeId,
   notifications,
   unread,
 }: {
   roles: HrmsRole[];
+  permissionOverrides?: Record<string, boolean>;
   employeeId: string | null;
   notifications: BellItem[];
   unread: number;
@@ -23,7 +25,7 @@ export default function HrmsTopbar({
   const isStaff = hasStaffRole(roles);
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
-      <HrmsMobileSidebar roles={roles} employeeId={employeeId} />
+      <HrmsMobileSidebar roles={roles} permissionOverrides={permissionOverrides} employeeId={employeeId} />
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold text-foreground">Human Resources</p>
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryRoleLabel(roles)}</p>

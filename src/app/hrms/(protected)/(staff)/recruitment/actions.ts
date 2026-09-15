@@ -18,7 +18,7 @@ export interface OfferActionResult {
 async function requireRecruiter() {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageEmployees(user.roles)) throw new Error("Forbidden");
+  if (!canManageEmployees(user)) throw new Error("Forbidden");
   return user;
 }
 

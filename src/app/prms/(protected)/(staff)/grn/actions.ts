@@ -16,7 +16,7 @@ export interface GrnActionResult {
 async function requireManage() {
   const user = await getCurrentPrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageProcurement(user.roles)) throw new Error("Forbidden");
+  if (!canManageProcurement(user)) throw new Error("Forbidden");
   return user;
 }
 

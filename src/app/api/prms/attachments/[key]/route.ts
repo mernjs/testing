@@ -1,6 +1,7 @@
 import { Readable } from "node:stream";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentPrmsUser } from "@/lib/prms-auth";
+import { hasPrmsStaffRole } from "@/lib/prms-roles";
 import { readAttachmentStream } from "@/lib/prms/attachment-storage";
 import { getDb } from "@/lib/mongodb";
 
@@ -26,10 +27,7 @@ export async function GET(_req: NextRequest, { params }: Context) {
 
   if (!req) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const isStaff = ["super_admin", "prms_admin", "procurement_manager", "finance", "dept_manager"].some((r) =>
-    user.roles.includes(r as (typeof user.roles)[number])
-  );
-  if (!isStaff && req.requestedBy?.userId !== user.id) {
+  if (!hasPrmsStaffRole(user.roles) && req.requestedBy?.userId !== user.id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

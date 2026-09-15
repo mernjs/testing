@@ -16,11 +16,13 @@ const COLLAPSED_WIDTH = 68;
 export default function PrmsSidebarShell({
   email,
   roles,
+  permissionOverrides,
   createdAt,
   lastLoginAt,
 }: {
   email: string;
   roles: PrmsRole[];
+  permissionOverrides?: Record<string, boolean>;
   createdAt: string;
   lastLoginAt: string | null;
 }) {
@@ -58,7 +60,7 @@ export default function PrmsSidebarShell({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <PrmsSidebar roles={roles} collapsed={collapsed} />
+        <PrmsSidebar roles={roles} permissionOverrides={permissionOverrides} collapsed={collapsed} />
       </div>
 
       <PrmsProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />

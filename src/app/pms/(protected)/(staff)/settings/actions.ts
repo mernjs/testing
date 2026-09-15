@@ -14,7 +14,7 @@ export interface SettingsActionResult {
 export async function savePmsSettingsAction(input: Record<string, unknown>): Promise<SettingsActionResult> {
   const user = await getCurrentPmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageSettings(user.roles)) throw new Error("Forbidden");
+  if (!canManageSettings(user)) throw new Error("Forbidden");
 
   const data = normalizeSettingsInput(input);
   await updatePmsSettings(data, user.id);

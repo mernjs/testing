@@ -11,7 +11,14 @@
  * Panel access is only the outer gate. Every channel / DM / group still enforces
  * its own per-conversation membership — see `src/lib/messenger/channels.ts` and
  * `src/lib/messenger/conversations.ts`.
+ *
+ * The capability predicates below (everything except `hasMessengerAccess`, the
+ * outer panel-access tier gate) are Super-Admin-override-aware: each checks
+ * `RoleContext.permissionOverrides` before falling back to its role-based
+ * default. See `src/lib/permission-overrides.ts`.
  */
+
+import { resolvePermission, type RoleContext } from "@/lib/permission-overrides";
 
 export const CHAT_ROLES = ["super_admin", "chat_admin", "chat_pm", "chat_hr", "chat_employee"] as const;
 
@@ -59,32 +66,36 @@ export function hasMessengerAccess(roles: readonly string[] | undefined | null):
 }
 
 /** Elevated reach — org-wide channel creation, moderation, full analytics. */
-export function hasChatStaffRole(roles: readonly ChatRole[]): boolean {
-  return roles.some((r) => CHAT_STAFF_ROLES.includes(r));
+export function hasChatStaffRole(user: RoleContext): boolean {
+  return resolvePermission(user, "messenger.hasChatStaffRole", () =>
+    user.roles.some((r) => (CHAT_STAFF_ROLES as readonly string[]).includes(r))
+  );
 }
 
-export function isChatAdmin(roles: readonly ChatRole[]): boolean {
-  return roles.includes("super_admin") || roles.includes("chat_admin");
+export function isChatAdmin(user: RoleContext): boolean {
+  return resolvePermission(user, "messenger.isChatAdmin", () => user.roles.includes("chat_admin"));
 }
 
 /** Create organization-wide team channels + group chats. */
-export function canCreateTeamChannel(roles: readonly ChatRole[]): boolean {
-  return hasChatStaffRole(roles);
+export function canCreateTeamChannel(user: RoleContext): boolean {
+  return resolvePermission(user, "messenger.canCreateTeamChannel", () => hasChatStaffRole(user));
 }
 
 /** Post broadcast announcements (deferred module, gate defined now). */
-export function canPostAnnouncements(roles: readonly ChatRole[]): boolean {
-  return roles.includes("super_admin") || roles.includes("chat_admin") || roles.includes("chat_hr");
+export function canPostAnnouncements(user: RoleContext): boolean {
+  return resolvePermission(user, "messenger.canPostAnnouncements", () =>
+    user.roles.includes("chat_admin") || user.roles.includes("chat_hr")
+  );
 }
 
 /** See the full workspace dashboard analytics (vs. a personal summary). */
-export function canViewWorkspaceAnalytics(roles: readonly ChatRole[]): boolean {
-  return hasChatStaffRole(roles);
+export function canViewWorkspaceAnalytics(user: RoleContext): boolean {
+  return resolvePermission(user, "messenger.canViewWorkspaceAnalytics", () => hasChatStaffRole(user));
 }
 
 /** Read the audit log. */
-export function canViewAuditLog(roles: readonly ChatRole[]): boolean {
-  return isChatAdmin(roles);
+export function canViewAuditLog(user: RoleContext): boolean {
+  return resolvePermission(user, "messenger.canViewAuditLog", () => isChatAdmin(user));
 }
 
 export function primaryChatRoleLabel(roles: readonly ChatRole[]): string {

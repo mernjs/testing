@@ -23,7 +23,7 @@ const DESCRIPTIONS: Record<string, string> = {
 
 export default async function ReportsPage() {
   const user = await getCurrentPrmsUser();
-  if (!user || !canViewReports(user.roles)) redirect("/prms");
+  if (!user || !canViewReports(user)) redirect("/prms");
 
   return (
     <div className="space-y-4">

@@ -13,7 +13,7 @@ import { formatDateTime } from "@/lib/utils";
 
 export default async function AuditLogPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const user = await getCurrentHrmsUser();
-  if (!user || !canViewAuditLog(user.roles)) redirect("/hrms");
+  if (!user || !canViewAuditLog(user)) redirect("/hrms");
 
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);

@@ -21,7 +21,11 @@ export interface VisibleScopes {
   scopeKeys: string[];
 }
 
-export async function resolveVisibleScopes(user: { id: string; roles: ChatRole[] }): Promise<VisibleScopes> {
+export async function resolveVisibleScopes(user: {
+  id: string;
+  roles: ChatRole[];
+  permissionOverrides?: Record<string, boolean>;
+}): Promise<VisibleScopes> {
   const db = await getDb();
 
   const [memberRows, publicChannels, convRows, callRows] = await Promise.all([
@@ -29,7 +33,7 @@ export async function resolveVisibleScopes(user: { id: string; roles: ChatRole[]
     db
       .collection<{ _id: string }>("chat_channels")
       .find(
-        isChatAdmin(user.roles)
+        isChatAdmin(user)
           ? { deletedAt: null }
           : { kind: "team", visibility: "public", deletedAt: null }
       )

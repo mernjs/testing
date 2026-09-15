@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, ShieldCheck, KeyRound, UserX, Plus, Lock } from "lucide-react";
+import { MoreHorizontal, ShieldCheck, KeyRound, UserX, Plus, Lock, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -24,9 +24,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import AdminDataGrid, { type AdminDataGridColumn, type BulkActionsContext } from "@/components/admin/data-grid/AdminDataGrid";
 import { formatDate, formatDateTime } from "@/lib/utils";
-import { moduleLabelsForRoles } from "@/lib/admin/role-catalog";
+import { roleLabelsForRoles } from "@/lib/admin/role-catalog";
 import { resetAdminUserPasswordAction, deactivateAdminUserAction, bulkDeactivateAdminUsersAction } from "./actions";
 import RoleEditorSheet from "./RoleEditorSheet";
+import PermissionOverridesSheet from "./PermissionOverridesSheet";
 import CreateUserSheet from "./CreateUserSheet";
 import TempPasswordDialog from "./TempPasswordDialog";
 
@@ -34,6 +35,7 @@ export interface AdminUserRow {
   _id: string;
   email: string;
   roles: string[];
+  permissionOverrides: Record<string, boolean>;
   mustChangePassword: boolean;
   locked: boolean;
   createdAt: string;
@@ -44,11 +46,13 @@ function RowActions({
   row,
   currentAdminId,
   onEditRoles,
+  onEditPermissions,
   onTempPassword,
 }: {
   row: AdminUserRow;
   currentAdminId: string;
   onEditRoles: (row: AdminUserRow) => void;
+  onEditPermissions: (row: AdminUserRow) => void;
   onTempPassword: (info: { email: string; tempPassword: string }) => void;
 }) {
   const [isPending, startTransition] = useTransition();
@@ -87,6 +91,10 @@ function RowActions({
           <DropdownMenuItem onClick={() => onEditRoles(row)}>
             <ShieldCheck className="size-3.5" />
             Edit roles
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onEditPermissions(row)}>
+            <SlidersHorizontal className="size-3.5" />
+            Edit permissions
           </DropdownMenuItem>
           <DropdownMenuItem onClick={resetPassword} disabled={isPending}>
             <KeyRound className="size-3.5" />
@@ -194,6 +202,7 @@ export default function UsersGrid({
   currentAdminId: string;
 }) {
   const [editRolesFor, setEditRolesFor] = useState<AdminUserRow | null>(null);
+  const [editPermissionsFor, setEditPermissionsFor] = useState<AdminUserRow | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [tempPasswordInfo, setTempPasswordInfo] = useState<{ email: string; tempPassword: string } | null>(null);
 
@@ -211,15 +220,21 @@ export default function UsersGrid({
     },
     {
       key: "roles",
-      label: "Access",
+      label: "Roles",
       render: (row) =>
         row.roles.length === 0 ? (
           <Badge variant="outline" className="text-muted-foreground">Deactivated</Badge>
         ) : (
           <div className="flex flex-wrap gap-1">
-            {moduleLabelsForRoles(row.roles).map((m) => (
-              <Badge key={m} variant="outline" className="text-[11px]">{m}</Badge>
+            {roleLabelsForRoles(row.roles).map((label) => (
+              <Badge key={label} variant="outline" className="text-[11px]">{label}</Badge>
             ))}
+            {Object.keys(row.permissionOverrides).length > 0 && (
+              <Badge className="text-[11px]">
+                {Object.keys(row.permissionOverrides).length} override
+                {Object.keys(row.permissionOverrides).length === 1 ? "" : "s"}
+              </Badge>
+            )}
           </div>
         ),
     },
@@ -262,6 +277,7 @@ export default function UsersGrid({
             row={row}
             currentAdminId={currentAdminId}
             onEditRoles={setEditRolesFor}
+            onEditPermissions={setEditPermissionsFor}
             onTempPassword={setTempPasswordInfo}
           />
         )}
@@ -269,13 +285,23 @@ export default function UsersGrid({
       />
 
       <RoleEditorSheet
-        key={editRolesFor?._id ?? "none"}
+        key={`roles-${editRolesFor?._id ?? "none"}`}
         userId={editRolesFor?._id ?? null}
         userEmail={editRolesFor?.email ?? null}
         initialRoles={editRolesFor?.roles ?? []}
         currentAdminId={currentAdminId}
         open={editRolesFor !== null}
         onOpenChange={(open) => !open && setEditRolesFor(null)}
+      />
+
+      <PermissionOverridesSheet
+        key={`permissions-${editPermissionsFor?._id ?? "none"}`}
+        userId={editPermissionsFor?._id ?? null}
+        userEmail={editPermissionsFor?.email ?? null}
+        userRoles={editPermissionsFor?.roles ?? []}
+        initialOverrides={editPermissionsFor?.permissionOverrides ?? {}}
+        open={editPermissionsFor !== null}
+        onOpenChange={(open) => !open && setEditPermissionsFor(null)}
       />
 
       <CreateUserSheet

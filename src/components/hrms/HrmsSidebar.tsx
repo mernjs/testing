@@ -120,15 +120,18 @@ function SectionLabel({ children, collapsed }: { children: React.ReactNode; coll
 
 export default function HrmsSidebar({
   roles,
+  permissionOverrides,
   employeeId,
   onNavigate,
   collapsed = false,
 }: {
   roles: HrmsRole[];
+  permissionOverrides?: Record<string, boolean>;
   employeeId: string | null;
   onNavigate?: () => void;
   collapsed?: boolean;
 }) {
+  const roleCtx = { roles, permissionOverrides };
   const isStaff = hasStaffRole(roles);
   const nav = (props: { href: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean }) => (
     <NavLink {...props} collapsed={collapsed} onNavigate={onNavigate} />
@@ -168,7 +171,7 @@ export default function HrmsSidebar({
       {nav({ href: "/hrms/attendance", label: "Attendance", icon: CalendarClock })}
       {nav({ href: "/hrms/leave", label: "Leave", icon: CalendarDays })}
       {nav({ href: "/hrms/holidays", label: "Holidays", icon: CalendarCheck })}
-      {canRunPayroll(roles) && (
+      {canRunPayroll(roleCtx) && (
         <>
           {nav({ href: "/hrms/payroll", label: "Payroll", icon: Wallet })}
           {nav({ href: "/hrms/payroll/payouts", label: "Salary Payouts", icon: Banknote })}
@@ -177,8 +180,8 @@ export default function HrmsSidebar({
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
       {nav({ href: "/hrms/notifications", label: "Notifications", icon: Bell })}
-      {canManageSettings(roles) && nav({ href: "/hrms/settings", label: "Settings", icon: Settings })}
-      {canViewAuditLog(roles) && nav({ href: "/hrms/audit", label: "Audit Log", icon: ScrollText })}
+      {canManageSettings(roleCtx) && nav({ href: "/hrms/settings", label: "Settings", icon: Settings })}
+      {canViewAuditLog(roleCtx) && nav({ href: "/hrms/audit", label: "Audit Log", icon: ScrollText })}
 
       {employeeId && (
         <>

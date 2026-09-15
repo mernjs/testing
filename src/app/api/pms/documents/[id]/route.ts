@@ -32,7 +32,7 @@ export async function GET(req: NextRequest, { params }: Context) {
 export async function DELETE(_req: NextRequest, { params }: Context) {
   const user = await getCurrentPmsUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!canManageProjects(user.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!canManageProjects(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { id } = await params;
   const doc = await getDocument(id);

@@ -30,6 +30,7 @@ export default async function ProtectedPrmsLayout({ children }: { children: Reac
           <PrmsSidebarShell
             email={user.email}
             roles={user.roles}
+            permissionOverrides={user.permissionOverrides}
             createdAt={user.createdAt.toISOString()}
             lastLoginAt={user.lastLoginAt ? user.lastLoginAt.toISOString() : null}
           />
@@ -38,6 +39,7 @@ export default async function ProtectedPrmsLayout({ children }: { children: Reac
             <div className="lms-surface relative z-30 shrink-0 rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md dark:bg-card/85">
               <PrmsTopbar
                 roles={user.roles}
+                permissionOverrides={user.permissionOverrides}
                 notifications={notifications.map((n) => ({
                   _id: n._id,
                   type: n.type,

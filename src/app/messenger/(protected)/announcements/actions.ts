@@ -20,7 +20,7 @@ import type { Attachment } from "@/lib/messenger/attachments";
 async function requireAuthor() {
   const user = await getCurrentChatUser();
   if (!user) redirect("/messenger/login");
-  if (!canPostAnnouncements(user.roles)) throw new Error("Forbidden");
+  if (!canPostAnnouncements(user)) throw new Error("Forbidden");
   return user;
 }
 

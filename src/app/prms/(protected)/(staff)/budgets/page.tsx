@@ -20,7 +20,7 @@ import { formatDate } from "@/lib/utils";
 export default async function BudgetsPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams;
   const user = await getCurrentPrmsUser();
-  if (!user || !canManageFinance(user.roles)) {
+  if (!user || !canManageFinance(user)) {
     return (
       <div className="space-y-4">
         <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Budget Management" }]} />
@@ -85,7 +85,7 @@ export default async function BudgetsPage({ searchParams }: { searchParams: Prom
           { key: "consumed", header: "Consumed", align: "right" },
           { key: "remaining", header: "Remaining", align: "right" },
           { key: "util", header: "Utilisation" },
-          ...(canManageFinance(user.roles) ? [{ key: "_actions", header: "", align: "right" as const }] : []),
+          ...(canManageFinance(user) ? [{ key: "_actions", header: "", align: "right" as const }] : []),
         ]}
         rows={rows.map((b) => ({
           id: b._id,

@@ -296,28 +296,28 @@ export async function GET(req: NextRequest, { params }: Context) {
 
   let spec: ExportSpec;
   if (entity === "vendors") {
-    if (!canManageProcurement(user.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!canManageProcurement(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     spec = await buildVendorExport();
   } else if (entity === "requisitions") {
-    if (!canApproveRequisitions(user.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!canApproveRequisitions(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     spec = await buildRequisitionExport();
   } else if (entity === "purchase-orders") {
-    if (!canManageProcurement(user.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!canManageProcurement(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     spec = await buildPoExport();
   } else if (entity === "expenses") {
-    if (!canManageExpenses(user.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!canManageExpenses(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     spec = await buildExpenseExport();
   } else if (entity === "assets") {
-    if (!canManageProcurement(user.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!canManageProcurement(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     spec = await buildAssetExport();
   } else if (entity === "inventory") {
-    if (!canManageProcurement(user.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!canManageProcurement(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     spec = await buildInventoryExport();
   } else if (entity === "invoices") {
-    if (!canManageFinance(user.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!canManageFinance(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     spec = await buildInvoiceExport();
   } else if (entity === "payments") {
-    if (!canManageFinance(user.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (!canManageFinance(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     spec = await buildPaymentExport();
   } else {
     return NextResponse.json({ error: "Unknown export" }, { status: 404 });

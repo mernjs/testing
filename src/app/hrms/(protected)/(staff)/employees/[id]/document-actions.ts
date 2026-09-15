@@ -16,7 +16,7 @@ export interface DocumentActionResult {
 async function requireDocs() {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageEmployeeDocuments(user.roles)) throw new Error("Forbidden");
+  if (!canManageEmployeeDocuments(user)) throw new Error("Forbidden");
   return user;
 }
 

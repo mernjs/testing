@@ -13,7 +13,7 @@ import { formatDateTime } from "@/lib/utils";
 
 export default async function ActivityLogPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const user = await getCurrentPmsUser();
-  if (!user || !canViewActivityLog(user.roles)) redirect("/pms");
+  if (!user || !canViewActivityLog(user)) redirect("/pms");
 
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);

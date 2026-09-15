@@ -11,7 +11,7 @@ type Context = { params: Promise<{ id: string }> };
 
 export async function GET(_req: NextRequest, { params }: Context) {
   const user = await getCurrentHrmsUser();
-  if (!user || !canRunPayroll(user.roles)) {
+  if (!user || !canRunPayroll(user)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

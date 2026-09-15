@@ -41,7 +41,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     .toArray();
   const program = programs.find((p) => p._id === project.programId);
 
-  const canManage = user ? canManageTraining(user.roles) : false;
+  const canManage = user ? canManageTraining(user) : false;
   const isAssignedStudent = Boolean(user?.studentId && project.studentIds.includes(user.studentId));
   const p = serializeLiveProject(project);
   const progress = effectiveProgress(project);

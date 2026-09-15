@@ -12,7 +12,7 @@ type Context = { params: Promise<{ code: string }> };
 export async function GET(_req: NextRequest, { params }: Context) {
   const user = await getCurrentPrmsUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!canManageFinance(user.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!canManageFinance(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { code } = await params;
   const db = await getDb();

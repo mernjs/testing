@@ -24,7 +24,7 @@ import { notify } from "@/lib/hrms/notifications";
 async function requireManage(): Promise<{ id: string; email: string; roles: HrmsRole[] }> {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageEmployees(user.roles)) throw new Error("Forbidden");
+  if (!canManageEmployees(user)) throw new Error("Forbidden");
   return user;
 }
 

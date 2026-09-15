@@ -16,7 +16,7 @@ import { getTmsSettings } from "@/lib/tms/settings";
 
 export default async function ClassesPage() {
   const user = await getCurrentTmsUser();
-  const canManage = user ? canManageTraining(user.roles) : false;
+  const canManage = user ? canManageTraining(user) : false;
 
   const [classes, batches, mentors, settings, total, upcoming, completed] = await Promise.all([
     listClasses({}, 800),

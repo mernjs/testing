@@ -20,7 +20,7 @@ import { listStudentBatchMemberships } from "@/lib/tms/enrollments";
 
 export default async function ProjectsPage() {
   const user = await getCurrentTmsUser();
-  const canManage = user ? canManageTraining(user.roles) : false;
+  const canManage = user ? canManageTraining(user) : false;
 
   const [projects, programs, batches, mentors, memberships, total, active, completed] = await Promise.all([
     listLiveProjects({}, 500),

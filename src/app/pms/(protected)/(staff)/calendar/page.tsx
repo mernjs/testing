@@ -10,7 +10,7 @@ import { getUpcomingDeadlines } from "@/lib/pms/timeline";
 export default async function PmsCalendarPage() {
   const user = await getCurrentPmsUser();
   const restrictToEmployeeId =
-    user && !canViewAllProjects(user.roles) ? user.employeeId ?? "__none__" : undefined;
+    user && !canViewAllProjects(user) ? user.employeeId ?? "__none__" : undefined;
 
   const items = await getUpcomingDeadlines({ restrictToEmployeeId, days: 120 });
   const in7Date = new Date();

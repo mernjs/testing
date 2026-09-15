@@ -27,6 +27,7 @@ interface AdminUserDoc {
   createdAt: Date;
   lastLoginAt: Date | null;
   roles?: string[];
+  permissionOverrides?: Record<string, boolean>;
   employeeId?: string | null;
   mustChangePassword?: boolean;
   /** Optional display overrides set from `/messenger/settings`. */
@@ -46,6 +47,8 @@ export interface CurrentChatUser {
   id: string;
   email: string;
   roles: ChatRole[];
+  /** Per-capability overrides from the Super Admin — see `permission-overrides.ts`. */
+  permissionOverrides: Record<string, boolean>;
   /** Linked `hrms_employees` id — set for accounts that are also HRMS employees. */
   employeeId: string | null;
   displayName: string;
@@ -160,6 +163,7 @@ export async function getSessionChatUser(token: string | undefined | null): Prom
     id: user._id.toString(),
     email: user.email,
     roles,
+    permissionOverrides: user.permissionOverrides ?? {},
     employeeId: user.employeeId ?? null,
     displayName: user.chatDisplayName?.trim() || nameFromEmail(user.email),
     avatarUrl: user.chatAvatarUrl ?? null,

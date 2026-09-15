@@ -13,7 +13,7 @@ export default async function NewProjectPage({
   searchParams: Promise<{ clientId?: string }>;
 }) {
   const user = await getCurrentPmsUser();
-  if (!user || !canManageProjects(user.roles)) redirect("/pms/projects");
+  if (!user || !canManageProjects(user)) redirect("/pms/projects");
 
   const sp = await searchParams;
   const [clients, employees, settings] = await Promise.all([

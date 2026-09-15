@@ -34,7 +34,7 @@ export interface GlobalSearchResults {
 
 export async function globalSearch(
   q: string,
-  user: { id: string; roles: ChatRole[] },
+  user: { id: string; roles: ChatRole[]; permissionOverrides?: Record<string, boolean> },
   opts: { types?: SearchType[]; limit?: number } = {}
 ): Promise<GlobalSearchResults> {
   const term = q.trim();
@@ -54,7 +54,7 @@ export async function globalSearch(
     types.has("channels")
       ? (async () => {
           const rx = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
-          const filter: Record<string, unknown> = isChatAdmin(user.roles)
+          const filter: Record<string, unknown> = isChatAdmin(user)
             ? { deletedAt: null, $or: [{ name: rx }, { slug: rx }, { description: rx }] }
             : { deletedAt: null, $or: [{ name: rx }, { slug: rx }, { description: rx }], $and: [{ $or: [{ _id: { $in: scopes.channelIds } }, { visibility: "public", kind: "team" }] }] };
           return db.collection<{ _id: string; slug: string; name: string; kind: string; description: string | null }>("chat_channels").find(filter).limit(limit).toArray();

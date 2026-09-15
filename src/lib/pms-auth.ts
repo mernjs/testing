@@ -27,6 +27,7 @@ interface AdminUserDoc {
   createdAt: Date;
   lastLoginAt: Date | null;
   roles?: string[];
+  permissionOverrides?: Record<string, boolean>;
   employeeId?: string | null;
   mustChangePassword?: boolean;
 }
@@ -43,6 +44,8 @@ export interface CurrentPmsUser {
   id: string;
   email: string;
   roles: PmsRole[];
+  /** Per-capability overrides from the Super Admin — see `permission-overrides.ts`. */
+  permissionOverrides: Record<string, boolean>;
   employeeId: string | null;
   mustChangePassword: boolean;
   createdAt: Date;
@@ -151,6 +154,7 @@ export async function getSessionPmsUser(token: string | undefined | null): Promi
     id: user._id.toString(),
     email: user.email,
     roles,
+    permissionOverrides: user.permissionOverrides ?? {},
     employeeId: user.employeeId ?? null,
     mustChangePassword: user.mustChangePassword === true,
     createdAt: user.createdAt,

@@ -7,7 +7,14 @@
  *
  * `super_admin` is the same literal used by the LMS / HRMS / PMS / TMS panels
  * and implicitly grants full PRMS access.
+ *
+ * The capability predicates below (everything except `hasPrmsAccess`,
+ * `hasPrmsStaffRole` and `isEmployeeOnly`, the outer tier gates) are Super-
+ * Admin-override-aware: each checks `RoleContext.permissionOverrides` before
+ * falling back to its role-based default. See `src/lib/permission-overrides.ts`.
  */
+
+import { resolvePermission, type RoleContext } from "@/lib/permission-overrides";
 
 export const PRMS_ROLES = [
   "super_admin",
@@ -81,47 +88,53 @@ export function isEmployeeOnly(roles: readonly PrmsRole[]): boolean {
   return roles.length > 0 && !hasPrmsStaffRole(roles);
 }
 
-export function isPrmsAdmin(roles: readonly PrmsRole[]): boolean {
-  return roles.includes("super_admin") || roles.includes("prms_admin");
+export function isPrmsAdmin(user: RoleContext): boolean {
+  return resolvePermission(user, "prms.isPrmsAdmin", () => user.roles.includes("prms_admin"));
 }
 
 /** Vendors, PR, RFQ, PO, GRN, assets, inventory, subscriptions, contracts. */
-export function canManageProcurement(roles: readonly PrmsRole[]): boolean {
-  return isPrmsAdmin(roles) || roles.includes("procurement_manager");
+export function canManageProcurement(user: RoleContext): boolean {
+  return resolvePermission(user, "prms.canManageProcurement", () =>
+    isPrmsAdmin(user) || user.roles.includes("procurement_manager")
+  );
 }
 
 /** Invoices, payments, budgets, expense approvals, reports. */
-export function canManageFinance(roles: readonly PrmsRole[]): boolean {
-  return isPrmsAdmin(roles) || roles.includes("finance");
+export function canManageFinance(user: RoleContext): boolean {
+  return resolvePermission(user, "prms.canManageFinance", () => isPrmsAdmin(user) || user.roles.includes("finance"));
 }
 
 /** Approve requisitions (dept managers are scoped to their own department by the caller). */
-export function canApproveRequisitions(roles: readonly PrmsRole[]): boolean {
-  return isPrmsAdmin(roles) || roles.includes("procurement_manager") || roles.includes("dept_manager");
+export function canApproveRequisitions(user: RoleContext): boolean {
+  return resolvePermission(user, "prms.canApproveRequisitions", () =>
+    isPrmsAdmin(user) || user.roles.includes("procurement_manager") || user.roles.includes("dept_manager")
+  );
 }
 
 /** Create / approve operational expenses. */
-export function canManageExpenses(roles: readonly PrmsRole[]): boolean {
-  return isPrmsAdmin(roles) || roles.includes("procurement_manager") || roles.includes("finance");
+export function canManageExpenses(user: RoleContext): boolean {
+  return resolvePermission(user, "prms.canManageExpenses", () =>
+    isPrmsAdmin(user) || user.roles.includes("procurement_manager") || user.roles.includes("finance")
+  );
 }
 
 /** Edit PRMS settings (company identity, approval thresholds, category suggestions). */
-export function canManageSettings(roles: readonly PrmsRole[]): boolean {
-  return isPrmsAdmin(roles);
+export function canManageSettings(user: RoleContext): boolean {
+  return resolvePermission(user, "prms.canManageSettings", () => isPrmsAdmin(user));
 }
 
 /** Read the audit log. */
-export function canViewAuditLog(roles: readonly PrmsRole[]): boolean {
-  return isPrmsAdmin(roles);
+export function canViewAuditLog(user: RoleContext): boolean {
+  return resolvePermission(user, "prms.canViewAuditLog", () => isPrmsAdmin(user));
 }
 
 /** View reports & analytics. */
-export function canViewReports(roles: readonly PrmsRole[]): boolean {
-  return (
-    isPrmsAdmin(roles) ||
-    roles.includes("procurement_manager") ||
-    roles.includes("finance") ||
-    roles.includes("dept_manager")
+export function canViewReports(user: RoleContext): boolean {
+  return resolvePermission(user, "prms.canViewReports", () =>
+    isPrmsAdmin(user) ||
+    user.roles.includes("procurement_manager") ||
+    user.roles.includes("finance") ||
+    user.roles.includes("dept_manager")
   );
 }
 

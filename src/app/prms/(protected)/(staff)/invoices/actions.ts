@@ -29,7 +29,7 @@ export interface InvoiceActionResult {
 async function requireFinance() {
   const user = await getCurrentPrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageFinance(user.roles)) throw new Error("Forbidden");
+  if (!canManageFinance(user)) throw new Error("Forbidden");
   return user;
 }
 

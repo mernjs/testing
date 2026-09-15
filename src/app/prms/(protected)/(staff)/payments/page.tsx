@@ -17,7 +17,7 @@ import { formatDate } from "@/lib/utils";
 export default async function PaymentsPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams;
   const user = await getCurrentPrmsUser();
-  const canManage = user ? canManageFinance(user.roles) : false;
+  const canManage = user ? canManageFinance(user) : false;
 
   const page = Math.max(Number(sp.page) || 1, 1);
   const [result, vendors, monthTotal] = await Promise.all([

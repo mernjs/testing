@@ -20,7 +20,7 @@ const isGrnStatus = (v: string | undefined): v is GrnStatus =>
 export default async function GrnPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams;
   const user = await getCurrentPrmsUser();
-  const canManage = user ? canManageProcurement(user.roles) : false;
+  const canManage = user ? canManageProcurement(user) : false;
 
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = isGrnStatus(sp.status) ? sp.status : undefined;

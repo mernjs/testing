@@ -74,7 +74,7 @@ export default async function PmsDashboardPage({
   }
 
   const restrictToEmployeeId =
-    user && !canViewAllProjects(user.roles) ? user.employeeId ?? "__none__" : undefined;
+    user && !canViewAllProjects(user) ? user.employeeId ?? "__none__" : undefined;
 
   const stats = await getPmsDashboardStats({ dateFrom, dateTo, granularity, restrictToEmployeeId });
   const hasActiveFilters = Boolean(sp.range || sp.dateFrom || sp.dateTo);

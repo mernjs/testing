@@ -26,7 +26,7 @@ export interface MasterActionResult {
 async function requireMasters() {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageMasters(user.roles)) throw new Error("Forbidden");
+  if (!canManageMasters(user)) throw new Error("Forbidden");
   return user;
 }
 

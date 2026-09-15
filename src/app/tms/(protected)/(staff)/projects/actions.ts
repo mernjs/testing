@@ -24,7 +24,7 @@ export interface ProjectActionResult {
 async function requireManage() {
   const user = await getCurrentTmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageTraining(user.roles)) throw new Error("Forbidden");
+  if (!canManageTraining(user)) throw new Error("Forbidden");
   return user;
 }
 
@@ -108,7 +108,7 @@ export async function toggleMilestoneAction(
   const project = await getLiveProject(projectId);
   if (!project) return { ok: false, error: "Project not found." };
 
-  const isStaff = canManageTraining(user.roles);
+  const isStaff = canManageTraining(user);
   const isAssignedStudent = Boolean(user.studentId && project.studentIds.includes(user.studentId));
   if (!isStaff && !isAssignedStudent) throw new Error("Forbidden");
 

@@ -11,7 +11,7 @@ import { buildOrgTree } from "@/lib/hrms/hierarchy";
 
 export default async function DepartmentsPage() {
   const user = await getCurrentHrmsUser();
-  const canManage = !!user && canManageMasters(user.roles);
+  const canManage = !!user && canManageMasters(user);
 
   const [departments, designations, teams, employees, orgRoots] = await Promise.all([
     listDepartmentsWithCounts(),

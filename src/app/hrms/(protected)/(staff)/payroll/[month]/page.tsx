@@ -10,7 +10,7 @@ import { payoutsForRun, serializePayout } from "@/lib/hrms/salary-payouts";
 
 export default async function PayrollRunPage({ params }: { params: Promise<{ month: string }> }) {
   const user = await getCurrentHrmsUser();
-  if (!user || !canRunPayroll(user.roles)) redirect("/hrms");
+  if (!user || !canRunPayroll(user)) redirect("/hrms");
 
   const { month } = await params;
   const run = await getRunByMonth(month);

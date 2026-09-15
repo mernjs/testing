@@ -28,7 +28,7 @@ export interface PaymentActionResult {
 async function requireManage() {
   const user = await getCurrentTmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManagePayments(user.roles)) throw new Error("Forbidden");
+  if (!canManagePayments(user)) throw new Error("Forbidden");
   return user;
 }
 

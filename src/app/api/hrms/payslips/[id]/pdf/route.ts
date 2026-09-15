@@ -17,7 +17,7 @@ export async function GET(_req: NextRequest, { params }: Context) {
   const data = await getPayslipPdfData(id);
   if (!data) return NextResponse.json({ error: "Payslip not found." }, { status: 404 });
 
-  const isStaff = canRunPayroll(user.roles) || canManagePayroll(user.roles);
+  const isStaff = canRunPayroll(user) || canManagePayroll(user);
   const isOwner =
     user.employeeId === data.employeeId && ["approved", "paid"].includes(data.runStatus);
   if (!isStaff && !isOwner) {

@@ -27,6 +27,7 @@ interface AdminUserDoc {
   createdAt: Date;
   lastLoginAt: Date | null;
   roles?: string[];
+  permissionOverrides?: Record<string, boolean>;
   employeeId?: string | null;
   mustChangePassword?: boolean;
 }
@@ -43,6 +44,8 @@ export interface CurrentPrmsUser {
   id: string;
   email: string;
   roles: PrmsRole[];
+  /** Per-capability overrides from the Super Admin — see `permission-overrides.ts`. */
+  permissionOverrides: Record<string, boolean>;
   /** Linked `hrms_employees` id — set for accounts that are also HRMS employees. */
   employeeId: string | null;
   mustChangePassword: boolean;
@@ -152,6 +155,7 @@ export async function getSessionPrmsUser(token: string | undefined | null): Prom
     id: user._id.toString(),
     email: user.email,
     roles,
+    permissionOverrides: user.permissionOverrides ?? {},
     employeeId: user.employeeId ?? null,
     mustChangePassword: user.mustChangePassword === true,
     createdAt: user.createdAt,

@@ -39,9 +39,9 @@ export default async function LeavePage({
   }>;
 }) {
   const user = await getCurrentHrmsUser();
-  const canDecide = !!user && canApproveLeave(user.roles);
-  const canAllocate = !!user && canManageEmployees(user.roles);
-  const restrictManagerId = user && !canViewAllEmployees(user.roles) ? user.employeeId ?? "__none__" : undefined;
+  const canDecide = !!user && canApproveLeave(user);
+  const canAllocate = !!user && canManageEmployees(user);
+  const restrictManagerId = user && !canViewAllEmployees(user) ? user.employeeId ?? "__none__" : undefined;
   const restrictIds = restrictManagerId ? await descendantEmployeeIds(restrictManagerId) : undefined;
 
   const sp = await searchParams;

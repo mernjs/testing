@@ -28,7 +28,7 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
     listBatchesForProgram(application.programId),
   ]);
 
-  const canManage = user ? canManageStudents(user.roles) : false;
+  const canManage = user ? canManageStudents(user) : false;
   const a = serializeApplication(application);
   const converted = Boolean(a.studentId);
 

@@ -21,6 +21,11 @@ export default async function ProtectedMessengerLayout({ children }: { children:
   const user = await getCurrentChatUser();
   if (!user) redirect("/messenger/login");
   if (user.mustChangePassword) redirect("/messenger/change-password");
+  // `hasMessengerAccess` is the coarse panel-access tier gate, not a fine-grained
+  // capability predicate (see `messenger-roles.ts`) — deliberately NOT Super-
+  // Admin-permission-override-aware. An override can only add/remove capability
+  // for a user who already clears this gate via a real role; it can never let
+  // a logged-in identity with zero YashChat roles into the panel at all.
   if (!hasMessengerAccess(user.roles)) redirect("/messenger/login");
 
   await ensureChatUser(user);
@@ -61,6 +66,7 @@ export default async function ProtectedMessengerLayout({ children }: { children:
               <div className="lms-surface relative z-30 shrink-0 rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md dark:bg-card/85">
                 <MessengerTopbar
                   roles={user.roles}
+                  permissionOverrides={user.permissionOverrides}
                   unreadDms={summary.dms}
                   unreadChannels={summary.channels}
                   notifications={notifications.map((n) => ({

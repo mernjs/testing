@@ -59,3 +59,30 @@ export function moduleLabelsForRoles(roles: string[]): string[] {
   }
   return labels;
 }
+
+const ROLE_LABEL_BY_VALUE: Record<string, string> = {
+  super_admin: "Super Admin",
+  ...Object.fromEntries(ROLE_GROUPS.flatMap((g) => g.roles.map((r) => [r.value, r.label]))),
+};
+
+export function roleLabel(value: string): string {
+  return ROLE_LABEL_BY_VALUE[value] ?? value;
+}
+
+/** Each held role's own label, module-qualified when the label alone would be
+ * ambiguous across modules (e.g. two modules both have a role labelled "Admin"). */
+export function roleLabelsForRoles(roles: string[]): string[] {
+  if (roles.includes("super_admin")) return ["Super Admin"];
+  const labelCounts = new Map<string, number>();
+  for (const label of Object.values(ROLE_LABEL_BY_VALUE)) {
+    labelCounts.set(label, (labelCounts.get(label) ?? 0) + 1);
+  }
+  const out: string[] = [];
+  for (const g of ROLE_GROUPS) {
+    for (const r of g.roles) {
+      if (!roles.includes(r.value)) continue;
+      out.push((labelCounts.get(r.label) ?? 0) > 1 ? `${r.label} (${g.module})` : r.label);
+    }
+  }
+  return out;
+}

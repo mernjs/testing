@@ -18,7 +18,7 @@ export default async function StudentsPage({
 }) {
   const sp = await searchParams;
   const user = await getCurrentTmsUser();
-  const canManage = user ? canManageStudents(user.roles) : false;
+  const canManage = user ? canManageStudents(user) : false;
 
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidStudentStatus(sp.status) ? (sp.status as StudentStatus) : undefined;

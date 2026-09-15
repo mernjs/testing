@@ -14,7 +14,7 @@ import { formatDate } from "@/lib/utils";
 
 export default async function RecruitmentPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
   const user = await getCurrentHrmsUser();
-  const canConvert = !!user && canManageEmployees(user.roles);
+  const canConvert = !!user && canManageEmployees(user);
   const sp = await searchParams;
   const tab = sp.tab === "convert" ? "convert" : "offers";
 

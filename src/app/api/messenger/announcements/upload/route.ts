@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
   try {
     const user = await requireSession();
-    if (!canPostAnnouncements(user.roles)) throw new HttpError(403, "You can't post announcements.");
+    if (!canPostAnnouncements(user)) throw new HttpError(403, "You can't post announcements.");
     const form = await request.formData();
     const file = form.get("file");
     if (!(file instanceof File)) throw new HttpError(400, "No file provided.");

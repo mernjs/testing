@@ -29,7 +29,7 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
 export default async function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await getCurrentPrmsUser();
-  const canManage = user ? canManageFinance(user.roles) : false;
+  const canManage = user ? canManageFinance(user) : false;
 
   const invoice = await getInvoice(id);
   if (!invoice) notFound();

@@ -91,11 +91,13 @@ function SectionLabel({ children, collapsed }: { children: React.ReactNode; coll
 
 export default function TmsSidebar({
   roles,
+  permissionOverrides,
   studentId,
   onNavigate,
   collapsed = false,
 }: {
   roles: TmsRole[];
+  permissionOverrides?: Record<string, boolean>;
   studentId: string | null;
   onNavigate?: () => void;
   collapsed?: boolean;
@@ -103,6 +105,7 @@ export default function TmsSidebar({
   const nav = (props: { href: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean }) => (
     <NavLink {...props} collapsed={collapsed} onNavigate={onNavigate} />
   );
+  const roleCtx = { roles, permissionOverrides };
   const isStaff = hasTmsStaffRole(roles);
 
   // Student-only portal. Schedule / assignments / projects / certificates /
@@ -142,14 +145,14 @@ export default function TmsSidebar({
 
       <SectionLabel collapsed={collapsed}>Records</SectionLabel>
       {nav({ href: "/tms/certificates", label: "Certificates", icon: BadgeCheck })}
-      {canManagePayments(roles) && nav({ href: "/tms/payments", label: "Payments", icon: Wallet })}
+      {canManagePayments(roleCtx) && nav({ href: "/tms/payments", label: "Payments", icon: Wallet })}
       {nav({ href: "/tms/placements", label: "Placements", icon: Briefcase })}
       {nav({ href: "/tms/reports", label: "Reports", icon: BarChart3 })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
       {nav({ href: "/tms/notifications", label: "Notifications", icon: Bell })}
-      {canViewAuditLog(roles) && nav({ href: "/tms/activity", label: "Activity Log", icon: ScrollText })}
-      {canManageSettings(roles) && nav({ href: "/tms/settings", label: "Settings", icon: Settings })}
+      {canViewAuditLog(roleCtx) && nav({ href: "/tms/activity", label: "Activity Log", icon: ScrollText })}
+      {canManageSettings(roleCtx) && nav({ href: "/tms/settings", label: "Settings", icon: Settings })}
 
       {studentId && (
         <>

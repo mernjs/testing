@@ -12,7 +12,7 @@ export default async function EditAnnouncementPage({ params }: { params: Promise
   const { id } = await params;
   const user = await getCurrentChatUser();
   if (!user) return null;
-  if (!canPostAnnouncements(user.roles)) redirect("/messenger/announcements");
+  if (!canPostAnnouncements(user)) redirect("/messenger/announcements");
 
   const a = await getAnnouncement(id);
   if (!a || a.authorId !== user.id) notFound();

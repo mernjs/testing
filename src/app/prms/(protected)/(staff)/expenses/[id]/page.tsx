@@ -20,7 +20,7 @@ export default async function ExpenseDetailPage({ params }: { params: Promise<{ 
   if (!expense) notFound();
   const e = serializeExpense(expense);
 
-  const canApprove = canManageExpenses(user.roles);
+  const canApprove = canManageExpenses(user);
   const isOwner = e.raisedByUserId === user.id;
 
   const [vendors, departments, projects] = e.approvalStatus === "pending"

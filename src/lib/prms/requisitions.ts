@@ -22,6 +22,7 @@ import {
 import { getPrmsSettings } from "@/lib/prms/settings";
 import type { PrmsRole } from "@/lib/prms-roles";
 import { isPrmsAdmin } from "@/lib/prms-roles";
+import type { RoleContext } from "@/lib/permission-overrides";
 
 export const REQUISITIONS_COLLECTION = "prms_requisitions";
 const REQUISITION_CODE_PREFIX = "PR";
@@ -167,10 +168,10 @@ function buildApprovalChain(estimatedCost: number, threshold: number): ApprovalS
 }
 
 /** Can this role act on the given approval level? Admins can act on any level. */
-export function canDecideLevel(roles: readonly PrmsRole[], level: number): boolean {
-  if (isPrmsAdmin(roles)) return true;
-  if (level === 1) return roles.includes("dept_manager") || roles.includes("procurement_manager");
-  if (level === 2) return roles.includes("procurement_manager");
+export function canDecideLevel(user: RoleContext, level: number): boolean {
+  if (isPrmsAdmin(user)) return true;
+  if (level === 1) return user.roles.includes("dept_manager") || user.roles.includes("procurement_manager");
+  if (level === 2) return user.roles.includes("procurement_manager");
   return false;
 }
 
@@ -422,7 +423,7 @@ export async function decideRequisition(
   id: string,
   approve: boolean,
   note: string | null,
-  actor: { id: string; email: string; roles: readonly PrmsRole[] }
+  actor: { id: string; email: string; roles: readonly PrmsRole[]; permissionOverrides?: Record<string, boolean> }
 ): Promise<DecisionResult> {
   const collection = await getCollection();
   const existing = await collection.findOne({ _id: id, ...notDeleted });
@@ -434,10 +435,10 @@ export async function decideRequisition(
   const level = existing.currentLevel;
   const stepIdx = existing.approvals.findIndex((a) => a.level === level && a.decision === "pending");
   if (stepIdx === -1) return { ok: false, reason: "No pending approval step found." };
-  if (!canDecideLevel(actor.roles, level)) {
+  if (!canDecideLevel(actor, level)) {
     return { ok: false, reason: "You are not authorised to decide this approval level." };
   }
-  if (existing.requestedBy.userId === actor.id && !isPrmsAdmin(actor.roles)) {
+  if (existing.requestedBy.userId === actor.id && !isPrmsAdmin(actor)) {
     return { ok: false, reason: "You cannot approve your own requisition." };
   }
 

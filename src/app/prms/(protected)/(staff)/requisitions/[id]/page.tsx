@@ -23,10 +23,10 @@ export default async function StaffRequisitionDetailPage({ params }: { params: P
   const r = serializeRequisition(requisition);
   const vendor = r.preferredVendorId ? await getVendor(r.preferredVendorId) : null;
 
-  const canApprove = canApproveRequisitions(user.roles);
-  const canProcure = canManageProcurement(user.roles);
+  const canApprove = canApproveRequisitions(user);
+  const canProcure = canManageProcurement(user);
   const canDecideCurrent =
-    canApprove && requisition.currentLevel > 0 && canDecideLevel(user.roles, requisition.currentLevel);
+    canApprove && requisition.currentLevel > 0 && canDecideLevel(user, requisition.currentLevel);
   const isOwner = r.requestedBy.userId === user.id;
 
   const showConvert = canProcure && r.status === "approved";

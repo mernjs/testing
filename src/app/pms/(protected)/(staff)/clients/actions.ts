@@ -17,7 +17,7 @@ export interface ClientActionResult {
 async function requireManage() {
   const user = await getCurrentPmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageClients(user.roles)) throw new Error("Forbidden");
+  if (!canManageClients(user)) throw new Error("Forbidden");
   return user;
 }
 

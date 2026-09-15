@@ -26,7 +26,7 @@ export default async function ProgramsPage({
 }) {
   const sp = await searchParams;
   const user = await getCurrentTmsUser();
-  const canManage = user ? canManageProgramsBatches(user.roles) : false;
+  const canManage = user ? canManageProgramsBatches(user) : false;
 
   const page = Math.max(Number(sp.page) || 1, 1);
   const category = sp.category && isValidProgramCategory(sp.category) ? (sp.category as ProgramCategory) : undefined;

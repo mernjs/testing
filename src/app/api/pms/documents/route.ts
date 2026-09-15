@@ -10,7 +10,7 @@ import { recordActivity } from "@/lib/pms/activity";
 export async function POST(req: NextRequest) {
   const user = await getCurrentPmsUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!canManageProjects(user.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!canManageProjects(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   let formData: FormData;
   try {

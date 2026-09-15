@@ -34,7 +34,7 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
     loginStatusForStudent(id),
   ]);
 
-  const canManage = user ? canManageStudents(user.roles) : false;
+  const canManage = user ? canManageStudents(user) : false;
   const { student: s, enrollments, averageProgress } = overview;
   const activeEnrollments = enrollments.filter((e) => e.status === "active").length;
 

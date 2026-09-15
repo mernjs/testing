@@ -11,7 +11,7 @@ import { getPmsSettings } from "@/lib/pms/settings";
 export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await getCurrentPmsUser();
-  if (!user || !canManageProjects(user.roles)) redirect(`/pms/projects/${id}`);
+  if (!user || !canManageProjects(user)) redirect(`/pms/projects/${id}`);
 
   const [project, clients, employees, settings] = await Promise.all([
     getProject(id),

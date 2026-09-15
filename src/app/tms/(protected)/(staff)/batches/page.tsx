@@ -25,7 +25,7 @@ export default async function BatchesPage({
 }) {
   const sp = await searchParams;
   const user = await getCurrentTmsUser();
-  const canManage = user ? canManageProgramsBatches(user.roles) : false;
+  const canManage = user ? canManageProgramsBatches(user) : false;
 
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidBatchStatus(sp.status) ? (sp.status as BatchStatus) : undefined;

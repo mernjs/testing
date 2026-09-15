@@ -112,7 +112,7 @@ export async function saveExpenseAction(
   }
 
   // Staff with expense authority can auto-approve their own direct entries.
-  const autoApprove = canManageExpenses(user.roles) && input.autoApprove === true;
+  const autoApprove = canManageExpenses(user) && input.autoApprove === true;
   const created = await createExpense(built.data, { userId: user.id, name: nameFromEmail(user.email) }, user.id, autoApprove);
   await recordAudit({ actorId: user.id, actorEmail: user.email, action: "create", entity: "expense", entityId: created._id, entityLabel: created.expenseCode });
   if (!autoApprove) {
@@ -164,7 +164,7 @@ export async function uploadExpenseInvoiceAction(id: string, formData: FormData)
 export async function decideExpenseAction(id: string, approve: boolean, note: string): Promise<ExpenseActionResult> {
   const user = await getCurrentPrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageExpenses(user.roles)) throw new Error("Forbidden");
+  if (!canManageExpenses(user)) throw new Error("Forbidden");
   const res = await decideExpense(id, approve, note || null, user.id);
   if (!res.ok) return { ok: false, error: res.reason };
   await recordAudit({ actorId: user.id, actorEmail: user.email, action: approve ? "approve" : "reject", entity: "expense", entityId: id, entityLabel: res.expense?.expenseCode });
@@ -185,7 +185,7 @@ export async function decideExpenseAction(id: string, approve: boolean, note: st
 export async function reimburseExpenseAction(id: string): Promise<ExpenseActionResult> {
   const user = await getCurrentPrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageExpenses(user.roles)) throw new Error("Forbidden");
+  if (!canManageExpenses(user)) throw new Error("Forbidden");
   const res = await markExpenseReimbursed(id, user.id);
   if (!res.ok) return { ok: false, error: res.reason };
   await recordAudit({ actorId: user.id, actorEmail: user.email, action: "record", entity: "expense", entityId: id, entityLabel: null, summary: "marked reimbursed" });
@@ -196,7 +196,7 @@ export async function reimburseExpenseAction(id: string): Promise<ExpenseActionR
 export async function toggleRecurringExpenseAction(id: string, active: boolean): Promise<ExpenseActionResult> {
   const user = await getCurrentPrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageExpenses(user.roles)) throw new Error("Forbidden");
+  if (!canManageExpenses(user)) throw new Error("Forbidden");
   await setRecurringActive(id, active, user.id);
   revalidate(id);
   return { ok: true, id };

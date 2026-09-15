@@ -23,7 +23,7 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 
 export default async function PaymentsPage() {
   const user = await getCurrentTmsUser();
-  if (!user || !canManagePayments(user.roles)) redirect("/tms");
+  if (!user || !canManagePayments(user)) redirect("/tms");
 
   const [plans, analytics, students, programs, batches, settings] = await Promise.all([
     listPaymentPlans({}, 800),

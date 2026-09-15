@@ -20,7 +20,7 @@ import { formatCurrency } from "@/lib/utils";
 export default async function ProjectCostingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await getCurrentPmsUser();
-  if (!user || !canViewCosting(user.roles)) redirect("/pms");
+  if (!user || !canViewCosting(user)) redirect("/pms");
 
   const project = await getProject(id);
   if (!project) notFound();

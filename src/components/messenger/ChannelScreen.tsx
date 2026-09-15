@@ -55,7 +55,7 @@ export default async function ChannelScreen({
   const presence = await getPresence(members.map((m) => m.userId));
 
   const canPost = await canPostInChannel(channel, user);
-  const isModerator = isChatAdmin(user.roles) || membership?.role === "owner" || membership?.role === "admin";
+  const isModerator = isChatAdmin(user) || membership?.role === "owner" || membership?.role === "admin";
 
   const memberLite = [
     { _id: user.id, displayName: me?.displayName ?? user.displayName },

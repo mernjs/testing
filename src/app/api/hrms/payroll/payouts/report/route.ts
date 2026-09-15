@@ -8,7 +8,7 @@ import { toCsv } from "@/lib/csv";
 
 export async function GET(req: NextRequest) {
   const user = await getCurrentHrmsUser();
-  if (!user || !canRunPayroll(user.roles)) {
+  if (!user || !canRunPayroll(user)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

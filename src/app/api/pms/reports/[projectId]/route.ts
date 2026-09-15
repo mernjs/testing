@@ -23,7 +23,7 @@ function fileResponse(body: Buffer | string, type: string, filename: string) {
 export async function GET(req: NextRequest, { params }: Context) {
   const user = await getCurrentPmsUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!canViewCosting(user.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!canViewCosting(user)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { projectId } = await params;
   const sp = req.nextUrl.searchParams;

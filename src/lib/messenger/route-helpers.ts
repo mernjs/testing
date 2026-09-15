@@ -60,7 +60,7 @@ export async function resolveScope(
     const canPost = await canPostInChannel(channel, u);
     const membership = await getMembership(channel._id, u.id);
     const isModerator =
-      isChatAdmin(u.roles) || membership?.role === "owner" || membership?.role === "admin";
+      isChatAdmin(u) || membership?.role === "owner" || membership?.role === "admin";
     return { user: u, scope: { type: "channel", id: channel._id }, channel, conversation: null, canRead, canPost, isModerator };
   }
 

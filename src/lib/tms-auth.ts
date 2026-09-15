@@ -27,6 +27,7 @@ interface AdminUserDoc {
   createdAt: Date;
   lastLoginAt: Date | null;
   roles?: string[];
+  permissionOverrides?: Record<string, boolean>;
   employeeId?: string | null;
   studentId?: string | null;
   mustChangePassword?: boolean;
@@ -44,6 +45,8 @@ export interface CurrentTmsUser {
   id: string;
   email: string;
   roles: TmsRole[];
+  /** Per-capability overrides from the Super Admin — see `permission-overrides.ts`. */
+  permissionOverrides: Record<string, boolean>;
   /** Linked `hrms_employees` id — set for `mentor` accounts. */
   employeeId: string | null;
   /** Linked `training_students` id — set for `training_student` accounts. */
@@ -155,6 +158,7 @@ export async function getSessionTmsUser(token: string | undefined | null): Promi
     id: user._id.toString(),
     email: user.email,
     roles,
+    permissionOverrides: user.permissionOverrides ?? {},
     employeeId: user.employeeId ?? null,
     studentId: user.studentId ?? null,
     mustChangePassword: user.mustChangePassword === true,

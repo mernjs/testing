@@ -18,7 +18,7 @@ export default async function ProjectTasksPage({ params }: { params: Promise<{ i
   const [user, project] = await Promise.all([getCurrentPmsUser(), getProject(id)]);
   if (!project) notFound();
   if (user && !(await checkProjectAccess(user, id)).allowed) notFound();
-  const canManage = user ? canManageProjects(user.roles) : false;
+  const canManage = user ? canManageProjects(user) : false;
 
   const [topTasks, allTasks, employees, labels] = await Promise.all([
     listTasks(id, {}),

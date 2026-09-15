@@ -76,14 +76,14 @@ export default async function EmployeeProfilePage({
     listRevisions(id),
     listDocuments(id),
     loginStatusForEmployee(id),
-    canManagePayroll(user?.roles ?? []) ? listBankAccounts(id) : Promise.resolve([]),
+    canManagePayroll(user ?? { roles: [] }) ? listBankAccounts(id) : Promise.resolve([]),
   ]);
 
-  const canEdit = !!user && canManageEmployees(user.roles);
-  const canPayroll = !!user && canManagePayroll(user.roles);
-  const canRevise = !!user && canRunPayroll(user.roles);
-  const canDocs = !!user && canManageEmployeeDocuments(user.roles);
-  const canLeave = !!user && canApproveLeave(user.roles);
+  const canEdit = !!user && canManageEmployees(user);
+  const canPayroll = !!user && canManagePayroll(user);
+  const canRevise = !!user && canRunPayroll(user);
+  const canDocs = !!user && canManageEmployeeDocuments(user);
+  const canLeave = !!user && canApproveLeave(user);
   const managerName = managers.find((m) => m._id === employee.professional.reportingManagerId)?.name ?? "—";
   const name = employeeFullName(employee);
   const p = employee.personal;

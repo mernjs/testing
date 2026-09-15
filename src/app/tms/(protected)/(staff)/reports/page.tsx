@@ -10,7 +10,7 @@ import { REPORT_TYPES } from "@/lib/tms/reports";
 
 export default async function ReportsPage() {
   const user = await getCurrentTmsUser();
-  if (!user || !canManageTraining(user.roles)) redirect("/tms");
+  if (!user || !canManageTraining(user)) redirect("/tms");
 
   return (
     <div className="space-y-4">

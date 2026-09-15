@@ -7,7 +7,7 @@ import { getPmsSettings } from "@/lib/pms/settings";
 
 export default async function PmsSettingsPage() {
   const user = await getCurrentPmsUser();
-  if (!user || !canManageSettings(user.roles)) redirect("/pms");
+  if (!user || !canManageSettings(user)) redirect("/pms");
 
   const settings = await getPmsSettings();
 

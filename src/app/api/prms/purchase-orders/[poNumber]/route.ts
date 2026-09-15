@@ -10,7 +10,7 @@ type Context = { params: Promise<{ poNumber: string }> };
 export async function GET(_req: NextRequest, { params }: Context) {
   const user = await getCurrentPrmsUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!canManageProcurement(user.roles) && !canManageFinance(user.roles)) {
+  if (!canManageProcurement(user) && !canManageFinance(user)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

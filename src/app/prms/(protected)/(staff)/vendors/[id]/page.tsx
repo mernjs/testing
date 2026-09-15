@@ -26,7 +26,7 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
 export default async function VendorProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const user = await getCurrentPrmsUser();
-  const canManage = user ? canManageProcurement(user.roles) : false;
+  const canManage = user ? canManageProcurement(user) : false;
 
   const vendor = await getVendor(id);
   if (!vendor) notFound();

@@ -23,7 +23,7 @@ export async function savePayrollProfileAction(
 ): Promise<PayrollActionResult> {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManagePayroll(user.roles)) throw new Error("Forbidden");
+  if (!canManagePayroll(user)) throw new Error("Forbidden");
 
   const employee = await getEmployee(employeeId);
   if (!employee) return { ok: false, error: "Employee not found." };
@@ -53,7 +53,7 @@ export async function createSalaryRevisionAction(
 ): Promise<PayrollActionResult> {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canRunPayroll(user.roles)) throw new Error("Forbidden");
+  if (!canRunPayroll(user)) throw new Error("Forbidden");
 
   const employee = await getEmployee(employeeId);
   if (!employee) return { ok: false, error: "Employee not found." };
@@ -91,7 +91,7 @@ export async function createEmployeeLoginAction(
 ): Promise<LoginActionResult> {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageEmployees(user.roles)) throw new Error("Forbidden");
+  if (!canManageEmployees(user)) throw new Error("Forbidden");
 
   const v = validateEmployeeLogin(input);
   if (!v.valid) return { ok: false, fieldErrors: v.errors };
@@ -115,7 +115,7 @@ export async function createEmployeeLoginAction(
 export async function resetEmployeeLoginAction(employeeId: string): Promise<LoginActionResult> {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageEmployees(user.roles)) throw new Error("Forbidden");
+  if (!canManageEmployees(user)) throw new Error("Forbidden");
 
   const temp = generateTempPassword();
   const result = await resetEmployeeLoginPassword(employeeId, temp);
@@ -129,7 +129,7 @@ export async function resetEmployeeLoginAction(employeeId: string): Promise<Logi
 export async function revokeEmployeeLoginAction(employeeId: string): Promise<LoginActionResult> {
   const user = await getCurrentHrmsUser();
   if (!user) throw new Error("Unauthorized");
-  if (!canManageEmployees(user.roles)) throw new Error("Forbidden");
+  if (!canManageEmployees(user)) throw new Error("Forbidden");
 
   const result = await revokeEmployeeLogin(employeeId);
   if (!result.ok) return { ok: false, error: result.error };
