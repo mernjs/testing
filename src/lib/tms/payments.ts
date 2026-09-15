@@ -180,6 +180,54 @@ export async function listPaymentsForStudent(studentId: string): Promise<Payment
   return listPaymentPlans({ studentId });
 }
 
+export interface SearchPaymentPlansOptions {
+  search?: string;
+  programId?: string;
+  page?: number;
+  pageSize?: number;
+  sortBy?: "createdAt" | "totalFees";
+  sortDir?: "asc" | "desc";
+}
+
+/**
+ * Paginated variant of `listPaymentPlans` — real DB-level pagination on the
+ * stored fields (search, program). `status` (paid/partial/pending) is a
+ * derived value computed from installments, not stored, so it isn't a
+ * pushable Mongo filter here — the native page filters it in memory over an
+ * unpaginated fetch, which this listing doesn't attempt to replicate.
+ */
+export async function searchPaymentPlans(opts: SearchPaymentPlansOptions = {}) {
+  const collection = await getCollection();
+  const page = Math.max(opts.page ?? 1, 1);
+  const pageSize = Math.min(Math.max(opts.pageSize ?? 20, 1), 100);
+  const filter: Record<string, unknown> = { ...notDeleted };
+  if (opts.programId) filter.programId = opts.programId;
+  const sortField = opts.sortBy ?? "createdAt";
+  const sortDir = opts.sortDir === "asc" ? 1 : -1;
+
+  const [rows, total] = await Promise.all([
+    collection.find(filter).sort({ [sortField]: sortDir }).skip((page - 1) * pageSize).limit(pageSize).toArray(),
+    collection.countDocuments(filter),
+  ]);
+  let items = await attachMeta(rows);
+  if (opts.search?.trim()) {
+    const q = opts.search.trim().toLowerCase();
+    items = items.filter(
+      (v) => v.studentName.toLowerCase().includes(q) || (v.studentCode ?? "").toLowerCase().includes(q)
+    );
+  }
+  return { items, total, page, pageSize, totalPages: Math.max(Math.ceil(total / pageSize), 1) };
+}
+
+const EXPORT_ROW_LIMIT = 5000;
+
+export async function exportPaymentPlans(opts: { ids?: string[] } = {}): Promise<PaymentView[]> {
+  const collection = await getCollection();
+  const filter = opts.ids && opts.ids.length > 0 ? { _id: { $in: opts.ids }, ...notDeleted } : notDeleted;
+  const rows = await collection.find(filter).sort({ createdAt: -1 }).limit(EXPORT_ROW_LIMIT).toArray();
+  return attachMeta(rows);
+}
+
 export interface PaymentAnalytics {
   totalBilled: number;
   totalCollected: number;

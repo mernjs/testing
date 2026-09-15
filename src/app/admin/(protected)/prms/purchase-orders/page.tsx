@@ -1,0 +1,59 @@
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
+import { searchPurchaseOrders } from "@/lib/prms/purchase-orders";
+import { isValidPoStatus } from "@/lib/prms/constants";
+import PurchaseOrdersFilterBar from "./PurchaseOrdersFilterBar";
+import PurchaseOrdersGrid, { type AdminPoRow } from "./PurchaseOrdersGrid";
+
+export default async function AdminPurchaseOrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string; search?: string; status?: string; sortBy?: string; sortDir?: string }>;
+}) {
+  const sp = await searchParams;
+  const page = Math.max(Number(sp.page) || 1, 1);
+  const status = sp.status && isValidPoStatus(sp.status) ? sp.status : undefined;
+  const sortBy = sp.sortBy === "poNumber" || sp.sortBy === "totalAmount" || sp.sortBy === "status" ? sp.sortBy : "createdAt";
+  const sortDir = sp.sortDir === "asc" ? "asc" : "desc";
+
+  const { items, total, totalPages } = await searchPurchaseOrders({
+    page,
+    pageSize: 20,
+    search: sp.search,
+    status,
+    sortBy,
+    sortDir,
+  });
+
+  const rows: AdminPoRow[] = items.map((p) => ({
+    _id: p._id,
+    poNumber: p.poNumber,
+    vendorName: p.vendorName,
+    status: p.status,
+    totalAmount: p.totalAmount,
+    currency: p.currency,
+    deliveryDate: p.deliveryDate,
+  }));
+
+  const hasActiveFilters = Boolean(sp.search || sp.status);
+
+  return (
+    <div className="space-y-4">
+      <Breadcrumbs items={[{ label: "Admin", href: "/admin" }, { label: "Procurement" }, { label: "Purchase Orders" }]} />
+      <div>
+        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Purchase Orders</h1>
+        <p className="text-sm text-muted-foreground">{total} purchase order{total === 1 ? "" : "s"}.</p>
+      </div>
+
+      <PurchaseOrdersGrid
+        rows={rows}
+        total={total}
+        page={page}
+        totalPages={totalPages}
+        sortBy={sortBy}
+        sortDir={sortDir}
+        hasActiveFilters={hasActiveFilters}
+        filters={<PurchaseOrdersFilterBar initialSearch={sp.search ?? ""} initialStatus={status ?? ""} />}
+      />
+    </div>
+  );
+}

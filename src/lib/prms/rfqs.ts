@@ -140,6 +140,12 @@ export async function countRfqs(filter: RfqFilter = {}): Promise<number> {
   return collection.countDocuments(buildFilter(filter));
 }
 
+export async function exportRfqs(opts: RfqFilter & { ids?: string[] } = {}): Promise<Rfq[]> {
+  const collection = await getCollection();
+  const filter = opts.ids && opts.ids.length > 0 ? { _id: { $in: opts.ids }, ...notDeleted } : buildFilter(opts);
+  return collection.find(filter).sort({ createdAt: -1 }).limit(5000).toArray();
+}
+
 export interface RfqWriteData {
   title: string;
   description: string | null;

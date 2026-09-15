@@ -173,9 +173,10 @@ export async function sumAssetValue(filter: AssetFilter = {}): Promise<number> {
   return res[0]?.total ?? 0;
 }
 
-export async function exportAssets(opts: AssetFilter = {}): Promise<Asset[]> {
+export async function exportAssets(opts: AssetFilter & { ids?: string[] } = {}): Promise<Asset[]> {
   const { assets } = await collections();
-  return assets.find(buildFilter(opts)).sort({ createdAt: -1 }).limit(5000).toArray();
+  const filter = opts.ids && opts.ids.length > 0 ? { _id: { $in: opts.ids }, ...notDeleted } : buildFilter(opts);
+  return assets.find(filter).sort({ createdAt: -1 }).limit(5000).toArray();
 }
 
 export async function listAssignments(assetId: string): Promise<AssetAssignment[]> {

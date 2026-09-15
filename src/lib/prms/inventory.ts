@@ -136,9 +136,10 @@ export async function inventoryStockValue(): Promise<number> {
   return round2(res[0]?.total ?? 0);
 }
 
-export async function exportInventoryItems(opts: InventoryFilter = {}): Promise<InventoryItem[]> {
+export async function exportInventoryItems(opts: InventoryFilter & { ids?: string[] } = {}): Promise<InventoryItem[]> {
   const { items } = await collections();
-  return items.find(buildFilter(opts)).sort({ name: 1 }).limit(5000).toArray();
+  const filter = opts.ids && opts.ids.length > 0 ? { _id: { $in: opts.ids }, ...notDeleted } : buildFilter(opts);
+  return items.find(filter).sort({ name: 1 }).limit(5000).toArray();
 }
 
 export async function listTransactions(itemId: string, limit = 100): Promise<InventoryTransaction[]> {

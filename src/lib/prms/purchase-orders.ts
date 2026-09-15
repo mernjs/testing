@@ -197,9 +197,10 @@ export async function countPurchaseOrders(filter: PoFilter = {}): Promise<number
   return collection.countDocuments(buildFilter(filter));
 }
 
-export async function exportPurchaseOrders(opts: PoFilter = {}): Promise<PurchaseOrder[]> {
+export async function exportPurchaseOrders(opts: PoFilter & { ids?: string[] } = {}): Promise<PurchaseOrder[]> {
   const collection = await getCollection();
-  return collection.find(buildFilter(opts)).sort({ createdAt: -1 }).limit(5000).toArray();
+  const filter = opts.ids && opts.ids.length > 0 ? { _id: { $in: opts.ids }, ...notDeleted } : buildFilter(opts);
+  return collection.find(filter).sort({ createdAt: -1 }).limit(5000).toArray();
 }
 
 export async function listOpenPoOptions(): Promise<

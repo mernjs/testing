@@ -322,6 +322,17 @@ export async function countBatches(filter: BatchFilter = {}): Promise<number> {
   return collection.countDocuments(buildFilter(filter));
 }
 
+const EXPORT_ROW_LIMIT = 5000;
+
+/** Same shape as `exportPrograms`/`exportProjects` — either every row matching
+ * the filter, or (when `ids` is given) exactly those rows. */
+export async function exportBatches(opts: BatchFilter & { ids?: string[] } = {}): Promise<BatchWithMeta[]> {
+  const collection = await getCollection();
+  const filter = opts.ids && opts.ids.length > 0 ? { _id: { $in: opts.ids }, ...notDeleted } : buildFilter(opts);
+  const rows = await collection.find(filter).sort({ createdAt: -1 }).limit(EXPORT_ROW_LIMIT).toArray();
+  return attachMeta(rows);
+}
+
 export async function countBatchesForProgram(programId: string): Promise<number> {
   const collection = await getCollection();
   return collection.countDocuments({ ...notDeleted, programId });

@@ -166,6 +166,51 @@ export async function listCertificatesForStudent(studentId: string): Promise<Cer
   return listCertificates({ studentId });
 }
 
+function buildCertificateFilter(opts: CertificateFilter): Record<string, unknown> {
+  const filter: Record<string, unknown> = { ...notDeleted };
+  if (opts.type) filter.type = opts.type;
+  if (opts.programId) filter.programId = opts.programId;
+  if (opts.studentId) filter.studentId = opts.studentId;
+  if (opts.search?.trim()) {
+    const rx = new RegExp(opts.search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+    filter.$or = [{ certificateNumber: rx }, { title: rx }];
+  }
+  return filter;
+}
+
+export interface SearchCertificatesOptions extends CertificateFilter {
+  page?: number;
+  pageSize?: number;
+  sortBy?: "createdAt" | "issuedOn";
+  sortDir?: "asc" | "desc";
+}
+
+/** Paginated variant of `listCertificates` — for a browsable listing. */
+export async function searchCertificates(opts: SearchCertificatesOptions = {}) {
+  const collection = await getCollection();
+  const page = Math.max(opts.page ?? 1, 1);
+  const pageSize = Math.min(Math.max(opts.pageSize ?? 20, 1), 100);
+  const filter = buildCertificateFilter(opts);
+  const sortField = opts.sortBy ?? "createdAt";
+  const sortDir = opts.sortDir === "asc" ? 1 : -1;
+
+  const [rows, total] = await Promise.all([
+    collection.find(filter).sort({ [sortField]: sortDir }).skip((page - 1) * pageSize).limit(pageSize).toArray(),
+    collection.countDocuments(filter),
+  ]);
+  const items = await attachMeta(rows);
+  return { items, total, page, pageSize, totalPages: Math.max(Math.ceil(total / pageSize), 1) };
+}
+
+const EXPORT_ROW_LIMIT = 5000;
+
+export async function exportCertificates(opts: CertificateFilter & { ids?: string[] } = {}): Promise<CertificateView[]> {
+  const collection = await getCollection();
+  const filter = opts.ids && opts.ids.length > 0 ? { _id: { $in: opts.ids }, ...notDeleted } : buildCertificateFilter(opts);
+  const rows = await collection.find(filter).sort({ createdAt: -1 }).limit(EXPORT_ROW_LIMIT).toArray();
+  return attachMeta(rows);
+}
+
 // ---------------------------------------------------------------------------
 // Writes
 // ---------------------------------------------------------------------------

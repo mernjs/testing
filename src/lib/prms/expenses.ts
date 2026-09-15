@@ -182,9 +182,10 @@ export async function sumExpenses(filter: ExpenseFilter = {}): Promise<number> {
   return res[0]?.total ?? 0;
 }
 
-export async function exportExpenses(opts: ExpenseFilter = {}): Promise<Expense[]> {
+export async function exportExpenses(opts: ExpenseFilter & { ids?: string[] } = {}): Promise<Expense[]> {
   const collection = await getCollection();
-  return collection.find(buildFilter(opts)).sort({ expenseDate: -1 }).limit(5000).toArray();
+  const filter = opts.ids && opts.ids.length > 0 ? { _id: { $in: opts.ids }, ...notDeleted } : buildFilter(opts);
+  return collection.find(filter).sort({ expenseDate: -1 }).limit(5000).toArray();
 }
 
 export interface ExpenseWriteData {

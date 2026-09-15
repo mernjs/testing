@@ -116,6 +116,41 @@ export async function countEntries(opts: EntryFilter = {}): Promise<number> {
   return collection.countDocuments(buildFilter(opts));
 }
 
+const EXPORT_ROW_LIMIT = 5000;
+
+/** Same shape as `exportLeads`/`exportClients`/`exportProjects` — either every
+ * row matching the filter, or (when `ids` is given) exactly those rows, for
+ * "export selected" from a listing. */
+export async function exportEntries(opts: EntryFilter & { ids?: string[] } = {}): Promise<TimesheetEntry[]> {
+  const collection = await getCollection();
+  const filter = opts.ids && opts.ids.length > 0 ? { _id: { $in: opts.ids }, ...notDeleted } : buildFilter(opts);
+  return collection.find(filter).sort({ date: -1 }).limit(EXPORT_ROW_LIMIT).toArray();
+}
+
+export interface SearchEntriesOptions extends EntryFilter {
+  page?: number;
+  pageSize?: number;
+  sortBy?: "date" | "hours" | "createdAt";
+  sortDir?: "asc" | "desc";
+}
+
+/** Paginated variant of `listEntries` — for a browsable, sortable listing
+ * rather than a bounded (max 2000) in-memory report source. */
+export async function searchEntries(opts: SearchEntriesOptions = {}) {
+  const collection = await getCollection();
+  const page = Math.max(opts.page ?? 1, 1);
+  const pageSize = Math.min(Math.max(opts.pageSize ?? 20, 1), 100);
+  const filter = buildFilter(opts);
+  const sortField = opts.sortBy ?? "date";
+  const sortDir = opts.sortDir === "asc" ? 1 : -1;
+
+  const [items, total] = await Promise.all([
+    collection.find(filter).sort({ [sortField]: sortDir }).skip((page - 1) * pageSize).limit(pageSize).toArray(),
+    collection.countDocuments(filter),
+  ]);
+  return { items, total, page, pageSize, totalPages: Math.max(Math.ceil(total / pageSize), 1) };
+}
+
 // ---------------------------------------------------------------------------
 // Aggregations
 // ---------------------------------------------------------------------------

@@ -65,20 +65,34 @@ export async function listPaymentsForInvoice(invoiceId: string): Promise<Payment
   return collection.find({ invoiceId, ...notDeleted }).sort({ paymentDate: -1 }).toArray();
 }
 
-export async function searchPayments(
-  opts: { search?: string; vendorId?: string; page?: number; pageSize?: number } = {}
-) {
-  const collection = await getCollection();
-  const page = Math.max(opts.page ?? 1, 1);
-  const pageSize = Math.min(Math.max(opts.pageSize ?? 20, 1), 100);
+export interface PaymentFilter {
+  search?: string;
+  vendorId?: string;
+  status?: Payment["status"];
+}
+
+function buildPaymentFilter(opts: PaymentFilter): Record<string, unknown> {
   const filter: Record<string, unknown> = { ...notDeleted };
   if (opts.vendorId) filter.vendorId = opts.vendorId;
+  if (opts.status) filter.status = opts.status;
   if (opts.search?.trim()) {
     const rx = new RegExp(opts.search.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
     filter.$or = [{ paymentCode: rx }, { invoiceNumber: rx }, { vendorName: rx }, { transactionReference: rx }];
   }
+  return filter;
+}
+
+export async function searchPayments(
+  opts: PaymentFilter & { page?: number; pageSize?: number; sortBy?: "paymentDate" | "amount"; sortDir?: "asc" | "desc" } = {}
+) {
+  const collection = await getCollection();
+  const page = Math.max(opts.page ?? 1, 1);
+  const pageSize = Math.min(Math.max(opts.pageSize ?? 20, 1), 100);
+  const filter = buildPaymentFilter(opts);
+  const sortField = opts.sortBy ?? "paymentDate";
+  const sortDir = opts.sortDir === "asc" ? 1 : -1;
   const [items, total] = await Promise.all([
-    collection.find(filter).sort({ paymentDate: -1 }).skip((page - 1) * pageSize).limit(pageSize).toArray(),
+    collection.find(filter).sort({ [sortField]: sortDir }).skip((page - 1) * pageSize).limit(pageSize).toArray(),
     collection.countDocuments(filter),
   ]);
   return { items, total, page, pageSize, totalPages: Math.max(Math.ceil(total / pageSize), 1) };
@@ -96,9 +110,10 @@ export async function paymentsThisMonth(): Promise<number> {
   return round2(res[0]?.total ?? 0);
 }
 
-export async function exportPayments(): Promise<Payment[]> {
+export async function exportPayments(opts: PaymentFilter & { ids?: string[] } = {}): Promise<Payment[]> {
   const collection = await getCollection();
-  return collection.find(notDeleted).sort({ paymentDate: -1 }).limit(5000).toArray();
+  const filter = opts.ids && opts.ids.length > 0 ? { _id: { $in: opts.ids }, ...notDeleted } : buildPaymentFilter(opts);
+  return collection.find(filter).sort({ paymentDate: -1 }).limit(5000).toArray();
 }
 
 export interface PaymentWriteData {

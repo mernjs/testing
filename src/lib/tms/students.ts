@@ -185,6 +185,16 @@ export async function countStudents(filter: StudentFilter = {}): Promise<number>
   return collection.countDocuments(buildFilter(filter));
 }
 
+const EXPORT_ROW_LIMIT = 5000;
+
+/** Same shape as `exportLeads`/`exportClients`/`exportProjects` — either every
+ * row matching the filter, or (when `ids` is given) exactly those rows. */
+export async function exportStudents(opts: StudentFilter & { ids?: string[] } = {}): Promise<Student[]> {
+  const collection = await getCollection();
+  const filter = opts.ids && opts.ids.length > 0 ? { _id: { $in: opts.ids }, ...notDeleted } : buildFilter(opts);
+  return collection.find(filter).sort({ createdAt: -1 }).limit(EXPORT_ROW_LIMIT).toArray();
+}
+
 export interface StudentWriteData {
   fullName: string;
   email: string | null;
