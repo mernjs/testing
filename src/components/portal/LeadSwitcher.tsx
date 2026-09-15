@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import { ChevronsUpDown, Check } from "lucide-react";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { switchPortalLeadAction } from "@/app/portal/(app)/actions";
 
 export interface LeadSummary {
@@ -37,7 +37,9 @@ export default function LeadSwitcher({ leads }: { leads: LeadSummary[] }) {
         <ChevronsUpDown className="size-3.5 text-muted-foreground" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
-        <DropdownMenuLabel>Your requests</DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Your requests</DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         {leads.map((l) => (
           <DropdownMenuItem

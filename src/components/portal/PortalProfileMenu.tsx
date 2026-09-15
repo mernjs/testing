@@ -9,6 +9,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuItem,
@@ -50,19 +51,21 @@ export default function PortalProfileMenu({
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" side="top" className="w-60">
-          <DropdownMenuLabel className="flex items-center gap-3 py-2 font-normal">
-            <Avatar className="size-9 ring-2 ring-primary/15">
-              <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">{initials}</AvatarFallback>
-            </Avatar>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-foreground">{displayName}</p>
-              <p className="truncate text-xs text-muted-foreground">{email}</p>
-              <p className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-medium text-primary">
-                <ShieldCheck className="size-3" />
-                {PORTAL_ROLE_META[role].label}
-              </p>
-            </div>
-          </DropdownMenuLabel>
+          <DropdownMenuGroup>
+            <DropdownMenuLabel className="flex items-center gap-3 py-2 font-normal">
+              <Avatar className="size-9 ring-2 ring-primary/15">
+                <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">{initials}</AvatarFallback>
+              </Avatar>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-foreground">{displayName}</p>
+                <p className="truncate text-xs text-muted-foreground">{email}</p>
+                <p className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-medium text-primary">
+                  <ShieldCheck className="size-3" />
+                  {PORTAL_ROLE_META[role].label}
+                </p>
+              </div>
+            </DropdownMenuLabel>
+          </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem render={<Link href="/portal/profile" />}>
             <UserRound className="size-3.5" data-icon="inline-start" />

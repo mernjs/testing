@@ -41,6 +41,10 @@ interface LmsSessionDoc {
 export interface CurrentLmsUser {
   id: string;
   email: string;
+  /** Raw `admin_users.roles` — LMS itself has no role gate, but other panels'
+   * role literals (notably `super_admin`) still show up here since identity is
+   * shared. Used e.g. to conditionally show a "Back to Admin" link. */
+  roles: string[];
   createdAt: Date;
   lastLoginAt: Date | null;
 }
@@ -141,7 +145,13 @@ export async function getSessionLmsUser(token: string | undefined | null): Promi
   const user = await users.findOne({ _id: session.adminId });
   if (!user) return null;
 
-  return { id: user._id.toString(), email: user.email, createdAt: user.createdAt, lastLoginAt: user.lastLoginAt };
+  return {
+    id: user._id.toString(),
+    email: user.email,
+    roles: user.roles ?? [],
+    createdAt: user.createdAt,
+    lastLoginAt: user.lastLoginAt,
+  };
 }
 
 export async function setSessionCookie(token: string): Promise<void> {

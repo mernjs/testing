@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Globe, Users, FolderKanban, GraduationCap, MessagesSquare } from "lucide-react";
+import { Globe, Users, FolderKanban, GraduationCap, MessagesSquare, ShieldCheck } from "lucide-react";
 import MobileSidebar from "@/components/lms/MobileSidebar";
 import GlobalSearch from "@/components/lms/GlobalSearch";
 import NotificationsBell from "@/components/lms/NotificationsBell";
@@ -10,6 +10,7 @@ import { buttonVariants } from "@/components/ui/button";
 import type { SerializedLead, SerializedCareerApplication } from "@/components/lms/types";
 
 export default function LmsTopbar({
+  roles,
   staleLeads,
   staleLeadsCount,
   staleApplications,
@@ -17,6 +18,7 @@ export default function LmsTopbar({
   recentLeads,
   recentApplications,
 }: {
+  roles: string[];
   staleLeads: SerializedLead[];
   staleLeadsCount: number;
   staleApplications: SerializedCareerApplication[];
@@ -24,6 +26,7 @@ export default function LmsTopbar({
   recentLeads: SerializedLead[];
   recentApplications: SerializedCareerApplication[];
 }) {
+  const isSuperAdmin = roles.includes("super_admin");
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <MobileSidebar />
@@ -31,6 +34,16 @@ export default function LmsTopbar({
         <GlobalSearch />
       </div>
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+        {isSuperAdmin && (
+          <Link
+            href="/admin"
+            className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
+            aria-label="Back to Admin"
+          >
+            <ShieldCheck className="size-3.5" data-icon="inline-start" />
+            <span className="hidden sm:inline">Admin</span>
+          </Link>
+        )}
         <Link
           href="/messenger"
           className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}

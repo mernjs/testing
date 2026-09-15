@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Users, LayoutGrid, Globe, GraduationCap, MessagesSquare } from "lucide-react";
+import { Users, LayoutGrid, Globe, GraduationCap, MessagesSquare, ShieldCheck } from "lucide-react";
 import PmsMobileSidebar from "@/components/pms/PmsMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
 import PmsNotificationsBell, { type BellItem } from "@/components/pms/PmsNotificationsBell";
@@ -21,6 +21,7 @@ export default function PmsTopbar({
   notifications: BellItem[];
   unread: number;
 }) {
+  const isSuperAdmin = roles.includes("super_admin");
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <PmsMobileSidebar roles={roles} permissionOverrides={permissionOverrides} employeeId={employeeId} />
@@ -29,6 +30,16 @@ export default function PmsTopbar({
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryPmsRoleLabel(roles)}</p>
       </div>
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+        {isSuperAdmin && (
+          <Link
+            href="/admin"
+            className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
+            aria-label="Back to Admin"
+          >
+            <ShieldCheck className="size-3.5" data-icon="inline-start" />
+            <span className="hidden sm:inline">Admin</span>
+          </Link>
+        )}
         <Link
           href="/messenger"
           className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}

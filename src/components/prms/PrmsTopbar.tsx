@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Users, LayoutGrid, FolderKanban, GraduationCap, Globe, MessagesSquare } from "lucide-react";
+import { Users, LayoutGrid, FolderKanban, GraduationCap, Globe, MessagesSquare, ShieldCheck } from "lucide-react";
 import PrmsMobileSidebar from "@/components/prms/PrmsMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
 import PrmsNotificationsBell, { type BellItem } from "@/components/prms/PrmsNotificationsBell";
@@ -20,6 +20,7 @@ export default function PrmsTopbar({
   unread: number;
 }) {
   const isStaff = hasPrmsStaffRole(roles);
+  const isSuperAdmin = roles.includes("super_admin");
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <PrmsMobileSidebar roles={roles} permissionOverrides={permissionOverrides} />
@@ -28,6 +29,16 @@ export default function PrmsTopbar({
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryPrmsRoleLabel(roles)}</p>
       </div>
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+        {isSuperAdmin && (
+          <Link
+            href="/admin"
+            className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
+            aria-label="Back to Admin"
+          >
+            <ShieldCheck className="size-3.5" data-icon="inline-start" />
+            <span className="hidden sm:inline">Admin</span>
+          </Link>
+        )}
         <Link
           href="/messenger"
           className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}

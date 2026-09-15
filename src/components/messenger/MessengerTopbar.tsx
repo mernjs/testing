@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Users, FolderKanban } from "lucide-react";
+import { Search, Users, FolderKanban, ShieldCheck } from "lucide-react";
 import MessengerMobileSidebar from "@/components/messenger/MessengerMobileSidebar";
 import MessengerNotificationsBell, { type BellItem } from "@/components/messenger/MessengerNotificationsBell";
 import { ConnectionPill } from "@/components/messenger/ConnectionPill";
@@ -25,6 +25,7 @@ export default function MessengerTopbar({
   unreadChannels: number;
 }) {
   const staff = hasChatStaffRole({ roles, permissionOverrides });
+  const isSuperAdmin = roles.includes("super_admin");
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <MessengerMobileSidebar
@@ -40,6 +41,16 @@ export default function MessengerTopbar({
 
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
         <ConnectionPill />
+        {isSuperAdmin && (
+          <Link
+            href="/admin"
+            className={buttonVariants({ variant: "outline", size: "sm", className: "hidden transition-transform duration-200 hover:scale-105 lg:inline-flex" })}
+            aria-label="Back to Admin"
+          >
+            <ShieldCheck className="size-3.5" data-icon="inline-start" />
+            <span className="hidden sm:inline">Admin</span>
+          </Link>
+        )}
         <Link
           href="/messenger/search"
           className={buttonVariants({ variant: "outline", size: "sm", className: "hidden sm:inline-flex" })}

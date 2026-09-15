@@ -8,6 +8,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuItem,
@@ -62,15 +63,17 @@ export default function AdminProfileMenu({
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-64">
-          <DropdownMenuLabel>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="size-3.5 text-primary" />
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold">{displayName}</p>
-                <p className="truncate text-xs font-normal text-muted-foreground">{email}</p>
+          <DropdownMenuGroup>
+            <DropdownMenuLabel>
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="size-3.5 text-primary" />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold">{displayName}</p>
+                  <p className="truncate text-xs font-normal text-muted-foreground">{email}</p>
+                </div>
               </div>
-            </div>
-          </DropdownMenuLabel>
+            </DropdownMenuLabel>
+          </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <div className="px-2 py-1.5 text-xs text-muted-foreground">
             {lastLoginAt ? `Last sign-in ${formatDateTime(lastLoginAt)}` : "First sign-in"}
@@ -79,7 +82,7 @@ export default function AdminProfileMenu({
           <DropdownMenuItem
             variant="destructive"
             disabled={isPending}
-            onSelect={() => startTransition(() => void adminLogoutAction())}
+            onClick={() => startTransition(() => void adminLogoutAction())}
           >
             <LogOut className="size-4" />
             Sign out
