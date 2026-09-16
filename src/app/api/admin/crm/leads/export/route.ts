@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAdminUser } from "@/lib/admin-auth";
+import { hasAdminAccess } from "@/lib/admin-roles";
 import { CATEGORIES, exportLeads, isValidCategory, getCategoryLabel, type CategorySlug, type Lead } from "@/lib/leads";
 import { isValidLeadStatus } from "@/lib/lead-status";
 import { toCsv } from "@/lib/csv";
@@ -13,6 +14,7 @@ function parseDateParam(value: string | null, endOfDay = false): Date | undefine
 export async function GET(req: NextRequest) {
   const admin = await getCurrentAdminUser();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!hasAdminAccess(admin.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const sp = req.nextUrl.searchParams;
   const categoryParam = sp.get("category") ?? "all";

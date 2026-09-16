@@ -43,6 +43,7 @@ export default async function ProtectedPmsLayout({ children }: { children: React
             <div className="lms-surface relative z-30 shrink-0 rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md dark:bg-card/85">
               <PmsTopbar
                 roles={user.roles}
+                allRoles={user.allRoles}
                 permissionOverrides={user.permissionOverrides}
                 employeeId={user.employeeId}
                 notifications={notifications.map((n) => ({

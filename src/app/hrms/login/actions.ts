@@ -8,6 +8,7 @@ import {
   getSessionHrmsUser,
 } from "@/lib/hrms-auth";
 import { hasStaffRole } from "@/lib/hrms-roles";
+import { provisionAccessibleSessions } from "@/lib/cross-module-sso";
 
 export interface HrmsLoginState {
   error?: string;
@@ -28,6 +29,10 @@ export async function hrmsLoginAction(_prevState: HrmsLoginState, formData: Form
 
   const token = await createHrmsSession(result.adminId);
   await setHrmsSessionCookie(token);
+
+  // Mint a real session in every other panel this account's roles actually
+  // grant access to, so no separate login is needed to open them.
+  await provisionAccessibleSessions(result.adminId, "hrms");
 
   const user = await getSessionHrmsUser(token);
   if (user?.mustChangePassword) redirect("/hrms/change-password");

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Wallet, Receipt, TrendingUp, TrendingDown, Clock, Coins, PieChart, Percent } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -11,6 +12,8 @@ import PmsDashboardFilters from "@/components/pms/PmsDashboardFilters";
 import GroupedBarChart from "@/components/pms/GroupedBarChart";
 import CategoryBarChart from "@/components/lms/CategoryBarChart";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import { getCurrentPmsUser } from "@/lib/pms-auth";
+import { canViewCosting } from "@/lib/pms-roles";
 import { getPortfolioCosting } from "@/lib/pms/costing";
 import { isValidDateRangePreset, resolveDateRangePreset, type DateRangePreset } from "@/lib/date-ranges";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -27,6 +30,9 @@ export default async function CostingPage({
   searchParams: Promise<{ range?: string; dateFrom?: string; dateTo?: string }>;
 }) {
   const sp = await searchParams;
+  const user = await getCurrentPmsUser();
+  if (!user || !canViewCosting(user)) redirect("/pms");
+
   const rangeParam: DateRangePreset =
     sp.range && isValidDateRangePreset(sp.range) ? sp.range : sp.dateFrom || sp.dateTo ? "custom" : "thisYear";
 

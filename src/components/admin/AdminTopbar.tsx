@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Users, FolderKanban, ShoppingCart, GraduationCap, LayoutGrid, MessagesSquare, Globe } from "lucide-react";
+import { Users, FolderKanban, ShoppingCart, GraduationCap, LayoutGrid, MessagesSquare, Globe, LayoutDashboard } from "lucide-react";
 import AdminMobileSidebar from "@/components/admin/AdminMobileSidebar";
 import AdminNotificationsBell, { type BellItem } from "@/components/admin/AdminNotificationsBell";
 import ThemeToggle from "@/components/lms/ThemeToggle";
@@ -9,6 +9,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { primaryAdminRoleLabel, type AdminRole } from "@/lib/admin-roles";
 
 const MODULE_LINKS = [
+  { href: "/workspace", label: "Hub", icon: LayoutDashboard },
   { href: "/lms", label: "CRM", icon: LayoutGrid },
   { href: "/pms", label: "PMS", icon: FolderKanban },
   { href: "/tms", label: "TMS", icon: GraduationCap },

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAdminUser } from "@/lib/admin-auth";
+import { hasAdminAccess } from "@/lib/admin-roles";
 import { exportApplications } from "@/lib/career-applications";
 import { isValidCareerApplicationStatus } from "@/lib/career-application-status";
 import { toCsv } from "@/lib/csv";
@@ -13,6 +14,7 @@ function parseDateParam(value: string | null, endOfDay = false): Date | undefine
 export async function GET(req: NextRequest) {
   const admin = await getCurrentAdminUser();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!hasAdminAccess(admin.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const sp = req.nextUrl.searchParams;
   const search = sp.get("search") ?? undefined;

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAdminUser } from "@/lib/admin-auth";
+import { hasAdminAccess } from "@/lib/admin-roles";
 import { exportPortalUsers } from "@/lib/admin/portal-users";
 import { isPortalRole, PORTAL_ROLE_META } from "@/lib/portal-roles";
 import { toCsv } from "@/lib/csv";
@@ -7,6 +8,7 @@ import { toCsv } from "@/lib/csv";
 export async function GET(req: NextRequest) {
   const admin = await getCurrentAdminUser();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!hasAdminAccess(admin.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const sp = req.nextUrl.searchParams;
   const search = sp.get("search") ?? undefined;

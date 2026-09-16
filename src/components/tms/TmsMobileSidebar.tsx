@@ -9,7 +9,15 @@ import BrandMark from "@/components/BrandMark";
 import { brandify } from "@/lib/brand";
 import type { TmsRole } from "@/lib/tms-roles";
 
-export default function TmsMobileSidebar({ roles, studentId }: { roles: TmsRole[]; studentId: string | null }) {
+export default function TmsMobileSidebar({
+  roles,
+  permissionOverrides,
+  studentId,
+}: {
+  roles: TmsRole[];
+  permissionOverrides?: Record<string, boolean>;
+  studentId: string | null;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -27,7 +35,7 @@ export default function TmsMobileSidebar({ roles, studentId }: { roles: TmsRole[
               {brandify("YashOrbit")} <span className="text-foreground">TMS</span>
             </span>
           </div>
-          <TmsSidebar roles={roles} studentId={studentId} onNavigate={() => setOpen(false)} />
+          <TmsSidebar roles={roles} permissionOverrides={permissionOverrides} studentId={studentId} onNavigate={() => setOpen(false)} />
         </SheetContent>
       </Sheet>
     </>

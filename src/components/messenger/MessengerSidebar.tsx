@@ -102,6 +102,7 @@ export default function MessengerSidebar({
   unreadNotifications = 0,
 }: {
   roles: ChatRole[];
+  permissionOverrides?: Record<string, boolean>;
   onNavigate?: () => void;
   collapsed?: boolean;
   unreadDms?: number;

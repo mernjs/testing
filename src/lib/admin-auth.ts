@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import { verifyPassword, hashPassword } from "@/lib/lms-auth";
-import { ADMIN_ROLES, normalizeAdminRoles, type AdminRole } from "@/lib/admin-roles";
+import { ADMIN_ROLES, normalizeAdminRoles, hasAdminAccess, type AdminRole } from "@/lib/admin-roles";
 
 /**
  * Super Admin Command Center authentication. A separate cookie / session
@@ -187,7 +187,7 @@ export async function getCurrentAdminUser(): Promise<CurrentAdminUser | null> {
 export async function requireAdminUser(): Promise<CurrentAdminUser> {
   const user = await getCurrentAdminUser();
   if (!user) throw new Error("Unauthorized");
-  if (!user.roles.includes("super_admin")) throw new Error("Forbidden");
+  if (!hasAdminAccess(user.roles)) throw new Error("Forbidden");
   return user;
 }
 

@@ -1,13 +1,18 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { PRMS_SESSION_COOKIE, destroyPrmsSessionByToken, clearPrmsSessionCookie } from "@/lib/prms-auth";
+import { ObjectId } from "mongodb";
+import { getCurrentPrmsUser } from "@/lib/prms-auth";
+import { destroySessionsEverywhere } from "@/lib/cross-module-sso";
 
+/**
+ * Centralized logout: destroys this account's session in EVERY panel (not
+ * just PRMS's own), on every device — see `cross-module-sso.ts`.
+ */
 export async function prmsLogoutAction(): Promise<void> {
-  const store = await cookies();
-  const token = store.get(PRMS_SESSION_COOKIE)?.value;
-  if (token) await destroyPrmsSessionByToken(token);
-  await clearPrmsSessionCookie();
-  redirect("/prms/login");
+  const user = await getCurrentPrmsUser();
+  if (user && ObjectId.isValid(user.id)) {
+    await destroySessionsEverywhere(new ObjectId(user.id));
+  }
+  redirect("/workspace/login");
 }

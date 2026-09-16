@@ -8,6 +8,7 @@ import {
   getSessionPrmsUser,
 } from "@/lib/prms-auth";
 import { hasPrmsStaffRole } from "@/lib/prms-roles";
+import { provisionAccessibleSessions } from "@/lib/cross-module-sso";
 
 export interface PrmsLoginState {
   error?: string;
@@ -28,6 +29,10 @@ export async function prmsLoginAction(_prevState: PrmsLoginState, formData: Form
 
   const token = await createPrmsSession(result.adminId);
   await setPrmsSessionCookie(token);
+
+  // Mint a real session in every other panel this account's roles actually
+  // grant access to, so no separate login is needed to open them.
+  await provisionAccessibleSessions(result.adminId, "prms");
 
   const user = await getSessionPrmsUser(token);
   if (user?.mustChangePassword) redirect("/prms/change-password");

@@ -8,6 +8,7 @@ import {
   getSessionPmsUser,
 } from "@/lib/pms-auth";
 import { hasPmsStaffRole } from "@/lib/pms-roles";
+import { provisionAccessibleSessions } from "@/lib/cross-module-sso";
 
 export interface PmsLoginState {
   error?: string;
@@ -28,6 +29,10 @@ export async function pmsLoginAction(_prevState: PmsLoginState, formData: FormDa
 
   const token = await createPmsSession(result.adminId);
   await setPmsSessionCookie(token);
+
+  // Mint a real session in every other panel this account's roles actually
+  // grant access to, so no separate login is needed to open them.
+  await provisionAccessibleSessions(result.adminId, "pms");
 
   const user = await getSessionPmsUser(token);
   if (user?.mustChangePassword) redirect("/pms/change-password");

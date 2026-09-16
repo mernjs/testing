@@ -3,8 +3,7 @@ import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import KpiCard from "@/components/lms/KpiCard";
 import KpiGrid from "@/components/lms/KpiGrid";
-import { CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/lms/GlassCard";
+import UnauthorizedNotice from "@/components/lms/UnauthorizedNotice";
 import PrmsDataTable from "@/components/prms/PrmsDataTable";
 import BudgetForm from "@/components/prms/BudgetForm";
 import DeleteRowButton from "@/components/prms/DeleteRowButton";
@@ -24,7 +23,7 @@ export default async function BudgetsPage({ searchParams }: { searchParams: Prom
     return (
       <div className="space-y-4">
         <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Budget Management" }]} />
-        <GlassCard interactive={false}><CardContent className="py-10 text-center text-sm text-muted-foreground">Finance access required.</CardContent></GlassCard>
+        <UnauthorizedNotice backHref="/prms" message="Finance access required to view budgets." />
       </div>
     );
   }

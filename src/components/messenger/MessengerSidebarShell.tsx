@@ -17,6 +17,7 @@ export default function MessengerSidebarShell({
   email,
   displayName,
   roles,
+  permissionOverrides,
   createdAt,
   lastLoginAt,
   unreadDms,
@@ -26,6 +27,7 @@ export default function MessengerSidebarShell({
   email: string;
   displayName: string;
   roles: ChatRole[];
+  permissionOverrides?: Record<string, boolean>;
   createdAt: string;
   lastLoginAt: string | null;
   unreadDms: number;
@@ -68,6 +70,7 @@ export default function MessengerSidebarShell({
       <div className="min-h-0 flex-1 overflow-y-auto">
         <MessengerSidebar
           roles={roles}
+          permissionOverrides={permissionOverrides}
           collapsed={collapsed}
           unreadDms={unreadDms}
           unreadChannels={unreadChannels}

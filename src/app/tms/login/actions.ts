@@ -8,6 +8,7 @@ import {
   getSessionTmsUser,
 } from "@/lib/tms-auth";
 import { hasTmsStaffRole } from "@/lib/tms-roles";
+import { provisionAccessibleSessions } from "@/lib/cross-module-sso";
 
 export interface TmsLoginState {
   error?: string;
@@ -28,6 +29,10 @@ export async function tmsLoginAction(_prevState: TmsLoginState, formData: FormDa
 
   const token = await createTmsSession(result.adminId);
   await setTmsSessionCookie(token);
+
+  // Mint a real session in every other panel this account's roles actually
+  // grant access to, so no separate login is needed to open them.
+  await provisionAccessibleSessions(result.adminId, "tms");
 
   const user = await getSessionTmsUser(token);
   if (user?.mustChangePassword) redirect("/tms/change-password");

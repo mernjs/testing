@@ -40,6 +40,8 @@ export default async function ProtectedTmsLayout({ children }: { children: React
             <div className="lms-surface relative z-30 shrink-0 rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md dark:bg-card/85">
               <TmsTopbar
                 roles={user.roles}
+                allRoles={user.allRoles}
+                permissionOverrides={user.permissionOverrides}
                 studentId={user.studentId}
                 notifications={notifications.map((n) => ({
                   _id: n._id,

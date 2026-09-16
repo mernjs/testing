@@ -7,6 +7,7 @@ import {
   setMessengerSessionCookie,
   getSessionChatUser,
 } from "@/lib/messenger-auth";
+import { provisionAccessibleSessions } from "@/lib/cross-module-sso";
 
 export interface MessengerLoginState {
   error?: string;
@@ -30,6 +31,10 @@ export async function messengerLoginAction(
 
   const token = await createMessengerSession(result.adminId);
   await setMessengerSessionCookie(token);
+
+  // Mint a real session in every other panel this account's roles actually
+  // grant access to, so no separate login is needed to open them.
+  await provisionAccessibleSessions(result.adminId, "messenger");
 
   const user = await getSessionChatUser(token);
   if (user?.mustChangePassword) redirect("/messenger/change-password");

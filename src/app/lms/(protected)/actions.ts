@@ -1,15 +1,18 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { SESSION_COOKIE, destroySessionByToken, clearSessionCookie } from "@/lib/lms-auth";
+import { ObjectId } from "mongodb";
+import { getCurrentLmsUser } from "@/lib/lms-auth";
+import { destroySessionsEverywhere } from "@/lib/cross-module-sso";
 
+/**
+ * Centralized logout: destroys this account's session in EVERY panel (not
+ * just LMS's own), on every device — see `cross-module-sso.ts`.
+ */
 export async function logoutAction(): Promise<void> {
-  const store = await cookies();
-  const token = store.get(SESSION_COOKIE)?.value;
-  if (token) {
-    await destroySessionByToken(token);
+  const user = await getCurrentLmsUser();
+  if (user && ObjectId.isValid(user.id)) {
+    await destroySessionsEverywhere(new ObjectId(user.id));
   }
-  await clearSessionCookie();
-  redirect("/lms/login");
+  redirect("/workspace/login");
 }

@@ -44,6 +44,10 @@ export interface CurrentPmsUser {
   id: string;
   email: string;
   roles: PmsRole[];
+  /** Raw, unfiltered `admin_users.roles` — used only to decide whether this
+   * account also has access to OTHER panels (cross-panel nav links), never
+   * as PMS's own gate (use `roles` above for that). */
+  allRoles: string[];
   /** Per-capability overrides from the Super Admin — see `permission-overrides.ts`. */
   permissionOverrides: Record<string, boolean>;
   employeeId: string | null;
@@ -154,6 +158,7 @@ export async function getSessionPmsUser(token: string | undefined | null): Promi
     id: user._id.toString(),
     email: user.email,
     roles,
+    allRoles: user.roles ?? [],
     permissionOverrides: user.permissionOverrides ?? {},
     employeeId: user.employeeId ?? null,
     mustChangePassword: user.mustChangePassword === true,

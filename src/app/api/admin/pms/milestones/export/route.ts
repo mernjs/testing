@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAdminUser } from "@/lib/admin-auth";
+import { hasAdminAccess } from "@/lib/admin-roles";
 import { exportAllMilestones } from "@/lib/admin/pms-work-items";
 import { exportProjects } from "@/lib/pms/projects";
 import { isValidMilestoneStatus, getMilestoneStatusMeta, type MilestoneStatus } from "@/lib/pms/constants";
@@ -8,6 +9,7 @@ import { toCsv } from "@/lib/csv";
 export async function GET(req: NextRequest) {
   const admin = await getCurrentAdminUser();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!hasAdminAccess(admin.roles)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const sp = req.nextUrl.searchParams;
   const status = sp.get("status");

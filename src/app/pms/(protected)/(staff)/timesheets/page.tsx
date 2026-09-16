@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { Clock, CheckCircle2, Hourglass, Coins, Download } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import KpiCard from "@/components/lms/KpiCard";
@@ -5,6 +6,8 @@ import KpiGrid from "@/components/lms/KpiGrid";
 import { buttonVariants } from "@/components/ui/button";
 import PmsDashboardFilters from "@/components/pms/PmsDashboardFilters";
 import TimesheetReviewTable from "@/components/pms/timesheet/TimesheetReviewTable";
+import { getCurrentPmsUser } from "@/lib/pms-auth";
+import { canReviewTimesheets } from "@/lib/pms-roles";
 import { listEntries, serializeEntry, countEntries } from "@/lib/pms/timesheets";
 import { searchProjects } from "@/lib/pms/projects";
 import { listTasks } from "@/lib/pms/tasks";
@@ -17,6 +20,9 @@ export default async function TimesheetReviewPage({
   searchParams: Promise<{ range?: string; dateFrom?: string; dateTo?: string; view?: string }>;
 }) {
   const sp = await searchParams;
+  const user = await getCurrentPmsUser();
+  if (!user || !canReviewTimesheets(user)) redirect("/pms");
+
   const showAll = sp.view === "all";
 
   const rangeParam: DateRangePreset =

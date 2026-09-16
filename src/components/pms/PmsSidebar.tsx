@@ -19,7 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { PmsRole } from "@/lib/pms-roles";
-import { canManageSettings, canViewActivityLog, canViewCosting, hasPmsStaffRole } from "@/lib/pms-roles";
+import { canManageSettings, canViewActivityLog, canViewCosting, canReviewTimesheets, hasPmsStaffRole } from "@/lib/pms-roles";
 
 function NavLink({
   href,
@@ -128,7 +128,7 @@ export default function PmsSidebar({
 
       <SectionLabel collapsed={collapsed}>Finance</SectionLabel>
       {canViewCosting(roleCtx) && nav({ href: "/pms/costing", label: "Costing", icon: Coins })}
-      {canViewCosting(roleCtx) && nav({ href: "/pms/timesheets", label: "Timesheet Review", icon: Clock })}
+      {canReviewTimesheets(roleCtx) && nav({ href: "/pms/timesheets", label: "Timesheet Review", icon: Clock })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
       {nav({ href: "/pms/notifications", label: "Notifications", icon: Bell })}

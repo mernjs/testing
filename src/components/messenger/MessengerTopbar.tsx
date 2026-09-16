@@ -1,31 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Users, FolderKanban, ShieldCheck } from "lucide-react";
+import { Search, Users, FolderKanban, ShieldCheck, LayoutDashboard } from "lucide-react";
 import MessengerMobileSidebar from "@/components/messenger/MessengerMobileSidebar";
 import MessengerNotificationsBell, { type BellItem } from "@/components/messenger/MessengerNotificationsBell";
 import { ConnectionPill } from "@/components/messenger/ConnectionPill";
 import ThemeToggle from "@/components/lms/ThemeToggle";
 import { buttonVariants } from "@/components/ui/button";
-import { primaryChatRoleLabel, hasChatStaffRole, type ChatRole } from "@/lib/messenger-roles";
+import { primaryChatRoleLabel, type ChatRole } from "@/lib/messenger-roles";
+import { normalizeRoles } from "@/lib/hrms-roles";
+import { normalizePmsRoles } from "@/lib/pms-roles";
 
 export default function MessengerTopbar({
   roles,
-  permissionOverrides,
+  allRoles,
   notifications,
   unread,
   unreadDms,
   unreadChannels,
 }: {
   roles: ChatRole[];
-  permissionOverrides?: Record<string, boolean>;
+  allRoles: string[];
   notifications: BellItem[];
   unread: number;
   unreadDms: number;
   unreadChannels: number;
 }) {
-  const staff = hasChatStaffRole({ roles, permissionOverrides });
   const isSuperAdmin = roles.includes("super_admin");
+  const hasHrms = normalizeRoles(allRoles).length > 0;
+  const hasPms = normalizePmsRoles(allRoles).length > 0;
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <MessengerMobileSidebar
@@ -41,6 +44,14 @@ export default function MessengerTopbar({
 
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
         <ConnectionPill />
+        <Link
+          href="/workspace"
+          className={buttonVariants({ variant: "outline", size: "sm", className: "hidden transition-transform duration-200 hover:scale-105 lg:inline-flex" })}
+          aria-label="Open Staff Hub"
+        >
+          <LayoutDashboard className="size-3.5" data-icon="inline-start" />
+          <span className="hidden sm:inline">Hub</span>
+        </Link>
         {isSuperAdmin && (
           <Link
             href="/admin"
@@ -60,25 +71,25 @@ export default function MessengerTopbar({
           <span className="hidden md:inline">Search</span>
         </Link>
 
-        {staff && (
-          <>
-            <Link
-              href="/pms"
-              className={buttonVariants({ variant: "outline", size: "sm", className: "hidden transition-transform duration-200 hover:scale-105 lg:inline-flex" })}
-              aria-label="Open PMS"
-            >
-              <FolderKanban className="size-3.5" data-icon="inline-start" />
-              <span className="hidden sm:inline">PMS</span>
-            </Link>
-            <Link
-              href="/hrms"
-              className={buttonVariants({ variant: "outline", size: "sm", className: "hidden transition-transform duration-200 hover:scale-105 lg:inline-flex" })}
-              aria-label="Open HRMS"
-            >
-              <Users className="size-3.5" data-icon="inline-start" />
-              <span className="hidden sm:inline">HRMS</span>
-            </Link>
-          </>
+        {hasPms && (
+          <Link
+            href="/pms"
+            className={buttonVariants({ variant: "outline", size: "sm", className: "hidden transition-transform duration-200 hover:scale-105 lg:inline-flex" })}
+            aria-label="Open PMS"
+          >
+            <FolderKanban className="size-3.5" data-icon="inline-start" />
+            <span className="hidden sm:inline">PMS</span>
+          </Link>
+        )}
+        {hasHrms && (
+          <Link
+            href="/hrms"
+            className={buttonVariants({ variant: "outline", size: "sm", className: "hidden transition-transform duration-200 hover:scale-105 lg:inline-flex" })}
+            aria-label="Open HRMS"
+          >
+            <Users className="size-3.5" data-icon="inline-start" />
+            <span className="hidden sm:inline">HRMS</span>
+          </Link>
         )}
 
         <MessengerNotificationsBell items={notifications} unread={unread} />

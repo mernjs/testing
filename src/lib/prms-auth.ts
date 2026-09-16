@@ -44,6 +44,10 @@ export interface CurrentPrmsUser {
   id: string;
   email: string;
   roles: PrmsRole[];
+  /** Raw, unfiltered `admin_users.roles` — used only to decide whether this
+   * account also has access to OTHER panels (cross-panel nav links), never
+   * as PRMS's own gate (use `roles` above for that). */
+  allRoles: string[];
   /** Per-capability overrides from the Super Admin — see `permission-overrides.ts`. */
   permissionOverrides: Record<string, boolean>;
   /** Linked `hrms_employees` id — set for accounts that are also HRMS employees. */
@@ -155,6 +159,7 @@ export async function getSessionPrmsUser(token: string | undefined | null): Prom
     id: user._id.toString(),
     email: user.email,
     roles,
+    allRoles: user.roles ?? [],
     permissionOverrides: user.permissionOverrides ?? {},
     employeeId: user.employeeId ?? null,
     mustChangePassword: user.mustChangePassword === true,

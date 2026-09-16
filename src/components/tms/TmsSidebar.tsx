@@ -24,7 +24,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { TmsRole } from "@/lib/tms-roles";
-import { canManageSettings, canViewAuditLog, canManagePayments, hasTmsStaffRole } from "@/lib/tms-roles";
+import { canManageSettings, canViewAuditLog, canManagePayments, canManageTraining, hasTmsStaffRole } from "@/lib/tms-roles";
 
 function NavLink({
   href,
@@ -146,8 +146,8 @@ export default function TmsSidebar({
       <SectionLabel collapsed={collapsed}>Records</SectionLabel>
       {nav({ href: "/tms/certificates", label: "Certificates", icon: BadgeCheck })}
       {canManagePayments(roleCtx) && nav({ href: "/tms/payments", label: "Payments", icon: Wallet })}
-      {nav({ href: "/tms/placements", label: "Placements", icon: Briefcase })}
-      {nav({ href: "/tms/reports", label: "Reports", icon: BarChart3 })}
+      {canManageTraining(roleCtx) && nav({ href: "/tms/placements", label: "Placements", icon: Briefcase })}
+      {canManageTraining(roleCtx) && nav({ href: "/tms/reports", label: "Reports", icon: BarChart3 })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
       {nav({ href: "/tms/notifications", label: "Notifications", icon: Bell })}
