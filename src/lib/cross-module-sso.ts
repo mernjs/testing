@@ -7,6 +7,8 @@ import { normalizePmsRoles } from "@/lib/pms-roles";
 import { createPmsSession, setPmsSessionCookie, clearPmsSessionCookie } from "@/lib/pms-auth";
 import { normalizePrmsRoles } from "@/lib/prms-roles";
 import { createPrmsSession, setPrmsSessionCookie, clearPrmsSessionCookie } from "@/lib/prms-auth";
+import { normalizeFmsRoles } from "@/lib/fms-roles";
+import { createFmsSession, setFmsSessionCookie, clearFmsSessionCookie } from "@/lib/fms-auth";
 import { normalizeTmsRoles } from "@/lib/tms-roles";
 import { createTmsSession, setTmsSessionCookie, clearTmsSessionCookie } from "@/lib/tms-auth";
 import { normalizeChatRoles } from "@/lib/messenger-roles";
@@ -46,7 +48,7 @@ import { createHubSession, setHubSessionCookie, clearHubSessionCookie } from "@/
  * applicant records, structurally outside this system.
  */
 
-export type SsoModule = "hrms" | "pms" | "prms" | "tms" | "messenger" | "lms" | "admin" | "hub";
+export type SsoModule = "hrms" | "pms" | "prms" | "tms" | "messenger" | "lms" | "admin" | "hub" | "fms";
 
 interface ModuleEntry {
   key: SsoModule;
@@ -95,6 +97,14 @@ const MODULES: ModuleEntry[] = [
     clearCookie: clearPrmsSessionCookie,
     collection: "prms_sessions",
     hasAccess: (roles) => normalizePrmsRoles(roles).length > 0,
+  },
+  {
+    key: "fms",
+    create: createFmsSession,
+    setCookie: setFmsSessionCookie,
+    clearCookie: clearFmsSessionCookie,
+    collection: "fms_sessions",
+    hasAccess: (roles) => normalizeFmsRoles(roles).length > 0,
   },
   {
     key: "tms",

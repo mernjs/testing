@@ -265,6 +265,41 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       },
     ],
   },
+  {
+    module: "Finance (FMS)",
+    permissions: [
+      {
+        key: "fms.isFmsAdmin",
+        label: "FMS admin actions",
+        description: "Everything a Finance Admin can do — the broadest single grant in this module.",
+      },
+      {
+        key: "fms.canManageTransactions",
+        label: "Manage transactions",
+        description: "Create and edit transactions, customers-side and vendors-side financial records.",
+      },
+      {
+        key: "fms.canApproveTransactions",
+        label: "Approve transactions",
+        description: "Move a transaction through pending approval to approved or rejected.",
+      },
+      {
+        key: "fms.canManageAccounts",
+        label: "Manage chart of accounts",
+        description: "Create and edit Chart of Accounts entries and other FMS settings.",
+      },
+      {
+        key: "fms.canViewAuditLog",
+        label: "View audit log",
+        description: "Read the FMS audit trail.",
+      },
+      {
+        key: "fms.canViewReports",
+        label: "View reports",
+        description: "View the full FMS dashboard detail and reports.",
+      },
+    ],
+  },
 ];
 
 export const ALL_PERMISSION_KEYS: string[] = PERMISSION_GROUPS.flatMap((g) => g.permissions.map((p) => p.key));

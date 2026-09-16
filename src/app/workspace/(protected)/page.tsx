@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   Clock,
   CalendarDays,
+  Wallet,
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { normalizeRoles } from "@/lib/hrms-roles";
@@ -18,6 +19,7 @@ import { normalizePrmsRoles } from "@/lib/prms-roles";
 import { normalizeTmsRoles } from "@/lib/tms-roles";
 import { normalizeChatRoles } from "@/lib/messenger-roles";
 import { normalizeAdminRoles } from "@/lib/admin-roles";
+import { normalizeFmsRoles } from "@/lib/fms-roles";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardContent } from "@/components/ui/card";
 import KpiCard from "@/components/lms/KpiCard";
@@ -81,6 +83,14 @@ export default async function HubDashboardPage() {
       href: "/tms",
       icon: GraduationCap,
       visible: normalizeTmsRoles(roles).length > 0,
+    },
+    {
+      key: "fms",
+      label: "Finance Management",
+      description: "Transactions, customers, vendors, accounts.",
+      href: "/fms",
+      icon: Wallet,
+      visible: normalizeFmsRoles(roles).length > 0,
     },
     {
       key: "messenger",

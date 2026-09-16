@@ -1,5 +1,8 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+> **New here?** See [PANELS.md](./PANELS.md) for what each panel is, why it
+> was built, and what it's for — this file covers local dev setup only.
+
 ## Getting Started
 
 First, run the development server:

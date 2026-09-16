@@ -3,6 +3,7 @@ import { PMS_ROLES, PMS_ROLE_META } from "@/lib/pms-roles";
 import { PRMS_ROLES, PRMS_ROLE_META } from "@/lib/prms-roles";
 import { TMS_ROLES, TMS_ROLE_META } from "@/lib/tms-roles";
 import { CHAT_ROLES, CHAT_ROLE_META } from "@/lib/messenger-roles";
+import { FMS_ROLES, FMS_ROLE_META } from "@/lib/fms-roles";
 
 /**
  * Every real role literal that can appear in `admin_users.roles`, grouped by
@@ -44,6 +45,7 @@ export const ROLE_GROUPS: RoleGroup[] = [
   group("Procurement", PRMS_ROLES, PRMS_ROLE_META),
   group("Training", TMS_ROLES, TMS_ROLE_META),
   group("YashChat", CHAT_ROLES, CHAT_ROLE_META),
+  group("Finance", FMS_ROLES, FMS_ROLE_META),
 ];
 
 export const ALL_KNOWN_ROLES: string[] = [

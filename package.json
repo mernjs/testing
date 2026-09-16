@@ -21,7 +21,9 @@
     "prms:seed-demo": "node --env-file=.env scripts/seed-prms-demo.mjs",
     "chat:grant": "node --env-file=.env scripts/grant-chat-role.mjs",
     "chat:grant-hrms": "node --env-file=.env scripts/grant-messenger-to-hrms.mjs",
-    "chat:seed-demo": "node --env-file=.env scripts/seed-messenger-demo.mjs"
+    "chat:seed-demo": "node --env-file=.env scripts/seed-messenger-demo.mjs",
+    "fms:grant": "node --env-file=.env scripts/grant-fms-role.mjs",
+    "fms:seed-demo": "node --env-file=.env scripts/seed-fms-demo.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
