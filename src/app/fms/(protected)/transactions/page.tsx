@@ -12,12 +12,16 @@ import { searchTransactions, serializeTransaction } from "@/lib/fms/transactions
 import { listClientOptions } from "@/lib/pms/clients";
 import { listVendorOptions } from "@/lib/prms/vendors";
 import { listProjectOptions } from "@/lib/fms/pickers";
-import { listAccountOptions } from "@/lib/fms/accounts";
+import { listAccountOptions, getAccountByCode } from "@/lib/fms/accounts";
+import { listBankAccountOptions } from "@/lib/fms/bank-accounts";
+import { listCashAccountOptions } from "@/lib/fms/cash-accounts";
+import type { FundAccountOption } from "@/components/fms/FundTransferForm";
 import {
   TRANSACTION_TYPES,
   TRANSACTION_STATUSES,
   isValidTransactionType,
   isValidTransactionStatus,
+  isValidFundAccountType,
   formatMoney,
 } from "@/lib/fms/constants";
 import { formatDate } from "@/lib/utils";
@@ -34,21 +38,32 @@ export default async function TransactionsPage({
   const page = Math.max(Number(sp.page) || 1, 1);
   const type = sp.type && isValidTransactionType(sp.type) ? sp.type : undefined;
   const status = sp.status && isValidTransactionStatus(sp.status) ? sp.status : undefined;
+  const fundAccountType = sp.fundAccountType && isValidFundAccountType(sp.fundAccountType) ? sp.fundAccountType : undefined;
   const sortBy = (sp.sortBy as "transactionDate" | "createdAt" | "amount" | "transactionNumber" | "status") || "transactionDate";
   const sortDir = sp.sortDir === "asc" ? "asc" : "desc";
 
-  const [result, customers, vendors, projects, accounts] = await Promise.all([
-    searchTransactions({ search: sp.search, type, status, page, pageSize: 20, sortBy, sortDir }),
+  /** `accountCode` (e.g. `5500` Travel) resolves to the real `accountId` — the sidebar can't hardcode a DB-generated UUID. */
+  const accountByCode = sp.accountCode ? await getAccountByCode(sp.accountCode) : null;
+  const accountId = accountByCode?._id;
+
+  const [result, customers, vendors, projects, accounts, bankAccounts, cashAccounts] = await Promise.all([
+    searchTransactions({ search: sp.search, type, status, fundAccountType, accountId, page, pageSize: 20, sortBy, sortDir }),
     listClientOptions(),
     listVendorOptions({ activeOnly: true }),
     listProjectOptions(),
     listAccountOptions({ activeOnly: true }),
+    listBankAccountOptions(),
+    listCashAccountOptions(),
   ]);
 
   const customerOpts = customers.map((c) => ({ _id: c._id, label: `${c.companyName} (${c.clientCode})` }));
   const vendorOpts = vendors.map((v) => ({ _id: v._id, label: v.companyName }));
   const projectOpts = projects.map((p) => ({ _id: p._id, label: p.name }));
   const accountOpts = accounts.map((a) => ({ _id: a._id, label: `${a.code} · ${a.name}` }));
+  const fundAccountOpts: FundAccountOption[] = [
+    ...bankAccounts.map((a) => ({ key: `bank:${a._id}`, type: "bank" as const, id: a._id, label: `${a.accountName} (Bank)` })),
+    ...cashAccounts.map((a) => ({ key: `cash:${a._id}`, type: "cash" as const, id: a._id, label: `${a.accountName} (Cash)` })),
+  ];
 
   const customerNameById = new Map(customers.map((c) => [c._id, c.companyName]));
   const vendorNameById = new Map(vendors.map((v) => [v._id, v.companyName]));
@@ -62,7 +77,10 @@ export default async function TransactionsPage({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Transactions</h1>
-          <p className="text-sm text-muted-foreground">{result.total} transaction{result.total === 1 ? "" : "s"} logged.</p>
+          <p className="text-sm text-muted-foreground">
+            {result.total} transaction{result.total === 1 ? "" : "s"} logged.
+            {accountByCode && ` Filtered to ${accountByCode.name}.`}
+          </p>
         </div>
         {canManage && (
           <TransactionForm
@@ -70,6 +88,7 @@ export default async function TransactionsPage({
             vendors={vendorOpts}
             projects={projectOpts}
             accounts={accountOpts}
+            fundAccounts={fundAccountOpts}
             trigger={
               <Button type="button" size="sm">
                 <Plus className="size-3.5" data-icon="inline-start" />

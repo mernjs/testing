@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * FMS demo seeder — Phase 1 dataset for the Finance Management System.
+ * FMS demo seeder — Phase 1 + Phase 2 dataset for the Finance Management
+ * System.
  *
  *   npm run fms:seed-demo
  *
@@ -8,13 +9,15 @@
  * rebuilds them. Never touches leads / campaigns / chatbot / hrms_* / pms_* /
  * prms_* / tms_* / your admin accounts.
  *
- * Seeds the Chart of Accounts defaults plus a spread of transactions across
- * every status and type. When `pms_clients` / `prms_vendors` already have
- * data (e.g. after `npm run pms:seed-demo` / `npm run prms:seed-demo`),
- * income/expense transactions reference those real records so the FMS
- * Customers / Vendors pages show real receivables/payables; otherwise
- * transactions are still seeded without a customer/vendor reference so the
- * dashboard isn't empty.
+ * Seeds the Chart of Accounts defaults, a spread of transactions across
+ * every status and type, and (Phase 2) customer invoices with a spread of
+ * statuses, receipts applied against them, and one credit note. When
+ * `pms_clients` / `prms_vendors` already have data (e.g. after `npm run
+ * pms:seed-demo` / `npm run prms:seed-demo`), records reference those real
+ * customers/vendors so the FMS pages show real receivables/payables;
+ * otherwise transactions are still seeded without a reference so the
+ * dashboard isn't empty. A debit note is only seeded if a real PRMS vendor
+ * bill (`prms_invoices`) already exists — never fabricated.
  *
  * After running, grant yourself access with `npm run fms:grant`
  * (roles: super_admin — or fms_admin) and sign in at /fms/login.
@@ -23,7 +26,17 @@
 import { MongoClient } from "mongodb";
 import { randomUUID } from "node:crypto";
 
-const OWNED_COLLECTIONS = ["fms_transactions", "fms_accounts", "fms_activity_logs", "fms_counters"];
+const OWNED_COLLECTIONS = [
+  "fms_transactions",
+  "fms_accounts",
+  "fms_activity_logs",
+  "fms_counters",
+  "fms_invoices",
+  "fms_receipts",
+  "fms_refunds",
+  "fms_credit_notes",
+  "fms_debit_notes",
+];
 
 const now = new Date();
 function daysAgo(n) {
@@ -238,7 +251,165 @@ async function main() {
 
     await db.collection("fms_transactions").insertMany(txns);
 
-    console.log(`\nSeeded ${accountDocs.length} accounts and ${txns.length} transactions.`);
+    // ------------------------------------------------------------------
+    // Phase 2: Invoices, Receipts, Credit Notes (customer side)
+    // ------------------------------------------------------------------
+    console.log("Seeding invoices, receipts and a credit note...");
+    async function nextYearNumber(prefix, year) {
+      const key = `${prefix}_${year}`;
+      const res = await counters.findOneAndUpdate({ _id: key }, { $inc: { seq: 1 } }, { upsert: true, returnDocument: "after" });
+      return `${prefix}-${year}-${String(res.seq).padStart(6, "0")}`;
+    }
+
+    function priceItems(items, discount) {
+      const priced = items.map((it) => ({
+        description: it.description,
+        quantity: it.quantity,
+        unitPrice: round2(it.unitPrice),
+        taxRate: it.taxRate,
+        lineTotal: round2(it.quantity * it.unitPrice),
+        taxAmount: 0,
+      }));
+      const subtotal = round2(priced.reduce((s, it) => s + it.lineTotal, 0));
+      const disc = round2(Math.min(discount, subtotal));
+      const taxableAmount = round2(subtotal - disc);
+      const ratio = subtotal > 0 ? taxableAmount / subtotal : 0;
+      let taxAmount = 0;
+      for (const it of priced) {
+        it.taxAmount = round2(it.lineTotal * ratio * (it.taxRate / 100));
+        taxAmount += it.taxAmount;
+      }
+      taxAmount = round2(taxAmount);
+      return { items: priced, subtotal, discount: disc, taxableAmount, taxAmount, totalAmount: round2(taxableAmount + taxAmount) };
+    }
+
+    const INVOICE_PLANS = [
+      { statusIdx: 0, daysAgo: 45, dueInDays: 30, status: "paid", paidFraction: 1 },
+      { statusIdx: 1, daysAgo: 20, dueInDays: 30, status: "partially_paid", paidFraction: 0.4 },
+      { statusIdx: 2, daysAgo: 10, dueInDays: 30, status: "sent", paidFraction: 0 },
+      { statusIdx: 3, daysAgo: 60, dueInDays: 20, status: "overdue", paidFraction: 0 },
+      { statusIdx: 4, daysAgo: 5, dueInDays: 30, status: "draft", paidFraction: 0 },
+    ];
+
+    const invoiceDocs = [];
+    const receiptDocs = [];
+    let creditNoteDoc = null;
+
+    for (let i = 0; i < INVOICE_PLANS.length; i++) {
+      const plan = INVOICE_PLANS[i];
+      const client = clients.length ? clients[plan.statusIdx % clients.length] : null;
+      const invoiceDate = daysAgo(plan.daysAgo);
+      const dueDate = new Date(invoiceDate.getTime() + plan.dueInDays * 86400000);
+      const year = invoiceDate.getFullYear();
+      const priced = priceItems(
+        [
+          { description: "Project milestone delivery", quantity: 1, unitPrice: 85000 + i * 12000, taxRate: 18 },
+          { description: "Support & maintenance (monthly)", quantity: 1, unitPrice: 15000, taxRate: 18 },
+        ],
+        i === 1 ? 2000 : 0
+      );
+      const amountPaid = round2(priced.totalAmount * plan.paidFraction);
+      const invoiceId = randomUUID();
+      const invoiceNumber = await nextYearNumber("INV", year);
+      const invoice = {
+        _id: invoiceId,
+        invoiceNumber,
+        customerId: client?._id ?? null,
+        customerName: client?.companyName ?? "Walk-in Customer",
+        projectId: null,
+        invoiceDate: invoiceDate.toISOString().slice(0, 10),
+        dueDate: dueDate.toISOString().slice(0, 10),
+        items: priced.items,
+        discount: priced.discount,
+        subtotal: priced.subtotal,
+        taxAmount: priced.taxAmount,
+        totalAmount: priced.totalAmount,
+        amountPaid,
+        amountCredited: 0,
+        currency: client?.billing?.currency || "INR",
+        paymentTerms: "Net 30",
+        poNumber: null,
+        status: plan.status,
+        notes: null,
+        ...stamp(invoiceDate),
+      };
+      invoiceDocs.push(invoice);
+
+      if (amountPaid > 0) {
+        const receiptDate = new Date(invoiceDate.getTime() + 5 * 86400000);
+        const receiptId = randomUUID();
+        receiptDocs.push({
+          _id: receiptId,
+          receiptNumber: await nextYearNumber("REC", receiptDate.getFullYear()),
+          customerId: invoice.customerId,
+          customerName: invoice.customerName,
+          receiptDate,
+          amount: amountPaid,
+          method: "bank_transfer",
+          transactionReference: `UTR${1000 + i}`,
+          allocations: [{ invoiceId, invoiceNumber, amount: amountPaid }],
+          advanceAmount: 0,
+          currency: invoice.currency,
+          status: "completed",
+          transactionId: null,
+          notes: null,
+          ...stamp(receiptDate),
+        });
+      }
+
+      // One credit note against the "sent" invoice — a small discount correction.
+      if (plan.status === "sent" && !creditNoteDoc) {
+        const creditAmount = round2(priced.totalAmount * 0.05);
+        creditNoteDoc = {
+          _id: randomUUID(),
+          creditNoteNumber: await nextYearNumber("CRN", year),
+          invoiceId,
+          invoiceNumber,
+          customerId: invoice.customerId,
+          customerName: invoice.customerName,
+          amount: creditAmount,
+          reason: "Post-delivery discount adjustment",
+          status: "issued",
+          issuedAt: invoiceDate,
+          ...stamp(invoiceDate),
+        };
+        invoice.amountCredited = creditAmount;
+      }
+    }
+
+    await db.collection("fms_invoices").insertMany(invoiceDocs);
+    if (receiptDocs.length) await db.collection("fms_receipts").insertMany(receiptDocs);
+    if (creditNoteDoc) await db.collection("fms_credit_notes").insertOne(creditNoteDoc);
+
+    // ------------------------------------------------------------------
+    // Phase 2: Debit Note (vendor side) — only if a real PRMS bill exists.
+    // ------------------------------------------------------------------
+    let debitNoteCount = 0;
+    const realBill = await db.collection("prms_invoices").findOne({ deletedAt: null });
+    if (realBill) {
+      await db.collection("fms_debit_notes").insertOne({
+        _id: randomUUID(),
+        debitNoteNumber: await nextYearNumber("DBN", now.getFullYear()),
+        billId: realBill._id,
+        billNumber: realBill.invoiceNumber,
+        vendorId: realBill.vendorId,
+        vendorName: realBill.vendorName,
+        amount: round2(realBill.totalAmount * 0.03),
+        reason: "Freight & handling adjustment",
+        status: "issued",
+        issuedAt: now,
+        ...stamp(now),
+      });
+      debitNoteCount = 1;
+      console.log(`Seeded 1 debit note against real PRMS bill ${realBill.invoiceNumber}.`);
+    } else {
+      console.log("No PRMS vendor bills found — skipped seeding a debit note (never fabricated).");
+    }
+
+    console.log(
+      `\nSeeded ${accountDocs.length} accounts, ${txns.length} transactions, ${invoiceDocs.length} invoices, ` +
+        `${receiptDocs.length} receipts, ${creditNoteDoc ? 1 : 0} credit note, ${debitNoteCount} debit note.`
+    );
     console.log("Grant yourself access with `npm run fms:grant` (role: super_admin or fms_admin), then sign in at /fms/login.");
   } finally {
     await client.close();

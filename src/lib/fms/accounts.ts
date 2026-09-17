@@ -60,6 +60,26 @@ export async function getAccount(id: string): Promise<Account | null> {
   return collection.findOne({ _id: id, ...notDeleted });
 }
 
+export async function getAccountByCode(code: string): Promise<Account | null> {
+  const collection = await getCollection();
+  return collection.findOne({ code, ...notDeleted });
+}
+
+/**
+ * Codes of the shared control accounts Phase 5's journal-posting hook maps
+ * fund accounts and unsettled-side fallbacks onto — see `fms/journal.ts`.
+ * One GL account per fund-account *type* (not per literal bank/cash account).
+ */
+export const CONTROL_ACCOUNT_CODES = {
+  cash: "1000",
+  bank: "1010",
+  retainedEarnings: "3000",
+  accountsReceivable: "1100",
+  accountsPayable: "2000",
+  otherIncome: "4900",
+  otherExpense: "5900",
+} as const;
+
 /** Lightweight list for the transaction form's category/account dropdown. */
 export async function listAccountOptions(
   opts: { type?: AccountType; activeOnly?: boolean } = {}
@@ -171,6 +191,8 @@ export const DEFAULT_ACCOUNTS: Omit<AccountWriteData, "parentId">[] = [
   { code: "2100", name: "Payroll Payable", type: "liability", description: "Salaries and wages payable.", isActive: true },
   { code: "2200", name: "Tax Payable", type: "liability", description: "Taxes collected/owed.", isActive: true },
   { code: "2900", name: "Other Liabilities", type: "liability", description: "Miscellaneous liabilities.", isActive: true },
+  // Equity
+  { code: "3000", name: "Retained Earnings", type: "equity", description: "Cumulative net income — computed live for the Balance Sheet, not journal-posted.", isActive: true },
   // Income
   { code: "4000", name: "Project Revenue", type: "income", description: "Revenue from client projects.", isActive: true },
   { code: "4100", name: "Training Revenue", type: "income", description: "Revenue from training & internship programs.", isActive: true },

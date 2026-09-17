@@ -294,9 +294,29 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
         description: "Read the FMS audit trail.",
       },
       {
+        key: "fms.canReconcile",
+        label: "Reconcile bank & cash",
+        description: "Enter/match bank statement lines and record cash counts.",
+      },
+      {
+        key: "fms.canManageBanking",
+        label: "Manage bank & cash accounts",
+        description: "Create/edit bank and cash accounts and record transfers between them.",
+      },
+      {
         key: "fms.canViewReports",
         label: "View reports",
         description: "View the full FMS dashboard detail and reports.",
+      },
+      {
+        key: "fms.canManageTaxConfig",
+        label: "Manage tax configuration",
+        description: "Edit the tax-rate list used when entering taxable transactions and invoices.",
+      },
+      {
+        key: "fms.canManageFiscalPeriods",
+        label: "Manage fiscal periods",
+        description: "Define fiscal periods and close/reopen them — closing posts a real journal entry.",
       },
     ],
   },

@@ -4,8 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
-import { TransactionStatusBadge, TransactionTypeBadge } from "@/components/fms/StatusBadges";
+import { TransactionStatusBadge, TransactionTypeBadge, InvoiceStatusBadge } from "@/components/fms/StatusBadges";
 import { getCustomerDetail } from "@/lib/fms/customers";
+import { invoiceBalance, serializeInvoice } from "@/lib/fms/invoices";
 import { getClientStatusMeta } from "@/lib/pms/constants";
 import { formatMoney } from "@/lib/fms/constants";
 import { formatDate } from "@/lib/utils";
@@ -14,7 +15,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
   const { id } = await params;
   const detail = await getCustomerDetail(id);
   if (!detail) notFound();
-  const { client, financials, transactions } = detail;
+  const { client, financials, transactions, invoices } = detail;
 
   return (
     <div className="space-y-4">
@@ -47,10 +48,32 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
           <CardContent className="space-y-2 text-sm">
             <Row label="Total Received" value={formatMoney(financials.totalReceived, client.billing.currency)} />
             <Row label="Outstanding Receivable" value={formatMoney(financials.totalOutstanding, client.billing.currency)} />
-            <Row label="Income Transactions" value={String(financials.transactionCount)} />
+            <Row label="Invoices" value={String(financials.transactionCount)} />
           </CardContent>
         </GlassCard>
       </div>
+
+      <GlassCard>
+        <CardHeader><CardTitle>Invoices</CardTitle></CardHeader>
+        <CardContent>
+          {invoices.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No invoices raised for this customer yet.</p>
+          ) : (
+            <ul className="divide-y divide-border/40">
+              {invoices.map(serializeInvoice).map((inv) => (
+                <li key={inv._id} className="flex items-center justify-between gap-3 py-2 text-sm">
+                  <Link href={`/fms/invoices/${inv._id}`} className="font-medium text-primary hover:underline">{inv.invoiceNumber}</Link>
+                  <div className="flex items-center gap-3 text-muted-foreground">
+                    <span>{formatDate(inv.dueDate)}</span>
+                    <span className="font-medium text-foreground">{formatMoney(invoiceBalance(inv), inv.currency)}</span>
+                    <InvoiceStatusBadge status={inv.status} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </GlassCard>
 
       <GlassCard>
         <CardHeader><CardTitle>Transactions</CardTitle></CardHeader>

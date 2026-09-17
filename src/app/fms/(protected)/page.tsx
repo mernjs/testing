@@ -9,6 +9,8 @@ import {
   CheckSquare,
   Receipt,
   PiggyBank,
+  GraduationCap,
+  CreditCard,
 } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -109,7 +111,7 @@ export default async function FmsDashboardPage({
         </KpiGrid>
       </div>
 
-      {/* Cash, Banking, Payroll & Tax — Phase 4/3/7, shown at 0 until those modules ship */}
+      {/* Cash, Banking, Payroll & Tax */}
       <div>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Cash, Banking, Payroll &amp; Tax</h2>
         <KpiGrid>
@@ -117,6 +119,8 @@ export default async function FmsDashboardPage({
           <KpiCard label="Total Bank Balance" value={stats.totalBankBalance} format="currency" icon={<Landmark className="size-4" />} />
           <KpiCard label="Payroll Payable" value={stats.payrollPayable} format="currency" icon={<Wallet className="size-4" />} />
           <KpiCard label="Tax Payable" value={stats.taxPayable} format="currency" icon={<PiggyBank className="size-4" />} />
+          <KpiCard label="Training Revenue (TMS)" value={stats.trainingRevenue} format="currency" icon={<GraduationCap className="size-4" />} />
+          <KpiCard label="Subscription Commitment (mo.)" value={stats.subscriptionCommitment} format="currency" icon={<CreditCard className="size-4" />} />
         </KpiGrid>
       </div>
 

@@ -2,7 +2,7 @@ import "server-only";
 import { getDb } from "@/lib/mongodb";
 import { escapeRegExp } from "@/lib/text-search";
 import { newId, createStamp, updateStamp, notDeleted, nextYearSequence, formatYearCode, type AuditFields } from "@/lib/fms/db";
-import { DEFAULT_CURRENCY, round2, type PaymentMethod } from "@/lib/fms/constants";
+import { DEFAULT_CURRENCY, round2, type PaymentMethod, type FundAccountType } from "@/lib/fms/constants";
 import { getInvoice, applyReceiptToInvoice, invoiceBalance, type Invoice } from "@/lib/fms/invoices";
 import { postSystemTransaction, changeTransactionStatus } from "@/lib/fms/transactions";
 
@@ -141,6 +141,8 @@ export interface RecordReceiptData {
   transactionReference: string | null;
   allocations: { invoiceId: string; amount: number }[];
   currency: string;
+  fundAccountId?: string | null;
+  fundAccountType?: FundAccountType | null;
   notes: string | null;
 }
 
@@ -215,6 +217,8 @@ export async function recordReceipt(
       projectId: null,
       department: null,
       accountId: null,
+      fundAccountId: data.fundAccountId ?? null,
+      fundAccountType: data.fundAccountType ?? null,
       taxAmount: 0,
       referenceNumber: data.transactionReference,
       description: `Receipt ${doc.receiptNumber} from ${data.customerName}`,
@@ -223,6 +227,7 @@ export async function recordReceipt(
     actorId,
     actorEmail
   );
+  if ("ok" in txn) return txn;
   doc.transactionId = txn._id;
 
   await collection.insertOne(doc);

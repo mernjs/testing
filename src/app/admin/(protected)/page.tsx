@@ -27,6 +27,8 @@ import {
   FolderKanban,
   Briefcase,
   Globe,
+  Landmark,
+  AlertTriangle,
 } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -46,6 +48,7 @@ const MODULE_ICONS: Record<string, React.ReactNode> = {
   prms: <ShoppingCart className="size-4" />,
   careers: <Briefcase className="size-4" />,
   portal: <Globe className="size-4" />,
+  fms: <Landmark className="size-4" />,
 };
 
 export default async function AdminCommandCenterPage() {
@@ -145,6 +148,19 @@ export default async function AdminCommandCenterPage() {
             <CardContent><CategoryBarChart data={stats.financial.expenseByCategory} /></CardContent>
           </GlassCard>
         </div>
+      </ExecutiveSection>
+
+      <ExecutiveSection title="Finance (FMS)" description="Real, ledger-backed figures from the Finance Management System — separate from the Business section's project/training/CRM-derived estimate above.">
+        <KpiGrid>
+          <KpiCard label="Ledger Revenue" value={stats.finance.totalRevenue} format="currency" icon={<IndianRupee className="size-4" />} />
+          <KpiCard label="Ledger Expenses" value={stats.finance.totalExpenses} format="currency" icon={<ReceiptText className="size-4" />} />
+          <KpiCard label="Net Profit" value={stats.finance.netProfit} format="currency" tone={stats.finance.netProfit >= 0 ? "up" : "down"} icon={<PiggyBank className="size-4" />} />
+          <KpiCard label="Cash + Bank" value={stats.finance.totalCash + stats.finance.totalBankBalance} format="currency" accent icon={<Wallet className="size-4" />} />
+          <KpiCard label="Accounts Receivable" value={stats.finance.accountsReceivable} format="currency" icon={<TrendingUp className="size-4" />} />
+          <KpiCard label="Accounts Payable" value={stats.finance.accountsPayable} format="currency" icon={<ReceiptText className="size-4" />} />
+          <KpiCard label="Pending Approvals" value={stats.finance.pendingApprovals} tone={stats.finance.pendingApprovals > 0 ? "down" : undefined} icon={<AlarmClock className="size-4" />} />
+          <KpiCard label="Overdue Invoices" value={stats.finance.overdueInvoices} tone={stats.finance.overdueInvoices > 0 ? "down" : undefined} icon={<AlertTriangle className="size-4" />} />
+        </KpiGrid>
       </ExecutiveSection>
 
       <ExecutiveSection title="Centralized Module Overview" description="Live status from every module — open any of them for the full picture.">

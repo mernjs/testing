@@ -4,16 +4,17 @@ import { Badge } from "@/components/ui/badge";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
-import { VendorCategoryBadge } from "@/components/prms/StatusBadges";
+import { VendorCategoryBadge, InvoiceStatusBadge } from "@/components/prms/StatusBadges";
 import { TransactionStatusBadge, TransactionTypeBadge } from "@/components/fms/StatusBadges";
 import { getVendorDetail } from "@/lib/fms/vendors";
+import { listBills } from "@/lib/fms/bills";
 import { getVendorStatusMeta } from "@/lib/prms/constants";
 import { formatMoney } from "@/lib/fms/constants";
 import { formatDate } from "@/lib/utils";
 
 export default async function VendorDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const detail = await getVendorDetail(id);
+  const [detail, bills] = await Promise.all([getVendorDetail(id), listBills({ vendorId: id, pageSize: 100 })]);
   if (!detail) notFound();
   const { vendor, financials, transactions } = detail;
 
@@ -51,10 +52,32 @@ export default async function VendorDetailPage({ params }: { params: Promise<{ i
           <CardContent className="space-y-2 text-sm">
             <Row label="Total Paid" value={formatMoney(financials.totalPaid, vendor.currency)} />
             <Row label="Outstanding Payable" value={formatMoney(financials.totalOutstanding, vendor.currency)} />
-            <Row label="Expense Transactions" value={String(financials.transactionCount)} />
+            <Row label="Bills" value={String(financials.transactionCount)} />
           </CardContent>
         </GlassCard>
       </div>
+
+      <GlassCard>
+        <CardHeader><CardTitle>Bills</CardTitle></CardHeader>
+        <CardContent>
+          {bills.items.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No bills recorded for this vendor yet.</p>
+          ) : (
+            <ul className="divide-y divide-border/40">
+              {bills.items.map((bill) => (
+                <li key={bill._id} className="flex items-center justify-between gap-3 py-2 text-sm">
+                  <Link href={`/fms/bills/${bill._id}`} className="font-medium text-primary hover:underline">{bill.invoiceNumber}</Link>
+                  <div className="flex items-center gap-3 text-muted-foreground">
+                    <span>{formatDate(bill.dueDate)}</span>
+                    <span className="font-medium text-foreground">{formatMoney(bill.outstanding, bill.currency)}</span>
+                    <InvoiceStatusBadge status={bill.status} />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </GlassCard>
 
       <GlassCard>
         <CardHeader><CardTitle>Transactions</CardTitle></CardHeader>

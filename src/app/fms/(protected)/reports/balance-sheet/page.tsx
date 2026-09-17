@@ -1,0 +1,100 @@
+import { CheckCircle2, AlertTriangle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Table, TableBody, TableRow, TableCell } from "@/components/ui/table";
+import GlassCard from "@/components/lms/GlassCard";
+import KpiCard from "@/components/lms/KpiCard";
+import KpiGrid from "@/components/lms/KpiGrid";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
+import { getBalanceSheet } from "@/lib/fms/reports/balance-sheet";
+import { formatMoney } from "@/lib/fms/constants";
+
+function Section({ title, lines, total }: { title: string; lines: { accountId: string; accountCode: string; accountName: string; amount: number }[]; total: number }) {
+  return (
+    <GlassCard interactive={false}>
+      <CardHeader><CardTitle>{title}</CardTitle></CardHeader>
+      <CardContent className="p-0">
+        <Table>
+          <TableBody>
+            {lines.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={2} className="text-center text-muted-foreground">None.</TableCell>
+              </TableRow>
+            )}
+            {lines.map((l) => (
+              <TableRow key={l.accountId}>
+                <TableCell><Badge variant="secondary" className="mr-2">{l.accountCode}</Badge>{l.accountName}</TableCell>
+                <TableCell className="text-right tabular-nums">{formatMoney(l.amount)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <tfoot>
+            <TableRow>
+              <TableCell className="font-bold text-foreground">Total {title}</TableCell>
+              <TableCell className="text-right tabular-nums font-bold">{formatMoney(total)}</TableCell>
+            </TableRow>
+          </tfoot>
+        </Table>
+      </CardContent>
+    </GlassCard>
+  );
+}
+
+export default async function BalanceSheetPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  const sp = await searchParams;
+  const asOfStr = sp.asOf ?? new Date().toISOString().slice(0, 10);
+  const asOf = new Date(`${asOfStr}T23:59:59`);
+  const result = await getBalanceSheet(asOf);
+
+  return (
+    <div className="space-y-4">
+      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Balance Sheet" }]} />
+      <div>
+        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Balance Sheet</h1>
+        <p className="text-sm text-muted-foreground">Assets, liabilities and equity as of {new Date(result.asOf).toLocaleDateString()}. Retained Earnings is computed live, not journal-posted.</p>
+      </div>
+
+      <GlassCard interactive={false}>
+        <CardContent className="py-4">
+          <form className="flex flex-wrap items-end gap-3" method="get">
+            <div>
+              <label className="mb-1 block text-xs text-muted-foreground">As of</label>
+              <Input type="date" name="asOf" defaultValue={asOfStr} className="h-9" />
+            </div>
+            <Button type="submit" size="sm" variant="secondary">Apply</Button>
+          </form>
+        </CardContent>
+      </GlassCard>
+
+      <KpiGrid>
+        <KpiCard label="Total Assets" value={<span>{formatMoney(result.totalAssets)}</span>} accent />
+        <KpiCard label="Total Liabilities" value={<span>{formatMoney(result.totalLiabilities)}</span>} />
+        <KpiCard label="Total Equity" value={<span>{formatMoney(result.totalEquity)}</span>} />
+        <KpiCard
+          label="Status"
+          value={
+            <span className="inline-flex items-center gap-1.5">
+              {result.balanced ? <CheckCircle2 className="size-4 text-green-600" /> : <AlertTriangle className="size-4 text-destructive" />}
+              {result.balanced ? "Balanced" : "Out of balance"}
+            </span>
+          }
+          tone={result.balanced ? undefined : "down"}
+        />
+      </KpiGrid>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Section title="Assets" lines={result.assets} total={result.totalAssets} />
+        <div className="space-y-4">
+          <Section title="Liabilities" lines={result.liabilities} total={result.totalLiabilities} />
+          <Section title="Equity" lines={result.equity} total={result.totalEquity} />
+        </div>
+      </div>
+    </div>
+  );
+}

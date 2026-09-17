@@ -15,7 +15,8 @@ import { canViewCosting } from "@/lib/pms-roles";
 import { getProject } from "@/lib/pms/projects";
 import { getCostingConfig, computeProjectFinancials } from "@/lib/pms/costing";
 import { buildProjectReport } from "@/lib/pms/reports";
-import { formatCurrency } from "@/lib/utils";
+import { projectFinancialSummary } from "@/lib/fms/reports/project-financials";
+import { formatCurrency, cn } from "@/lib/utils";
 
 export default async function ProjectCostingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -25,10 +26,11 @@ export default async function ProjectCostingPage({ params }: { params: Promise<{
   const project = await getProject(id);
   if (!project) notFound();
 
-  const [config, financials, report] = await Promise.all([
+  const [config, financials, report, actual] = await Promise.all([
     getCostingConfig(id),
     computeProjectFinancials(id),
     buildProjectReport(id),
+    projectFinancialSummary(id),
   ]);
   if (!financials || !report) notFound();
 
@@ -96,6 +98,44 @@ export default async function ProjectCostingPage({ params }: { params: Promise<{
         <KpiCard label="Billable Hours" value={f.billableHours} icon={<Clock className="size-4" />} />
         <KpiCard label="Margin" value={f.profitMargin} suffix="%" tone={f.profitMargin >= 0 ? "up" : "down"} icon={<Percent className="size-4" />} />
       </KpiGrid>
+
+      {actual && (
+        <GlassCard interactive={false}>
+          <CardHeader>
+            <CardTitle>Actual Financials (FMS Ledger)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-3 text-xs text-muted-foreground">
+              Real booked revenue and expenses from Finance transactions linked to this project — distinct from the
+              estimated figures above, which are simulated from timesheets and configured rates.
+            </p>
+            <div className="grid gap-x-8 gap-y-1.5 text-sm sm:grid-cols-3">
+              <div className="flex items-center justify-between border-b border-border/40 py-1 sm:block sm:border-0 sm:py-0">
+                <span className="text-muted-foreground">Real Revenue</span>
+                <span className="font-medium tabular-nums text-foreground sm:mt-1 sm:block sm:text-lg">{c(actual.revenue)}</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-border/40 py-1 sm:block sm:border-0 sm:py-0">
+                <span className="text-muted-foreground">Real Expenses</span>
+                <span className="font-medium tabular-nums text-foreground sm:mt-1 sm:block sm:text-lg">{c(actual.expenses)}</span>
+              </div>
+              <div className="flex items-center justify-between py-1 sm:block sm:py-0">
+                <span className="text-muted-foreground">Real Net Profit</span>
+                <span
+                  className={cn(
+                    "font-medium tabular-nums sm:mt-1 sm:block sm:text-lg",
+                    actual.netProfit >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive"
+                  )}
+                >
+                  {c(actual.netProfit)}
+                </span>
+              </div>
+            </div>
+            {actual.transactionCount === 0 && (
+              <p className="mt-3 text-xs text-muted-foreground">No Finance transactions reference this project yet.</p>
+            )}
+          </CardContent>
+        </GlassCard>
+      )}
 
       <div className="grid gap-4 lg:grid-cols-2">
         <GlassCard>

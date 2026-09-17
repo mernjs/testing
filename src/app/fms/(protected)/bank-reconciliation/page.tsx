@@ -1,0 +1,46 @@
+import Link from "next/link";
+import { Scale } from "lucide-react";
+import { CardContent } from "@/components/ui/card";
+import GlassCard from "@/components/lms/GlassCard";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
+import { listBankAccounts, serializeBankAccount } from "@/lib/fms/bank-accounts";
+import { formatMoney } from "@/lib/fms/constants";
+
+export default async function BankReconciliationIndexPage() {
+  const accounts = (await listBankAccounts()).map(serializeBankAccount);
+
+  return (
+    <div className="space-y-4">
+      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Bank Reconciliation" }]} />
+      <div>
+        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Bank Reconciliation</h1>
+        <p className="text-sm text-muted-foreground">Pick a bank account to reconcile.</p>
+      </div>
+
+      {accounts.length === 0 ? (
+        <GlassCard>
+          <CardContent className="py-10 text-center text-sm text-muted-foreground">
+            No bank accounts yet — create one at <Link href="/fms/bank-accounts" className="text-primary hover:underline">/fms/bank-accounts</Link>.
+          </CardContent>
+        </GlassCard>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {accounts.map((a) => (
+            <Link key={a._id} href={`/fms/bank-reconciliation/${a._id}`}>
+              <GlassCard>
+                <CardContent className="flex items-center justify-between gap-3 pt-6">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-foreground">{a.accountName}</p>
+                    <p className="text-sm text-muted-foreground">{a.bankName}</p>
+                    <p className="mt-1 text-sm font-medium">{formatMoney(a.currentBalance, a.currency)}</p>
+                  </div>
+                  <Scale className="size-5 shrink-0 text-muted-foreground" />
+                </CardContent>
+              </GlassCard>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

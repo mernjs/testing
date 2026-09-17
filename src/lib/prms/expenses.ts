@@ -125,6 +125,13 @@ export interface ExpenseFilter {
   vendorId?: string;
   departmentId?: string;
   raisedByUserId?: string;
+  /**
+   * True to match only out-of-pocket personal claims (`vendorId` unset) —
+   * every expense has a `raisedByUserId` (mandatory, even for staff-logged
+   * vendor costs), so that field alone can't distinguish "this needs
+   * reimbursing to a person" from "this was paid to a vendor."
+   */
+  personalClaimOnly?: boolean;
   dateFrom?: Date;
   dateTo?: Date;
 }
@@ -141,6 +148,7 @@ function buildFilter(opts: ExpenseFilter): Record<string, unknown> {
   if (opts.vendorId) filter.vendorId = opts.vendorId;
   if (opts.departmentId) filter.departmentId = opts.departmentId;
   if (opts.raisedByUserId) filter.raisedByUserId = opts.raisedByUserId;
+  if (opts.personalClaimOnly) filter.vendorId = null;
   if (opts.dateFrom || opts.dateTo) {
     const r: Record<string, Date> = {};
     if (opts.dateFrom) r.$gte = opts.dateFrom;

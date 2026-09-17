@@ -194,6 +194,7 @@ export async function changeRefundStatus(
       actorId,
       actorEmail
     );
+    if ("ok" in txn) return txn;
     patch.transactionId = txn._id;
   }
 

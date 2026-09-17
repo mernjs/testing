@@ -10,9 +10,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { PAYMENT_METHODS, SUPPORTED_CURRENCIES, formatMoney, round2 } from "@/lib/fms/constants";
+import { PAYMENT_METHODS, SUPPORTED_CURRENCIES, formatMoney, round2, invoiceBalance } from "@/lib/fms/constants";
 import { recordReceiptAction, listOutstandingInvoicesAction } from "@/app/fms/(protected)/receipts/actions";
-import { invoiceBalance, type SerializedInvoice } from "@/lib/fms/invoices";
+import type { SerializedInvoice } from "@/lib/fms/invoices";
+import type { FundAccountOption } from "@/lib/fms/fund-accounts";
 
 interface Option {
   _id: string;
@@ -23,6 +24,7 @@ export default function ReceiptForm({
   customers,
   presetCustomerId,
   presetInvoiceId,
+  fundAccounts = [],
   trigger,
   onSaved,
 }: {
@@ -30,6 +32,8 @@ export default function ReceiptForm({
   /** Pre-selects a customer and preloads its outstanding invoices, e.g. when triggered from a customer or invoice page. */
   presetCustomerId?: string;
   presetInvoiceId?: string;
+  /** Bank/cash accounts this receipt can settle through — optional, filtered to the receipt's own currency below. */
+  fundAccounts?: FundAccountOption[];
   trigger: ReactNode;
   onSaved?: (id: string) => void;
 }) {
@@ -45,6 +49,7 @@ export default function ReceiptForm({
     method: "bank_transfer",
     transactionReference: "",
     currency: "INR",
+    fundAccountKey: "",
     notes: "",
   });
 
@@ -156,7 +161,10 @@ export default function ReceiptForm({
             </div>
             <div className="space-y-1.5">
               <Label>Currency</Label>
-              <Select value={form.currency} onValueChange={(v) => set("currency", v ?? "INR")}>
+              <Select
+                value={form.currency}
+                onValueChange={(v) => setForm((f) => ({ ...f, currency: v ?? "INR", fundAccountKey: "" }))}
+              >
                 <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {SUPPORTED_CURRENCIES.map((c) => (
@@ -171,6 +179,26 @@ export default function ReceiptForm({
             <Label>Transaction Reference</Label>
             <Input value={form.transactionReference} onChange={(e) => set("transactionReference", e.target.value)} />
           </div>
+
+          {(() => {
+            const matchingFundAccounts = fundAccounts.filter((a) => a.currency === form.currency);
+            return (
+              matchingFundAccounts.length > 0 && (
+                <div className="space-y-1.5">
+                  <Label>Fund Account (bank/cash this settles through)</Label>
+                  <Select value={form.fundAccountKey || "none"} onValueChange={(v) => set("fundAccountKey", !v || v === "none" ? "" : v)}>
+                    <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {matchingFundAccounts.map((a) => (
+                        <SelectItem key={a.key} value={a.key}>{a.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )
+            );
+          })()}
 
           <div className="space-y-2">
             <Label>Allocate to invoices</Label>

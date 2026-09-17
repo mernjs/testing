@@ -11,6 +11,7 @@ import { getCurrentFmsUser } from "@/lib/fms-auth";
 import { canManageTransactions, canApproveTransactions } from "@/lib/fms-roles";
 import { getTransaction, serializeTransaction } from "@/lib/fms/transactions";
 import { getAccount } from "@/lib/fms/accounts";
+import { getFundAccountLabel } from "@/lib/fms/fund-accounts";
 import { getClient } from "@/lib/pms/clients";
 import { getVendor } from "@/lib/prms/vendors";
 import { listAudit, serializeAuditLog } from "@/lib/fms/audit";
@@ -24,11 +25,12 @@ export default async function TransactionDetailPage({ params }: { params: Promis
   const txn = await getTransaction(id);
   if (!txn) notFound();
 
-  const [account, customer, vendor, audit] = await Promise.all([
+  const [account, customer, vendor, audit, fundAccountLabel] = await Promise.all([
     txn.accountId ? getAccount(txn.accountId) : Promise.resolve(null),
     txn.customerId ? getClient(txn.customerId) : Promise.resolve(null),
     txn.vendorId ? getVendor(txn.vendorId) : Promise.resolve(null),
     listAudit({ entity: "transaction", entityId: id, pageSize: 50 }),
+    getFundAccountLabel(txn.fundAccountType, txn.fundAccountId),
   ]);
 
   const t = serializeTransaction(txn);
@@ -78,6 +80,7 @@ export default async function TransactionDetailPage({ params }: { params: Promis
             <Row label="Transaction Date" value={formatDate(t.transactionDate)} />
             <Row label="Posting Date" value={formatDate(t.postingDate)} />
             <Row label="Category / Account" value={account ? `${account.code} · ${account.name}` : "—"} />
+            <Row label="Fund Account" value={fundAccountLabel ?? "—"} />
             <Row label="Department" value={t.department ?? "—"} />
           </CardContent>
         </GlassCard>

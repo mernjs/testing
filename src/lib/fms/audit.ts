@@ -20,7 +20,14 @@ export type AuditEntity =
   | "receipt"
   | "refund"
   | "credit_note"
-  | "debit_note";
+  | "debit_note"
+  | "bank_account"
+  | "cash_account"
+  | "fund_transfer"
+  | "bank_statement_line"
+  | "cash_count"
+  | "journal_entry"
+  | "fiscal_period";
 
 export type AuditAction =
   | "create"
@@ -33,6 +40,7 @@ export type AuditAction =
   | "cancel"
   | "reverse"
   | "reconcile"
+  | "record"
   | "export";
 
 export interface AuditLog {

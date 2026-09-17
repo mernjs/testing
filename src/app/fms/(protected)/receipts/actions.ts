@@ -6,7 +6,7 @@ import { canManageTransactions } from "@/lib/fms-roles";
 import { recordReceipt, voidReceipt, type RecordReceiptData } from "@/lib/fms/receipts";
 import { listOutstandingInvoicesForCustomer, serializeInvoice, type SerializedInvoice } from "@/lib/fms/invoices";
 import { getClient } from "@/lib/pms/clients";
-import { isValidPaymentMethod } from "@/lib/fms/constants";
+import { isValidPaymentMethod, isValidFundAccountType } from "@/lib/fms/constants";
 import { recordAudit } from "@/lib/fms/audit";
 
 export interface ReceiptActionResult {
@@ -60,6 +60,17 @@ export async function recordReceiptAction(input: Record<string, unknown>): Promi
     .map((a) => ({ invoiceId: a.invoiceId, amount: Number(a.amount) || 0 }))
     .filter((a) => a.amount > 0);
 
+  const fundAccountKey = String(input.fundAccountKey ?? "");
+  let fundAccountId: string | null = null;
+  let fundAccountType: RecordReceiptData["fundAccountType"] = null;
+  if (fundAccountKey) {
+    const [type, accountId] = fundAccountKey.split(":");
+    if (isValidFundAccountType(type) && accountId) {
+      fundAccountType = type;
+      fundAccountId = accountId;
+    }
+  }
+
   const data: RecordReceiptData = {
     customerId,
     customerName: customer.companyName,
@@ -69,6 +80,8 @@ export async function recordReceiptAction(input: Record<string, unknown>): Promi
     transactionReference: (input.transactionReference as string)?.trim() || null,
     allocations,
     currency: String(input.currency ?? customer.billing?.currency ?? "INR"),
+    fundAccountId,
+    fundAccountType,
     notes: (input.notes as string)?.trim() || null,
   };
 

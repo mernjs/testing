@@ -15,6 +15,7 @@ import {
   DEFAULT_INVOICE_STATUS,
   round2,
   canTransitionInvoice,
+  invoiceBalance,
   type InvoiceStatus,
 } from "@/lib/fms/constants";
 import { priceLineItems, type FmsLineItem, type FmsLineItemInput } from "@/lib/fms/pricing";
@@ -68,10 +69,11 @@ export function serializeInvoice(i: Invoice): SerializedInvoice {
   };
 }
 
-/** `balance` is never persisted — always derived so it can't drift from its inputs. */
-export function invoiceBalance(inv: Pick<Invoice, "totalAmount" | "amountPaid" | "amountCredited">): number {
-  return round2(inv.totalAmount - inv.amountPaid - inv.amountCredited);
-}
+// `invoiceBalance` lives in `fms/constants.ts` (client-safe, no `server-only`,
+// imported above) and is re-exported here for server-side convenience — a
+// client component must import it from `fms/constants` directly, never
+// through this file, or it pulls the mongodb driver into the browser bundle.
+export { invoiceBalance };
 
 let indexesEnsured = false;
 async function getCollection() {

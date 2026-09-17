@@ -47,6 +47,19 @@ export function round2(n: number): number {
   return Math.round((Number.isFinite(n) ? n : 0) * 100) / 100;
 }
 
+/**
+ * Invoice balance is never persisted — always derived so it can't drift from
+ * its inputs. Lives here (not in `fms/invoices.ts`, which has `import
+ * "server-only"` and touches mongodb) specifically so client components can
+ * import it directly without pulling the mongodb driver into the browser
+ * bundle — importing ANY runtime export from a `server-only` file into a
+ * `"use client"` component drags its whole module graph along, which Next.js
+ * refuses to bundle.
+ */
+export function invoiceBalance(inv: { totalAmount: number; amountPaid: number; amountCredited: number }): number {
+  return round2(inv.totalAmount - inv.amountPaid - inv.amountCredited);
+}
+
 // ---------------------------------------------------------------------------
 // Transaction type & status (§5)
 // ---------------------------------------------------------------------------
@@ -275,6 +288,7 @@ export function agingBucketFor(daysOverdue: number): string {
 export const ACCOUNT_TYPES = [
   { value: "asset", label: "Asset" },
   { value: "liability", label: "Liability" },
+  { value: "equity", label: "Equity" },
   { value: "income", label: "Income" },
   { value: "expense", label: "Expense" },
 ] as const;
@@ -282,4 +296,92 @@ export type AccountType = (typeof ACCOUNT_TYPES)[number]["value"];
 
 export function isValidAccountType(value: unknown): value is AccountType {
   return typeof value === "string" && ACCOUNT_TYPES.some((t) => t.value === value);
+}
+
+/** Debit-normal (asset/expense) vs credit-normal (liability/equity/income) — §28/§29. */
+export function normalBalanceSide(type: AccountType): "debit" | "credit" {
+  return type === "asset" || type === "expense" ? "debit" : "credit";
+}
+
+// ---------------------------------------------------------------------------
+// Employee Advances (§12 — genuinely new, nothing exists in HRMS for this)
+// ---------------------------------------------------------------------------
+
+export const ADVANCE_STATUSES = [
+  { value: "requested", label: "Requested", badgeClass: "bg-secondary/60 text-secondary-foreground", dotClass: "bg-secondary-foreground/50" },
+  { value: "approved", label: "Approved", badgeClass: "bg-blue-500/15 text-blue-600 dark:text-blue-400", dotClass: "bg-blue-500" },
+  { value: "disbursed", label: "Disbursed", badgeClass: "bg-amber-500/15 text-amber-600 dark:text-amber-400", dotClass: "bg-amber-500" },
+  { value: "repaid", label: "Repaid", badgeClass: "bg-green-500/15 text-green-600 dark:text-green-400", dotClass: "bg-green-500" },
+  { value: "rejected", label: "Rejected", badgeClass: "bg-destructive/15 text-destructive", dotClass: "bg-destructive" },
+] as const;
+export type AdvanceStatus = (typeof ADVANCE_STATUSES)[number]["value"];
+export const DEFAULT_ADVANCE_STATUS: AdvanceStatus = "requested";
+
+export function isValidAdvanceStatus(value: unknown): value is AdvanceStatus {
+  return typeof value === "string" && ADVANCE_STATUSES.some((s) => s.value === value);
+}
+export function getAdvanceStatusMeta(value: string | undefined) {
+  return ADVANCE_STATUSES.find((s) => s.value === value) ?? ADVANCE_STATUSES[0];
+}
+
+export const ADVANCE_TRANSITIONS: Record<AdvanceStatus, AdvanceStatus[]> = {
+  requested: ["approved", "rejected"],
+  approved: ["disbursed", "rejected"],
+  disbursed: ["repaid"],
+  repaid: [],
+  rejected: [],
+};
+export function canTransitionAdvance(from: AdvanceStatus, to: AdvanceStatus): boolean {
+  return ADVANCE_TRANSITIONS[from]?.includes(to) ?? false;
+}
+
+// ---------------------------------------------------------------------------
+// Bank & Cash Accounts (§19, §21 — genuinely new, no company-level account
+// concept exists anywhere in the platform)
+// ---------------------------------------------------------------------------
+
+export const FUND_ACCOUNT_TYPES = [
+  { value: "bank", label: "Bank" },
+  { value: "cash", label: "Cash" },
+] as const;
+export type FundAccountType = (typeof FUND_ACCOUNT_TYPES)[number]["value"];
+
+export function isValidFundAccountType(value: unknown): value is FundAccountType {
+  return typeof value === "string" && FUND_ACCOUNT_TYPES.some((t) => t.value === value);
+}
+
+export const FUND_ACCOUNT_STATUSES = [
+  { value: "active", label: "Active", badgeClass: "bg-green-500/15 text-green-600 dark:text-green-400", dotClass: "bg-green-500" },
+  { value: "inactive", label: "Inactive", badgeClass: "bg-amber-500/15 text-amber-600 dark:text-amber-400", dotClass: "bg-amber-500" },
+  { value: "closed", label: "Closed", badgeClass: "bg-muted text-muted-foreground", dotClass: "bg-muted-foreground/50" },
+] as const;
+export type FundAccountStatus = (typeof FUND_ACCOUNT_STATUSES)[number]["value"];
+export const DEFAULT_FUND_ACCOUNT_STATUS: FundAccountStatus = "active";
+
+export function isValidFundAccountStatus(value: unknown): value is FundAccountStatus {
+  return typeof value === "string" && FUND_ACCOUNT_STATUSES.some((s) => s.value === value);
+}
+export function getFundAccountStatusMeta(value: string | undefined) {
+  return FUND_ACCOUNT_STATUSES.find((s) => s.value === value) ?? FUND_ACCOUNT_STATUSES[0];
+}
+
+// ---------------------------------------------------------------------------
+// Bank Reconciliation (§20)
+// ---------------------------------------------------------------------------
+
+export const STATEMENT_LINE_STATUSES = [
+  { value: "unmatched", label: "Unmatched", badgeClass: "bg-secondary/60 text-secondary-foreground", dotClass: "bg-secondary-foreground/50" },
+  { value: "matched", label: "Matched", badgeClass: "bg-green-500/15 text-green-600 dark:text-green-400", dotClass: "bg-green-500" },
+  { value: "partially_matched", label: "Partially Matched", badgeClass: "bg-amber-500/15 text-amber-600 dark:text-amber-400", dotClass: "bg-amber-500" },
+  { value: "duplicate", label: "Duplicate", badgeClass: "bg-destructive/15 text-destructive", dotClass: "bg-destructive" },
+  { value: "needs_review", label: "Needs Review", badgeClass: "bg-blue-500/15 text-blue-600 dark:text-blue-400", dotClass: "bg-blue-500" },
+] as const;
+export type StatementLineStatus = (typeof STATEMENT_LINE_STATUSES)[number]["value"];
+export const DEFAULT_STATEMENT_LINE_STATUS: StatementLineStatus = "unmatched";
+
+export function isValidStatementLineStatus(value: unknown): value is StatementLineStatus {
+  return typeof value === "string" && STATEMENT_LINE_STATUSES.some((s) => s.value === value);
+}
+export function getStatementLineStatusMeta(value: string | undefined) {
+  return STATEMENT_LINE_STATUSES.find((s) => s.value === value) ?? STATEMENT_LINE_STATUSES[0];
 }

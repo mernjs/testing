@@ -13,6 +13,7 @@ export default function HubModuleTile({
   description,
   icon,
   index = 0,
+  kpi,
 }: {
   href: string;
   label: string;
@@ -22,6 +23,9 @@ export default function HubModuleTile({
    * Component (mirrors `KpiCard`'s `icon` prop). */
   icon: React.ReactNode;
   index?: number;
+  /** Optional live KPI strip, pre-formatted (e.g. `{label: "Cash", value: "₹1,200"}`) —
+   * omit for a plain static tile, exactly as before. */
+  kpi?: { label: string; value: string }[];
 }) {
   return (
     <motion.div
@@ -43,6 +47,15 @@ export default function HubModuleTile({
               <p className="font-semibold text-foreground">{label}</p>
               <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
             </div>
+            {kpi && kpi.length > 0 && (
+              <div className="mt-auto flex flex-wrap gap-x-4 gap-y-1 border-t border-border/40 pt-2 text-xs">
+                {kpi.map((k) => (
+                  <span key={k.label} className="text-muted-foreground">
+                    {k.label}: <span className="font-medium text-foreground">{k.value}</span>
+                  </span>
+                ))}
+              </div>
+            )}
           </CardContent>
         </GlassCard>
       </Link>

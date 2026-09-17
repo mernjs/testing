@@ -1,0 +1,105 @@
+import Link from "next/link";
+import { CheckCircle2, AlertTriangle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import GlassCard from "@/components/lms/GlassCard";
+import KpiCard from "@/components/lms/KpiCard";
+import KpiGrid from "@/components/lms/KpiGrid";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
+import { getTrialBalance } from "@/lib/fms/reports/trial-balance";
+import { formatMoney } from "@/lib/fms/constants";
+
+export default async function TrialBalancePage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  const sp = await searchParams;
+  const asOf = sp.asOf ? new Date(`${sp.asOf}T23:59:59`) : undefined;
+  const result = await getTrialBalance({ asOf });
+
+  return (
+    <div className="space-y-4">
+      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Trial Balance" }]} />
+      <div>
+        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Trial Balance</h1>
+        <p className="text-sm text-muted-foreground">Every account&apos;s total debits and credits{result.asOf ? ` as of ${new Date(result.asOf).toLocaleDateString()}` : ""}.</p>
+      </div>
+
+      <GlassCard interactive={false}>
+        <CardContent className="py-4">
+          <form className="flex flex-wrap items-end gap-3" method="get">
+            <div>
+              <label className="mb-1 block text-xs text-muted-foreground">As of</label>
+              <Input type="date" name="asOf" defaultValue={sp.asOf ?? ""} className="h-9" />
+            </div>
+            <Button type="submit" size="sm" variant="secondary">Apply</Button>
+          </form>
+        </CardContent>
+      </GlassCard>
+
+      <KpiGrid>
+        <KpiCard label="Total Debits" value={<span>{formatMoney(result.totalDebits)}</span>} accent />
+        <KpiCard label="Total Credits" value={<span>{formatMoney(result.totalCredits)}</span>} />
+        <KpiCard
+          label="Status"
+          value={
+            <span className="inline-flex items-center gap-1.5">
+              {result.balanced ? <CheckCircle2 className="size-4 text-green-600" /> : <AlertTriangle className="size-4 text-destructive" />}
+              {result.balanced ? "Balanced" : "Out of balance"}
+            </span>
+          }
+          tone={result.balanced ? undefined : "down"}
+        />
+      </KpiGrid>
+
+      <GlassCard interactive={false}>
+        <CardHeader><CardTitle>Accounts</CardTitle></CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Account</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead className="text-right">Debit</TableHead>
+                <TableHead className="text-right">Credit</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {result.rows.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center text-muted-foreground">No posted journal activity yet.</TableCell>
+                </TableRow>
+              )}
+              {result.rows.map((r) => (
+                <TableRow key={r.accountId}>
+                  <TableCell>
+                    <Link href={`/fms/general-ledger?account=${r.accountId}`} className="font-medium text-primary hover:underline">
+                      <Badge variant="secondary" className="mr-2">{r.accountCode}</Badge>
+                      {r.accountName}
+                    </Link>
+                  </TableCell>
+                  <TableCell className="capitalize text-muted-foreground">{r.accountType}</TableCell>
+                  <TableCell className="text-right tabular-nums">{r.totalDebit > 0 ? formatMoney(r.totalDebit) : ""}</TableCell>
+                  <TableCell className="text-right tabular-nums">{r.totalCredit > 0 ? formatMoney(r.totalCredit) : ""}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+            {result.rows.length > 0 && (
+              <tfoot>
+                <TableRow>
+                  <TableCell colSpan={2} className="font-bold text-foreground">Total</TableCell>
+                  <TableCell className="text-right tabular-nums font-bold">{formatMoney(result.totalDebits)}</TableCell>
+                  <TableCell className="text-right tabular-nums font-bold">{formatMoney(result.totalCredits)}</TableCell>
+                </TableRow>
+              </tfoot>
+            )}
+          </Table>
+        </CardContent>
+      </GlassCard>
+    </div>
+  );
+}

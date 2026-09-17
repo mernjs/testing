@@ -1,0 +1,90 @@
+import { ArrowDownCircle, ArrowUpCircle, Wallet } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { CardContent } from "@/components/ui/card";
+import GlassCard from "@/components/lms/GlassCard";
+import KpiCard from "@/components/lms/KpiCard";
+import KpiGrid from "@/components/lms/KpiGrid";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
+import { getCashFlow } from "@/lib/fms/reports/cash-flow";
+import { formatMoney } from "@/lib/fms/constants";
+
+function monthStart(): string {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+}
+
+export default async function CashFlowPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  const sp = await searchParams;
+  const dateFromStr = sp.dateFrom ?? monthStart();
+  const dateToStr = sp.dateTo ?? new Date().toISOString().slice(0, 10);
+  const dateFrom = new Date(`${dateFromStr}T00:00:00`);
+  const dateTo = new Date(`${dateToStr}T23:59:59`);
+
+  const result = await getCashFlow(dateFrom, dateTo);
+
+  return (
+    <div className="space-y-4">
+      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Cash Flow" }]} />
+      <div>
+        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Cash Flow</h1>
+        <p className="text-sm text-muted-foreground">
+          Direct method — cash in and out of real bank/cash accounts for the selected range. No operating/investing/financing
+          categorization yet.
+        </p>
+      </div>
+
+      <GlassCard interactive={false}>
+        <CardContent className="py-4">
+          <form className="flex flex-wrap items-end gap-3" method="get">
+            <div>
+              <label className="mb-1 block text-xs text-muted-foreground">From</label>
+              <Input type="date" name="dateFrom" defaultValue={dateFromStr} className="h-9" />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-muted-foreground">To</label>
+              <Input type="date" name="dateTo" defaultValue={dateToStr} className="h-9" />
+            </div>
+            <Button type="submit" size="sm" variant="secondary">Apply</Button>
+          </form>
+        </CardContent>
+      </GlassCard>
+
+      <KpiGrid>
+        <KpiCard label="Opening Balance" value={<span>{formatMoney(result.openingBalance)}</span>} icon={<Wallet className="size-4" />} />
+        <KpiCard label="Cash In" value={<span>{formatMoney(result.cashIn)}</span>} tone="up" icon={<ArrowUpCircle className="size-4" />} />
+        <KpiCard label="Cash Out" value={<span>{formatMoney(result.cashOut)}</span>} tone="down" icon={<ArrowDownCircle className="size-4" />} />
+        <KpiCard label="Closing Balance" value={<span>{formatMoney(result.closingBalance)}</span>} accent icon={<Wallet className="size-4" />} />
+      </KpiGrid>
+
+      <GlassCard interactive={false}>
+        <CardContent className="space-y-3 py-4 text-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">Opening Balance</span>
+            <span className="tabular-nums font-medium">{formatMoney(result.openingBalance)}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">+ Cash In</span>
+            <span className="tabular-nums font-medium text-green-600 dark:text-green-400">{formatMoney(result.cashIn)}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">− Cash Out</span>
+            <span className="tabular-nums font-medium text-destructive">{formatMoney(result.cashOut)}</span>
+          </div>
+          <div className="flex items-center justify-between border-t border-border/40 pt-3">
+            <span className="font-medium text-foreground">Net Cash Flow</span>
+            <span className="tabular-nums font-bold">{formatMoney(result.netCashFlow)}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="font-medium text-foreground">Closing Balance</span>
+            <span className="tabular-nums font-bold">{formatMoney(result.closingBalance)}</span>
+          </div>
+        </CardContent>
+      </GlassCard>
+    </div>
+  );
+}

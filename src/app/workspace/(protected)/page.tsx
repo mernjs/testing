@@ -20,6 +20,8 @@ import { normalizeTmsRoles } from "@/lib/tms-roles";
 import { normalizeChatRoles } from "@/lib/messenger-roles";
 import { normalizeAdminRoles } from "@/lib/admin-roles";
 import { normalizeFmsRoles } from "@/lib/fms-roles";
+import { fmsWorkspaceSummary } from "@/lib/fms/dashboard";
+import { formatMoney } from "@/lib/fms/constants";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardContent } from "@/components/ui/card";
 import KpiCard from "@/components/lms/KpiCard";
@@ -36,6 +38,7 @@ interface ModuleTile {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   visible: boolean;
+  kpi?: { label: string; value: string }[];
 }
 
 function nameFromEmail(email: string): string {
@@ -50,6 +53,8 @@ export default async function HubDashboardPage() {
   if (!user) redirect("/workspace/login");
 
   const roles = user.roles;
+  const hasFmsAccess = normalizeFmsRoles(roles).length > 0;
+  const fmsSummary = hasFmsAccess ? await fmsWorkspaceSummary().catch(() => null) : null;
 
   const tiles: ModuleTile[] = [
     {
@@ -90,7 +95,13 @@ export default async function HubDashboardPage() {
       description: "Transactions, customers, vendors, accounts.",
       href: "/fms",
       icon: Wallet,
-      visible: normalizeFmsRoles(roles).length > 0,
+      visible: hasFmsAccess,
+      kpi: fmsSummary
+        ? [
+            { label: "Cash", value: formatMoney(fmsSummary.cash) },
+            { label: "Pending Approvals", value: String(fmsSummary.pendingApprovals) },
+          ]
+        : undefined,
     },
     {
       key: "messenger",
@@ -189,6 +200,7 @@ export default async function HubDashboardPage() {
                 description={tile.description}
                 icon={<tile.icon className="size-5" />}
                 index={i}
+                kpi={tile.kpi}
               />
             ))}
           </div>

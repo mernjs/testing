@@ -136,6 +136,28 @@ export function canViewReports(user: RoleContext): boolean {
   );
 }
 
+/** Enter/match bank statement lines and record cash counts (§20/§21, FMS_RECONCILE). */
+export function canReconcile(user: RoleContext): boolean {
+  return resolvePermission(user, "fms.canReconcile", () =>
+    isFmsAdmin(user) || user.roles.includes("finance_manager") || user.roles.includes("accountant")
+  );
+}
+
+/** Create/edit bank & cash accounts and record transfers (§19/§21, FMS_BANK). */
+export function canManageBanking(user: RoleContext): boolean {
+  return resolvePermission(user, "fms.canManageBanking", () => isFmsAdmin(user) || user.roles.includes("finance_manager"));
+}
+
+/** Edit the tax-rate config (§25, Phase 7). */
+export function canManageTaxConfig(user: RoleContext): boolean {
+  return resolvePermission(user, "fms.canManageTaxConfig", () => isFmsAdmin(user));
+}
+
+/** Define fiscal periods and close/reopen them — posts real closing journal entries (§39, Phase 7). */
+export function canManageFiscalPeriods(user: RoleContext): boolean {
+  return resolvePermission(user, "fms.canManageFiscalPeriods", () => isFmsAdmin(user));
+}
+
 export function primaryFmsRoleLabel(roles: readonly FmsRole[]): string {
   if (roles.includes("super_admin")) return FMS_ROLE_META.super_admin.label;
   for (const r of FMS_ROLES) {

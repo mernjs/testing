@@ -15,6 +15,7 @@ import {
   isValidPaymentMethod,
   isValidSourceModule,
   isValidTransactionStatus,
+  isValidFundAccountType,
   DEFAULT_CURRENCY,
 } from "@/lib/fms/constants";
 import { saveAttachmentFile, isAllowedAttachment } from "@/lib/fms/attachment-storage";
@@ -56,6 +57,17 @@ function buildPayload(input: Record<string, unknown>): { ok: true; data: Transac
   const postingDateRaw = String(input.postingDate ?? transactionDateRaw);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(postingDateRaw)) errors.postingDate = "Enter a valid date.";
 
+  const fundAccountKey = String(input.fundAccountKey ?? "");
+  let fundAccountId: string | null = null;
+  let fundAccountType: TransactionWriteData["fundAccountType"] = null;
+  if (fundAccountKey) {
+    const [type, accountId] = fundAccountKey.split(":");
+    if (isValidFundAccountType(type) && accountId) {
+      fundAccountType = type;
+      fundAccountId = accountId;
+    }
+  }
+
   if (Object.keys(errors).length) return { ok: false, fieldErrors: errors };
 
   return {
@@ -75,6 +87,8 @@ function buildPayload(input: Record<string, unknown>): { ok: true; data: Transac
       projectId: (input.projectId as string) || null,
       department: (input.department as string)?.trim() || null,
       accountId: (input.accountId as string) || null,
+      fundAccountId,
+      fundAccountType,
       taxAmount: Number.isFinite(Number(input.taxAmount)) ? Number(input.taxAmount) : 0,
       referenceNumber: (input.referenceNumber as string)?.trim() || null,
       description: (input.description as string)?.trim() || null,

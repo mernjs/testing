@@ -18,8 +18,29 @@ import {
   type TransactionStatus,
   type PaymentMethod,
   type SourceModule,
+  type FundAccountType,
 } from "@/lib/fms/constants";
 import { recordAudit, diffSummary } from "@/lib/fms/audit";
+import { applyToFundAccount } from "@/lib/fms/fund-accounts";
+import { postJournalEntryForTransaction, reverseJournalEntryForTransaction } from "@/lib/fms/journal";
+import { isDateInClosedPeriod } from "@/lib/fms/fiscal-periods";
+
+/** Transactions whose fund-account effect is already applied — see `applyFundAccountEffect`. */
+const SETTLED_STATUSES = new Set<TransactionStatus>(["completed", "reconciled"]);
+
+/**
+ * `income` credits the fund account, `expense` debits it — unambiguous.
+ * `transfer`/`adjustment` have no single inferred sign: a real transfer
+ * between two fund accounts is posted as an `expense` leg (source) + an
+ * `income` leg (destination) sharing a `transferId` — see
+ * `fms/fund-transfers.ts` — rather than teaching this function a second
+ * sign convention for a `"transfer"`-typed row.
+ */
+function fundEffectSign(type: TransactionType): number {
+  if (type === "income") return 1;
+  if (type === "expense") return -1;
+  return 0;
+}
 
 /**
  * Centralized transaction log (§5) — the single source of truth for every
@@ -60,6 +81,11 @@ export interface Transaction extends AuditFields {
   department: string | null;
   /** Reference into `fms_accounts` (Chart of Accounts / category). */
   accountId: string | null;
+  /** Which real bank/cash account this settled through (§19/§21) — distinct from `accountId`'s category. */
+  fundAccountId: string | null;
+  fundAccountType: FundAccountType | null;
+  /** Set on both legs of a fund transfer — see `fms/fund-transfers.ts`. */
+  transferId: string | null;
   taxAmount: number;
   referenceNumber: string | null;
   description: string | null;
@@ -137,6 +163,8 @@ export interface TransactionFilter {
   department?: string;
   accountId?: string;
   sourceModule?: SourceModule;
+  fundAccountType?: FundAccountType;
+  fundAccountId?: string;
   dateFrom?: Date;
   dateTo?: Date;
 }
@@ -155,6 +183,8 @@ function buildFilter(opts: TransactionFilter): Record<string, unknown> {
   if (opts.department) filter.department = opts.department;
   if (opts.accountId) filter.accountId = opts.accountId;
   if (opts.sourceModule) filter.sourceModule = opts.sourceModule;
+  if (opts.fundAccountType) filter.fundAccountType = opts.fundAccountType;
+  if (opts.fundAccountId) filter.fundAccountId = opts.fundAccountId;
   if (opts.dateFrom || opts.dateTo) {
     const range: Record<string, Date> = {};
     if (opts.dateFrom) range.$gte = opts.dateFrom;
@@ -208,6 +238,16 @@ export async function transactionsForVendor(vendorId: string, limit = 200): Prom
   return collection.find({ vendorId, ...notDeleted }).sort({ transactionDate: -1 }).limit(limit).toArray();
 }
 
+/** All non-deleted transactions settled through a given bank/cash account, newest first. */
+export async function transactionsForFundAccount(
+  fundAccountType: FundAccountType,
+  fundAccountId: string,
+  limit = 200
+): Promise<Transaction[]> {
+  const collection = await getCollection();
+  return collection.find({ fundAccountId, fundAccountType, ...notDeleted }).sort({ transactionDate: -1 }).limit(limit).toArray();
+}
+
 // ---------------------------------------------------------------------------
 // Writes
 // ---------------------------------------------------------------------------
@@ -227,6 +267,9 @@ export interface TransactionWriteData {
   projectId: string | null;
   department: string | null;
   accountId: string | null;
+  fundAccountId?: string | null;
+  fundAccountType?: FundAccountType | null;
+  transferId?: string | null;
   taxAmount: number;
   referenceNumber: string | null;
   description: string | null;
@@ -249,13 +292,21 @@ export async function createTransaction(
  * vendor payment PRMS just processed, a completed refund — not a
  * user-entered proposal that still needs review. Manual entries always go
  * through `createTransaction` (draft) + `changeTransactionStatus` instead.
+ *
+ * Refuses (Phase 7 §39) when `transactionDate` falls inside a closed fiscal
+ * period — a draft never reaches this function (see `createTransaction`),
+ * so this is the one real gate needed to keep a closed period's ledger from
+ * changing after close.
  */
 export async function postSystemTransaction(
   data: TransactionWriteData,
   actorId: string,
   actorEmail: string | null,
   status: TransactionStatus = "completed"
-): Promise<Transaction> {
+): Promise<Transaction | { ok: false; reason: string }> {
+  if (SETTLED_STATUSES.has(status) && (await isDateInClosedPeriod(data.transactionDate))) {
+    return { ok: false, reason: "Cannot post a transaction dated inside a closed fiscal period." };
+  }
   return insertTransaction(data, actorId, actorEmail, status);
 }
 
@@ -283,6 +334,9 @@ async function insertTransaction(
     projectId: data.projectId,
     department: data.department,
     accountId: data.accountId,
+    fundAccountId: data.fundAccountId ?? null,
+    fundAccountType: data.fundAccountType ?? null,
+    transferId: data.transferId ?? null,
     taxAmount: round2(data.taxAmount),
     referenceNumber: data.referenceNumber,
     description: data.description,
@@ -293,6 +347,13 @@ async function insertTransaction(
     ...createStamp(actorId),
   };
   await collection.insertOne(doc);
+  if (doc.fundAccountId && doc.fundAccountType && SETTLED_STATUSES.has(status)) {
+    const sign = fundEffectSign(doc.type);
+    if (sign !== 0) await applyToFundAccount(doc.fundAccountType, doc.fundAccountId, sign * doc.amount);
+  }
+  if (SETTLED_STATUSES.has(status)) {
+    await postJournalEntryForTransaction(doc, actorId);
+  }
   await recordAudit({
     actorId,
     actorEmail,
@@ -396,6 +457,12 @@ export async function changeTransactionStatus(
     return { ok: false, reason: `Cannot move a ${existing.status} transaction to ${toStatus}.` };
   }
 
+  const wasSettled = SETTLED_STATUSES.has(existing.status);
+  const nowSettled = SETTLED_STATUSES.has(toStatus);
+  if (wasSettled !== nowSettled && (await isDateInClosedPeriod(existing.transactionDate))) {
+    return { ok: false, reason: "Cannot change the settlement state of a transaction dated inside a closed fiscal period." };
+  }
+
   const patch: Record<string, unknown> = { status: toStatus };
   if (toStatus === "approved") {
     patch.approvedBy = actorId;
@@ -408,6 +475,21 @@ export async function changeTransactionStatus(
     { returnDocument: "after" }
   );
   if (updated) {
+    if (existing.fundAccountId && existing.fundAccountType) {
+      const sign = fundEffectSign(existing.type);
+      if (sign !== 0) {
+        if (!wasSettled && nowSettled) {
+          await applyToFundAccount(existing.fundAccountType, existing.fundAccountId, sign * existing.amount);
+        } else if (wasSettled && !nowSettled) {
+          await applyToFundAccount(existing.fundAccountType, existing.fundAccountId, -sign * existing.amount);
+        }
+      }
+    }
+    if (!wasSettled && nowSettled) {
+      await postJournalEntryForTransaction(updated, actorId);
+    } else if (wasSettled && !nowSettled) {
+      await reverseJournalEntryForTransaction(existing, actorId);
+    }
     await recordAudit({
       actorId,
       actorEmail,

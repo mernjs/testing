@@ -9,7 +9,7 @@ import {
 } from "@/lib/prms/payments";
 import { getInvoice as getPrmsBill } from "@/lib/prms/invoices";
 import { postSystemTransaction, type Transaction } from "@/lib/fms/transactions";
-import type { PaymentMethod } from "@/lib/fms/constants";
+import type { PaymentMethod, FundAccountType } from "@/lib/fms/constants";
 
 /**
  * FMS's "Vendor Payments" (§11 — "FMS should manage the financial portion:
@@ -27,7 +27,9 @@ const TRANSACTIONS_COLLECTION = "fms_transactions";
 async function postLinkedTransaction(
   paymentId: string,
   actorId: string,
-  actorEmail: string | null
+  actorEmail: string | null,
+  fundAccountId: string | null = null,
+  fundAccountType: FundAccountType | null = null
 ): Promise<Transaction | null> {
   const payment = await getPrmsPayment(paymentId);
   if (!payment || payment.status !== "processed") return null;
@@ -41,7 +43,7 @@ async function postLinkedTransaction(
   if (already) return null;
 
   const bill = await getPrmsBill(payment.invoiceId);
-  return postSystemTransaction(
+  const txn = await postSystemTransaction(
     {
       type: "expense",
       transactionDate: payment.paymentDate,
@@ -57,6 +59,8 @@ async function postLinkedTransaction(
       projectId: null,
       department: null,
       accountId: null,
+      fundAccountId,
+      fundAccountType,
       taxAmount: payment.tdsDeducted,
       referenceNumber: payment.transactionReference,
       description: `Vendor payment ${payment.paymentCode} for bill ${payment.invoiceNumber}`,
@@ -65,6 +69,10 @@ async function postLinkedTransaction(
     actorId,
     actorEmail
   );
+  // The PRMS payment itself already succeeded (this only runs after it's
+  // "processed") — a closed-period rejection here means no matching FMS
+  // ledger entry gets posted for it, not that the payment should be undone.
+  return "ok" in txn ? null : txn;
 }
 
 export interface RecordVendorPaymentResult {
@@ -76,12 +84,14 @@ export interface RecordVendorPaymentResult {
 export async function recordVendorPayment(
   data: PrmsPaymentWriteData,
   actorId: string,
-  actorEmail: string | null
+  actorEmail: string | null,
+  fundAccountId: string | null = null,
+  fundAccountType: FundAccountType | null = null
 ): Promise<RecordVendorPaymentResult> {
   const res = await prmsRecordPayment(data, actorId);
   if (!res.ok || !res.id) return { ok: false, reason: res.reason };
   if (data.status === "processed") {
-    await postLinkedTransaction(res.id, actorId, actorEmail);
+    await postLinkedTransaction(res.id, actorId, actorEmail, fundAccountId, fundAccountType);
   }
   return { ok: true, paymentId: res.id };
 }

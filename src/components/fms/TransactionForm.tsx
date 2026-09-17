@@ -13,6 +13,7 @@ import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescri
 import { TRANSACTION_TYPES, PAYMENT_METHODS, SOURCE_MODULES, SUPPORTED_CURRENCIES } from "@/lib/fms/constants";
 import { saveTransactionAction } from "@/app/fms/(protected)/transactions/actions";
 import type { SerializedTransaction } from "@/lib/fms/transactions";
+import type { FundAccountOption } from "@/components/fms/FundTransferForm";
 
 interface Option {
   _id: string;
@@ -25,6 +26,7 @@ export default function TransactionForm({
   vendors,
   projects,
   accounts,
+  fundAccounts = [],
   trigger,
   onSaved,
 }: {
@@ -33,6 +35,8 @@ export default function TransactionForm({
   vendors: Option[];
   projects: Option[];
   accounts: Option[];
+  /** Bank/cash accounts this transaction can settle through (§19/§21) — optional so callers built before Phase 4 keep working unchanged. */
+  fundAccounts?: FundAccountOption[];
   trigger: ReactNode;
   onSaved?: (id: string) => void;
 }) {
@@ -55,6 +59,7 @@ export default function TransactionForm({
     projectId: transaction?.projectId ?? "",
     department: transaction?.department ?? "",
     accountId: transaction?.accountId ?? "",
+    fundAccountKey: transaction?.fundAccountType && transaction?.fundAccountId ? `${transaction.fundAccountType}:${transaction.fundAccountId}` : "",
     referenceNumber: transaction?.referenceNumber ?? "",
     description: transaction?.description ?? "",
   });
@@ -222,6 +227,21 @@ export default function TransactionForm({
               </SelectContent>
             </Select>
           </div>
+
+          {fundAccounts.length > 0 && (
+            <div className="space-y-1.5">
+              <Label>Fund Account (bank/cash this settles through)</Label>
+              <Select value={form.fundAccountKey || "none"} onValueChange={(v) => set("fundAccountKey", !v || v === "none" ? "" : v)}>
+                <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {fundAccounts.map((a) => (
+                    <SelectItem key={a.key} value={a.key}>{a.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="space-y-1.5">
             <Label>Source Module</Label>

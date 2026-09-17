@@ -1,9 +1,11 @@
-import { ReceiptText } from "lucide-react";
+import { ReceiptText, Download } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import GlassCard from "@/components/lms/GlassCard";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getClientOverview } from "@/lib/portal/client";
+import { listPortalInvoicesForClient } from "@/lib/fms/portal-invoices";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import EmptyPortalState from "@/components/portal/EmptyPortalState";
 import { cn } from "@/lib/utils";
@@ -11,9 +13,20 @@ import { cn } from "@/lib/utils";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Invoices · YashOrbit Portal" };
 
+const STATUS_BADGE: Record<string, string> = {
+  sent: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
+  partially_paid: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+  paid: "bg-green-500/15 text-green-600 dark:text-green-400",
+  overdue: "bg-destructive/15 text-destructive",
+  cancelled: "bg-muted text-muted-foreground",
+};
+
 export default async function InvoicesPage() {
   const user = await guardPortalPage("client");
-  const data = await getClientOverview(user.clientId);
+  const [data, invoices] = await Promise.all([
+    getClientOverview(user.clientId),
+    user.clientId ? listPortalInvoicesForClient(user.clientId) : Promise.resolve([]),
+  ]);
   if (!data) return <EmptyPortalState title="No billing yet" body="Your invoice summary appears here once projects are set up." />;
 
   const inv = data.invoiceSummary;
@@ -22,7 +35,59 @@ export default async function InvoicesPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
       <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Invoices" }]} />
-      <PortalPageHeader title="Invoice Summary" subtitle="A milestone-billing view of your engagements" />
+      <PortalPageHeader title="Invoices" subtitle="Your formal tax invoices and a milestone-billing view of your engagements" />
+
+      {invoices.length > 0 && (
+        <GlassCard>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <ReceiptText className="size-4" /> Invoices
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="overflow-x-auto">
+            <table className="w-full min-w-[520px] text-sm">
+              <thead>
+                <tr className="border-b border-border/60 text-left text-xs text-muted-foreground">
+                  <th className="py-2 pr-3 font-medium">Invoice #</th>
+                  <th className="py-2 pr-3 font-medium">Date</th>
+                  <th className="py-2 pr-3 font-medium">Status</th>
+                  <th className="py-2 pr-3 text-right font-medium">Amount</th>
+                  <th className="py-2 pr-3 text-right font-medium">Balance</th>
+                  <th className="py-2 text-right font-medium">PDF</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoices.map((i) => (
+                  <tr key={i.invoiceNumber} className="border-b border-border/40 last:border-0">
+                    <td className="py-2 pr-3 font-mono text-foreground">{i.invoiceNumber}</td>
+                    <td className="py-2 pr-3 text-muted-foreground">{i.invoiceDate}</td>
+                    <td className="py-2 pr-3">
+                      <Badge className={STATUS_BADGE[i.status] ?? "bg-muted text-muted-foreground"}>{i.statusLabel}</Badge>
+                    </td>
+                    <td className="py-2 pr-3 text-right tabular-nums text-foreground">{i.formattedTotal}</td>
+                    <td className="py-2 pr-3 text-right tabular-nums text-muted-foreground">{i.formattedBalance}</td>
+                    <td className="py-2 text-right">
+                      <a
+                        href={`/api/portal/invoices/${i.invoiceNumber}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-primary hover:underline"
+                      >
+                        <Download className="size-3.5" /> PDF
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </GlassCard>
+      )}
+
+      <div>
+        <h2 className="text-sm font-semibold text-foreground">Milestone Billing</h2>
+        <p className="text-xs text-muted-foreground">What&apos;s in progress and not yet formally invoiced above.</p>
+      </div>
 
       <div className="grid gap-3 sm:grid-cols-4">
         {[
@@ -82,8 +147,8 @@ export default async function InvoicesPage() {
       </GlassCard>
 
       <p className="text-xs text-muted-foreground">
-        This is an indicative summary based on milestone completion against each project&apos;s agreed value. Formal
-        tax invoices are issued separately by the YashOrbit accounts team.
+        The milestone view above is an indicative summary based on completion against each project&apos;s agreed
+        value, not a formal invoice — your issued tax invoices are listed at the top of this page.
       </p>
     </div>
   );

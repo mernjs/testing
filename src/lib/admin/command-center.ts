@@ -14,6 +14,7 @@ import { getCareerDashboardStats } from "@/lib/career-applications";
 import { getMessengerDashboardStats } from "@/lib/messenger/dashboard";
 import { getChatbotDashboardStats } from "@/lib/chatbot-analytics";
 import { getVoiceDashboardStats } from "@/lib/voice-analytics";
+import { getFmsDashboardStats } from "@/lib/fms/dashboard";
 
 /**
  * Super Admin Command Center aggregation — Phase 1 (executive KPIs, financial
@@ -103,6 +104,24 @@ export interface CommandCenterStats {
     expenseTrend: TimePoint[];
     profitTrend: TimePoint[];
     expenseByCategory: LabelledValue[];
+  };
+  /**
+   * Real, ledger-backed figures from FMS (Phase 6) — deliberately separate
+   * from `business`/`financial` above, which remain a PMS/TMS/CRM/PRMS-
+   * derived proxy. Not merged in, since replacing those already-shipped
+   * numbers can't be fully verified from here without auditing whether
+   * every PRMS spend category already lands in an `fms_transaction`.
+   */
+  finance: {
+    totalRevenue: number;
+    totalExpenses: number;
+    netProfit: number;
+    totalCash: number;
+    totalBankBalance: number;
+    accountsReceivable: number;
+    accountsPayable: number;
+    pendingApprovals: number;
+    overdueInvoices: number;
   };
   modules: ModuleSummary[];
   generatedAt: string;
@@ -244,6 +263,7 @@ export async function getCommandCenterStats(): Promise<CommandCenterStats> {
     messenger,
     chatbot,
     voice,
+    fms,
     pipelineValue,
     wonValueLifetime,
     newLeadsToday,
@@ -260,6 +280,7 @@ export async function getCommandCenterStats(): Promise<CommandCenterStats> {
     getMessengerDashboardStats({ from: last30, to: now, viewerId: "command-center" }),
     getChatbotDashboardStats({ granularity: "month" }),
     getVoiceDashboardStats({ granularity: "month" }),
+    getFmsDashboardStats({ granularity }),
     crmDealValueTotal(["new", "in_progress"]),
     crmDealValueTotal(["completed"]),
     crmLeadsCreatedSince(startOfToday),
@@ -355,6 +376,16 @@ export async function getCommandCenterStats(): Promise<CommandCenterStats> {
         { label: "Applicants", value: portal.byRole.job_applicant },
       ],
     },
+    {
+      key: "fms",
+      label: "Finance",
+      href: "/fms",
+      stats: [
+        { label: "Cash + Bank", value: fms.totalCash + fms.totalBankBalance },
+        { label: "Net Profit", value: fms.netProfit },
+        { label: "Pending Approvals", value: fms.pendingApprovals },
+      ],
+    },
   ];
 
   return {
@@ -410,6 +441,17 @@ export async function getCommandCenterStats(): Promise<CommandCenterStats> {
       expenseTrend,
       profitTrend,
       expenseByCategory: prms.categoryExpenses,
+    },
+    finance: {
+      totalRevenue: fms.totalRevenue,
+      totalExpenses: fms.totalExpenses,
+      netProfit: fms.netProfit,
+      totalCash: fms.totalCash,
+      totalBankBalance: fms.totalBankBalance,
+      accountsReceivable: fms.accountsReceivable,
+      accountsPayable: fms.accountsPayable,
+      pendingApprovals: fms.pendingApprovals,
+      overdueInvoices: fms.overdueInvoices,
     },
     modules,
     generatedAt: now.toISOString(),

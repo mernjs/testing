@@ -14,6 +14,7 @@ import { ACCOUNT_TYPES } from "@/lib/fms/constants";
 const TYPE_BADGE: Record<string, string> = {
   asset: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
   liability: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+  equity: "bg-purple-500/15 text-purple-600 dark:text-purple-400",
   income: "bg-green-500/15 text-green-600 dark:text-green-400",
   expense: "bg-destructive/15 text-destructive",
 };
