@@ -4,13 +4,13 @@ import { Calculator, Calendar, TrendingUp, ShieldCheck, FileBarChart } from "luc
 import ExecutiveProfile from "@/components/sections/ExecutiveProfile";
 import { brandify } from "@/lib/brand";
 
-// Temporary placeholder photo — swap for Shikha's actual headshot when available.
+// Temporary placeholder photo — swap for Suman's actual headshot when available.
 const PHOTO = "/images/placeholders/leadership-hero-placeholder.png";
 
 export default function CfoContent() {
   return (
     <ExecutiveProfile
-      name="Shikha Singh"
+      name="Suman Singh"
       role="Chief Financial Officer"
       gender="female"
       tagline={brandify("Chief Financial Officer, YashOrbit")}
@@ -18,7 +18,7 @@ export default function CfoContent() {
       heroIcon={Calculator}
       photo={PHOTO}
       bioParagraphs={[
-        "Shikha qualified as a Chartered Accountant and spent the years that followed in corporate finance and investment analysis roles, working across statutory reporting, budgeting, and financial planning for growing companies. That combination of compliance discipline and analytical rigor became the foundation of how she runs a finance function.",
+        "Suman qualified as a Chartered Accountant and spent the years that followed in corporate finance and investment analysis roles, working across statutory reporting, budgeting, and financial planning for growing companies. That combination of compliance discipline and analytical rigor became the foundation of how she runs a finance function.",
         brandify("She joined YashOrbit as Chief Financial Officer, where she owns financial planning, statutory compliance, and pricing strategy across the company's services, products, and training lines."),
       ]}
       bioStats={[
@@ -28,7 +28,7 @@ export default function CfoContent() {
         { label: "Focus", value: "Financial Planning & Compliance", icon: FileBarChart },
       ]}
       overviewTitle="Leadership overview"
-      overviewDescription="How Shikha approaches running the company's finances."
+      overviewDescription="How Suman approaches running the company's finances."
       overviewItems={[
         { title: "Compliance Is a Floor, Not a Goal", description: "\"Meeting statutory requirements is the minimum bar. A finance function should also tell leadership something useful about the business.\"" },
         { title: "Forecast in Ranges, Not Single Numbers", description: "\"A single-point forecast just tells you where you'll be wrong. I plan around a range and revisit it monthly.\"" },
@@ -47,7 +47,7 @@ export default function CfoContent() {
         { title: "Pricing Strategy", description: "Sets and reviews commercial pricing models across services, products, and training." },
         { title: "Treasury Management", description: "Tracks cash position and runway, and plans spending and hiring decisions around it." },
       ]}
-      achievementsDescription={brandify("A few of the milestones Shikha has led at YashOrbit.")}
+      achievementsDescription={brandify("A few of the milestones Suman has led at YashOrbit.")}
       achievements={[
         { title: brandify("Rebuilt YashOrbit's Financial Reporting Framework"), description: "Introduced monthly financial reporting to the leadership team, replacing ad hoc reviews with a consistent, data-driven cadence.", skills: ["Financial Reporting", "Process Design"] },
         { title: "Structured Pricing Across Every Revenue Line", description: "Reworked commercial models for project work, resource augmentation, and training to reflect true delivery cost.", skills: ["Pricing Strategy", "Unit Economics"] },
@@ -56,7 +56,7 @@ export default function CfoContent() {
       visionStatement={brandify("I want YashOrbit's finances to be a source of confidence for the leadership team, not a source of surprises. That means clean books, defensible pricing, and forecasts the team can actually plan around — so every strategic decision is made with a clear, accurate picture of what the company can afford.")}
       visionQuote="Good financial management should be quiet. If the monthly close is dramatic or the numbers keep surprising leadership, something upstream went wrong — my job is to make sure that doesn't happen."
       ctaHeading="Want to talk with our finance leadership?"
-      ctaDescription="For engagements with non-standard commercial terms or procurement requirements, we're glad to bring Shikha directly into the conversation."
+      ctaDescription="For engagements with non-standard commercial terms or procurement requirements, we're glad to bring Suman directly into the conversation."
     />
   );
 }

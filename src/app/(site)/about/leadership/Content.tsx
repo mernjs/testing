@@ -37,7 +37,7 @@ const founders = [
 
 const leadershipTeam = [
   {
-    name: "Tej Pratap Singh",
+    name: "Vinit Singh",
     role: "Chief Technology Officer",
     gender: "male" as const,
     bio: "Leads engineering strategy, architecture standards, and the company's applied AI roadmap across every client engagement.",
@@ -45,7 +45,7 @@ const leadershipTeam = [
     href: "/about/cto",
   },
   {
-    name: "Shikha Singh",
+    name: "Suman Singh",
     role: "Chief Financial Officer",
     gender: "female" as const,
     bio: "Owns financial planning, statutory compliance, and pricing strategy across services, products, and training.",
@@ -53,7 +53,7 @@ const leadershipTeam = [
     href: "/about/cfo",
   },
   {
-    name: "Pooja Singh",
+    name: "Yogita Singh",
     role: "Chief Human Resources Officer",
     gender: "female" as const,
     bio: "Owns talent acquisition, culture, and learning and development as the team grows across every function.",

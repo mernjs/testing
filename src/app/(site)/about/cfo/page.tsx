@@ -4,7 +4,7 @@ import { socialMetadata, breadcrumbJsonLd, personJsonLd } from "@/lib/seo";
 
 const title = "Chief Financial Officer (CFO) | YashOrbit";
 const description =
-  "Meet Shikha Singh, Chief Financial Officer at YashOrbit — her background, financial leadership philosophy, career journey, and vision for the company's finances.";
+  "Meet Suman Singh, Chief Financial Officer at YashOrbit — her background, financial leadership philosophy, career journey, and vision for the company's finances.";
 const path = "/about/cfo";
 
 const image = "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?q=80&w=1200&auto=format&fit=crop";
@@ -25,7 +25,7 @@ export default function CfoPage() {
       { name: "Chief Financial Officer", path },
     ]),
     personJsonLd({
-      name: "Shikha Singh",
+      name: "Suman Singh",
       jobTitle: "Chief Financial Officer",
       path,
       description: "Chief Financial Officer at YashOrbit, leading financial strategy, compliance, and reporting.",

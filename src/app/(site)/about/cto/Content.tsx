@@ -4,13 +4,13 @@ import { Cpu, Calendar, Code2, Layers, TrendingUp } from "lucide-react";
 import ExecutiveProfile from "@/components/sections/ExecutiveProfile";
 import { brandify } from "@/lib/brand";
 
-// Temporary placeholder photo — swap for Tej Pratap's actual headshot when available.
+// Temporary placeholder photo — swap for Vinit's actual headshot when available.
 const PHOTO = "/images/placeholders/leadership-hero-placeholder.png";
 
 export default function CtoContent() {
   return (
     <ExecutiveProfile
-      name="Tej Pratap Singh"
+      name="Vinit Singh"
       role="Chief Technology Officer"
       gender="male"
       tagline={brandify("Chief Technology Officer, YashOrbit")}
@@ -18,7 +18,7 @@ export default function CtoContent() {
       heroIcon={Cpu}
       photo={PHOTO}
       bioParagraphs={[
-        "Tej Pratap spent over a decade as a senior engineer and technical architect across product and services companies, working on systems that had to hold up under real production load rather than a demo environment. He led engineering teams through several periods of rapid scaling before moving into a dedicated technology leadership role.",
+        "Vinit spent over a decade as a senior engineer and technical architect across product and services companies, working on systems that had to hold up under real production load rather than a demo environment. He led engineering teams through several periods of rapid scaling before moving into a dedicated technology leadership role.",
         brandify("He joined YashOrbit as Chief Technology Officer, where he sets engineering and architecture standards across every client engagement, and directs the technical roadmap for the company's applied AI practice."),
       ]}
       bioStats={[
@@ -28,7 +28,7 @@ export default function CtoContent() {
         { label: "Focus", value: "Architecture & Applied AI", icon: TrendingUp },
       ]}
       overviewTitle="Leadership overview"
-      overviewDescription="How Tej Pratap approaches leading engineering."
+      overviewDescription="How Vinit approaches leading engineering."
       overviewItems={[
         { title: "Architecture Reviews Are Non-negotiable", description: "\"Every engagement above a certain size gets an architecture review before a line of production code is written — it's cheaper to catch a bad decision on a whiteboard.\"" },
         { title: "Boring Technology, Used Well", description: "\"I'd rather ship a proven stack executed cleanly than a trendy one executed carelessly. Novelty isn't a client requirement.\"" },
@@ -47,7 +47,7 @@ export default function CtoContent() {
         { title: "Engineering Team Leadership", description: "Leads and grows the engineering organization across frontend, backend, mobile, and DevOps." },
         { title: "Technical Risk & Security Oversight", description: "Owns technical risk review and security standards across infrastructure and client-facing systems." },
       ]}
-      achievementsDescription={brandify("A few of the milestones Tej Pratap has led at YashOrbit.")}
+      achievementsDescription={brandify("A few of the milestones Vinit has led at YashOrbit.")}
       achievements={[
         { title: "Established Company-wide Architecture Standards", description: "Built the architecture review process now applied to every engagement above a defined complexity threshold.", skills: ["Systems Architecture", "Technical Governance"] },
         { title: brandify("Directed YashOrbit's Applied AI Technical Roadmap"), description: "Set the technical direction connecting the company's generative AI, agentic AI, and computer vision work into a coherent engineering practice.", skills: ["Applied AI", "Technical Strategy"] },
@@ -56,7 +56,7 @@ export default function CtoContent() {
       visionStatement={brandify("I want YashOrbit's engineering reputation to rest on reliability first — code that holds up under real production conditions, architecture that scales past the first version, and AI systems held to the same bar as everything else we ship. Being early on new technology only matters if what we build with it actually works.")}
       visionQuote="A client should never be able to tell which parts of a system were built under deadline pressure. If our architecture and review process are doing their job, the engineering just quietly works."
       ctaHeading="Want to talk with our technical leadership?"
-      ctaDescription="For engagements with complex architecture or AI requirements, we're glad to bring Tej Pratap directly into the conversation."
+      ctaDescription="For engagements with complex architecture or AI requirements, we're glad to bring Vinit directly into the conversation."
     />
   );
 }

@@ -4,7 +4,7 @@ import { socialMetadata, breadcrumbJsonLd, personJsonLd } from "@/lib/seo";
 
 const title = "Chief Technology Officer (CTO) | YashOrbit";
 const description =
-  "Meet Tej Pratap Singh, Chief Technology Officer at YashOrbit — his background, technical leadership philosophy, career journey, and vision for the company's engineering.";
+  "Meet Vinit Singh, Chief Technology Officer at YashOrbit — his background, technical leadership philosophy, career journey, and vision for the company's engineering.";
 const path = "/about/cto";
 
 const image = "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1200&auto=format&fit=crop";
@@ -25,7 +25,7 @@ export default function CtoPage() {
       { name: "Chief Technology Officer", path },
     ]),
     personJsonLd({
-      name: "Tej Pratap Singh",
+      name: "Vinit Singh",
       jobTitle: "Chief Technology Officer",
       path,
       description: "Chief Technology Officer at YashOrbit, leading engineering strategy, technical architecture, and applied AI direction.",
