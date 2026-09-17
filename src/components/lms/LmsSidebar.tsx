@@ -15,6 +15,9 @@ import {
   Mic,
   Settings2,
   Users,
+  Gift,
+  TicketPercent,
+  ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -87,6 +90,10 @@ export default function LmsSidebar({ onNavigate, collapsed = false }: { onNaviga
       <NavLink href="/lms/leads" label="Leads" icon={Users} collapsed={collapsed} onNavigate={onNavigate} />
       <SectionLabel collapsed={collapsed}>Marketing</SectionLabel>
       <NavLink href="/lms/campaigns" label="Campaign Analytics" icon={Megaphone} collapsed={collapsed} onNavigate={onNavigate} />
+      <SectionLabel collapsed={collapsed}>Festival Offers</SectionLabel>
+      <NavLink href="/lms/offers" label="Campaigns" icon={Gift} collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/lms/offers/coupons" label="Coupons" icon={TicketPercent} collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/lms/offers/claims" label="Claims" icon={ClipboardList} collapsed={collapsed} onNavigate={onNavigate} />
       <SectionLabel collapsed={collapsed}>Careers</SectionLabel>
       <NavLink href="/lms/careers" label="Applicants" icon={Briefcase} collapsed={collapsed} onNavigate={onNavigate} />
       <SectionLabel collapsed={collapsed}>AI Chatbot</SectionLabel>

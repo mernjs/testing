@@ -1,0 +1,253 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
+import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import ServicePicker from "@/components/lms/offers/ServicePicker";
+import { AUDIENCES, OFFER_STATUSES, PRICING_MODES, DEFAULT_CURRENCY, type Audience, type PricingMode } from "@/lib/offers/constants";
+import type { CategorySlug } from "@/lib/categories";
+import { saveOfferAction } from "@/app/lms/(protected)/offers/[id]/offers/actions";
+import type { SerializedOffer } from "@/lib/offers/offers";
+
+function toLocalInput(iso?: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+export default function OfferForm({ campaignId, offer }: { campaignId: string; offer?: SerializedOffer }) {
+  const [pending, start] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [form, setForm] = useState({
+    title: offer?.title ?? "",
+    description: offer?.description ?? "",
+    badgeText: offer?.badgeText ?? "",
+    category: (offer?.category ?? "") as CategorySlug | "",
+    subService: offer?.subService ?? "",
+    audience: offer?.audience ?? (["ALL"] as Audience[]),
+    status: offer?.status ?? "draft",
+    validFrom: toLocalInput(offer?.validFrom),
+    validUntil: toLocalInput(offer?.validUntil),
+    priority: offer?.priority ?? 10,
+    isFeatured: offer?.isFeatured ?? false,
+    isDealOfTheDay: offer?.isDealOfTheDay ?? false,
+    isFlashDeal: offer?.isFlashDeal ?? false,
+    pricingMode: offer?.pricing.mode ?? ("custom_quote" as PricingMode),
+    originalPrice: offer?.pricing.originalPrice ?? "",
+    currency: offer?.pricing.currency ?? DEFAULT_CURRENCY,
+    percentage: offer?.pricing.percentage ?? "",
+    flatDiscountAmount: offer?.pricing.flatDiscountAmount ?? "",
+    maxDiscountCap: offer?.pricing.maxDiscountCap ?? "",
+    startingPriceLabel: offer?.pricing.startingPriceLabel ?? "",
+  });
+  const [benefits, setBenefits] = useState<string[]>(offer?.benefits ?? []);
+
+  function toggleAudience(value: Audience) {
+    setForm((f) => ({ ...f, audience: f.audience.includes(value) ? f.audience.filter((a) => a !== value) : [...f.audience, value] }));
+  }
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setFieldErrors({});
+    start(async () => {
+      const res = await saveOfferAction(campaignId, offer?._id ?? null, {
+        title: form.title,
+        description: form.description || undefined,
+        badgeText: form.badgeText || undefined,
+        category: form.category as CategorySlug,
+        subService: form.subService,
+        audience: form.audience,
+        status: form.status,
+        validFrom: form.validFrom ? new Date(form.validFrom).toISOString() : "",
+        validUntil: form.validUntil ? new Date(form.validUntil).toISOString() : "",
+        priority: Number(form.priority),
+        isFeatured: form.isFeatured,
+        isDealOfTheDay: form.isDealOfTheDay,
+        isFlashDeal: form.isFlashDeal,
+        benefits,
+        pricing: {
+          mode: form.pricingMode,
+          originalPrice: form.originalPrice === "" ? undefined : Number(form.originalPrice),
+          currency: form.currency || undefined,
+          percentage: form.percentage === "" ? undefined : Number(form.percentage),
+          flatDiscountAmount: form.flatDiscountAmount === "" ? undefined : Number(form.flatDiscountAmount),
+          maxDiscountCap: form.maxDiscountCap === "" ? undefined : Number(form.maxDiscountCap),
+          startingPriceLabel: form.startingPriceLabel || undefined,
+        },
+      });
+      if (res?.error) {
+        setError(res.error);
+        setFieldErrors(res.fieldErrors ?? {});
+        toast.error(res.error);
+      }
+    });
+  }
+
+  return (
+    <form onSubmit={submit} className="space-y-6">
+      {error && <p className="text-sm text-destructive">{error}</p>}
+
+      <div className="space-y-1.5">
+        <Label>Offer title</Label>
+        <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Web App Development — Festival Special" required />
+        {fieldErrors.title && <p className="text-xs text-destructive">{fieldErrors.title}</p>}
+      </div>
+
+      <div className="space-y-1.5">
+        <Label>Short description (optional)</Label>
+        <Textarea rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label>Badge text (optional — auto-generated from pricing if left blank)</Label>
+        <Input value={form.badgeText} onChange={(e) => setForm({ ...form, badgeText: e.target.value })} placeholder="FESTIVAL OFFER" />
+      </div>
+
+      <ServicePicker
+        category={form.category}
+        subService={form.subService}
+        onCategoryChange={(v) => setForm({ ...form, category: v, subService: "" })}
+        onSubServiceChange={(v) => setForm({ ...form, subService: v })}
+        allowAllSubService
+      />
+      {fieldErrors.category && <p className="text-xs text-destructive">{fieldErrors.category}</p>}
+      {fieldErrors.subService && <p className="text-xs text-destructive">{fieldErrors.subService}</p>}
+
+      <div className="space-y-1.5">
+        <Label>Audience</Label>
+        <div className="flex flex-wrap gap-3">
+          {AUDIENCES.map((a) => (
+            <label key={a.value} className="flex items-center gap-1.5 text-sm">
+              <input type="checkbox" checked={form.audience.includes(a.value)} onChange={() => toggleAudience(a.value)} />
+              {a.label}
+            </label>
+          ))}
+        </div>
+        {fieldErrors.audience && <p className="text-xs text-destructive">{fieldErrors.audience}</p>}
+      </div>
+
+      <div className="space-y-3 rounded-xl border border-border/50 p-4">
+        <p className="text-sm font-semibold text-foreground">Pricing</p>
+        <div className="space-y-1.5">
+          <Label>Pricing mode</Label>
+          <Select value={form.pricingMode} onValueChange={(v) => v && setForm({ ...form, pricingMode: v as PricingMode })}>
+            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {PRICING_MODES.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {form.pricingMode !== "custom_quote" ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label>Original price</Label>
+              <Input type="number" min={0} value={form.originalPrice} onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} />
+              {fieldErrors.originalPrice && <p className="text-xs text-destructive">{fieldErrors.originalPrice}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label>Currency</Label>
+              <Input value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} />
+            </div>
+            {form.pricingMode === "percentage" && (
+              <div className="space-y-1.5">
+                <Label>Percentage off (1–100)</Label>
+                <Input type="number" min={1} max={100} value={form.percentage} onChange={(e) => setForm({ ...form, percentage: e.target.value })} />
+                {fieldErrors.percentage && <p className="text-xs text-destructive">{fieldErrors.percentage}</p>}
+              </div>
+            )}
+            {form.pricingMode === "flat" && (
+              <div className="space-y-1.5">
+                <Label>Flat amount off</Label>
+                <Input type="number" min={0} value={form.flatDiscountAmount} onChange={(e) => setForm({ ...form, flatDiscountAmount: e.target.value })} />
+                {fieldErrors.flatDiscountAmount && <p className="text-xs text-destructive">{fieldErrors.flatDiscountAmount}</p>}
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <Label>Max discount cap (optional)</Label>
+              <Input type="number" min={0} value={form.maxDiscountCap} onChange={(e) => setForm({ ...form, maxDiscountCap: e.target.value })} />
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-1.5">
+            <Label>Starting price label (optional, e.g. &quot;From $15/hr&quot;)</Label>
+            <Input value={form.startingPriceLabel} onChange={(e) => setForm({ ...form, startingPriceLabel: e.target.value })} />
+          </div>
+        )}
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label>Valid from</Label>
+          <Input type="datetime-local" value={form.validFrom} onChange={(e) => setForm({ ...form, validFrom: e.target.value })} required />
+          {fieldErrors.validFrom && <p className="text-xs text-destructive">{fieldErrors.validFrom}</p>}
+        </div>
+        <div className="space-y-1.5">
+          <Label>Valid until</Label>
+          <Input type="datetime-local" value={form.validUntil} onChange={(e) => setForm({ ...form, validUntil: e.target.value })} required />
+          {fieldErrors.validUntil && <p className="text-xs text-destructive">{fieldErrors.validUntil}</p>}
+        </div>
+      </div>
+
+      <div className="space-y-3 rounded-xl border border-border/50 p-4">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold text-foreground">Benefits (optional)</p>
+          <Button type="button" variant="outline" size="sm" onClick={() => setBenefits([...benefits, ""])}>
+            <Plus className="size-3.5" /> Add
+          </Button>
+        </div>
+        {benefits.map((b, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <Input value={b} onChange={(e) => setBenefits(benefits.map((x, j) => (j === i ? e.target.value : x)))} placeholder="Live Projects" />
+            <Button type="button" variant="ghost" size="icon-sm" onClick={() => setBenefits(benefits.filter((_, j) => j !== i))}>
+              <Trash2 className="size-3.5" />
+            </Button>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div className="space-y-1.5">
+          <Label>Status</Label>
+          <Select value={form.status} onValueChange={(v) => v && setForm({ ...form, status: v as typeof form.status })}>
+            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {OFFER_STATUSES.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <Label>Priority</Label>
+          <Input type="number" min={0} max={1000} value={form.priority} onChange={(e) => setForm({ ...form, priority: Number(e.target.value) })} />
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-4">
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={form.isFeatured} onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })} />
+          Featured offer
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={form.isDealOfTheDay} onChange={(e) => setForm({ ...form, isDealOfTheDay: e.target.checked })} />
+          Deal of the Day (replaces any other offer set for this campaign)
+        </label>
+        <label className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={form.isFlashDeal} onChange={(e) => setForm({ ...form, isFlashDeal: e.target.checked })} />
+          Flash deal
+        </label>
+      </div>
+
+      <Button type="submit" disabled={pending}>
+        {pending ? <Loader2 className="size-4 animate-spin" /> : offer ? "Save changes" : "Create offer"}
+      </Button>
+    </form>
+  );
+}
