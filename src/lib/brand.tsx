@@ -11,10 +11,7 @@ export function brandify(text: string): React.ReactNode {
   if (parts.length === 1) return text;
   return parts.map((part, i) =>
     part === "YashOrbit" ? (
-      <React.Fragment key={i}>
-        <span className="text-foreground">Yash</span>
-        <span className="text-primary">Orbit</span>
-      </React.Fragment>
+      <span key={i}><span className="text-foreground">Yash</span><span className="text-primary">Orbit</span></span>
     ) : (
       part
     )

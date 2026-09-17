@@ -33,7 +33,6 @@ export function organizationJsonLd() {
       "YashOrbit Tech",
       "YashOrbit Technologies Pvt Ltd",
       "YashOrbit Technologies Private Limited",
-      "Yash Orbit",
     ],
     url: organizationInfo.url,
     logo: organizationInfo.logo,
