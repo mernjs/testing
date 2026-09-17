@@ -10,8 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { PAYMENT_METHODS, formatMoney } from "@/lib/fms/constants";
-import { ASSET_EXPENSE_CATEGORIES } from "@/lib/fms/asset-expenses";
+import { PAYMENT_METHODS, ASSET_EXPENSE_CATEGORIES, formatMoney } from "@/lib/fms/constants";
 import { recordAssetExpenseAction } from "@/app/fms/(protected)/asset-expenses/actions";
 import type { FundAccountOption } from "@/lib/fms/fund-accounts";
 

@@ -104,6 +104,11 @@ export default async function BudgetVsActualPage() {
           </CardContent>
         </GlassCard>
       )}
+
+      <p className="text-xs text-muted-foreground">
+        Budget allocations are owned by PRMS. Create or edit a budget at{" "}
+        <Link href="/prms/budgets" className="text-primary hover:underline">/prms/budgets</Link>.
+      </p>
     </div>
   );
 }

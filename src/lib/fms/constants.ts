@@ -366,6 +366,26 @@ export function getFundAccountStatusMeta(value: string | undefined) {
 }
 
 // ---------------------------------------------------------------------------
+// Asset Expenses (§14 — genuinely new, no ongoing/recurring asset cost
+// concept exists anywhere in PRMS or FMS). Lives here (not in
+// `fms/asset-expenses.ts`, which has `import "server-only"`) so client
+// components can import it directly — same rule `invoiceBalance` follows.
+// ---------------------------------------------------------------------------
+
+export type AssetExpenseCategory = "maintenance" | "insurance" | "amc" | "other";
+
+export const ASSET_EXPENSE_CATEGORIES: { value: AssetExpenseCategory; label: string }[] = [
+  { value: "maintenance", label: "Maintenance" },
+  { value: "insurance", label: "Insurance" },
+  { value: "amc", label: "AMC / Service Contract" },
+  { value: "other", label: "Other" },
+];
+
+export function isValidAssetExpenseCategory(value: unknown): value is AssetExpenseCategory {
+  return typeof value === "string" && ASSET_EXPENSE_CATEGORIES.some((c) => c.value === value);
+}
+
+// ---------------------------------------------------------------------------
 // Bank Reconciliation (§20)
 // ---------------------------------------------------------------------------
 

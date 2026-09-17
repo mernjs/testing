@@ -1,7 +1,14 @@
 import "server-only";
 import { getDb } from "@/lib/mongodb";
 import { newId, createStamp, notDeleted, nextYearSequence, formatYearCode, type AuditFields } from "@/lib/fms/db";
-import { round2, type PaymentMethod, type FundAccountType } from "@/lib/fms/constants";
+import {
+  round2,
+  type PaymentMethod,
+  type FundAccountType,
+  type AssetExpenseCategory,
+  ASSET_EXPENSE_CATEGORIES,
+  isValidAssetExpenseCategory,
+} from "@/lib/fms/constants";
 import { getAsset } from "@/lib/prms/assets";
 import { postSystemTransaction } from "@/lib/fms/transactions";
 
@@ -12,23 +19,18 @@ import { postSystemTransaction } from "@/lib/fms/transactions";
  * only ever tracks its original `purchaseCost`. Unlike disposal, an asset
  * can have any number of these over its life, so there's no uniqueness
  * constraint on `assetId` here.
+ *
+ * `AssetExpenseCategory`/`ASSET_EXPENSE_CATEGORIES`/`isValidAssetExpenseCategory`
+ * live in `fms/constants.ts` (client-safe) and are re-exported here for
+ * server-side convenience — a client component must import them from
+ * `fms/constants` directly, never through this file, or it pulls the
+ * mongodb driver into the browser bundle (the exact Phase 2 bug this
+ * mirrors — caught here via a real build failure, not proactively).
  */
+export { type AssetExpenseCategory, ASSET_EXPENSE_CATEGORIES, isValidAssetExpenseCategory };
 
 export const ASSET_EXPENSES_COLLECTION = "fms_asset_expenses";
 const ASSET_EXPENSE_NUMBER_PREFIX = "AEX";
-
-export type AssetExpenseCategory = "maintenance" | "insurance" | "amc" | "other";
-
-export const ASSET_EXPENSE_CATEGORIES: { value: AssetExpenseCategory; label: string }[] = [
-  { value: "maintenance", label: "Maintenance" },
-  { value: "insurance", label: "Insurance" },
-  { value: "amc", label: "AMC / Service Contract" },
-  { value: "other", label: "Other" },
-];
-
-export function isValidAssetExpenseCategory(value: unknown): value is AssetExpenseCategory {
-  return typeof value === "string" && ASSET_EXPENSE_CATEGORIES.some((c) => c.value === value);
-}
 
 export interface AssetExpense extends AuditFields {
   _id: string;
