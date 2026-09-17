@@ -94,6 +94,28 @@ export async function getPublicOffers(opts: { campaignId: string; audience?: Aud
   return collection.find(filter).sort({ priority: -1, createdAt: -1 }).toArray();
 }
 
+/**
+ * Picks the single best-matching real offer for the top strip/popup on a
+ * given page, so their content is always a real offer's title/discount —
+ * never separately-authored marketing copy. Preference order: an offer
+ * whose category matches the page's inferred audience/category context →
+ * the campaign's Deal of the Day → the highest-priority featured offer →
+ * the highest-priority offer overall. Returns null when the campaign has
+ * no active offers at all (the caller must hide gracefully, not invent one).
+ */
+export function pickContextOffer(offers: Offer[], opts: { category?: CategorySlug } = {}): Offer | null {
+  if (offers.length === 0) return null;
+  if (opts.category) {
+    const categoryMatch = offers.find((o) => o.category === opts.category);
+    if (categoryMatch) return categoryMatch;
+  }
+  const dealOfTheDay = offers.find((o) => o.isDealOfTheDay);
+  if (dealOfTheDay) return dealOfTheDay;
+  const featured = offers.find((o) => o.isFeatured);
+  if (featured) return featured;
+  return offers[0];
+}
+
 // ---------------------------------------------------------------------------
 // Writes
 // ---------------------------------------------------------------------------

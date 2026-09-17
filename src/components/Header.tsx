@@ -411,7 +411,7 @@ export default function Header() {
 
   return (
     <>
-    <header className="fixed inset-x-0 top-0 z-50 h-[88px] bg-background/80 dark:bg-muted/20 backdrop-blur-xl border-b border-border/50">
+    <header className="fixed inset-x-0 top-[var(--offer-strip-h,0px)] z-50 h-[88px] bg-background/80 dark:bg-muted/20 backdrop-blur-xl border-b border-border/50">
       <nav className="mx-auto flex h-full max-w-7xl items-center justify-between px-6 lg:px-8" aria-label="Global">
         <div className="flex shrink-0">
           <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2.5 group">

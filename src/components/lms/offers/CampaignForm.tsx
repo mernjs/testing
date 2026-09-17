@@ -13,10 +13,21 @@ import {
   CAMPAIGN_STATUSES,
   CAMPAIGN_TYPES,
   CAMPAIGN_THEME_PRESETS,
+  CTA_ACTION_TYPES,
+  POPUP_TEMPLATES,
+  POPUP_TRIGGER_TYPES,
+  POPUP_FREQUENCIES,
+  PAGE_TARGETING_MODES,
+  TARGETABLE_PAGES,
   getThemePreset,
   isValidThemePreset,
   type Audience,
   type CampaignThemePreset,
+  type CtaActionType,
+  type PopupTemplate,
+  type PopupTriggerType,
+  type PopupFrequency,
+  type PageTargetingMode,
 } from "@/lib/offers/constants";
 import { saveCampaignAction, type CampaignFormInput } from "@/app/lms/(protected)/offers/actions";
 import type { SerializedCampaign } from "@/lib/offers/campaigns";
@@ -50,6 +61,38 @@ export default function CampaignForm({ campaign }: { campaign?: SerializedCampai
     accentColor: campaign?.theme?.accentColor ?? "",
   });
   const [faqs, setFaqs] = useState(campaign?.faqs ?? []);
+  const [strip, setStrip] = useState({
+    enabled: campaign?.display?.strip.enabled ?? false,
+    message: campaign?.display?.strip.message ?? "",
+    discountText: campaign?.display?.strip.discountText ?? "",
+    ctaText: campaign?.display?.strip.ctaText ?? "Claim Offer",
+    ctaActionType: campaign?.display?.strip.ctaActionType ?? "url",
+    ctaActionValue: campaign?.display?.strip.ctaActionValue ?? "/offers",
+    showCountdown: campaign?.display?.strip.showCountdown ?? true,
+    allowClose: campaign?.display?.strip.allowClose ?? true,
+  });
+  const [popup, setPopup] = useState({
+    enabled: campaign?.display?.popup.enabled ?? false,
+    template: campaign?.display?.popup.template ?? "festival",
+    ctaText: campaign?.display?.popup.ctaText ?? "Claim Offer",
+    ctaActionType: campaign?.display?.popup.ctaActionType ?? "url",
+    ctaActionValue: campaign?.display?.popup.ctaActionValue ?? "/offers",
+    showCountdown: campaign?.display?.popup.showCountdown ?? true,
+    triggerType: campaign?.display?.popup.triggerType ?? "delay",
+    triggerValue: campaign?.display?.popup.triggerValue ?? 10,
+    frequency: campaign?.display?.popup.frequency ?? "session",
+  });
+  const [pageTargeting, setPageTargeting] = useState({
+    mode: campaign?.display?.pageTargeting.mode ?? "all",
+    pages: campaign?.display?.pageTargeting.pages ?? ([] as string[]),
+  });
+
+  function togglePage(path: string) {
+    setPageTargeting((pt) => ({
+      ...pt,
+      pages: pt.pages.includes(path) ? pt.pages.filter((p) => p !== path) : [...pt.pages, path],
+    }));
+  }
 
   function toggleAudience(value: Audience) {
     setForm((f) => ({
@@ -92,6 +135,33 @@ export default function CampaignForm({ campaign }: { campaign?: SerializedCampai
           accentColor: form.accentColor || undefined,
         },
         faqs,
+        display: {
+          strip: {
+            enabled: strip.enabled,
+            message: strip.message,
+            discountText: strip.discountText,
+            ctaText: strip.ctaText,
+            ctaActionType: strip.ctaActionType as CtaActionType,
+            ctaActionValue: strip.ctaActionValue,
+            showCountdown: strip.showCountdown,
+            allowClose: strip.allowClose,
+          },
+          popup: {
+            enabled: popup.enabled,
+            template: popup.template as PopupTemplate,
+            ctaText: popup.ctaText,
+            ctaActionType: popup.ctaActionType as CtaActionType,
+            ctaActionValue: popup.ctaActionValue,
+            showCountdown: popup.showCountdown,
+            triggerType: popup.triggerType as PopupTriggerType,
+            triggerValue: Number(popup.triggerValue),
+            frequency: popup.frequency as PopupFrequency,
+          },
+          pageTargeting: {
+            mode: pageTargeting.mode as PageTargetingMode,
+            pages: pageTargeting.pages,
+          },
+        },
       };
       const res = await saveCampaignAction(campaign?._id ?? null, input);
       if (res?.error) {
@@ -244,6 +314,165 @@ export default function CampaignForm({ campaign }: { campaign?: SerializedCampai
           </div>
         ))}
       </div>
+
+      <div className="space-y-3 rounded-xl border border-border/50 p-4">
+        <label className="flex items-center justify-between">
+          <span className="text-sm font-semibold text-foreground">Top Strip</span>
+          <input type="checkbox" checked={strip.enabled} onChange={(e) => setStrip({ ...strip, enabled: e.target.checked })} />
+        </label>
+        {strip.enabled && (
+          <>
+            <div className="space-y-1.5">
+              <Label>Message</Label>
+              <Input value={strip.message} onChange={(e) => setStrip({ ...strip, message: e.target.value })} placeholder="Build Your Next Product at Festival Pricing" />
+              {fieldErrors.stripMessage && <p className="text-xs text-destructive">{fieldErrors.stripMessage}</p>}
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label>Discount text</Label>
+                <Input value={strip.discountText} onChange={(e) => setStrip({ ...strip, discountText: e.target.value })} placeholder="UP TO 90% OFF" />
+              </div>
+              <div className="space-y-1.5">
+                <Label>CTA text</Label>
+                <Input value={strip.ctaText} onChange={(e) => setStrip({ ...strip, ctaText: e.target.value })} />
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label>CTA action</Label>
+                <Select value={strip.ctaActionType} onValueChange={(v) => v && setStrip({ ...strip, ctaActionType: v as typeof strip.ctaActionType })}>
+                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {CTA_ACTION_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              {strip.ctaActionType === "url" && (
+                <div className="space-y-1.5">
+                  <Label>CTA URL</Label>
+                  <Input value={strip.ctaActionValue} onChange={(e) => setStrip({ ...strip, ctaActionValue: e.target.value })} placeholder="/offers" />
+                </div>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={strip.showCountdown} onChange={(e) => setStrip({ ...strip, showCountdown: e.target.checked })} />
+                Show countdown
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={strip.allowClose} onChange={(e) => setStrip({ ...strip, allowClose: e.target.checked })} />
+                Closable
+              </label>
+            </div>
+          </>
+        )}
+      </div>
+
+      <div className="space-y-3 rounded-xl border border-border/50 p-4">
+        <label className="flex items-center justify-between">
+          <span className="text-sm font-semibold text-foreground">Popup</span>
+          <input type="checkbox" checked={popup.enabled} onChange={(e) => setPopup({ ...popup, enabled: e.target.checked })} />
+        </label>
+        {popup.enabled && (
+          <>
+            <p className="text-xs text-muted-foreground">
+              The popup&apos;s title/discount is derived from the campaign&apos;s real offers (Deal of the Day, or the best match for the page a
+              visitor is on) — only the framing below is configured here.
+            </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label>Template</Label>
+                <Select value={popup.template} onValueChange={(v) => v && setPopup({ ...popup, template: v as typeof popup.template })}>
+                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {POPUP_TEMPLATES.map((t) => <SelectItem key={t.value} value={t.value}>{t.emoji} {t.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>CTA text</Label>
+                <Input value={popup.ctaText} onChange={(e) => setPopup({ ...popup, ctaText: e.target.value })} />
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label>CTA action</Label>
+                <Select value={popup.ctaActionType} onValueChange={(v) => v && setPopup({ ...popup, ctaActionType: v as typeof popup.ctaActionType })}>
+                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {CTA_ACTION_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              {popup.ctaActionType === "url" && (
+                <div className="space-y-1.5">
+                  <Label>CTA URL</Label>
+                  <Input value={popup.ctaActionValue} onChange={(e) => setPopup({ ...popup, ctaActionValue: e.target.value })} placeholder="/offers" />
+                </div>
+              )}
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="space-y-1.5">
+                <Label>Trigger</Label>
+                <Select value={popup.triggerType} onValueChange={(v) => v && setPopup({ ...popup, triggerType: v as typeof popup.triggerType })}>
+                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {POPUP_TRIGGER_TYPES.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              {popup.triggerType === "delay" && (
+                <div className="space-y-1.5">
+                  <Label>Delay (seconds)</Label>
+                  <Input type="number" min={0} max={300} value={popup.triggerValue} onChange={(e) => setPopup({ ...popup, triggerValue: Number(e.target.value) })} />
+                </div>
+              )}
+              {popup.triggerType === "scroll" && (
+                <div className="space-y-1.5">
+                  <Label>Scroll depth (%)</Label>
+                  <Input type="number" min={1} max={100} value={popup.triggerValue} onChange={(e) => setPopup({ ...popup, triggerValue: Number(e.target.value) })} />
+                </div>
+              )}
+              <div className="space-y-1.5">
+                <Label>Frequency</Label>
+                <Select value={popup.frequency} onValueChange={(v) => v && setPopup({ ...popup, frequency: v as typeof popup.frequency })}>
+                  <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {POPUP_FREQUENCIES.map((f) => <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={popup.showCountdown} onChange={(e) => setPopup({ ...popup, showCountdown: e.target.checked })} />
+              Show countdown
+            </label>
+          </>
+        )}
+      </div>
+
+      {(strip.enabled || popup.enabled) && (
+        <div className="space-y-3 rounded-xl border border-border/50 p-4">
+          <p className="text-sm font-semibold text-foreground">Page targeting (Strip &amp; Popup)</p>
+          <Select value={pageTargeting.mode} onValueChange={(v) => v && setPageTargeting({ ...pageTargeting, mode: v as typeof pageTargeting.mode })}>
+            <SelectTrigger className="w-full sm:w-64"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {PAGE_TARGETING_MODES.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          {pageTargeting.mode === "selected" && (
+            <div className="flex flex-wrap gap-3">
+              {TARGETABLE_PAGES.map((p) => (
+                <label key={p.path} className="flex items-center gap-1.5 text-sm">
+                  <input type="checkbox" checked={pageTargeting.pages.includes(p.path)} onChange={() => togglePage(p.path)} />
+                  {p.label}
+                </label>
+              ))}
+            </div>
+          )}
+          {fieldErrors.pageTargeting && <p className="text-xs text-destructive">{fieldErrors.pageTargeting}</p>}
+        </div>
+      )}
 
       <Button type="submit" disabled={pending}>
         {pending ? <Loader2 className="size-4 animate-spin" /> : campaign ? "Save changes" : "Create campaign"}

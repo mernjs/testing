@@ -3,9 +3,12 @@ import { getDb } from "@/lib/mongodb";
 import { escapeRegExp } from "@/lib/text-search";
 import { newId, createStamp, updateStamp, notDeleted, type AuditFields } from "@/lib/offers/db";
 import type { CampaignWriteInput } from "@/lib/offers/campaign-validation";
-import { DEFAULT_THEME_PRESET, type Audience, type CampaignStatus, type CampaignType, type CampaignThemePreset } from "@/lib/offers/constants";
+import { DEFAULT_DISPLAY_CONFIG, type DisplayConfigInput } from "@/lib/offers/display-validation";
+import { DEFAULT_THEME_PRESET, pageIsTargeted, type Audience, type CampaignStatus, type CampaignType, type CampaignThemePreset } from "@/lib/offers/constants";
 
 export const CAMPAIGNS_COLLECTION = "offer_campaigns";
+
+export { DEFAULT_DISPLAY_CONFIG };
 
 export interface OfferCampaign extends AuditFields {
   _id: string;
@@ -27,6 +30,7 @@ export interface OfferCampaign extends AuditFields {
   targetAudience: Audience[];
   isFeatured: boolean;
   faqs: { question: string; answer: string; audience?: Audience }[];
+  display: DisplayConfigInput;
 }
 
 export interface SerializedCampaign extends Omit<OfferCampaign, "createdAt" | "updatedAt" | "deletedAt" | "startDate" | "endDate"> {
@@ -40,6 +44,7 @@ export interface SerializedCampaign extends Omit<OfferCampaign, "createdAt" | "u
 export function serializeCampaign(c: OfferCampaign): SerializedCampaign {
   return {
     ...c,
+    display: c.display ?? DEFAULT_DISPLAY_CONFIG,
     createdAt: c.createdAt.toISOString(),
     updatedAt: c.updatedAt.toISOString(),
     deletedAt: c.deletedAt ? c.deletedAt.toISOString() : null,
@@ -144,6 +149,29 @@ export async function getActiveCampaign(now: Date = new Date()): Promise<OfferCa
   return candidates[0] ?? null;
 }
 
+/**
+ * Same resolution as `getActiveCampaign`, with an additional page-targeting
+ * filter (§17: priority → audience/page targeting → dates). Since page
+ * targeting can't be expressed as a simple Mongo equality filter (a
+ * prefix-match against a list), this fetches a bounded window of top
+ * candidates by priority and filters in memory — negligible cost, campaign
+ * counts are always small.
+ */
+export async function getActiveCampaignForPage(pathname: string, now: Date = new Date()): Promise<OfferCampaign | null> {
+  const collection = await getCollection();
+  const candidates = await collection
+    .find({
+      ...notDeleted,
+      status: { $in: ["scheduled", "active"] },
+      startDate: { $lte: now },
+      endDate: { $gte: now },
+    })
+    .sort({ priority: -1, startDate: -1, _id: -1 })
+    .limit(25)
+    .toArray();
+  return candidates.find((c) => pageIsTargeted(pathname, (c.display ?? DEFAULT_DISPLAY_CONFIG).pageTargeting)) ?? null;
+}
+
 // ---------------------------------------------------------------------------
 // Writes
 // ---------------------------------------------------------------------------
@@ -165,6 +193,7 @@ export async function createCampaign(data: CampaignWriteInput, actorId: string):
     targetAudience: data.targetAudience,
     isFeatured: data.isFeatured,
     faqs: data.faqs,
+    display: data.display ?? DEFAULT_DISPLAY_CONFIG,
     ...createStamp(actorId),
   };
   await collection.insertOne(doc);
@@ -194,6 +223,7 @@ export async function updateCampaign(
         targetAudience: data.targetAudience,
         isFeatured: data.isFeatured,
         faqs: data.faqs,
+        display: data.display ?? DEFAULT_DISPLAY_CONFIG,
         ...updateStamp(actorId),
       },
     },

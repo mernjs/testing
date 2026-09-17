@@ -5,7 +5,7 @@ import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import FunnelChart from "@/components/lms/offers/FunnelChart";
 import TrendChart from "@/components/lms/offers/TrendChart";
 import { getCampaign } from "@/lib/offers/campaigns";
-import { getCampaignFunnel, getCampaignBreakdown, getCampaignTrend } from "@/lib/offers/analytics";
+import { getCampaignFunnel, getCampaignBreakdown, getCampaignTrend, getPromoStats } from "@/lib/offers/analytics";
 import { getAudienceLabel } from "@/lib/offers/constants";
 
 export const dynamic = "force-dynamic";
@@ -63,12 +63,13 @@ export default async function CampaignAnalyticsPage({ params }: { params: Promis
   const campaign = await getCampaign(id);
   if (!campaign) notFound();
 
-  const [funnel, trend, byAudience, byDevice, bySource] = await Promise.all([
+  const [funnel, trend, byAudience, byDevice, bySource, promo] = await Promise.all([
     getCampaignFunnel(id),
     getCampaignTrend(id, 14),
     getCampaignBreakdown(id, "audience"),
     getCampaignBreakdown(id, "device"),
     getCampaignBreakdown(id, "source"),
+    getPromoStats(id),
   ]);
 
   const stages = [
@@ -123,6 +124,38 @@ export default async function CampaignAnalyticsPage({ params }: { params: Promis
         <BreakdownTable title="Device" rows={byDevice} />
         <BreakdownTable title="Source" rows={bySource} />
       </div>
+
+      <GlassCard>
+        <CardHeader>
+          <CardTitle className="text-base">Top Strip &amp; Popup</CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          <div>
+            <p className="text-xs text-muted-foreground">Strip Impressions</p>
+            <p className="text-lg font-bold text-foreground">{promo.stripImpressions.toLocaleString("en-IN")}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Strip Clicks</p>
+            <p className="text-lg font-bold text-foreground">{promo.stripClicks.toLocaleString("en-IN")}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Strip Closes</p>
+            <p className="text-lg font-bold text-foreground">{promo.stripCloses.toLocaleString("en-IN")}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Popup Impressions</p>
+            <p className="text-lg font-bold text-foreground">{promo.popupImpressions.toLocaleString("en-IN")}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Popup Clicks</p>
+            <p className="text-lg font-bold text-foreground">{promo.popupClicks.toLocaleString("en-IN")}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">Popup Closes</p>
+            <p className="text-lg font-bold text-foreground">{promo.popupCloses.toLocaleString("en-IN")}</p>
+          </div>
+        </CardContent>
+      </GlassCard>
 
       <p className="text-xs text-muted-foreground">
         WhatsApp clicks: {funnel.whatsappClicks.toLocaleString("en-IN")} · Call clicks: {funnel.callClicks.toLocaleString("en-IN")}. Conversions

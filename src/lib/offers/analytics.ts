@@ -101,6 +101,35 @@ export async function getCampaignFunnel(campaignId: string): Promise<CampaignFun
   };
 }
 
+export interface PromoStats {
+  stripImpressions: number;
+  stripClicks: number;
+  stripCloses: number;
+  popupImpressions: number;
+  popupClicks: number;
+  popupCloses: number;
+}
+
+/** Top strip / popup stats, tracked separately from the main offer-card funnel above (§22). */
+export async function getPromoStats(campaignId: string): Promise<PromoStats> {
+  const collection = await getCollection();
+  const counts = await collection
+    .aggregate<{ _id: OfferEventType; count: number }>([
+      { $match: { campaignId, type: { $in: ["strip_view", "strip_click", "strip_close", "popup_view", "popup_click", "popup_close"] } } },
+      { $group: { _id: "$type", count: { $sum: 1 } } },
+    ])
+    .toArray();
+  const byType = new Map(counts.map((c) => [c._id, c.count]));
+  return {
+    stripImpressions: byType.get("strip_view") ?? 0,
+    stripClicks: byType.get("strip_click") ?? 0,
+    stripCloses: byType.get("strip_close") ?? 0,
+    popupImpressions: byType.get("popup_view") ?? 0,
+    popupClicks: byType.get("popup_click") ?? 0,
+    popupCloses: byType.get("popup_close") ?? 0,
+  };
+}
+
 export interface BreakdownRow {
   key: string;
   label: string;

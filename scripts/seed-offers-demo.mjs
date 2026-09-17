@@ -64,6 +64,30 @@ async function main() {
       priority: 100,
       targetAudience: ["ALL"],
       isFeatured: true,
+      display: {
+        strip: {
+          enabled: true,
+          message: "Build Your Next Product at Festival Pricing",
+          discountText: "UP TO 90% OFF",
+          ctaText: "Claim Offer",
+          ctaActionType: "url",
+          ctaActionValue: "/offers",
+          showCountdown: true,
+          allowClose: true,
+        },
+        popup: {
+          enabled: true,
+          template: "festival",
+          ctaText: "Claim My Offer",
+          ctaActionType: "url",
+          ctaActionValue: "/offers",
+          showCountdown: true,
+          triggerType: "delay",
+          triggerValue: 8,
+          frequency: "session",
+        },
+        pageTargeting: { mode: "all", pages: [] },
+      },
       faqs: [
         {
           question: "Can students claim client offers?",

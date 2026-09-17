@@ -9,6 +9,7 @@ import {
   type CampaignType,
   type CampaignThemePreset,
 } from "@/lib/offers/constants";
+import { validateDisplayInput, DEFAULT_DISPLAY_CONFIG, type DisplayConfigInput } from "@/lib/offers/display-validation";
 
 export interface CampaignFaqInput {
   question: string;
@@ -35,6 +36,7 @@ export interface CampaignWriteInput {
   targetAudience: Audience[];
   isFeatured: boolean;
   faqs: CampaignFaqInput[];
+  display: DisplayConfigInput;
 }
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -81,6 +83,11 @@ export function validateCampaignInput(
         .filter((f) => f.question && f.answer)
     : [];
 
+  const displayValidation = validateDisplayInput(input.display ?? DEFAULT_DISPLAY_CONFIG);
+  if (!displayValidation.valid) {
+    Object.assign(errors, displayValidation.errors);
+  }
+
   if (Object.keys(errors).length > 0) return { valid: false, errors };
 
   return {
@@ -104,6 +111,7 @@ export function validateCampaignInput(
       targetAudience,
       isFeatured: Boolean(input.isFeatured),
       faqs,
+      display: (displayValidation as { valid: true; data: DisplayConfigInput }).data ?? DEFAULT_DISPLAY_CONFIG,
     },
   };
 }

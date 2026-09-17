@@ -202,6 +202,12 @@ export const EVENT_TYPES = [
   "call_click",
   "exit_intent_shown",
   "scroll_cta_click",
+  "strip_view",
+  "strip_click",
+  "strip_close",
+  "popup_view",
+  "popup_click",
+  "popup_close",
 ] as const;
 
 export type OfferEventType = (typeof EVENT_TYPES)[number];
@@ -259,4 +265,121 @@ export function getThemePreset(key: string | undefined) {
 
 export function titleize(value: string): string {
   return value.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+// ---------------------------------------------------------------------------
+// Global promotions — top strip + popup, both driven by the same campaign
+// engine (`OfferCampaign.display`). Never a second campaign/offer system.
+// ---------------------------------------------------------------------------
+
+export const CTA_ACTION_TYPES = [
+  { value: "url", label: "Go to a page" },
+  { value: "whatsapp", label: "Open WhatsApp" },
+  { value: "call", label: "Call us" },
+] as const;
+
+export type CtaActionType = (typeof CTA_ACTION_TYPES)[number]["value"];
+
+export function isValidCtaActionType(value: unknown): value is CtaActionType {
+  return typeof value === "string" && CTA_ACTION_TYPES.some((t) => t.value === value);
+}
+
+export const POPUP_TEMPLATES = [
+  { value: "festival", label: "Festival", emoji: "🔥", heading: "Festival Offer" },
+  { value: "student", label: "Student", emoji: "🎓", heading: "Student Offer" },
+  { value: "client", label: "Business / Client", emoji: "🚀", heading: "Business Offer" },
+  { value: "hiring", label: "Hiring", emoji: "👨‍💻", heading: "Hiring Offer" },
+] as const;
+
+export type PopupTemplate = (typeof POPUP_TEMPLATES)[number]["value"];
+
+export function isValidPopupTemplate(value: unknown): value is PopupTemplate {
+  return typeof value === "string" && POPUP_TEMPLATES.some((t) => t.value === value);
+}
+
+export function getPopupTemplateMeta(value: string | undefined) {
+  return POPUP_TEMPLATES.find((t) => t.value === value) ?? POPUP_TEMPLATES[0];
+}
+
+export const POPUP_TRIGGER_TYPES = [
+  { value: "immediate", label: "Immediate (0s)" },
+  { value: "delay", label: "Delayed (seconds)" },
+  { value: "scroll", label: "Scroll depth (%)" },
+  { value: "exit_intent", label: "Exit intent (desktop)" },
+] as const;
+
+export type PopupTriggerType = (typeof POPUP_TRIGGER_TYPES)[number]["value"];
+
+export function isValidPopupTriggerType(value: unknown): value is PopupTriggerType {
+  return typeof value === "string" && POPUP_TRIGGER_TYPES.some((t) => t.value === value);
+}
+
+export const POPUP_FREQUENCIES = [
+  { value: "session", label: "Once per session" },
+  { value: "daily", label: "Once per day" },
+  { value: "every_3_days", label: "Once every 3 days" },
+  { value: "per_campaign", label: "Once per campaign" },
+  { value: "every_visit", label: "Every visit" },
+] as const;
+
+export type PopupFrequency = (typeof POPUP_FREQUENCIES)[number]["value"];
+
+export const DEFAULT_POPUP_FREQUENCY: PopupFrequency = "session";
+
+export function isValidPopupFrequency(value: unknown): value is PopupFrequency {
+  return typeof value === "string" && POPUP_FREQUENCIES.some((f) => f.value === value);
+}
+
+/** The page-targeting checkbox list — path PREFIXES matched via `pathname.startsWith()`. */
+export const TARGETABLE_PAGES = [
+  { path: "/", label: "Homepage" },
+  { path: "/services", label: "Services hub" },
+  { path: "/software-development", label: "Software Development" },
+  { path: "/ai-automations", label: "AI & Automations" },
+  { path: "/industrial-training", label: "Training" },
+  { path: "/internship-program", label: "Internship" },
+  { path: "/resource-augmentation", label: "Resource Augmentation / Hiring" },
+  { path: "/careers", label: "Careers" },
+  { path: "/offers", label: "Offers page" },
+] as const;
+
+export const PAGE_TARGETING_MODES = [
+  { value: "all", label: "All public pages" },
+  { value: "selected", label: "Selected pages only" },
+] as const;
+
+export type PageTargetingMode = (typeof PAGE_TARGETING_MODES)[number]["value"];
+
+export function isValidPageTargetingMode(value: unknown): value is PageTargetingMode {
+  return typeof value === "string" && PAGE_TARGETING_MODES.some((m) => m.value === value);
+}
+
+/** `pathname === "/"` needs an exact match; every other target is a prefix match (so `/services` also matches `/services/web-app-development`). */
+export function pathMatchesTarget(pathname: string, target: string): boolean {
+  return target === "/" ? pathname === "/" : pathname === target || pathname.startsWith(`${target}/`);
+}
+
+export function pageIsTargeted(pathname: string, targeting: { mode: PageTargetingMode; pages: string[] }): boolean {
+  if (targeting.mode === "all") return true;
+  return targeting.pages.some((p) => pathMatchesTarget(pathname, p));
+}
+
+/** Maps the current pathname to the `Audience` its visitor most likely belongs to, for context-aware offer selection. Defaults to "ALL" (unbiased) when no page-specific signal exists. */
+export function audienceForPath(pathname: string): Audience {
+  if (pathMatchesTarget(pathname, "/internship-program")) return "INTERN";
+  if (pathMatchesTarget(pathname, "/industrial-training")) return "STUDENT";
+  if (pathMatchesTarget(pathname, "/resource-augmentation")) return "HIRING";
+  if (pathMatchesTarget(pathname, "/careers")) return "STUDENT";
+  if (pathMatchesTarget(pathname, "/software-development") || pathMatchesTarget(pathname, "/ai-automations") || pathMatchesTarget(pathname, "/services")) return "CLIENT";
+  return "ALL";
+}
+
+/** Maps the current pathname to the real `CategorySlug` it most directly represents, for picking a matching real offer. Undefined when the page has no single clear category (e.g. the homepage). */
+export function categoryForPath(pathname: string): CategorySlug | undefined {
+  if (pathMatchesTarget(pathname, "/internship-program")) return "internship-program";
+  if (pathMatchesTarget(pathname, "/industrial-training")) return "industrial-training";
+  if (pathMatchesTarget(pathname, "/resource-augmentation")) return "resource-augmentation";
+  if (pathMatchesTarget(pathname, "/ai-automations")) return "ai-automations";
+  if (pathMatchesTarget(pathname, "/software-development")) return "software-development";
+  return undefined;
 }

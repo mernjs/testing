@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
+import OfferPromotions from "@/components/offers/OfferPromotions";
 
 export default function SiteLayout({
   children,
@@ -9,8 +10,9 @@ export default function SiteLayout({
 }>) {
   return (
     <>
+      <OfferPromotions />
       <Header />
-      <main className="flex-grow pt-[88px]">
+      <main className="flex-grow pt-[calc(88px+var(--offer-strip-h,0px))]">
         {children}
       </main>
       <Footer />
