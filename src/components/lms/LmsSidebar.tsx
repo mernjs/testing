@@ -17,8 +17,6 @@ import {
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { CATEGORIES } from "@/lib/categories";
-import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 function NavLink({
@@ -87,17 +85,6 @@ export default function LmsSidebar({ onNavigate, collapsed = false }: { onNaviga
       <NavLink href="/lms" label="Dashboard" icon={LayoutDashboard} exact collapsed={collapsed} onNavigate={onNavigate} />
       <SectionLabel collapsed={collapsed}>Lead Management</SectionLabel>
       <NavLink href="/lms/leads" label="Leads" icon={Users} collapsed={collapsed} onNavigate={onNavigate} />
-      <SectionLabel collapsed={collapsed}>Legacy intake</SectionLabel>
-      {CATEGORIES.map((c) => (
-        <NavLink
-          key={c.slug}
-          href={`/lms/submissions/${c.slug}`}
-          label={c.label}
-          icon={CATEGORY_ICONS[c.slug]}
-          collapsed={collapsed}
-          onNavigate={onNavigate}
-        />
-      ))}
       <SectionLabel collapsed={collapsed}>Marketing</SectionLabel>
       <NavLink href="/lms/campaigns" label="Campaign Analytics" icon={Megaphone} collapsed={collapsed} onNavigate={onNavigate} />
       <SectionLabel collapsed={collapsed}>Careers</SectionLabel>

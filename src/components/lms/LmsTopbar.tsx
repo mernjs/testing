@@ -1,12 +1,12 @@
 "use client";
 
 import MobileSidebar from "@/components/lms/MobileSidebar";
-import GlobalSearch from "@/components/lms/GlobalSearch";
 import NotificationsBell from "@/components/lms/NotificationsBell";
 import ThemeToggle from "@/components/lms/ThemeToggle";
 import type { SerializedLead, SerializedCareerApplication } from "@/components/lms/types";
 
 export default function LmsTopbar({
+  userEmail,
   staleLeads,
   staleLeadsCount,
   staleApplications,
@@ -15,6 +15,7 @@ export default function LmsTopbar({
   recentApplications,
 }: {
   roles: string[];
+  userEmail: string;
   staleLeads: SerializedLead[];
   staleLeadsCount: number;
   staleApplications: SerializedCareerApplication[];
@@ -25,8 +26,9 @@ export default function LmsTopbar({
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <MobileSidebar />
-      <div className="min-w-0 flex-1 sm:max-w-md">
-        <GlobalSearch />
+      <div className="min-w-0">
+        <p className="truncate text-sm font-semibold text-foreground">Lead Management</p>
+        <p className="truncate text-[11px] text-muted-foreground">Signed in as {userEmail}</p>
       </div>
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
         <ThemeToggle />

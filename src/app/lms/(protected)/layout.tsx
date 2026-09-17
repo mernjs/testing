@@ -80,6 +80,7 @@ export default async function ProtectedLmsLayout({ children }: { children: React
             <div className="lms-surface relative z-30 shrink-0 rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md dark:bg-card/85">
               <LmsTopbar
                 roles={lmsUser.roles}
+                userEmail={lmsUser.email}
                 staleLeads={staleLeads}
                 staleLeadsCount={staleLeadsSummary.count}
                 staleApplications={staleApplications}
