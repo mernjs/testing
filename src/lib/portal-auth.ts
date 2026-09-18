@@ -37,6 +37,10 @@ export interface ExternalUserDoc {
   leadId?: string | null;
   /** Which lead's dashboard the portal currently renders (defaults to leadId). */
   activeLeadId?: string | null;
+  /** Wallet & Credits — this account's own shareable referral code, generated lazily on first `/portal/referrals` visit. */
+  referralCode?: string | null;
+  /** The referral code (if any) that was live in the visitor's browser when this account was created. */
+  referredByCode?: string | null;
   createdAt: Date;
   updatedAt: Date;
   lastLoginAt: Date | null;
@@ -80,6 +84,7 @@ export async function externalUsers() {
       c.createIndex({ applicationId: 1 }).catch(() => {}),
       c.createIndex({ studentId: 1 }).catch(() => {}),
       c.createIndex({ clientId: 1 }).catch(() => {}),
+      c.createIndex({ referralCode: 1 }, { unique: true, partialFilterExpression: { referralCode: { $type: "string" } } }).catch(() => {}),
     ]);
   }
   return c;

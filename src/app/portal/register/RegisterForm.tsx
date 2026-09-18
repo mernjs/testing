@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { brandify } from "@/lib/brand";
+import { useReferralCode } from "@/lib/useReferralCode";
 import { portalRegisterAction, type PortalRegisterState } from "./actions";
 
 const initial: PortalRegisterState = {};
@@ -18,6 +19,7 @@ const initial: PortalRegisterState = {};
 export default function RegisterForm() {
   const [state, formAction, pending] = useActionState(portalRegisterAction, initial);
   const [show, setShow] = useState(false);
+  const referralCode = useReferralCode();
   const emailId = useId();
   const phoneId = useId();
   const pwId = useId();
@@ -40,6 +42,7 @@ export default function RegisterForm() {
             Use the <strong>exact email and phone number</strong> you gave YashOrbit. Your role is detected automatically.
           </div>
           <form action={formAction} className="space-y-4" noValidate>
+            {referralCode && <input type="hidden" name="referralCode" value={referralCode} />}
             <div className="space-y-1.5">
               <Label htmlFor={emailId}>Email</Label>
               <Input id={emailId} name="email" type="email" required autoComplete="email" autoFocus />

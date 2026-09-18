@@ -89,6 +89,7 @@ export async function POST(req: NextRequest, { params }: Context) {
           subService: validation.data.subService ?? null,
           message: validation.data.message ?? null,
           sourceRef: { kind: "category_lead", category, id: String(lead._id) },
+          referralCode: typeof formData.get("referralCode") === "string" ? String(formData.get("referralCode")) : null,
         });
         const { token } = await createPortalSession(result.externalUserId, false);
         await setPortalSessionCookie(token, false);

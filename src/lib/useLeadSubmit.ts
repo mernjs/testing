@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { CategorySlug } from "@/lib/categories";
 import { useUtmParams } from "@/lib/useUtmParams";
+import { useReferralCode } from "@/lib/useReferralCode";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -23,6 +24,7 @@ export function useLeadSubmit() {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const utm = useUtmParams();
+  const referralCode = useReferralCode();
 
   async function submit(category: CategorySlug, data: LeadFormData) {
     setStatus("submitting");
@@ -42,6 +44,7 @@ export function useLeadSubmit() {
     if (utm?.campaign) body.set("utmCampaign", utm.campaign);
     if (utm?.content) body.set("utmContent", utm.content);
     if (utm?.term) body.set("utmTerm", utm.term);
+    if (referralCode) body.set("referralCode", referralCode);
 
     try {
       const res = await fetch(`/api/leads/${category}`, {

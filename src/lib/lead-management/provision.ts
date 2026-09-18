@@ -10,6 +10,8 @@ import { createLeadRecord } from "@/lib/lead-management/records";
 import { recordLeadEvent } from "@/lib/lead-management/timeline";
 import { LEAD_SOURCE_META } from "@/lib/lead-management/types";
 import type { LeadManagementSource, LeadRecord, LeadSourceRef, LeadType } from "@/lib/lead-management/types";
+import { awardSignupBonus } from "@/lib/wallet/signup-bonus";
+import { attributeAndRewardReferral } from "@/lib/wallet/referrals";
 
 /**
  * The heart of the lead-driven portal: turn any website form submission into a
@@ -38,6 +40,7 @@ export interface ProvisionInput {
   sourceRef?: LeadSourceRef | null;
   applicationId?: string | null;
   actorId?: string | null; // set for manual (staff) leads
+  referralCode?: string | null; // Wallet & Credits — first-touch `?ref=` capture, only applied on a brand-new account
 }
 
 export interface ProvisionResult {
@@ -87,6 +90,8 @@ export async function provisionLeadAndAccount(input: ProvisionInput): Promise<Pr
       lastLoginAt: null,
       leadId: null,
       activeLeadId: null,
+      referralCode: null,
+      referredByCode: input.referralCode ?? null,
     };
     await users.insertOne(doc);
     externalUserId = doc._id;
@@ -121,6 +126,15 @@ export async function provisionLeadAndAccount(input: ProvisionInput): Promise<Pr
       actor: "system",
       visibleToLead: true,
     });
+    // Wallet & Credits — fire-and-forget-ish, but awaited so a signup bonus
+    // is reliably present the moment the visitor lands on /portal. Never
+    // blocks or fails the actual account/lead creation above.
+    try {
+      await awardSignupBonus(externalUserId, role);
+      await attributeAndRewardReferral(input.referralCode, externalUserId, role);
+    } catch (walletErr) {
+      console.error("Wallet signup/referral reward failed (account still created)", walletErr);
+    }
   }
   await recordLeadEvent(lead._id, {
     kind: "lead_submitted",

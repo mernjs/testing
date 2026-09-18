@@ -67,6 +67,7 @@ export async function POST(req: NextRequest) {
         message: validation.data.coverNote ?? null,
         sourceRef: { kind: "career_application", id: String(application._id) },
         applicationId: String(application._id),
+        referralCode: typeof formData.get("referralCode") === "string" ? String(formData.get("referralCode")) : null,
       });
       const { token } = await createPortalSession(result.externalUserId, false);
       await setPortalSessionCookie(token, false);

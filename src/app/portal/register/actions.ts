@@ -13,11 +13,12 @@ export async function portalRegisterAction(_prev: PortalRegisterState, formData:
   const phone = String(formData.get("phone") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
+  const referralCode = formData.get("referralCode");
 
   if (!email || !phone || !password) return { error: "Fill in every field." };
   if (password !== confirm) return { error: "Passwords do not match." };
 
-  const result = await registerExternalUser({ email, phone, password });
+  const result = await registerExternalUser({ email, phone, password, referralCode: typeof referralCode === "string" ? referralCode : null });
   if (!result.ok) return { error: result.error };
 
   const { token } = await createPortalSession(result.userId, false);

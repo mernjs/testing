@@ -6,11 +6,14 @@ import { matchDomainRecord } from "@/lib/portal/identity";
 import { recordPortalAudit } from "@/lib/portal/audit";
 import { notifyPortalUser } from "@/lib/portal/notifications";
 import { PORTAL_ROLE_META } from "@/lib/portal-roles";
+import { awardSignupBonus } from "@/lib/wallet/signup-bonus";
+import { attributeAndRewardReferral } from "@/lib/wallet/referrals";
 
 export interface RegisterInput {
   email: string;
   phone: string;
   password: string;
+  referralCode?: string | null;
 }
 
 const GENERIC_NO_MATCH =
@@ -51,9 +54,17 @@ export async function registerExternalUser(
     createdAt: now,
     updatedAt: now,
     lastLoginAt: null,
+    referralCode: null,
+    referredByCode: input.referralCode ?? null,
   });
 
   await recordPortalAudit({ actorId: _id, action: "register", entity: "account", entityId: _id, summary: `role=${match.role}` });
+  try {
+    await awardSignupBonus(_id, match.role);
+    await attributeAndRewardReferral(input.referralCode, _id, match.role);
+  } catch (walletErr) {
+    console.error("Wallet signup/referral reward failed (account still created)", walletErr);
+  }
   await notifyPortalUser({
     recipientUserId: _id,
     type: "welcome",
