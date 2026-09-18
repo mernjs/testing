@@ -8,7 +8,11 @@ import {
   Building2,
   Users,
   Gauge,
+  Plus,
+  BarChart3,
+  Clock,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import KpiCard from "@/components/lms/KpiCard";
@@ -21,9 +25,12 @@ import GranularityToggle from "@/components/lms/GranularityToggle";
 import PmsDashboardFilters from "@/components/pms/PmsDashboardFilters";
 import ProgressBar from "@/components/pms/ProgressBar";
 import { ProjectStatusBadge } from "@/components/pms/StatusBadges";
+import ProjectBillingDownloadButtons from "@/components/pms/ProjectBillingDownloadButtons";
+
 import { getCurrentPmsUser } from "@/lib/pms-auth";
 import { canViewAllProjects } from "@/lib/pms-roles";
 import { getPmsDashboardStats } from "@/lib/pms/dashboard";
+import { listClientOptions } from "@/lib/pms/clients";
 import { PROJECT_STATUSES } from "@/lib/pms/constants";
 import { isValidDateRangePreset, resolveDateRangePreset, type DateRangePreset } from "@/lib/date-ranges";
 import type { DashboardGranularity } from "@/lib/granularity";
@@ -50,7 +57,17 @@ function parseDateParam(value: string | undefined, endOfDay = false): Date | und
 export default async function PmsDashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ range?: string; dateFrom?: string; dateTo?: string; granularity?: string }>;
+  searchParams: Promise<{
+    range?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    granularity?: string;
+    clientId?: string;
+    status?: string;
+    priority?: string;
+    billingModel?: string;
+    overdue?: string;
+  }>;
 }) {
   const sp = await searchParams;
   const user = await getCurrentPmsUser();
@@ -76,63 +93,98 @@ export default async function PmsDashboardPage({
   const restrictToEmployeeId =
     user && !canViewAllProjects(user) ? user.employeeId ?? "__none__" : undefined;
 
-  const stats = await getPmsDashboardStats({ dateFrom, dateTo, granularity, restrictToEmployeeId });
-  const hasActiveFilters = Boolean(sp.range || sp.dateFrom || sp.dateTo);
+  const [stats, clients] = await Promise.all([
+    getPmsDashboardStats({ dateFrom, dateTo, granularity, restrictToEmployeeId }),
+    listClientOptions(),
+  ]);
+
+  const hasActiveFilters = Boolean(
+    sp.range || sp.dateFrom || sp.dateTo || sp.clientId || sp.status || sp.priority || sp.billingModel || sp.overdue
+  );
   const scoped = Boolean(restrictToEmployeeId);
 
+  // Derive a friendly greeting name from email
+  const displayName = user?.email ? user.email.split("@")[0].replace(/[._]/g, " ") : "";
+
   return (
-    <div className="relative space-y-4">
+    <div className="relative space-y-5">
+
+      {/* Breadcrumbs */}
       <Breadcrumbs items={[{ label: "PMS" }, { label: "Dashboard" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
+
+      {/* ── HRMS-style heading row ── */}
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Project Dashboard</h1>
-          <p className="text-sm text-muted-foreground">
-            {scoped
-              ? "Projects you manage or contribute to."
-              : `Welcome back${user ? `, ${user.email.split("@")[0]}` : ""}. Real-time delivery overview.`}
+          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
+            Project Dashboard
+          </h1>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            {displayName
+              ? `Welcome back, ${displayName}. `
+              : ""}
+            Real-time overview of your project portfolio, team capacity &amp; billing health.
           </p>
         </div>
-        <Link href="/pms/projects/new" className="text-sm font-medium text-primary hover:underline">
-          + New Project
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/pms/projects/new">
+            <Button size="sm" className="gap-1.5 shadow-xs">
+              <Plus className="size-4" />
+              <span>New Project</span>
+            </Button>
+          </Link>
+          <Link href="/pms/analytics">
+            <Button size="sm" variant="outline" className="gap-1.5 shadow-xs">
+              <BarChart3 className="size-4" />
+              <span>Analytics</span>
+            </Button>
+          </Link>
+        </div>
       </div>
 
+      {/* ── Multi-Filter Panel ── */}
       <PmsDashboardFilters
         range={rangeParam}
         dateFrom={(dateFrom ?? new Date()).toISOString().slice(0, 10)}
         dateTo={(dateTo ?? new Date()).toISOString().slice(0, 10)}
+        clientId={sp.clientId ?? ""}
+        status={sp.status ?? ""}
+        priority={sp.priority ?? ""}
+        granularity={granularity}
+        billingModel={sp.billingModel ?? ""}
+        overdue={sp.overdue ?? ""}
+        clients={clients}
         hasActiveFilters={hasActiveFilters}
       />
 
-      {/* Portfolio KPIs */}
+      {/* ── Portfolio KPIs ── */}
       <div>
-        <h2 className="mb-3 text-lg font-semibold text-foreground">Portfolio</h2>
+        <h2 className="mb-3 text-lg font-semibold text-foreground">Portfolio Overview</h2>
         <KpiGrid>
           <KpiCard label="Total Projects" value={stats.totalProjects} accent icon={<FolderKanban className="size-4" />} />
-          <KpiCard label="Active Projects" value={stats.activeProjects} icon={<Rocket className="size-4" />} />
+          <KpiCard label="Active Delivery" value={stats.activeProjects} icon={<Rocket className="size-4" />} />
           <KpiCard label="Completed" value={stats.completedProjects} icon={<CheckCircle2 className="size-4" />} />
           <KpiCard label="On Hold" value={stats.onHoldProjects} icon={<PauseCircle className="size-4" />} />
         </KpiGrid>
       </div>
 
-      {/* Health KPIs */}
+      {/* ── Capacity & Milestones KPIs ── */}
       <div>
-        <h2 className="mb-3 text-lg font-semibold text-foreground">Health &amp; Capacity</h2>
+        <h2 className="mb-3 text-lg font-semibold text-foreground">Capacity &amp; Health</h2>
         <KpiGrid>
           <KpiCard label="Overdue Projects" value={stats.overdueProjects} tone={stats.overdueProjects > 0 ? "down" : undefined} icon={<AlarmClock className="size-4" />} />
-          {!scoped && <KpiCard label="Total Clients" value={stats.totalClients} icon={<Building2 className="size-4" />} />}
+          {!scoped && <KpiCard label="Active Clients" value={stats.totalClients} icon={<Building2 className="size-4" />} />}
           <KpiCard label="Team Utilization" value={stats.teamUtilization} suffix="%" icon={<Users className="size-4" />} />
           <KpiCard label="Overall Completion" value={stats.overallCompletion} suffix="%" icon={<Gauge className="size-4" />} />
           {scoped && <KpiCard label="New This Period" value={stats.newProjects} trend={stats.newProjectsGrowth} icon={<FolderKanban className="size-4" />} />}
         </KpiGrid>
       </div>
 
-      {/* Distribution */}
+      {/* ── Distribution & Workload Charts ── */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-foreground">Distribution</h2>
+        <h2 className="text-lg font-semibold text-foreground">Distribution &amp; Workload</h2>
         <div className="grid gap-4 lg:grid-cols-2">
           <GlassCard>
-            <CardHeader><CardTitle>Project Status</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm font-bold">Project Status Distribution</CardTitle></CardHeader>
             <CardContent>
               <StatusPieChart
                 data={stats.statusDistribution.filter((s) => s.count > 0)}
@@ -141,51 +193,40 @@ export default async function PmsDashboardPage({
             </CardContent>
           </GlassCard>
           <GlassCard>
-            <CardHeader><CardTitle>Priority Mix</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm font-bold">Priority Mix</CardTitle></CardHeader>
             <CardContent><CategoryBarChart data={stats.priorityDistribution} /></CardContent>
           </GlassCard>
           <GlassCard>
-            <CardHeader><CardTitle>Client-wise Projects</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm font-bold">Client-wise Projects</CardTitle></CardHeader>
             <CardContent><CategoryBarChart data={stats.clientDistribution} /></CardContent>
           </GlassCard>
           <GlassCard>
-            <CardHeader><CardTitle>Deadline &amp; Overdue Analysis</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm font-bold">Deadline &amp; Schedule Analysis</CardTitle></CardHeader>
             <CardContent><CategoryBarChart data={stats.deadlineBuckets} /></CardContent>
           </GlassCard>
         </div>
       </div>
 
-      {/* Trends */}
+      {/* ── Trends & Progress ── */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-foreground">Trends</h2>
+        <h2 className="text-lg font-semibold text-foreground">Trends &amp; Progress</h2>
         <GlassCard>
           <CardHeader className="flex-row items-center justify-between space-y-0">
-            <CardTitle>Monthly Project Growth</CardTitle>
+            <CardTitle className="text-sm font-bold">Monthly Project Growth</CardTitle>
             <GranularityToggle value={granularity} />
           </CardHeader>
           <CardContent><TimeSeriesChart data={stats.monthlyGrowth} /></CardContent>
         </GlassCard>
         <GlassCard>
-          <CardHeader><CardTitle>Average Progress Trend</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm font-bold">Average Progress Trend</CardTitle></CardHeader>
           <CardContent><TimeSeriesChart data={stats.progressTrend} /></CardContent>
         </GlassCard>
       </div>
 
-      {/* Team workload */}
-      {!scoped && (
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Team Workload</h2>
-          <GlassCard>
-            <CardHeader><CardTitle>Allocation by Person (%)</CardTitle></CardHeader>
-            <CardContent><CategoryBarChart data={stats.teamWorkload} /></CardContent>
-          </GlassCard>
-        </div>
-      )}
-
-      {/* Status board summary + recent */}
+      {/* ── Status Board & Recent Projects ── */}
       <div className="grid gap-4 lg:grid-cols-2">
         <GlassCard>
-          <CardHeader><CardTitle>Status Board</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm font-bold">Status Board Summary</CardTitle></CardHeader>
           <CardContent className="space-y-2 pt-2">
             {PROJECT_STATUSES.map((s) => {
               const row = stats.statusDistribution.find((d) => d.status === s.value);
@@ -200,25 +241,29 @@ export default async function PmsDashboardPage({
         </GlassCard>
 
         <GlassCard>
-          <CardHeader><CardTitle>Recent Projects</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
+          <CardHeader className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 pb-3">
+            <CardTitle className="text-sm font-bold">Recent Projects &amp; PDF Downloads</CardTitle>
+            <Link href="/pms/projects" className="text-xs text-primary hover:underline font-semibold">View All →</Link>
+          </CardHeader>
+          <CardContent className="space-y-2 pt-3">
             {stats.recentProjects.length === 0 && <p className="text-sm text-muted-foreground">No projects yet.</p>}
             {stats.recentProjects.map((p) => (
-              <Link
+              <div
                 key={p.id}
-                href={`/pms/projects/${p.id}`}
-                className="block rounded-lg border border-border/60 p-3 text-sm transition-colors hover:bg-muted/50"
+                className="rounded-lg border border-border/60 p-3 text-sm transition-colors hover:bg-muted/30"
               >
-                <div className="flex items-center justify-between gap-3">
-                  <span className="min-w-0 truncate font-medium">{p.name}</span>
-                  <ProjectStatusBadge status={p.status} />
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <Link href={`/pms/projects/${p.id}`} className="min-w-0 truncate font-bold text-foreground hover:underline">
+                    {p.name}
+                  </Link>
+                  <ProjectBillingDownloadButtons projectId={p.id} projectCode={p.code} variant="compact" />
                 </div>
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  {p.code}
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Code: <span className="font-mono text-primary font-semibold">{p.code}</span>
                   {p.endDate ? ` · Due ${formatDate(p.endDate)}` : ""}
                 </p>
                 <ProgressBar value={p.progressPercent} className="mt-2" />
-              </Link>
+              </div>
             ))}
           </CardContent>
         </GlassCard>

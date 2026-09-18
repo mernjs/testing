@@ -1,6 +1,6 @@
 import "server-only";
 import { getDb } from "@/lib/mongodb";
-import { createStamp, updateStamp, notDeleted, newId as newTxId } from "@/lib/wallet/db";
+import { createStamp, updateStamp, notDeleted, newId as newTxId, type AuditFields } from "@/lib/wallet/db";
 import { DEFAULT_CURRENCY, type WalletStatus, type WalletTxType } from "@/lib/wallet/constants";
 import { TRANSACTIONS_COLLECTION, type WalletTransaction, type WalletTxWriteInput } from "@/lib/wallet/transactions";
 

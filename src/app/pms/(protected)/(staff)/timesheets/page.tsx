@@ -78,7 +78,7 @@ export default async function TimesheetReviewPage({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Timesheet Review</h1>
-          <p className="text-sm text-muted-foreground">Approve or reject submitted hours. Approved hours feed project costing.</p>
+          <p className="text-sm text-muted-foreground">Review and approve submitted hours for project delivery and billable tracking.</p>
         </div>
         <div className="flex items-center gap-2">
           <a

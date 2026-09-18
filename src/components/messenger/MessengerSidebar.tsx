@@ -135,7 +135,6 @@ export default function MessengerSidebar({
       {nav({ href: "/messenger/meetings", label: "Meetings", icon: Video })}
 
       <SectionLabel collapsed={collapsed}>Account</SectionLabel>
-      {nav({ href: "/messenger/notifications", label: "Notifications", icon: Bell, badge: unreadNotifications })}
       {nav({ href: "/messenger/settings", label: "Settings", icon: Settings })}
     </nav>
   );

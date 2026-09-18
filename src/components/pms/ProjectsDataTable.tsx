@@ -15,6 +15,7 @@ import ProgressBar from "@/components/pms/ProgressBar";
 import { PROJECT_STATUSES, PRIORITIES } from "@/lib/pms/constants";
 import { formatDate } from "@/lib/utils";
 import type { SerializedProject } from "@/lib/pms/projects";
+import ProjectBillingDownloadButtons from "@/components/pms/ProjectBillingDownloadButtons";
 
 interface Props {
   items: SerializedProject[];
@@ -205,12 +206,13 @@ export default function ProjectsDataTable({
                     Due {sortIcon("endDate")}
                   </button>
                 </TableHead>
+                <TableHead className="text-right">Billing PDFs</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {items.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center text-muted-foreground">No projects match these filters.</TableCell>
+                  <TableCell colSpan={10} className="text-center text-muted-foreground">No projects match these filters.</TableCell>
                 </TableRow>
               )}
               {items.map((p) => (
@@ -226,6 +228,9 @@ export default function ProjectsDataTable({
                   <TableCell><ProjectHealthBadge health={p.health} /></TableCell>
                   <TableCell><ProgressBar value={p.progressPercent} /></TableCell>
                   <TableCell className="text-muted-foreground">{p.endDate ? formatDate(p.endDate) : "—"}</TableCell>
+                  <TableCell className="text-right">
+                    <ProjectBillingDownloadButtons projectId={p._id} projectCode={p.projectCode} variant="compact" />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

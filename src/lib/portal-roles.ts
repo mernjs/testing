@@ -63,7 +63,6 @@ const JOURNEY_NAV: PortalNavItem[] = [
 
 const SHARED_TAIL: PortalNavItem[] = [
   { href: "/portal/documents", label: "Documents", icon: "FolderOpen" },
-  { href: "/portal/notifications", label: "Notifications", icon: "Bell" },
   { href: "/portal/profile", label: "Profile", icon: "CircleUser" },
 ];
 

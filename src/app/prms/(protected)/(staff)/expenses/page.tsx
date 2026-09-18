@@ -22,6 +22,8 @@ import {
 } from "@/lib/prms/constants";
 import { formatDate } from "@/lib/utils";
 
+import ItemPdfDownloadButtons from "@/components/prms/ItemPdfDownloadButtons";
+
 export default async function ExpensesPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams;
   const user = await getCurrentPrmsUser();
@@ -87,6 +89,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
           { key: "type", header: "Type" },
           { key: "status", header: "Status" },
           { key: "date", header: "Date", sortable: true },
+          { key: "pdfDownloads", header: "PDF Downloads", align: "right" },
         ]}
         rows={result.items.map(serializeExpense).map((e) => ({
           id: e._id,
@@ -99,6 +102,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
             type: e.expenseType === "recurring" ? `Recurring · ${e.recurrence?.interval ?? ""}` : "One-time",
             status: <ExpenseStatusBadge status={e.approvalStatus} />,
             date: formatDate(e.expenseDate),
+            pdfDownloads: <ItemPdfDownloadButtons itemId={e._id} code={e.expenseCode} variant="compact" />,
           },
         }))}
         filters={[

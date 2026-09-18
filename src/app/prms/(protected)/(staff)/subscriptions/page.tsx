@@ -17,6 +17,8 @@ import { listEmployeeOptions } from "@/lib/prms/pickers";
 import { getDb } from "@/lib/mongodb";
 import { RESOURCE_STATUSES, isValidResourceStatus, formatMoney, type ResourceStatus } from "@/lib/prms/constants";
 
+import ItemPdfDownloadButtons from "@/components/prms/ItemPdfDownloadButtons";
+
 export default async function SubscriptionsPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const sp = await searchParams;
   const user = await getCurrentPrmsUser();
@@ -78,6 +80,7 @@ export default async function SubscriptionsPage({ searchParams }: { searchParams
           { key: "owner", header: "Owner" },
           { key: "renewal", header: "Renewal" },
           { key: "status", header: "Status" },
+          { key: "pdfDownloads", header: "PDF Downloads", align: "right" },
           ...(canManage ? [{ key: "_actions", header: "", align: "right" as const }] : []),
         ]}
         rows={result.items.map((r) => ({
@@ -89,6 +92,7 @@ export default async function SubscriptionsPage({ searchParams }: { searchParams
             owner: r.ownerName ?? "—",
             renewal: <RenewalHint date={r.renewalDate} autoRenew={r.autoRenew} />,
             status: <ResourceStatusBadge status={r.status} />,
+            pdfDownloads: <ItemPdfDownloadButtons itemId={r._id} code={r.serviceName} variant="compact" />,
             _actions: canManage ? (
               <span className="flex justify-end gap-1">
                 <SubscriptionForm

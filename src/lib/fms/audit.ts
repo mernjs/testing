@@ -27,7 +27,12 @@ export type AuditEntity =
   | "bank_statement_line"
   | "cash_count"
   | "journal_entry"
-  | "fiscal_period";
+  | "fiscal_period"
+  | "payment_intent"
+  | "payment_link"
+  | "webhook_event"
+  | "bank_statement"
+  | "payment_reminders";
 
 export type AuditAction =
   | "create"
@@ -41,7 +46,10 @@ export type AuditAction =
   | "reverse"
   | "reconcile"
   | "record"
-  | "export";
+  | "export"
+  | "import"
+  | "webhook_received"
+  | "reminder_cron";
 
 export interface AuditLog {
   _id: string;

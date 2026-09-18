@@ -145,6 +145,8 @@ export default function FmsSidebar({
       label: "Sales & Receivables",
       icon: Users,
       items: [
+        { label: "Central Payments", href: "/fms/payments" },
+        { label: "Payment Links", href: "/fms/payment-links" },
         { label: "Customers", href: "/fms/customers" },
         { label: "Invoices", href: "/fms/invoices" },
         { label: "Payment Receipts", href: "/fms/receipts" },

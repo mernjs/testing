@@ -158,6 +158,20 @@ export function canManageFiscalPeriods(user: RoleContext): boolean {
   return resolvePermission(user, "fms.canManageFiscalPeriods", () => isFmsAdmin(user));
 }
 
+export function canManagePaymentLinks(user: RoleContext): boolean {
+  return resolvePermission(user, "fms.canManagePaymentLinks", () =>
+    isFmsAdmin(user) ||
+    user.roles.includes("finance_manager") ||
+    user.roles.includes("accounts_receivable")
+  );
+}
+
+export function canRefundPayments(user: RoleContext): boolean {
+  return resolvePermission(user, "fms.canRefundPayments", () =>
+    isFmsAdmin(user) || user.roles.includes("finance_manager")
+  );
+}
+
 export function primaryFmsRoleLabel(roles: readonly FmsRole[]): string {
   if (roles.includes("super_admin")) return FMS_ROLE_META.super_admin.label;
   for (const r of FMS_ROLES) {

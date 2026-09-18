@@ -151,7 +151,6 @@ export default function HrmsSidebar({
         <SectionLabel collapsed={collapsed}>Company</SectionLabel>
         {nav({ href: "/hrms/me/directory", label: "Directory", icon: Network })}
         {nav({ href: "/hrms/holidays", label: "Holidays", icon: CalendarCheck })}
-        {nav({ href: "/hrms/notifications", label: "Notifications", icon: Bell })}
       </nav>
     );
   }
@@ -179,7 +178,6 @@ export default function HrmsSidebar({
       )}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      {nav({ href: "/hrms/notifications", label: "Notifications", icon: Bell })}
       {canManageSettings(roleCtx) && nav({ href: "/hrms/settings", label: "Settings", icon: Settings })}
       {canViewAuditLog(roleCtx) && nav({ href: "/hrms/audit", label: "Audit Log", icon: ScrollText })}
 

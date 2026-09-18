@@ -134,49 +134,34 @@ export default function PrmsSidebar({
         {nav({ href: "/prms/me", label: "My Dashboard", icon: LayoutDashboard, exact: true })}
         {nav({ href: "/prms/me/requisitions", label: "My Requisitions", icon: FileText })}
         {nav({ href: "/prms/me/expenses", label: "My Expenses", icon: Receipt })}
-        <SectionLabel collapsed={collapsed}>Account</SectionLabel>
-        {nav({ href: "/prms/notifications", label: "Notifications", icon: Bell })}
       </nav>
     );
   }
 
-  // Modules delivered in later phases still appear so the panel structure is
-  // visible; they route to a "coming soon" placeholder.
   return (
     <nav className="flex h-full flex-col gap-1 p-3">
       {nav({ href: "/prms", label: "Dashboard", icon: LayoutDashboard, exact: true })}
 
-      <SectionLabel collapsed={collapsed}>Procure to Pay</SectionLabel>
-      {nav({ href: "/prms/requisitions", label: "Purchase Requisition", icon: FileText })}
+      <SectionLabel collapsed={collapsed}>Purchasing</SectionLabel>
+      {nav({ href: "/prms/procurement", label: "Procurement Hub", icon: ShoppingCart })}
+      {nav({ href: "/prms/purchase-orders", label: "Purchase Orders", icon: FileText })}
       {nav({ href: "/prms/vendors", label: "Vendors", icon: Building2 })}
-      {nav({ href: "/prms/rfq", label: "RFQ & Quotations", icon: FileSpreadsheet })}
-      {nav({ href: "/prms/purchase-orders", label: "Purchase Orders", icon: ShoppingCart })}
-      {nav({ href: "/prms/grn", label: "Goods Receipt", icon: PackageCheck })}
 
-      <SectionLabel collapsed={collapsed}>Spend</SectionLabel>
-      {nav({ href: "/prms/expenses", label: "Expense Management", icon: Receipt })}
-      {nav({ href: "/prms/assets", label: "Asset Management", icon: Boxes })}
-      {nav({ href: "/prms/inventory", label: "Inventory & Stationery", icon: Package })}
+      <SectionLabel collapsed={collapsed}>Expenses</SectionLabel>
+      {nav({ href: "/prms/expenses", label: "Expense Claims", icon: Receipt })}
 
-      <SectionLabel collapsed={collapsed}>Recurring</SectionLabel>
-      {nav({ href: "/prms/infrastructure", label: "Infrastructure & Servers", icon: Server })}
+      <SectionLabel collapsed={collapsed}>Assets & Office</SectionLabel>
+      {nav({ href: "/prms/assets", label: "Hardware Assets", icon: Boxes })}
+      {nav({ href: "/prms/inventory", label: "Office Inventory", icon: Package })}
+
+      <SectionLabel collapsed={collapsed}>Subscriptions</SectionLabel>
       {nav({ href: "/prms/subscriptions", label: "Software & SaaS", icon: Cloud })}
-      {nav({ href: "/prms/third-party", label: "Third-Party Services", icon: Handshake })}
-      {nav({ href: "/prms/contracts", label: "Contracts & AMC", icon: ScrollText })}
+      {nav({ href: "/prms/infrastructure", label: "Cloud & Servers", icon: Server })}
 
-      <SectionLabel collapsed={collapsed}>Finance</SectionLabel>
-      {nav({ href: "/prms/invoices", label: "Invoices & Payments", icon: FileCheck2 })}
-      {canManageFinance(roleCtx) && nav({ href: "/prms/payments", label: "Payments", icon: Wallet })}
-      {canManageFinance(roleCtx) && nav({ href: "/prms/budgets", label: "Budget Management", icon: PiggyBank })}
-      {canViewReports(roleCtx) && nav({ href: "/prms/reports", label: "Reports & Analytics", icon: BarChart3 })}
-
-      <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      {nav({ href: "/prms/notifications", label: "Notifications", icon: Bell })}
-      {canViewAuditLog(roleCtx) && nav({ href: "/prms/activity", label: "Activity Log", icon: ScrollText })}
-      {canManageSettings(roleCtx) && nav({ href: "/prms/settings", label: "Settings", icon: Settings })}
-
-      <SectionLabel collapsed={collapsed}>Me</SectionLabel>
+      <SectionLabel collapsed={collapsed}>Reports & Workspace</SectionLabel>
+      {canViewReports(roleCtx) && nav({ href: "/prms/reports", label: "Spend Analytics", icon: BarChart3 })}
       {nav({ href: "/prms/me", label: "My Requisitions", icon: CircleUser, exact: true })}
+      {canManageSettings(roleCtx) && nav({ href: "/prms/settings", label: "Settings", icon: Settings })}
     </nav>
   );
 }

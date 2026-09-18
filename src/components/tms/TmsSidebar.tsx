@@ -122,7 +122,6 @@ export default function TmsSidebar({
         {nav({ href: "/tms/me/certificates", label: "Certificates", icon: BadgeCheck })}
         {nav({ href: "/tms/me/payments", label: "Payments", icon: Wallet })}
         <SectionLabel collapsed={collapsed}>Account</SectionLabel>
-        {nav({ href: "/tms/notifications", label: "Notifications", icon: Bell })}
         {nav({ href: "/tms/me/profile", label: "Profile", icon: CircleUser })}
       </nav>
     );
@@ -150,7 +149,6 @@ export default function TmsSidebar({
       {canManageTraining(roleCtx) && nav({ href: "/tms/reports", label: "Reports", icon: BarChart3 })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      {nav({ href: "/tms/notifications", label: "Notifications", icon: Bell })}
       {canViewAuditLog(roleCtx) && nav({ href: "/tms/activity", label: "Activity Log", icon: ScrollText })}
       {canManageSettings(roleCtx) && nav({ href: "/tms/settings", label: "Settings", icon: Settings })}
 

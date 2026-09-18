@@ -15,6 +15,7 @@ import {
   Coins,
   Clock,
   CheckSquare,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -111,8 +112,6 @@ export default function PmsSidebar({
         {nav({ href: "/pms/me/projects", label: "My Projects", icon: FolderKanban })}
         {nav({ href: "/pms/me/tasks", label: "My Tasks", icon: CheckSquare })}
         {nav({ href: "/pms/me/timesheet", label: "Timesheet", icon: Clock })}
-        <SectionLabel collapsed={collapsed}>General</SectionLabel>
-        {nav({ href: "/pms/notifications", label: "Notifications", icon: Bell })}
       </nav>
     );
   }
@@ -126,12 +125,11 @@ export default function PmsSidebar({
       {nav({ href: "/pms/clients", label: "Clients", icon: Building2 })}
       {nav({ href: "/pms/calendar", label: "Calendar", icon: CalendarDays })}
 
-      <SectionLabel collapsed={collapsed}>Finance</SectionLabel>
-      {canViewCosting(roleCtx) && nav({ href: "/pms/costing", label: "Costing", icon: Coins })}
-      {canReviewTimesheets(roleCtx) && nav({ href: "/pms/timesheets", label: "Timesheet Review", icon: Clock })}
+      <SectionLabel collapsed={collapsed}>Timesheets & Tracking</SectionLabel>
+      {canReviewTimesheets(roleCtx) && nav({ href: "/pms/timesheets", label: "Timesheet", icon: Clock })}
+      {nav({ href: "/pms/analytics", label: "Analytics", icon: BarChart3 })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      {nav({ href: "/pms/notifications", label: "Notifications", icon: Bell })}
       {canViewActivityLog(roleCtx) && nav({ href: "/pms/activity", label: "Activity Log", icon: ScrollText })}
       {canManageSettings(roleCtx) && nav({ href: "/pms/settings", label: "Settings", icon: Settings })}
 

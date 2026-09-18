@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { CalendarRange, X } from "lucide-react";
+import { CalendarRange, X, Filter, SlidersHorizontal } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { Button } from "@/components/ui/button";
@@ -10,19 +10,36 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { DATE_RANGE_PRESETS } from "@/lib/date-ranges";
+import { PROJECT_STATUSES, PRIORITIES } from "@/lib/pms/constants";
 import { formatDate } from "@/lib/utils";
+
+interface Props {
+  range: string;
+  dateFrom: string;
+  dateTo: string;
+  clientId?: string;
+  status?: string;
+  priority?: string;
+  granularity?: string;
+  billingModel?: string;
+  overdue?: string;
+  clients?: { _id: string; companyName: string }[];
+  hasActiveFilters: boolean;
+}
 
 export default function PmsDashboardFilters({
   range,
   dateFrom,
   dateTo,
+  clientId = "",
+  status = "",
+  priority = "",
+  granularity = "month",
+  billingModel = "",
+  overdue = "",
+  clients = [],
   hasActiveFilters,
-}: {
-  range: string;
-  dateFrom: string;
-  dateTo: string;
-  hasActiveFilters: boolean;
-}) {
+}: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -51,12 +68,45 @@ export default function PmsDashboardFilters({
     setCustomOpen(false);
   }
 
+  // Count active non-date filters
+  const activeCount = [clientId, status, priority, billingModel, overdue].filter(Boolean).length;
+
   return (
     <GlassCard interactive={false}>
-      <CardContent>
+      <CardContent className="p-4">
+        {/* Header row */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/50 pb-3 mb-4">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="size-4 text-primary" />
+            <span className="text-xs font-bold uppercase tracking-wider text-foreground">
+              Dashboard Analytics Filters
+            </span>
+            {activeCount > 0 && (
+              <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                {activeCount}
+              </span>
+            )}
+          </div>
+          {hasActiveFilters && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="xs"
+              onClick={() => router.replace(pathname)}
+              className="h-7 text-xs text-muted-foreground hover:text-destructive"
+            >
+              <X className="size-3 mr-1" />
+              Reset All
+            </Button>
+          )}
+        </div>
+
+        {/* Filter controls */}
         <div className="flex flex-wrap items-end gap-3">
+
+          {/* ── Date Range ── */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Date Range</label>
+            <label className="text-xs font-semibold text-muted-foreground">Date Range</label>
             <Select
               value={range || "thisYear"}
               onValueChange={(v) => {
@@ -69,57 +119,224 @@ export default function PmsDashboardFilters({
                 }
               }}
             >
-              <SelectTrigger className="w-44">
+              <SelectTrigger className="w-40 h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {DATE_RANGE_PRESETS.map((p) => (
-                  <SelectItem key={p.value} value={p.value}>
-                    {p.label}
-                  </SelectItem>
+                  <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
+          {/* ── Custom Date Picker ── */}
           {range === "custom" && (
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Custom Dates</label>
+              <label className="text-xs font-semibold text-muted-foreground">Custom Dates</label>
               <Popover open={customOpen} onOpenChange={(open) => (open ? openCustom() : setCustomOpen(false))}>
                 <PopoverTrigger
                   render={
-                    <Button type="button" variant="outline" size="sm" className="h-8">
-                      <CalendarRange className="size-3.5" data-icon="inline-start" />
+                    <Button type="button" variant="outline" size="sm" className="h-8 text-xs">
+                      <CalendarRange className="size-3.5 mr-1" />
                       {formatDate(dateFrom)} – {formatDate(dateTo)}
                     </Button>
                   }
                 />
-                <PopoverContent align="start" className="w-auto">
+                <PopoverContent align="start" className="w-auto p-3">
                   <div className="flex items-end gap-2">
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-medium text-muted-foreground">From</label>
-                      <Input type="date" value={pendingFrom} max={pendingTo || undefined} onChange={(e) => setPendingFrom(e.target.value)} className="w-auto" />
+                      <Input
+                        type="date"
+                        value={pendingFrom}
+                        max={pendingTo || undefined}
+                        onChange={(e) => setPendingFrom(e.target.value)}
+                        className="w-auto h-8 text-xs"
+                      />
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-medium text-muted-foreground">To</label>
-                      <Input type="date" value={pendingTo} min={pendingFrom || undefined} onChange={(e) => setPendingTo(e.target.value)} className="w-auto" />
+                      <Input
+                        type="date"
+                        value={pendingTo}
+                        min={pendingFrom || undefined}
+                        onChange={(e) => setPendingTo(e.target.value)}
+                        className="w-auto h-8 text-xs"
+                      />
                     </div>
                   </div>
-                  <Button type="button" size="sm" onClick={applyCustom} disabled={!pendingFrom || !pendingTo}>
-                    Apply
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={applyCustom}
+                    disabled={!pendingFrom || !pendingTo}
+                    className="mt-2 w-full h-8 text-xs"
+                  >
+                    Apply Custom Dates
                   </Button>
                 </PopoverContent>
               </Popover>
             </div>
           )}
 
-          {hasActiveFilters && (
-            <Button type="button" variant="ghost" size="sm" onClick={() => router.replace(pathname)}>
-              <X className="size-3.5" data-icon="inline-start" />
-              Reset
-            </Button>
+          {/* ── Granularity ── */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-muted-foreground">Granularity</label>
+            <Select
+              value={granularity || "month"}
+              onValueChange={(v) => updateParams({ granularity: v || undefined })}
+            >
+              <SelectTrigger className="w-28 h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="day">Daily</SelectItem>
+                <SelectItem value="week">Weekly</SelectItem>
+                <SelectItem value="month">Monthly</SelectItem>
+                <SelectItem value="year">Yearly</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* ── Client ── */}
+          {clients.length > 0 && (
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-muted-foreground">Client</label>
+              <Select
+                value={clientId || "all"}
+                onValueChange={(v) => updateParams({ clientId: !v || v === "all" ? undefined : v })}
+              >
+                <SelectTrigger className="w-44 h-8 text-xs">
+                  <SelectValue placeholder="All Clients" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Clients ({clients.length})</SelectItem>
+                  {clients.map((c) => (
+                    <SelectItem key={c._id} value={c._id}>{c.companyName}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           )}
+
+          {/* ── Project Status ── */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-muted-foreground">Status</label>
+            <Select
+              value={status || "all"}
+              onValueChange={(v) => updateParams({ status: !v || v === "all" ? undefined : v })}
+            >
+              <SelectTrigger className="w-36 h-8 text-xs">
+                <SelectValue placeholder="All Statuses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                {PROJECT_STATUSES.map((s) => (
+                  <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* ── Priority ── */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-muted-foreground">Priority</label>
+            <Select
+              value={priority || "all"}
+              onValueChange={(v) => updateParams({ priority: !v || v === "all" ? undefined : v })}
+            >
+              <SelectTrigger className="w-32 h-8 text-xs">
+                <SelectValue placeholder="All Priorities" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Priorities</SelectItem>
+                {PRIORITIES.map((p) => (
+                  <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* ── Billing Model ── */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-muted-foreground">Billing Model</label>
+            <Select
+              value={billingModel || "all"}
+              onValueChange={(v) => updateParams({ billingModel: !v || v === "all" ? undefined : v })}
+            >
+              <SelectTrigger className="w-36 h-8 text-xs">
+                <SelectValue placeholder="All Models" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Models</SelectItem>
+                <SelectItem value="hourly">Hourly Rate</SelectItem>
+                <SelectItem value="fixed">Fixed Cost</SelectItem>
+                <SelectItem value="milestone">Milestone-Based</SelectItem>
+                <SelectItem value="retainer">Retainer</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* ── Health / Overdue ── */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-muted-foreground">Health Filter</label>
+            <Select
+              value={overdue || "all"}
+              onValueChange={(v) => updateParams({ overdue: !v || v === "all" ? undefined : v })}
+            >
+              <SelectTrigger className="w-36 h-8 text-xs">
+                <SelectValue placeholder="All Health" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Health States</SelectItem>
+                <SelectItem value="overdue">⚠ Overdue Only</SelectItem>
+                <SelectItem value="on_track">✓ On Track</SelectItem>
+                <SelectItem value="at_risk">⚡ At Risk</SelectItem>
+                <SelectItem value="completed">✅ Completed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
         </div>
+
+        {/* Active filter pills */}
+        {activeCount > 0 && (
+          <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border/40">
+            <span className="text-xs text-muted-foreground font-medium">Active:</span>
+            {clientId && clients.length > 0 && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+                {clients.find((c) => c._id === clientId)?.companyName ?? clientId}
+                <button onClick={() => updateParams({ clientId: undefined })} className="ml-0.5 hover:text-destructive">×</button>
+              </span>
+            )}
+            {status && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-600 dark:text-blue-400">
+                Status: {PROJECT_STATUSES.find((s) => s.value === status)?.label ?? status}
+                <button onClick={() => updateParams({ status: undefined })} className="ml-0.5 hover:text-destructive">×</button>
+              </span>
+            )}
+            {priority && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                Priority: {PRIORITIES.find((p) => p.value === priority)?.label ?? priority}
+                <button onClick={() => updateParams({ priority: undefined })} className="ml-0.5 hover:text-destructive">×</button>
+              </span>
+            )}
+            {billingModel && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                Billing: {billingModel}
+                <button onClick={() => updateParams({ billingModel: undefined })} className="ml-0.5 hover:text-destructive">×</button>
+              </span>
+            )}
+            {overdue && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-0.5 text-xs font-semibold text-rose-600 dark:text-rose-400">
+                Health: {overdue}
+                <button onClick={() => updateParams({ overdue: undefined })} className="ml-0.5 hover:text-destructive">×</button>
+              </span>
+            )}
+          </div>
+        )}
+
       </CardContent>
     </GlassCard>
   );

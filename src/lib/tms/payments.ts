@@ -376,6 +376,38 @@ export async function addInstallment(
     { _id: planId },
     { $push: { installments: installment }, $set: { ...updateStamp(actorId) } }
   );
+
+  // Sync to Central FMS Engine
+  try {
+    const { postSystemTransaction } = await import("@/lib/fms/transactions");
+    await postSystemTransaction(
+      {
+        type: "income",
+        transactionDate: new Date(input.paidOn),
+        postingDate: new Date(),
+        amount: input.amount,
+        currency: plan.currency || "INR",
+        paymentMethod: (input.method as any) || "UPI",
+        sourceModule: "tms",
+        sourceRecordId: plan._id,
+        customerId: plan.studentId,
+        vendorId: null,
+        employeeId: null,
+        projectId: null,
+        department: "TMS",
+        accountId: null,
+        taxAmount: 0,
+        referenceNumber: input.transactionId || invoiceNumber,
+        description: `TMS Course Fee Payment (${invoiceNumber})`,
+        attachments: [],
+      },
+      actorId,
+      "tms@yashorbit.com"
+    );
+  } catch {
+    // Non-blocking fallback for FMS sync
+  }
+
   return { ok: true, invoiceNumber };
 }
 
