@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import CampaignCountdown from "@/components/offers/CampaignCountdown";
@@ -19,12 +19,15 @@ export default function OfferPopup({
 }) {
   const [open, setOpen] = useState(false);
   const track = useOfferTracking(campaign.id);
-  const armedFor = useRef<string | null>(null);
 
   useEffect(() => {
-    if (armedFor.current === campaign.id) return; // one trigger arm per campaign per mount
+    // Deliberately no "already armed" ref guard here — React (Strict Mode,
+    // dev only) runs this effect through mount→cleanup→mount once, and a
+    // ref-based guard would survive that cleanup and block the second real
+    // arm, silently killing the trigger in dev while working by accident in
+    // production. The effect's own cleanup (clearTimeout/removeEventListener
+    // below) is what actually prevents double-arming — trust it instead.
     if (!popupMayShow(campaign.id, popup.frequency)) return;
-    armedFor.current = campaign.id;
 
     function show() {
       setOpen(true);
