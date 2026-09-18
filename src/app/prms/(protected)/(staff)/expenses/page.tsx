@@ -53,11 +53,11 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Expense Management" }]} />
+      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Expenses" }]} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Expense Management</h1>
-          <p className="text-sm text-muted-foreground">{total} expense{total === 1 ? "" : "s"} logged.</p>
+          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Expenses</h1>
+          <p className="text-sm text-muted-foreground">Track and approve company expenses, reimbursements &amp; vendor payments. {total} record{total === 1 ? "" : "s"} total.</p>
         </div>
         <ExpenseForm
           vendors={vOpts}
@@ -82,7 +82,7 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
 
       <PrmsDataTable
         columns={[
-          { key: "code", header: "Expense", sortable: true },
+          { key: "code", header: "Code / Ref", sortable: true },
           { key: "category", header: "Category" },
           { key: "vendor", header: "Vendor" },
           { key: "amount", header: "Amount", sortable: true, align: "right" },

@@ -101,21 +101,21 @@ export default function KpiCard({
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="h-full">
       <GlassCard>
-        <CardContent className="flex h-full items-center gap-3 py-4">
+        <CardContent className="flex h-full items-center gap-3 py-3.5 px-4">
           {icon && (
             <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-yashorbit-coral text-white">
               {icon}
             </div>
           )}
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-xs text-muted-foreground">{label}</p>
-            <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <p className="text-[11px] font-medium text-muted-foreground truncate leading-snug">{label}</p>
+            <div className="flex items-center gap-1.5 mt-0.5">
               <p
                 className={cn(
-                  "text-lg font-bold tabular-nums text-foreground",
+                  "text-[17px] font-bold tracking-tight tabular-nums text-foreground whitespace-nowrap shrink-0",
                   accent && "bg-gradient-to-r from-primary to-[color:var(--color-yashorbit-coral)] bg-clip-text text-transparent",
-                  tone === "up" && "text-green-600 dark:text-green-400",
-                  tone === "down" && "text-destructive"
+                  tone === "up" && "text-emerald-600 dark:text-emerald-400",
+                  tone === "down" && "text-rose-600 dark:text-rose-400"
                 )}
               >
                 {displayValue}

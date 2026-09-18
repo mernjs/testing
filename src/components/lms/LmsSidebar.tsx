@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import {
   LayoutDashboard,
   Briefcase,
-  Megaphone,
   Bot,
   MessagesSquare,
   BookOpen,
@@ -18,6 +17,9 @@ import {
   Gift,
   TicketPercent,
   ClipboardList,
+  BarChart3,
+  Settings,
+  ScrollText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -86,25 +88,31 @@ export default function LmsSidebar({ onNavigate, collapsed = false }: { onNaviga
   return (
     <nav className="flex h-full flex-col gap-1 p-3">
       <NavLink href="/lms" label="Dashboard" icon={LayoutDashboard} exact collapsed={collapsed} onNavigate={onNavigate} />
+
       <SectionLabel collapsed={collapsed}>Lead Management</SectionLabel>
       <NavLink href="/lms/leads" label="Leads" icon={Users} collapsed={collapsed} onNavigate={onNavigate} />
-      <SectionLabel collapsed={collapsed}>Marketing</SectionLabel>
-      <NavLink href="/lms/campaigns" label="Campaign Analytics" icon={Megaphone} collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/lms/careers" label="Applicants" icon={Briefcase} collapsed={collapsed} onNavigate={onNavigate} />
+
       <SectionLabel collapsed={collapsed}>Festival Offers</SectionLabel>
       <NavLink href="/lms/offers" label="Campaigns" icon={Gift} collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/offers/coupons" label="Coupons" icon={TicketPercent} collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/offers/claims" label="Claims" icon={ClipboardList} collapsed={collapsed} onNavigate={onNavigate} />
-      <SectionLabel collapsed={collapsed}>Careers</SectionLabel>
-      <NavLink href="/lms/careers" label="Applicants" icon={Briefcase} collapsed={collapsed} onNavigate={onNavigate} />
+
       <SectionLabel collapsed={collapsed}>AI Chatbot</SectionLabel>
       <NavLink href="/lms/chatbot" label="Dashboard" icon={Bot} exact collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/chatbot/conversations" label="Conversations" icon={MessagesSquare} collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/chatbot/knowledge-base" label="Knowledge Base" icon={BookOpen} collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/chatbot/config" label="AI Config" icon={SlidersHorizontal} exact collapsed={collapsed} onNavigate={onNavigate} />
+
       <SectionLabel collapsed={collapsed}>Conversation AI</SectionLabel>
       <NavLink href="/lms/chatbot/voice" label="Voice Dashboard" icon={AudioLines} exact collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/chatbot/voice/conversations" label="Voice Conversations" icon={Mic} collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/chatbot/voice/config" label="ElevenLabs Config" icon={Settings2} collapsed={collapsed} onNavigate={onNavigate} />
+
+      <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
+      <NavLink href="/lms" label="Analytics" icon={BarChart3} exact collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/lms/chatbot/config" label="Settings" icon={Settings} collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/lms/chatbot/conversations" label="Activity Log" icon={ScrollText} collapsed={collapsed} onNavigate={onNavigate} />
     </nav>
   );
 }

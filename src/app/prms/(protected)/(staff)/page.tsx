@@ -1,23 +1,18 @@
 import Link from "next/link";
 import {
   Wallet,
-  CalendarClock,
-  PiggyBank,
   Coins,
-  Boxes,
   Building2,
   Cloud,
-  Server,
   FileText,
-  FileCheck2,
-  Package,
-  Activity,
-  Plus,
-  ShoppingCart,
   Receipt,
-  Download,
   ArrowRight,
+  ClipboardList,
+  Boxes,
+  PieChart as PieChartIcon,
   TrendingUp,
+  BarChart3,
+  Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -29,14 +24,14 @@ import TimeSeriesChart from "@/components/lms/TimeSeriesChart";
 import CategoryBarChart from "@/components/lms/CategoryBarChart";
 import GranularityToggle from "@/components/lms/GranularityToggle";
 import PrmsDashboardFilters from "@/components/prms/PrmsDashboardFilters";
-import PrmsDataTable from "@/components/prms/PrmsDataTable";
 import ItemPdfDownloadButtons from "@/components/prms/ItemPdfDownloadButtons";
+import PrmsDonutChart from "@/components/prms/PrmsDonutChart";
+import PrmsSpendProgress from "@/components/prms/PrmsSpendProgress";
 
 import { getCurrentPrmsUser } from "@/lib/prms-auth";
 import { getPrmsDashboardStats } from "@/lib/prms/dashboard";
 import { listDepartments, listProjectOptions } from "@/lib/prms/pickers";
 import { listVendorOptions } from "@/lib/prms/vendors";
-import { searchRequisitions, serializeRequisition } from "@/lib/prms/requisitions";
 import { searchPurchaseOrders, serializePurchaseOrder } from "@/lib/prms/purchase-orders";
 import { searchExpenses, serializeExpense } from "@/lib/prms/expenses";
 
@@ -79,7 +74,7 @@ export default async function PrmsDashboardPage({
     dateTo = resolved.to;
   }
 
-  const [stats, departments, projects, vendors, recentReqs, recentPos, recentExps] = await Promise.all([
+  const [stats, departments, projects, vendors, recentPos, recentExps] = await Promise.all([
     getPrmsDashboardStats({
       dateFrom,
       dateTo,
@@ -88,41 +83,43 @@ export default async function PrmsDashboardPage({
       projectId: sp.projectId || undefined,
       vendorId: sp.vendorId || undefined,
       category: sp.category || undefined,
-      paymentStatus: sp.paymentStatus || undefined,
       expenseType: sp.expenseType || undefined,
     }),
     listDepartments(),
     listProjectOptions(),
     listVendorOptions({ activeOnly: true }),
-    searchRequisitions({ pageSize: 5 }),
     searchPurchaseOrders({ pageSize: 5 }),
     searchExpenses({ pageSize: 5 }),
   ]);
 
   const hasActiveFilters = Boolean(
-    sp.range || sp.dateFrom || sp.dateTo || sp.departmentId || sp.projectId || sp.vendorId || sp.category
+    sp.range || sp.dateFrom || sp.dateTo || sp.departmentId || sp.projectId || sp.vendorId || sp.category || sp.expenseType
   );
+
+  const displayName = user?.email ? user.email.split("@")[0].replace(/[._]/g, " ") : "";
 
   return (
     <div className="relative space-y-6">
-      <Breadcrumbs items={[{ label: "PRMS" }, { label: "Executive Dashboard" }]} />
 
-      {/* Header Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-primary/20 bg-gradient-to-r from-primary/10 via-background to-secondary/10 p-5 shadow-xs">
+      {/* Breadcrumbs */}
+      <Breadcrumbs items={[{ label: "PRMS" }, { label: "Dashboard" }]} />
+
+      {/* ── Heading ── */}
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Executive Dashboard</h1>
-            <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-bold text-primary">Live Operations</span>
-          </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Welcome back{user ? `, ${user.email.split("@")[0]}` : ""}. Company financial control, procurement hub, and instant PDF receipts.
+          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
+            Procurement Dashboard
+          </h1>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            {displayName ? `Welcome back, ${displayName}. ` : ""}
+            Real-time analytics for spend, requisitions, vendor orders, and company assets.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Link href="/prms/procurement">
+          <Link href="/prms/requisitions">
             <Button size="sm" className="gap-1.5 shadow-xs">
-              <ShoppingCart className="size-4" />
-              <span>Procurement Hub</span>
+              <ClipboardList className="size-4" />
+              <span>New Request</span>
             </Button>
           </Link>
           <Link href="/prms/expenses">
@@ -131,15 +128,10 @@ export default async function PrmsDashboardPage({
               <span>Log Expense</span>
             </Button>
           </Link>
-          <Link href="/prms/subscriptions">
-            <Button size="sm" variant="outline" className="gap-1.5 shadow-xs">
-              <Cloud className="size-4" />
-              <span>SaaS Subscriptions</span>
-            </Button>
-          </Link>
         </div>
       </div>
 
+      {/* ── Filter Panel ── */}
       <PrmsDashboardFilters
         range={rangeParam}
         dateFrom={(dateFrom ?? new Date()).toISOString().slice(0, 10)}
@@ -148,33 +140,138 @@ export default async function PrmsDashboardPage({
         projectId={sp.projectId ?? ""}
         vendorId={sp.vendorId ?? ""}
         category={sp.category ?? ""}
+        expenseType={sp.expenseType ?? ""}
         departments={departments.map((d) => ({ _id: d._id, name: d.name }))}
         projects={projects.map((p) => ({ _id: p._id, name: p.name }))}
         vendors={vendors.map((v) => ({ _id: v._id, companyName: v.companyName }))}
         hasActiveFilters={hasActiveFilters}
       />
 
-      {/* 1. Core Financial Overview */}
+      {/* ── Procurement Overview KPIs ── */}
       <div>
-        <h2 className="mb-3 text-base font-bold uppercase tracking-wider text-muted-foreground">Company Financial Overview</h2>
+        <h2 className="mb-3 text-lg font-semibold text-foreground flex items-center gap-2">
+          <Layers className="size-4 text-primary" />
+          Procurement & Asset Summary
+        </h2>
         <KpiGrid>
-          <KpiCard label="Total Procurement Spend" value={stats.totalProcurementSpend} format="currency" accent icon={<Coins className="size-4" />} />
-          <KpiCard label="Remaining Budget" value={stats.remainingBudget} format="currency" accent icon={<PiggyBank className="size-4" />} />
-          <KpiCard label="Monthly Expenses" value={stats.monthlyExpenses} format="currency" icon={<Wallet className="size-4" />} />
-          <KpiCard label="Active SaaS & Servers" value={stats.activeSubscriptions} icon={<Cloud className="size-4" />} />
+          <KpiCard label="Total Spend" value={stats.totalProcurementSpend} format="currency" accent icon={<Coins className="size-4" />} />
+          <KpiCard label="This Month's Expenses" value={stats.monthlyExpenses} format="currency" icon={<Wallet className="size-4" />} />
+          <KpiCard
+            label="Pending Purchase Requests"
+            value={stats.pendingPurchaseRequests}
+            tone={stats.pendingPurchaseRequests > 0 ? "down" : undefined}
+            icon={<ClipboardList className="size-4" />}
+          />
+          <KpiCard label="Active Vendors" value={stats.activeVendors} icon={<Building2 className="size-4" />} />
+          <KpiCard label="Hardware & Devices" value={stats.totalOfficeAssets} icon={<Boxes className="size-4" />} />
+          <KpiCard label="Software Subscriptions" value={stats.activeSubscriptions} icon={<Cloud className="size-4" />} />
         </KpiGrid>
       </div>
 
-      {/* 2. Instant PDF Downloads & Recent Transactions Widget */}
+      {/* ── Monthly Spend Trend Chart ── */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <TrendingUp className="size-4 text-primary" />
+            Spend & Expense Timeline
+          </h2>
+        </div>
+        <GlassCard>
+          <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
+            <div>
+              <CardTitle className="text-sm font-bold">Expense Spend Trend</CardTitle>
+              <p className="text-xs text-muted-foreground mt-0.5">Track procurement costs over time across selected filters.</p>
+            </div>
+            <GranularityToggle value={granularity} />
+          </CardHeader>
+          <CardContent><TimeSeriesChart data={stats.monthlyExpenseTrend} /></CardContent>
+        </GlassCard>
+      </div>
+
+      {/* ── Charts Grid ── */}
+      <div className="space-y-3">
+        <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+          <PieChartIcon className="size-4 text-primary" />
+          Spend Breakdown & Analytics
+        </h2>
+        <div className="grid gap-5 lg:grid-cols-2">
+
+          {/* 1. Category-wise Donut Chart */}
+          <GlassCard>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-bold flex items-center justify-between">
+                <span>Expense Categories</span>
+                <span className="text-xs font-normal text-muted-foreground">Share of total spend</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PrmsDonutChart data={stats.categoryExpenses} height={260} />
+            </CardContent>
+          </GlassCard>
+
+          {/* 2. SaaS Subscription Costs Donut */}
+          <GlassCard>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-bold flex items-center justify-between">
+                <span>Software & Cloud Subscriptions</span>
+                <span className="text-xs font-normal text-muted-foreground">Monthly Recurring Cost</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PrmsDonutChart data={stats.saasSubscriptionCost} height={260} />
+            </CardContent>
+          </GlassCard>
+
+          {/* 3. Department-wise Spend Bar Chart */}
+          <GlassCard>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-bold">Department-wise Spend</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CategoryBarChart data={stats.departmentExpenses} />
+            </CardContent>
+          </GlassCard>
+
+          {/* 4. Top Vendors Progress Breakdown */}
+          <GlassCard>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-bold">Top Vendors by Spend</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-2">
+              <PrmsSpendProgress data={stats.vendorSpend} maxItems={5} />
+            </CardContent>
+          </GlassCard>
+
+        </div>
+      </div>
+
+      {/* ── Asset Acquisition Growth Trend ── */}
+      <div className="space-y-3">
+        <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+          <BarChart3 className="size-4 text-primary" />
+          Asset & Device Growth Timeline
+        </h2>
+        <GlassCard>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold">Hardware & Office Asset Additions</CardTitle>
+            <p className="text-xs text-muted-foreground">Timeline of company laptop, monitor and hardware onboarding.</p>
+          </CardHeader>
+          <CardContent>
+            <TimeSeriesChart data={stats.assetAcquisitionTrend} />
+          </CardContent>
+        </GlassCard>
+      </div>
+
+      {/* ── Recent Activity Table Card ── */}
       <GlassCard className="p-4 sm:p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-3">
           <div>
-            <h3 className="text-lg font-bold text-foreground">Recent Transactions &amp; Instant PDF Downloads</h3>
-            <p className="text-xs text-muted-foreground">1-click Invoice PDF and Payment Receipt PDF downloads for recent startup activity.</p>
+            <h3 className="text-base font-bold text-foreground">Recent Activity &amp; Quick PDF Downloads</h3>
+            <p className="text-xs text-muted-foreground">Recent purchase orders and expense vouchers with 1-click PDF download.</p>
           </div>
-          <Link href="/prms/procurement">
+          <Link href="/prms/purchase-orders">
             <Button size="xs" variant="ghost" className="gap-1 text-xs text-primary">
-              <span>View All Items</span>
+              <span>View All POs</span>
               <ArrowRight className="size-3" />
             </Button>
           </Link>
@@ -186,12 +283,15 @@ export default async function PrmsDashboardPage({
               {recentPos.items.map(serializePurchaseOrder).slice(0, 4).map((po) => (
                 <div key={po._id} className="flex flex-wrap items-center justify-between gap-3 p-3 text-xs sm:text-sm">
                   <div className="flex items-center gap-3">
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary font-bold">
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary text-[10px] font-bold">
                       PO
                     </div>
                     <div>
                       <p className="font-bold text-foreground">{po.poNumber} · {po.vendorName}</p>
-                      <p className="text-[11px] text-muted-foreground">{formatDate(po.createdAt)} · Status: <span className="uppercase font-semibold text-primary">{po.status}</span></p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {formatDate(po.createdAt)} ·{" "}
+                        <span className="uppercase font-semibold text-primary">{po.status}</span>
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -206,12 +306,12 @@ export default async function PrmsDashboardPage({
               {recentExps.items.map(serializeExpense).slice(0, 4).map((exp) => (
                 <div key={exp._id} className="flex flex-wrap items-center justify-between gap-3 p-3 text-xs sm:text-sm">
                   <div className="flex items-center gap-3">
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 font-bold">
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 text-[10px] font-bold">
                       EXP
                     </div>
                     <div>
-                      <p className="font-bold text-foreground">{exp.expenseCode} · {exp.vendorName || exp.description || "Expense Claim"}</p>
-                      <p className="text-[11px] text-muted-foreground">{formatDate(exp.expenseDate)} · Category: {exp.category}</p>
+                      <p className="font-bold text-foreground">{exp.expenseCode} · {exp.vendorName || exp.description || "Expense"}</p>
+                      <p className="text-[11px] text-muted-foreground">{formatDate(exp.expenseDate)} · {exp.category}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -222,70 +322,11 @@ export default async function PrmsDashboardPage({
               ))}
             </div>
           ) : (
-            <p className="p-4 text-center text-xs text-muted-foreground">No recent transactions logged yet.</p>
+            <p className="p-4 text-center text-xs text-muted-foreground">No recent activity recorded.</p>
           )}
         </div>
       </GlassCard>
 
-      {/* 3. Operational Counters */}
-      <div>
-        <h2 className="mb-3 text-base font-bold uppercase tracking-wider text-muted-foreground">Operational Assets &amp; Vendors</h2>
-        <KpiGrid>
-          <KpiCard label="Active Vendors" value={stats.activeVendors} icon={<Building2 className="size-4" />} />
-          <KpiCard
-            label="Pending Purchase Requests"
-            value={stats.pendingPurchaseRequests}
-            tone={stats.pendingPurchaseRequests > 0 ? "down" : undefined}
-            icon={<FileText className="size-4" />}
-          />
-          <KpiCard
-            label="Pending Invoice Payments"
-            value={stats.pendingInvoicePayments}
-            tone={stats.pendingInvoicePayments > 0 ? "down" : undefined}
-            icon={<FileCheck2 className="size-4" />}
-          />
-          <KpiCard label="Total Office Assets" value={stats.totalOfficeAssets} icon={<Package className="size-4" />} />
-        </KpiGrid>
-      </div>
-
-      {/* 4. Distribution Breakdown */}
-      <div className="space-y-4">
-        <h2 className="text-base font-bold uppercase tracking-wider text-muted-foreground">Spend Distribution &amp; Analysis</h2>
-        <div className="grid gap-4 lg:grid-cols-2">
-          <GlassCard>
-            <CardHeader><CardTitle>Department-wise Expenses</CardTitle></CardHeader>
-            <CardContent><CategoryBarChart data={stats.departmentExpenses} /></CardContent>
-          </GlassCard>
-          <GlassCard>
-            <CardHeader><CardTitle>Category-wise Expenses</CardTitle></CardHeader>
-            <CardContent><CategoryBarChart data={stats.categoryExpenses} /></CardContent>
-          </GlassCard>
-          <GlassCard>
-            <CardHeader><CardTitle>Vendor Spend Analysis</CardTitle></CardHeader>
-            <CardContent><CategoryBarChart data={stats.vendorSpend} /></CardContent>
-          </GlassCard>
-          <GlassCard>
-            <CardHeader><CardTitle>SaaS Subscription Cost</CardTitle></CardHeader>
-            <CardContent><CategoryBarChart data={stats.saasSubscriptionCost} /></CardContent>
-          </GlassCard>
-        </div>
-      </div>
-
-      {/* 5. Historical Trends & Timelines */}
-      <div className="space-y-4">
-        <h2 className="text-base font-bold uppercase tracking-wider text-muted-foreground">Operational Trends &amp; Outflow</h2>
-        <GlassCard>
-          <CardHeader className="flex-row items-center justify-between space-y-0">
-            <CardTitle>Monthly Expense Trend</CardTitle>
-            <GranularityToggle value={granularity} />
-          </CardHeader>
-          <CardContent><TimeSeriesChart data={stats.monthlyExpenseTrend} /></CardContent>
-        </GlassCard>
-        <GlassCard>
-          <CardHeader><CardTitle>Cash Outflow Timeline</CardTitle></CardHeader>
-          <CardContent><TimeSeriesChart data={stats.cashOutflowTimeline} /></CardContent>
-        </GlassCard>
-      </div>
     </div>
   );
 }

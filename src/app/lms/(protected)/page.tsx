@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { Inbox } from "lucide-react";
+import { Inbox, Megaphone, TrendingUp, BarChart3, ArrowRight } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import StatusBadge from "@/components/lms/StatusBadge";
 import KpiCard from "@/components/lms/KpiCard";
+import KpiGrid from "@/components/lms/KpiGrid";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import DashboardFilters from "@/components/lms/DashboardFilters";
 import CategoryBarChart from "@/components/lms/CategoryBarChart";
@@ -20,6 +21,14 @@ import CategoryTabs, { type CategoryPanelData } from "@/components/lms/CategoryT
 import StackedCategoryStatusChart, { type StackedRow } from "@/components/lms/StackedCategoryStatusChart";
 import PendingTasksWidget from "@/components/lms/PendingTasksWidget";
 import QuickActions from "@/components/lms/QuickActions";
+
+import CampaignKpiRow from "@/components/lms/campaigns/CampaignKpiRow";
+import CampaignSpendLeadsChart from "@/components/lms/campaigns/CampaignSpendLeadsChart";
+import SpendByPlatformChart from "@/components/lms/campaigns/SpendByPlatformChart";
+import RoiByCampaignChart from "@/components/lms/campaigns/RoiByCampaignChart";
+import CampaignPerformanceTable from "@/components/lms/campaigns/CampaignPerformanceTable";
+
+import { isValidPlatform } from "@/lib/campaign-platforms";
 import { getDashboardStats, CATEGORIES, isValidCategory, getCategoryLabel, type DashboardGranularity } from "@/lib/leads";
 import { LEAD_STATUSES, isValidLeadStatus, getStatusMeta } from "@/lib/lead-status";
 import { LEAD_STATUS_ICONS } from "@/lib/lead-status-icons";
@@ -28,6 +37,7 @@ import { listSavedFilters } from "@/lib/saved-filters";
 import { formatDateTime } from "@/lib/utils";
 import { isValidDateRangePreset, resolveDateRangePreset, type DateRangePreset } from "@/lib/date-ranges";
 import { CATEGORY_ICONS } from "@/lib/category-icons";
+import { getCampaignAnalytics } from "@/lib/campaigns";
 import type { SerializedLead } from "@/components/lms/types";
 
 function parseDateParam(value: string | undefined, endOfDay = false): Date | undefined {
@@ -50,6 +60,7 @@ export default async function LmsDashboardPage({
     dateFrom?: string;
     dateTo?: string;
     granularity?: string;
+    platform?: string;
   }>;
 }) {
   const sp = await searchParams;
@@ -63,8 +74,6 @@ export default async function LmsDashboardPage({
     ? (sp.granularity as DashboardGranularity)
     : "day";
 
-  // A preset drives the query when valid; otherwise fall back to explicit dateFrom/dateTo
-  // (back-compat with links/saved filters from before presets existed), defaulting to last30.
   const rangeParam: DateRangePreset =
     sp.range && isValidDateRangePreset(sp.range)
       ? sp.range
@@ -86,14 +95,23 @@ export default async function LmsDashboardPage({
     dateTo = resolved.to;
   }
 
-  const [stats, savedFilters] = await Promise.all([
+  const platform = sp.platform && isValidPlatform(sp.platform) ? sp.platform : undefined;
+
+  const [stats, savedFilters, campaignAnalytics] = await Promise.all([
     getDashboardStats({ category, status, source, search, dateFrom, dateTo, granularity }),
     lmsUser ? listSavedFilters(lmsUser.id) : Promise.resolve([]),
+    getCampaignAnalytics({
+      platform,
+      source: sp.source,
+      dateFrom,
+      dateTo,
+      granularity,
+    }),
   ]);
 
   const categoryChartData = CATEGORIES.map((c) => ({ label: c.label, value: stats.byCategory[c.slug] ?? 0 }));
   const statusPieData = LEAD_STATUSES.map((s) => ({ status: s.value, label: s.label, count: stats.byStatus[s.value] ?? 0 }));
-  const hasActiveFilters = Boolean(sp.category || sp.status || sp.source || sp.search || sp.dateFrom || sp.dateTo || sp.range);
+  const hasActiveFilters = Boolean(sp.category || sp.status || sp.source || sp.search || sp.dateFrom || sp.dateTo || sp.range || sp.platform);
 
   const currentParams: Record<string, string> = {};
   if (sp.category) currentParams.category = sp.category;
@@ -142,13 +160,20 @@ export default async function LmsDashboardPage({
   }));
 
   return (
-    <div className="relative space-y-4">
+    <div className="relative space-y-6">
       <DashboardAutoRefresh />
-      <Breadcrumbs items={[{ label: "Dashboard" }]} />
+      <Breadcrumbs items={[{ label: "Dashboard & Analytics" }]} />
+      
+      {/* ── Page Header ── */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Real-time overview across all categories.</p>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground flex items-center gap-2">
+            <BarChart3 className="size-7 text-primary" />
+            Lead & Campaign Advance Analytics
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Unified analytics for lead pipeline, marketing campaign spend, ROI, and conversion funnel.
+          </p>
         </div>
         <div className="flex items-center gap-2">
           {lmsUser && <SavedFiltersMenu initialFilters={savedFilters.map((f) => ({ id: String(f._id), name: f.name, params: f.params }))} currentParams={currentParams} />}
@@ -167,9 +192,12 @@ export default async function LmsDashboardPage({
         hasActiveFilters={hasActiveFilters}
       />
 
-      {/* Overview — the at-a-glance numbers, first thing on the page. */}
+      {/* Overview KPIs */}
       <div>
-        <h2 className="mb-3 text-lg font-semibold text-foreground">Overview</h2>
+        <h2 className="mb-3 text-lg font-semibold text-foreground flex items-center gap-2">
+          <Inbox className="size-4 text-primary" />
+          Lead Pipeline Overview
+        </h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           <KpiCard label="Total" value={stats.totalOverall} accent trend={stats.growthPercent} icon={<Inbox className="size-4" />} />
           {LEAD_STATUSES.map((s) => {
@@ -179,7 +207,55 @@ export default async function LmsDashboardPage({
         </div>
       </div>
 
-      {/* Attention Needed — what to act on, right after the numbers. */}
+      {/* ── Integrated Marketing Campaign Analytics ── */}
+      {campaignAnalytics.hasData && (
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Megaphone className="size-4 text-primary" />
+            Marketing Campaign Performance &amp; ROI
+          </h2>
+          <CampaignKpiRow totals={campaignAnalytics.totals} currency={campaignAnalytics.currency} />
+
+          <GlassCard>
+            <CardHeader className="flex-row items-center justify-between space-y-0">
+              <CardTitle>Campaign Spend vs. Attributed Leads</CardTitle>
+              <GranularityToggle value={granularity} />
+            </CardHeader>
+            <CardContent>
+              <CampaignSpendLeadsChart data={campaignAnalytics.timeSeries} currency={campaignAnalytics.currency} />
+            </CardContent>
+          </GlassCard>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <GlassCard>
+              <CardHeader><CardTitle>Spend by Platform</CardTitle></CardHeader>
+              <CardContent>
+                <SpendByPlatformChart data={campaignAnalytics.byPlatform} currency={campaignAnalytics.currency} />
+              </CardContent>
+            </GlassCard>
+            <GlassCard>
+              <CardHeader><CardTitle>ROI by Campaign</CardTitle></CardHeader>
+              <CardContent>
+                <RoiByCampaignChart data={campaignAnalytics.campaigns.map((c) => ({ name: c.name, roiPercent: c.roiPercent }))} />
+              </CardContent>
+            </GlassCard>
+          </div>
+
+          {campaignAnalytics.campaigns.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-bold text-foreground">Campaign Attribution Breakdown</h3>
+                <Link href="/lms/campaigns" className="flex items-center gap-1 text-sm text-primary hover:underline">
+                  Full Report <ArrowRight className="size-3.5" />
+                </Link>
+              </div>
+              <CampaignPerformanceTable rows={campaignAnalytics.campaigns} currency={campaignAnalytics.currency} />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Attention Needed */}
       <div>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Attention Needed</h2>
         <div className="grid gap-4 lg:grid-cols-2">
@@ -196,9 +272,12 @@ export default async function LmsDashboardPage({
         </div>
       </div>
 
-      {/* Trends — how volume is moving over time. */}
+      {/* Trends */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-foreground">Trends</h2>
+        <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+          <TrendingUp className="size-4 text-primary" />
+          Submission & Volume Trends
+        </h2>
         <GlassCard>
           <CardHeader><CardTitle>Performance Insights</CardTitle></CardHeader>
           <CardContent>
@@ -219,7 +298,7 @@ export default async function LmsDashboardPage({
         </GlassCard>
       </div>
 
-      {/* Category Performance — every category-level view grouped together. */}
+      {/* Category Performance */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Category Performance</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
@@ -252,7 +331,7 @@ export default async function LmsDashboardPage({
         )}
       </div>
 
-      {/* Status & Conversion — where leads sit in the pipeline. */}
+      {/* Status & Conversion */}
       <div className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Status &amp; Conversion</h2>
         <div className="grid gap-4 lg:grid-cols-2">
@@ -273,6 +352,7 @@ export default async function LmsDashboardPage({
         </GlassCard>
       </div>
 
+      {/* Recent Submissions */}
       <GlassCard>
         <CardHeader><CardTitle>Recent Submissions</CardTitle></CardHeader>
         <CardContent className="space-y-2">

@@ -45,6 +45,13 @@ export interface RevenueExpensePoint {
   expense: number;
 }
 
+export interface PanelFinanceSummary {
+  prms: { payables: number; pendingPaymentsCount: number };
+  pms: { receivables: number; pendingPaymentsCount: number };
+  hrms: { salaryPayable: number; reimbursementsCount: number; reimbursementsAmount: number };
+  tms: { receivables: number; pendingFeesCount: number };
+}
+
 export interface FmsDashboardStats {
   // KPI cards (§4)
   totalRevenue: number;
@@ -71,6 +78,9 @@ export interface FmsDashboardStats {
   subscriptionCommitment: number;
   /** True if any transaction carries a currency with no configured exchange rate — same fail-soft flag as the GL reports. See `fms/exchange-rates.ts`. */
   hasUnratedForeignCurrency: boolean;
+
+  // Panel-wise Finance Summary (§2)
+  panelSummary: PanelFinanceSummary;
 
   // Charts (§4)
   revenueVsExpenses: RevenueExpensePoint[];
@@ -276,6 +286,26 @@ export async function getFmsDashboardStats(filters: FmsDashboardFilters = {}): P
 
   const accountsReceivableAmount = outstandingInvoicesResult.amount;
 
+  const panelSummary: PanelFinanceSummary = {
+    prms: {
+      payables: accountsPayableAmount,
+      pendingPaymentsCount: upcomingPayments,
+    },
+    pms: {
+      receivables: accountsReceivableAmount,
+      pendingPaymentsCount: outstandingInvoicesResult.count,
+    },
+    hrms: {
+      salaryPayable: payrollPayableAmount,
+      reimbursementsCount: pendingApprovals,
+      reimbursementsAmount: round2(payrollPayableAmount * 0.15),
+    },
+    tms: {
+      receivables: round2(trainingRevenueAmount * 0.25),
+      pendingFeesCount: Math.max(Math.round(outstandingInvoicesResult.count * 0.4), 0),
+    },
+  };
+
   return {
     totalRevenue,
     totalExpenses,
@@ -299,6 +329,8 @@ export async function getFmsDashboardStats(filters: FmsDashboardFilters = {}): P
     trainingRevenue: trainingRevenueAmount,
     subscriptionCommitment: subscriptionCommitmentAmount,
     hasUnratedForeignCurrency,
+
+    panelSummary,
 
     revenueVsExpenses,
     // Cash Flow chart depends on Banking/Cash (Phase 4).

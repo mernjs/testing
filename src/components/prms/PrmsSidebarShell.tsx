@@ -63,7 +63,13 @@ export default function PrmsSidebarShell({
         <PrmsSidebar roles={roles} permissionOverrides={permissionOverrides} collapsed={collapsed} />
       </div>
 
-      <PrmsProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      <PrmsProfileMenu
+        email={email}
+        roles={roles}
+        permissionOverrides={permissionOverrides}
+        createdAt={createdAt}
+        lastLoginAt={lastLoginAt}
+      />
     </motion.aside>
   );
 }

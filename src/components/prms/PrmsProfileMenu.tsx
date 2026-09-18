@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { LogOut, Settings, ShieldCheck, UserRound, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { LogOut, Settings, ShieldCheck, UserRound, Clock, Info } from "lucide-react";
 import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -16,7 +17,7 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { prmsLogoutAction } from "@/app/prms/(protected)/actions";
 import { formatDateTime, cn } from "@/lib/utils";
-import { PRMS_ROLE_META, primaryPrmsRoleLabel, type PrmsRole } from "@/lib/prms-roles";
+import { PRMS_ROLE_META, primaryPrmsRoleLabel, canManageSettings, type PrmsRole } from "@/lib/prms-roles";
 
 function nameFromEmail(email: string): string {
   const local = email.split("@")[0] ?? email;
@@ -32,27 +33,31 @@ function initialsFor(email: string) {
 export default function PrmsProfileMenu({
   email,
   roles,
+  permissionOverrides,
   createdAt,
   lastLoginAt,
 }: {
   email: string;
   roles: PrmsRole[];
+  permissionOverrides?: Record<string, boolean>;
   createdAt: string;
   lastLoginAt: string | null;
 }) {
+  const router = useRouter();
   const { collapsed } = useSidebarCollapse();
   const [isPending, startTransition] = useTransition();
   const [profileOpen, setProfileOpen] = useState(false);
   const displayName = nameFromEmail(email);
   const initials = initialsFor(email);
   const roleLabel = primaryPrmsRoleLabel(roles);
+  const showSettings = canManageSettings({ roles, permissionOverrides });
 
   return (
     <div className="shrink-0 border-t border-border/60 p-2">
       <DropdownMenu>
         <DropdownMenuTrigger
           className={cn(
-            "flex w-full items-center gap-2.5 rounded-lg p-1.5 text-left transition-colors hover:bg-muted",
+            "flex w-full items-center gap-2.5 rounded-lg p-1.5 text-left transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
             collapsed && "justify-center px-0"
           )}
         >
@@ -66,7 +71,7 @@ export default function PrmsProfileMenu({
             </span>
           )}
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" side="top" className="w-64">
+        <DropdownMenuContent align="start" side="top" className="w-60">
           <DropdownMenuGroup>
             <DropdownMenuLabel className="flex items-center gap-3 py-2 font-normal">
               <Avatar className="size-9 ring-2 ring-primary/15">
@@ -83,19 +88,28 @@ export default function PrmsProfileMenu({
             </DropdownMenuLabel>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setProfileOpen(true)}>
-            <UserRound className="size-3.5" data-icon="inline-start" />
-            Profile
+
+          <DropdownMenuItem onClick={() => router.push("/prms/me")} className="flex items-center gap-2 cursor-pointer">
+            <UserRound className="size-3.5 text-muted-foreground" />
+            <span>My Profile</span>
           </DropdownMenuItem>
-          <DropdownMenuItem disabled>
-            <Settings className="size-3.5" data-icon="inline-start" />
-            Preferences
-            <span className="ml-auto text-[10px] text-muted-foreground">Soon</span>
+
+          {showSettings && (
+            <DropdownMenuItem onClick={() => router.push("/prms/settings")} className="flex items-center gap-2 cursor-pointer">
+              <Settings className="size-3.5 text-muted-foreground" />
+              <span>Settings</span>
+            </DropdownMenuItem>
+          )}
+
+          <DropdownMenuItem onClick={() => setProfileOpen(true)} className="flex items-center gap-2 cursor-pointer">
+            <Info className="size-3.5 text-muted-foreground" />
+            <span>Session Info</span>
           </DropdownMenuItem>
+
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive" disabled={isPending} onClick={() => startTransition(() => prmsLogoutAction())}>
-            <LogOut className="size-3.5" data-icon="inline-start" />
-            Log out
+          <DropdownMenuItem variant="destructive" disabled={isPending} onClick={() => startTransition(() => prmsLogoutAction())} className="flex items-center gap-2 cursor-pointer">
+            <LogOut className="size-3.5" />
+            <span>Log out</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

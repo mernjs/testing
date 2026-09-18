@@ -11,8 +11,6 @@ import {
   Settings,
   CircleUser,
   CalendarDays,
-  Bell,
-  Coins,
   Clock,
   CheckSquare,
   BarChart3,
@@ -20,7 +18,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { PmsRole } from "@/lib/pms-roles";
-import { canManageSettings, canViewActivityLog, canViewCosting, canReviewTimesheets, hasPmsStaffRole } from "@/lib/pms-roles";
+import { canManageSettings, canViewActivityLog, canReviewTimesheets, hasPmsStaffRole } from "@/lib/pms-roles";
 
 function NavLink({
   href,
@@ -127,11 +125,11 @@ export default function PmsSidebar({
 
       <SectionLabel collapsed={collapsed}>Timesheets & Tracking</SectionLabel>
       {canReviewTimesheets(roleCtx) && nav({ href: "/pms/timesheets", label: "Timesheet", icon: Clock })}
-      {nav({ href: "/pms/analytics", label: "Analytics", icon: BarChart3 })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      {canViewActivityLog(roleCtx) && nav({ href: "/pms/activity", label: "Activity Log", icon: ScrollText })}
+      {nav({ href: "/pms/analytics", label: "Analytics", icon: BarChart3 })}
       {canManageSettings(roleCtx) && nav({ href: "/pms/settings", label: "Settings", icon: Settings })}
+      {canViewActivityLog(roleCtx) && nav({ href: "/pms/activity", label: "Activity Log", icon: ScrollText })}
 
       {employeeId && (
         <>

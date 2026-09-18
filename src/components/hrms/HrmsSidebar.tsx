@@ -12,13 +12,12 @@ import {
   CalendarDays,
   CalendarCheck,
   Wallet,
-  Banknote,
   ScrollText,
-  Bell,
   Settings,
   FileText,
   UserRound,
   Network,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -170,14 +169,10 @@ export default function HrmsSidebar({
       {nav({ href: "/hrms/attendance", label: "Attendance", icon: CalendarClock })}
       {nav({ href: "/hrms/leave", label: "Leave", icon: CalendarDays })}
       {nav({ href: "/hrms/holidays", label: "Holidays", icon: CalendarCheck })}
-      {canRunPayroll(roleCtx) && (
-        <>
-          {nav({ href: "/hrms/payroll", label: "Payroll", icon: Wallet })}
-          {nav({ href: "/hrms/payroll/payouts", label: "Salary Payouts", icon: Banknote })}
-        </>
-      )}
+      {canRunPayroll(roleCtx) && nav({ href: "/hrms/payroll", label: "Payroll", icon: Wallet })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
+      {nav({ href: "/hrms/analytics", label: "Advance Analytics", icon: BarChart3 })}
       {canManageSettings(roleCtx) && nav({ href: "/hrms/settings", label: "Settings", icon: Settings })}
       {canViewAuditLog(roleCtx) && nav({ href: "/hrms/audit", label: "Audit Log", icon: ScrollText })}
 

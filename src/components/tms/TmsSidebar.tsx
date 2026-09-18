@@ -19,7 +19,6 @@ import {
   ScrollText,
   Settings,
   CircleUser,
-  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -146,11 +145,11 @@ export default function TmsSidebar({
       {nav({ href: "/tms/certificates", label: "Certificates", icon: BadgeCheck })}
       {canManagePayments(roleCtx) && nav({ href: "/tms/payments", label: "Payments", icon: Wallet })}
       {canManageTraining(roleCtx) && nav({ href: "/tms/placements", label: "Placements", icon: Briefcase })}
-      {canManageTraining(roleCtx) && nav({ href: "/tms/reports", label: "Reports", icon: BarChart3 })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      {canViewAuditLog(roleCtx) && nav({ href: "/tms/activity", label: "Activity Log", icon: ScrollText })}
+      {canManageTraining(roleCtx) && nav({ href: "/tms/reports", label: "Analytics", icon: BarChart3 })}
       {canManageSettings(roleCtx) && nav({ href: "/tms/settings", label: "Settings", icon: Settings })}
+      {canViewAuditLog(roleCtx) && nav({ href: "/tms/activity", label: "Activity Log", icon: ScrollText })}
 
       {studentId && (
         <>

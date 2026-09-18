@@ -12,10 +12,11 @@ import {
   Megaphone,
   FolderOpen,
   Video,
-  Bell,
   Settings,
   Search,
   Lock,
+  BarChart3,
+  ScrollText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -99,7 +100,6 @@ export default function MessengerSidebar({
   collapsed = false,
   unreadDms = 0,
   unreadChannels = 0,
-  unreadNotifications = 0,
 }: {
   roles: ChatRole[];
   permissionOverrides?: Record<string, boolean>;
@@ -134,8 +134,10 @@ export default function MessengerSidebar({
       {nav({ href: "/messenger/files", label: "Shared Files", icon: FolderOpen })}
       {nav({ href: "/messenger/meetings", label: "Meetings", icon: Video })}
 
-      <SectionLabel collapsed={collapsed}>Account</SectionLabel>
+      <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
+      {nav({ href: "/messenger", label: "Analytics", icon: BarChart3, exact: true })}
       {nav({ href: "/messenger/settings", label: "Settings", icon: Settings })}
+      {nav({ href: "/messenger/announcements", label: "Audit Log", icon: ScrollText })}
     </nav>
   );
 }

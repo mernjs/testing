@@ -7,34 +7,21 @@ import {
   LayoutDashboard,
   FileText,
   Building2,
-  FileSpreadsheet,
-  ShoppingCart,
-  PackageCheck,
   Receipt,
   Boxes,
-  Package,
-  Server,
   Cloud,
-  Handshake,
-  ScrollText,
-  FileCheck2,
-  Wallet,
-  PiggyBank,
+  ClipboardList,
   BarChart3,
+  ScrollText,
   Settings,
-  CircleUser,
-  Bell,
-  Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { PrmsRole } from "@/lib/prms-roles";
 import {
-  canManageSettings,
-  canViewAuditLog,
-  canViewReports,
-  canManageFinance,
   hasPrmsStaffRole,
+  canViewAuditLog,
+  canManageSettings,
 } from "@/lib/prms-roles";
 
 function NavLink({
@@ -43,7 +30,6 @@ function NavLink({
   icon: Icon,
   exact = false,
   collapsed = false,
-  soon = false,
   onNavigate,
 }: {
   href: string;
@@ -51,7 +37,6 @@ function NavLink({
   icon: React.ComponentType<{ className?: string }>;
   exact?: boolean;
   collapsed?: boolean;
-  soon?: boolean;
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
@@ -68,9 +53,6 @@ function NavLink({
       )}
       <Icon className="relative size-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
       {!collapsed && <span className="relative truncate">{label}</span>}
-      {!collapsed && soon && (
-        <Lock className="relative ml-auto size-3 text-muted-foreground/60" aria-label="Coming soon" />
-      )}
     </>
   );
 
@@ -101,7 +83,9 @@ function NavLink({
 function SectionLabel({ children, collapsed }: { children: React.ReactNode; collapsed?: boolean }) {
   if (collapsed) return <div className="mt-4 mb-1 border-t border-border/50" />;
   return (
-    <div className="mt-4 mb-1 px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{children}</div>
+    <div className="mt-4 mb-1 px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+      {children}
+    </div>
   );
 }
 
@@ -122,17 +106,16 @@ export default function PrmsSidebar({
     label: string;
     icon: React.ComponentType<{ className?: string }>;
     exact?: boolean;
-    soon?: boolean;
   }) => <NavLink {...props} collapsed={collapsed} onNavigate={onNavigate} />;
 
   const isStaff = hasPrmsStaffRole(roles);
 
-  // Employee self-service portal.
+  // Employee self-service
   if (!isStaff) {
     return (
       <nav className="flex h-full flex-col gap-1 p-3">
         {nav({ href: "/prms/me", label: "My Dashboard", icon: LayoutDashboard, exact: true })}
-        {nav({ href: "/prms/me/requisitions", label: "My Requisitions", icon: FileText })}
+        {nav({ href: "/prms/me/requisitions", label: "My Requests", icon: ClipboardList })}
         {nav({ href: "/prms/me/expenses", label: "My Expenses", icon: Receipt })}
       </nav>
     );
@@ -140,28 +123,28 @@ export default function PrmsSidebar({
 
   return (
     <nav className="flex h-full flex-col gap-1 p-3">
+
+      {/* Overview */}
       {nav({ href: "/prms", label: "Dashboard", icon: LayoutDashboard, exact: true })}
 
-      <SectionLabel collapsed={collapsed}>Purchasing</SectionLabel>
-      {nav({ href: "/prms/procurement", label: "Procurement Hub", icon: ShoppingCart })}
+      {/* ── Procurement ── */}
+      <SectionLabel collapsed={collapsed}>Procurement</SectionLabel>
+      {nav({ href: "/prms/requisitions", label: "Purchase Requests", icon: ClipboardList })}
       {nav({ href: "/prms/purchase-orders", label: "Purchase Orders", icon: FileText })}
+      {nav({ href: "/prms/expenses", label: "Expenses", icon: Receipt })}
       {nav({ href: "/prms/vendors", label: "Vendors", icon: Building2 })}
 
-      <SectionLabel collapsed={collapsed}>Expenses</SectionLabel>
-      {nav({ href: "/prms/expenses", label: "Expense Claims", icon: Receipt })}
-
-      <SectionLabel collapsed={collapsed}>Assets & Office</SectionLabel>
-      {nav({ href: "/prms/assets", label: "Hardware Assets", icon: Boxes })}
-      {nav({ href: "/prms/inventory", label: "Office Inventory", icon: Package })}
-
-      <SectionLabel collapsed={collapsed}>Subscriptions</SectionLabel>
+      {/* ── Company Assets ── */}
+      <SectionLabel collapsed={collapsed}>Company Assets</SectionLabel>
+      {nav({ href: "/prms/assets", label: "Hardware & Devices", icon: Boxes })}
       {nav({ href: "/prms/subscriptions", label: "Software & SaaS", icon: Cloud })}
-      {nav({ href: "/prms/infrastructure", label: "Cloud & Servers", icon: Server })}
 
-      <SectionLabel collapsed={collapsed}>Reports & Workspace</SectionLabel>
-      {canViewReports(roleCtx) && nav({ href: "/prms/reports", label: "Spend Analytics", icon: BarChart3 })}
-      {nav({ href: "/prms/me", label: "My Requisitions", icon: CircleUser, exact: true })}
+      {/* ── Governance ── */}
+      <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
+      {nav({ href: "/prms/analytics", label: "Analytics", icon: BarChart3 })}
       {canManageSettings(roleCtx) && nav({ href: "/prms/settings", label: "Settings", icon: Settings })}
+      {canViewAuditLog(roleCtx) && nav({ href: "/prms/activity", label: "Activity Log", icon: ScrollText })}
+
     </nav>
   );
 }

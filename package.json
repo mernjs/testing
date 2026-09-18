@@ -24,6 +24,7 @@
     "chat:seed-demo": "node --env-file=.env scripts/seed-messenger-demo.mjs",
     "fms:grant": "node --env-file=.env scripts/grant-fms-role.mjs",
     "fms:seed-demo": "node --env-file=.env scripts/seed-fms-demo.mjs",
+    "fms:seed-realistic": "node --env-file=.env scripts/seed-fms-realistic.mjs",
     "offers:seed-demo": "node --env-file=.env scripts/seed-offers-demo.mjs"
   },
   "dependencies": {

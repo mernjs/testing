@@ -3,7 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Users, FolderKanban, ShoppingCart, GraduationCap, MessagesSquare, LayoutGrid, ShieldCheck } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  FolderKanban,
+  ShoppingCart,
+  GraduationCap,
+  MessagesSquare,
+  LayoutGrid,
+  ShieldCheck,
+  BarChart3,
+  Settings,
+  ScrollText,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
@@ -63,15 +75,13 @@ function NavLink({
   );
 }
 
-/**
- * Flat, panel-level navigation — every deep per-module sub-entity link (CRM
- * leads/clients, PMS projects/tasks/…, TMS/PRMS/YashChat entities, etc.) was
- * removed in favor of one link straight into each panel's own real nav,
- * mirroring how `HubSidebar.tsx` lists panels for every other user. A
- * super_admin always has full access to every panel (every module treats
- * `super_admin` as universal access), so every link here is unconditional —
- * same reasoning `AdminTopbar.tsx`'s own cross-panel links already use.
- */
+function SectionLabel({ children, collapsed }: { children: React.ReactNode; collapsed?: boolean }) {
+  if (collapsed) return <div className="mt-4 mb-1 border-t border-border/50" />;
+  return (
+    <div className="mt-4 mb-1 px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{children}</div>
+  );
+}
+
 export default function AdminSidebar({
   onNavigate,
   collapsed = false,
@@ -94,6 +104,11 @@ export default function AdminSidebar({
       {nav({ href: "/messenger", label: "YashChat", icon: MessagesSquare })}
       {nav({ href: "/lms", label: "CRM & Leads", icon: LayoutGrid })}
       {nav({ href: "/admin/users", label: "Users, Roles & Access", icon: ShieldCheck })}
+
+      <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
+      {nav({ href: "/admin", label: "Analytics", icon: BarChart3, exact: true })}
+      {nav({ href: "/admin/users", label: "Settings", icon: Settings })}
+      {nav({ href: "/admin/users", label: "Audit Log", icon: ScrollText })}
     </nav>
   );
 }

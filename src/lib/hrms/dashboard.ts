@@ -23,6 +23,10 @@ export interface HrmsDashboardFilters {
   dateFrom?: Date;
   dateTo?: Date;
   granularity?: DashboardGranularity;
+  departmentId?: string;
+  employmentType?: string;
+  status?: string;
+  gender?: string;
 }
 
 export interface HrmsDashboardStats {
@@ -70,6 +74,12 @@ export async function getHrmsDashboardStats(filters: HrmsDashboardFilters = {}):
   const granularity = filters.granularity ?? "month";
   const dateFormat = dateFormatFor(granularity);
 
+  const scopeMatch: Record<string, unknown> = { ...notDeleted };
+  if (filters.departmentId) scopeMatch["professional.departmentId"] = filters.departmentId;
+  if (filters.employmentType) scopeMatch["professional.employmentType"] = filters.employmentType;
+  if (filters.status) scopeMatch.status = filters.status;
+  if (filters.gender) scopeMatch["personal.gender"] = filters.gender;
+
   const rangeMatch: Record<string, unknown> = {};
   if (filters.dateFrom || filters.dateTo) {
     const r: Record<string, Date> = {};
@@ -95,24 +105,24 @@ export async function getHrmsDashboardStats(filters: HrmsDashboardFilters = {}):
     allForHeadcount,
     deptDocs,
   ] = await Promise.all([
-    employees.countDocuments(notDeleted),
-    employees.countDocuments({ status: { $in: ACTIVE_EMPLOYEE_STATUSES }, ...notDeleted }),
-    employees.countDocuments({ ...notDeleted, ...rangeMatch }),
+    employees.countDocuments(scopeMatch),
+    employees.countDocuments({ ...scopeMatch, status: { $in: ACTIVE_EMPLOYEE_STATUSES } }),
+    employees.countDocuments({ ...scopeMatch, ...rangeMatch }),
     prev
-      ? employees.countDocuments({ ...notDeleted, createdAt: { $gte: prev.from, $lte: prev.to } })
+      ? employees.countDocuments({ ...scopeMatch, createdAt: { $gte: prev.from, $lte: prev.to } })
       : Promise.resolve(null),
     departments.countDocuments({ deletedAt: null }),
-    employees.aggregate<{ _id: string; count: number }>([{ $match: notDeleted }, { $group: { _id: "$status", count: { $sum: 1 } } }]).toArray(),
+    employees.aggregate<{ _id: string; count: number }>([{ $match: scopeMatch }, { $group: { _id: "$status", count: { $sum: 1 } } }]).toArray(),
     employees
-      .aggregate<{ _id: string | null; count: number }>([{ $match: notDeleted }, { $group: { _id: "$professional.departmentId", count: { $sum: 1 } } }])
+      .aggregate<{ _id: string | null; count: number }>([{ $match: scopeMatch }, { $group: { _id: "$professional.departmentId", count: { $sum: 1 } } }])
       .toArray(),
-    employees.aggregate<{ _id: string | null; count: number }>([{ $match: notDeleted }, { $group: { _id: "$personal.gender", count: { $sum: 1 } } }]).toArray(),
+    employees.aggregate<{ _id: string | null; count: number }>([{ $match: scopeMatch }, { $group: { _id: "$personal.gender", count: { $sum: 1 } } }]).toArray(),
     employees
-      .aggregate<{ _id: string | null; count: number }>([{ $match: notDeleted }, { $group: { _id: "$professional.employmentType", count: { $sum: 1 } } }])
+      .aggregate<{ _id: string | null; count: number }>([{ $match: scopeMatch }, { $group: { _id: "$professional.employmentType", count: { $sum: 1 } } }])
       .toArray(),
     employees
       .aggregate<{ _id: string; count: number }>([
-        { $match: { ...notDeleted, ...rangeMatch } },
+        { $match: { ...scopeMatch, ...rangeMatch } },
         { $group: { _id: { $dateToString: { format: dateFormat, date: "$createdAt" } }, count: { $sum: 1 } } },
       ])
       .toArray(),
@@ -120,7 +130,7 @@ export async function getHrmsDashboardStats(filters: HrmsDashboardFilters = {}):
       .aggregate<{ _id: string; count: number }>([
         {
           $match: {
-            ...notDeleted,
+            ...scopeMatch,
             status: { $in: EXITED_EMPLOYEE_STATUSES },
             ...(filters.dateFrom || filters.dateTo
               ? { updatedAt: { ...(filters.dateFrom ? { $gte: filters.dateFrom } : {}), ...(filters.dateTo ? { $lte: filters.dateTo } : {}) } }
@@ -130,8 +140,8 @@ export async function getHrmsDashboardStats(filters: HrmsDashboardFilters = {}):
         { $group: { _id: { $dateToString: { format: dateFormat, date: "$updatedAt" } }, count: { $sum: 1 } } },
       ])
       .toArray(),
-    employees.find(notDeleted).sort({ createdAt: -1 }).limit(6).toArray(),
-    employees.find(notDeleted, { projection: { createdAt: 1 } }).toArray(),
+    employees.find(scopeMatch).sort({ createdAt: -1 }).limit(6).toArray(),
+    employees.find(scopeMatch, { projection: { createdAt: 1 } }).toArray(),
     departments.find({ deletedAt: null }).toArray(),
   ]);
 

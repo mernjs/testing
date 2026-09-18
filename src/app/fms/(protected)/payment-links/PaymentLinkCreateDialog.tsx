@@ -26,6 +26,7 @@ export default function PaymentLinkCreateDialog() {
     customerEmail: "",
     customerPhone: "",
     expiresInDays: "7",
+    sourceModule: "DIRECT",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,7 +46,7 @@ export default function PaymentLinkCreateDialog() {
           customerEmail: formData.customerEmail,
           customerPhone: formData.customerPhone,
           expiresInDays: Number(formData.expiresInDays),
-          sourceModule: "DIRECT",
+          sourceModule: formData.sourceModule || "DIRECT",
         }),
       });
 
@@ -112,10 +113,25 @@ export default function PaymentLinkCreateDialog() {
           ) : (
             <form onSubmit={handleSubmit} className="py-3 space-y-3.5 text-xs">
               <div className="space-y-1.5">
+                <Label>Target Portal / Source Panel</Label>
+                <select
+                  value={formData.sourceModule}
+                  onChange={(e) => setFormData({ ...formData, sourceModule: e.target.value })}
+                  className="w-full rounded-md border border-border/60 bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+                  <option value="DIRECT">Direct Payment Link</option>
+                  <option value="TMS">TMS Student Portal (Course Fee)</option>
+                  <option value="PMS">PMS Client Portal (Project Invoice)</option>
+                  <option value="HRMS">HRMS Employee Portal</option>
+                  <option value="PRMS">PRMS Vendor Portal</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
                 <Label>Purpose / Title *</Label>
                 <Input
                   required
-                  placeholder="e.g. Generative AI Training Fee"
+                  placeholder="e.g. Generative AI Training Fee / Milestone Payment"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 />
