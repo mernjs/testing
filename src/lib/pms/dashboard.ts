@@ -222,6 +222,13 @@ export async function getPmsDashboardStats(filters: PmsDashboardFilters = {}): P
     { label: "Next 30 days", value: deadline30 },
   ];
 
+  /** Return a valid ISO string, falling back to epoch if the value is absent / invalid. */
+  const safeIso = (v: unknown): string => {
+    if (!v) return new Date(0).toISOString();
+    const d = v instanceof Date ? v : new Date(v as string | number);
+    return Number.isFinite(d.getTime()) ? d.toISOString() : new Date(0).toISOString();
+  };
+
   const recentProjects = recentDocs.map((p) => ({
     id: p._id,
     code: p.projectCode,
@@ -229,7 +236,7 @@ export async function getPmsDashboardStats(filters: PmsDashboardFilters = {}): P
     status: p.status,
     progressPercent: p.progressPercent ?? 0,
     endDate: p.endDate ?? null,
-    createdAt: new Date(p.createdAt).toISOString(),
+    createdAt: safeIso(p.createdAt),
   }));
 
   return {
