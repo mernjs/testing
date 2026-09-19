@@ -3,7 +3,21 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Users, UserCheck, FolderKanban, ShoppingCart, GraduationCap, MessagesSquare, LayoutGrid, Landmark, ShieldCheck, BarChart3, Settings, ScrollText } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  FolderKanban,
+  ShoppingCart,
+  GraduationCap,
+  MessagesSquare,
+  LayoutGrid,
+  Landmark,
+  ShieldCheck,
+  BarChart3,
+  KeyRound,
+  Globe,
+  ExternalLink,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { normalizeRoles } from "@/lib/hrms-roles";
@@ -20,6 +34,7 @@ function NavLink({
   icon: Icon,
   exact = false,
   collapsed = false,
+  external = false,
   onNavigate,
 }: {
   href: string;
@@ -27,6 +42,7 @@ function NavLink({
   icon: React.ComponentType<{ className?: string }>;
   exact?: boolean;
   collapsed?: boolean;
+  external?: boolean;
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
@@ -42,19 +58,22 @@ function NavLink({
         />
       )}
       <Icon className="relative size-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
-      {!collapsed && <span className="relative truncate">{label}</span>}
+      {!collapsed && <span className="relative truncate flex-1">{label}</span>}
+      {!collapsed && external && <ExternalLink className="relative size-3 text-muted-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity" />}
     </>
   );
 
   const link = (
     <Link
       href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
       onClick={onNavigate}
       aria-label={collapsed ? label : undefined}
       className={cn(
         "group relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
         collapsed && "justify-center px-0",
-        active ? "text-primary" : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
+        active ? "text-primary font-semibold" : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
       )}
     >
       {inner}
@@ -77,45 +96,47 @@ function SectionLabel({ children, collapsed }: { children: React.ReactNode; coll
   );
 }
 
-/**
- * Same shell/nav pattern as `AdminSidebar.tsx`. Hub only ever has one real
- * page of its own (the dashboard) — below it, the "Your Panels" section
- * mirrors exactly the same real-role checks the dashboard's tile grid and
- * `cross-module-sso.ts` use, so this sidebar and the dashboard never
- * disagree about what an account can reach.
- */
 export default function HubSidebar({
-  roles,
+  roles = [],
   onNavigate,
   collapsed = false,
 }: {
-  roles: string[];
+  roles?: string[];
   onNavigate?: () => void;
   collapsed?: boolean;
 }) {
-  const nav = (props: { href: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean }) => (
+  const nav = (props: { href: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean; external?: boolean }) => (
     <NavLink {...props} collapsed={collapsed} onNavigate={onNavigate} />
   );
 
+  // Strict workspace role access checks for employees
+  const hasHrms = normalizeRoles(roles).length > 0;
+  const hasPms = normalizePmsRoles(roles).length > 0;
+  const hasPrms = normalizePrmsRoles(roles).length > 0;
+  const hasTms = normalizeTmsRoles(roles).length > 0;
+  const hasFms = normalizeFmsRoles(roles).length > 0;
+  const hasChat = normalizeChatRoles(roles).length > 0;
+  const hasAdmin = normalizeAdminRoles(roles).length > 0;
+
   return (
-    <nav className="flex h-full flex-col gap-1 p-3">
+    <nav className="flex h-full flex-col gap-1 p-3 overflow-y-auto">
       {nav({ href: "/workspace", label: "Dashboard", icon: LayoutDashboard, exact: true })}
 
-      <SectionLabel collapsed={collapsed}>Your Panels</SectionLabel>
-      {nav({ href: "/hrms/me", label: "User Portal", icon: UserCheck })}
-      {normalizeRoles(roles).length > 0 && nav({ href: "/hrms", label: "Human Resources", icon: Users })}
-      {normalizePmsRoles(roles).length > 0 && nav({ href: "/pms", label: "Project Management", icon: FolderKanban })}
-      {normalizePrmsRoles(roles).length > 0 && nav({ href: "/prms", label: "Procurement", icon: ShoppingCart })}
-      {normalizeTmsRoles(roles).length > 0 && nav({ href: "/tms", label: "Training", icon: GraduationCap })}
-      {normalizeFmsRoles(roles).length > 0 && nav({ href: "/fms", label: "Finance", icon: Landmark })}
-      {normalizeChatRoles(roles).length > 0 && nav({ href: "/messenger", label: "YashChat", icon: MessagesSquare })}
-      {nav({ href: "/lms", label: "CRM & Leads", icon: LayoutGrid })}
-      {normalizeAdminRoles(roles).length > 0 && nav({ href: "/admin", label: "Super Admin", icon: ShieldCheck })}
+      {/* Panel Analytics Links — Strictly filtered to employee workspace access */}
+      <SectionLabel collapsed={collapsed}>Panel Analytics</SectionLabel>
+      {(hasFms || hasAdmin) && nav({ href: "/workspace/analytics/fms", label: "Finance Analytics", icon: Landmark })}
+      {(hasHrms || hasAdmin) && nav({ href: "/workspace/analytics/hrms", label: "HR Analytics", icon: Users })}
+      {nav({ href: "/workspace/analytics/lms", label: "Lead Analytics", icon: LayoutGrid })}
+      {(hasChat || hasAdmin) && nav({ href: "/workspace/analytics/messenger", label: "Messenger Analytics", icon: MessagesSquare })}
+      {(hasPms || hasAdmin) && nav({ href: "/workspace/analytics/pms", label: "Project Analytics", icon: FolderKanban })}
+      {hasAdmin && nav({ href: "/workspace/analytics/portal", label: "Portal Analytics", icon: Globe })}
+      {(hasPrms || hasAdmin) && nav({ href: "/workspace/analytics/prms", label: "Procurement Analytics", icon: ShoppingCart })}
+      {(hasTms || hasAdmin) && nav({ href: "/workspace/analytics/tms", label: "Training Analytics", icon: GraduationCap })}
+      {nav({ href: "/workspace/analytics/workspace", label: "Workspace Analytics", icon: BarChart3 })}
 
-      <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      {nav({ href: "/workspace", label: "Analytics", icon: BarChart3, exact: true })}
-      {nav({ href: "/workspace", label: "Settings", icon: Settings })}
-      {nav({ href: "/workspace", label: "Audit Log", icon: ScrollText })}
+      {/* Account Settings */}
+      <SectionLabel collapsed={collapsed}>Account</SectionLabel>
+      {nav({ href: "/workspace/change-password", label: "Change Password", icon: KeyRound })}
     </nav>
   );
 }

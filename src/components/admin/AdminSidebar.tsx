@@ -100,15 +100,15 @@ export default function AdminSidebar({
       {nav({ href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true })}
 
       <SectionLabel collapsed={collapsed}>Your Panels</SectionLabel>
-      {nav({ href: "/admin/analytics/fms", label: "FMS – Finance Analytics", icon: Landmark })}
-      {nav({ href: "/admin/analytics/hrms", label: "HRMS – HR Analytics", icon: Users })}
-      {nav({ href: "/admin/analytics/lms", label: "LMS – Lead Analytics", icon: LayoutGrid })}
-      {nav({ href: "/admin/analytics/messenger", label: "Messenger – Messenger Analytics", icon: MessagesSquare })}
-      {nav({ href: "/admin/analytics/pms", label: "PMS – Project Analytics", icon: FolderKanban })}
-      {nav({ href: "/admin/analytics/portal", label: "Portal – Portal Analytics", icon: UserCheck })}
-      {nav({ href: "/admin/analytics/prms", label: "PRMS – Procurement Analytics", icon: ShoppingCart })}
-      {nav({ href: "/admin/analytics/tms", label: "TMS – Training Analytics", icon: GraduationCap })}
-      {nav({ href: "/admin/analytics/workspace", label: "Workspace – Workspace Analytics", icon: LayoutDashboard })}
+      {nav({ href: "/admin/analytics/fms", label: "Finance Analytics", icon: Landmark })}
+      {nav({ href: "/admin/analytics/hrms", label: "HR Analytics", icon: Users })}
+      {nav({ href: "/admin/analytics/lms", label: "Lead Analytics", icon: LayoutGrid })}
+      {nav({ href: "/admin/analytics/messenger", label: "Messenger Analytics", icon: MessagesSquare })}
+      {nav({ href: "/admin/analytics/pms", label: "Project Analytics", icon: FolderKanban })}
+      {nav({ href: "/admin/analytics/portal", label: "Portal Analytics", icon: UserCheck })}
+      {nav({ href: "/admin/analytics/prms", label: "Procurement Analytics", icon: ShoppingCart })}
+      {nav({ href: "/admin/analytics/tms", label: "Training Analytics", icon: GraduationCap })}
+      {nav({ href: "/admin/analytics/workspace", label: "Workspace Analytics", icon: LayoutDashboard })}
 
       <SectionLabel collapsed={collapsed}>Administration</SectionLabel>
       {nav({ href: "/admin/users", label: "Users, Roles & Access", icon: ShieldCheck })}
