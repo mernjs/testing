@@ -111,12 +111,12 @@ export default function AdminSidebar({
       {nav({ href: "/admin/analytics/workspace", label: "Workspace Analytics", icon: LayoutDashboard })}
 
       <SectionLabel collapsed={collapsed}>Administration</SectionLabel>
-      {nav({ href: "/admin/users", label: "Users, Roles & Access", icon: ShieldCheck })}
+      {nav({ href: "/admin/users", label: "User Management", icon: Users })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
       {nav({ href: "/admin", label: "Analytics", icon: BarChart3, exact: true })}
-      {nav({ href: "/admin/users", label: "Settings", icon: Settings })}
-      {nav({ href: "/admin/users", label: "Audit Log", icon: ScrollText })}
+      {nav({ href: "/admin/users", label: "Access & Roles", icon: ShieldCheck })}
+      {nav({ href: "/admin/activity-log", label: "Audit Log", icon: ScrollText })}
     </nav>
   );
 }

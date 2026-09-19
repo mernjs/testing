@@ -320,6 +320,71 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       },
     ],
   },
+  {
+    module: "LMS (CRM & Learning)",
+    permissions: [
+      {
+        key: "lms.isLmsAdmin",
+        label: "LMS admin actions",
+        description: "Everything an LMS Admin can do — full control over leads, campaigns, and courses.",
+      },
+      {
+        key: "lms.canManageLeads",
+        label: "Manage leads & sales pipeline",
+        description: "Create, edit, assign, and update status of leads across campaigns.",
+      },
+      {
+        key: "lms.canManageCampaigns",
+        label: "Manage marketing campaigns",
+        description: "Create, edit, and launch marketing lead campaigns and import leads.",
+      },
+      {
+        key: "lms.canViewAnalytics",
+        label: "View sales & lead analytics",
+        description: "Access conversion rates, pipeline velocity, and team performance reports.",
+      },
+    ],
+  },
+  {
+    module: "External Portal",
+    permissions: [
+      {
+        key: "portal.isPortalAdmin",
+        label: "Portal admin actions",
+        description: "Manage applicant, student, and client portal access and configurations.",
+      },
+      {
+        key: "portal.canManageApplications",
+        label: "Manage applications",
+        description: "Review and process incoming job and training applications.",
+      },
+      {
+        key: "portal.canManageDocuments",
+        label: "Manage portal documents",
+        description: "Upload and share official documents with applicants, trainees, or clients.",
+      },
+    ],
+  },
+  {
+    module: "Workspace Panel",
+    permissions: [
+      {
+        key: "workspace.isWorkspaceAdmin",
+        label: "Workspace admin actions",
+        description: "Manage workspace panels, employee access rights, and executive dashboards.",
+      },
+      {
+        key: "workspace.canViewAnalytics",
+        label: "View workspace analytics",
+        description: "Access cross-department analytics, team metrics, and workspace KPIs.",
+      },
+      {
+        key: "workspace.canManageWorkspace",
+        label: "Manage workspace configuration",
+        description: "Customize employee workspace layout, widgets, and navigation permissions.",
+      },
+    ],
+  },
 ];
 
 export const ALL_PERMISSION_KEYS: string[] = PERMISSION_GROUPS.flatMap((g) => g.permissions.map((p) => p.key));

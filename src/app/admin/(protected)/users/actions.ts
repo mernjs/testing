@@ -8,11 +8,14 @@ import {
   updateAdminUserPermissionOverrides,
   resetAdminUserPassword,
   deactivateAdminUser,
+  reactivateAdminUser,
+  setUserTypeAndNotes,
   type CreateAdminUserResult,
   type ResetPasswordResult,
 } from "@/lib/admin/admin-users";
 import { ALL_KNOWN_ROLES } from "@/lib/admin/role-catalog";
 import { ALL_PERMISSION_KEYS } from "@/lib/admin/permission-catalog";
+import { searchActivityLog, type AdminActivityRow } from "@/lib/admin/activity-log";
 
 function revalidate() {
   revalidatePath("/admin/users");
@@ -30,9 +33,14 @@ function sanitizeOverrides(overrides: Record<string, boolean>): Record<string, b
   return clean;
 }
 
-export async function createAdminUserAction(email: string, roles: string[]): Promise<CreateAdminUserResult> {
+export async function createAdminUserAction(
+  email: string,
+  roles: string[],
+  userType?: "employee" | "contractor" | "partner" | "system",
+  notes?: string
+): Promise<CreateAdminUserResult> {
   await requireAdminUser();
-  const result = await createAdminUser(email, sanitizeRoles(roles));
+  const result = await createAdminUser(email, sanitizeRoles(roles), userType, notes);
   if (result.ok) revalidate();
   return result;
 }
@@ -71,6 +79,27 @@ export async function deactivateAdminUserAction(id: string): Promise<{ ok: boole
   return result;
 }
 
+export async function reactivateAdminUserAction(
+  id: string,
+  rolesToRestore?: string[]
+): Promise<{ ok: boolean; error?: string }> {
+  await requireAdminUser();
+  const result = await reactivateAdminUser(id, rolesToRestore ? sanitizeRoles(rolesToRestore) : undefined);
+  if (result.ok) revalidate();
+  return result;
+}
+
+export async function setUserTypeAndNotesAction(
+  id: string,
+  userType: "employee" | "contractor" | "partner" | "system",
+  notes?: string
+): Promise<{ ok: boolean; error?: string }> {
+  await requireAdminUser();
+  const result = await setUserTypeAndNotes(id, userType, notes);
+  if (result.ok) revalidate();
+  return result;
+}
+
 export async function bulkDeactivateAdminUsersAction(ids: string[]): Promise<{ deactivated: number; skipped: number }> {
   const admin = await requireAdminUser();
   let deactivated = 0;
@@ -80,4 +109,22 @@ export async function bulkDeactivateAdminUsersAction(ids: string[]): Promise<{ d
   }
   revalidate();
   return { deactivated, skipped: ids.length - deactivated };
+}
+
+export async function bulkReactivateAdminUsersAction(ids: string[]): Promise<{ reactivated: number }> {
+  await requireAdminUser();
+  let reactivated = 0;
+  for (const id of ids) {
+    const result = await reactivateAdminUser(id);
+    if (result.ok) reactivated += 1;
+  }
+  revalidate();
+  return { reactivated };
+}
+
+export async function getUserActivityAction(actorEmail: string): Promise<AdminActivityRow[]> {
+  await requireAdminUser();
+  if (!actorEmail) return [];
+  const result = await searchActivityLog({ search: actorEmail, pageSize: 50 });
+  return result.items;
 }

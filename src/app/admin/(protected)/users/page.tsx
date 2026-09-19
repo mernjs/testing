@@ -1,9 +1,9 @@
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { requireAdminUser } from "@/lib/admin-auth";
-import { searchAdminUsers } from "@/lib/admin/admin-users";
+import { searchAdminUsers, type AdminUserRow } from "@/lib/admin/admin-users";
 import { ALL_KNOWN_ROLES } from "@/lib/admin/role-catalog";
 import UsersFilterBar from "./UsersFilterBar";
-import UsersGrid, { type AdminUserRow } from "./UsersGrid";
+import UsersGrid from "./UsersGrid";
 
 export default async function AdminUsersPage({
   searchParams,

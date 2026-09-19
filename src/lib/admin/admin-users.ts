@@ -14,6 +14,12 @@ import { hashPassword } from "@/lib/lms-auth";
  * every write here changes who can access what, across the whole ERP.
  */
 
+import { destroySessionsEverywhere } from "@/lib/cross-module-sso";
+import { type AdminUserRow, type PanelAccessSummaryItem, getPanelAccessSummary } from "@/lib/admin/admin-users-shared";
+
+export type { AdminUserRow, PanelAccessSummaryItem };
+export { getPanelAccessSummary };
+
 export const ADMIN_USERS_COLLECTION = "admin_users";
 const SCRYPT_TEMP_PASSWORD_LENGTH = 12;
 
@@ -35,31 +41,27 @@ export interface AdminUserDoc {
   lockedUntil?: Date | null;
   createdAt: Date;
   lastLoginAt?: Date | null;
-}
-
-export interface AdminUserRow {
-  _id: string;
-  email: string;
-  roles: string[];
-  permissionOverrides: Record<string, boolean>;
-  employeeId: string | null;
-  mustChangePassword: boolean;
-  locked: boolean;
-  createdAt: string;
-  lastLoginAt: string | null;
+  savedRoles?: string[];
+  userType?: "employee" | "contractor" | "partner" | "system";
+  notes?: string;
 }
 
 function serialize(u: AdminUserDoc): AdminUserRow {
+  const roles = u.roles ?? [];
   return {
     _id: u._id.toString(),
     email: u.email,
-    roles: u.roles ?? [],
+    roles,
     permissionOverrides: u.permissionOverrides ?? {},
     employeeId: u.employeeId ?? null,
     mustChangePassword: u.mustChangePassword === true,
     locked: Boolean(u.lockedUntil && u.lockedUntil > new Date()),
     createdAt: u.createdAt.toISOString(),
     lastLoginAt: u.lastLoginAt ? u.lastLoginAt.toISOString() : null,
+    status: roles.length > 0 ? "active" : "deactivated",
+    savedRoles: u.savedRoles ?? [],
+    userType: u.userType ?? "employee",
+    notes: u.notes ?? "",
   };
 }
 
@@ -140,7 +142,12 @@ export interface CreateAdminUserResult {
   tempPassword?: string;
 }
 
-export async function createAdminUser(email: string, roles: string[]): Promise<CreateAdminUserResult> {
+export async function createAdminUser(
+  email: string,
+  roles: string[],
+  userType?: "employee" | "contractor" | "partner" | "system",
+  notes?: string
+): Promise<CreateAdminUserResult> {
   const normalizedEmail = email.trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) return { ok: false, error: "Enter a valid email address." };
 
@@ -154,6 +161,8 @@ export async function createAdminUser(email: string, roles: string[]): Promise<C
     email: normalizedEmail,
     passwordHash: hashPassword(tempPassword),
     roles,
+    userType: userType ?? "employee",
+    notes: notes?.trim() || undefined,
     employeeId: null,
     mustChangePassword: true,
     failedLoginAttempts: 0,
@@ -229,13 +238,71 @@ export async function resetAdminUserPassword(id: string): Promise<ResetPasswordR
   return { ok: true, tempPassword };
 }
 
-/** Clears every role — the account can no longer sign into any panel. There's
- * no account-level delete anywhere in the app (only per-module role revoke
- * via the CLI scripts), so this mirrors that: access removed, record kept. */
+/**
+ * Clears every role and saves current roles to `savedRoles` for restoration.
+ * Also immediately terminates all active sessions across all panels.
+ */
 export async function deactivateAdminUser(id: string, actorId: string): Promise<{ ok: boolean; error?: string }> {
   if (!ObjectId.isValid(id)) return { ok: false, error: "Unknown account." };
   if (id === actorId) return { ok: false, error: "You can't deactivate your own account." };
   const col = await collection();
-  const res = await col.updateOne({ _id: new ObjectId(id) }, { $set: { roles: [] } });
+  const existing = await col.findOne({ _id: new ObjectId(id) });
+  if (!existing) return { ok: false, error: "Account not found." };
+
+  const currentRoles = existing.roles ?? [];
+  const updateData: Record<string, unknown> = { roles: [] };
+  if (currentRoles.length > 0) {
+    updateData.savedRoles = currentRoles;
+  }
+
+  const res = await col.updateOne({ _id: new ObjectId(id) }, { $set: updateData });
+  if (res.matchedCount === 1) {
+    try {
+      await destroySessionsEverywhere(new ObjectId(id));
+    } catch (e) {
+      console.error("Failed to revoke sessions on deactivation:", e);
+    }
+  }
+  return { ok: res.matchedCount === 1 };
+}
+
+export async function reactivateAdminUser(
+  id: string,
+  rolesToRestore?: string[]
+): Promise<{ ok: boolean; error?: string }> {
+  if (!ObjectId.isValid(id)) return { ok: false, error: "Unknown account." };
+  const col = await collection();
+  const existing = await col.findOne({ _id: new ObjectId(id) });
+  if (!existing) return { ok: false, error: "Account not found." };
+
+  const roles =
+    rolesToRestore && rolesToRestore.length > 0
+      ? rolesToRestore
+      : existing.savedRoles && existing.savedRoles.length > 0
+      ? existing.savedRoles
+      : ["employee"];
+
+  const res = await col.updateOne(
+    { _id: new ObjectId(id) },
+    {
+      $set: { roles },
+      $unset: { savedRoles: "" },
+    }
+  );
+  return { ok: res.matchedCount === 1 };
+}
+
+export async function setUserTypeAndNotes(
+  id: string,
+  userType: "employee" | "contractor" | "partner" | "system",
+  notes?: string
+): Promise<{ ok: boolean; error?: string }> {
+  if (!ObjectId.isValid(id)) return { ok: false, error: "Unknown account." };
+  const col = await collection();
+  const updatePayload: Record<string, unknown> = { userType };
+  if (notes !== undefined) {
+    updatePayload.notes = notes.trim();
+  }
+  const res = await col.updateOne({ _id: new ObjectId(id) }, { $set: updatePayload });
   return { ok: res.matchedCount === 1 };
 }

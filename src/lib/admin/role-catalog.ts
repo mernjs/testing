@@ -39,13 +39,39 @@ function group<T extends string>(
   };
 }
 
+export const LMS_ROLES = ["lms_admin", "lms_manager", "lms_agent"] as const;
+export const PORTAL_ADMIN_ROLES = ["portal_admin", "portal_manager"] as const;
+export const WORKSPACE_ROLES = ["workspace_admin", "workspace_member"] as const;
+
 export const ROLE_GROUPS: RoleGroup[] = [
   group("HRMS", HRMS_ROLES, HRMS_ROLE_META),
   group("PMS (Projects)", PMS_ROLES, PMS_ROLE_META),
-  group("Procurement", PRMS_ROLES, PRMS_ROLE_META),
-  group("Training", TMS_ROLES, TMS_ROLE_META),
-  group("YashChat", CHAT_ROLES, CHAT_ROLE_META),
-  group("Finance", FMS_ROLES, FMS_ROLE_META),
+  group("Procurement (PRMS)", PRMS_ROLES, PRMS_ROLE_META),
+  group("Training (TMS)", TMS_ROLES, TMS_ROLE_META),
+  group("YashChat (Messenger)", CHAT_ROLES, CHAT_ROLE_META),
+  group("Finance (FMS)", FMS_ROLES, FMS_ROLE_META),
+  {
+    module: "LMS (CRM & Learning)",
+    roles: [
+      { value: "lms_admin", label: "LMS Admin", description: "Full control over leads, marketing campaigns, courses, and sales analytics." },
+      { value: "lms_manager", label: "LMS Manager", description: "Manage lead assignments, sales stages, student enrollments, and reports." },
+      { value: "lms_agent", label: "LMS Executive / Counselor", description: "Manage assigned leads, track call activities, and update status." },
+    ],
+  },
+  {
+    module: "External Portal",
+    roles: [
+      { value: "portal_admin", label: "Portal Admin", description: "Full administration of applicant, student, and client portal experiences." },
+      { value: "portal_manager", label: "Portal Manager", description: "Manage job applications, student batches, and client document sharing." },
+    ],
+  },
+  {
+    module: "Workspace Panel",
+    roles: [
+      { value: "workspace_admin", label: "Workspace Admin", description: "Manage workspace settings, department analytics, and employee panel access." },
+      { value: "workspace_member", label: "Workspace Member", description: "Access to workspace dashboard, employee self-service, and department KPIs." },
+    ],
+  },
 ];
 
 export const ALL_KNOWN_ROLES: string[] = [
