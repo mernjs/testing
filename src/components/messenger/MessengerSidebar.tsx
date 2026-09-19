@@ -120,7 +120,7 @@ export default function MessengerSidebar({
 
   return (
     <nav className="flex h-full flex-col gap-1 p-3">
-      {nav({ href: "/messenger", label: "Chat Dashboard", icon: LayoutDashboard, exact: true })}
+      {nav({ href: "/messenger", label: "Dashboard", icon: LayoutDashboard, exact: true })}
       {nav({ href: "/messenger/search", label: "Search", icon: Search })}
 
       <SectionLabel collapsed={collapsed}>Conversations</SectionLabel>

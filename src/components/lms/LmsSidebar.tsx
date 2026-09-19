@@ -112,7 +112,7 @@ export default function LmsSidebar({ onNavigate, collapsed = false }: { onNaviga
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
       <NavLink href="/lms" label="Analytics" icon={BarChart3} exact collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/chatbot/config" label="Settings" icon={Settings} collapsed={collapsed} onNavigate={onNavigate} />
-      <NavLink href="/lms/chatbot/conversations" label="Activity Log" icon={ScrollText} collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/lms/chatbot/conversations" label="Audit Log" icon={ScrollText} collapsed={collapsed} onNavigate={onNavigate} />
     </nav>
   );
 }
