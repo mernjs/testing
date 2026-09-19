@@ -77,15 +77,64 @@ function generateTempPassword(): string {
 export interface AdminUserFilter {
   search?: string;
   role?: string;
+  panel?: string;
+  status?: "active" | "deactivated";
+  userType?: "employee" | "contractor" | "partner" | "system";
+}
+
+function getRolesForPanel(panel: string): string[] {
+  const p = panel.toLowerCase();
+  if (p === "admin") return ["super_admin"];
+  if (p === "hrms") return ["super_admin", "hr", "manager", "employee"];
+  if (p === "pms") return ["super_admin", "pms_admin", "pms_manager", "pms_employee"];
+  if (p === "prms") return ["super_admin", "prms_admin", "procurement_manager", "finance", "dept_manager", "prms_employee"];
+  if (p === "tms") return ["super_admin", "tms_admin", "tms_instructor", "tms_coordinator"];
+  if (p === "fms") return ["super_admin", "fms_admin", "fms_accountant", "fms_auditor"];
+  if (p === "messenger") return ["super_admin", "chat_admin", "chat_moderator"];
+  if (p === "lms") return ["super_admin", "lms_admin", "lms_manager", "lms_agent"];
+  if (p === "portal") return ["super_admin", "portal_admin", "portal_manager"];
+  if (p === "workspace") return ["super_admin", "workspace_admin", "workspace_member"];
+  return ["super_admin"];
 }
 
 function buildFilter(opts: AdminUserFilter): Record<string, unknown> {
   const filter: Record<string, unknown> = {};
+
   if (opts.search?.trim()) {
     const rx = new RegExp(escapeRegExp(opts.search.trim()), "i");
-    filter.email = rx;
+    filter.$or = [{ email: rx }, { notes: rx }, { employeeId: rx }];
   }
-  if (opts.role) filter.roles = opts.role;
+
+  if (opts.role) {
+    filter.roles = opts.role;
+  } else if (opts.panel && opts.panel !== "all") {
+    const panelRoles = getRolesForPanel(opts.panel);
+    if (opts.panel === "lms" || opts.panel === "workspace") {
+      filter.$and = [
+        { roles: { $exists: true, $not: { $size: 0 } } },
+        { $or: [{ roles: { $in: panelRoles } }, { roles: { $exists: true } }] },
+      ];
+    } else {
+      filter.roles = { $in: panelRoles };
+    }
+  }
+
+  if (opts.status === "active") {
+    filter.roles = filter.roles
+      ? { $all: filter.roles, $not: { $size: 0 } }
+      : { $exists: true, $not: { $size: 0 } };
+  } else if (opts.status === "deactivated") {
+    filter.$or = [{ roles: { $exists: false } }, { roles: { $size: 0 } }];
+  }
+
+  if (opts.userType) {
+    if (opts.userType === "employee") {
+      filter.$or = [{ userType: "employee" }, { userType: { $exists: false } }];
+    } else {
+      filter.userType = opts.userType;
+    }
+  }
+
   return filter;
 }
 
@@ -104,14 +153,18 @@ export async function searchAdminUsers(opts: SearchAdminUsersOptions = {}) {
   const sortField = opts.sortBy ?? "createdAt";
   const sortDir = opts.sortDir === "asc" ? 1 : -1;
 
-  const [docs, total] = await Promise.all([
+  const [docs, total, activeCount, deactivatedCount] = await Promise.all([
     col.find(filter).sort({ [sortField]: sortDir }).skip((page - 1) * pageSize).limit(pageSize).toArray(),
     col.countDocuments(filter),
+    col.countDocuments({ roles: { $exists: true, $not: { $size: 0 } } }),
+    col.countDocuments({ $or: [{ roles: { $exists: false } }, { roles: { $size: 0 } }] }),
   ]);
 
   return {
     items: docs.map(serialize),
     total,
+    activeCount,
+    deactivatedCount,
     page,
     pageSize,
     totalPages: Math.max(Math.ceil(total / pageSize), 1),
