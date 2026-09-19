@@ -40,7 +40,7 @@ export default function ModuleOverviewCard({
           ))}
         </dl>
         {href ? (
-          <Link href={href} className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+          <Link href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
             View Details <ArrowUpRight className="size-3.5" />
           </Link>
         ) : (

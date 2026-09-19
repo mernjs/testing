@@ -317,6 +317,8 @@ export default async function AdminCommandCenterPage({
                     </Link>
                     <Link
                       href={panel.panelHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="inline-flex flex-1 items-center justify-center gap-1 rounded-lg bg-gradient-to-r from-primary/90 to-[var(--color-yashorbit-coral)] px-3 py-1.5 text-xs font-medium text-white transition-all hover:opacity-90"
                     >
                       Open

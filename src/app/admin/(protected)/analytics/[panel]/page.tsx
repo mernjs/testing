@@ -1403,6 +1403,8 @@ export default async function PanelAnalyticsPage({
         </div>
         <Link
           href={config.href}
+          target="_blank"
+          rel="noopener noreferrer"
           className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-[var(--color-yashorbit-coral)] px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg"
         >
           {config.ctaLabel}
