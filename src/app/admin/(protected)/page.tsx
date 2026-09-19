@@ -48,6 +48,7 @@ import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import TimeSeriesChart from "@/components/lms/TimeSeriesChart";
 import CategoryBarChart from "@/components/lms/CategoryBarChart";
 import ExecutiveSection from "@/components/admin/ExecutiveSection";
+import { AnalyticsFilterBar } from "@/components/admin/AnalyticsFilterBar";
 import { getCommandCenterStats } from "@/lib/admin/command-center";
 import { formatCurrency } from "@/lib/utils";
 
@@ -134,8 +135,17 @@ const PANEL_GRID = [
 // Module stat map (from command-center `modules` array)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default async function AdminCommandCenterPage() {
-  const stats = await getCommandCenterStats();
+export default async function AdminCommandCenterPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const dateFrom = typeof sp.dateFrom === "string" ? sp.dateFrom : undefined;
+  const dateTo = typeof sp.dateTo === "string" ? sp.dateTo : undefined;
+  const granularity = typeof sp.granularity === "string" ? (sp.granularity as any) : undefined;
+
+  const stats = await getCommandCenterStats({ dateFrom, dateTo, granularity });
 
   // Build quick stat lookup from module summaries
   const moduleStats = Object.fromEntries(stats.modules.map((m) => [m.key, m.stats]));
@@ -154,6 +164,9 @@ export default async function AdminCommandCenterPage() {
           <span className="text-xs opacity-60">Updated {new Date(stats.generatedAt).toLocaleTimeString("en-IN")}</span>
         </p>
       </div>
+
+      {/* Advanced Command Center Filters */}
+      <AnalyticsFilterBar title="Command Center Global Filters" />
 
       {/* ── FMS Top-Line Financial KPIs ── */}
       <ExecutiveSection title="Financial Position (FMS Ledger)" description="Real ledger-backed figures from the Finance Management System.">

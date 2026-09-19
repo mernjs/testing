@@ -244,14 +244,23 @@ function mergeSubtract(minuend: TimePoint[], subtrahend: TimePoint[]): TimePoint
 
 // ---------------------------------------------------------------------------
 
-export async function getCommandCenterStats(): Promise<CommandCenterStats> {
-  const granularity: DashboardGranularity = "month";
+export interface CommandCenterFilters {
+  dateFrom?: string;
+  dateTo?: string;
+  granularity?: DashboardGranularity;
+}
+
+export async function getCommandCenterStats(filters: CommandCenterFilters = {}): Promise<CommandCenterStats> {
+  const granularity: DashboardGranularity = filters.granularity ?? "month";
+  const dateFrom = filters.dateFrom ? new Date(filters.dateFrom) : undefined;
+  const dateTo = filters.dateTo ? new Date(filters.dateTo) : undefined;
   const format = dateFormatFor(granularity);
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const yearStart = new Date(now.getFullYear(), 0, 1);
-  const last30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const last30 = dateFrom ?? new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const toDate = dateTo ?? now;
 
   const [
     pms,
@@ -271,16 +280,16 @@ export async function getCommandCenterStats(): Promise<CommandCenterStats> {
     activeMeetings,
     wonValueTrend,
   ] = await Promise.all([
-    getPmsDashboardStats({ granularity }),
+    getPmsDashboardStats({ granularity, dateFrom, dateTo }),
     getPortfolioCosting(),
-    getPrmsDashboardStats({ granularity }),
-    getTmsDashboardStats({ granularity }),
-    getCrmDashboardStats({ granularity: "month" }),
-    getCareerDashboardStats({ granularity: "month" }),
-    getMessengerDashboardStats({ from: last30, to: now, viewerId: "command-center" }),
-    getChatbotDashboardStats({ granularity: "month" }),
-    getVoiceDashboardStats({ granularity: "month" }),
-    getFmsDashboardStats({ granularity }),
+    getPrmsDashboardStats({ granularity, dateFrom, dateTo }),
+    getTmsDashboardStats({ granularity, dateFrom, dateTo }),
+    getCrmDashboardStats({ granularity, dateFrom, dateTo }),
+    getCareerDashboardStats({ granularity, dateFrom, dateTo }),
+    getMessengerDashboardStats({ from: last30, to: toDate, viewerId: "command-center" }),
+    getChatbotDashboardStats({ granularity, dateFrom, dateTo }),
+    getVoiceDashboardStats({ granularity, dateFrom, dateTo }),
+    getFmsDashboardStats({ granularity, dateFrom, dateTo }),
     crmDealValueTotal(["new", "in_progress"]),
     crmDealValueTotal(["completed"]),
     crmLeadsCreatedSince(startOfToday),

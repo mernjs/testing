@@ -11,6 +11,7 @@ import { externalUsers } from "@/lib/portal-auth";
 import { PORTAL_ROLES, type PortalRole } from "@/lib/portal-roles";
 import { round2 } from "@/lib/fms/constants";
 import { normalizeAdminRoles } from "@/lib/admin-roles";
+import { type DashboardGranularity } from "@/lib/granularity";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared helpers
@@ -29,10 +30,32 @@ async function safeCount(collection: string, match: Record<string, unknown> = {}
 // FMS Analytics
 // ─────────────────────────────────────────────────────────────────────────────
 
+export interface PanelAnalyticsFilters {
+  dateFrom?: string;
+  dateTo?: string;
+  granularity?: "day" | "week" | "month" | "year";
+  status?: string;
+  category?: string;
+  departmentId?: string;
+  role?: string;
+  source?: string;
+  employmentType?: string;
+  gender?: string;
+  expenseType?: string;
+  paymentStatus?: string;
+  mode?: string;
+  programId?: string;
+  restrictToEmployeeId?: string;
+}
+
 export type FmsAnalytics = Awaited<ReturnType<typeof getFmsAnalytics>>;
 
-export async function getFmsAnalytics() {
-  const stats = await getFmsDashboardStats({ granularity: "month" });
+export async function getFmsAnalytics(filters?: PanelAnalyticsFilters) {
+  const stats = await getFmsDashboardStats({
+    granularity: (filters?.granularity as DashboardGranularity) ?? "month",
+    dateFrom: filters?.dateFrom ? new Date(filters.dateFrom) : undefined,
+    dateTo: filters?.dateTo ? new Date(filters.dateTo) : undefined,
+  });
   const alerts: { type: "warning" | "danger"; message: string }[] = [];
   if (stats.overdueInvoices > 0) alerts.push({ type: "danger", message: `${stats.overdueInvoices} overdue invoice(s) need immediate attention` });
   if (stats.pendingApprovals > 0) alerts.push({ type: "warning", message: `${stats.pendingApprovals} transaction(s) pending approval` });
@@ -79,8 +102,16 @@ export async function getFmsAnalytics() {
 
 export type HrmsAnalytics = Awaited<ReturnType<typeof getHrmsAnalytics>>;
 
-export async function getHrmsAnalytics() {
-  const stats = await getHrmsDashboardStats({ granularity: "month" });
+export async function getHrmsAnalytics(filters?: PanelAnalyticsFilters) {
+  const stats = await getHrmsDashboardStats({
+    granularity: (filters?.granularity as DashboardGranularity) ?? "month",
+    dateFrom: filters?.dateFrom ? new Date(filters.dateFrom) : undefined,
+    dateTo: filters?.dateTo ? new Date(filters.dateTo) : undefined,
+    departmentId: filters?.departmentId,
+    employmentType: filters?.employmentType,
+    status: filters?.status,
+    gender: filters?.gender,
+  });
   const attritionRate =
     stats.totalEmployees > 0
       ? round2((stats.attritionTimeSeries.reduce((s, p) => s + p.count, 0) / stats.totalEmployees) * 100)
@@ -119,8 +150,15 @@ export async function getHrmsAnalytics() {
 
 export type LmsAnalytics = Awaited<ReturnType<typeof getLmsAnalytics>>;
 
-export async function getLmsAnalytics() {
-  const stats = await getCrmDashboardStats({ granularity: "month" });
+export async function getLmsAnalytics(filters?: PanelAnalyticsFilters) {
+  const stats = await getCrmDashboardStats({
+    granularity: (filters?.granularity as DashboardGranularity) ?? "month",
+    dateFrom: filters?.dateFrom ? new Date(filters.dateFrom) : undefined,
+    dateTo: filters?.dateTo ? new Date(filters.dateTo) : undefined,
+    category: filters?.category as any,
+    status: filters?.status as any,
+    source: filters?.source as any,
+  });
   const conversionRate =
     stats.totalOverall > 0 ? round2(((stats.byStatus.completed ?? 0) / stats.totalOverall) * 100) : 0;
 
@@ -173,10 +211,11 @@ export async function getLmsAnalytics() {
 
 export type MessengerAnalytics = Awaited<ReturnType<typeof getMessengerAnalytics>>;
 
-export async function getMessengerAnalytics() {
+export async function getMessengerAnalytics(filters?: PanelAnalyticsFilters) {
   const now = new Date();
-  const last30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  const stats = await getMessengerDashboardStats({ from: last30, to: now, viewerId: "command-center" });
+  const from = filters?.dateFrom ? new Date(filters.dateFrom) : new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const to = filters?.dateTo ? new Date(filters.dateTo) : now;
+  const stats = await getMessengerDashboardStats({ from, to, viewerId: "command-center" });
 
   const engagementRate =
     stats.kpis.activeUsers > 0
@@ -215,8 +254,13 @@ export async function getMessengerAnalytics() {
 
 export type PmsAnalytics = Awaited<ReturnType<typeof getPmsAnalytics>>;
 
-export async function getPmsAnalytics() {
-  const stats = await getPmsDashboardStats({ granularity: "month" });
+export async function getPmsAnalytics(filters?: PanelAnalyticsFilters) {
+  const stats = await getPmsDashboardStats({
+    granularity: (filters?.granularity as DashboardGranularity) ?? "month",
+    dateFrom: filters?.dateFrom ? new Date(filters.dateFrom) : undefined,
+    dateTo: filters?.dateTo ? new Date(filters.dateTo) : undefined,
+    restrictToEmployeeId: filters?.restrictToEmployeeId,
+  });
 
   const alerts: { type: "warning" | "danger"; message: string }[] = [];
   if (stats.overdueProjects > 0) alerts.push({ type: "danger", message: `${stats.overdueProjects} overdue project(s) need attention` });
@@ -256,30 +300,35 @@ export async function getPmsAnalytics() {
 
 export type PortalAnalytics = Awaited<ReturnType<typeof getPortalAnalytics>>;
 
-export async function getPortalAnalytics() {
+export async function getPortalAnalytics(filters?: PanelAnalyticsFilters) {
   const empty = Object.fromEntries(PORTAL_ROLES.map((r) => [r, 0])) as Record<PortalRole, number>;
 
   let total = 0;
   let byRole: Record<PortalRole, number> = { ...empty };
   let recentUsers: { id: string; name: string; email: string; role: string; createdAt: string }[] = [];
 
+  const matchFilter: Record<string, unknown> = {
+    ...(filters?.status && filters.status !== "all" ? { status: filters.status } : { status: "active" }),
+    ...(filters?.role && filters.role !== "all" ? { role: filters.role } : {}),
+  };
+
   try {
     const collection = await externalUsers();
     const [rows, recent] = await Promise.all([
       collection
         .aggregate<{ _id: PortalRole; count: number }>([
-          { $match: { status: "active" } },
+          { $match: matchFilter },
           { $group: { _id: "$role", count: { $sum: 1 } } },
         ])
         .toArray(),
-      collection.find({ status: "active" }).sort({ createdAt: -1 }).limit(10).toArray(),
+      collection.find(matchFilter).sort({ createdAt: -1 }).limit(10).toArray(),
     ]);
     byRole = { ...empty };
     for (const r of rows) byRole[r._id] = r.count;
     total = Object.values(byRole).reduce((a, b) => a + b, 0);
     recentUsers = recent.map((u) => ({
       id: String(u._id),
-      name: (u.name as string) ?? "—",
+      name: u.displayName ?? "—",
       email: (u.email as string) ?? "—",
       role: (u.role as string) ?? "—",
       createdAt: new Date(u.createdAt as Date).toISOString(),
@@ -315,8 +364,16 @@ export async function getPortalAnalytics() {
 
 export type PrmsAnalytics = Awaited<ReturnType<typeof getPrmsAnalytics>>;
 
-export async function getPrmsAnalytics() {
-  const stats = await getPrmsDashboardStats({ granularity: "month" });
+export async function getPrmsAnalytics(filters?: PanelAnalyticsFilters) {
+  const stats = await getPrmsDashboardStats({
+    granularity: (filters?.granularity as DashboardGranularity) ?? "month",
+    dateFrom: filters?.dateFrom ? new Date(filters.dateFrom) : undefined,
+    dateTo: filters?.dateTo ? new Date(filters.dateTo) : undefined,
+    departmentId: filters?.departmentId,
+    category: filters?.category,
+    expenseType: filters?.expenseType,
+    paymentStatus: filters?.paymentStatus,
+  });
 
   const budgetUtilization =
     stats.approvedBudget > 0
@@ -366,8 +423,14 @@ export async function getPrmsAnalytics() {
 
 export type TmsAnalytics = Awaited<ReturnType<typeof getTmsAnalytics>>;
 
-export async function getTmsAnalytics() {
-  const stats = await getTmsDashboardStats({ granularity: "month" });
+export async function getTmsAnalytics(filters?: PanelAnalyticsFilters) {
+  const stats = await getTmsDashboardStats({
+    granularity: (filters?.granularity as DashboardGranularity) ?? "month",
+    dateFrom: filters?.dateFrom ? new Date(filters.dateFrom) : undefined,
+    dateTo: filters?.dateTo ? new Date(filters.dateTo) : undefined,
+    mode: filters?.mode as any,
+    programId: filters?.programId,
+  });
 
   const alerts: { type: "warning" | "danger"; message: string }[] = [];
   if (stats.pendingApplications > 0) alerts.push({ type: "warning", message: `${stats.pendingApplications} student application(s) awaiting review` });
@@ -409,18 +472,22 @@ export async function getTmsAnalytics() {
 
 export type WorkspaceAnalytics = Awaited<ReturnType<typeof getWorkspaceAnalytics>>;
 
-export async function getWorkspaceAnalytics() {
+export async function getWorkspaceAnalytics(filters?: PanelAnalyticsFilters) {
   const ADMIN_USERS_COLLECTION = "admin_users";
+  const matchFilter: Record<string, unknown> = { deletedAt: null };
+  if (filters?.status && filters.status !== "all") matchFilter.status = filters.status;
+  if (filters?.role && filters.role !== "all") matchFilter.roles = filters.role;
+
   const [totalUsers, activeUsers, roleDist] = await Promise.all([
-    safeCount(ADMIN_USERS_COLLECTION),
-    safeCount(ADMIN_USERS_COLLECTION, { status: "active" }),
+    safeCount(ADMIN_USERS_COLLECTION, matchFilter),
+    safeCount(ADMIN_USERS_COLLECTION, { status: "active", ...matchFilter }),
     (async () => {
       try {
         const db = await getDb();
         return db
           .collection<{ roles: string[] }>(ADMIN_USERS_COLLECTION)
           .aggregate<{ _id: string; count: number }>([
-            { $match: { deletedAt: null } },
+            { $match: matchFilter },
             { $unwind: "$roles" },
             { $group: { _id: "$roles", count: { $sum: 1 } } },
             { $sort: { count: -1 } },
