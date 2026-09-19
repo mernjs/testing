@@ -56,9 +56,9 @@ export default async function AdminCommandCenterPage() {
 
   return (
     <div className="relative space-y-6">
-      <Breadcrumbs items={[{ label: "Admin" }, { label: "Command Center" }]} />
+      <Breadcrumbs items={[{ label: "Admin" }, { label: "Dashboard" }]} />
       <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Super Admin Command Center</h1>
+        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Super Admin Dashboard</h1>
         <p className="text-sm text-muted-foreground">
           Real-time executive overview, aggregated live across every YashOrbit system.
         </p>

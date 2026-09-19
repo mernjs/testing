@@ -121,7 +121,7 @@ export default async function HubDashboardPage() {
     },
     {
       key: "admin",
-      label: "Super Admin Command Center",
+      label: "Super Admin Panel",
       description: "Executive KPIs, every panel, user & role management.",
       href: "/admin",
       icon: ShieldCheck,

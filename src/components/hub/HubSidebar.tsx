@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { LayoutDashboard, Users, FolderKanban, ShoppingCart, GraduationCap, MessagesSquare, LayoutGrid, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Users, UserCheck, FolderKanban, ShoppingCart, GraduationCap, MessagesSquare, LayoutGrid, Landmark, ShieldCheck, BarChart3, Settings, ScrollText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { normalizeRoles } from "@/lib/hrms-roles";
 import { normalizePmsRoles } from "@/lib/pms-roles";
 import { normalizePrmsRoles } from "@/lib/prms-roles";
 import { normalizeTmsRoles } from "@/lib/tms-roles";
+import { normalizeFmsRoles } from "@/lib/fms-roles";
 import { normalizeChatRoles } from "@/lib/messenger-roles";
 import { normalizeAdminRoles } from "@/lib/admin-roles";
 
@@ -101,13 +102,20 @@ export default function HubSidebar({
       {nav({ href: "/workspace", label: "Dashboard", icon: LayoutDashboard, exact: true })}
 
       <SectionLabel collapsed={collapsed}>Your Panels</SectionLabel>
+      {nav({ href: "/hrms/me", label: "User Portal", icon: UserCheck })}
       {normalizeRoles(roles).length > 0 && nav({ href: "/hrms", label: "Human Resources", icon: Users })}
       {normalizePmsRoles(roles).length > 0 && nav({ href: "/pms", label: "Project Management", icon: FolderKanban })}
       {normalizePrmsRoles(roles).length > 0 && nav({ href: "/prms", label: "Procurement", icon: ShoppingCart })}
       {normalizeTmsRoles(roles).length > 0 && nav({ href: "/tms", label: "Training", icon: GraduationCap })}
+      {normalizeFmsRoles(roles).length > 0 && nav({ href: "/fms", label: "Finance", icon: Landmark })}
       {normalizeChatRoles(roles).length > 0 && nav({ href: "/messenger", label: "YashChat", icon: MessagesSquare })}
       {nav({ href: "/lms", label: "CRM & Leads", icon: LayoutGrid })}
       {normalizeAdminRoles(roles).length > 0 && nav({ href: "/admin", label: "Super Admin", icon: ShieldCheck })}
+
+      <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
+      {nav({ href: "/workspace", label: "Analytics", icon: BarChart3, exact: true })}
+      {nav({ href: "/workspace", label: "Settings", icon: Settings })}
+      {nav({ href: "/workspace", label: "Audit Log", icon: ScrollText })}
     </nav>
   );
 }

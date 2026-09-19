@@ -6,11 +6,13 @@ import { motion } from "framer-motion";
 import {
   LayoutDashboard,
   Users,
+  UserCheck,
   FolderKanban,
   ShoppingCart,
   GraduationCap,
   MessagesSquare,
   LayoutGrid,
+  Landmark,
   ShieldCheck,
   BarChart3,
   Settings,
@@ -95,14 +97,20 @@ export default function AdminSidebar({
 
   return (
     <nav className="flex h-full flex-col gap-1 p-3">
-      {nav({ href: "/admin", label: "Command Center", icon: LayoutDashboard, exact: true })}
+      {nav({ href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true })}
+
+      <SectionLabel collapsed={collapsed}>Your Panels</SectionLabel>
       {nav({ href: "/workspace", label: "Staff Hub", icon: LayoutDashboard })}
+      {nav({ href: "/hrms/me", label: "User Portal", icon: UserCheck })}
       {nav({ href: "/hrms", label: "Human Resources", icon: Users })}
       {nav({ href: "/pms", label: "Project Management", icon: FolderKanban })}
       {nav({ href: "/prms", label: "Procurement", icon: ShoppingCart })}
       {nav({ href: "/tms", label: "Training Management", icon: GraduationCap })}
+      {nav({ href: "/fms", label: "Finance Management", icon: Landmark })}
       {nav({ href: "/messenger", label: "YashChat", icon: MessagesSquare })}
       {nav({ href: "/lms", label: "CRM & Leads", icon: LayoutGrid })}
+
+      <SectionLabel collapsed={collapsed}>Administration</SectionLabel>
       {nav({ href: "/admin/users", label: "Users, Roles & Access", icon: ShieldCheck })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
