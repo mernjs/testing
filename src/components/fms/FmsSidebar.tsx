@@ -128,16 +128,16 @@ export default function FmsSidebar({
 
       {/* ── PANELS ── */}
       <SectionLabel collapsed={collapsed}>Panels</SectionLabel>
-      {nav({ href: "/fms/panels/prms", label: "PRMS Procurement", icon: ShoppingCart })}
-      {nav({ href: "/fms/panels/pms", label: "PMS Projects", icon: FolderKanban })}
-      {nav({ href: "/fms/panels/hrms", label: "HRMS Payroll", icon: Users })}
-      {nav({ href: "/fms/panels/tms", label: "TMS Student Fees", icon: GraduationCap })}
+      {nav({ href: "/fms/panels/prms", label: "PRMS Panel", icon: ShoppingCart })}
+      {nav({ href: "/fms/panels/pms", label: "PMS Panel", icon: FolderKanban })}
+      {nav({ href: "/fms/panels/hrms", label: "HRMS Panel", icon: Users })}
+      {nav({ href: "/fms/panels/tms", label: "TMS Panel", icon: GraduationCap })}
 
       {/* ── FINANCE DESK ── */}
       <SectionLabel collapsed={collapsed}>Finance Desk</SectionLabel>
-      {nav({ href: "/fms/receivables", label: "Collect Money", icon: ArrowDownLeft })}
-      {nav({ href: "/fms/payouts", label: "Pay Out Money", icon: Send })}
-      {nav({ href: "/fms/beneficiaries", label: "Bank Accounts", icon: Building2 })}
+      {nav({ href: "/fms/receivables", label: "Receivables", icon: ArrowDownLeft })}
+      {nav({ href: "/fms/payouts", label: "Payouts", icon: Send })}
+      {nav({ href: "/fms/beneficiaries", label: "Bank Directory", icon: Building2 })}
       {nav({ href: "/fms/transactions", label: "Transactions", icon: ArrowLeftRight })}
 
       {/* ── GOVERNANCE ── */}

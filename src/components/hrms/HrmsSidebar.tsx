@@ -162,7 +162,7 @@ export default function HrmsSidebar({
 
       <SectionLabel collapsed={collapsed}>People</SectionLabel>
       {nav({ href: "/hrms/employees", label: "Employees", icon: Users })}
-      {nav({ href: "/hrms/departments", label: "Departments & Teams", icon: Building2 })}
+      {nav({ href: "/hrms/departments", label: "Departments", icon: Building2 })}
       {nav({ href: "/hrms/recruitment", label: "Recruitment", icon: UserPlus })}
 
       <SectionLabel collapsed={collapsed}>Operations</SectionLabel>
@@ -172,7 +172,7 @@ export default function HrmsSidebar({
       {canRunPayroll(roleCtx) && nav({ href: "/hrms/payroll", label: "Payroll", icon: Wallet })}
 
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      {nav({ href: "/hrms/analytics", label: "Advance Analytics", icon: BarChart3 })}
+      {nav({ href: "/hrms/analytics", label: "Analytics", icon: BarChart3 })}
       {canManageSettings(roleCtx) && nav({ href: "/hrms/settings", label: "Settings", icon: Settings })}
       {canViewAuditLog(roleCtx) && nav({ href: "/hrms/audit", label: "Audit Log", icon: ScrollText })}
 

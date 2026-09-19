@@ -149,7 +149,7 @@ export default function TmsSidebar({
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
       {canManageTraining(roleCtx) && nav({ href: "/tms/reports", label: "Analytics", icon: BarChart3 })}
       {canManageSettings(roleCtx) && nav({ href: "/tms/settings", label: "Settings", icon: Settings })}
-      {canViewAuditLog(roleCtx) && nav({ href: "/tms/activity", label: "Activity Log", icon: ScrollText })}
+      {canViewAuditLog(roleCtx) && nav({ href: "/tms/activity", label: "Audit Log", icon: ScrollText })}
 
       {studentId && (
         <>

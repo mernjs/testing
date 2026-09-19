@@ -129,7 +129,7 @@ export default function PmsSidebar({
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
       {nav({ href: "/pms/analytics", label: "Analytics", icon: BarChart3 })}
       {canManageSettings(roleCtx) && nav({ href: "/pms/settings", label: "Settings", icon: Settings })}
-      {canViewActivityLog(roleCtx) && nav({ href: "/pms/activity", label: "Activity Log", icon: ScrollText })}
+      {canViewActivityLog(roleCtx) && nav({ href: "/pms/activity", label: "Audit Log", icon: ScrollText })}
 
       {employeeId && (
         <>

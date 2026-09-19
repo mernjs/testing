@@ -136,14 +136,14 @@ export default function PrmsSidebar({
 
       {/* ── Company Assets ── */}
       <SectionLabel collapsed={collapsed}>Company Assets</SectionLabel>
-      {nav({ href: "/prms/assets", label: "Hardware & Devices", icon: Boxes })}
-      {nav({ href: "/prms/subscriptions", label: "Software & SaaS", icon: Cloud })}
+      {nav({ href: "/prms/assets", label: "Hardware & Assets", icon: Boxes })}
+      {nav({ href: "/prms/subscriptions", label: "Subscriptions", icon: Cloud })}
 
       {/* ── Governance ── */}
       <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
       {nav({ href: "/prms/analytics", label: "Analytics", icon: BarChart3 })}
       {canManageSettings(roleCtx) && nav({ href: "/prms/settings", label: "Settings", icon: Settings })}
-      {canViewAuditLog(roleCtx) && nav({ href: "/prms/activity", label: "Activity Log", icon: ScrollText })}
+      {canViewAuditLog(roleCtx) && nav({ href: "/prms/activity", label: "Audit Log", icon: ScrollText })}
 
     </nav>
   );
