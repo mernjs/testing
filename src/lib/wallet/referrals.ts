@@ -5,6 +5,7 @@ import { getDb } from "@/lib/mongodb";
 import { newId, createStamp, updateStamp, type AuditFields } from "@/lib/wallet/db";
 import { randomReferralCode, formatCredits, type ReferralStatus } from "@/lib/wallet/constants";
 import { creditWallet } from "@/lib/wallet/wallets";
+import { awardActivity } from "@/lib/wallet/earn";
 import { resolveActiveRewardRule } from "@/lib/wallet/reward-rules";
 import { externalUsers } from "@/lib/portal-auth";
 import { notifyPortalUser } from "@/lib/portal/notifications";
@@ -339,6 +340,10 @@ export async function rewardReferral(referralId: string, refereeRoleHint?: Rewar
       },
     }
   );
+
+  // Milestone bonus: the referrer's 3rd / 5th / 10th… rewarded referral can carry an extra reward (rule subKey = the count).
+  const rewardedCount = await collection.countDocuments({ referrerUserId: referrer._id, status: "REWARDED" });
+  await awardActivity({ userId: referrer._id, role: referrer.role, type: "referral_milestone", key: `${referrer._id}:${rewardedCount}`, subKey: String(rewardedCount), detail: `${rewardedCount} rewarded referrals` });
   return true;
 }
 
@@ -392,6 +397,9 @@ export async function qualifyReferralForRecord(ref: { studentId?: string | null;
   const filter = ref.studentId ? { studentId: ref.studentId } : ref.clientId ? { clientId: ref.clientId } : null;
   if (!filter) return;
   const users = await externalUsers();
-  const user = await users.findOne(filter, { projection: { _id: 1 } });
-  if (user) await qualifyReferralOnEvent(user._id, "first_payment");
+  const user = await users.findOne(filter, { projection: { _id: 1, role: 1 } });
+  if (!user) return;
+  await qualifyReferralOnEvent(user._id, "first_payment");
+  // The payer's own "first payment" reward (once per account).
+  await awardActivity({ userId: user._id, role: user.role, type: "first_payment", key: user._id });
 }

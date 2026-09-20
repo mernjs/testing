@@ -22,6 +22,9 @@ import {
   MessagesSquare,
   Coins,
   Gift,
+  Flame,
+  Trophy,
+  ListChecks,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -47,6 +50,9 @@ const ICONS: Record<string, LucideIcon> = {
   MessagesSquare,
   Coins,
   Gift,
+  Flame,
+  Trophy,
+  ListChecks,
 };
 
 function NavLink({

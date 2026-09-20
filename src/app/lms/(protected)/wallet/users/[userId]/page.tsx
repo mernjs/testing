@@ -6,7 +6,7 @@ import AdjustWalletForm from "@/components/lms/wallet/AdjustWalletForm";
 import { externalUsers } from "@/lib/portal-auth";
 import { getWallet } from "@/lib/wallet/wallets";
 import { listWalletTransactions } from "@/lib/wallet/transactions";
-import { WALLET_TX_TYPE_LABELS, formatCredits } from "@/lib/wallet/constants";
+import { txLabel, formatCredits } from "@/lib/wallet/constants";
 import { formatDateTime } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -41,7 +41,7 @@ export default async function AdminUserWalletPage({ params }: { params: Promise<
               {txs.items.map((t) => (
                 <tr key={t._id} className="border-b border-border/40 last:border-0">
                   <td className="py-2 pr-3 text-muted-foreground">{formatDateTime(t.createdAt)}</td>
-                  <td className="py-2 pr-3">{WALLET_TX_TYPE_LABELS[t.type]}</td>
+                  <td className="py-2 pr-3">{txLabel(t.type, t.metadata)}</td>
                   <td className="py-2 pr-3 font-semibold">{t.direction === "credit" ? "+" : "−"}{t.amount.toLocaleString("en-IN")}</td>
                   <td className="py-2 pr-3 text-muted-foreground">{t.balanceBefore} → {t.balanceAfter}</td>
                   <td className="py-2 text-muted-foreground">{t.reason ?? "—"}</td>

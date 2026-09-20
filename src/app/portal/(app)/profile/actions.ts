@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { getCurrentPortalUser, externalUsers } from "@/lib/portal-auth";
 import { normalizePhone } from "@/lib/portal/db";
 import { recordPortalAudit } from "@/lib/portal/audit";
+import { awardActivity } from "@/lib/wallet/earn";
 
 export interface ProfileState {
   ok?: boolean;
@@ -13,7 +14,7 @@ export interface ProfileState {
 
 export async function updatePortalProfileAction(_prev: ProfileState, formData: FormData): Promise<ProfileState> {
   const user = await getCurrentPortalUser();
-  if (!user) redirect("/portal/login");
+  if (!user) redirect("/login");
 
   const displayName = String(formData.get("displayName") ?? "").trim();
   const phone = String(formData.get("phone") ?? "").trim();
@@ -26,6 +27,7 @@ export async function updatePortalProfileAction(_prev: ProfileState, formData: F
     { $set: { displayName, phone, updatedAt: new Date() } }
   );
   await recordPortalAudit({ actorId: user.id, action: "profile_update", entity: "account", entityId: user.id });
+  await awardActivity({ userId: user.id, role: user.role, type: "profile_complete", key: user.id });
   revalidatePath("/portal/profile");
   return { ok: true };
 }

@@ -31,7 +31,7 @@ export async function getWalletAnalytics(): Promise<WalletAnalytics> {
     db
       .collection(TRANSACTIONS_COLLECTION)
       .aggregate<{ _id: string; credits: number; count: number }>([
-        { $match: { direction: "credit", type: { $in: ["signup_bonus", "referral_bonus_referrer", "referral_bonus_referee", "manual_adjustment"] } } },
+        { $match: { direction: "credit", type: { $in: ["signup_bonus", "referral_bonus_referrer", "referral_bonus_referee", "activity_reward", "manual_adjustment"] } } },
         { $group: { _id: "$type", credits: { $sum: "$amount" }, count: { $sum: 1 } } },
       ])
       .toArray(),

@@ -9,6 +9,7 @@ export const WALLET_TX_TYPES = [
   "signup_bonus",
   "referral_bonus_referrer",
   "referral_bonus_referee",
+  "activity_reward",
   "manual_adjustment",
   "redemption_reserved",
   "redemption_confirmed",
@@ -27,6 +28,7 @@ export const WALLET_TX_TYPE_LABELS: Record<WalletTxType, string> = {
   signup_bonus: "Signup Reward",
   referral_bonus_referrer: "Referral Reward",
   referral_bonus_referee: "Referral Welcome Bonus",
+  activity_reward: "Activity Reward",
   manual_adjustment: "Manual Adjustment",
   redemption_reserved: "Redemption Reserved",
   redemption_confirmed: "Redemption",
@@ -34,6 +36,11 @@ export const WALLET_TX_TYPE_LABELS: Record<WalletTxType, string> = {
   expiry: "Expired",
   reversal: "Reversed",
 };
+
+/** Display label for a ledger row — activity rewards carry their own specific label ("Stage completed: Enrolled"). */
+export function txLabel(type: WalletTxType, metadata?: Record<string, unknown> | null): string {
+  return type === "activity_reward" && typeof metadata?.label === "string" ? metadata.label : WALLET_TX_TYPE_LABELS[type];
+}
 
 export const WALLET_BUCKETS = ["available", "pending", "locked"] as const;
 export type WalletBucket = (typeof WALLET_BUCKETS)[number];
@@ -47,7 +54,27 @@ export type WalletTxStatus = (typeof WALLET_TX_STATUSES)[number];
 export const WALLET_STATUSES = ["active", "frozen"] as const;
 export type WalletStatus = (typeof WALLET_STATUSES)[number];
 
-export const REWARD_RULE_TYPES = ["signup", "referral_referrer", "referral_referee"] as const;
+/**
+ * Every way a user can earn credits. `signup` and the two referral types are
+ * paid by their own flows; the rest are "activity" rewards paid through
+ * `awardActivity()` when the matching real event happens. All amounts, expiry
+ * and on/off are admin-configured per account type — nothing is hardcoded.
+ */
+export const REWARD_RULE_TYPES = [
+  "signup",
+  "referral_referrer",
+  "referral_referee",
+  "referral_milestone",
+  "stage_complete",
+  "daily_visit",
+  "streak_7",
+  "profile_complete",
+  "first_offer_claim",
+  "first_payment",
+  "interview_completed",
+  "assignment_submit",
+  "assignment_approved",
+] as const;
 export type RewardRuleType = (typeof REWARD_RULE_TYPES)[number];
 
 export function isValidRewardRuleType(v: unknown): v is RewardRuleType {
@@ -58,6 +85,53 @@ export const REWARD_RULE_TYPE_LABELS: Record<RewardRuleType, string> = {
   signup: "Signup Reward",
   referral_referrer: "Referral Reward (Referrer)",
   referral_referee: "Referral Welcome Bonus (Referee)",
+  referral_milestone: "Referral Milestone Bonus",
+  stage_complete: "Journey Stage Completed",
+  daily_visit: "Daily Visit",
+  streak_7: "7-Day Visit Streak",
+  profile_complete: "Profile Completed",
+  first_offer_claim: "First Offer Claimed",
+  first_payment: "First Payment Made",
+  interview_completed: "Interview Completed",
+  assignment_submit: "Assignment Submitted",
+  assignment_approved: "Assignment Approved",
+};
+
+/** Coarser grouping used by charts: activity rewards group by what earned them ("Journey Stage Completed"), not by stage. */
+export function txSource(type: WalletTxType, metadata?: Record<string, unknown> | null): string {
+  const a = metadata?.activity;
+  return type === "activity_reward" && typeof a === "string" && isValidRewardRuleType(a) ? REWARD_RULE_TYPE_LABELS[a] : WALLET_TX_TYPE_LABELS[type];
+}
+
+/** Rules that are earned by doing something (as opposed to signup/referral, which have their own flows). */
+export const ACTIVITY_RULE_TYPES = [
+  "referral_milestone",
+  "stage_complete",
+  "daily_visit",
+  "streak_7",
+  "profile_complete",
+  "first_offer_claim",
+  "first_payment",
+  "interview_completed",
+  "assignment_submit",
+  "assignment_approved",
+] as const satisfies readonly RewardRuleType[];
+export type ActivityRuleType = (typeof ACTIVITY_RULE_TYPES)[number];
+
+export const EARN_WAY_META: Record<RewardRuleType, { description: string; repeat: "once" | "each" | "daily"; href: string; cta: string; subKeyLabel?: string }> = {
+  signup: { description: "Create your YashOrbit account.", repeat: "once", href: "/portal", cta: "Done" },
+  referral_referrer: { description: "A friend joins and qualifies through your link.", repeat: "each", href: "/portal/referrals", cta: "Invite friends" },
+  referral_referee: { description: "Join through a friend's referral link.", repeat: "once", href: "/portal/referrals", cta: "See referrals" },
+  referral_milestone: { description: "Bonus when your rewarded referrals reach a milestone (set the milestone in the rule's key, e.g. 3, 5, 10).", repeat: "each", href: "/portal/referrals", cta: "Invite friends", subKeyLabel: "Milestone (number of rewarded referrals)" },
+  stage_complete: { description: "Earn credits every time you complete a stage of your journey — application, enrolment, batch, project and more.", repeat: "each", href: "/portal/journey", cta: "View journey", subKeyLabel: "Stage key (blank = every stage)" },
+  daily_visit: { description: "Open your dashboard each day.", repeat: "daily", href: "/portal", cta: "Visit daily" },
+  streak_7: { description: "Visit 7 days in a row for a bonus.", repeat: "each", href: "/portal", cta: "Keep your streak" },
+  profile_complete: { description: "Add your name and a valid phone number to your profile.", repeat: "once", href: "/portal/profile", cta: "Complete profile" },
+  first_offer_claim: { description: "Claim your first festival offer.", repeat: "once", href: "/offers", cta: "Browse offers" },
+  first_payment: { description: "Make your first payment with YashOrbit.", repeat: "once", href: "/portal", cta: "View payments" },
+  interview_completed: { description: "Attend an interview round.", repeat: "each", href: "/portal/interviews", cta: "Interview schedule" },
+  assignment_submit: { description: "Submit an assignment on time.", repeat: "each", href: "/portal/assignments", cta: "My assignments" },
+  assignment_approved: { description: "Get an assignment approved by your mentor.", repeat: "each", href: "/portal/assignments", cta: "My assignments" },
 };
 
 /** `PortalRole | "ALL"` without importing `portal-roles.ts` here (kept import-light and dependency-free). */

@@ -2,13 +2,13 @@
 
 import * as React from "react";
 import Link from "next/link";
+import PortalAuthLink from "@/components/PortalAuthLink";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Users2, Newspaper, Workflow, BarChart3, FileSearch, TrendingUp, Plug, BrainCircuit } from "lucide-react";
+import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Newspaper, Workflow, BarChart3, FileSearch, TrendingUp, Plug, BrainCircuit } from "lucide-react";
 import { useTheme } from "next-themes";
 import { InstagramIcon, XIcon, FacebookIcon, GithubIcon, YoutubeIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
 import { socialLinks as socialLinksData, whatsapp } from "@/lib/contact";
-import { blogPosts } from "@/lib/blog";
 import { loadAndToggleTawk } from "@/lib/tawk";
 
 function Logo({ className }: { className?: string }) {
@@ -58,7 +58,7 @@ const navigation = [
       { name: "Technologies", href: "/about/technologies", description: "Our full tech stack", icon: Layers },
       { name: "Success Stories", href: "/about/success-stories", description: "Client impact cases", icon: Box },
       { name: "Our Team", href: "/about/our-team", description: "The experts behind it", icon: LayoutGrid },
-      { name: "Founders & Leadership", href: "/about/leadership", description: "Meet our leadership team", icon: Users2 },
+      { name: "Blog", href: "/blog", description: "Engineering insights & updates", icon: Newspaper },
     ],
   },
   {
@@ -176,12 +176,6 @@ const navigation = [
       { name: "HR Executive", href: "/careers/hr-executive", description: "Recruitment & employee experience", icon: Users },
     ],
   },
-  {
-    name: "Blog",
-    href: "/blog",
-    featured: { title: "The YashOrbit Blog", description: "Engineering-led insights on web, mobile, and AI development.", image: "https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=600&auto=format&fit=crop" },
-    items: blogPosts.slice(0, 4).map((post) => ({ name: post.title, href: `/blog/${post.slug}`, description: post.category, icon: Newspaper })),
-  },
 ];
 
 // Mobile-only nav data: mirrors real, existing routes (kept separate from `navigation`
@@ -197,7 +191,7 @@ const mobileNavigation = [
       { name: "Technologies", href: "/about/technologies", icon: Layers },
       { name: "Success Stories", href: "/about/success-stories", icon: Box },
       { name: "Our Team", href: "/about/our-team", icon: LayoutGrid },
-      { name: "Founders & Leadership", href: "/about/leadership", icon: Users2 },
+      { name: "Blog", href: "/blog", icon: Newspaper },
     ],
   },
   {
@@ -315,12 +309,6 @@ const mobileNavigation = [
       { name: "Business Development Manager", href: "/careers/business-development-manager", icon: Handshake },
       { name: "HR Executive", href: "/careers/hr-executive", icon: Users },
     ],
-  },
-  {
-    name: "Blog",
-    href: "/blog",
-    icon: Newspaper,
-    items: blogPosts.slice(0, 6).map((post) => ({ name: post.title, href: `/blog/${post.slug}`, icon: Newspaper })),
   },
 ];
 
@@ -532,7 +520,7 @@ export default function Header() {
               }`}
             >
               <Bot className="h-4 w-4 text-primary" />
-              Ask YashOrbit AI
+              Ask AI
             </Link>
           </div>
 
@@ -544,6 +532,7 @@ export default function Header() {
             >
               {isDark ? <Sun className="w-4 h-4 text-foreground" /> : <Moon className="w-4 h-4 text-foreground" />}
             </button>
+            <PortalAuthLink variant="desktop" />
             <Link
               href="/contact"
               className="group relative inline-flex flex-none items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-all hover:scale-105 active:scale-95"
@@ -684,7 +673,7 @@ export default function Header() {
                     >
                       <Bot className="h-4 w-4" />
                     </span>
-                    <span className="text-base font-bold">Ask YashOrbit Chatbot</span>
+                    <span className="text-base font-bold">Ask AI</span>
                   </Link>
                 </div>
 
@@ -748,6 +737,7 @@ export default function Header() {
 
                 <div className="space-y-5 pt-6">
                   <div className="grid grid-cols-1 gap-3">
+                    <PortalAuthLink variant="mobile" onNavigate={() => setMobileMenuOpen(false)} />
                     <Link
                       href="/contact"
                       onClick={() => setMobileMenuOpen(false)}

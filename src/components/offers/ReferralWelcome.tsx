@@ -71,7 +71,7 @@ export default function ReferralWelcome() {
         <p className="mt-0.5 text-xs text-muted-foreground">
           Create a free account{preview.welcomeBonus > 0 ? ` and earn up to ${formatCredits(preview.welcomeBonus)}` : ""}.
         </p>
-        <Link href={`/portal/join?ref=${encodeURIComponent(code)}`} className="mt-2 inline-block rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">
+        <Link href={`/register?ref=${encodeURIComponent(code)}`} className="mt-2 inline-block rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">
           Claim my bonus
         </Link>
       </div>

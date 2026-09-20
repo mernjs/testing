@@ -1,26 +1,17 @@
 import Link from "next/link";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getWalletOverview, getWalletHistory } from "@/lib/portal/wallet";
-import { WALLET_TX_TYPE_LABELS, formatCredits } from "@/lib/wallet/constants";
+import { txLabel, formatCredits } from "@/lib/wallet/constants";
+import { EarnNav } from "@/components/portal/rewards/parts";
+import { Hourglass, Lock, Clock3, TrendingUp, ShoppingBag, CalendarX } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
-import { PortalPageHeader } from "@/components/portal/widgets";
+import { PortalPageHeader, PortalStat } from "@/components/portal/widgets";
 import { formatDateTime } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Wallet · YashOrbit Portal" };
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <GlassCard interactive={false}>
-      <CardContent className="py-4">
-        <p className="text-xs font-medium text-muted-foreground">{label}</p>
-        <p className="mt-1 text-xl font-black tracking-tight text-foreground">{value}</p>
-      </CardContent>
-    </GlassCard>
-  );
-}
 
 export default async function PortalWalletPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const user = await guardPortalPage();
@@ -39,7 +30,7 @@ export default async function PortalWalletPage({ searchParams }: { searchParams:
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Available credits</p>
           <p className="mt-2 text-4xl font-black tracking-tight text-foreground">{formatCredits(b.available)}</p>
           {overview.status === "frozen" && <p className="mt-2 text-sm text-destructive">This wallet is frozen — contact support.</p>}
-          <div className="mt-4 flex justify-center gap-2 text-sm">
+          <div className="mt-4 flex flex-wrap justify-center gap-2 text-sm">
             <Link href="/offers" className="rounded-full bg-primary px-5 py-2 font-semibold text-primary-foreground">Use Credits</Link>
             <Link href="/portal/referrals" className="rounded-full border border-border px-5 py-2 font-medium hover:border-primary">Earn Credits</Link>
             <a href="/api/portal/wallet/statement" className="rounded-full border border-border px-5 py-2 font-medium hover:border-primary">Download statement</a>
@@ -47,13 +38,18 @@ export default async function PortalWalletPage({ searchParams }: { searchParams:
         </CardContent>
       </GlassCard>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Pending" value={b.pending.toLocaleString("en-IN")} />
-        <Stat label="Locked (in redemption)" value={b.locked.toLocaleString("en-IN")} />
-        <Stat label="Expiring in 30 days" value={overview.expiringSoon.toLocaleString("en-IN")} />
-        <Stat label="Lifetime earned" value={b.lifetimeEarned.toLocaleString("en-IN")} />
-        <Stat label="Lifetime used" value={b.lifetimeRedeemed.toLocaleString("en-IN")} />
-        <Stat label="Expired" value={b.lifetimeExpired.toLocaleString("en-IN")} />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <PortalStat icon={Hourglass} label="Pending" value={b.pending.toLocaleString("en-IN")} />
+        <PortalStat icon={Lock} label="Locked (in redemption)" value={b.locked.toLocaleString("en-IN")} />
+        <PortalStat icon={Clock3} label="Expiring in 30 days" value={overview.expiringSoon.toLocaleString("en-IN")} />
+        <PortalStat icon={TrendingUp} label="Lifetime earned" value={b.lifetimeEarned.toLocaleString("en-IN")} />
+        <PortalStat icon={ShoppingBag} label="Lifetime used" value={b.lifetimeRedeemed.toLocaleString("en-IN")} />
+        <PortalStat icon={CalendarX} label="Expired" value={b.lifetimeExpired.toLocaleString("en-IN")} />
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Earn more credits</p>
+        <EarnNav current="wallet" />
       </div>
 
       <GlassCard interactive={false}>
@@ -74,7 +70,7 @@ export default async function PortalWalletPage({ searchParams }: { searchParams:
               {history.items.map((t) => (
                 <tr key={t._id} className="border-b border-border/40 last:border-0">
                   <td className="py-2 pr-3 text-muted-foreground">{formatDateTime(t.createdAt)}</td>
-                  <td className="py-2 pr-3 text-foreground">{WALLET_TX_TYPE_LABELS[t.type]}</td>
+                  <td className="py-2 pr-3 text-foreground">{txLabel(t.type, t.metadata)}</td>
                   <td className={`py-2 pr-3 font-semibold ${t.direction === "credit" ? "text-green-600 dark:text-green-400" : "text-foreground"}`}>
                     {t.direction === "credit" ? "+" : "−"}
                     {t.amount.toLocaleString("en-IN")}

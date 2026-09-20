@@ -30,7 +30,7 @@ export default async function RewardRulesPage() {
             <tbody>
               {rules.map((r) => (
                 <tr key={r._id} className="border-b border-border/40 last:border-0">
-                  <td className="py-2 pr-3"><Link className="font-medium text-foreground hover:text-primary hover:underline" href={`/lms/wallet/rules/${r._id}`}>{REWARD_RULE_TYPE_LABELS[r.type]}</Link></td>
+                  <td className="py-2 pr-3"><Link className="font-medium text-foreground hover:text-primary hover:underline" href={`/lms/wallet/rules/${r._id}`}>{REWARD_RULE_TYPE_LABELS[r.type]}</Link>{r.subKey && <span className="ml-1.5 rounded-full bg-secondary px-2 py-0.5 text-[10px] text-secondary-foreground">{r.subKey}</span>}</td>
                   <td className="py-2 pr-3 text-muted-foreground">{AUDIENCE_LABELS[r.appliesToRole]}</td>
                   <td className="py-2 pr-3 text-foreground">{r.amount.toLocaleString("en-IN")}</td>
                   <td className="py-2 pr-3 text-muted-foreground">{r.expiresInDays ? `${r.expiresInDays} days` : "Never"}</td>

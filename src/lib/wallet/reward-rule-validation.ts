@@ -11,6 +11,7 @@ export interface RewardRuleWriteInput {
   amount: number;
   expiresInDays: number | null;
   isActive: boolean;
+  subKey: string | null;
 }
 
 export function validateRewardRuleInput(
@@ -46,6 +47,7 @@ export function validateRewardRuleInput(
       amount,
       expiresInDays,
       isActive: Boolean(input.isActive ?? true),
+      subKey: typeof input.subKey === "string" && input.subKey.trim() ? input.subKey.trim().slice(0, 60) : null,
     },
   };
 }

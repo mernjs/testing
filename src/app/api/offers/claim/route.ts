@@ -5,6 +5,7 @@ import { CATEGORY_TO_SOURCE } from "@/lib/lead-management/types";
 import { createPortalSession, setPortalSessionCookie, getCurrentPortalUser } from "@/lib/portal-auth";
 import { resolveUsagePolicy, maxUsableCredits } from "@/lib/wallet/usage-rules";
 import { qualifyReferralOnEvent } from "@/lib/wallet/referrals";
+import { awardActivity } from "@/lib/wallet/earn";
 import { reserveWalletCredit, confirmWalletRedemption, releaseWalletReservation, getAvailableBalance } from "@/lib/wallet/redemption";
 import { randomUUID } from "node:crypto";
 import { getCampaign } from "@/lib/offers/campaigns";
@@ -110,9 +111,9 @@ export async function POST(req: NextRequest) {
   // Wallet redemption is only ever honored for the signed-in owner of the
   // wallet — never by email alone (an anonymous caller must not be able to
   // spend someone else's credits by typing their address).
-  const sessionUser = useWallet ? await getCurrentPortalUser() : null;
+  const sessionUser = await getCurrentPortalUser();
   const walletUserId =
-    sessionUser && sessionUser.email.toLowerCase() === (contact.email ?? "").trim().toLowerCase() ? sessionUser.id : null;
+    useWallet && sessionUser && sessionUser.email.toLowerCase() === (contact.email ?? "").trim().toLowerCase() ? sessionUser.id : null;
   let walletReserved = 0;
   const walletKey = `offer_claim_wallet:${randomUUID()}`;
 
@@ -120,6 +121,7 @@ export async function POST(req: NextRequest) {
     const lead = await createLead(offer.category, leadValidation.data);
 
     let claimUserId: string | null = null;
+    let claimIsNew = false;
     let portal: { redirect: string; isNewAccount: boolean; tempPassword: string | null } | undefined;
     try {
       const result = await provisionLeadAndAccount({
@@ -133,13 +135,14 @@ export async function POST(req: NextRequest) {
         referralCode,
       });
       claimUserId = result.externalUserId;
+      claimIsNew = result.isNewAccount;
       // Only a brand-new account is signed in automatically. An email that already has an account is NOT proof of identity —
       // logging the submitter in would let anyone take over (and spend the wallet of) any user whose email they know.
       if (result.isNewAccount) {
         const { token } = await createPortalSession(result.externalUserId, false);
         await setPortalSessionCookie(token, false);
       }
-      portal = { redirect: result.isNewAccount ? "/portal" : "/portal/login", isNewAccount: result.isNewAccount, tempPassword: result.tempPassword };
+      portal = { redirect: result.isNewAccount ? "/portal" : "/login", isNewAccount: result.isNewAccount, tempPassword: result.tempPassword };
     } catch (provErr) {
       console.error("Offer claim: lead provisioning failed (claim still saved)", provErr);
     }
@@ -180,6 +183,8 @@ export async function POST(req: NextRequest) {
     if (claimUserId) {
       try {
         await qualifyReferralOnEvent(claimUserId, "first_offer_claim");
+        // Earned only by the signed-in owner of the account — an anonymous claim using someone's email must not pay them.
+        if (claimIsNew || sessionUser?.id === claimUserId) await awardActivity({ userId: claimUserId, type: "first_offer_claim", key: claimUserId });
       } catch (refErr) {
         console.error("Offer claim: referral qualification failed (claim still saved)", refErr);
       }

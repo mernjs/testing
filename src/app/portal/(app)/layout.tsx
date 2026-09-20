@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentPortalUser } from "@/lib/portal-auth";
 import { listPortalNotifications, portalUnreadCount } from "@/lib/portal/notifications";
 import { listPortalLeadSummaries } from "@/lib/portal/lead";
+import { recordDailyVisit } from "@/lib/wallet/earn";
 import PortalSidebarShell from "@/components/portal/PortalSidebarShell";
 import PortalTopbar from "@/components/portal/PortalTopbar";
 import TempPasswordBanner from "@/components/portal/TempPasswordBanner";
@@ -13,8 +14,10 @@ export const metadata = { title: "YashOrbit Portal", robots: { index: false, fol
 
 export default async function PortalAppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentPortalUser();
-  if (!user) redirect("/portal/login");
+  if (!user) redirect("/login");
   if (user.mustChangePassword) redirect("/portal/change-password");
+
+  await recordDailyVisit(user); // daily-visit + streak credits (first load of the day only)
 
   const [notifications, unread, leads] = await Promise.all([
     listPortalNotifications(user.id, 10),
@@ -51,7 +54,7 @@ export default async function PortalAppLayout({ children }: { children: React.Re
                 }))}
               />
             </div>
-            <main className="min-h-0 flex-1 overflow-y-auto rounded-2xl">
+            <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">
               <TempPasswordBanner />
               {children}
             </main>

@@ -8,7 +8,7 @@ import { formatCredits } from "@/lib/wallet/constants";
 import { notifyPortalUser } from "@/lib/portal/notifications";
 import { externalUsers } from "@/lib/portal-auth";
 
-const REVERSIBLE_TYPES = ["signup_bonus", "referral_bonus_referrer", "referral_bonus_referee", "manual_adjustment"];
+const REVERSIBLE_TYPES = ["signup_bonus", "referral_bonus_referrer", "referral_bonus_referee", "activity_reward", "manual_adjustment"];
 
 async function txCollection() {
   const db = await getDb();

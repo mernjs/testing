@@ -20,7 +20,7 @@ export async function portalLogoutAction(): Promise<void> {
   if (user) await recordPortalAudit({ actorId: user.id, action: "logout", entity: "account", entityId: user.id });
   if (token) await destroyPortalSessionByToken(token);
   await clearPortalSessionCookie();
-  redirect("/portal/login");
+  redirect("/login");
 }
 
 export async function markPortalNotificationsReadAction(ids: string[]): Promise<{ ok: boolean }> {

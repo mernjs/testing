@@ -13,6 +13,8 @@ export interface RewardRule extends AuditFields {
   amount: number;
   expiresInDays: number | null;
   isActive: boolean;
+  /** Narrows a rule to one sub-event (e.g. a lead stage key, or a referral milestone count). null = applies to the whole type. */
+  subKey?: string | null;
 }
 
 export interface SerializedRewardRule extends Omit<RewardRule, "createdAt" | "updatedAt" | "deletedAt"> {
@@ -53,12 +55,18 @@ export async function listRewardRules(): Promise<RewardRule[]> {
  * "ALL"-audience rule; returns null (no reward) when nothing configured or
  * the matching rule is inactive/zero. Never hardcodes an amount.
  */
-export async function resolveActiveRewardRule(type: RewardRuleType, role: RewardRuleAudience): Promise<RewardRule | null> {
+export async function resolveActiveRewardRule(type: RewardRuleType, role: RewardRuleAudience, subKey?: string | null): Promise<RewardRule | null> {
   const collection = await getCollection();
-  const roleMatch = await collection.findOne({ ...notDeleted, type, appliesToRole: role, isActive: true });
-  if (roleMatch) return roleMatch.amount > 0 ? roleMatch : null;
-  const allMatch = await collection.findOne({ ...notDeleted, type, appliesToRole: "ALL", isActive: true });
-  if (allMatch && allMatch.amount > 0) return allMatch;
+  // Most specific first: (role + subKey) → (ALL + subKey) → (role) → (ALL). A more specific rule with amount 0 deliberately switches that case off.
+  const candidates: Record<string, unknown>[] = [];
+  if (subKey) {
+    candidates.push({ appliesToRole: role, subKey }, { appliesToRole: "ALL", subKey });
+  }
+  candidates.push({ appliesToRole: role, subKey: { $in: [null, undefined] } }, { appliesToRole: "ALL", subKey: { $in: [null, undefined] } });
+  for (const c of candidates) {
+    const rule = await collection.findOne({ ...notDeleted, type, isActive: true, ...c });
+    if (rule) return rule.amount > 0 ? rule : null;
+  }
   return null;
 }
 

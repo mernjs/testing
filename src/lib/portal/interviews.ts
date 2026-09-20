@@ -125,6 +125,22 @@ export async function createInterview(
 export async function updateInterviewStatus(id: string, status: InterviewStatus): Promise<void> {
   const c = await collection();
   await c.updateOne({ _id: id }, { $set: { status, updatedAt: new Date() } });
+
+  // Wallet & Credits: attending an interview round earns credits (best-effort; never affects the status change).
+  if (status === "completed") {
+    try {
+      const iv = await c.findOne({ _id: id });
+      if (iv) {
+        const { externalUsers } = await import("@/lib/portal-auth");
+        const { awardActivity } = await import("@/lib/wallet/earn");
+        const users = await externalUsers();
+        const user = iv.applicationId ? await users.findOne({ applicationId: iv.applicationId }, { projection: { _id: 1, role: 1 } }) : null;
+        if (user) await awardActivity({ userId: user._id, role: user.role, type: "interview_completed", key: id });
+      }
+    } catch {
+      /* non-blocking */
+    }
+  }
 }
 
 export async function deleteInterview(id: string): Promise<void> {

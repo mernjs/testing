@@ -63,7 +63,10 @@ const JOURNEY_NAV: PortalNavItem[] = [
 
 const WALLET_NAV: PortalNavItem[] = [
   { href: "/portal/wallet", label: "Wallet", icon: "Coins" },
-  { href: "/portal/referrals", label: "Referrals", icon: "Gift" },
+  { href: "/portal/referrals", label: "Refer & Earn", icon: "Gift" },
+  { href: "/portal/rewards/daily", label: "Daily Rewards", icon: "Flame" },
+  { href: "/portal/rewards/journey", label: "Journey Rewards", icon: "Trophy" },
+  { href: "/portal/rewards/tasks", label: "Bonus Tasks", icon: "ListChecks" },
 ];
 
 const SHARED_TAIL: PortalNavItem[] = [

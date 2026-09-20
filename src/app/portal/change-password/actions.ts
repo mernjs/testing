@@ -10,7 +10,7 @@ export interface ChangePasswordState {
 
 export async function changePortalPasswordAction(_prev: ChangePasswordState, formData: FormData): Promise<ChangePasswordState> {
   const user = await getCurrentPortalUser();
-  if (!user) redirect("/portal/login");
+  if (!user) redirect("/login");
 
   const current = String(formData.get("current") ?? "");
   const next = String(formData.get("next") ?? "");

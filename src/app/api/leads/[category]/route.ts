@@ -97,7 +97,7 @@ export async function POST(req: NextRequest, { params }: Context) {
           const { token } = await createPortalSession(result.externalUserId, false);
           await setPortalSessionCookie(token, false);
         }
-        portal = { redirect: result.isNewAccount ? "/portal" : "/portal/login", isNewAccount: result.isNewAccount, tempPassword: result.tempPassword };
+        portal = { redirect: result.isNewAccount ? "/portal" : "/login", isNewAccount: result.isNewAccount, tempPassword: result.tempPassword };
       } catch (provErr) {
         console.error("Lead provisioning failed (submission still saved)", provErr);
       }

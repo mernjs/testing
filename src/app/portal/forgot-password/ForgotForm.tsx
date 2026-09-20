@@ -72,7 +72,7 @@ export default function ForgotForm() {
           )}
 
           <p className="mt-4 text-center text-sm text-muted-foreground">
-            <Link href="/portal/login" className="font-medium text-primary hover:underline">
+            <Link href="/login" className="font-medium text-primary hover:underline">
               Back to sign in
             </Link>
           </p>

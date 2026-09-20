@@ -17,7 +17,7 @@ export interface WalletTransaction {
   status: WalletTxStatus;
   expiresAt: Date | null;
   idempotencyKey: string | null;
-  referenceType: "signup" | "referral" | "offer_claim" | "admin_adjustment" | "module_charge" | null;
+  referenceType: "signup" | "referral" | "offer_claim" | "admin_adjustment" | "module_charge" | "activity" | null;
   referenceId: string | null;
   reason: string | null;
   metadata: Record<string, unknown>;

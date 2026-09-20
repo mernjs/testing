@@ -7,7 +7,7 @@ export const metadata = { title: "Change password · YashOrbit Portal", robots: 
 
 export default async function PortalChangePasswordPage() {
   const user = await getCurrentPortalUser();
-  if (!user) redirect("/portal/login");
+  if (!user) redirect("/login");
   return (
     <PortalAuthShell headline={<>Secure your account</>} sub="Choose a password you don't use anywhere else.">
       <ChangePasswordForm forced={user.mustChangePassword} />

@@ -32,5 +32,5 @@ export async function portalForgotAction(_prev: ForgotState, formData: FormData)
   const done = await resetPortalPassword(verify.userId, password);
   if (!done.ok) return { step: "reset", error: done.error, email, phone };
 
-  redirect("/portal/login?reset=1");
+  redirect("/login?reset=1");
 }

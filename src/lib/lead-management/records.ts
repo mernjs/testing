@@ -3,6 +3,7 @@ import { getDb } from "@/lib/mongodb";
 import { externalUsers } from "@/lib/portal-auth";
 import { newId, nextSequence, formatCode } from "@/lib/portal/db";
 import { notifyPortalUser } from "@/lib/portal/notifications";
+import { awardActivity } from "@/lib/wallet/earn";
 import { recordLeadEvent } from "@/lib/lead-management/timeline";
 import { firstStage, isValidStage, nextStageOptions, stageMeta } from "@/lib/lead-management/workflows";
 import type {
@@ -195,6 +196,11 @@ export async function advanceLeadStage(
     body: `Your ${labelForType(lead.type)} is now: ${meta.portalLabel}.`,
     link: "/portal/journey",
   });
+
+  // Wallet & Credits: every completed journey stage earns credits (rule per account type, optionally per stage). Lost/rejected outcomes never pay.
+  if (meta.terminal !== "lost") {
+    await awardActivity({ userId: lead.externalUserId, role: lead.type, type: "stage_complete", key: `${leadId}:${toStage}`, subKey: toStage, detail: `Stage completed: ${meta.label}` });
+  }
 
   // Soft side-effect breadcrumbs — never block the stage change.
   if (toStage === "offer_released") {

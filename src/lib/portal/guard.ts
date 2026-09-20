@@ -11,7 +11,7 @@ import type { PortalRole } from "@/lib/portal-roles";
  */
 export async function guardPortalPage(...allowed: PortalRole[]): Promise<CurrentPortalUser> {
   const user = await getCurrentPortalUser();
-  if (!user) redirect("/portal/login");
+  if (!user) redirect("/login");
   if (user.mustChangePassword) redirect("/portal/change-password");
   if (allowed.length > 0 && !allowed.includes(user.role)) redirect("/portal");
   return user;

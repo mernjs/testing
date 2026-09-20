@@ -40,7 +40,7 @@ export default function JoinForm({ initialCode, referrerName, welcomeBonus, code
           <CardTitle className="text-xl">Create your account</CardTitle>
           <CardDescription>
             Already have one?{" "}
-            <Link href="/portal/login" className="text-primary hover:underline">Sign in</Link>
+            <Link href="/login" className="text-primary hover:underline">Sign in</Link>
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -12,6 +12,7 @@ import {
   REWARD_RULE_TYPE_LABELS,
   REWARD_RULE_AUDIENCES,
   AUDIENCE_LABELS,
+  EARN_WAY_META,
   isValidRewardRuleType,
   isValidRewardRuleAudience,
   type RewardRuleType,
@@ -28,6 +29,8 @@ export default function RewardRuleForm({ rule }: { rule?: SerializedRewardRule }
   const [amount, setAmount] = useState(String(rule?.amount ?? ""));
   const [expires, setExpires] = useState(rule?.expiresInDays ? String(rule.expiresInDays) : "");
   const [active, setActive] = useState(rule?.isActive ?? true);
+  const [subKey, setSubKey] = useState(rule?.subKey ?? "");
+  const subLabel = EARN_WAY_META[type].subKeyLabel;
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,6 +42,7 @@ export default function RewardRuleForm({ rule }: { rule?: SerializedRewardRule }
         amount: Number(amount),
         expiresInDays: expires === "" ? null : Number(expires),
         isActive: active,
+        subKey: subLabel ? subKey : null,
       });
       if (res?.error) {
         setErrors(res.fieldErrors ?? {});
@@ -81,6 +85,13 @@ export default function RewardRuleForm({ rule }: { rule?: SerializedRewardRule }
           {errors.expiresInDays && <p className="text-xs text-destructive">{errors.expiresInDays}</p>}
         </div>
       </div>
+      <p className="text-xs text-muted-foreground">{EARN_WAY_META[type].description}</p>
+      {subLabel && (
+        <div className="space-y-1.5">
+          <Label>{subLabel}</Label>
+          <Input value={subKey} onChange={(e) => setSubKey(e.target.value)} placeholder={type === "stage_complete" ? "e.g. batch_assigned" : "e.g. 5"} />
+        </div>
+      )}
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} /> Active
       </label>

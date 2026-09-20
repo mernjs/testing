@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check, Circle, Clock, X } from "lucide-react";
+import { Check, Circle, Clock, X, type LucideIcon } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { cn } from "@/lib/utils";
@@ -151,5 +151,36 @@ export function LinkPill({ href, children }: { href: string; children: React.Rea
     <Link href={href} className="text-sm font-medium text-primary hover:underline">
       {children}
     </Link>
+  );
+}
+
+// ---------------------------------------------------------------------------
+/** Metric tile — same icon-chip + label/value pattern as the dashboards' HeroStat, on a standard GlassCard. */
+export function PortalStat({
+  label,
+  value,
+  hint,
+  icon: Icon,
+}: {
+  label: string;
+  value: React.ReactNode;
+  hint?: string;
+  icon?: LucideIcon;
+}) {
+  return (
+    <GlassCard interactive={false}>
+      <CardContent className="flex h-full items-center gap-3 py-4">
+        {Icon && (
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Icon className="size-4" />
+          </span>
+        )}
+        <div className="min-w-0">
+          <p className="text-[11px] text-muted-foreground">{label}</p>
+          <p className="truncate text-xl font-black tabular-nums tracking-tight text-foreground">{value}</p>
+          {hint && <p className="text-[11px] text-muted-foreground">{hint}</p>}
+        </div>
+      </CardContent>
+    </GlassCard>
   );
 }

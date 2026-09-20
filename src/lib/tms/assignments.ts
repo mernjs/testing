@@ -297,6 +297,13 @@ export async function submitAssignment(
     },
     { upsert: true, returnDocument: "after" }
   );
+  // Wallet & Credits: a submission earns credits once per assignment (best-effort; never affects the submission).
+  try {
+    const { awardActivityForStudent } = await import("@/lib/wallet/earn");
+    await awardActivityForStudent(studentId, "assignment_submit", `${assignmentId}:${studentId}`);
+  } catch {
+    /* non-blocking */
+  }
   return res as Submission;
 }
 
@@ -308,7 +315,7 @@ export async function reviewSubmission(
   reviewerId: string
 ): Promise<Submission | null> {
   const col = await submissionsCollection();
-  return col.findOneAndUpdate(
+  const updated = await col.findOneAndUpdate(
     { assignmentId, studentId },
     {
       $set: {
@@ -321,4 +328,13 @@ export async function reviewSubmission(
     },
     { returnDocument: "after" }
   );
+  if (updated && input.approved) {
+    try {
+      const { awardActivityForStudent } = await import("@/lib/wallet/earn");
+      await awardActivityForStudent(studentId, "assignment_approved", `${assignmentId}:${studentId}`);
+    } catch {
+      /* non-blocking */
+    }
+  }
+  return updated;
 }

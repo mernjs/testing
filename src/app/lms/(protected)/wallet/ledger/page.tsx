@@ -3,12 +3,12 @@ import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { listWalletTransactions } from "@/lib/wallet/transactions";
-import { WALLET_TX_TYPE_LABELS } from "@/lib/wallet/constants";
+import { txLabel } from "@/lib/wallet/constants";
 import { formatDateTime } from "@/lib/utils";
 import ReasonAction from "@/components/lms/wallet/ReasonAction";
 import { reverseTransactionAction, refundRedemptionAction } from "../actions";
 
-const REVERSIBLE = ["signup_bonus", "referral_bonus_referrer", "referral_bonus_referee", "manual_adjustment"];
+const REVERSIBLE = ["signup_bonus", "referral_bonus_referrer", "referral_bonus_referee", "activity_reward", "manual_adjustment"];
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Ledger · Wallet" };
@@ -39,7 +39,7 @@ export default async function WalletLedgerPage({ searchParams }: { searchParams:
                 <tr key={t._id} className="border-b border-border/40 last:border-0">
                   <td className="py-2 pr-3 text-muted-foreground">{formatDateTime(t.createdAt)}</td>
                   <td className="py-2 pr-3"><Link className="font-mono text-xs text-primary hover:underline" href={`/lms/wallet/users/${t.userId}`}>{t.userId.slice(0, 8)}…</Link></td>
-                  <td className="py-2 pr-3 text-foreground">{WALLET_TX_TYPE_LABELS[t.type]}</td>
+                  <td className="py-2 pr-3 text-foreground">{txLabel(t.type, t.metadata)}</td>
                   <td className="py-2 pr-3 font-semibold">{t.direction === "credit" ? "+" : "−"}{t.amount.toLocaleString("en-IN")} <span className="text-[10px] font-normal text-muted-foreground">{t.bucket}</span></td>
                   <td className="py-2 pr-3 text-muted-foreground">{t.balanceBefore.toLocaleString("en-IN")} → {t.balanceAfter.toLocaleString("en-IN")}</td>
                   <td className="py-2 pr-3 text-muted-foreground">{t.reason ?? "—"}{t.status !== "active" && <span className="ml-1 text-[10px] uppercase">({t.status})</span>}</td>
