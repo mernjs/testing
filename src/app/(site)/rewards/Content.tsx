@@ -7,6 +7,7 @@ import { ArrowRight, BadgePercent, CalendarClock, CheckCircle2, ChevronDown, Coi
 import type { AudienceGuide, RewardsGuide } from "@/lib/wallet/guide";
 import type { GuideAudience } from "@/lib/wallet/earn-guide";
 
+import { brandify } from "@/lib/brand";
 const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } };
 const stagger = { visible: { transition: { staggerChildren: 0.1 } } };
 const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
@@ -131,16 +132,16 @@ export default function RewardsContent({
                   <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 font-medium text-secondary-foreground"><Repeat className="h-3 w-3" /> {w.frequency}</span>
                   {w.expiresInDays && <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 font-medium text-secondary-foreground"><CalendarClock className="h-3 w-3" /> Valid {w.expiresInDays} days</span>}
                 </div>
-                <p className="mt-4 text-sm"><span className="font-semibold text-foreground">When you get it: </span><span className="text-muted-foreground">{w.when}</span></p>
+                <p className="mt-4 text-sm"><span className="font-semibold text-foreground">When you get it: </span><span className="text-muted-foreground">{brandify(w.when)}</span></p>
                 <div className="mt-3">
                   <p className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-foreground"><ListChecks className="h-4 w-4 text-primary" /> What to complete</p>
                   <ol className="space-y-1 text-sm text-muted-foreground">
                     {w.steps.map((s, i) => (
-                      <li key={i} className="flex gap-2"><span className="font-semibold text-primary">{i + 1}.</span> {s}</li>
+                      <li key={i} className="flex gap-2"><span className="font-semibold text-primary">{i + 1}.</span> {brandify(s)}</li>
                     ))}
                   </ol>
                 </div>
-                {w.note && <p className="mt-3 flex gap-1.5 text-xs text-muted-foreground"><Info className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {w.note}</p>}
+                {w.note && <p className="mt-3 flex gap-1.5 text-xs text-muted-foreground"><Info className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {brandify(w.note)}</p>}
               </div>
             ))}
           </div>
@@ -239,7 +240,7 @@ export default function RewardsContent({
               <ol className="space-y-1.5 text-sm text-muted-foreground">
                 <li>1. Sign in first — credits are only used by the signed-in owner.</li>
                 <li>2. Use the <em>same email</em> as your account in the claim form.</li>
-                <li>3. Tick <em>Use my YashOrbit Credits</em>.</li>
+                <li>3. Tick <em>Use my {brandify("YashOrbit")} Credits</em>.</li>
                 <li>4. Credits cover part of what remains, up to your account limit.</li>
               </ol>
             </div>
@@ -323,10 +324,10 @@ export default function RewardsContent({
             {faqs.map((f) => (
               <details key={f.question} className="group rounded-2xl border border-border/50 bg-muted/30 p-5 open:bg-muted/50">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-semibold text-foreground">
-                  {f.question}
+                  {brandify(f.question)}
                   <ChevronDown className="h-4 w-4 shrink-0 transition-transform group-open:rotate-180" />
                 </summary>
-                <p className="mt-3 text-muted-foreground">{f.answer}</p>
+                <p className="mt-3 text-muted-foreground">{brandify(f.answer)}</p>
               </details>
             ))}
           </div>

@@ -105,7 +105,7 @@ export async function getReferralOverview(userId: string, origin: string): Promi
 
   return {
     code,
-    link: `${origin}/?ref=${code}`,
+    link: `${origin}/register?ref=${code}`,
     totalReferred: referrals.length,
     rewarded: referrals.filter((r) => r.status === "REWARDED").length,
     creditsEarned: rows.reduce((sum, r) => sum + r.reward, 0),

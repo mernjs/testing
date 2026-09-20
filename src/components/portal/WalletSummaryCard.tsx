@@ -4,6 +4,7 @@ import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { formatCredits } from "@/lib/wallet/constants";
 
+import { brandify } from "@/lib/brand";
 /** Props-driven only — never imports a server-only wallet module. */
 export default function WalletSummaryCard({
   available,
@@ -24,7 +25,7 @@ export default function WalletSummaryCard({
             <Coins className="size-5" />
           </span>
           <div>
-            <p className="text-xs font-medium text-muted-foreground">YashOrbit Wallet</p>
+            <p className="text-xs font-medium text-muted-foreground">{brandify("YashOrbit")} Wallet</p>
             <p className="text-2xl font-black tracking-tight text-foreground">{formatCredits(available)}</p>
             <p className="text-xs text-muted-foreground">
               {earnedThisMonth > 0 && <>+{earnedThisMonth.toLocaleString("en-IN")} this month</>}

@@ -6,6 +6,7 @@ import { Gift, X } from "lucide-react";
 import { useReferralCode } from "@/lib/useReferralCode";
 import { formatCredits } from "@/lib/wallet/constants";
 
+import { brandify } from "@/lib/brand";
 interface Preview {
   valid: boolean;
   referrerFirstName?: string;
@@ -67,7 +68,7 @@ export default function ReferralWelcome() {
     <div role="status" className="fixed bottom-4 left-4 right-4 z-[60] mx-auto flex max-w-md items-start gap-3 rounded-2xl border border-primary/30 bg-background/95 p-4 shadow-xl backdrop-blur sm:left-auto sm:right-4 sm:mx-0">
       <Gift className="mt-0.5 size-5 shrink-0 text-primary" />
       <div className="min-w-0 flex-1 text-sm">
-        <p className="font-semibold text-foreground">{preview.referrerFirstName} invited you to YashOrbit</p>
+        <p className="font-semibold text-foreground">{preview.referrerFirstName} invited you to {brandify("YashOrbit")}</p>
         <p className="mt-0.5 text-xs text-muted-foreground">
           Create a free account{preview.welcomeBonus > 0 ? ` and earn up to ${formatCredits(preview.welcomeBonus)}` : ""}.
         </p>

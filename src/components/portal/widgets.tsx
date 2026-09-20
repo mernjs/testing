@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Check, Circle, Clock, X, type LucideIcon } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
+import { brandify } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -17,8 +18,8 @@ export function PortalPageHeader({
   return (
     <div className="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{title}</h1>
-        {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{brandify(title)}</h1>
+        {subtitle && <p className="text-sm text-muted-foreground">{brandify(subtitle)}</p>}
       </div>
       {action}
     </div>

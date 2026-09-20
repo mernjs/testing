@@ -9,6 +9,7 @@ import ProgressBar from "@/components/pms/ProgressBar";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getTaskRewards } from "@/lib/portal/rewards";
 
+import { brandify } from "@/lib/brand";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Bonus tasks · YashOrbit Portal" };
 
@@ -53,9 +54,9 @@ export default async function TaskRewardsPage() {
                   </div>
                   <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold tabular-nums ${task.done ? "bg-green-500/15 text-green-600 dark:text-green-400" : "bg-primary/10 text-primary"}`}>{task.done ? "✓ " : "+"}{task.amount.toLocaleString("en-IN")}</span>
                 </div>
-                <p className="text-xs text-muted-foreground"><span className="font-semibold text-foreground">When: </span>{task.when}</p>
+                <p className="text-xs text-muted-foreground"><span className="font-semibold text-foreground">When: </span>{brandify(task.when)}</p>
                 <ol className="space-y-1 text-xs text-muted-foreground">
-                  {task.steps.map((s, i) => <li key={i} className="flex gap-1.5"><span className="font-semibold text-primary">{i + 1}.</span> {s}</li>)}
+                  {task.steps.map((s, i) => <li key={i} className="flex gap-1.5"><span className="font-semibold text-primary">{i + 1}.</span> {brandify(s)}</li>)}
                 </ol>
                 {task.progress && <ProgressBar value={(task.progress.current / task.progress.target) * 100} showLabel={false} />}
                 {task.progress && <p className="-mt-1 text-[11px] text-muted-foreground">{task.progress.current} of {task.progress.target} rewarded referrals</p>}

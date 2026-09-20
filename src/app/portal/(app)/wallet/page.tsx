@@ -10,6 +10,7 @@ import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { PortalPageHeader, PortalStat } from "@/components/portal/widgets";
 import { formatDateTime } from "@/lib/utils";
 
+import { brandify } from "@/lib/brand";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Wallet · YashOrbit Portal" };
 
@@ -95,7 +96,7 @@ export default async function PortalWalletPage({ searchParams }: { searchParams:
       </GlassCard>
 
       <p className="text-xs text-muted-foreground">
-        YashOrbit Credits are promotional/reward credits, not cash. They are subject to eligibility, expiry, redemption limits and campaign rules, are not
+        {brandify("YashOrbit")} Credits are promotional/reward credits, not cash. They are subject to eligibility, expiry, redemption limits and campaign rules, are not
         transferable, and may be reversed in case of cancellation or misuse.
       </p>
     </div>

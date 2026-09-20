@@ -384,15 +384,8 @@ async function runMegaSeeder() {
       });
     }
 
-    // Offers (30)
-    for (let o = 1; o <= 30; o++) {
-      const cName = randomName();
-      await hrmsOffersCol.updateOne(
-        { offerId: `OFFER-2026-${100 + o}` },
-        { $set: { offerId: `OFFER-2026-${100 + o}`, candidateName: cName, email: `${cName.toLowerCase().replace(/\s+/g, ".")}@offered.com`, designation: "Senior Engineer", offeredSalary: randInt(90, 180) * 1000, status: choice(["drafted", "sent", "accepted", "declined"]), issuedDate: dateDaysAgo(o), updatedAt: new Date() } },
-        { upsert: true }
-      );
-    }
+    // HRMS job offers are seeded by scripts/seed-demo-portal.mjs — they must reference a real career application
+    // (the app keeps a unique index on hrms_offers.applicationId), which the generic docs written here didn't.
 
     // Employee Documents (30)
     for (let d = 1; d <= 30; d++) {
@@ -1070,8 +1063,6 @@ async function runMegaSeeder() {
     const leadsInternCol = db.collection("leads_internship_program");
     const campaignsCol = db.collection("campaigns");
     const metricsCol = db.collection("campaign_metrics");
-    const couponsCol = db.collection("coupons");
-    const offersCol = db.collection("offers");
 
     const leadCategories = [
       { col: leadsSwCol, cat: "software-development" },
@@ -1140,14 +1131,9 @@ async function runMegaSeeder() {
       await metricsCol.insertMany(metricRows);
     }
 
-    // Coupons (30) & Offers (10)
-    for (let cp = 1; cp <= 30; cp++) {
-      await couponsCol.updateOne({ code: `PROMO2026-${cp}` }, { $set: { code: `PROMO2026-${cp}`, discountPercent: 15, validUntil: isoDate(90), status: "active", updatedAt: new Date() } }, { upsert: true });
-    }
-    for (let of_ = 1; of_ <= 10; of_++) {
-      await offersCol.updateOne({ offerCode: `OFFER-LMS-${of_}` }, { $set: { offerCode: `OFFER-LMS-${of_}`, title: `Special Offer ${of_}`, discount: randInt(10, 40), validTill: isoDate(60), status: "active", updatedAt: new Date() } }, { upsert: true });
-    }
-    console.log("  ✓ LMS Suite: 300 Leads across 5 Categories, 4 Campaigns, 1,200 Metric Rows, 30 Coupons.");
+    // Festival Offers (campaigns / offers / coupons / claims) are seeded by scripts/seed-demo-portal.mjs — the
+    // legacy generic coupon/offer docs that used to be written here didn't match that module's schema.
+    console.log("  ✓ LMS Suite: 300 Leads across 5 Categories, 4 Campaigns, 1,200 Metric Rows.");
 
     // =========================================================================
     // 8. EXTERNAL PORTAL (5 Jobs, 200 Applicants, 100 Interviews)

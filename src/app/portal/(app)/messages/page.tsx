@@ -7,6 +7,7 @@ import { getActivePortalLead } from "@/lib/portal/lead";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import EmptyPortalState from "@/components/portal/EmptyPortalState";
 
+import { brandify } from "@/lib/brand";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Messages · YashOrbit Portal" };
 
@@ -39,7 +40,7 @@ export default async function MessagesPage() {
                   {m.channel === "document_request" ? <FileText className="size-3.5" /> : <MessagesSquare className="size-3.5" />}
                 </span>
                 <span className="text-xs font-semibold text-foreground">
-                  {m.channel === "document_request" ? "Document request" : "YashOrbit team"}
+                  {m.channel === "document_request" ? "Document request" : brandify("YashOrbit team")}
                 </span>
                 <span className="ml-auto text-[11px] text-muted-foreground">{when(m.createdAt)}</span>
               </div>
@@ -50,7 +51,7 @@ export default async function MessagesPage() {
       </GlassCard>
 
       <p className="text-xs text-muted-foreground">
-        Need to reply? Use the contact details in your welcome email or call your YashOrbit point of contact.
+        Need to reply? Use the contact details in your welcome email or call your {brandify("YashOrbit")} point of contact.
       </p>
     </div>
   );

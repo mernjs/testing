@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Bell, Coins, Eye, EyeOff, LayoutDashboard, Loader2, Route, ShieldCheck, Sparkles } from "lucide-react";
 import { portalLoginAction, type PortalLoginState } from "@/app/portal/login/actions";
 
+import { brandify } from "@/lib/brand";
 const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } };
 const stagger = { visible: { transition: { staggerChildren: 0.1 } } };
 const input =
@@ -65,7 +66,7 @@ export default function LoginContent() {
                 <form action={formAction} className="relative z-10 space-y-6" noValidate>
                   <div>
                     <h2 className="text-2xl font-bold text-foreground">Sign in</h2>
-                    <p className="mt-1 text-sm text-muted-foreground">Use the email and password for your YashOrbit account.</p>
+                    <p className="mt-1 text-sm text-muted-foreground">Use the email and password for your {brandify("YashOrbit")} account.</p>
                   </div>
                   <div>
                     <label htmlFor="email" className="mb-2 block text-sm font-semibold text-foreground">Email</label>

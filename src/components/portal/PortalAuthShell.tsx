@@ -26,7 +26,7 @@ export default function PortalAuthShell({
         </div>
         <div className="relative z-10 max-w-md">
           <h1 className="text-4xl font-black tracking-tight text-foreground">{headline}</h1>
-          <p className="mt-4 text-muted-foreground">{sub}</p>
+          <p className="mt-4 text-muted-foreground">{brandify(sub)}</p>
         </div>
         <p className="relative z-10 text-xs text-muted-foreground">
           Applicants · Interns · Trainees · Clients — one door, four experiences.

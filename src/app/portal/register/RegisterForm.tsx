@@ -39,7 +39,7 @@ export default function RegisterForm() {
         <CardContent>
           <div className="mb-4 flex gap-2 rounded-lg bg-secondary/50 px-3 py-2 text-xs text-secondary-foreground">
             <Info className="mt-0.5 size-3.5 shrink-0" />
-            Use the <strong>exact email and phone number</strong> you gave YashOrbit. Your role is detected automatically.
+            Use the <strong>exact email and phone number</strong> you gave {brandify("YashOrbit")}. Your role is detected automatically.
           </div>
           <form action={formAction} className="space-y-4" noValidate>
             {referralCode && <input type="hidden" name="referralCode" value={referralCode} />}
@@ -84,7 +84,7 @@ export default function RegisterForm() {
 
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            New to YashOrbit?{" "}
+            New to {brandify("YashOrbit")}?{" "}
             <Link href="/portal/join" className="font-medium text-primary hover:underline">Join here</Link>
             {" · "}Already registered?{" "}
             <Link href="/login" className="font-medium text-primary hover:underline">

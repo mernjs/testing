@@ -54,70 +54,76 @@ export interface PortalNavItem {
   label: string;
   icon: string;
   exact?: boolean;
+  /** Sidebar category label. Items with the same `group` sit under one heading (like the other panels); no group = top-level. */
+  group?: string;
 }
 
-const JOURNEY_NAV: PortalNavItem[] = [
+const inGroup = (group: string, items: PortalNavItem[]): PortalNavItem[] => items.map((i) => ({ ...i, group }));
+
+const DASHBOARD: PortalNavItem = { href: "/portal", label: "Dashboard", icon: "LayoutDashboard", exact: true };
+
+const OVERVIEW_NAV = inGroup("Overview", [
   { href: "/portal/journey", label: "My Journey", icon: "Route" },
   { href: "/portal/messages", label: "Messages", icon: "MessagesSquare" },
-];
+]);
 
-const WALLET_NAV: PortalNavItem[] = [
-  { href: "/portal/wallet", label: "Wallet", icon: "Coins" },
+const REWARDS_NAV = inGroup("Rewards", [
   { href: "/portal/referrals", label: "Refer & Earn", icon: "Gift" },
   { href: "/portal/rewards/daily", label: "Daily Rewards", icon: "Flame" },
   { href: "/portal/rewards/journey", label: "Journey Rewards", icon: "Trophy" },
   { href: "/portal/rewards/tasks", label: "Bonus Tasks", icon: "ListChecks" },
-];
+]);
 
-const SHARED_TAIL: PortalNavItem[] = [
+const ACCOUNT_NAV = inGroup("Account", [
   { href: "/portal/documents", label: "Documents", icon: "FolderOpen" },
   { href: "/portal/profile", label: "Profile", icon: "CircleUser" },
-];
+]);
+
+const WALLET_ITEM: PortalNavItem = { href: "/portal/wallet", label: "Wallet", icon: "Coins" };
+
+function learnerNav(programLabel: string, scheduleLabel: string): PortalNavItem[] {
+  return [
+    DASHBOARD,
+    ...OVERVIEW_NAV,
+    ...inGroup("Learning", [
+      { href: "/portal/program", label: programLabel, icon: "GraduationCap" },
+      { href: "/portal/schedule", label: scheduleLabel, icon: "CalendarClock" },
+      { href: "/portal/projects", label: "Projects", icon: "FolderKanban" },
+      { href: "/portal/assignments", label: "Assignments", icon: "ClipboardList" },
+      { href: "/portal/attendance", label: "Attendance", icon: "CalendarCheck" },
+      { href: "/portal/certificates", label: "Certificates", icon: "Award" },
+    ]),
+    ...inGroup("Finance", [{ href: "/portal/payments", label: "Payments", icon: "Wallet" }, WALLET_ITEM]),
+    ...REWARDS_NAV,
+    ...ACCOUNT_NAV,
+  ];
+}
 
 export const PORTAL_NAV: Record<PortalRole, PortalNavItem[]> = {
   job_applicant: [
-    { href: "/portal", label: "Dashboard", icon: "LayoutDashboard", exact: true },
-    ...JOURNEY_NAV,
-    { href: "/portal/application", label: "My Application", icon: "FileText" },
-    { href: "/portal/interviews", label: "Interview Schedule", icon: "CalendarClock" },
-    ...WALLET_NAV,
-    ...SHARED_TAIL,
+    DASHBOARD,
+    ...OVERVIEW_NAV,
+    ...inGroup("Recruitment", [
+      { href: "/portal/application", label: "My Application", icon: "FileText" },
+      { href: "/portal/interviews", label: "Interview Schedule", icon: "CalendarClock" },
+    ]),
+    ...inGroup("Finance", [WALLET_ITEM]),
+    ...REWARDS_NAV,
+    ...ACCOUNT_NAV,
   ],
-  intern: [
-    { href: "/portal", label: "Dashboard", icon: "LayoutDashboard", exact: true },
-    ...JOURNEY_NAV,
-    { href: "/portal/program", label: "My Internship", icon: "GraduationCap" },
-    { href: "/portal/schedule", label: "Batch Schedule", icon: "CalendarClock" },
-    { href: "/portal/projects", label: "Projects", icon: "FolderKanban" },
-    { href: "/portal/assignments", label: "Assignments", icon: "ClipboardList" },
-    { href: "/portal/attendance", label: "Attendance", icon: "CalendarCheck" },
-    { href: "/portal/certificates", label: "Certificates", icon: "Award" },
-    { href: "/portal/payments", label: "Payments", icon: "Wallet" },
-    ...WALLET_NAV,
-    ...SHARED_TAIL,
-  ],
-  trainee: [
-    { href: "/portal", label: "Dashboard", icon: "LayoutDashboard", exact: true },
-    ...JOURNEY_NAV,
-    { href: "/portal/program", label: "My Program", icon: "GraduationCap" },
-    { href: "/portal/schedule", label: "Class Schedule", icon: "CalendarClock" },
-    { href: "/portal/projects", label: "Projects", icon: "FolderKanban" },
-    { href: "/portal/assignments", label: "Assignments", icon: "ClipboardList" },
-    { href: "/portal/attendance", label: "Attendance", icon: "CalendarCheck" },
-    { href: "/portal/certificates", label: "Certificates", icon: "Award" },
-    { href: "/portal/payments", label: "Payments", icon: "Wallet" },
-    ...WALLET_NAV,
-    ...SHARED_TAIL,
-  ],
+  intern: learnerNav("My Internship", "Batch Schedule"),
+  trainee: learnerNav("My Program", "Class Schedule"),
   client: [
-    { href: "/portal", label: "Dashboard", icon: "LayoutDashboard", exact: true },
-    ...JOURNEY_NAV,
-    { href: "/portal/projects", label: "My Projects", icon: "FolderKanban" },
-    { href: "/portal/milestones", label: "Milestones", icon: "Flag" },
-    { href: "/portal/meetings", label: "Meetings", icon: "CalendarClock" },
-    { href: "/portal/invoices", label: "Invoices", icon: "ReceiptText" },
-    ...WALLET_NAV,
-    ...SHARED_TAIL,
+    DASHBOARD,
+    ...OVERVIEW_NAV,
+    ...inGroup("Projects", [
+      { href: "/portal/projects", label: "My Projects", icon: "FolderKanban" },
+      { href: "/portal/milestones", label: "Milestones", icon: "Flag" },
+      { href: "/portal/meetings", label: "Meetings", icon: "CalendarClock" },
+    ]),
+    ...inGroup("Finance", [{ href: "/portal/invoices", label: "Invoices", icon: "ReceiptText" }, WALLET_ITEM]),
+    ...REWARDS_NAV,
+    ...ACCOUNT_NAV,
   ],
 };
 

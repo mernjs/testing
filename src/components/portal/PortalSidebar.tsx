@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import React from "react";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -94,7 +95,7 @@ function NavLink({
       onClick={onNavigate}
       aria-label={collapsed ? label : undefined}
       className={cn(
-        "group relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+        "group relative flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
         collapsed && "justify-center px-0",
         active ? "text-primary" : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
       )}
@@ -112,7 +113,13 @@ function NavLink({
   );
 }
 
-/** The whole sidebar is `PORTAL_NAV[role]` — nothing shared, nothing hidden. */
+/** Same section heading the LMS / TMS / PMS sidebars use, so every panel groups its navigation the same way. */
+function SectionLabel({ children, collapsed }: { children: React.ReactNode; collapsed?: boolean }) {
+  if (collapsed) return <div className="mt-3 mb-0.5 border-t border-border/50" />;
+  return <div className="mt-3 mb-0.5 px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{children}</div>;
+}
+
+/** The whole sidebar is `PORTAL_NAV[role]`, rendered under its category headings — nothing shared, nothing hidden. */
 export default function PortalSidebar({
   role,
   collapsed = false,
@@ -123,20 +130,19 @@ export default function PortalSidebar({
   onNavigate?: () => void;
 }) {
   const items = PORTAL_NAV[role];
-  const tailStart = items.findIndex((i) => i.href === "/portal/documents");
 
   return (
-    <nav className="flex h-full flex-col gap-1 p-3">
+    <nav className="flex h-full flex-col gap-1 overflow-y-auto p-3">
       {!collapsed && (
         <p className="mb-1 px-3 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
           {PORTAL_ROLE_META[role].portalName}
         </p>
       )}
       {items.map((item, i) => (
-        <div key={item.href}>
-          {i === tailStart && (collapsed ? <div className="my-1.5 border-t border-border/50" /> : <div className="my-1.5" />)}
+        <React.Fragment key={item.href}>
+          {item.group && item.group !== items[i - 1]?.group && <SectionLabel collapsed={collapsed}>{item.group}</SectionLabel>}
           <NavLink {...item} collapsed={collapsed} onNavigate={onNavigate} />
-        </div>
+        </React.Fragment>
       ))}
     </nav>
   );

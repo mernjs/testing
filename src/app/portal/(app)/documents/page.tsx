@@ -6,6 +6,7 @@ import { guardPortalPage } from "@/lib/portal/guard";
 import { listPortalDocuments } from "@/lib/portal/documents";
 import { PortalPageHeader } from "@/components/portal/widgets";
 
+import { brandify } from "@/lib/brand";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Documents · YashOrbit Portal" };
 
@@ -38,7 +39,7 @@ export default async function DocumentsPage() {
         <CardContent className="space-y-2">
           {docs.length === 0 && (
             <p className="py-6 text-center text-sm text-muted-foreground">
-              No documents yet. Anything YashOrbit shares with you appears here.
+              No documents yet. Anything {brandify("YashOrbit")} shares with you appears here.
             </p>
           )}
           {docs.map((d) => (

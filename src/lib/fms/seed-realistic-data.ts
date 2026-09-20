@@ -298,7 +298,27 @@ export async function seedFmsRealisticData(actorId = "system_admin") {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await db.collection("fms_transactions").updateOne(
       { _id: t._id as any },
-      { $set: t },
+      // Fill the fields the Transactions list requires (postingDate etc.) — without them /fms/transactions crashes on these rows.
+      {
+        $set: {
+          ...t,
+          postingDate: t.transactionDate,
+          taxAmount: 0,
+          attachments: [],
+          description: t.payee,
+          customerId: null,
+          vendorId: null,
+          employeeId: null,
+          projectId: null,
+          department: null,
+          accountId: null,
+          fundAccountId: null,
+          fundAccountType: null,
+          transferId: null,
+          approvedBy: null,
+          approvedAt: null,
+        },
+      },
       { upsert: true }
     );
   }
