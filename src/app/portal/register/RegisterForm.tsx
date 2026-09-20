@@ -84,6 +84,9 @@ export default function RegisterForm() {
 
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
+            New to YashOrbit?{" "}
+            <Link href="/portal/join" className="font-medium text-primary hover:underline">Join here</Link>
+            {" · "}Already registered?{" "}
             <Link href="/portal/login" className="font-medium text-primary hover:underline">
               Sign in
             </Link>

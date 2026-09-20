@@ -38,6 +38,8 @@ export default function ClaimOfferModal({
   const [couponCode, setCouponCode] = useState("");
   const [couponPreview, setCouponPreview] = useState<{ ok: boolean; message: string } | null>(null);
   const [checkingCoupon, setCheckingCoupon] = useState(false);
+  const [wallet, setWallet] = useState<{ email: string; available: number } | null>(null);
+  const [useWallet, setUseWallet] = useState(false);
   const track = useOfferTracking(campaignId);
   const formStartFired = useRef<string | null>(null);
 
@@ -50,6 +52,20 @@ export default function ClaimOfferModal({
     track("form_start", { offerId: offer._id, category: offer.category, audience });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offer?._id]);
+
+  useEffect(() => {
+    if (!offer) return;
+    let cancelled = false;
+    fetch("/api/portal/wallet-balance", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((j) => {
+        if (!cancelled && j?.signedIn && j.available > 0) setWallet({ email: j.email, available: j.available });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [offer]);
 
   function set<K extends keyof ClaimOfferFields>(key: K, value: string) {
     setFields((f) => ({ ...f, [key]: value }));
@@ -79,7 +95,7 @@ export default function ClaimOfferModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!offer) return;
-    await submit({ campaignId, offerId: offer._id, audience, couponCode: couponCode.trim() || undefined, fields });
+    await submit({ campaignId, offerId: offer._id, audience, couponCode: couponCode.trim() || undefined, useWallet: useWallet && !!wallet, fields });
   }
 
   function handleOpenChange(next: boolean) {
@@ -211,6 +227,16 @@ export default function ClaimOfferModal({
                   )}
                   <p className="text-[11px] text-muted-foreground">Final pricing and coupon eligibility are always re-checked when you submit.</p>
                 </div>
+
+                {wallet && (
+                  <label className="flex items-center gap-2 rounded-xl border border-border/60 p-3 text-sm">
+                    <input type="checkbox" checked={useWallet} onChange={(e) => setUseWallet(e.target.checked)} />
+                    <span>
+                      Use my YashOrbit Credits ({wallet.available.toLocaleString("en-IN")} available)
+                      <span className="block text-[11px] text-muted-foreground">Applied only if the offer has a price and your claim email matches your account. Final amount is confirmed server-side.</span>
+                    </span>
+                  </label>
+                )}
 
                 <Button type="submit" className="w-full" disabled={status === "submitting"}>
                   {status === "submitting" ? <Loader2 className="size-4 animate-spin" /> : "Claim Offer"}

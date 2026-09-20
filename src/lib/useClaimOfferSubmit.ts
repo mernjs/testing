@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useUtmParams } from "@/lib/useUtmParams";
+import { useReferralCode } from "@/lib/useReferralCode";
 import type { Audience } from "@/lib/offers/constants";
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -28,6 +29,7 @@ export interface ClaimOfferSubmitData {
   offerId: string;
   audience: Audience;
   couponCode?: string;
+  useWallet?: boolean;
   fields: ClaimOfferFields;
 }
 
@@ -36,6 +38,7 @@ export interface ClaimPricingResult {
   totalDiscountApplied?: number;
   finalPrice?: number;
   currency?: string;
+  walletAmountApplied?: number;
 }
 
 export function useClaimOfferSubmit() {
@@ -44,6 +47,7 @@ export function useClaimOfferSubmit() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [pricing, setPricing] = useState<ClaimPricingResult | null>(null);
   const utm = useUtmParams();
+  const referralCode = useReferralCode();
 
   async function submit(data: ClaimOfferSubmitData) {
     setStatus("submitting");
@@ -54,7 +58,7 @@ export function useClaimOfferSubmit() {
       const res = await fetch("/api/offers/claim", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, utm }),
+        body: JSON.stringify({ ...data, utm, referralCode }),
       });
       const json = await res.json().catch(() => null);
 

@@ -408,6 +408,14 @@ export async function addInstallment(
     // Non-blocking fallback for FMS sync
   }
 
+  // Wallet & Credits: a real payment is the "first payment" qualifying event for a pending referral. Best-effort; never affects the payment.
+  try {
+    const { qualifyReferralForRecord } = await import("@/lib/wallet/referrals");
+    await qualifyReferralForRecord({ studentId: plan.studentId });
+  } catch {
+    /* non-blocking */
+  }
+
   return { ok: true, invoiceNumber };
 }
 

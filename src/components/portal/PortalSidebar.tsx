@@ -20,6 +20,8 @@ import {
   ReceiptText,
   Route,
   MessagesSquare,
+  Coins,
+  Gift,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -43,6 +45,8 @@ const ICONS: Record<string, LucideIcon> = {
   ReceiptText,
   Route,
   MessagesSquare,
+  Coins,
+  Gift,
 };
 
 function NavLink({

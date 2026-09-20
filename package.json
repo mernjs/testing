@@ -11,6 +11,7 @@
     "index-kb": "node --env-file=.env scripts/index-knowledge-base.mjs",
     "db:truncate": "node --env-file=.env scripts/truncate-all-data.mjs",
     "db:seed-super-admin": "node --env-file=.env scripts/seed-super-admin.mjs",
+    "db:seed-wallet-rules": "node --env-file=.env scripts/seed-wallet-rules.mjs",
     "db:seed-all-panels": "node --env-file=.env scripts/seed-all-panels-demo.mjs"
   },
   "dependencies": {

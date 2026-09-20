@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useActiveCampaignDisplay } from "@/lib/useActiveCampaignDisplay";
+import { useReferralCode } from "@/lib/useReferralCode";
 import OfferTopStrip from "@/components/offers/OfferTopStrip";
 import OfferPopup from "@/components/offers/OfferPopup";
 
@@ -15,6 +16,8 @@ import OfferPopup from "@/components/offers/OfferPopup";
  */
 export default function OfferPromotions() {
   const display = useActiveCampaignDisplay();
+  // Site-wide first-touch capture of `?ref=CODE` — a referral link may land on any public page, not only one hosting a lead form.
+  useReferralCode();
 
   // Keep the Header/`<main>` offset correct even while no strip is mounted
   // (e.g. between campaigns) — OfferTopStrip itself takes over this

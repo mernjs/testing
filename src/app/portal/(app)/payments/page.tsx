@@ -8,6 +8,9 @@ import { getLearnerOverview } from "@/lib/portal/student";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import EmptyPortalState from "@/components/portal/EmptyPortalState";
 import { cn } from "@/lib/utils";
+import PayWithCreditsButton from "@/components/portal/PayWithCreditsButton";
+import { quoteTrainingCredits } from "@/lib/wallet/panel-redemption";
+import { payFeeWithCreditsAction } from "../wallet/pay-actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Payments · YashOrbit Portal" };
@@ -29,6 +32,7 @@ export default async function PaymentsPage() {
   if (!data) return <EmptyPortalState title="No fee record" body="Your payment plan appears here once it's set up." />;
 
   const plans = data.payments;
+  const quotes = new Map(await Promise.all(plans.map(async (p) => [p._id, await quoteTrainingCredits(user, p._id).catch(() => null)] as const)));
   const totals = plans.reduce(
     (acc, p) => {
       acc.net += Math.max(p.totalFees - p.discount, 0);
@@ -79,6 +83,12 @@ export default async function PaymentsPage() {
                   <p className="font-semibold text-foreground">{inr(p.pendingAmount)}</p>
                 </div>
               </div>
+              {(quotes.get(p._id)?.usable ?? 0) > 0 && (
+                <div className="flex items-center justify-between gap-2 rounded-lg bg-primary/5 px-3 py-2 text-xs">
+                  <span className="text-muted-foreground">You can cover part of this with your YO Credits.</span>
+                  <PayWithCreditsButton usable={quotes.get(p._id)!.usable} action={payFeeWithCreditsAction.bind(null, p._id)} />
+                </div>
+              )}
               {p.installments.length > 0 && (
                 <ul className="space-y-1 border-t border-border/50 pt-2 text-xs">
                   {p.installments.map((i) => (

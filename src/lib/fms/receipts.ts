@@ -231,6 +231,15 @@ export async function recordReceipt(
   doc.transactionId = txn._id;
 
   await collection.insertOne(doc);
+
+  // Wallet & Credits: a real receipt is the "first payment" qualifying event for a pending referral. Best-effort; never affects the receipt.
+  try {
+    const { qualifyReferralForRecord } = await import("@/lib/wallet/referrals");
+    await qualifyReferralForRecord({ clientId: data.customerId });
+  } catch {
+    /* non-blocking */
+  }
+
   return { ok: true, receipt: doc };
 }
 

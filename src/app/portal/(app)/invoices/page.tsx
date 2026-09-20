@@ -9,6 +9,9 @@ import { listPortalInvoicesForClient } from "@/lib/fms/portal-invoices";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import EmptyPortalState from "@/components/portal/EmptyPortalState";
 import { cn } from "@/lib/utils";
+import PayWithCreditsButton from "@/components/portal/PayWithCreditsButton";
+import { quoteInvoiceCredits } from "@/lib/wallet/panel-redemption";
+import { payInvoiceWithCreditsAction } from "../wallet/pay-actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Invoices · YashOrbit Portal" };
@@ -27,6 +30,7 @@ export default async function InvoicesPage() {
     getClientOverview(user.clientId),
     user.clientId ? listPortalInvoicesForClient(user.clientId) : Promise.resolve([]),
   ]);
+  const quotes = new Map(await Promise.all(invoices.map(async (i) => [i.invoiceNumber, await quoteInvoiceCredits(user, i.invoiceNumber).catch(() => null)] as const)));
   if (!data) return <EmptyPortalState title="No billing yet" body="Your invoice summary appears here once projects are set up." />;
 
   const inv = data.invoiceSummary;
@@ -67,6 +71,9 @@ export default async function InvoicesPage() {
                     <td className="py-2 pr-3 text-right tabular-nums text-foreground">{i.formattedTotal}</td>
                     <td className="py-2 pr-3 text-right tabular-nums text-muted-foreground">{i.formattedBalance}</td>
                     <td className="py-2 text-right">
+                      {(quotes.get(i.invoiceNumber)?.usable ?? 0) > 0 && (
+                        <div className="mb-1"><PayWithCreditsButton usable={quotes.get(i.invoiceNumber)!.usable} action={payInvoiceWithCreditsAction.bind(null, i.invoiceNumber)} /></div>
+                      )}
                       <a
                         href={`/api/portal/invoices/${i.invoiceNumber}`}
                         target="_blank"

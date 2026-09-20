@@ -13,6 +13,8 @@ export interface OfferClaimPricing {
   totalDiscountApplied?: number;
   finalPrice?: number;
   currency?: string;
+  /** Wallet credits applied server-side at claim time (Wallet & Credits module). */
+  walletAmountApplied?: number;
 }
 
 export interface OfferClaim {

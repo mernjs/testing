@@ -76,7 +76,7 @@ export default function LoginForm() {
 
           <p className="mt-4 text-center text-sm text-muted-foreground">
             New here?{" "}
-            <Link href="/portal/register" className="font-medium text-primary hover:underline">
+            <Link href="/portal/join" className="font-medium text-primary hover:underline">
               Create your account
             </Link>
           </p>

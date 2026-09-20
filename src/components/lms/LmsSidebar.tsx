@@ -20,6 +20,13 @@ import {
   BarChart3,
   Settings,
   ScrollText,
+  Coins,
+  Sparkles,
+  BookText,
+  Share2,
+  Megaphone,
+  SlidersVertical,
+  WalletCards,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -97,6 +104,15 @@ export default function LmsSidebar({ onNavigate, collapsed = false }: { onNaviga
       <NavLink href="/lms/offers" label="Campaigns" icon={Gift} collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/offers/coupons" label="Coupons" icon={TicketPercent} collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/offers/claims" label="Claims" icon={ClipboardList} collapsed={collapsed} onNavigate={onNavigate} />
+
+      <SectionLabel collapsed={collapsed}>Wallet & Credits</SectionLabel>
+      <NavLink href="/lms/wallet" label="Overview" icon={Coins} exact collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/lms/wallet/rules" label="Reward Rules" icon={Sparkles} collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/lms/wallet/referrals" label="Referrals" icon={Share2} collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/lms/wallet/campaigns" label="Referral Campaigns" icon={Megaphone} collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/lms/wallet/usage-rules" label="Usage Rules" icon={SlidersVertical} collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/lms/wallet/wallets" label="Balances" icon={WalletCards} collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/lms/wallet/ledger" label="Ledger" icon={BookText} collapsed={collapsed} onNavigate={onNavigate} />
 
       <SectionLabel collapsed={collapsed}>AI Chatbot</SectionLabel>
       <NavLink href="/lms/chatbot" label="Dashboard" icon={Bot} exact collapsed={collapsed} onNavigate={onNavigate} />

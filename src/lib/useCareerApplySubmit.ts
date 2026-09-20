@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useReferralCode } from "@/lib/useReferralCode";
 import { SUCCESS_AUTO_HIDE_MS } from "@/lib/useLeadSubmit";
 
 export { SUCCESS_AUTO_HIDE_MS };
@@ -22,6 +23,8 @@ export function useCareerApplySubmit() {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
+  const referralCode = useReferralCode();
+
   async function submit(data: CareerApplyFormData) {
     setStatus("submitting");
     setError(null);
@@ -35,6 +38,7 @@ export function useCareerApplySubmit() {
     if (data.positionSlug) body.set("positionSlug", data.positionSlug);
     body.set("resume", data.resume);
     if (data.source) body.set("source", data.source);
+    if (referralCode) body.set("referralCode", referralCode);
 
     try {
       const res = await fetch("/api/careers/apply", {

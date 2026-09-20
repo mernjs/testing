@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { createLead, validateLeadInput } from "@/lib/leads";
 import { provisionLeadAndAccount } from "@/lib/lead-management/provision";
 import { CATEGORY_TO_SOURCE } from "@/lib/lead-management/types";
-import { createPortalSession, setPortalSessionCookie } from "@/lib/portal-auth";
+import { createPortalSession, setPortalSessionCookie, getCurrentPortalUser } from "@/lib/portal-auth";
+import { resolveUsagePolicy, maxUsableCredits } from "@/lib/wallet/usage-rules";
+import { qualifyReferralOnEvent } from "@/lib/wallet/referrals";
+import { reserveWalletCredit, confirmWalletRedemption, releaseWalletReservation, getAvailableBalance } from "@/lib/wallet/redemption";
+import { randomUUID } from "node:crypto";
 import { getCampaign } from "@/lib/offers/campaigns";
 import { getOffer } from "@/lib/offers/offers";
 import { validateCoupon, redeemCoupon } from "@/lib/offers/coupons";
@@ -24,6 +28,8 @@ export async function POST(req: NextRequest) {
   const couponCodeRaw = typeof body.couponCode === "string" ? body.couponCode.trim() : "";
   const fields = (body.fields ?? {}) as Record<string, unknown>;
   const utm = (body.utm ?? {}) as Record<string, unknown>;
+  const useWallet = body.useWallet === true;
+  const referralCode = typeof body.referralCode === "string" ? body.referralCode : null;
 
   if (!isValidAudience(audience) || !["CLIENT", "STUDENT", "INTERN", "HIRING"].includes(audience)) {
     return NextResponse.json({ error: "Invalid audience." }, { status: 400 });
@@ -101,9 +107,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Validation failed.", fields: leadValidation.errors }, { status: 422 });
   }
 
+  // Wallet redemption is only ever honored for the signed-in owner of the
+  // wallet — never by email alone (an anonymous caller must not be able to
+  // spend someone else's credits by typing their address).
+  const sessionUser = useWallet ? await getCurrentPortalUser() : null;
+  const walletUserId =
+    sessionUser && sessionUser.email.toLowerCase() === (contact.email ?? "").trim().toLowerCase() ? sessionUser.id : null;
+  let walletReserved = 0;
+  const walletKey = `offer_claim_wallet:${randomUUID()}`;
+
   try {
     const lead = await createLead(offer.category, leadValidation.data);
 
+    let claimUserId: string | null = null;
     let portal: { redirect: string; isNewAccount: boolean; tempPassword: string | null } | undefined;
     try {
       const result = await provisionLeadAndAccount({
@@ -114,13 +130,35 @@ export async function POST(req: NextRequest) {
         subService: leadValidation.data.subService ?? null,
         message: leadValidation.data.message ?? null,
         sourceRef: { kind: "category_lead", category: offer.category, id: String(lead._id) },
+        referralCode,
       });
-      const { token } = await createPortalSession(result.externalUserId, false);
-      await setPortalSessionCookie(token, false);
-      portal = { redirect: "/portal", isNewAccount: result.isNewAccount, tempPassword: result.tempPassword };
+      claimUserId = result.externalUserId;
+      // Only a brand-new account is signed in automatically. An email that already has an account is NOT proof of identity —
+      // logging the submitter in would let anyone take over (and spend the wallet of) any user whose email they know.
+      if (result.isNewAccount) {
+        const { token } = await createPortalSession(result.externalUserId, false);
+        await setPortalSessionCookie(token, false);
+      }
+      portal = { redirect: result.isNewAccount ? "/portal" : "/portal/login", isNewAccount: result.isNewAccount, tempPassword: result.tempPassword };
     } catch (provErr) {
       console.error("Offer claim: lead provisioning failed (claim still saved)", provErr);
     }
+
+    let walletAmountApplied = 0;
+    if (walletUserId && finalPrice != null && finalPrice > 0) {
+      const available = await getAvailableBalance(walletUserId);
+      // Admin-configured usage rule for this account type (max % of price, per-claim cap, minimum order) — never a client-side number.
+      const policy = await resolveUsagePolicy("offers", sessionUser?.role ?? "client");
+      const amount = maxUsableCredits(policy, finalPrice, available);
+      if (amount > 0) {
+        const reserved = await reserveWalletCredit(walletUserId, amount, walletKey);
+        if (reserved.ok) {
+          walletReserved = amount;
+          walletAmountApplied = amount;
+        }
+      }
+    }
+    const finalAfterWallet = finalPrice != null ? finalPrice - walletAmountApplied : undefined;
 
     const claim = await createOfferClaim({
       leadId: String(lead._id),
@@ -131,14 +169,30 @@ export async function POST(req: NextRequest) {
       couponCode,
       audience: claimAudience,
       audienceFields,
-      pricing: { originalPrice, offerDiscountAmount: originalPrice ? offerDiscountAmount : undefined, couponDiscountAmount: redeemedCouponId ? couponDiscountAmount : undefined, totalDiscountApplied, finalPrice, currency },
+      pricing: { originalPrice, offerDiscountAmount: originalPrice ? offerDiscountAmount : undefined, couponDiscountAmount: redeemedCouponId ? couponDiscountAmount : undefined, totalDiscountApplied, finalPrice: finalAfterWallet, currency, walletAmountApplied: walletAmountApplied || undefined },
     });
+
+    if (walletReserved > 0 && walletUserId) {
+      await confirmWalletRedemption(walletUserId, walletReserved, claim._id, walletKey);
+      walletReserved = 0;
+    }
+
+    if (claimUserId) {
+      try {
+        await qualifyReferralOnEvent(claimUserId, "first_offer_claim");
+      } catch (refErr) {
+        console.error("Offer claim: referral qualification failed (claim still saved)", refErr);
+      }
+    }
 
     return NextResponse.json(
       { data: { claimId: claim._id }, pricing: claim.pricing, portal },
       { status: 201 }
     );
   } catch (err) {
+    if (walletReserved > 0 && walletUserId) {
+      await releaseWalletReservation(walletUserId, walletReserved, walletKey).catch(() => {});
+    }
     console.error("Failed to create offer claim", err);
     return NextResponse.json({ error: "Failed to save your claim. Please try again." }, { status: 500 });
   }

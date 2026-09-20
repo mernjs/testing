@@ -72,12 +72,50 @@ export const REFERRAL_STATUSES = ["REGISTERED", "QUALIFIED", "REWARDED", "REJECT
 export type ReferralStatus = (typeof REFERRAL_STATUSES)[number];
 
 export const REFERRAL_STATUS_META: Record<ReferralStatus, { label: string; badgeClass: string; dotClass: string }> = {
-  REGISTERED: { label: "Registered", badgeClass: "bg-blue-500/15 text-blue-600 dark:text-blue-400", dotClass: "bg-blue-500" },
+  REGISTERED: { label: "Pending", badgeClass: "bg-blue-500/15 text-blue-600 dark:text-blue-400", dotClass: "bg-blue-500" },
   QUALIFIED: { label: "Qualified", badgeClass: "bg-amber-500/15 text-amber-600 dark:text-amber-400", dotClass: "bg-amber-500" },
   REWARDED: { label: "Rewarded", badgeClass: "bg-green-500/15 text-green-600 dark:text-green-400", dotClass: "bg-green-500" },
   REJECTED: { label: "Rejected", badgeClass: "bg-destructive/15 text-destructive", dotClass: "bg-destructive" },
   FRAUD_HOLD: { label: "Fraud Hold", badgeClass: "bg-destructive/15 text-destructive", dotClass: "bg-destructive" },
 };
+
+/** What must happen before a referral is rewarded. `first_offer_claim` is the one real purchase-intent signal that exists today (TMS/FMS payment hooks are a later phase). */
+export const REFERRAL_QUALIFYING_EVENTS = ["account_created", "first_offer_claim", "first_payment"] as const;
+export type ReferralQualifyingEvent = (typeof REFERRAL_QUALIFYING_EVENTS)[number];
+
+export const REFERRAL_QUALIFYING_EVENT_LABELS: Record<ReferralQualifyingEvent, string> = {
+  account_created: "Referred person creates an account",
+  first_offer_claim: "Referred person claims their first offer",
+  first_payment: "Referred person makes their first payment (course fee or invoice)",
+};
+
+export function isValidQualifyingEvent(v: unknown): v is ReferralQualifyingEvent {
+  return typeof v === "string" && (REFERRAL_QUALIFYING_EVENTS as readonly string[]).includes(v);
+}
+
+/** Friendly account-type names for the four portal roles, used in admin rule screens and the signup form. */
+export const AUDIENCE_LABELS: Record<RewardRuleAudience, string> = {
+  ALL: "All account types",
+  trainee: "Student (Training)",
+  intern: "Student (Intern)",
+  client: "Client / Business",
+  job_applicant: "Job Seeker / Hiring User",
+};
+
+/** Platform areas that can spend credits. Only `offers` is wired to a live checkout today; the others are configurable now and enforced by `chargeCredits` the moment a panel calls it. */
+export const USAGE_MODULES = ["offers", "training", "projects", "hiring"] as const;
+export type UsageModule = (typeof USAGE_MODULES)[number];
+
+export const USAGE_MODULE_LABELS: Record<UsageModule, string> = {
+  offers: "Festival Offers",
+  training: "Courses & Training",
+  projects: "Projects & Services",
+  hiring: "Hiring Services",
+};
+
+export function isValidUsageModule(v: unknown): v is UsageModule {
+  return typeof v === "string" && (USAGE_MODULES as readonly string[]).includes(v);
+}
 
 export const DEFAULT_CURRENCY = "INR";
 

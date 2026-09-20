@@ -129,7 +129,7 @@ export async function applyBalanceDelta(
   return { before, after };
 }
 
-export interface CreditLedgerInput extends Omit<WalletTxWriteInput, "balanceBefore" | "balanceAfter"> {}
+export type CreditLedgerInput = Omit<WalletTxWriteInput, "balanceBefore" | "balanceAfter">;
 
 /** Inserts a ledger row from an already-computed before/after pair — never called with a guessed balance. */
 export async function insertLedgerRow(input: CreditLedgerInput, balanceBefore: number, balanceAfter: number): Promise<WalletTransaction> {

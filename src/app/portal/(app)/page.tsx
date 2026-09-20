@@ -8,10 +8,12 @@ import LearnerDashboard from "@/components/portal/dashboards/LearnerDashboard";
 import ClientDashboard from "@/components/portal/dashboards/ClientDashboard";
 import LeadOnlyDashboard from "@/components/portal/dashboards/LeadOnlyDashboard";
 import EmptyPortalState from "@/components/portal/EmptyPortalState";
+import WalletSummaryCard from "@/components/portal/WalletSummaryCard";
+import { getWalletOverview } from "@/lib/portal/wallet";
 
 export const dynamic = "force-dynamic";
 
-export default async function PortalDashboardPage() {
+async function PortalDashboardInner() {
   const user = await getCurrentPortalUser();
   if (!user) return null;
 
@@ -37,4 +39,25 @@ export default async function PortalDashboardPage() {
   if (data) return <ClientDashboard data={data} firstName={firstName} leadView={leadView} />;
   if (leadView) return <LeadOnlyDashboard view={leadView} firstName={firstName} />;
   return <EmptyPortalState title="No projects yet" body="Your projects will appear here once they're set up." />;
+}
+
+export default async function PortalDashboardPage() {
+  const user = await getCurrentPortalUser();
+  if (!user) return null;
+  const wallet = await getWalletOverview(user.id).catch(() => null);
+  return (
+    <>
+      {wallet && (
+        <div className="mx-auto max-w-6xl px-4 pt-4 sm:px-6 sm:pt-6">
+          <WalletSummaryCard
+            available={wallet.balances.available}
+            earnedThisMonth={wallet.earnedThisMonth}
+            expiringSoon={wallet.expiringSoon}
+            frozen={wallet.status === "frozen"}
+          />
+        </div>
+      )}
+      <PortalDashboardInner />
+    </>
+  );
 }

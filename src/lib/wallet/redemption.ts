@@ -25,8 +25,8 @@ export async function reserveWalletCredit(userId: string, amount: number, idempo
 
   await reconcileExpiredLots(userId);
 
-  const result = await applyBalanceDelta(userId, { available: -amount, locked: amount }, { "balances.available": { $gte: amount } });
-  if (!result) return { ok: false, error: "Insufficient wallet balance." };
+  const result = await applyBalanceDelta(userId, { available: -amount, locked: amount }, { "balances.available": { $gte: amount }, status: "active" });
+  if (!result) return { ok: false, error: "Insufficient wallet balance, or the wallet is frozen." };
 
   const tx = await insertLedgerRow(
     {

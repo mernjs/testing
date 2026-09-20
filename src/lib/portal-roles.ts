@@ -61,6 +61,11 @@ const JOURNEY_NAV: PortalNavItem[] = [
   { href: "/portal/messages", label: "Messages", icon: "MessagesSquare" },
 ];
 
+const WALLET_NAV: PortalNavItem[] = [
+  { href: "/portal/wallet", label: "Wallet", icon: "Coins" },
+  { href: "/portal/referrals", label: "Referrals", icon: "Gift" },
+];
+
 const SHARED_TAIL: PortalNavItem[] = [
   { href: "/portal/documents", label: "Documents", icon: "FolderOpen" },
   { href: "/portal/profile", label: "Profile", icon: "CircleUser" },
@@ -72,6 +77,7 @@ export const PORTAL_NAV: Record<PortalRole, PortalNavItem[]> = {
     ...JOURNEY_NAV,
     { href: "/portal/application", label: "My Application", icon: "FileText" },
     { href: "/portal/interviews", label: "Interview Schedule", icon: "CalendarClock" },
+    ...WALLET_NAV,
     ...SHARED_TAIL,
   ],
   intern: [
@@ -84,6 +90,7 @@ export const PORTAL_NAV: Record<PortalRole, PortalNavItem[]> = {
     { href: "/portal/attendance", label: "Attendance", icon: "CalendarCheck" },
     { href: "/portal/certificates", label: "Certificates", icon: "Award" },
     { href: "/portal/payments", label: "Payments", icon: "Wallet" },
+    ...WALLET_NAV,
     ...SHARED_TAIL,
   ],
   trainee: [
@@ -96,6 +103,7 @@ export const PORTAL_NAV: Record<PortalRole, PortalNavItem[]> = {
     { href: "/portal/attendance", label: "Attendance", icon: "CalendarCheck" },
     { href: "/portal/certificates", label: "Certificates", icon: "Award" },
     { href: "/portal/payments", label: "Payments", icon: "Wallet" },
+    ...WALLET_NAV,
     ...SHARED_TAIL,
   ],
   client: [
@@ -105,6 +113,7 @@ export const PORTAL_NAV: Record<PortalRole, PortalNavItem[]> = {
     { href: "/portal/milestones", label: "Milestones", icon: "Flag" },
     { href: "/portal/meetings", label: "Meetings", icon: "CalendarClock" },
     { href: "/portal/invoices", label: "Invoices", icon: "ReceiptText" },
+    ...WALLET_NAV,
     ...SHARED_TAIL,
   ],
 };

@@ -12,6 +12,7 @@ import { LEAD_SOURCE_META } from "@/lib/lead-management/types";
 import type { LeadManagementSource, LeadRecord, LeadSourceRef, LeadType } from "@/lib/lead-management/types";
 import { awardSignupBonus } from "@/lib/wallet/signup-bonus";
 import { attributeAndRewardReferral } from "@/lib/wallet/referrals";
+import { resolveReferralCode } from "@/lib/wallet/referral-capture";
 
 /**
  * The heart of the lead-driven portal: turn any website form submission into a
@@ -40,6 +41,8 @@ export interface ProvisionInput {
   sourceRef?: LeadSourceRef | null;
   applicationId?: string | null;
   actorId?: string | null; // set for manual (staff) leads
+  /** Self-serve signup: the person's own chosen password. When set, no temp password is generated. */
+  password?: string | null;
   referralCode?: string | null; // Wallet & Credits — first-touch `?ref=` capture, only applied on a brand-new account
 }
 
@@ -61,6 +64,7 @@ export async function provisionLeadAndAccount(input: ProvisionInput): Promise<Pr
   let externalUserId: string;
   let tempPassword: string | null = null;
   let isNewAccount = false;
+  let referralCode: string | null = null;
   let role: LeadType;
 
   if (existing) {
@@ -68,14 +72,16 @@ export async function provisionLeadAndAccount(input: ProvisionInput): Promise<Pr
     role = existing.role;
   } else {
     isNewAccount = true;
-    tempPassword = generateTempPassword();
+    // Posted code wins, else the first-touch cookie from proxy.ts. Never for staff-entered leads — that cookie would be the staff member's browser's.
+    referralCode = input.actorId ? null : await resolveReferralCode(input.referralCode);
+    tempPassword = input.password ? null : generateTempPassword();
     role = type;
     const now = new Date();
     const doc: ExternalUserDoc & { leadId: string | null; activeLeadId: string | null } = {
       _id: newId(),
       email,
       phone: input.phone.trim(),
-      passwordHash: hashPassword(tempPassword),
+      passwordHash: hashPassword(input.password ?? tempPassword ?? generateTempPassword()),
       role,
       applicationId: input.applicationId ?? null,
       studentId: null,
@@ -91,7 +97,7 @@ export async function provisionLeadAndAccount(input: ProvisionInput): Promise<Pr
       leadId: null,
       activeLeadId: null,
       referralCode: null,
-      referredByCode: input.referralCode ?? null,
+      referredByCode: referralCode,
     };
     await users.insertOne(doc);
     externalUserId = doc._id;
@@ -131,7 +137,7 @@ export async function provisionLeadAndAccount(input: ProvisionInput): Promise<Pr
     // blocks or fails the actual account/lead creation above.
     try {
       await awardSignupBonus(externalUserId, role);
-      await attributeAndRewardReferral(input.referralCode, externalUserId, role);
+      await attributeAndRewardReferral(referralCode, externalUserId, role);
     } catch (walletErr) {
       console.error("Wallet signup/referral reward failed (account still created)", walletErr);
     }

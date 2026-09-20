@@ -8,6 +8,7 @@ import { notifyPortalUser } from "@/lib/portal/notifications";
 import { PORTAL_ROLE_META } from "@/lib/portal-roles";
 import { awardSignupBonus } from "@/lib/wallet/signup-bonus";
 import { attributeAndRewardReferral } from "@/lib/wallet/referrals";
+import { resolveReferralCode } from "@/lib/wallet/referral-capture";
 
 export interface RegisterInput {
   email: string;
@@ -35,6 +36,7 @@ export async function registerExternalUser(
   const match = await matchDomainRecord(email, phone);
   if (!match) return { ok: false, error: GENERIC_NO_MATCH };
 
+  const referralCode = await resolveReferralCode(input.referralCode);
   const now = new Date();
   const _id = newId();
   await users.insertOne({
@@ -55,13 +57,13 @@ export async function registerExternalUser(
     updatedAt: now,
     lastLoginAt: null,
     referralCode: null,
-    referredByCode: input.referralCode ?? null,
+    referredByCode: referralCode,
   });
 
   await recordPortalAudit({ actorId: _id, action: "register", entity: "account", entityId: _id, summary: `role=${match.role}` });
   try {
     await awardSignupBonus(_id, match.role);
-    await attributeAndRewardReferral(input.referralCode, _id, match.role);
+    await attributeAndRewardReferral(referralCode, _id, match.role);
   } catch (walletErr) {
     console.error("Wallet signup/referral reward failed (account still created)", walletErr);
   }

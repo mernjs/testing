@@ -91,9 +91,13 @@ export async function POST(req: NextRequest, { params }: Context) {
           sourceRef: { kind: "category_lead", category, id: String(lead._id) },
           referralCode: typeof formData.get("referralCode") === "string" ? String(formData.get("referralCode")) : null,
         });
-        const { token } = await createPortalSession(result.externalUserId, false);
-        await setPortalSessionCookie(token, false);
-        portal = { redirect: "/portal", isNewAccount: result.isNewAccount, tempPassword: result.tempPassword };
+        // Only a brand-new account is signed in automatically. An email that already has an account is NOT proof of identity —
+        // logging the submitter in would let anyone take over (and spend the wallet of) any user whose email they know.
+        if (result.isNewAccount) {
+          const { token } = await createPortalSession(result.externalUserId, false);
+          await setPortalSessionCookie(token, false);
+        }
+        portal = { redirect: result.isNewAccount ? "/portal" : "/portal/login", isNewAccount: result.isNewAccount, tempPassword: result.tempPassword };
       } catch (provErr) {
         console.error("Lead provisioning failed (submission still saved)", provErr);
       }
