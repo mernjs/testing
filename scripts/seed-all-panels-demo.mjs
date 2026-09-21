@@ -94,7 +94,22 @@ async function runMegaSeeder() {
 
   try {
     await client.connect();
-    const db = client.db();
+    const rawDb = client.db();
+    // Real databases keep the app's unique indexes after a truncate, and these generic base docs don't carry every
+    // module-specific key. Skip duplicate-key rows instead of aborting; seed-demo-portal.mjs supplies the correctly
+    // shaped data for those modules.
+    let skippedDup = 0;
+    const tolerant = (col) => new Proxy(col, {
+      get(target, key) {
+        const value = target[key];
+        if (typeof value !== "function") return value;
+        return (...args) => {
+          const out = value.apply(target, args);
+          return out && typeof out.catch === "function" ? out.catch((e) => { if (e?.code === 11000 || e?.writeErrors?.every?.((w) => w.code === 11000)) { skippedDup++; return null; } throw e; }) : out;
+        };
+      },
+    });
+    const db = new Proxy(rawDb, { get: (t, k) => (k === "collection" ? (n, o) => tolerant(t.collection(n, o)) : typeof t[k] === "function" ? t[k].bind(t) : t[k]) });
     const defaultPasswordHash = hashPassword("YashOrbit#2026");
 
     // =========================================================================
@@ -1260,6 +1275,7 @@ async function runMegaSeeder() {
     console.log("  • 5 Job Postings, 200 Applications, 100 Portal Interviews");
     console.log("  • 20 Workspace Boards, 120 Cards");
     console.log("  • 500 Central Audit Logs");
+    if (skippedDup) console.log(`\n  ℹ Skipped ${skippedDup} base rows that clashed with existing unique indexes (demo layer seeds those modules).`);
     console.log("\nAll panels are now ready for end-to-end testing. 🚀");
 
   } catch (error) {

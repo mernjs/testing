@@ -167,7 +167,15 @@ export async function seedGrowth(db, tms, pms, people) {
   const referrals = [];
   const referrerPool = [...users.filter((u) => u._fixed), ...sorted.filter((u) => !u._fixed && (u._leads.length > 1 || chance(0.35)))].slice(0, 36);
   const ledgerEvents = new Map();
-  const addEv = (uid, ev) => (ledgerEvents.get(uid) ?? ledgerEvents.set(uid, []).get(uid)).push(ev);
+  // idempotency keys are globally unique in the ledger (the real app makes a repeat award a no-op), so drop repeats here too
+  const usedKeys = new Set();
+  const addEv = (uid, ev) => {
+    if (ev.key) {
+      if (usedKeys.has(ev.key)) return;
+      usedKeys.add(ev.key);
+    }
+    (ledgerEvents.get(uid) ?? ledgerEvents.set(uid, []).get(uid)).push(ev);
+  };
 
   let rn = 0;
   for (const referrer of referrerPool) {
