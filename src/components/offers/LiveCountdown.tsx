@@ -78,13 +78,13 @@ function Digit({ value, animate }: { value: string; animate: boolean }) {
   );
 }
 
-function Unit({ value, label, animate, tone }: { value: number; label: string; animate: boolean; tone: string }) {
+function Unit({ value, label, animate, tone, onDark }: { value: number; label: string; animate: boolean; tone: string; onDark?: boolean }) {
   return (
-    <div className={`flex min-w-[58px] flex-col items-center rounded-2xl border bg-muted/30 px-3 py-2.5 sm:min-w-[68px] sm:px-4 sm:py-3 ${tone}`}>
-      <span className="text-2xl font-black tabular-nums leading-none text-foreground sm:text-3xl">
+    <div className={`flex min-w-[58px] flex-col items-center rounded-2xl border px-3 py-2.5 sm:min-w-[68px] sm:px-4 sm:py-3 ${onDark ? "border-white/20 bg-white/10 backdrop-blur-sm" : `bg-muted/30 ${tone}`}`}>
+      <span className={`text-2xl font-black tabular-nums leading-none sm:text-3xl ${onDark ? "text-white" : "text-foreground"}`}>
         <Digit value={pad2(value)} animate={animate} />
       </span>
-      <span className="mt-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{label}</span>
+      <span className={`mt-1 text-[10px] font-medium uppercase tracking-wide ${onDark ? "text-white/60" : "text-muted-foreground"}`}>{label}</span>
     </div>
   );
 }
@@ -195,7 +195,7 @@ export default function LiveCountdown({
 
   // boxes
   if (urgency.level === "ended") {
-    return <p className={`text-sm font-semibold text-muted-foreground ${className}`}>This offer has ended.</p>;
+    return <p className={`text-sm font-semibold ${onDark ? "text-white/70" : "text-muted-foreground"} ${className}`}>This offer has ended.</p>;
   }
 
   let elapsedPct: number | null = null;
@@ -207,12 +207,12 @@ export default function LiveCountdown({
 
   return (
     <div className={`flex flex-col items-center gap-3 ${className}`}>
-      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label ?? "Offer ends in"}</p>
+      <p className={`text-xs font-semibold uppercase tracking-widest ${onDark ? "text-white/70" : "text-muted-foreground"}`}>{label ?? "Offer ends in"}</p>
       <div className="flex items-center gap-1.5 sm:gap-2.5" role="timer" aria-label={aria}>
-        {days > 0 && <Unit value={days} label="Days" animate={animate} tone={styles.box} />}
-        <Unit value={hours} label="Hours" animate={animate} tone={styles.box} />
-        <Unit value={minutes} label="Minutes" animate={animate} tone={styles.box} />
-        <Unit value={seconds} label="Seconds" animate={animate} tone={styles.box} />
+        {days > 0 && <Unit value={days} label="Days" animate={animate} tone={styles.box} onDark={onDark} />}
+        <Unit value={hours} label="Hours" animate={animate} tone={styles.box} onDark={onDark} />
+        <Unit value={minutes} label="Minutes" animate={animate} tone={styles.box} onDark={onDark} />
+        <Unit value={seconds} label="Seconds" animate={animate} tone={styles.box} onDark={onDark} />
       </div>
       {showUrgency && urgency.message && (
         <p className={`flex items-center gap-1.5 text-xs font-semibold ${styles.text}`}>
@@ -222,10 +222,10 @@ export default function LiveCountdown({
       )}
       {elapsedPct !== null && (
         <div className="w-full max-w-xs" aria-hidden="true">
-          <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+          <div className={`h-1.5 overflow-hidden rounded-full ${onDark ? "bg-white/15" : "bg-muted"}`}>
             <div className={`h-full rounded-full transition-[width] duration-1000 ease-linear ${styles.bar}`} style={{ width: `${elapsedPct}%` }} />
           </div>
-          <p className="mt-1 text-[10px] uppercase tracking-wide text-muted-foreground">{Math.round(elapsedPct)}% of the offer window gone</p>
+          <p className={`mt-1 text-[10px] uppercase tracking-wide ${onDark ? "text-white/60" : "text-muted-foreground"}`}>{Math.round(elapsedPct)}% of the offer window gone</p>
         </div>
       )}
     </div>

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import CampaignCountdown from "@/components/offers/CampaignCountdown";
+import CampaignBackdrop from "@/components/offers/CampaignBackdrop";
 import { PUBLIC_AUDIENCE_TABS, getThemePreset, type PublicAudienceTabKey } from "@/lib/offers/constants";
 import type { SerializedCampaign } from "@/lib/offers/campaigns";
 
@@ -30,36 +31,14 @@ export default function OffersHero({
   const accentColor = campaign?.theme.accentColor;
 
   return (
-    <section className="relative overflow-hidden bg-background pt-28 pb-16 lg:pt-36 lg:pb-24 border-b border-border/50">
-      {campaign?.bannerImage && (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={campaign.bannerImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
-          <div
-            className="absolute inset-0 bg-background"
-            style={{
-              maskImage: "linear-gradient(to bottom, transparent 0%, black 65%, black 100%)",
-              WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 65%, black 100%)",
-            }}
-          />
-        </div>
-      )}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className={`absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full blur-[120px] mix-blend-multiply dark:mix-blend-screen animate-blob ${primaryColor ? "" : "bg-primary/15"}`}
-          style={primaryColor ? { backgroundColor: primaryColor, opacity: 0.15 } : undefined}
-        />
-        <div
-          className={`absolute top-[10%] right-[5%] w-[50%] h-[50%] rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-2000 ${accentColor ? "" : "bg-secondary/15"}`}
-          style={accentColor ? { backgroundColor: accentColor, opacity: 0.15 } : undefined}
-        />
-      </div>
+    <section className="relative overflow-hidden border-b border-white/10 bg-[#0a0d16] pt-28 pb-20 text-white lg:pt-36 lg:pb-28">
+      <CampaignBackdrop preset={campaign?.themePreset} primaryColor={primaryColor} accentColor={accentColor} image={campaign?.bannerImage} />
 
       <div className="mx-auto max-w-5xl px-6 lg:px-8 text-center relative z-10">
         <motion.div initial="hidden" animate="visible" variants={stagger} className="space-y-6">
           <motion.div
             variants={fadeIn}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border/50 text-sm font-medium text-foreground backdrop-blur-sm mx-auto shadow-sm"
+            className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur-md"
           >
             {preset?.emoji ? (
               <span className="text-base leading-none" aria-hidden="true">{preset.emoji}</span>
@@ -69,17 +48,17 @@ export default function OffersHero({
             <span>{campaign ? campaign.name : "Festival Offers"}</span>
           </motion.div>
 
-          <motion.h1 variants={fadeIn} className="text-4xl font-black tracking-tight text-foreground sm:text-6xl">
+          <motion.h1 variants={fadeIn} className="text-4xl font-black tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)] sm:text-6xl lg:text-7xl">
             {headline}
           </motion.h1>
-          <motion.p variants={fadeIn} className="mx-auto max-w-2xl text-lg leading-relaxed text-muted-foreground">
+          <motion.p variants={fadeIn} className="mx-auto max-w-2xl text-lg leading-relaxed text-white/80">
             {subheadline}
           </motion.p>
 
           {!campaign && (
-            <motion.p variants={fadeIn} className="text-sm text-muted-foreground">
+            <motion.p variants={fadeIn} className="text-sm text-white/70">
               No festival campaign is live right now — check back soon, or explore our{" "}
-              <a href="/services" className="text-primary hover:underline">
+              <a href="/services" className="text-primary underline-offset-2 hover:underline">
                 full range of services
               </a>{" "}
               in the meantime.
@@ -88,7 +67,7 @@ export default function OffersHero({
 
           {campaign && (
             <motion.div variants={fadeIn}>
-              <CampaignCountdown endDate={campaign.endDate} startDate={campaign.startDate} onExpire={onCampaignEnd} />
+              <CampaignCountdown endDate={campaign.endDate} startDate={campaign.startDate} onExpire={onCampaignEnd} onDark />
             </motion.div>
           )}
 
@@ -99,7 +78,7 @@ export default function OffersHero({
                   key={tab.key}
                   type="button"
                   onClick={() => onSelectAudience(tab.key)}
-                  className="group inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-5 py-2.5 text-sm font-semibold text-foreground transition-all hover:border-primary hover:text-primary"
+                  className="group inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-md transition-all hover:border-white hover:bg-white/20"
                 >
                   {tab.cta} →
                 </button>

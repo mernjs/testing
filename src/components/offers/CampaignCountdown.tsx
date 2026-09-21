@@ -8,11 +8,15 @@ export default function CampaignCountdown({
   startDate,
   label,
   onExpire,
+  showUrgency = true,
+  onDark = false,
 }: {
   endDate: string;
   startDate?: string;
   label?: string;
   onExpire?: () => void;
+  showUrgency?: boolean;
+  onDark?: boolean;
 }) {
-  return <LiveCountdown endDate={endDate} startDate={startDate} label={label} onExpire={onExpire} variant="boxes" />;
+  return <LiveCountdown endDate={endDate} startDate={startDate} label={label} onExpire={onExpire} showUrgency={showUrgency} onDark={onDark} variant="boxes" />;
 }

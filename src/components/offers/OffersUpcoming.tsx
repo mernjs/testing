@@ -4,6 +4,7 @@ import { useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import { Lock, CalendarClock, Sparkles, Bell, Percent, Layers, Users, ArrowRight, Flag } from "lucide-react";
 import CampaignCountdown from "@/components/offers/CampaignCountdown";
+import CampaignBackdrop from "@/components/offers/CampaignBackdrop";
 import { CountdownPill, useRemaining } from "@/components/offers/LiveCountdown";
 import NotifyMeForm from "@/components/offers/NotifyMeForm";
 import AddToCalendar from "@/components/offers/AddToCalendar";
@@ -95,26 +96,23 @@ export default function OffersUpcoming({
     <div className="flex min-h-screen flex-col selection:bg-primary/30">
       <StateWatcher serverTime={serverTime} startsAt={campaign.startDate} />
 
-      <section className="relative overflow-hidden border-b border-border/50 bg-background pt-28 pb-16 lg:pt-36 lg:pb-24">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className={`absolute -left-[10%] -top-[20%] h-[60%] w-[60%] rounded-full blur-[120px] animate-blob ${primary ? "" : "bg-primary/15"}`} style={primary ? { backgroundColor: primary, opacity: 0.16 } : undefined} />
-          <div className={`absolute right-[5%] top-[10%] h-[50%] w-[50%] rounded-full blur-[100px] animate-blob animation-delay-2000 ${accent ? "" : "bg-secondary/15"}`} style={accent ? { backgroundColor: accent, opacity: 0.16 } : undefined} />
-        </div>
+      <section className="relative overflow-hidden border-b border-white/10 bg-[#0a0d16] pt-28 pb-20 text-white lg:pt-36 lg:pb-28">
+        <CampaignBackdrop preset={campaign.themePreset} primaryColor={primary} accentColor={accent} image={campaign.bannerImage} />
 
         <div className="relative z-10 mx-auto max-w-5xl space-y-6 px-6 text-center lg:px-8">
-          <motion.span initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-muted/50 px-4 py-2 text-sm font-semibold text-foreground">
+          <motion.span initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur-md">
             {variant === "coming_soon" ? <span className="relative flex size-2.5"><span className="absolute inline-flex size-full animate-ping rounded-full bg-primary/60" /><span className="relative inline-flex size-2.5 rounded-full bg-primary" /></span> : preset?.emoji ? <span aria-hidden="true">{preset.emoji}</span> : <Flag className="size-4 text-primary" />}
             {variant === "coming_soon" ? "Coming soon" : `Scheduled campaign · ${daysAway} ${daysAway === 1 ? "day" : "days"} to go`}
           </motion.span>
 
-          <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-6xl">{campaign.theme.bannerHeadline ?? campaign.name}</h1>
-          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-muted-foreground">
+          <h1 className="text-4xl font-black tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.45)] sm:text-6xl lg:text-7xl">{campaign.theme.bannerHeadline ?? campaign.name}</h1>
+          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-white/80">
             {campaign.theme.bannerSubheadline ?? `${campaign.name} is almost here — exclusive limited-time offers on software, AI, training, internships and developer hiring.`}
           </p>
 
-          <CampaignCountdown endDate={campaign.startDate} label="Goes live in" />
+          <CampaignCountdown endDate={campaign.startDate} label="Goes live in" showUrgency={false} onDark />
 
-          <p className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+          <p className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-sm text-white/75">
             <span className="inline-flex items-center gap-1.5"><CalendarClock className="size-4 text-primary" /> Starts {formatDateTime(campaign.startDate)}</span>
             <span>Runs until {formatDate(campaign.endDate)}</span>
           </p>

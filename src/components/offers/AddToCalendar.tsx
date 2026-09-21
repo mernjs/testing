@@ -46,10 +46,10 @@ export default function AddToCalendar({ name, startsAt, endsAt, description }: {
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <button type="button" onClick={downloadIcs} className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/80 px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-primary hover:text-primary">
+      <button type="button" onClick={downloadIcs} className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/20">
         <CalendarPlus className="size-4" /> Add to calendar
       </button>
-      <a href={google} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-muted-foreground underline underline-offset-2 hover:text-primary">
+      <a href={google} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-white/70 underline underline-offset-2 hover:text-white">
         Google Calendar
       </a>
     </div>
