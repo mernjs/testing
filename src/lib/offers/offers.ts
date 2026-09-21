@@ -2,7 +2,7 @@ import "server-only";
 import { getDb } from "@/lib/mongodb";
 import { newId, createStamp, updateStamp, notDeleted, type AuditFields } from "@/lib/offers/db";
 import type { OfferWriteInput, OfferPricingInput } from "@/lib/offers/offer-validation";
-import { audienceAliases, type Audience, type OfferStatus } from "@/lib/offers/constants";
+import { audienceAliases, type Audience, type OfferStatus, type OfferType, type OfferSegment, type LimitKind, type LinkedItem } from "@/lib/offers/constants";
 import { countClaimsByOffer } from "@/lib/offers/claims";
 import type { CategorySlug } from "@/lib/categories";
 
@@ -20,6 +20,11 @@ export interface Offer extends AuditFields {
   pricing: OfferPricingInput;
   benefits: string[];
   eligibility?: string[];
+  offerTypes?: OfferType[];
+  segment?: OfferSegment;
+  limitKind?: LimitKind;
+  linked?: LinkedItem | null;
+  ctaText?: string;
   /** Optional total-claims cap; null/absent = unlimited. */
   claimLimit?: number | null;
   validFrom: Date;
@@ -141,6 +146,11 @@ export async function createOffer(data: OfferWriteInput, actorId: string): Promi
     pricing: data.pricing,
     benefits: data.benefits,
     eligibility: data.eligibility,
+    offerTypes: data.offerTypes,
+    segment: data.segment,
+    limitKind: data.limitKind,
+    linked: data.linked,
+    ctaText: data.ctaText,
     claimLimit: data.claimLimit,
     validFrom: new Date(data.validFrom),
     validUntil: new Date(data.validUntil),
@@ -172,6 +182,11 @@ export async function updateOffer(id: string, data: OfferWriteInput, actorId: st
         pricing: data.pricing,
         benefits: data.benefits,
         eligibility: data.eligibility,
+        offerTypes: data.offerTypes,
+        segment: data.segment,
+        limitKind: data.limitKind,
+        linked: data.linked,
+        ctaText: data.ctaText,
         claimLimit: data.claimLimit,
         validFrom: new Date(data.validFrom),
         validUntil: new Date(data.validUntil),

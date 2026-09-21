@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Flame, X } from "lucide-react";
 import LiveCountdown from "@/components/offers/LiveCountdown";
-import { useOfferClaim } from "@/components/offers/OfferClaimProvider";
 import { isClaimHref } from "@/lib/offers/constants";
 import { useOfferTracking } from "@/lib/useOfferTracking";
 import type { ActiveDisplayStrip } from "@/lib/useActiveCampaignDisplay";
@@ -32,7 +31,6 @@ export default function OfferTopStrip({
   const [closed, setClosed] = useState(() => isClosed(campaign.id));
   const ref = useRef<HTMLDivElement>(null);
   const track = useOfferTracking(campaign.id);
-  const { openClaim } = useOfferClaim();
   const viewedRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -72,7 +70,7 @@ export default function OfferTopStrip({
   if (closed) return null;
 
   return (
-    <div ref={ref} className="fixed inset-x-0 top-0 z-[60] w-full bg-foreground text-background">
+    <div ref={ref} className="fixed inset-x-0 top-0 z-[45] w-full bg-foreground text-background">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 py-2 text-center sm:justify-between sm:text-left">
         <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-xs sm:text-sm">
           <span className="inline-flex items-center gap-1 font-bold">
@@ -83,26 +81,14 @@ export default function OfferTopStrip({
           {strip.showCountdown && <LiveCountdown endDate={endDate} variant="strip" onDark />}
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {isClaimHref(strip.ctaHref) ? (
-            <button
-              type="button"
-              onClick={() => {
-                track("strip_click", {});
-                openClaim({ offerId: strip.offerId });
-              }}
-              className="rounded-full bg-primary px-3.5 py-1 text-xs font-semibold text-primary-foreground transition-transform hover:scale-105 sm:text-sm"
-            >
-              {strip.ctaText}
-            </button>
-          ) : (
-            <Link
-              href={strip.ctaHref}
-              onClick={() => track("strip_click", {})}
-              className="rounded-full bg-primary px-3.5 py-1 text-xs font-semibold text-primary-foreground transition-transform hover:scale-105 sm:text-sm"
-            >
-              {strip.ctaText}
-            </Link>
-          )}
+          {/* "Claim Offer" always lands on the Offers page so the visitor can see every live offer and choose. */}
+          <Link
+            href={isClaimHref(strip.ctaHref) ? "/offers" : strip.ctaHref}
+            onClick={() => track("strip_click", {})}
+            className="rounded-full bg-primary px-3.5 py-1 text-xs font-semibold text-primary-foreground transition-transform hover:scale-105 sm:text-sm"
+          >
+            {strip.ctaText}
+          </Link>
           {strip.allowClose && (
             <button
               type="button"

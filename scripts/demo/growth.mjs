@@ -1,7 +1,7 @@
 // Growth modules — Festival Offers (campaigns, offers, coupons, claims, analytics) and the Wallet & Credits system
 // (rules, referral campaigns, referral network, per-user ledgers with consistent balances, streaks, notifications).
 import { randomUUID } from "node:crypto";
-import { rng, rint, pick, chance, weighted, shuffle, ago, fromNow, audit, isoDay, NOW, insertAll } from "./lib.mjs";
+import { personName, rng, rint, pick, chance, weighted, shuffle, ago, fromNow, audit, isoDay, NOW, insertAll } from "./lib.mjs";
 
 const DAY = 86400000;
 const CAT_AUDIENCES = { "software-development": ["CLIENT", "BUSINESS"], "ai-automations": ["BUSINESS", "CLIENT"], "industrial-training": ["STUDENT", "LEARNER"], "resource-augmentation": ["HIRING", "BUSINESS"], "internship-program": ["INTERN", "STUDENT"] };
@@ -43,6 +43,7 @@ export async function seedGrowth(db, tms, pms, people) {
     { key: "diwali", name: "Diwali Dhamaka 2026", preset: "diwali", type: "festival", start: -10, end: 20, status: "active", priority: 100, featured: true, head: "Light up your career & business", sub: "Up to 30% off on training, internships, AI and software projects" },
     { key: "summer", name: "Summer Skills Sale", preset: "summer-sale", type: "seasonal", start: -140, end: -85, status: "expired", priority: 50, featured: false, head: "Beat the summer — upskill now", sub: "Bootcamps & internships at special prices" },
     { key: "newyear", name: "New Year Kickstart 2027", preset: "new-year", type: "festival", start: 70, end: 100, status: "scheduled", priority: 80, featured: true, head: "Start 2027 with a bang", sub: "Early-bird pricing across all services" },
+    { key: "republic", name: "Republic Day Tech Fest", preset: "independence-day", type: "festival", start: 2.5, end: 16, status: "scheduled", priority: 90, featured: true, head: "Build. Learn. Launch.", sub: "Republic Day pricing on developers, courses and AI projects" },
     { key: "college", name: "Back to College Bonanza", preset: "back-to-college", type: "seasonal", start: -60, end: -35, status: "expired", priority: 40, featured: false, head: "Campus season offers", sub: "Student-first pricing on training programs" },
     { key: "flash", name: "Flash Friday Deals", preset: "custom", type: "flash-sale", start: -3, end: 2, status: "paused", priority: 60, featured: false, head: "48-hour flash deals", sub: "Limited seats, limited time" },
   ];
@@ -63,12 +64,55 @@ export async function seedGrowth(db, tms, pms, people) {
       if (mode === "flat") pricing.flatDiscountAmount = val;
       if (mode === "custom_quote") pricing.startingPriceLabel = "Custom Quote";
       offers.push({
-        _id: `demo-offer-${c.key}-${i + 1}`, campaignId: `demo-camp-${c.key}`, title, description: `${title} — limited-period pricing with expert delivery and support.`, category, subService: sub, audience: i === 5 ? ["ALL"] : CAT_AUDIENCES[category], eligibility: CAT_ELIGIBILITY[category], pricing,
+        _id: `demo-offer-${c.key}-${i + 1}`, campaignId: `demo-camp-${c.key}`, title, description: `${title} — limited-period pricing with expert delivery and support.`, category, subService: sub, audience: i === 5 ? ["ALL"] : CAT_AUDIENCES[category], eligibility: CAT_ELIGIBILITY[category], offerTypes: ["seasonal", category === "industrial-training" || category === "internship-program" ? "student" : category === "resource-augmentation" ? "hiring" : "service", ...(i < 2 ? ["limited_time"] : [])], segment: "any", limitKind: "slots", pricing,
         benefits: ["Senior-led delivery", "Dedicated support", "Certificate / documentation included"], validFrom: fromNow(c.start), validUntil: c.key === "diwali" && i % 5 === 1 ? new Date(NOW + 46 * 3600000) : c.key === "diwali" && i === 3 ? new Date(NOW + 9 * 3600000) : fromNow(c.end), priority: 100 - i, isFeatured: i < 2, isDealOfTheDay: i === 0 && c.key === "diwali", isFlashDeal: c.key === "flash",
-        status: c.status === "active" ? "active" : c.status === "paused" ? "paused" : c.status === "scheduled" ? "draft" : "expired", ...audit(fromNow(c.start - 3)),
+        status: c.status === "active" || c.status === "scheduled" ? "active" : c.status === "paused" ? "paused" : "expired", ...audit(fromNow(c.start - 3)),
       });
     });
   }
+
+  // ---- Offer marketplace: a wide variety of typed offers on the live Diwali campaign ----
+  // [title, category, mode, price, value, types, unit, segment, audience, cta, linked, endsInHours|null, slots|null, limitKind]
+  const M = (t, cat, mode, price, val, types, o = {}) => ({ t, cat, mode, price, val, types, unit: "fixed", segment: "any", aud: CAT_AUDIENCES[cat], cta: null, linked: null, hours: null, slots: null, kind: "slots", ...o });
+  const MARKET = [
+    M("Full-Stack + DevOps Career Combo", "industrial-training", "percentage", 64000, 30, ["combo", "course", "student", "seasonal"], { linked: { kind: "course", label: "Full-Stack + DevOps Combo Program", href: "/industrial-training" }, slots: 40 }),
+    M("Website + SEO + Hosting Launch Combo", "software-development", "percentage", 120000, 25, ["combo", "service", "business", "limited_time"], { linked: { kind: "service", label: "Website Development", href: "/software-development" }, hours: 70 }),
+    M("Senior Developer — Hourly Rate", "resource-augmentation", "flat", 1500, 300, ["hourly", "hiring", "limited_time"], { unit: "hour", hours: 100, linked: { kind: "service", label: "Hire a senior developer", href: "/resource-augmentation" } }),
+    M("AI Engineer — Hourly Rate", "resource-augmentation", "percentage", 2500, 20, ["hourly", "hiring", "business", "flash"], { unit: "hour", hours: 30, slots: 12 }),
+    M("QA & Automation Engineer — Hourly Rate", "resource-augmentation", "percentage", 1100, 15, ["hourly", "hiring", "client"], { unit: "hour" }),
+    M("Flash: 48-Hour Landing Page Sprint", "software-development", "flat", 25000, 5000, ["flash", "project", "limited_time"], { hours: 5, slots: 8, cta: "Book my sprint" }),
+    M("Flash: Interview Bootcamp Weekend", "industrial-training", "flat", 2500, 700, ["flash", "student", "course"], { hours: 7, slots: 30, cta: "Reserve my seat" }),
+    M("Python for Data Science — Enrol", "industrial-training", "percentage", 18000, 35, ["course", "student", "first_time"], { segment: "new_user", cta: "Enrol now", linked: { kind: "course", label: "Python for Data Science", href: "/industrial-training" } }),
+    M("Advanced Track Upgrade — Loyalty Price", "industrial-training", "percentage", 22000, 15, ["renewal", "course", "student"], { segment: "existing_user", cta: "Upgrade my plan", linked: { kind: "program", label: "Advanced Placement Track", href: "/industrial-training" } }),
+    M("Mobile App Development", "software-development", "percentage", 300000, 18, ["service", "client", "project"], { linked: { kind: "service", label: "Mobile App Development", href: "/services" } }),
+    M("Fixed-Price MVP in 6 Weeks", "software-development", "flat", 350000, 40000, ["project", "client", "business", "limited_time"], { hours: 22, slots: 6, kind: "slots" }),
+    M("Managed Support Plan", "software-development", "percentage", 20000, 25, ["subscription", "business", "client"], { unit: "month", cta: "Start my plan" }),
+    M("Annual Cloud Care Plan", "software-development", "percentage", 240000, 30, ["subscription", "business", "limited_time"], { unit: "year", hours: 60 }),
+    M("Refer & Earn — 500 Credits Each", "software-development", "custom_quote", null, null, ["referral"], { aud: ["ALL"], cta: "Get my referral link", label: "500 credits per referral", linked: { kind: "product", label: "YashOrbit Rewards", href: "/rewards" } }),
+    M("Welcome Offer — 10% Off Your First Project", "software-development", "percentage", 50000, 10, ["first_time", "client"], { segment: "new_user" }),
+    M("Your First Course — ₹1,000 Off", "industrial-training", "flat", 3999, 1000, ["first_time", "student", "course"], { segment: "new_user", cta: "Claim welcome offer" }),
+    M("Loyalty Upgrade — 20% Off Dedicated Team", "resource-augmentation", "percentage", 480000, 20, ["renewal", "hiring", "business"], { segment: "existing_user", unit: "month" }),
+    M("Founders Pack: AI + App Bundle", "ai-automations", "percentage", 260000, 22, ["personalized", "combo", "business"], { linked: { kind: "service", label: "AI & App Bundle", href: "/ai-automations" } }),
+    M("Dedicated Team of 4 — Monthly", "resource-augmentation", "percentage", 480000, 15, ["hiring", "business", "subscription"], { unit: "month" }),
+    M("Diwali Special: Full Website Redesign", "software-development", "percentage", 150000, 28, ["seasonal", "service", "limited_time"], { hours: 46 }),
+    M("Internship Fast-Track + Certificate", "internship-program", "flat", 6000, 1500, ["student", "course", "limited_time"], { hours: 18, slots: 25, cta: "Apply now" }),
+    M("Free AI Audit + 10% Off Automation", "ai-automations", "percentage", 80000, 10, ["client", "service", "first_time"], { segment: "new_user", cta: "Book my audit" }),
+    M("Enterprise Data Platform Package", "software-development", "custom_quote", null, null, ["business", "project"], { label: "Custom Quote", cta: "Request a quote" }),
+    M("Chatbot Starter Kit — 25 Licences", "ai-automations", "percentage", 45000, 22, ["service", "limited_time"], { slots: 25, kind: "quantity", hours: 80 }),
+  ];
+  MARKET.forEach((m, k) => {
+    const pricing = { mode: m.mode, currency: "INR", unit: m.unit };
+    if (m.mode !== "custom_quote") pricing.originalPrice = m.price;
+    if (m.mode === "percentage") pricing.percentage = m.val;
+    if (m.mode === "flat") pricing.flatDiscountAmount = m.val;
+    if (m.mode === "custom_quote") pricing.startingPriceLabel = m.label ?? "Custom Quote";
+    offers.push({
+      _id: `demo-offer-diwali-m${k + 1}`, campaignId: "demo-camp-diwali", title: m.t, description: `${m.t} — limited-period pricing with expert delivery and support.`, category: m.cat, subService: "all", audience: m.aud,
+      eligibility: CAT_ELIGIBILITY[m.cat], offerTypes: m.types, segment: m.segment, limitKind: m.kind, linked: m.linked, ctaText: m.cta ?? undefined, _slots: m.slots, pricing,
+      benefits: ["Senior-led delivery", "Dedicated support", "Documentation & handover included"], validFrom: fromNow(-10), validUntil: m.hours ? new Date(NOW + m.hours * 3600000) : fromNow(18 + (k % 6)),
+      priority: 60 - k, isFeatured: k % 6 === 0, isDealOfTheDay: false, isFlashDeal: m.types.includes("flash"), status: "active", ...audit(fromNow(-13)),
+    });
+  });
   const activeOffers = offers.filter((o) => o.campaignId === "demo-camp-diwali");
 
   const couponDefs = [
@@ -364,27 +408,50 @@ export async function seedGrowth(db, tms, pms, people) {
   }
 
   // ---- write everything ----
+  // ---- "Notify me" subscribers for the upcoming campaigns ----
+  const subInterests = ["CLIENT", "STUDENT", "INTERN", "HIRING", null];
+  const subscriptions = Array.from({ length: 46 }, (_, i) => {
+    const campaignId = weighted([["demo-camp-republic", 5], ["demo-camp-newyear", 3], [null, 2]]);
+    const u = i % 3 === 0 ? pick(users) : null;
+    const created = ago(rint(0, 12));
+    return {
+      _id: `demo-sub-${i + 1}`, email: u ? u.email : `subscriber.${i + 1}@prospect.demo.in`, name: u ? u.displayName : chance(0.7) ? personName() : undefined,
+      phone: chance(0.5) ? `+91 ${rint(70000, 99999)}${rint(10000, 99999)}` : undefined, interest: pick(subInterests), message: chance(0.15) ? "Looking for a dedicated team for a 3-month build." : undefined,
+      campaignId, source: campaignId === "demo-camp-republic" ? "coming_soon" : campaignId ? "future" : "none", notifiedCampaignIds: [], createdAt: created, updatedAt: created,
+    };
+  }).filter((x, i, a) => a.findIndex((y) => y.email === x.email && y.campaignId === x.campaignId) === i);
+
   // A real claim cap on some Diwali offers so the public progress bars / sold-out / expiry alerts have true data to show.
   const claimedByOffer = new Map();
   for (const cl of claims) claimedByOffer.set(cl.offerId, (claimedByOffer.get(cl.offerId) ?? 0) + 1);
   activeOffers.forEach((o, i) => {
     const claimed = claimedByOffer.get(o._id) ?? 0;
+    if (o._slots) { o.claimLimit = Math.max(o._slots, claimed + 3); return; }
     if (claimed < 3) return;
     if (i === 2) o.claimLimit = claimed; // fully claimed
     else if (i === 4) o.claimLimit = Math.ceil(claimed / 0.88); // almost gone
     else if (i % 3 === 0) o.claimLimit = Math.ceil(claimed / (0.35 + (i % 5) * 0.1));
   });
 
-  for (const c of ["offer_campaigns", "offers", "coupons", "offer_claims", "offer_analytics_events", "wallets", "wallet_transactions", "referrals"]) await wipe(c);
+  for (const c of ["offer_campaigns", "offers", "coupons", "offer_claims", "offer_analytics_events", "offer_subscriptions", "wallets", "wallet_transactions", "referrals"]) await wipe(c);
+  // The live app also writes rows for demo users under random UUID ids (expiry sweep, wallet views, referral/notification hooks).
+  // Those don't match the demo- id prefix but collide with our idempotency keys, so clear everything that belongs to a demo user too.
+  await db.collection("wallet_transactions").deleteMany({ userId: /^demo-/ });
+  await db.collection("wallets").deleteMany({ _id: /^demo-/ });
+  await db.collection("referrals").deleteMany({ $or: [{ referrerUserId: /^demo-/ }, { refereeUserId: /^demo-/ }] });
+  await db.collection("wallet_idempotency_locks").deleteMany({ _id: /demo-/ });
+  await db.collection("wallet_streaks").deleteMany({ _id: /^demo-/ });
   await db.collection("wallet_idempotency_locks").deleteMany({ _id: /demo-/ });
   await db.collection("wallet_streaks").deleteMany({ _id: /^demo-/ });
   // remove the generic-shaped promo docs the legacy seeder used to write (wrong schema for this module)
   await db.collection("coupons").deleteMany({ code: /^PROMO2026-/ });
   await db.collection("offers").deleteMany({ offerCode: { $exists: true } });
   await insertAll(db.collection("offer_campaigns"), campaigns);
+  for (const o of offers) delete o._slots;
   await insertAll(db.collection("offers"), offers);
   await insertAll(db.collection("coupons"), coupons);
   await insertAll(db.collection("offer_claims"), claims);
+  await insertAll(db.collection("offer_subscriptions"), subscriptions);
   await insertAll(db.collection("offer_analytics_events"), evtDocs);
   await insertAll(db.collection("wallets"), wallets);
   await insertAll(db.collection("wallet_transactions"), ledger);

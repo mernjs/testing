@@ -88,6 +88,86 @@ export const PUBLIC_AUDIENCE_TABS = [
 export type PublicAudienceTabKey = (typeof PUBLIC_AUDIENCE_TABS)[number]["key"];
 
 // ---------------------------------------------------------------------------
+// Offer marketplace taxonomy
+// ---------------------------------------------------------------------------
+
+/** An offer can carry several tags (e.g. a flash, student, course offer). Order = display order of the filter bar. */
+export const OFFER_TYPES = [
+  { value: "limited_time", label: "Limited-Time", blurb: "Strong deadline, live countdown" },
+  { value: "flash", label: "Flash", blurb: "Short-duration special deals" },
+  { value: "combo", label: "Combo", blurb: "Bundled services or courses" },
+  { value: "course", label: "LMS Courses", blurb: "Course discounts & enrollments" },
+  { value: "student", label: "Student", blurb: "Student-only pricing" },
+  { value: "hourly", label: "Hourly Rates", blurb: "Developer rate per hour" },
+  { value: "hiring", label: "Developer Hiring", blurb: "Dedicated developers & teams" },
+  { value: "project", label: "Project-Based", blurb: "Fixed-price packages" },
+  { value: "service", label: "Services", blurb: "Web, app, AI & software" },
+  { value: "subscription", label: "Subscriptions", blurb: "Monthly / yearly plans" },
+  { value: "client", label: "Client", blurb: "Project & service packages" },
+  { value: "business", label: "Business", blurb: "Hiring & technology packages" },
+  { value: "referral", label: "Referral", blurb: "Rewards & credits for referrals" },
+  { value: "first_time", label: "First-Time", blurb: "New-user welcome offers" },
+  { value: "renewal", label: "Renewal & Upgrade", blurb: "For existing customers" },
+  { value: "seasonal", label: "Festival & Seasonal", blurb: "Scheduled campaigns" },
+  { value: "personalized", label: "Picked For You", blurb: "Matched to your profile" },
+] as const;
+
+export type OfferType = (typeof OFFER_TYPES)[number]["value"];
+
+export function isValidOfferType(value: unknown): value is OfferType {
+  return typeof value === "string" && OFFER_TYPES.some((t) => t.value === value);
+}
+
+export function getOfferTypeLabel(value: string): string {
+  return OFFER_TYPES.find((t) => t.value === value)?.label ?? value;
+}
+
+/** What one "unit" of the price means. `fixed` = a one-off package price. */
+export const PRICING_UNITS = [
+  { value: "fixed", label: "One-off / package", suffix: "" },
+  { value: "hour", label: "Per hour", suffix: "/hr" },
+  { value: "month", label: "Per month", suffix: "/mo" },
+  { value: "year", label: "Per year", suffix: "/yr" },
+] as const;
+
+export type PricingUnit = (typeof PRICING_UNITS)[number]["value"];
+
+export function isValidPricingUnit(value: unknown): value is PricingUnit {
+  return typeof value === "string" && PRICING_UNITS.some((u) => u.value === value);
+}
+
+export function unitSuffix(unit: string | undefined | null): string {
+  return PRICING_UNITS.find((u) => u.value === unit)?.suffix ?? "";
+}
+
+/** Who may claim, beyond the audience: first-time offers block repeat claimers, renewal offers need an existing account. */
+export const OFFER_SEGMENTS = [
+  { value: "any", label: "Anyone" },
+  { value: "new_user", label: "First-time users only" },
+  { value: "existing_user", label: "Existing customers only (signed in)" },
+] as const;
+
+export type OfferSegment = (typeof OFFER_SEGMENTS)[number]["value"];
+
+export function isValidOfferSegment(value: unknown): value is OfferSegment {
+  return typeof value === "string" && OFFER_SEGMENTS.some((s) => s.value === value);
+}
+
+/** What the limited quantity means in copy: seats/slots vs units. */
+export const LIMIT_KINDS = [
+  { value: "slots", label: "Slots / seats", noun: "slots" },
+  { value: "quantity", label: "Quantity", noun: "left in stock" },
+] as const;
+
+export type LimitKind = (typeof LIMIT_KINDS)[number]["value"];
+
+export interface LinkedItem {
+  kind: "course" | "service" | "product" | "program";
+  label: string;
+  href: string;
+}
+
+// ---------------------------------------------------------------------------
 // Campaign
 // ---------------------------------------------------------------------------
 

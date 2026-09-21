@@ -111,3 +111,8 @@ export async function countClaimsForOffer(offerId: string): Promise<number> {
   const collection = await getCollection();
   return collection.countDocuments({ offerId });
 }
+
+export async function hasClaimByEmail(email: string): Promise<boolean> {
+  const collection = await getCollection();
+  return (await collection.countDocuments({ leadEmail: email.trim().toLowerCase() }, { limit: 1 })) > 0;
+}

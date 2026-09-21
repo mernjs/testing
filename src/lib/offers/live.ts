@@ -34,7 +34,8 @@ export interface Urgency {
 export function getUrgency(remainingMs: number): Urgency {
   if (remainingMs <= 0) return { level: "ended", label: "Ended", message: "This offer has ended." };
   if (remainingMs <= HOUR) return { level: "critical", label: "Final hour", message: "Final hour — this offer is about to expire." };
-  if (remainingMs <= DAY) return { level: "urgent", label: "Last day", message: "Last day — this offer ends today." };
+  if (remainingMs <= 6 * HOUR) return { level: "critical", label: "Last few hours", message: "Last few hours — claim it before it's gone." };
+  if (remainingMs <= DAY) return { level: "urgent", label: "Expires today", message: "Offer expires today." };
   if (remainingMs <= 3 * DAY) return { level: "soon", label: "Ending soon", message: "Ending soon — claim before it's gone." };
   return { level: "calm", label: "", message: "" };
 }

@@ -21,7 +21,7 @@ export default function OfferPopup({
 }) {
   const [open, setOpen] = useState(false);
   const track = useOfferTracking(campaign.id);
-  const { openClaim, isClaimOpen } = useOfferClaim();
+  const { isClaimOpen } = useOfferClaim();
 
   useEffect(() => {
     // Deliberately no "already armed" ref guard here — React (Strict Mode,
@@ -86,17 +86,13 @@ export default function OfferPopup({
   }
 
   /**
-   * "Claim Offer": close this popup on purpose, THEN open the claim sheet once the dialog's exit animation has
-   * finished. Navigating away instead (the old behaviour) left the dialog mounted on top of the destination page.
+   * "Claim Offer" sends visitors to the Offers page, where they see everything that is live and pick what they want.
+   * The popup is closed on purpose first — a dialog left mounted would otherwise sit on top of the destination page.
    */
-  function handleCta(e: React.MouseEvent) {
+  function handleCta() {
     track("popup_click", {});
     setOpen(false);
     markPopupClosed(campaign.id);
-    if (isClaimHref(popup.ctaHref)) {
-      e.preventDefault();
-      setTimeout(() => openClaim({ offerId: popup.offerId }), 220);
-    }
   }
 
   return (
@@ -108,8 +104,7 @@ export default function OfferPopup({
           </div>
           <p className="mt-4 text-xs font-bold uppercase tracking-widest text-primary">{popup.heading}</p>
           <h2 className="mt-1 text-2xl font-black tracking-tight text-foreground">{campaign.name}</h2>
-          <p className="mt-2 text-lg font-black text-primary">{popup.offerBadge}</p>
-          <p className="mt-1 text-sm text-muted-foreground">{popup.offerTitle}</p>
+          <p className="mt-2 text-sm text-muted-foreground">Limited-time offers on software, AI, courses, internships and developer hiring.</p>
 
           {popup.showCountdown && (
             <div className="mt-5 flex justify-center">
@@ -118,7 +113,7 @@ export default function OfferPopup({
           )}
 
           <Link
-            href={popup.ctaHref}
+            href={isClaimHref(popup.ctaHref) ? "/offers" : popup.ctaHref}
             onClick={handleCta}
             className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-105"
           >

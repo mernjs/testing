@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Flame, ArrowRight, CheckCircle2, Users, Sparkles, CalendarClock, Info } from "lucide-react";
+import { Flame, ArrowRight, CheckCircle2, Users, Sparkles, CalendarClock, Info, Link2, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CountdownPill, useRemaining } from "@/components/offers/LiveCountdown";
-import { formatOfferBadge, getServiceHref, getAudienceLabel, estimateSavings } from "@/lib/offers/constants";
+import { formatOfferBadge, getServiceHref, getAudienceLabel, estimateSavings, getOfferTypeLabel, unitSuffix } from "@/lib/offers/constants";
 import { getUrgency, URGENCY_STYLES, claimProgress, nowMs } from "@/lib/offers/live";
 import { getCategoryLabel, getSubServices } from "@/lib/categories";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -15,6 +15,12 @@ import type { SerializedOffer } from "@/lib/offers/offers";
 function subServiceLabel(offer: SerializedOffer): string {
   if (offer.subService === "all") return getCategoryLabel(offer.category);
   return getSubServices(offer.category).find((s) => s.slug === offer.subService)?.label ?? getCategoryLabel(offer.category);
+}
+
+/** The two most informative marketplace tags (the urgency-only ones are already conveyed by the status chip / countdown). */
+function typeChips(offer: SerializedOffer): string[] {
+  const skip = new Set(["limited_time", "flash"]);
+  return (offer.offerTypes ?? []).filter((t) => !skip.has(t)).slice(0, 2).map(getOfferTypeLabel);
 }
 
 /** Human-readable "who is this for" chips. */
@@ -60,7 +66,7 @@ export default function OfferCard({
   if (ended) status = { label: "Ended", className: URGENCY_STYLES.ended.chip };
   else if (progress.soldOut) status = { label: "Sold out", className: URGENCY_STYLES.critical.chip };
   else if (notStarted) status = { label: "Starts soon", className: URGENCY_STYLES.upcoming.chip };
-  else if (progress.almostGone) status = { label: `Only ${progress.remaining} left`, className: URGENCY_STYLES.urgent.chip };
+  else if (progress.almostGone) status = { label: `Only ${progress.remaining} ${offer.limitKind === "quantity" ? "left" : "slots left"}`, className: URGENCY_STYLES.urgent.chip };
   else if (urgency && urgency.label) status = { label: urgency.label, className: URGENCY_STYLES[urgency.level].chip };
   else status = { label: "Live now", className: "bg-green-500/15 text-green-600 dark:text-green-400" };
 
@@ -77,7 +83,7 @@ export default function OfferCard({
     >
       <div className="mb-3 flex items-center justify-between gap-2">
         <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-primary">
-          <Flame className="size-3.5" /> {offer.isDealOfTheDay ? "Deal of the Day" : offer.isFlashDeal ? "Flash Deal" : "Festival Offer"}
+          <Flame className="size-3.5" /> {offer.isDealOfTheDay ? "Deal of the Day" : offer.isFlashDeal || offer.offerTypes?.includes("flash") ? "Flash Deal" : offer.offerTypes?.includes("hourly") ? "Hourly Rate Offer" : offer.offerTypes?.includes("combo") ? "Combo Offer" : offer.offerTypes?.includes("first_time") ? "Welcome Offer" : offer.offerTypes?.includes("renewal") ? "Renewal Offer" : "Festival Offer"}
         </span>
         {recommended ? (
           <Badge className="gap-1"><Sparkles className="size-3" /> For you</Badge>
@@ -99,9 +105,19 @@ export default function OfferCard({
         <p className="text-2xl font-black tracking-tight text-primary">{badge}</p>
         {original !== null && (
           <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-sm">
-            <span className="text-muted-foreground line-through">{formatCurrency(original, offer.pricing.currency)}</span>
-            {final !== null && <span className="font-bold text-foreground">{formatCurrency(final, offer.pricing.currency)}</span>}
-            {savings > 0 && <span className="text-xs font-semibold text-green-600 dark:text-green-400">Save {formatCurrency(savings, offer.pricing.currency)}</span>}
+            {offer.pricing.unit && offer.pricing.unit !== "fixed" ? (
+              <>
+                <span className="text-muted-foreground">Regular</span>
+                <span className="text-muted-foreground line-through">{formatCurrency(original, offer.pricing.currency)}{unitSuffix(offer.pricing.unit)}</span>
+                {final !== null && <span className="font-bold text-foreground">Offer {formatCurrency(final, offer.pricing.currency)}{unitSuffix(offer.pricing.unit)}</span>}
+              </>
+            ) : (
+              <>
+                <span className="text-muted-foreground line-through">{formatCurrency(original, offer.pricing.currency)}</span>
+                {final !== null && <span className="font-bold text-foreground">{formatCurrency(final, offer.pricing.currency)}</span>}
+                {savings > 0 && <span className="text-xs font-semibold text-green-600 dark:text-green-400">Save {formatCurrency(savings, offer.pricing.currency)}</span>}
+              </>
+            )}
           </p>
         )}
       </div>
@@ -113,6 +129,19 @@ export default function OfferCard({
               <Users className="size-3" /> {chip}
             </span>
           ))}
+        </div>
+      )}
+
+      {!compact && (typeChips(offer).length > 0 || offer.linked) && (
+        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+          {typeChips(offer).map((t) => (
+            <span key={t} className="rounded-full border border-primary/30 px-2.5 py-0.5 text-[11px] font-semibold text-primary">{t}</span>
+          ))}
+          {offer.linked && (
+            <Link href={offer.linked.href} className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-primary hover:underline">
+              <Link2 className="size-3" /> {offer.linked.label}
+            </Link>
+          )}
         </div>
       )}
 
@@ -136,8 +165,8 @@ export default function OfferCard({
       {!compact && progress.limit !== null && progress.percent !== null && (
         <div className="mt-4" aria-label={`${progress.claimed} of ${progress.limit} claimed`}>
           <div className="mb-1 flex items-center justify-between text-[11px] font-medium text-muted-foreground">
-            <span>{progress.claimed} of {progress.limit} claimed</span>
-            <span>{progress.soldOut ? "Sold out" : `${progress.remaining} left`}</span>
+            <span className="inline-flex items-center gap-1"><Zap className="size-3 text-primary" />{offer.limitKind === "quantity" ? "Limited quantity" : "Limited slots"} · {progress.claimed}/{progress.limit} claimed</span>
+            <span>{progress.soldOut ? "Sold out" : offer.limitKind === "quantity" ? `${progress.remaining} left in stock` : `${progress.remaining} slots left`}</span>
           </div>
           <div className="h-1.5 overflow-hidden rounded-full bg-muted">
             <div className={`h-full rounded-full transition-[width] duration-700 ${progress.almostGone || progress.soldOut ? "bg-destructive" : "bg-primary"}`} style={{ width: `${progress.percent}%` }} />
@@ -161,7 +190,7 @@ export default function OfferCard({
           onClick={() => onClaim(offer)}
           className="group inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-transform enabled:hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {ended ? "Offer ended" : progress.soldOut ? "Sold out" : notStarted ? "Not started yet" : "Claim Offer"}
+          {ended ? "Offer ended" : progress.soldOut ? "Sold out" : notStarted ? "Not started yet" : (offer.ctaText || "Claim Offer")}
           {canClaim && <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />}
         </button>
         {onDetails && (

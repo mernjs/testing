@@ -6,8 +6,6 @@ import type { Audience, PopupTemplate, PopupTriggerType, PopupFrequency } from "
 import { setServerTime } from "@/lib/offers/live";
 
 export interface ActiveDisplayStrip {
-  /** The real offer this strip promotes — lets its CTA open the claim form in place. */
-  offerId?: string | null;
   message: string;
   discountText: string;
   ctaText: string;
@@ -17,12 +15,9 @@ export interface ActiveDisplayStrip {
 }
 
 export interface ActiveDisplayPopup {
-  offerId?: string | null;
   template: PopupTemplate;
   emoji: string;
   heading: string;
-  offerTitle: string;
-  offerBadge: string;
   ctaText: string;
   ctaHref: string;
   showCountdown: boolean;

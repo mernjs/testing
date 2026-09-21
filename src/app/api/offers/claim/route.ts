@@ -11,7 +11,8 @@ import { randomUUID } from "node:crypto";
 import { getCampaign } from "@/lib/offers/campaigns";
 import { getOffer } from "@/lib/offers/offers";
 import { validateCoupon, redeemCoupon } from "@/lib/offers/coupons";
-import { createOfferClaim, countClaimsForOffer } from "@/lib/offers/claims";
+import { createOfferClaim, countClaimsForOffer, hasClaimByEmail } from "@/lib/offers/claims";
+import { externalUsers } from "@/lib/portal-auth";
 import { validateClaimInput, formatClaimMessage } from "@/lib/offers/claim-validation";
 import { isValidAudience, getCampaignEffectiveStatus, DEFAULT_CURRENCY } from "@/lib/offers/constants";
 
@@ -61,6 +62,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Please fix the highlighted fields.", fields: claimValidation.errors }, { status: 422 });
   }
   const { contact, audienceFields } = claimValidation;
+
+  // Segment rules (first-time / renewal offers) are enforced here, never trusted from the client.
+  if (offer.segment === "new_user" || offer.segment === "existing_user") {
+    const emailLc = (contact.email ?? "").trim().toLowerCase();
+    if (offer.segment === "new_user") {
+      const [account, priorClaim] = await Promise.all([externalUsers().then((c) => c.findOne({ email: emailLc }, { projection: { _id: 1 } })), hasClaimByEmail(emailLc)]);
+      if (account || priorClaim) {
+        return NextResponse.json({ error: "This offer is for first-time customers only. Check the other live offers made for existing customers.", fields: { email: "Already a YashOrbit customer." } }, { status: 403 });
+      }
+    } else {
+      const who = await getCurrentPortalUser();
+      if (!who || who.email.toLowerCase() !== emailLc) {
+        return NextResponse.json({ error: "This offer is for existing customers. Please sign in to your portal with the same email, then claim it.", needsLogin: true }, { status: 403 });
+      }
+    }
+  }
 
   // Server-side pricing — always recomputed here, client-submitted price fields are never trusted.
   const originalPrice = offer.pricing.mode !== "custom_quote" ? offer.pricing.originalPrice : undefined;

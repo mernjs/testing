@@ -410,3 +410,14 @@ Run a scheduler that calls `/api/wallet/expiry-sweep` daily with the cron bearer
 - When you add a module that shows data, add its records to `scripts/demo/` so
   demos never show blank sections.
 - Commit only source and docs. Never commit `.env` or uploaded files.
+
+
+
+==========================================================================
+✨ Done. Portal demo logins (password for all: Demo@12345) — sign in at /login
+==========================================================================
+  • Student (industrial training)      demo.student@yashorbit.com
+  • Intern                             demo.intern@yashorbit.com
+  • Client                             demo.client@yashorbit.com
+  • Business (hiring + services)       demo.business@yashorbit.com
+  • Hiring (job applicant)             demo.hiring@yashorbit.com

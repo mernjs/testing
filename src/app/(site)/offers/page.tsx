@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { cache } from "react";
-import { getActiveCampaign, serializeCampaign } from "@/lib/offers/campaigns";
-import { getPublicOffersWithStats } from "@/lib/offers/offers";
+import { resolveOffersPage } from "@/lib/offers/state";
+import { dispatchCampaignStart } from "@/lib/offers/subscriptions";
+import OffersUpcoming from "@/components/offers/OffersUpcoming";
+import OffersFallback from "@/components/offers/OffersFallback";
+import StateWatcher from "@/components/offers/StateWatcher";
 import { getCurrentPortalUser } from "@/lib/portal-auth";
 import { getAvailableBalance } from "@/lib/wallet/redemption";
 import { tabForPortalRole } from "@/lib/offers/constants";
@@ -9,12 +12,8 @@ import { PORTAL_ROLE_META } from "@/lib/portal-roles";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd, defaultOgImage, siteUrl } from "@/lib/seo";
 import OffersContent from "./Content";
 
-const loadActiveCampaign = cache(async () => {
-  const campaign = await getActiveCampaign();
-  if (!campaign) return null;
-  const offers = await getPublicOffersWithStats({ campaignId: campaign._id });
-  return { campaign: serializeCampaign(campaign), offers };
-});
+// One state resolution per request, shared by generateMetadata and the page body.
+const loadPage = cache(() => resolveOffersPage());
 
 const GENERIC_FAQS = [
   {
@@ -35,14 +34,20 @@ const GENERIC_FAQS = [
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
-  const data = await loadActiveCampaign();
-  const title = data
-    ? `${data.campaign.name} — Festival Offers | YashOrbit`
+  const page = await loadPage();
+  const campaign = page.active?.campaign ?? page.next?.campaign ?? null;
+  const title =
+    page.state === "active" && campaign ? `${campaign.name} — Festival Offers | YashOrbit`
+    : page.state === "none" ? "Offers & Deals | YashOrbit"
+    : campaign ? `${campaign.name} — Coming Soon | YashOrbit`
     : "Festival Offers | YashOrbit";
-  const description = data
-    ? `${data.campaign.theme.bannerHeadline ?? data.campaign.name}: limited-time offers on Software Development, AI & Automation, Training, Internships and Developer Hiring at YashOrbit.`
-    : "YashOrbit's festival offers on Software Development, AI & Automation, Training, Internships and Developer Hiring — check back for the next live campaign.";
-  const image = data?.campaign.bannerImage ?? defaultOgImage;
+  const description =
+    page.state === "active" && campaign
+      ? `${campaign.theme.bannerHeadline ?? campaign.name}: limited-time offers on Software Development, AI & Automation, Training, Internships and Developer Hiring at YashOrbit.`
+      : page.state === "none"
+        ? "No festival campaign is live right now. Join the list to get first access to YashOrbit's next offers on software, AI, training, internships and developer hiring."
+        : `${campaign?.name ?? "Our next campaign"} is coming soon — get notified when YashOrbit's limited-time offers go live.`;
+  const image = campaign?.bannerImage ?? defaultOgImage;
 
   return {
     title,
@@ -53,14 +58,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function OffersPage() {
-  const data = await loadActiveCampaign();
+  const page = await loadPage();
+  const data = page.active;
 
   // Personalization: a signed-in portal user gets offers matched to their role plus their spendable credits.
   // Anonymous visitors simply get the generic page — this never blocks rendering.
   let viewer: { firstName: string | null; roleLabel: string | null; credits: number } | null = null;
   let viewerTab: ReturnType<typeof tabForPortalRole> = null;
   try {
-    const user = await getCurrentPortalUser();
+    const user = page.state === "active" ? await getCurrentPortalUser() : null;
     if (user) {
       viewerTab = tabForPortalRole(user.role);
       const credits = await getAvailableBalance(user.id).catch(() => 0);
@@ -70,8 +76,9 @@ export default async function OffersPage() {
     /* treat as anonymous */
   }
 
-  const faqs = data
-    ? [...data.campaign.faqs.map((f) => ({ question: f.question, answer: f.answer })), ...GENERIC_FAQS]
+  const faqCampaign = data?.campaign ?? page.next?.campaign ?? null;
+  const faqs = faqCampaign
+    ? [...faqCampaign.faqs.map((f) => ({ question: f.question, answer: f.answer })), ...GENERIC_FAQS]
     : GENERIC_FAQS;
 
   const jsonLd = [
@@ -82,12 +89,24 @@ export default async function OffersPage() {
     faqJsonLd(faqs),
   ];
 
+  // First render of a live campaign kicks off the one-time "it's live" notifications for subscribers (idempotent, never blocks).
+  if (page.state === "active" && data) void dispatchCampaignStart({ _id: data.campaign._id, name: data.campaign.name }).catch(() => {});
+
   return (
     <>
       {jsonLd.map((ld, i) => (
         <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
       ))}
-      <OffersContent campaign={data?.campaign ?? null} offers={data?.offers ?? []} faqs={faqs} viewer={viewer} viewerTab={viewerTab} />
+      {page.state === "active" && data && (
+        <>
+          <StateWatcher serverTime={page.serverTime} endsAt={data.campaign.endDate} pollMs={120_000} />
+          <OffersContent campaign={data.campaign} offers={data.offers} faqs={faqs} viewer={viewer} viewerTab={viewerTab} />
+        </>
+      )}
+      {(page.state === "coming_soon" || page.state === "future") && page.next && (
+        <OffersUpcoming variant={page.state} campaign={page.next.campaign} preview={page.next.preview} later={page.later} serverTime={page.serverTime} faqs={faqs} />
+      )}
+      {page.state === "none" && <OffersFallback serverTime={page.serverTime} lastEnded={page.lastEnded} faqs={faqs} />}
     </>
   );
 }

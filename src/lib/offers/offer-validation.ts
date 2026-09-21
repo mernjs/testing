@@ -1,5 +1,8 @@
 import { isValidCategory, getSubServices, type CategorySlug } from "@/lib/categories";
-import { isValidAudience, isValidPricingMode, isValidOfferStatus, type Audience, type PricingMode, type OfferStatus } from "@/lib/offers/constants";
+import {
+  isValidAudience, isValidPricingMode, isValidOfferStatus, isValidOfferType, isValidPricingUnit, isValidOfferSegment,
+  type Audience, type PricingMode, type OfferStatus, type OfferType, type PricingUnit, type OfferSegment, type LimitKind, type LinkedItem,
+} from "@/lib/offers/constants";
 
 export interface OfferPricingInput {
   mode: PricingMode;
@@ -9,6 +12,8 @@ export interface OfferPricingInput {
   flatDiscountAmount?: number;
   maxDiscountCap?: number;
   startingPriceLabel?: string;
+  /** What the price is per — package (default), hour, month or year. */
+  unit?: PricingUnit;
 }
 
 export interface OfferWriteInput {
@@ -23,6 +28,14 @@ export interface OfferWriteInput {
   benefits: string[];
   /** Who the offer is for, in plain words (shown on the card and details sheet). */
   eligibility: string[];
+  /** Marketplace tags — an offer can be several things at once (flash + student + course). */
+  offerTypes: OfferType[];
+  segment: OfferSegment;
+  limitKind: LimitKind;
+  /** The LMS course / service / product this offer is for. */
+  linked: LinkedItem | null;
+  /** Overrides the default "Claim Offer" button label. */
+  ctaText?: string;
   /** Optional cap on total claims; drives the public progress bar and blocks claims once reached. */
   claimLimit: number | null;
   validFrom: string; // ISO
@@ -116,6 +129,24 @@ export function validateOfferInput(
     ? input.eligibility.filter((b): b is string => typeof b === "string" && b.trim().length > 0).map((b) => b.trim().slice(0, 160)).slice(0, 8)
     : [];
 
+  const offerTypes = Array.isArray(input.offerTypes) ? Array.from(new Set(input.offerTypes.filter(isValidOfferType))) : [];
+  const segment: OfferSegment = isValidOfferSegment(input.segment) ? input.segment : "any";
+  const limitKind: LimitKind = input.limitKind === "quantity" ? "quantity" : "slots";
+  const unit: PricingUnit = isValidPricingUnit(input.pricing?.unit) ? input.pricing!.unit! : "fixed";
+  const ctaText = typeof input.ctaText === "string" ? input.ctaText.trim().slice(0, 40) || undefined : undefined;
+
+  let linked: LinkedItem | null = null;
+  if (input.linked && typeof input.linked === "object") {
+    const l = input.linked as Partial<LinkedItem>;
+    const label = typeof l.label === "string" ? l.label.trim().slice(0, 100) : "";
+    const href = typeof l.href === "string" ? l.href.trim() : "";
+    if (label || href) {
+      if (!label) errors.linkedLabel = "Give the linked item a name.";
+      else if (!/^\/[^\s]*$/.test(href) && !/^https:\/\/[^\s]+$/.test(href)) errors.linkedHref = "Use a site path like /industrial-training or a full https:// link.";
+      else linked = { kind: ["course", "service", "product", "program"].includes(String(l.kind)) ? (l.kind as LinkedItem["kind"]) : "service", label, href };
+    }
+  }
+
   const rawLimit = numOrUndefined(input.claimLimit);
   if (rawLimit !== undefined && (!Number.isInteger(rawLimit) || rawLimit < 1 || rawLimit > 100000)) {
     errors.claimLimit = "Claim limit must be a whole number between 1 and 100000, or empty for unlimited.";
@@ -134,9 +165,14 @@ export function validateOfferInput(
       category,
       subService,
       audience,
-      pricing: { mode, originalPrice, currency, percentage, flatDiscountAmount, maxDiscountCap, startingPriceLabel },
+      pricing: { mode, originalPrice, currency, percentage, flatDiscountAmount, maxDiscountCap, startingPriceLabel, unit },
       benefits,
       eligibility,
+      offerTypes,
+      segment,
+      limitKind,
+      linked,
+      ctaText,
       claimLimit,
       validFrom,
       validUntil,

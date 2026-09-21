@@ -11,7 +11,7 @@ import { listOffersForCampaign } from "@/lib/offers/offers";
 import LiveCountdown from "@/components/offers/LiveCountdown";
 import { getOfferAnalyticsForCampaign } from "@/lib/offers/analytics";
 import { AUDIENCES, formatOfferBadge, getOfferStatusMeta, getAudienceLabel } from "@/lib/offers/constants";
-import { claimProgress } from "@/lib/offers/live";
+import { claimProgress, nowMs } from "@/lib/offers/live";
 import { getCategoryLabel } from "@/lib/categories";
 import { deleteCampaignAction } from "../actions";
 import { deleteOfferAction } from "./offers/actions";
@@ -25,7 +25,7 @@ export default async function EditCampaignPage({ params }: { params: Promise<{ i
 
   const [offers, perf] = await Promise.all([listOffersForCampaign(id), getOfferAnalyticsForCampaign(id)]);
   const serialized = serializeCampaign(campaign);
-  const now = Date.now();
+  const now = nowMs();
   const liveOffers = offers.filter((o) => o.status === "active" && o.validFrom.getTime() <= now && o.validUntil.getTime() >= now);
   // How many LIVE offers each audience can currently see — a gap here means a segment sees nothing targeted at them.
   const coverage = AUDIENCES.filter((a) => a.value !== "ALL").map((a) => ({

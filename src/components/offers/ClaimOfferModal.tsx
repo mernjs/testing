@@ -103,6 +103,7 @@ export default function ClaimOfferModal({
     return () => {
       cancelled = true;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offer?._id]);
 
   function set<K extends keyof ClaimOfferFields>(key: K, value: string) {

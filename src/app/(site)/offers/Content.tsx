@@ -17,10 +17,12 @@ import DesktopScrollCta from "@/components/offers/DesktopScrollCta";
 import ExitIntentModal from "@/components/offers/ExitIntentModal";
 import PersonalizedOffers, { type OffersViewer } from "@/components/offers/PersonalizedOffers";
 import OfferDetailsSheet from "@/components/offers/OfferDetailsSheet";
+import OfferCard from "@/components/offers/OfferCard";
+import OfferMarketplaceBar, { type MarketplaceSort } from "@/components/offers/OfferMarketplaceBar";
 import { useOfferClaim } from "@/components/offers/OfferClaimProvider";
 import { useOfferTracking } from "@/lib/useOfferTracking";
-import { setServerTime } from "@/lib/offers/live";
-import { PUBLIC_AUDIENCE_TABS, type PublicAudienceTabKey } from "@/lib/offers/constants";
+import { setServerTime, nowMs } from "@/lib/offers/live";
+import { PUBLIC_AUDIENCE_TABS, estimateSavings, type PublicAudienceTabKey, type OfferType } from "@/lib/offers/constants";
 import type { SerializedCampaign } from "@/lib/offers/campaigns";
 import type { SerializedOffer } from "@/lib/offers/offers";
 import type { CategorySlug } from "@/lib/categories";
@@ -104,9 +106,20 @@ export default function OffersContent({
   const [offers, setOffers] = useState<SerializedOffer[]>(initialOffers);
   const [detailOffer, setDetailOffer] = useState<SerializedOffer | null>(null);
   const [campaignEnded, setCampaignEnded] = useState(false);
+  // "It just went live" celebration for visitors who were waiting on the coming-soon page (or arrive within 15 min of launch).
+  const [justLive, setJustLive] = useState(false);
+  const [typeFilter, setTypeFilter] = useState<OfferType | null>(null);
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<MarketplaceSort>("featured");
   const { openClaim } = useOfferClaim();
   const track = useOfferTracking(campaign?._id ?? "");
   const impressionsFired = useRef(false);
+
+  useEffect(() => {
+    if (!campaign) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- browser/server clock comparison only makes sense after mount
+    setJustLive(nowMs() - new Date(campaign.startDate).getTime() < 15 * 60_000);
+  }, [campaign]);
 
   const setTab = useCallback((next: PublicAudienceTabKey | null) => {
     setTabState(next);
@@ -163,6 +176,36 @@ export default function OffersContent({
     if (!tabAudiences) return offers;
     return offers.filter((o) => o.audience.includes("ALL") || o.audience.some((a) => tabAudiences.includes(a)));
   }, [offers, tabAudiences]);
+
+  // Marketplace: type / search / sort narrow the audience-filtered offers. Any active refinement swaps the category
+  // sections for one flat, sorted result grid so results are never scattered across five sections.
+  const typeCounts = useMemo(() => {
+    const counts: Partial<Record<OfferType, number>> = {};
+    for (const o of visibleOffers) for (const t of o.offerTypes ?? []) counts[t] = (counts[t] ?? 0) + 1;
+    return counts;
+  }, [visibleOffers]);
+
+  const refining = typeFilter !== null || query.trim() !== "" || sort !== "featured";
+  const results = useMemo(() => {
+    if (!refining) return [];
+    const q = query.trim().toLowerCase();
+    const list = visibleOffers.filter((o) => {
+      if (typeFilter && !(o.offerTypes ?? []).includes(typeFilter)) return false;
+      if (!q) return true;
+      return [o.title, o.description ?? "", o.linked?.label ?? "", ...(o.benefits ?? [])].some((t) => t.toLowerCase().includes(q));
+    });
+    const pct = (o: SerializedOffer) => {
+      const { original, savings } = estimateSavings(o.pricing);
+      return original ? savings / original : o.pricing.percentage ? o.pricing.percentage / 100 : 0;
+    };
+    const featuredScore = (o: SerializedOffer) => (o.isDealOfTheDay ? 3 : 0) + (o.isFeatured ? 2 : 0) + (o.isFlashDeal ? 1 : 0);
+    return [...list].sort((a, b) =>
+      sort === "ending" ? new Date(a.validUntil).getTime() - new Date(b.validUntil).getTime()
+      : sort === "discount" ? pct(b) - pct(a)
+      : sort === "popular" ? (b.claimedCount ?? 0) - (a.claimedCount ?? 0)
+      : featuredScore(b) - featuredScore(a) || b.priority - a.priority
+    );
+  }, [visibleOffers, typeFilter, query, sort, refining]);
 
   const dealOfTheDay = offers.find((o) => o.isDealOfTheDay) ?? null;
   const flashDeals = visibleOffers.filter((o) => o.isFlashDeal);
@@ -232,7 +275,13 @@ export default function OffersContent({
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen selection:bg-primary/30 overflow-hidden">
+    <div className="flex flex-col min-h-screen selection:bg-primary/30 overflow-x-clip">
+      {justLive && !campaignEnded && (
+        <div className="border-b border-primary/30 bg-primary/10 px-4 py-3 text-center text-sm font-semibold text-primary">
+          🎉 {campaign?.name} just went live — claim your offers before they&apos;re gone!
+        </div>
+      )}
+
       {campaignEnded && (
         <div className="border-b border-destructive/30 bg-destructive/10 px-4 py-3 text-center text-sm font-medium text-destructive">
           This campaign has just ended.{" "}
@@ -266,7 +315,32 @@ export default function OffersContent({
 
       {campaign && <DesktopScrollCta campaignId={campaign._id} offer={dealOfTheDay ?? offers[0] ?? null} onClaim={handleClaim} />}
 
-      {categories.map((category, i) => {
+      {campaign && (
+        <OfferMarketplaceBar counts={typeCounts} type={typeFilter} onType={setTypeFilter} query={query} onQuery={setQuery} sort={sort} onSort={setSort} total={visibleOffers.length} />
+      )}
+
+      {refining && (
+        <section className="bg-background py-14">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <p className="mb-6 text-sm font-semibold text-muted-foreground">{results.length} {results.length === 1 ? "offer" : "offers"} found</p>
+            {results.length > 0 ? (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {results.map((o) => (
+                  <OfferCard key={o._id} offer={o} onClaim={handleClaim} onDetails={handleDetails} onView={handleView} onExpire={handleExpire} />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-border/60 p-10 text-center">
+                <p className="font-semibold text-foreground">No offers match that yet.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Try another category, or tell us what you need and we&apos;ll build you a custom offer.</p>
+                <button type="button" onClick={() => { setTypeFilter(null); setQuery(""); setSort("featured"); }} className="mt-4 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground">Clear filters</button>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {!refining && categories.map((category, i) => {
         const meta = CATEGORY_META[category];
         const categoryOffers = visibleOffers.filter((o) => o.category === category);
         return (

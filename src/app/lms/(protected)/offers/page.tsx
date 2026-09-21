@@ -56,7 +56,7 @@ export default async function OffersCampaignsPage() {
             {live.length > 0 ? (
               <>
                 <p className="mt-1 truncate text-lg font-black tracking-tight text-foreground">{live[0].c.name}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">Ends in <LiveCountdown endDate={live[0].c.endDate} variant="inline" className="font-semibold text-foreground" /></p>
+                <p className="mt-0.5 text-xs text-muted-foreground">Ends in <LiveCountdown endDate={new Date(live[0].c.endDate).toISOString()} variant="inline" className="font-semibold text-foreground" /></p>
               </>
             ) : (
               <p className="mt-1 text-lg font-black tracking-tight text-muted-foreground">No live campaign</p>
@@ -154,12 +154,12 @@ export default async function OffersCampaignsPage() {
                       {formatDateTime(c.startDate)} → {formatDateTime(c.endDate)}
                       {effective === "active" && (
                         <span className="block text-xs font-semibold text-foreground">
-                          Ends in <LiveCountdown endDate={c.endDate} variant="inline" />
+                          Ends in <LiveCountdown endDate={new Date(c.endDate).toISOString()} variant="inline" />
                         </span>
                       )}
                       {effective === "scheduled" && (
                         <span className="block text-xs font-semibold text-blue-600 dark:text-blue-400">
-                          Starts in <LiveCountdown endDate={c.startDate} variant="inline" />
+                          Starts in <LiveCountdown endDate={new Date(c.startDate).toISOString()} variant="inline" />
                         </span>
                       )}
                     </td>

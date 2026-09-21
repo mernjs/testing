@@ -5,7 +5,7 @@ import Link from "next/link";
 import { CheckCircle2, CalendarClock, Users, ShieldCheck, Share2, ArrowRight, ListChecks } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { CountdownPill, useRemaining } from "@/components/offers/LiveCountdown";
-import { formatOfferBadge, getServiceHref, getAudienceLabel, estimateSavings } from "@/lib/offers/constants";
+import { formatOfferBadge, getServiceHref, getAudienceLabel, estimateSavings, unitSuffix, getOfferTypeLabel } from "@/lib/offers/constants";
 import { claimProgress } from "@/lib/offers/live";
 import { getCategoryLabel } from "@/lib/categories";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -23,7 +23,12 @@ function Body({ offer, onClaim, onShare }: { offer: SerializedOffer; onClaim: (o
   const progress = claimProgress(offer.claimedCount, offer.claimLimit);
   const ended = remaining !== null && remaining <= 0;
   const canClaim = !ended && !progress.soldOut;
-  const eligibility = offer.eligibility?.length ? offer.eligibility : offer.audience.includes("ALL") ? ["Open to everyone"] : offer.audience.map(getAudienceLabel);
+  const suffix = unitSuffix(offer.pricing.unit);
+  const eligibility = [
+    ...(offer.eligibility?.length ? offer.eligibility : offer.audience.includes("ALL") ? ["Open to everyone"] : offer.audience.map(getAudienceLabel)),
+    ...(offer.segment === "new_user" ? ["First-time customers only — emails that already have an account or claim are not eligible"] : []),
+    ...(offer.segment === "existing_user" ? ["Existing customers only — sign in to your portal with the same email to claim"] : []),
+  ];
 
   return (
     <div className="space-y-5 p-4">
@@ -37,9 +42,9 @@ function Body({ offer, onClaim, onShare }: { offer: SerializedOffer; onClaim: (o
         <p className="text-2xl font-black text-primary">{offer.badgeText || formatOfferBadge(offer.pricing)}</p>
         {original !== null ? (
           <div className="mt-2 grid grid-cols-3 gap-2 text-center text-xs">
-            <div className="rounded-xl bg-background p-2"><p className="text-muted-foreground">Regular</p><p className="mt-0.5 font-semibold line-through">{formatCurrency(original, offer.pricing.currency)}</p></div>
-            <div className="rounded-xl bg-background p-2"><p className="text-muted-foreground">You save</p><p className="mt-0.5 font-semibold text-green-600 dark:text-green-400">{formatCurrency(savings, offer.pricing.currency)}</p></div>
-            <div className="rounded-xl bg-background p-2"><p className="text-muted-foreground">Offer price</p><p className="mt-0.5 font-bold">{final !== null ? formatCurrency(final, offer.pricing.currency) : "—"}</p></div>
+            <div className="rounded-xl bg-background p-2"><p className="text-muted-foreground">Regular</p><p className="mt-0.5 font-semibold line-through">{formatCurrency(original, offer.pricing.currency)}{suffix}</p></div>
+            <div className="rounded-xl bg-background p-2"><p className="text-muted-foreground">You save</p><p className="mt-0.5 font-semibold text-green-600 dark:text-green-400">{formatCurrency(savings, offer.pricing.currency)}{suffix}</p></div>
+            <div className="rounded-xl bg-background p-2"><p className="text-muted-foreground">Offer price</p><p className="mt-0.5 font-bold">{final !== null ? formatCurrency(final, offer.pricing.currency) + suffix : "—"}</p></div>
           </div>
         ) : (
           <p className="mt-1 text-xs text-muted-foreground">Custom quote — we price this after a short conversation.</p>
@@ -47,7 +52,20 @@ function Body({ offer, onClaim, onShare }: { offer: SerializedOffer; onClaim: (o
         <p className="mt-2 text-[11px] text-muted-foreground">Final pricing (including any coupon) is always confirmed by our server when you claim.</p>
       </div>
 
+      {(offer.offerTypes?.length ?? 0) > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {offer.offerTypes!.map((t) => <span key={t} className="rounded-full border border-primary/30 px-2.5 py-0.5 text-[11px] font-semibold text-primary">{getOfferTypeLabel(t)}</span>)}
+        </div>
+      )}
+
       {offer.description && <p className="text-sm leading-relaxed text-muted-foreground">{offer.description}</p>}
+
+      {offer.linked && (
+        <Link href={offer.linked.href} className="flex items-center justify-between rounded-2xl border border-border/50 px-4 py-3 text-sm hover:border-primary">
+          <span><span className="block text-[11px] uppercase tracking-wide text-muted-foreground">Related {offer.linked.kind}</span><span className="font-semibold text-foreground">{offer.linked.label}</span></span>
+          <ArrowRight className="size-4 text-primary" />
+        </Link>
+      )}
 
       {offer.benefits.length > 0 && (
         <section>
@@ -101,7 +119,7 @@ function Body({ offer, onClaim, onShare }: { offer: SerializedOffer; onClaim: (o
           onClick={() => onClaim(offer)}
           className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-transform enabled:hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {ended ? "Offer ended" : progress.soldOut ? "Sold out" : "Claim this offer"}
+          {ended ? "Offer ended" : progress.soldOut ? "Sold out" : offer.ctaText || "Claim this offer"}
           {canClaim && <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />}
         </button>
         <div className="flex items-center justify-between gap-2 text-xs">

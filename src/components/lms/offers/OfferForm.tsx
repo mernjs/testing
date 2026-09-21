@@ -10,7 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import ServicePicker from "@/components/lms/offers/ServicePicker";
 import OfferCard from "@/components/offers/OfferCard";
-import { AUDIENCES, AUDIENCE_PRESETS, OFFER_STATUSES, PRICING_MODES, DEFAULT_CURRENCY, type Audience, type PricingMode } from "@/lib/offers/constants";
+import { nowMs } from "@/lib/offers/live";
+import { AUDIENCES, AUDIENCE_PRESETS, OFFER_STATUSES, PRICING_MODES, DEFAULT_CURRENCY, OFFER_TYPES, PRICING_UNITS, OFFER_SEGMENTS, LIMIT_KINDS, type Audience, type PricingMode, type OfferType, type PricingUnit, type OfferSegment, type LimitKind } from "@/lib/offers/constants";
 import type { CategorySlug } from "@/lib/categories";
 import { saveOfferAction } from "@/app/lms/(protected)/offers/[id]/offers/actions";
 import type { SerializedOffer } from "@/lib/offers/offers";
@@ -48,6 +49,14 @@ export default function OfferForm({ campaignId, offer }: { campaignId: string; o
     maxDiscountCap: offer?.pricing.maxDiscountCap ?? "",
     startingPriceLabel: offer?.pricing.startingPriceLabel ?? "",
     claimLimit: offer?.claimLimit ?? "",
+    offerTypes: (offer?.offerTypes ?? []) as OfferType[],
+    unit: (offer?.pricing.unit ?? "fixed") as PricingUnit,
+    segment: (offer?.segment ?? "any") as OfferSegment,
+    limitKind: (offer?.limitKind ?? "slots") as LimitKind,
+    ctaText: offer?.ctaText ?? "",
+    linkedKind: (offer?.linked?.kind ?? "service") as "course" | "service" | "product" | "program",
+    linkedLabel: offer?.linked?.label ?? "",
+    linkedHref: offer?.linked?.href ?? "",
   });
   const [benefits, setBenefits] = useState<string[]>(offer?.benefits ?? []);
   const [eligibility, setEligibility] = useState<string[]>(offer?.eligibility ?? []);
@@ -78,7 +87,13 @@ export default function OfferForm({ campaignId, offer }: { campaignId: string; o
         benefits,
         eligibility,
         claimLimit: form.claimLimit === "" ? null : Number(form.claimLimit),
+        offerTypes: form.offerTypes,
+        segment: form.segment,
+        limitKind: form.limitKind,
+        ctaText: form.ctaText || undefined,
+        linked: form.linkedLabel || form.linkedHref ? { kind: form.linkedKind, label: form.linkedLabel, href: form.linkedHref } : null,
         pricing: {
+          unit: form.unit,
           mode: form.pricingMode,
           originalPrice: form.originalPrice === "" ? undefined : Number(form.originalPrice),
           currency: form.currency || undefined,
@@ -128,6 +143,67 @@ export default function OfferForm({ campaignId, offer }: { campaignId: string; o
 
       <div className="space-y-3 rounded-xl border border-border/50 p-4">
         <div>
+          <p className="text-sm font-semibold text-foreground">Offer type (marketplace tags)</p>
+          <p className="text-xs text-muted-foreground">Pick every type that fits — visitors filter the marketplace by these. A flash + student + course offer is fine.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {OFFER_TYPES.map((t) => {
+            const active = form.offerTypes.includes(t.value);
+            return (
+              <button
+                key={t.value}
+                type="button"
+                title={t.blurb}
+                onClick={() => setForm((f) => ({ ...f, offerTypes: active ? f.offerTypes.filter((x) => x !== t.value) : [...f.offerTypes, t.value] }))}
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${active ? "border-primary bg-primary text-primary-foreground" : "border-border/60 text-foreground hover:border-primary hover:text-primary"}`}
+              >
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label>Who can claim</Label>
+            <Select value={form.segment} onValueChange={(v) => v && setForm({ ...form, segment: v as OfferSegment })}>
+              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>{OFFER_SEGMENTS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}</SelectContent>
+            </Select>
+            <p className="text-[11px] text-muted-foreground">First-time offers reject emails that already have an account or claim; existing-customer offers require a signed-in match. Enforced on the server.</p>
+          </div>
+          <div className="space-y-1.5">
+            <Label>Button text (optional)</Label>
+            <Input value={form.ctaText} onChange={(e) => setForm({ ...form, ctaText: e.target.value })} placeholder="Claim Offer / Enroll Now / Hire Now" />
+          </div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="space-y-1.5">
+            <Label>Related item type</Label>
+            <Select value={form.linkedKind} onValueChange={(v) => v && setForm({ ...form, linkedKind: v as typeof form.linkedKind })}>
+              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="course">LMS course</SelectItem>
+                <SelectItem value="program">Program</SelectItem>
+                <SelectItem value="service">Service</SelectItem>
+                <SelectItem value="product">Product</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>Related item name</Label>
+            <Input value={form.linkedLabel} onChange={(e) => setForm({ ...form, linkedLabel: e.target.value })} placeholder="Full-Stack MERN Bootcamp" />
+            {fieldErrors.linkedLabel && <p className="text-xs text-destructive">{fieldErrors.linkedLabel}</p>}
+          </div>
+          <div className="space-y-1.5">
+            <Label>Link</Label>
+            <Input value={form.linkedHref} onChange={(e) => setForm({ ...form, linkedHref: e.target.value })} placeholder="/industrial-training" />
+            {fieldErrors.linkedHref && <p className="text-xs text-destructive">{fieldErrors.linkedHref}</p>}
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3 rounded-xl border border-border/50 p-4">
+        <div>
           <p className="text-sm font-semibold text-foreground">Target audience</p>
           <p className="text-xs text-muted-foreground">Who should see this offer on the public page. Pick a preset, then fine-tune below.</p>
         </div>
@@ -168,6 +244,15 @@ export default function OfferForm({ campaignId, offer }: { campaignId: string; o
               {PRICING_MODES.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label>Price is</Label>
+          <Select value={form.unit} onValueChange={(v) => v && setForm({ ...form, unit: v as PricingUnit })}>
+            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>{PRICING_UNITS.map((u) => <SelectItem key={u.value} value={u.value}>{u.label}</SelectItem>)}</SelectContent>
+          </Select>
+          <p className="text-[11px] text-muted-foreground">For hourly offers enter the regular hourly rate as the original price — the card shows regular vs offer rate per hour.</p>
         </div>
 
         {form.pricingMode !== "custom_quote" ? (
@@ -260,7 +345,13 @@ export default function OfferForm({ campaignId, offer }: { campaignId: string; o
 
       <div className="space-y-1.5 rounded-xl border border-border/50 p-4">
         <Label>Claim limit (optional)</Label>
-        <Input type="number" min={1} value={form.claimLimit} onChange={(e) => setForm({ ...form, claimLimit: e.target.value })} placeholder="Leave empty for unlimited" />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Input type="number" min={1} value={form.claimLimit} onChange={(e) => setForm({ ...form, claimLimit: e.target.value })} placeholder="Leave empty for unlimited" />
+          <Select value={form.limitKind} onValueChange={(v) => v && setForm({ ...form, limitKind: v as LimitKind })}>
+            <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+            <SelectContent>{LIMIT_KINDS.map((k) => <SelectItem key={k.value} value={k.value}>{k.label}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
         <p className="text-xs text-muted-foreground">Shows a real &quot;X of Y claimed&quot; progress bar on the public page and stops new claims once reached. Leave empty and no scarcity is ever shown.</p>
         {fieldErrors.claimLimit && <p className="text-xs text-destructive">{fieldErrors.claimLimit}</p>}
       </div>
@@ -317,13 +408,19 @@ export default function OfferForm({ campaignId, offer }: { campaignId: string; o
                   percentage: form.percentage === "" ? undefined : Number(form.percentage),
                   flatDiscountAmount: form.flatDiscountAmount === "" ? undefined : Number(form.flatDiscountAmount),
                   startingPriceLabel: form.startingPriceLabel || undefined,
+                  unit: form.unit,
                 },
                 benefits: benefits.filter(Boolean),
                 eligibility: eligibility.filter(Boolean),
+                offerTypes: form.offerTypes,
+                segment: form.segment,
+                limitKind: form.limitKind,
+                ctaText: form.ctaText || undefined,
+                linked: form.linkedLabel && form.linkedHref ? { kind: form.linkedKind, label: form.linkedLabel, href: form.linkedHref } : null,
                 claimLimit: form.claimLimit === "" ? null : Number(form.claimLimit),
                 claimedCount: offer?.claimedCount ?? 0,
                 validFrom: form.validFrom ? new Date(form.validFrom).toISOString() : new Date().toISOString(),
-                validUntil: form.validUntil ? new Date(form.validUntil).toISOString() : new Date(Date.now() + 7 * 86400000).toISOString(),
+                validUntil: form.validUntil ? new Date(form.validUntil).toISOString() : new Date(nowMs() + 7 * 86400000).toISOString(),
                 priority: Number(form.priority),
                 isFeatured: form.isFeatured,
                 isDealOfTheDay: form.isDealOfTheDay,

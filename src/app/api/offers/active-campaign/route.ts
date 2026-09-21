@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getActiveCampaignForPage } from "@/lib/offers/campaigns";
-import { getPublicOffers, pickContextOffer } from "@/lib/offers/offers";
-import { getPopupTemplateMeta, formatOfferBadge, categoryForPath, audienceForPath } from "@/lib/offers/constants";
+import { getPopupTemplateMeta, audienceForPath } from "@/lib/offers/constants";
 import { whatsapp, phone } from "@/lib/contact";
 
 function resolveCtaHref(actionType: string, actionValue: string): string {
@@ -29,9 +28,6 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ active: false, serverTime: Date.now() });
     }
 
-    const offers = await getPublicOffers({ campaignId: campaign._id });
-    const contextOffer = pickContextOffer(offers, { category: categoryForPath(page) });
-
     const base = {
       id: campaign._id,
       slug: campaign.slug,
@@ -42,7 +38,6 @@ export async function GET(req: NextRequest) {
 
     const strip = display.strip?.enabled
       ? {
-          offerId: contextOffer?._id ?? null,
           message: display.strip.message || campaign.name,
           discountText: display.strip.discountText,
           ctaText: display.strip.ctaText,
@@ -55,14 +50,9 @@ export async function GET(req: NextRequest) {
     const templateMeta = getPopupTemplateMeta(display.popup?.template);
     const popup = display.popup?.enabled
       ? {
-          offerId: contextOffer?._id ?? null,
           template: display.popup.template,
           emoji: templateMeta.emoji,
           heading: templateMeta.heading,
-          offerTitle: contextOffer?.title ?? campaign.name,
-          offerBadge: contextOffer
-            ? contextOffer.badgeText || formatOfferBadge(contextOffer.pricing)
-            : "Festival Offer",
           ctaText: display.popup.ctaText,
           ctaHref: resolveCtaHref(display.popup.ctaActionType, display.popup.ctaActionValue),
           showCountdown: display.popup.showCountdown,

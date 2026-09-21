@@ -27,6 +27,7 @@ import {
   Megaphone,
   SlidersVertical,
   WalletCards,
+  BellRing,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -104,6 +105,7 @@ export default function LmsSidebar({ onNavigate, collapsed = false }: { onNaviga
       <NavLink href="/lms/offers" label="Campaigns" icon={Gift} collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/offers/coupons" label="Coupons" icon={TicketPercent} collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/offers/claims" label="Claims" icon={ClipboardList} collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/lms/offers/subscribers" label="Subscribers" icon={BellRing} collapsed={collapsed} onNavigate={onNavigate} />
 
       <SectionLabel collapsed={collapsed}>Wallet & Credits</SectionLabel>
       <NavLink href="/lms/wallet" label="Overview" icon={Coins} exact collapsed={collapsed} onNavigate={onNavigate} />

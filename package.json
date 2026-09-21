@@ -14,6 +14,7 @@
     "db:seed-demo-portal": "node --env-file=.env scripts/seed-demo-portal.mjs",
     "db:seed-demo": "node --env-file=.env scripts/seed-all-panels-demo.mjs && node --env-file=.env scripts/seed-demo-portal.mjs",
     "db:reset-demo": "node --env-file=.env scripts/truncate-all-data.mjs && node --env-file=.env scripts/seed-all-panels-demo.mjs && node --env-file=.env scripts/seed-demo-portal.mjs",
+    "demo:offers-state": "node --env-file=.env scripts/demo/offers-state.mjs",
     "db:seed-wallet-rules": "node --env-file=.env scripts/seed-wallet-rules.mjs",
     "db:seed-all-panels": "node --env-file=.env scripts/seed-all-panels-demo.mjs"
   },
