@@ -70,6 +70,11 @@ export interface CampaignFunnel {
   conversionRate: number; // conversions / offerClicks, 0 when no clicks
   whatsappClicks: number;
   callClicks: number;
+  /** Engagement signals beyond the core funnel. */
+  detailOpens: number;
+  countdownExpiries: number;
+  personalizedViews: number;
+  shares: number;
 }
 
 export async function getCampaignFunnel(campaignId: string): Promise<CampaignFunnel> {
@@ -95,9 +100,15 @@ export async function getCampaignFunnel(campaignId: string): Promise<CampaignFun
     offerClicks,
     formStarts: byType.get("form_start") ?? 0,
     conversions,
-    conversionRate: offerClicks > 0 ? conversions / offerClicks : 0,
+    // Claims can also start from the top strip / popup (no offer_click), so use the larger "intent" signal
+    // as the denominator — otherwise the rate could exceed 100%.
+    conversionRate: Math.max(offerClicks, byType.get("form_start") ?? 0) > 0 ? conversions / Math.max(offerClicks, byType.get("form_start") ?? 0) : 0,
     whatsappClicks: byType.get("whatsapp_click") ?? 0,
     callClicks: byType.get("call_click") ?? 0,
+    detailOpens: byType.get("offer_detail_open") ?? 0,
+    countdownExpiries: byType.get("countdown_expired") ?? 0,
+    personalizedViews: byType.get("personalized_view") ?? 0,
+    shares: byType.get("share_click") ?? 0,
   };
 }
 
@@ -135,6 +146,8 @@ export interface BreakdownRow {
   label: string;
   views: number;
   clicks: number;
+  /** Real claims (audience dimension only; 0 elsewhere). */
+  claims: number;
 }
 
 /** Groups offer_view/offer_click events by audience, device, or source (top 8, rest folded into "Other"). */
@@ -152,13 +165,25 @@ export async function getCampaignBreakdown(
     ])
     .toArray();
 
-  const byKey = new Map<string, { views: number; clicks: number }>();
+  const byKey = new Map<string, { views: number; clicks: number; claims: number }>();
   for (const row of rows) {
     const key = row._id.key;
-    const entry = byKey.get(key) ?? { views: 0, clicks: 0 };
+    const entry = byKey.get(key) ?? { views: 0, clicks: 0, claims: 0 };
     if (row._id.type === "offer_view") entry.views += row.count;
     else entry.clicks += row.count;
     byKey.set(key, entry);
+  }
+  if (dimension === "audience") {
+    const db = await getDb();
+    const claimRows = await db
+      .collection("offer_claims")
+      .aggregate<{ _id: string; count: number }>([{ $match: { campaignId } }, { $group: { _id: "$audience", count: { $sum: 1 } } }])
+      .toArray();
+    for (const row of claimRows) {
+      const entry = byKey.get(row._id) ?? { views: 0, clicks: 0, claims: 0 };
+      entry.claims += row.count;
+      byKey.set(row._id, entry);
+    }
   }
 
   return Array.from(byKey.entries())
@@ -226,6 +251,7 @@ export interface OfferAnalytics {
   offerId: string;
   views: number;
   clicks: number;
+  detailOpens: number;
   conversions: number;
 }
 
@@ -237,7 +263,7 @@ export async function getOfferAnalyticsForCampaign(campaignId: string): Promise<
   const [rows, claimRows] = await Promise.all([
     collection
       .aggregate<{ _id: { offerId: string; type: OfferEventType }; count: number }>([
-        { $match: { campaignId, offerId: { $exists: true }, type: { $in: ["offer_view", "offer_click"] } } },
+        { $match: { campaignId, offerId: { $exists: true }, type: { $in: ["offer_view", "offer_click", "offer_detail_open"] } } },
         { $group: { _id: { offerId: "$offerId", type: "$type" }, count: { $sum: 1 } } },
       ])
       .toArray(),
@@ -251,7 +277,7 @@ export async function getOfferAnalyticsForCampaign(campaignId: string): Promise<
   function entryFor(offerId: string): OfferAnalytics {
     let entry = map.get(offerId);
     if (!entry) {
-      entry = { offerId, views: 0, clicks: 0, conversions: 0 };
+      entry = { offerId, views: 0, clicks: 0, detailOpens: 0, conversions: 0 };
       map.set(offerId, entry);
     }
     return entry;
@@ -259,10 +285,90 @@ export async function getOfferAnalyticsForCampaign(campaignId: string): Promise<
   for (const row of rows) {
     const entry = entryFor(row._id.offerId);
     if (row._id.type === "offer_view") entry.views += row.count;
+    else if (row._id.type === "offer_detail_open") entry.detailOpens += row.count;
     else entry.clicks += row.count;
   }
   for (const row of claimRows) {
     entryFor(row._id).conversions += row.count;
   }
   return map;
+}
+
+// ---------------------------------------------------------------------------
+// LMS overview: per-campaign roll-ups and proactive alerts
+// ---------------------------------------------------------------------------
+
+export interface CampaignSummary {
+  campaignId: string;
+  offers: number;
+  views: number;
+  claims: number;
+  claims7d: number;
+}
+
+/** One batched read for the campaign list page (never N+1). */
+export async function getCampaignSummaries(campaignIds: string[]): Promise<Map<string, CampaignSummary>> {
+  const map = new Map<string, CampaignSummary>();
+  for (const id of campaignIds) map.set(id, { campaignId: id, offers: 0, views: 0, claims: 0, claims7d: 0 });
+  if (campaignIds.length === 0) return map;
+
+  const collection = await getCollection();
+  const db = await getDb();
+  const since = new Date(Date.now() - 7 * 86400000);
+
+  const [offerRows, viewRows, claimRows, claim7Rows] = await Promise.all([
+    db.collection("offers").aggregate<{ _id: string; count: number }>([{ $match: { campaignId: { $in: campaignIds }, deletedAt: null } }, { $group: { _id: "$campaignId", count: { $sum: 1 } } }]).toArray(),
+    collection.aggregate<{ _id: string; count: number }>([{ $match: { campaignId: { $in: campaignIds }, type: "campaign_view" } }, { $group: { _id: "$campaignId", count: { $sum: 1 } } }]).toArray(),
+    db.collection("offer_claims").aggregate<{ _id: string; count: number }>([{ $match: { campaignId: { $in: campaignIds } } }, { $group: { _id: "$campaignId", count: { $sum: 1 } } }]).toArray(),
+    db.collection("offer_claims").aggregate<{ _id: string; count: number }>([{ $match: { campaignId: { $in: campaignIds }, createdAt: { $gte: since } } }, { $group: { _id: "$campaignId", count: { $sum: 1 } } }]).toArray(),
+  ]);
+  for (const r of offerRows) if (map.has(r._id)) map.get(r._id)!.offers = r.count;
+  for (const r of viewRows) if (map.has(r._id)) map.get(r._id)!.views = r.count;
+  for (const r of claimRows) if (map.has(r._id)) map.get(r._id)!.claims = r.count;
+  for (const r of claim7Rows) if (map.has(r._id)) map.get(r._id)!.claims7d = r.count;
+  return map;
+}
+
+export interface OfferAlert {
+  kind: "ending_soon" | "almost_full" | "sold_out";
+  offerId: string;
+  campaignId: string;
+  title: string;
+  detail: string;
+  /** ISO — for the "ending soon" live countdown. */
+  endsAt: string | null;
+}
+
+/** Active offers that need an admin's attention right now: expiring within 72h, or claim cap nearly/fully used. */
+export async function getOfferAlerts(): Promise<OfferAlert[]> {
+  const db = await getDb();
+  const now = new Date();
+  const soon = new Date(now.getTime() + 72 * 3600000);
+  const offers = await db
+    .collection<{ _id: string; campaignId: string; title: string; validUntil: Date; claimLimit?: number | null }>("offers")
+    .find({ deletedAt: null, status: "active", validUntil: { $gte: now } })
+    .project({ campaignId: 1, title: 1, validUntil: 1, claimLimit: 1 })
+    .toArray();
+  if (offers.length === 0) return [];
+
+  const claimRows = await db
+    .collection("offer_claims")
+    .aggregate<{ _id: string; count: number }>([{ $match: { offerId: { $in: offers.map((o) => o._id) } } }, { $group: { _id: "$offerId", count: { $sum: 1 } } }])
+    .toArray();
+  const claims = new Map(claimRows.map((r) => [r._id, r.count]));
+
+  const alerts: OfferAlert[] = [];
+  for (const o of offers) {
+    const claimed = claims.get(o._id) ?? 0;
+    if (o.claimLimit && claimed >= o.claimLimit) {
+      alerts.push({ kind: "sold_out", offerId: o._id, campaignId: o.campaignId, title: o.title, detail: `${claimed}/${o.claimLimit} claimed — sold out`, endsAt: o.validUntil.toISOString() });
+    } else if (o.claimLimit && claimed / o.claimLimit >= 0.8) {
+      alerts.push({ kind: "almost_full", offerId: o._id, campaignId: o.campaignId, title: o.title, detail: `${claimed}/${o.claimLimit} claimed (${Math.round((claimed / o.claimLimit) * 100)}%)`, endsAt: o.validUntil.toISOString() });
+    }
+    if (o.validUntil <= soon) {
+      alerts.push({ kind: "ending_soon", offerId: o._id, campaignId: o.campaignId, title: o.title, detail: "Expires within 72 hours", endsAt: o.validUntil.toISOString() });
+    }
+  }
+  const order = { sold_out: 0, ending_soon: 1, almost_full: 2 } as const;
+  return alerts.sort((a, b) => order[a.kind] - order[b.kind]);
 }

@@ -2,7 +2,8 @@ import "server-only";
 import { getDb } from "@/lib/mongodb";
 import { newId, createStamp, updateStamp, notDeleted, type AuditFields } from "@/lib/offers/db";
 import type { OfferWriteInput, OfferPricingInput } from "@/lib/offers/offer-validation";
-import type { Audience, OfferStatus } from "@/lib/offers/constants";
+import { audienceAliases, type Audience, type OfferStatus } from "@/lib/offers/constants";
+import { countClaimsByOffer } from "@/lib/offers/claims";
 import type { CategorySlug } from "@/lib/categories";
 
 export const OFFERS_COLLECTION = "offers";
@@ -18,6 +19,9 @@ export interface Offer extends AuditFields {
   audience: Audience[];
   pricing: OfferPricingInput;
   benefits: string[];
+  eligibility?: string[];
+  /** Optional total-claims cap; null/absent = unlimited. */
+  claimLimit?: number | null;
   validFrom: Date;
   validUntil: Date;
   priority: number;
@@ -28,6 +32,8 @@ export interface Offer extends AuditFields {
 }
 
 export interface SerializedOffer extends Omit<Offer, "createdAt" | "updatedAt" | "deletedAt" | "validFrom" | "validUntil"> {
+  /** Real number of claims so far (public pages only; undefined where not loaded). */
+  claimedCount?: number;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
@@ -35,9 +41,10 @@ export interface SerializedOffer extends Omit<Offer, "createdAt" | "updatedAt" |
   validUntil: string;
 }
 
-export function serializeOffer(o: Offer): SerializedOffer {
+export function serializeOffer(o: Offer, claimedCount?: number): SerializedOffer {
   return {
     ...o,
+    claimedCount,
     createdAt: o.createdAt.toISOString(),
     updatedAt: o.updatedAt.toISOString(),
     deletedAt: o.deletedAt ? o.deletedAt.toISOString() : null,
@@ -89,7 +96,7 @@ export async function getPublicOffers(opts: { campaignId: string; audience?: Aud
     validUntil: { $gte: now },
   };
   if (opts.audience) {
-    filter.audience = { $in: [opts.audience, "ALL"] };
+    filter.audience = { $in: audienceAliases(opts.audience) };
   }
   return collection.find(filter).sort({ priority: -1, createdAt: -1 }).toArray();
 }
@@ -133,6 +140,8 @@ export async function createOffer(data: OfferWriteInput, actorId: string): Promi
     audience: data.audience,
     pricing: data.pricing,
     benefits: data.benefits,
+    eligibility: data.eligibility,
+    claimLimit: data.claimLimit,
     validFrom: new Date(data.validFrom),
     validUntil: new Date(data.validUntil),
     priority: data.priority,
@@ -162,6 +171,8 @@ export async function updateOffer(id: string, data: OfferWriteInput, actorId: st
         audience: data.audience,
         pricing: data.pricing,
         benefits: data.benefits,
+        eligibility: data.eligibility,
+        claimLimit: data.claimLimit,
         validFrom: new Date(data.validFrom),
         validUntil: new Date(data.validUntil),
         priority: data.priority,
@@ -205,4 +216,11 @@ export async function deleteOffer(id: string, actorId: string): Promise<{ ok: bo
     { $set: { deletedAt: new Date(), ...updateStamp(actorId) } }
   );
   return { ok: res.modifiedCount === 1 };
+}
+
+/** Public offers with their real claim counts attached, ready for the public page / JSON API. */
+export async function getPublicOffersWithStats(opts: { campaignId: string; audience?: Audience; now?: Date }): Promise<SerializedOffer[]> {
+  const offers = await getPublicOffers(opts);
+  const counts = await countClaimsByOffer(offers.map((o) => o._id));
+  return offers.map((o) => serializeOffer(o, counts.get(o._id) ?? 0));
 }

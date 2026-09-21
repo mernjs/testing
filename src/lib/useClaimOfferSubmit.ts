@@ -33,6 +33,12 @@ export interface ClaimOfferSubmitData {
   fields: ClaimOfferFields;
 }
 
+export interface ClaimPortalResult {
+  redirect?: string;
+  isNewAccount?: boolean;
+  tempPassword?: string | null;
+}
+
 export interface ClaimPricingResult {
   originalPrice?: number;
   totalDiscountApplied?: number;
@@ -46,6 +52,7 @@ export function useClaimOfferSubmit() {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [pricing, setPricing] = useState<ClaimPricingResult | null>(null);
+  const [portal, setPortal] = useState<ClaimPortalResult | null>(null);
   const utm = useUtmParams();
   const referralCode = useReferralCode();
 
@@ -71,6 +78,14 @@ export function useClaimOfferSubmit() {
 
       setStatus("success");
       setPricing(json?.pricing ?? null);
+      const portalInfo = (json?.portal ?? null) as ClaimPortalResult | null;
+      setPortal(portalInfo);
+      if (portalInfo?.isNewAccount && portalInfo.tempPassword) {
+        // same hand-off the other lead forms use, so the portal's one-time temp-password banner still shows
+        try {
+          sessionStorage.setItem("portalTempPassword", portalInfo.tempPassword);
+        } catch {}
+      }
       return true;
     } catch {
       setStatus("error");
@@ -84,6 +99,7 @@ export function useClaimOfferSubmit() {
     setError(null);
     setFieldErrors({});
     setPricing(null);
+    setPortal(null);
   }
 
   useEffect(() => {
@@ -92,5 +108,5 @@ export function useClaimOfferSubmit() {
     return () => clearTimeout(timer);
   }, [status]);
 
-  return { status, error, fieldErrors, pricing, submit, reset };
+  return { status, error, fieldErrors, pricing, portal, submit, reset };
 }

@@ -15,9 +15,11 @@ const stagger = { visible: { transition: { staggerChildren: 0.1 } } };
 export default function OffersHero({
   campaign,
   onSelectAudience,
+  onCampaignEnd,
 }: {
   campaign: SerializedCampaign | null;
   onSelectAudience: (key: PublicAudienceTabKey) => void;
+  onCampaignEnd?: () => void;
 }) {
   const headline = campaign?.theme.bannerHeadline ?? "Build More. Pay Less.";
   const subheadline =
@@ -86,7 +88,7 @@ export default function OffersHero({
 
           {campaign && (
             <motion.div variants={fadeIn}>
-              <CampaignCountdown endDate={campaign.endDate} />
+              <CampaignCountdown endDate={campaign.endDate} startDate={campaign.startDate} onExpire={onCampaignEnd} />
             </motion.div>
           )}
 

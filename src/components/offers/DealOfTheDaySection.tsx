@@ -31,7 +31,7 @@ export default function DealOfTheDaySection({ offer, onClaim }: { offer: Seriali
           <p className="mt-3 text-3xl font-black text-primary sm:text-4xl">{offer.badgeText || formatOfferBadge(offer.pricing)}</p>
 
           <div className="mt-6 flex justify-center">
-            <CampaignCountdown endDate={offer.validUntil} />
+            <CampaignCountdown endDate={offer.validUntil} startDate={offer.validFrom} label="Deal ends in" />
           </div>
 
           <button

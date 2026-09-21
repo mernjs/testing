@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { Loader2, Tag } from "lucide-react";
+import Link from "next/link";
+import { Loader2, Tag, ShieldCheck, Clock3, MessageCircle, Phone, PartyPopper } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,7 +11,10 @@ import { Button } from "@/components/ui/button";
 import LeadSuccessState from "@/components/sections/LeadSuccessState";
 import { useClaimOfferSubmit, SUCCESS_AUTO_HIDE_MS, type ClaimOfferFields } from "@/lib/useClaimOfferSubmit";
 import { useOfferTracking } from "@/lib/useOfferTracking";
-import { formatOfferBadge } from "@/lib/offers/constants";
+import LiveCountdown from "@/components/offers/LiveCountdown";
+import { formatOfferBadge, estimateSavings } from "@/lib/offers/constants";
+import { claimProgress } from "@/lib/offers/live";
+import { whatsapp, phone as phoneContact } from "@/lib/contact";
 import { formatCurrency } from "@/lib/utils";
 import type { SerializedOffer } from "@/lib/offers/offers";
 import type { Audience } from "@/lib/offers/constants";
@@ -23,6 +27,7 @@ function claimAudienceFor(offer: SerializedOffer): Extract<Audience, "CLIENT" | 
 }
 
 const EMPTY_FIELDS: ClaimOfferFields = { name: "", email: "", phone: "" };
+const DRAFT_KEY = "offer_claim_contact";
 
 export default function ClaimOfferModal({
   offer,
@@ -33,7 +38,8 @@ export default function ClaimOfferModal({
   campaignId: string;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { status, error, fieldErrors, submit, reset } = useClaimOfferSubmit();
+  const { status, error, fieldErrors, pricing, portal, submit, reset } = useClaimOfferSubmit();
+  const [expired, setExpired] = useState(false);
   const [fields, setFields] = useState<ClaimOfferFields>(EMPTY_FIELDS);
   const [couponCode, setCouponCode] = useState("");
   const [couponPreview, setCouponPreview] = useState<{ ok: boolean; message: string } | null>(null);
@@ -44,6 +50,8 @@ export default function ClaimOfferModal({
   const formStartFired = useRef<string | null>(null);
 
   const open = Boolean(offer);
+  const summary = offer ? estimateSavings(offer.pricing) : { original: null, savings: 0, final: null };
+  const progress = claimProgress(offer?.claimedCount, offer?.claimLimit);
   const audience = offer ? claimAudienceFor(offer) : "CLIENT";
 
   useEffect(() => {
@@ -66,6 +74,36 @@ export default function ClaimOfferModal({
       cancelled = true;
     };
   }, [offer]);
+
+  // Less typing = more finished claims: signed-in portal users are pre-filled from their account, everyone else
+  // from the contact details they used last time on this device (name / email / phone only — nothing sensitive).
+  useEffect(() => {
+    if (!offer) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reset per opened offer
+    setExpired(false);
+    let cancelled = false;
+    (async () => {
+      let prefill: Partial<ClaimOfferFields> = {};
+      try {
+        const raw = window.localStorage.getItem(DRAFT_KEY);
+        if (raw) prefill = JSON.parse(raw) as Partial<ClaimOfferFields>;
+      } catch {
+        /* ignore */
+      }
+      try {
+        const res = await fetch("/api/offers/prefill", { cache: "no-store" });
+        const json = await res.json();
+        if (json?.signedIn) prefill = { name: json.name, email: json.email, phone: json.phone };
+      } catch {
+        /* anonymous / offline — fall back to the local draft */
+      }
+      if (cancelled) return;
+      setFields((f) => ({ ...f, name: f.name || prefill.name || "", email: f.email || prefill.email || "", phone: f.phone || prefill.phone || "" }));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [offer?._id]);
 
   function set<K extends keyof ClaimOfferFields>(key: K, value: string) {
     setFields((f) => ({ ...f, [key]: value }));
@@ -95,7 +133,14 @@ export default function ClaimOfferModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!offer) return;
-    await submit({ campaignId, offerId: offer._id, audience, couponCode: couponCode.trim() || undefined, useWallet: useWallet && !!wallet, fields });
+    const ok = await submit({ campaignId, offerId: offer._id, audience, couponCode: couponCode.trim() || undefined, useWallet: useWallet && !!wallet, fields });
+    if (ok) {
+      try {
+        window.localStorage.setItem(DRAFT_KEY, JSON.stringify({ name: fields.name, email: fields.email, phone: fields.phone }));
+      } catch {
+        /* ignore */
+      }
+    }
   }
 
   function handleOpenChange(next: boolean) {
@@ -116,18 +161,50 @@ export default function ClaimOfferModal({
         <SheetHeader className="border-b border-border/50">
           <SheetTitle>{offer ? offer.title : "Claim this offer"}</SheetTitle>
           {offer && <SheetDescription>{offer.badgeText || formatOfferBadge(offer.pricing)} — claim this festival offer</SheetDescription>}
+          {offer && (
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <LiveCountdown endDate={offer.validUntil} variant="pill" onExpire={() => setExpired(true)} />
+              {summary.savings > 0 && (
+                <span className="rounded-full bg-green-500/15 px-2.5 py-1 text-[11px] font-semibold text-green-600 dark:text-green-400">
+                  You save {formatCurrency(summary.savings, offer.pricing.currency)}
+                </span>
+              )}
+              {progress.limit !== null && !progress.soldOut && (
+                <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">{progress.remaining} of {progress.limit} left</span>
+              )}
+            </div>
+          )}
         </SheetHeader>
 
         <div className="p-4">
           <AnimatePresence mode="wait">
             {status === "success" ? (
-              <LeadSuccessState
-                key="success"
-                title="Offer claimed!"
-                description="Our team will reach out shortly with your confirmed discount and next steps."
-                onDismiss={reset}
-                autoHideMs={SUCCESS_AUTO_HIDE_MS}
-              />
+              <div key="success" className="space-y-4">
+                <LeadSuccessState
+                  title="Offer claimed!"
+                  description="Our team will reach out shortly with your confirmed discount and next steps."
+                  onDismiss={() => handleOpenChange(false)}
+                  autoHideMs={SUCCESS_AUTO_HIDE_MS}
+                />
+                {pricing?.originalPrice != null && pricing.finalPrice != null && (
+                  <div className="rounded-2xl border border-border/50 bg-muted/20 p-4 text-sm">
+                    <p className="mb-2 flex items-center gap-1.5 font-semibold text-foreground"><PartyPopper className="size-4 text-primary" /> Your locked-in price</p>
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="text-muted-foreground line-through">{formatCurrency(pricing.originalPrice, pricing.currency)}</span>
+                      <span className="text-xl font-black text-primary">{formatCurrency(pricing.finalPrice, pricing.currency)}</span>
+                    </div>
+                    {pricing.walletAmountApplied ? <p className="mt-1 text-xs text-muted-foreground">Includes {formatCurrency(pricing.walletAmountApplied, pricing.currency)} of YashOrbit Credits.</p> : null}
+                  </div>
+                )}
+                <div className="flex flex-col gap-2">
+                  {portal?.redirect && (
+                    <Link href={portal.redirect} className="inline-flex w-full items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground">
+                      {portal.isNewAccount ? "Open my portal — your account is ready" : "Sign in to track this claim"}
+                    </Link>
+                  )}
+                  <Button type="button" variant="outline" className="w-full" onClick={() => handleOpenChange(false)}>Keep exploring offers</Button>
+                </div>
+              </div>
             ) : (
               <form key="form" onSubmit={handleSubmit} className="space-y-4">
                 {error && <p className="text-sm text-destructive">{error}</p>}
@@ -238,9 +315,31 @@ export default function ClaimOfferModal({
                   </label>
                 )}
 
-                <Button type="submit" className="w-full" disabled={status === "submitting"}>
+                {(expired || progress.soldOut) && (
+                  <p className="rounded-xl bg-destructive/10 p-3 text-sm font-medium text-destructive">
+                    {progress.soldOut ? "This offer is fully claimed." : "This offer has just ended."} Please pick another live offer.
+                  </p>
+                )}
+
+                <Button type="submit" className="w-full" disabled={status === "submitting" || expired || progress.soldOut}>
                   {status === "submitting" ? <Loader2 className="size-4 animate-spin" /> : "Claim Offer"}
                 </Button>
+
+                <ul className="grid gap-1.5 text-[11px] text-muted-foreground sm:grid-cols-3">
+                  <li className="flex items-center gap-1.5"><ShieldCheck className="size-3.5 shrink-0 text-primary" /> No payment now</li>
+                  <li className="flex items-center gap-1.5"><Clock3 className="size-3.5 shrink-0 text-primary" /> Reply in 1 working day</li>
+                  <li className="flex items-center gap-1.5"><Tag className="size-3.5 shrink-0 text-primary" /> Price locked on claim</li>
+                </ul>
+
+                <div className="flex items-center gap-2 border-t border-border/50 pt-3 text-xs">
+                  <span className="text-muted-foreground">Prefer to talk?</span>
+                  <a href={whatsapp.href} target="_blank" rel="noopener noreferrer" onClick={() => offer && track("whatsapp_click", { offerId: offer._id, category: offer.category })} className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+                    <MessageCircle className="size-3.5" /> WhatsApp
+                  </a>
+                  <a href={phoneContact.href} onClick={() => offer && track("call_click", { offerId: offer._id, category: offer.category })} className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+                    <Phone className="size-3.5" /> Call us
+                  </a>
+                </div>
                 <p className="text-center text-[11px] text-muted-foreground">
                   By submitting, you agree to be contacted about this offer. See our{" "}
                   <a href="/about/terms-and-conditions" className="underline">terms</a>.

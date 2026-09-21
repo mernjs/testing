@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 import { Code2, Bot, Users, GraduationCap, Briefcase } from "lucide-react";
 import OffersHero from "@/components/offers/OffersHero";
 import AudienceSelector from "@/components/offers/AudienceSelector";
@@ -14,8 +15,11 @@ import FinalCtaSection from "@/components/offers/FinalCtaSection";
 import StickyMobileClaimBar from "@/components/offers/StickyMobileClaimBar";
 import DesktopScrollCta from "@/components/offers/DesktopScrollCta";
 import ExitIntentModal from "@/components/offers/ExitIntentModal";
-import ClaimOfferModal from "@/components/offers/ClaimOfferModal";
+import PersonalizedOffers, { type OffersViewer } from "@/components/offers/PersonalizedOffers";
+import OfferDetailsSheet from "@/components/offers/OfferDetailsSheet";
+import { useOfferClaim } from "@/components/offers/OfferClaimProvider";
 import { useOfferTracking } from "@/lib/useOfferTracking";
+import { setServerTime } from "@/lib/offers/live";
 import { PUBLIC_AUDIENCE_TABS, type PublicAudienceTabKey } from "@/lib/offers/constants";
 import type { SerializedCampaign } from "@/lib/offers/campaigns";
 import type { SerializedOffer } from "@/lib/offers/offers";
@@ -75,19 +79,84 @@ function orderedCategories(tab: PublicAudienceTabKey | null): CategorySlug[] {
   return [...priority, ...rest];
 }
 
+const TAB_STORAGE_KEY = "offers_tab";
+const LIVE_POLL_MS = 45_000;
+
+function isTabKey(v: unknown): v is PublicAudienceTabKey {
+  return v === "CLIENT" || v === "STUDENT" || v === "HIRING";
+}
+
 export default function OffersContent({
   campaign,
-  offers,
+  offers: initialOffers,
   faqs,
+  viewer,
+  viewerTab,
 }: {
   campaign: SerializedCampaign | null;
   offers: SerializedOffer[];
   faqs: { question: string; answer: string }[];
+  viewer: OffersViewer | null;
+  /** Audience tab implied by the signed-in portal role (server-decided). */
+  viewerTab: PublicAudienceTabKey | null;
 }) {
-  const [tab, setTab] = useState<PublicAudienceTabKey | null>(null);
-  const [claimOffer, setClaimOffer] = useState<SerializedOffer | null>(null);
+  const [tab, setTabState] = useState<PublicAudienceTabKey | null>(viewerTab);
+  const [offers, setOffers] = useState<SerializedOffer[]>(initialOffers);
+  const [detailOffer, setDetailOffer] = useState<SerializedOffer | null>(null);
+  const [campaignEnded, setCampaignEnded] = useState(false);
+  const { openClaim } = useOfferClaim();
   const track = useOfferTracking(campaign?._id ?? "");
   const impressionsFired = useRef(false);
+
+  const setTab = useCallback((next: PublicAudienceTabKey | null) => {
+    setTabState(next);
+    try {
+      if (next) window.localStorage.setItem(TAB_STORAGE_KEY, next);
+      else window.localStorage.removeItem(TAB_STORAGE_KEY);
+    } catch {
+      /* storage unavailable — selection just isn't remembered */
+    }
+  }, []);
+
+  // Returning visitors: `?for=` deep link > remembered tab (a signed-in role always wins because it is already the initial state).
+  useEffect(() => {
+    if (viewerTab) return;
+    try {
+      const fromUrl = new URLSearchParams(window.location.search).get("for")?.toUpperCase();
+      const remembered = window.localStorage.getItem(TAB_STORAGE_KEY);
+      const pick = isTabKey(fromUrl) ? fromUrl : isTabKey(remembered) ? remembered : null;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage only exists client-side
+      if (pick) setTabState(pick);
+    } catch {
+      /* ignore */
+    }
+  }, [viewerTab]);
+
+  // Real-time status: refresh claim counts / sold-out / expiry every 45s while the tab is visible.
+  useEffect(() => {
+    if (!campaign) return;
+    let cancelled = false;
+    async function refresh() {
+      if (document.visibilityState !== "visible") return;
+      try {
+        const res = await fetch(`/api/offers/public?campaignId=${encodeURIComponent(campaign!._id)}`, { cache: "no-store" });
+        if (!res.ok) return; // transient failure — keep what's on screen
+        const json = (await res.json()) as { active: boolean; serverTime?: number; offers: SerializedOffer[] };
+        if (typeof json.serverTime === "number") setServerTime(json.serverTime);
+        if (cancelled) return;
+        if (!json.active) setCampaignEnded(true);
+        else setOffers(json.offers);
+      } catch {
+        /* offline — keep what's on screen */
+      }
+    }
+    void refresh();
+    const id = setInterval(refresh, LIVE_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [campaign]);
 
   const tabAudiences = tab ? PUBLIC_AUDIENCE_TABS.find((t) => t.key === tab)?.matches : undefined;
   const visibleOffers = useMemo(() => {
@@ -103,9 +172,21 @@ export default function OffersContent({
     if (!campaign || impressionsFired.current) return;
     impressionsFired.current = true;
     track("campaign_view", {});
-    for (const offer of offers) track("offer_view", { offerId: offer._id, category: offer.category }, { once: true });
+    // offer_view is fired per card when it actually scrolls into view (see handleView), not for every offer at page load.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [campaign?._id]);
+
+  const handleView = useCallback(
+    (offer: SerializedOffer) => track("offer_view", { offerId: offer._id, category: offer.category }, { once: true }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [campaign?._id]
+  );
+
+  const handleExpire = useCallback(
+    (offer: SerializedOffer) => track("countdown_expired", { offerId: offer._id, category: offer.category }, { once: true }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [campaign?._id]
+  );
 
   function handleSelectAudience(key: PublicAudienceTabKey) {
     setTab(key);
@@ -115,14 +196,69 @@ export default function OffersContent({
 
   function handleClaim(offer: SerializedOffer) {
     track("offer_click", { offerId: offer._id, category: offer.category, audience: tab ?? undefined }, { once: true });
-    setClaimOffer(offer);
+    setDetailOffer(null);
+    // let the details sheet finish closing before the claim sheet opens (two open sheets fight over focus)
+    setTimeout(() => openClaim(offer), detailOffer ? 220 : 0);
   }
+
+  function handleDetails(offer: SerializedOffer) {
+    track("offer_detail_open", { offerId: offer._id, category: offer.category });
+    setDetailOffer(offer);
+  }
+
+  async function handleShare(offer: SerializedOffer) {
+    track("share_click", { offerId: offer._id, category: offer.category });
+    const url = `${window.location.origin}/offers?offer=${offer._id}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: offer.title, text: `${offer.title} — limited-time offer from YashOrbit`, url });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+      toast.success("Offer link copied");
+    } catch {
+      /* share sheet dismissed */
+    }
+  }
+
+  // Deep link: /offers?offer=<id> opens that offer's details once offers are on screen.
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("offer");
+    if (!id) return;
+    const target = initialOffers.find((o) => o._id === id);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time open from the URL
+    if (target) setDetailOffer(target);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen selection:bg-primary/30 overflow-hidden">
-      <OffersHero campaign={campaign} onSelectAudience={handleSelectAudience} />
+      {campaignEnded && (
+        <div className="border-b border-destructive/30 bg-destructive/10 px-4 py-3 text-center text-sm font-medium text-destructive">
+          This campaign has just ended.{" "}
+          <button type="button" onClick={() => window.location.reload()} className="underline underline-offset-2">
+            Refresh
+          </button>{" "}
+          to see what&apos;s live next.
+        </div>
+      )}
+
+      <OffersHero campaign={campaign} onSelectAudience={handleSelectAudience} onCampaignEnd={() => setCampaignEnded(true)} />
 
       {campaign && <AudienceSelector selected={tab} onSelect={setTab} />}
+
+      {campaign && (
+        <PersonalizedOffers
+          offers={offers}
+          tab={tab}
+          viewer={viewer}
+          onClaim={handleClaim}
+          onDetails={handleDetails}
+          onView={handleView}
+          onExpire={handleExpire}
+          onPersonalizedView={(t) => track("personalized_view", { audience: t === "CLIENT" ? "CLIENT" : t === "STUDENT" ? "STUDENT" : t === "HIRING" ? "HIRING" : undefined })}
+        />
+      )}
 
       {dealOfTheDay && <DealOfTheDaySection offer={dealOfTheDay} onClaim={handleClaim} />}
 
@@ -142,6 +278,9 @@ export default function OffersContent({
             description={meta.description}
             offers={categoryOffers}
             onClaim={handleClaim}
+            onDetails={handleDetails}
+            onView={handleView}
+            onExpire={handleExpire}
             tone={i % 2 === 0 ? "default" : "muted"}
           />
         );
@@ -160,7 +299,7 @@ export default function OffersContent({
 
       {campaign && <ExitIntentModal campaignId={campaign._id} offer={dealOfTheDay ?? offers[0] ?? null} onClaim={handleClaim} />}
 
-      {campaign && <ClaimOfferModal offer={claimOffer} campaignId={campaign._id} onOpenChange={(open) => !open && setClaimOffer(null)} />}
+      <OfferDetailsSheet offer={detailOffer} onOpenChange={(open) => !open && setDetailOffer(null)} onClaim={handleClaim} onShare={handleShare} />
     </div>
   );
 }

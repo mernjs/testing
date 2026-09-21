@@ -4,7 +4,7 @@ import { escapeRegExp } from "@/lib/text-search";
 import { newId, createStamp, updateStamp, notDeleted, type AuditFields } from "@/lib/offers/db";
 import type { ApplicableServiceInput, CouponWriteInput } from "@/lib/offers/coupon-validation";
 import { normalizeCouponCode } from "@/lib/offers/coupon-validation";
-import type { Audience, DiscountType } from "@/lib/offers/constants";
+import { audienceAliases, type Audience, type DiscountType } from "@/lib/offers/constants";
 import type { CategorySlug } from "@/lib/categories";
 
 export const COUPONS_COLLECTION = "coupons";
@@ -211,7 +211,7 @@ export async function validateCoupon(rawCode: string, ctx: CouponValidationConte
     return { ok: false, error: "This coupon has reached its usage limit." };
   }
 
-  if (coupon.applicableAudience.length > 0 && !coupon.applicableAudience.includes("ALL") && !coupon.applicableAudience.includes(ctx.audience)) {
+  if (coupon.applicableAudience.length > 0 && !coupon.applicableAudience.includes("ALL") && !audienceAliases(ctx.audience).some((a) => coupon.applicableAudience.includes(a))) {
     return { ok: false, error: "This coupon isn't valid for your selection." };
   }
 

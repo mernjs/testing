@@ -1,10 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Flame, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Flame, ArrowRight, CheckCircle2, Users, Sparkles, CalendarClock, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { formatOfferBadge, getServiceHref } from "@/lib/offers/constants";
+import { CountdownPill, useRemaining } from "@/components/offers/LiveCountdown";
+import { formatOfferBadge, getServiceHref, getAudienceLabel, estimateSavings } from "@/lib/offers/constants";
+import { getUrgency, URGENCY_STYLES, claimProgress, nowMs } from "@/lib/offers/live";
 import { getCategoryLabel, getSubServices } from "@/lib/categories";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { SerializedOffer } from "@/lib/offers/offers";
@@ -14,71 +17,164 @@ function subServiceLabel(offer: SerializedOffer): string {
   return getSubServices(offer.category).find((s) => s.slug === offer.subService)?.label ?? getCategoryLabel(offer.category);
 }
 
+/** Human-readable "who is this for" chips. */
+function audienceChips(offer: SerializedOffer): string[] {
+  if (offer.audience.includes("ALL")) return ["Open to everyone"];
+  return offer.audience.slice(0, 3).map(getAudienceLabel);
+}
+
 export default function OfferCard({
   offer,
   onClaim,
+  onDetails,
+  onView,
+  onExpire,
+  recommended = false,
   compact = false,
 }: {
   offer: SerializedOffer;
   onClaim: (offer: SerializedOffer) => void;
+  onDetails?: (offer: SerializedOffer) => void;
+  /** Fired once when the card actually scrolls into view (real viewability, not page load). */
+  onView?: (offer: SerializedOffer) => void;
+  /** Fired once when this offer's countdown reaches zero while the visitor is watching. */
+  onExpire?: (offer: SerializedOffer) => void;
+  recommended?: boolean;
   compact?: boolean;
 }) {
+  const [expired, setExpired] = useState(false);
+  const remaining = useRemaining(offer.validUntil, () => {
+    setExpired(true);
+    onExpire?.(offer);
+  });
   const badge = offer.badgeText || formatOfferBadge(offer.pricing);
-  const hasPrice = offer.pricing.mode !== "custom_quote" && offer.pricing.originalPrice;
+  const { original, savings, final } = estimateSavings(offer.pricing);
+  const progress = claimProgress(offer.claimedCount, offer.claimLimit);
+  const notStarted = new Date(offer.validFrom).getTime() > nowMs();
+  const ended = expired || (remaining !== null && remaining <= 0);
+  const urgency = remaining !== null ? getUrgency(remaining) : null;
+  const canClaim = !ended && !progress.soldOut && !notStarted;
+
+  // One status chip, most important state wins.
+  let status: { label: string; className: string } | null = null;
+  if (ended) status = { label: "Ended", className: URGENCY_STYLES.ended.chip };
+  else if (progress.soldOut) status = { label: "Sold out", className: URGENCY_STYLES.critical.chip };
+  else if (notStarted) status = { label: "Starts soon", className: URGENCY_STYLES.upcoming.chip };
+  else if (progress.almostGone) status = { label: `Only ${progress.remaining} left`, className: URGENCY_STYLES.urgent.chip };
+  else if (urgency && urgency.label) status = { label: urgency.label, className: URGENCY_STYLES[urgency.level].chip };
+  else status = { label: "Live now", className: "bg-green-500/15 text-green-600 dark:text-green-400" };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
+      onViewportEnter={() => onView?.(offer)}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.4 }}
-      className={`flex flex-col rounded-3xl border border-border/50 bg-background/95 backdrop-blur-md p-6 shadow-none transition-all hover:-translate-y-1 ${compact ? "min-w-[260px]" : ""}`}
+      className={`flex flex-col rounded-3xl border bg-background/95 p-6 backdrop-blur-md transition-transform hover:-translate-y-1 ${
+        recommended ? "border-primary/50" : "border-border/50"
+      } ${ended ? "opacity-70" : ""} ${compact ? "min-w-[260px]" : ""}`}
     >
       <div className="mb-3 flex items-center justify-between gap-2">
         <span className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-primary">
-          <Flame className="size-3.5" /> {offer.isDealOfTheDay ? "Deal of the Day" : "Festival Offer"}
+          <Flame className="size-3.5" /> {offer.isDealOfTheDay ? "Deal of the Day" : offer.isFlashDeal ? "Flash Deal" : "Festival Offer"}
         </span>
-        {offer.isFeatured && <Badge variant="secondary">Most Popular</Badge>}
+        {recommended ? (
+          <Badge className="gap-1"><Sparkles className="size-3" /> For you</Badge>
+        ) : offer.isFeatured ? (
+          <Badge variant="secondary">Most Popular</Badge>
+        ) : null}
+      </div>
+
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        {status && <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${status.className}`}>{status.label}</span>}
+        {!ended && !notStarted && remaining !== null && <CountdownPill remaining={remaining} />}
       </div>
 
       <p className="text-xs font-medium text-muted-foreground">{subServiceLabel(offer)}</p>
       <h3 className="mt-1 text-lg font-bold text-foreground">{offer.title}</h3>
       {offer.description && !compact && <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{offer.description}</p>}
 
-      <div className="mt-4 flex items-baseline gap-2">
-        {hasPrice && offer.pricing.originalPrice && (
-          <span className="text-sm text-muted-foreground line-through">
-            {formatCurrency(offer.pricing.originalPrice, offer.pricing.currency)}
-          </span>
+      <div className="mt-4">
+        <p className="text-2xl font-black tracking-tight text-primary">{badge}</p>
+        {original !== null && (
+          <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-sm">
+            <span className="text-muted-foreground line-through">{formatCurrency(original, offer.pricing.currency)}</span>
+            {final !== null && <span className="font-bold text-foreground">{formatCurrency(final, offer.pricing.currency)}</span>}
+            {savings > 0 && <span className="text-xs font-semibold text-green-600 dark:text-green-400">Save {formatCurrency(savings, offer.pricing.currency)}</span>}
+          </p>
         )}
       </div>
-      <p className="text-2xl font-black tracking-tight text-primary">{badge}</p>
+
+      {!compact && (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {audienceChips(offer).map((chip) => (
+            <span key={chip} className="inline-flex items-center gap-1 rounded-full bg-muted/60 px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
+              <Users className="size-3" /> {chip}
+            </span>
+          ))}
+        </div>
+      )}
 
       {offer.benefits.length > 0 && !compact && (
         <ul className="mt-4 space-y-1.5">
-          {offer.benefits.slice(0, 4).map((b) => (
+          {offer.benefits.slice(0, 3).map((b) => (
             <li key={b} className="flex items-center gap-2 text-sm text-muted-foreground">
               <CheckCircle2 className="size-4 shrink-0 text-primary" /> {b}
             </li>
           ))}
+          {offer.benefits.length > 3 && (
+            <li className="pl-6 text-xs text-muted-foreground">
+              +{offer.benefits.length - 3} more —{" "}
+              <button type="button" onClick={() => onDetails?.(offer)} className="font-medium text-primary hover:underline">see all</button>
+            </li>
+          )}
         </ul>
       )}
 
-      <p className="mt-4 text-xs text-muted-foreground">Valid until {formatDate(offer.validUntil)}</p>
+      {/* Real scarcity only: a bar exists solely when the admin set a claim limit; otherwise show honest social proof (a true claim count). */}
+      {!compact && progress.limit !== null && progress.percent !== null && (
+        <div className="mt-4" aria-label={`${progress.claimed} of ${progress.limit} claimed`}>
+          <div className="mb-1 flex items-center justify-between text-[11px] font-medium text-muted-foreground">
+            <span>{progress.claimed} of {progress.limit} claimed</span>
+            <span>{progress.soldOut ? "Sold out" : `${progress.remaining} left`}</span>
+          </div>
+          <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+            <div className={`h-full rounded-full transition-[width] duration-700 ${progress.almostGone || progress.soldOut ? "bg-destructive" : "bg-primary"}`} style={{ width: `${progress.percent}%` }} />
+          </div>
+        </div>
+      )}
+      {!compact && progress.limit === null && progress.claimed >= 5 && (
+        <p className="mt-4 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+          <Users className="size-3.5 text-primary" /> {progress.claimed.toLocaleString("en-IN")} people have claimed this
+        </p>
+      )}
 
-      <div className="mt-5 flex items-center gap-3">
+      <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+        <CalendarClock className="size-3.5" /> Valid until {formatDate(offer.validUntil)}
+      </p>
+
+      <div className="mt-5 flex items-center gap-2">
         <button
           type="button"
+          disabled={!canClaim}
           onClick={() => onClaim(offer)}
-          className="group inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-transform hover:scale-105"
+          className="group inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-transform enabled:hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Claim Offer <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+          {ended ? "Offer ended" : progress.soldOut ? "Sold out" : notStarted ? "Not started yet" : "Claim Offer"}
+          {canClaim && <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />}
         </button>
+        {onDetails && (
+          <button
+            type="button"
+            onClick={() => onDetails(offer)}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border/60 px-4 py-2.5 text-sm font-semibold text-foreground transition-colors hover:border-primary hover:text-primary"
+          >
+            <Info className="size-4" /> Details
+          </button>
+        )}
       </div>
-      <Link
-        href={getServiceHref(offer.category, offer.subService)}
-        className="mt-3 text-center text-xs text-muted-foreground hover:text-primary hover:underline"
-      >
+      <Link href={getServiceHref(offer.category, offer.subService)} className="mt-3 text-center text-xs text-muted-foreground hover:text-primary hover:underline">
         Learn more about this service
       </Link>
     </motion.div>

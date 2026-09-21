@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import CampaignCountdown from "@/components/offers/CampaignCountdown";
+import { useOfferClaim } from "@/components/offers/OfferClaimProvider";
+import { isClaimHref } from "@/lib/offers/constants";
 import { useOfferTracking } from "@/lib/useOfferTracking";
 import { popupMayShow, markPopupShown, markPopupClosed } from "@/lib/offers/popup-frequency";
 import type { ActiveDisplayPopup } from "@/lib/useActiveCampaignDisplay";
@@ -13,12 +15,13 @@ export default function OfferPopup({
   popup,
   endDate,
 }: {
-  campaign: { id: string; slug: string; name: string };
+  campaign: { id: string; slug: string; name: string; startDate?: string };
   popup: ActiveDisplayPopup;
   endDate: string;
 }) {
   const [open, setOpen] = useState(false);
   const track = useOfferTracking(campaign.id);
+  const { openClaim, isClaimOpen } = useOfferClaim();
 
   useEffect(() => {
     // Deliberately no "already armed" ref guard here — React (Strict Mode,
@@ -30,6 +33,8 @@ export default function OfferPopup({
     if (!popupMayShow(campaign.id, popup.frequency)) return;
 
     function show() {
+      // Never open on top of the claim form (or vice versa) — two stacked modals steal each other's focus and one of them closes.
+      if (isClaimOpen()) return;
       setOpen(true);
       markPopupShown(campaign.id, popup.frequency);
       track("popup_view", {});
@@ -80,6 +85,20 @@ export default function OfferPopup({
     }
   }
 
+  /**
+   * "Claim Offer": close this popup on purpose, THEN open the claim sheet once the dialog's exit animation has
+   * finished. Navigating away instead (the old behaviour) left the dialog mounted on top of the destination page.
+   */
+  function handleCta(e: React.MouseEvent) {
+    track("popup_click", {});
+    setOpen(false);
+    markPopupClosed(campaign.id);
+    if (isClaimHref(popup.ctaHref)) {
+      e.preventDefault();
+      setTimeout(() => openClaim({ offerId: popup.offerId }), 220);
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="text-center">
@@ -94,18 +113,20 @@ export default function OfferPopup({
 
           {popup.showCountdown && (
             <div className="mt-5 flex justify-center">
-              <CampaignCountdown endDate={endDate} />
+              <CampaignCountdown endDate={endDate} startDate={campaign.startDate} />
             </div>
           )}
 
           <Link
             href={popup.ctaHref}
-            onClick={() => track("popup_click", {})}
+            onClick={handleCta}
             className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-transform hover:scale-105"
           >
             {popup.ctaText}
           </Link>
-          <p className="mt-3 text-xs text-muted-foreground">Limited Time Offer</p>
+          <button type="button" onClick={() => handleOpenChange(false)} className="mt-3 text-xs text-muted-foreground hover:text-foreground hover:underline">
+            Maybe later
+          </button>
         </div>
       </DialogContent>
     </Dialog>

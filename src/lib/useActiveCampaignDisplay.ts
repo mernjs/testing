@@ -3,8 +3,11 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import type { Audience, PopupTemplate, PopupTriggerType, PopupFrequency } from "@/lib/offers/constants";
+import { setServerTime } from "@/lib/offers/live";
 
 export interface ActiveDisplayStrip {
+  /** The real offer this strip promotes — lets its CTA open the claim form in place. */
+  offerId?: string | null;
   message: string;
   discountText: string;
   ctaText: string;
@@ -14,6 +17,7 @@ export interface ActiveDisplayStrip {
 }
 
 export interface ActiveDisplayPopup {
+  offerId?: string | null;
   template: PopupTemplate;
   emoji: string;
   heading: string;
@@ -28,7 +32,8 @@ export interface ActiveDisplayPopup {
 
 export interface ActiveDisplay {
   active: boolean;
-  campaign?: { id: string; slug: string; name: string; endDate: string };
+  campaign?: { id: string; slug: string; name: string; startDate?: string; endDate: string };
+  serverTime?: number;
   audience?: Audience;
   strip: ActiveDisplayStrip | null;
   popup: ActiveDisplayPopup | null;
@@ -53,11 +58,15 @@ export function useActiveCampaignDisplay(): ActiveDisplay {
     async function load() {
       try {
         const res = await fetch(`/api/offers/active-campaign?page=${encodeURIComponent(pathname)}`, { cache: "no-store" });
-        if (!res.ok) throw new Error(`status ${res.status}`);
+        // A failed/timed-out request (5xx, network) says nothing about whether the campaign is still live —
+        // keep whatever is already on screen instead of yanking a popup out from under the visitor. Only an
+        // explicit `{ active: false }` from the server removes the promotion.
+        if (!res.ok) return;
         const json = (await res.json()) as ActiveDisplay;
+        if (typeof json.serverTime === "number") setServerTime(json.serverTime);
         if (!cancelled) setData(json.active ? json : INACTIVE);
       } catch {
-        if (!cancelled) setData(INACTIVE);
+        /* network error — keep the last good display */
       }
     }
 

@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import OfferPromotions from "@/components/offers/OfferPromotions";
 import ReferralWelcome from "@/components/offers/ReferralWelcome";
+import OfferClaimProvider from "@/components/offers/OfferClaimProvider";
 
 export default function SiteLayout({
   children,
@@ -10,7 +11,7 @@ export default function SiteLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <OfferClaimProvider>
       <OfferPromotions />
       <ReferralWelcome />
       <Header />
@@ -19,6 +20,6 @@ export default function SiteLayout({
       </main>
       <Footer />
       <Toaster position="top-right" richColors closeButton />
-    </>
+    </OfferClaimProvider>
   );
 }

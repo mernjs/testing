@@ -11,7 +11,7 @@ import { randomUUID } from "node:crypto";
 import { getCampaign } from "@/lib/offers/campaigns";
 import { getOffer } from "@/lib/offers/offers";
 import { validateCoupon, redeemCoupon } from "@/lib/offers/coupons";
-import { createOfferClaim } from "@/lib/offers/claims";
+import { createOfferClaim, countClaimsForOffer } from "@/lib/offers/claims";
 import { validateClaimInput, formatClaimMessage } from "@/lib/offers/claim-validation";
 import { isValidAudience, getCampaignEffectiveStatus, DEFAULT_CURRENCY } from "@/lib/offers/constants";
 
@@ -48,6 +48,12 @@ export async function POST(req: NextRequest) {
   const offerLive = offer.status === "active" && offer.validFrom <= now && offer.validUntil >= now;
   if (!campaignLive || !offerLive) {
     return NextResponse.json({ error: "This offer has expired." }, { status: 410 });
+  }
+
+  // Optional claim cap. Best-effort by design (no multi-document transactions in this codebase): two truly
+  // simultaneous claims on the very last slot can both pass, so treat the limit as a soft cap.
+  if (offer.claimLimit && (await countClaimsForOffer(offer._id)) >= offer.claimLimit) {
+    return NextResponse.json({ error: "This offer is fully claimed. Please check our other live offers.", soldOut: true }, { status: 409 });
   }
 
   const claimValidation = validateClaimInput(claimAudience, fields);

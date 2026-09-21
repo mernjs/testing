@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Flame, X } from "lucide-react";
+import LiveCountdown from "@/components/offers/LiveCountdown";
+import { useOfferClaim } from "@/components/offers/OfferClaimProvider";
+import { isClaimHref } from "@/lib/offers/constants";
 import { useOfferTracking } from "@/lib/useOfferTracking";
 import type { ActiveDisplayStrip } from "@/lib/useActiveCampaignDisplay";
 
@@ -14,31 +17,6 @@ function isClosed(campaignId: string): boolean {
   } catch {
     return false;
   }
-}
-
-/** Compact "Ends in 02D 14H 32M" text — the strip's own slim format, distinct from the hero's big-box `CampaignCountdown`. */
-function CompactCountdown({ endDate }: { endDate: string }) {
-  const [text, setText] = useState<string | null>(null);
-
-  useEffect(() => {
-    function tick() {
-      const total = Math.max(new Date(endDate).getTime() - Date.now(), 0);
-      if (total <= 0) {
-        setText("Ending soon");
-        return;
-      }
-      const days = Math.floor(total / 86400000);
-      const hours = Math.floor((total / 3600000) % 24);
-      const minutes = Math.floor((total / 60000) % 60);
-      setText(days > 0 ? `Ends in ${days}D ${hours}H` : `Ends in ${hours}H ${minutes}M`);
-    }
-    tick();
-    const interval = setInterval(tick, 30_000);
-    return () => clearInterval(interval);
-  }, [endDate]);
-
-  if (!text) return null;
-  return <span className="text-background/70">{text}</span>;
 }
 
 /** Renders before <Header/> and publishes its own height via `--offer-strip-h` so the fixed Header (and <main>'s top padding) can offset around it — see (site)/layout.tsx and Header.tsx. */
@@ -54,6 +32,7 @@ export default function OfferTopStrip({
   const [closed, setClosed] = useState(() => isClosed(campaign.id));
   const ref = useRef<HTMLDivElement>(null);
   const track = useOfferTracking(campaign.id);
+  const { openClaim } = useOfferClaim();
   const viewedRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -101,16 +80,29 @@ export default function OfferTopStrip({
             {strip.message}
           </span>
           {strip.discountText && <span className="font-black text-primary">{strip.discountText}</span>}
-          {strip.showCountdown && <CompactCountdown endDate={endDate} />}
+          {strip.showCountdown && <LiveCountdown endDate={endDate} variant="strip" onDark />}
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <Link
-            href={strip.ctaHref}
-            onClick={() => track("strip_click", {})}
-            className="rounded-full bg-primary px-3.5 py-1 text-xs font-semibold text-primary-foreground transition-transform hover:scale-105 sm:text-sm"
-          >
-            {strip.ctaText}
-          </Link>
+          {isClaimHref(strip.ctaHref) ? (
+            <button
+              type="button"
+              onClick={() => {
+                track("strip_click", {});
+                openClaim({ offerId: strip.offerId });
+              }}
+              className="rounded-full bg-primary px-3.5 py-1 text-xs font-semibold text-primary-foreground transition-transform hover:scale-105 sm:text-sm"
+            >
+              {strip.ctaText}
+            </button>
+          ) : (
+            <Link
+              href={strip.ctaHref}
+              onClick={() => track("strip_click", {})}
+              className="rounded-full bg-primary px-3.5 py-1 text-xs font-semibold text-primary-foreground transition-transform hover:scale-105 sm:text-sm"
+            >
+              {strip.ctaText}
+            </Link>
+          )}
           {strip.allowClose && (
             <button
               type="button"

@@ -4,6 +4,14 @@ import { randomUUID } from "node:crypto";
 import { rng, rint, pick, chance, weighted, shuffle, ago, fromNow, audit, isoDay, NOW, insertAll } from "./lib.mjs";
 
 const DAY = 86400000;
+const CAT_AUDIENCES = { "software-development": ["CLIENT", "BUSINESS"], "ai-automations": ["BUSINESS", "CLIENT"], "industrial-training": ["STUDENT", "LEARNER"], "resource-augmentation": ["HIRING", "BUSINESS"], "internship-program": ["INTERN", "STUDENT"] };
+const CAT_ELIGIBILITY = {
+  "software-development": ["Registered companies, startups and founders", "Project scope shared before kickoff"],
+  "ai-automations": ["Businesses with an existing process to automate", "Discovery call required"],
+  "industrial-training": ["Students and fresh graduates", "Laptop with internet access"],
+  "resource-augmentation": ["Companies hiring 1+ developers", "Minimum 3-month engagement"],
+  "internship-program": ["Final-year and pre-final-year students", "Minimum 8 hours/week commitment"],
+};
 const CAT_AUD = { "software-development": "CLIENT", "ai-automations": "CLIENT", "industrial-training": "STUDENT", "resource-augmentation": "HIRING", "internship-program": "INTERN" };
 
 const OFFER_TEMPLATES = [
@@ -55,8 +63,8 @@ export async function seedGrowth(db, tms, pms, people) {
       if (mode === "flat") pricing.flatDiscountAmount = val;
       if (mode === "custom_quote") pricing.startingPriceLabel = "Custom Quote";
       offers.push({
-        _id: `demo-offer-${c.key}-${i + 1}`, campaignId: `demo-camp-${c.key}`, title, description: `${title} — limited-period pricing with expert delivery and support.`, category, subService: sub, audience: [CAT_AUD[category]], pricing,
-        benefits: ["Senior-led delivery", "Dedicated support", "Certificate / documentation included"], validFrom: fromNow(c.start), validUntil: fromNow(c.end), priority: 100 - i, isFeatured: i < 2, isDealOfTheDay: i === 0 && c.key === "diwali", isFlashDeal: c.key === "flash",
+        _id: `demo-offer-${c.key}-${i + 1}`, campaignId: `demo-camp-${c.key}`, title, description: `${title} — limited-period pricing with expert delivery and support.`, category, subService: sub, audience: i === 5 ? ["ALL"] : CAT_AUDIENCES[category], eligibility: CAT_ELIGIBILITY[category], pricing,
+        benefits: ["Senior-led delivery", "Dedicated support", "Certificate / documentation included"], validFrom: fromNow(c.start), validUntil: c.key === "diwali" && i % 5 === 1 ? new Date(NOW + 46 * 3600000) : c.key === "diwali" && i === 3 ? new Date(NOW + 9 * 3600000) : fromNow(c.end), priority: 100 - i, isFeatured: i < 2, isDealOfTheDay: i === 0 && c.key === "diwali", isFlashDeal: c.key === "flash",
         status: c.status === "active" ? "active" : c.status === "paused" ? "paused" : c.status === "scheduled" ? "draft" : "expired", ...audit(fromNow(c.start - 3)),
       });
     });
@@ -103,7 +111,7 @@ export async function seedGrowth(db, tms, pms, people) {
     const camp = weighted([["demo-camp-diwali", 6], ["demo-camp-summer", 2], ["demo-camp-college", 1.5], ["demo-camp-flash", 0.5]]);
     const pool = offers.filter((o) => o.campaignId === camp && o.pricing.mode !== "custom_quote");
     const offer = pick(pool.length ? pool : activeOffers.filter((o) => o.pricing.mode !== "custom_quote"));
-    const aud = offer.audience[0];
+    const aud = CAT_AUD[offer.category]; // claim audiences are the 4 real claimant types
     const asPortal = chance(0.35) ? pick(portalUsers) : null;
     const email = asPortal ? asPortal.email : `enquiry.${i + 1}@prospect.demo.in`;
     const coupon = chance(0.4) ? pick(coupons.filter((c) => !c.campaignId || c.campaignId === camp)) : null;
@@ -123,7 +131,7 @@ export async function seedGrowth(db, tms, pms, people) {
 
   // ---- analytics events ----
   const evtDocs = [];
-  const EVT = [["campaign_view", 30], ["offer_view", 28], ["offer_click", 14], ["form_start", 7], ["coupon_apply", 3], ["whatsapp_click", 3], ["call_click", 1.5], ["strip_view", 12], ["strip_click", 2], ["popup_view", 9], ["popup_click", 2], ["popup_close", 4], ["exit_intent_shown", 1.5], ["scroll_cta_click", 1]];
+  const EVT = [["campaign_view", 30], ["offer_view", 28], ["offer_click", 14], ["form_start", 7], ["coupon_apply", 3], ["whatsapp_click", 3], ["call_click", 1.5], ["strip_view", 12], ["strip_click", 2], ["popup_view", 9], ["popup_click", 2], ["popup_close", 4], ["exit_intent_shown", 1.5], ["scroll_cta_click", 1], ["offer_detail_open", 6], ["personalized_view", 3], ["share_click", 1], ["countdown_expired", 0.5]];
   for (let i = 0; i < 4200; i++) {
     const camp = weighted([["demo-camp-diwali", 7], ["demo-camp-summer", 2], ["demo-camp-college", 1]]);
     const c = campWindow[camp];
@@ -356,6 +364,17 @@ export async function seedGrowth(db, tms, pms, people) {
   }
 
   // ---- write everything ----
+  // A real claim cap on some Diwali offers so the public progress bars / sold-out / expiry alerts have true data to show.
+  const claimedByOffer = new Map();
+  for (const cl of claims) claimedByOffer.set(cl.offerId, (claimedByOffer.get(cl.offerId) ?? 0) + 1);
+  activeOffers.forEach((o, i) => {
+    const claimed = claimedByOffer.get(o._id) ?? 0;
+    if (claimed < 3) return;
+    if (i === 2) o.claimLimit = claimed; // fully claimed
+    else if (i === 4) o.claimLimit = Math.ceil(claimed / 0.88); // almost gone
+    else if (i % 3 === 0) o.claimLimit = Math.ceil(claimed / (0.35 + (i % 5) * 0.1));
+  });
+
   for (const c of ["offer_campaigns", "offers", "coupons", "offer_claims", "offer_analytics_events", "wallets", "wallet_transactions", "referrals"]) await wipe(c);
   await db.collection("wallet_idempotency_locks").deleteMany({ _id: /demo-/ });
   await db.collection("wallet_streaks").deleteMany({ _id: /^demo-/ });

@@ -12,6 +12,10 @@ export default function CategoryOffersSection({
   description,
   offers,
   onClaim,
+  onDetails,
+  onView,
+  onExpire,
+  recommendedIds,
   tone = "default",
 }: {
   id: string;
@@ -20,6 +24,10 @@ export default function CategoryOffersSection({
   description: string;
   offers: SerializedOffer[];
   onClaim: (offer: SerializedOffer) => void;
+  onDetails?: (offer: SerializedOffer) => void;
+  onView?: (offer: SerializedOffer) => void;
+  onExpire?: (offer: SerializedOffer) => void;
+  recommendedIds?: Set<string>;
   tone?: "default" | "muted";
 }) {
   if (offers.length === 0) return null;
@@ -45,7 +53,7 @@ export default function CategoryOffersSection({
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {offers.map((offer) => (
-            <OfferCard key={offer._id} offer={offer} onClaim={onClaim} />
+            <OfferCard key={offer._id} offer={offer} onClaim={onClaim} onDetails={onDetails} onView={onView} onExpire={onExpire} recommended={recommendedIds?.has(offer._id)} />
           ))}
         </div>
       </div>

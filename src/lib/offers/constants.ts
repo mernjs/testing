@@ -15,12 +15,58 @@ import type { CategorySlug } from "@/lib/categories";
 // ---------------------------------------------------------------------------
 
 export const AUDIENCES = [
-  { value: "CLIENT", label: "Business / Client" },
+  { value: "CLIENT", label: "Client" },
+  { value: "BUSINESS", label: "Business / Enterprise" },
   { value: "STUDENT", label: "Student / Developer" },
+  { value: "LEARNER", label: "Learner / Trainee" },
   { value: "INTERN", label: "Internship" },
   { value: "HIRING", label: "Hiring / Resource Augmentation" },
   { value: "ALL", label: "Everyone" },
 ] as const;
+
+/**
+ * Targeting presets for the LMS offer form — one click selects the audiences
+ * that make sense together, instead of hand-ticking checkboxes.
+ */
+export const AUDIENCE_PRESETS: { key: string; label: string; hint: string; audiences: Audience[] }[] = [
+  { key: "clients", label: "Clients", hint: "Software & AI project buyers", audiences: ["CLIENT", "BUSINESS"] },
+  { key: "business", label: "Business / Enterprise", hint: "Companies scaling teams or products", audiences: ["BUSINESS", "HIRING"] },
+  { key: "students", label: "Students", hint: "College students & developers", audiences: ["STUDENT", "LEARNER"] },
+  { key: "learners", label: "Learners / Trainees", hint: "Enrolled or upskilling learners", audiences: ["LEARNER", "STUDENT"] },
+  { key: "interns", label: "Interns", hint: "Internship applicants", audiences: ["INTERN", "STUDENT"] },
+  { key: "hiring", label: "Hiring managers", hint: "Teams that need developers", audiences: ["HIRING", "BUSINESS"] },
+  { key: "everyone", label: "Everyone", hint: "Shown to all visitors", audiences: ["ALL"] },
+];
+
+/** A claimant of audience X is also eligible for offers/coupons targeted at its aliases. */
+export function audienceAliases(audience: Audience): Audience[] {
+  switch (audience) {
+    case "CLIENT":
+      return ["CLIENT", "BUSINESS", "ALL"];
+    case "HIRING":
+      return ["HIRING", "BUSINESS", "ALL"];
+    case "STUDENT":
+      return ["STUDENT", "LEARNER", "ALL"];
+    case "INTERN":
+      return ["INTERN", "STUDENT", "LEARNER", "ALL"];
+    default:
+      return [audience, "ALL"];
+  }
+}
+
+/** Signed-in portal role -> the public offers tab that best matches it. */
+export function tabForPortalRole(role: string | null | undefined): PublicAudienceTabKey | null {
+  switch (role) {
+    case "client":
+      return "CLIENT";
+    case "intern":
+    case "trainee":
+    case "job_applicant":
+      return "STUDENT";
+    default:
+      return null;
+  }
+}
 
 export type Audience = (typeof AUDIENCES)[number]["value"];
 
@@ -34,8 +80,8 @@ export function getAudienceLabel(value: string): string {
 
 /** The 3 public-facing audience-selector tabs. "Student" also surfaces Internship offers. */
 export const PUBLIC_AUDIENCE_TABS = [
-  { key: "CLIENT", label: "I'm a Business / Client", cta: "Explore Client Offers", matches: ["CLIENT", "HIRING"] as Audience[] },
-  { key: "STUDENT", label: "I'm a Student / Developer", cta: "Explore Student Offers", matches: ["STUDENT", "INTERN"] as Audience[] },
+  { key: "CLIENT", label: "I'm a Business / Client", cta: "Explore Client Offers", matches: ["CLIENT", "BUSINESS", "HIRING"] as Audience[] },
+  { key: "STUDENT", label: "I'm a Student / Developer", cta: "Explore Student Offers", matches: ["STUDENT", "LEARNER", "INTERN"] as Audience[] },
   { key: "HIRING", label: "I Need Developers", cta: "Explore Hiring Offers", matches: ["HIRING"] as Audience[] },
 ] as const;
 
@@ -165,6 +211,25 @@ export function formatOfferBadge(pricing: {
   return pricing.startingPriceLabel?.trim() || "Custom Quote";
 }
 
+/**
+ * Display-only price maths for cards. Mirrors the server's own formula in the
+ * claim route (which is what actually decides the price — this never does).
+ */
+export function estimateSavings(pricing: {
+  mode: PricingMode;
+  originalPrice?: number | null;
+  percentage?: number | null;
+  flatDiscountAmount?: number | null;
+}): { original: number | null; savings: number; final: number | null } {
+  if (pricing.mode === "custom_quote" || !pricing.originalPrice) return { original: null, savings: 0, final: null };
+  const original = pricing.originalPrice;
+  let savings = 0;
+  if (pricing.mode === "percentage" && pricing.percentage) savings = original * (pricing.percentage / 100);
+  else if (pricing.mode === "flat" && pricing.flatDiscountAmount) savings = pricing.flatDiscountAmount;
+  savings = Math.min(Math.round(savings), original);
+  return { original, savings, final: original - savings };
+}
+
 // ---------------------------------------------------------------------------
 // Service reference href — where a claimed service's real detail page lives.
 // Each pillar uses a different URL convention on the public site today; this
@@ -188,6 +253,12 @@ export function getServiceHref(category: CategorySlug, subService: string): stri
   }
 }
 
+/** A CTA that should open the claim form in place rather than navigate (the default `/offers` target, with or without a hash/query). */
+export function isClaimHref(href: string | null | undefined): boolean {
+  if (!href) return true;
+  return href === "/offers" || href.startsWith("/offers#") || href.startsWith("/offers?");
+}
+
 // ---------------------------------------------------------------------------
 // Analytics event types
 // ---------------------------------------------------------------------------
@@ -208,6 +279,10 @@ export const EVENT_TYPES = [
   "popup_view",
   "popup_click",
   "popup_close",
+  "offer_detail_open",
+  "countdown_expired",
+  "personalized_view",
+  "share_click",
 ] as const;
 
 export type OfferEventType = (typeof EVENT_TYPES)[number];

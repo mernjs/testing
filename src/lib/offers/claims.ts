@@ -96,3 +96,18 @@ export async function countClaimsForCouponAndEmail(couponCode: string, email: st
   const collection = await getCollection();
   return collection.countDocuments({ couponCode, leadEmail: email.trim().toLowerCase() });
 }
+
+/** Real claim counts per offer — the only source for public "N claimed" / progress numbers. */
+export async function countClaimsByOffer(offerIds: string[]): Promise<Map<string, number>> {
+  if (offerIds.length === 0) return new Map();
+  const collection = await getCollection();
+  const rows = await collection
+    .aggregate<{ _id: string; count: number }>([{ $match: { offerId: { $in: offerIds } } }, { $group: { _id: "$offerId", count: { $sum: 1 } } }])
+    .toArray();
+  return new Map(rows.map((r) => [r._id, r.count]));
+}
+
+export async function countClaimsForOffer(offerId: string): Promise<number> {
+  const collection = await getCollection();
+  return collection.countDocuments({ offerId });
+}

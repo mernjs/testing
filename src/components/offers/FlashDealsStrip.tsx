@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Zap } from "lucide-react";
 import { formatOfferBadge } from "@/lib/offers/constants";
+import LiveCountdown from "@/components/offers/LiveCountdown";
 import type { SerializedOffer } from "@/lib/offers/offers";
 
 export default function FlashDealsStrip({ offers, onClaim }: { offers: SerializedOffer[]; onClaim: (offer: SerializedOffer) => void }) {
@@ -31,6 +32,7 @@ export default function FlashDealsStrip({ offers, onClaim }: { offers: Serialize
                 <Zap className="size-3 fill-current text-primary" /> {offer.title}
               </span>
               <span className="text-lg font-black text-background">{offer.badgeText || formatOfferBadge(offer.pricing)}</span>
+              <LiveCountdown endDate={offer.validUntil} variant="strip" onDark />
             </motion.button>
           ))}
         </div>

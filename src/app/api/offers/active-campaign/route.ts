@@ -22,11 +22,11 @@ export async function GET(req: NextRequest) {
 
   try {
     const campaign = await getActiveCampaignForPage(page);
-    if (!campaign) return NextResponse.json({ active: false });
+    if (!campaign) return NextResponse.json({ active: false, serverTime: Date.now() });
 
     const display = campaign.display;
     if (!display?.strip?.enabled && !display?.popup?.enabled) {
-      return NextResponse.json({ active: false });
+      return NextResponse.json({ active: false, serverTime: Date.now() });
     }
 
     const offers = await getPublicOffers({ campaignId: campaign._id });
@@ -36,11 +36,13 @@ export async function GET(req: NextRequest) {
       id: campaign._id,
       slug: campaign.slug,
       name: campaign.name,
+      startDate: campaign.startDate.toISOString(),
       endDate: campaign.endDate.toISOString(),
     };
 
     const strip = display.strip?.enabled
       ? {
+          offerId: contextOffer?._id ?? null,
           message: display.strip.message || campaign.name,
           discountText: display.strip.discountText,
           ctaText: display.strip.ctaText,
@@ -53,6 +55,7 @@ export async function GET(req: NextRequest) {
     const templateMeta = getPopupTemplateMeta(display.popup?.template);
     const popup = display.popup?.enabled
       ? {
+          offerId: contextOffer?._id ?? null,
           template: display.popup.template,
           emoji: templateMeta.emoji,
           heading: templateMeta.heading,
@@ -70,6 +73,8 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       active: true,
+      // Lets every countdown use the server clock instead of the visitor's (possibly wrong) device clock.
+      serverTime: Date.now(),
       campaign: base,
       audience: audienceForPath(page),
       strip,
@@ -77,6 +82,8 @@ export async function GET(req: NextRequest) {
     });
   } catch (err) {
     console.error("Failed to resolve active campaign display (hiding promotions gracefully)", err);
-    return NextResponse.json({ active: false });
+    // A transient DB failure must NOT read as "no campaign": the client keeps showing the last good strip/popup
+    // on a 5xx, but tears them down on an honest `{ active: false }`.
+    return NextResponse.json({ error: "temporarily_unavailable" }, { status: 503 });
   }
 }

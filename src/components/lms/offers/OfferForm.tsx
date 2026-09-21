@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import ServicePicker from "@/components/lms/offers/ServicePicker";
-import { AUDIENCES, OFFER_STATUSES, PRICING_MODES, DEFAULT_CURRENCY, type Audience, type PricingMode } from "@/lib/offers/constants";
+import OfferCard from "@/components/offers/OfferCard";
+import { AUDIENCES, AUDIENCE_PRESETS, OFFER_STATUSES, PRICING_MODES, DEFAULT_CURRENCY, type Audience, type PricingMode } from "@/lib/offers/constants";
 import type { CategorySlug } from "@/lib/categories";
 import { saveOfferAction } from "@/app/lms/(protected)/offers/[id]/offers/actions";
 import type { SerializedOffer } from "@/lib/offers/offers";
@@ -46,8 +47,10 @@ export default function OfferForm({ campaignId, offer }: { campaignId: string; o
     flatDiscountAmount: offer?.pricing.flatDiscountAmount ?? "",
     maxDiscountCap: offer?.pricing.maxDiscountCap ?? "",
     startingPriceLabel: offer?.pricing.startingPriceLabel ?? "",
+    claimLimit: offer?.claimLimit ?? "",
   });
   const [benefits, setBenefits] = useState<string[]>(offer?.benefits ?? []);
+  const [eligibility, setEligibility] = useState<string[]>(offer?.eligibility ?? []);
 
   function toggleAudience(value: Audience) {
     setForm((f) => ({ ...f, audience: f.audience.includes(value) ? f.audience.filter((a) => a !== value) : [...f.audience, value] }));
@@ -73,6 +76,8 @@ export default function OfferForm({ campaignId, offer }: { campaignId: string; o
         isDealOfTheDay: form.isDealOfTheDay,
         isFlashDeal: form.isFlashDeal,
         benefits,
+        eligibility,
+        claimLimit: form.claimLimit === "" ? null : Number(form.claimLimit),
         pricing: {
           mode: form.pricingMode,
           originalPrice: form.originalPrice === "" ? undefined : Number(form.originalPrice),
@@ -121,8 +126,27 @@ export default function OfferForm({ campaignId, offer }: { campaignId: string; o
       {fieldErrors.category && <p className="text-xs text-destructive">{fieldErrors.category}</p>}
       {fieldErrors.subService && <p className="text-xs text-destructive">{fieldErrors.subService}</p>}
 
-      <div className="space-y-1.5">
-        <Label>Audience</Label>
+      <div className="space-y-3 rounded-xl border border-border/50 p-4">
+        <div>
+          <p className="text-sm font-semibold text-foreground">Target audience</p>
+          <p className="text-xs text-muted-foreground">Who should see this offer on the public page. Pick a preset, then fine-tune below.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {AUDIENCE_PRESETS.map((preset) => {
+            const active = preset.audiences.length === form.audience.length && preset.audiences.every((a) => form.audience.includes(a));
+            return (
+              <button
+                key={preset.key}
+                type="button"
+                title={preset.hint}
+                onClick={() => setForm((f) => ({ ...f, audience: preset.audiences }))}
+                className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${active ? "border-primary bg-primary text-primary-foreground" : "border-border/60 text-foreground hover:border-primary hover:text-primary"}`}
+              >
+                {preset.label}
+              </button>
+            );
+          })}
+        </div>
         <div className="flex flex-wrap gap-3">
           {AUDIENCES.map((a) => (
             <label key={a.value} className="flex items-center gap-1.5 text-sm">
@@ -214,6 +238,33 @@ export default function OfferForm({ campaignId, offer }: { campaignId: string; o
         ))}
       </div>
 
+      <div className="space-y-3 rounded-xl border border-border/50 p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold text-foreground">Eligibility (optional)</p>
+            <p className="text-xs text-muted-foreground">Plain-language conditions shown on the card details, e.g. &quot;Final-year students only&quot;.</p>
+          </div>
+          <Button type="button" variant="outline" size="sm" onClick={() => setEligibility([...eligibility, ""])}>
+            <Plus className="size-3.5" /> Add
+          </Button>
+        </div>
+        {eligibility.map((b, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <Input value={b} onChange={(e) => setEligibility(eligibility.map((x, j) => (j === i ? e.target.value : x)))} placeholder="Registered companies only" />
+            <Button type="button" variant="ghost" size="icon-sm" onClick={() => setEligibility(eligibility.filter((_, j) => j !== i))}>
+              <Trash2 className="size-3.5" />
+            </Button>
+          </div>
+        ))}
+      </div>
+
+      <div className="space-y-1.5 rounded-xl border border-border/50 p-4">
+        <Label>Claim limit (optional)</Label>
+        <Input type="number" min={1} value={form.claimLimit} onChange={(e) => setForm({ ...form, claimLimit: e.target.value })} placeholder="Leave empty for unlimited" />
+        <p className="text-xs text-muted-foreground">Shows a real &quot;X of Y claimed&quot; progress bar on the public page and stops new claims once reached. Leave empty and no scarcity is ever shown.</p>
+        {fieldErrors.claimLimit && <p className="text-xs text-destructive">{fieldErrors.claimLimit}</p>}
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-1.5">
           <Label>Status</Label>
@@ -244,6 +295,49 @@ export default function OfferForm({ campaignId, offer }: { campaignId: string; o
           Flash deal
         </label>
       </div>
+
+      {form.title && form.category && (
+        <div className="space-y-2">
+          <p className="text-sm font-semibold text-foreground">Live preview — how visitors will see it</p>
+          <div className="max-w-sm">
+            <OfferCard
+              offer={{
+                _id: offer?._id ?? "preview",
+                campaignId,
+                title: form.title,
+                description: form.description || undefined,
+                badgeText: form.badgeText || undefined,
+                category: form.category as CategorySlug,
+                subService: form.subService || "all",
+                audience: form.audience,
+                pricing: {
+                  mode: form.pricingMode,
+                  originalPrice: form.originalPrice === "" ? undefined : Number(form.originalPrice),
+                  currency: form.currency || undefined,
+                  percentage: form.percentage === "" ? undefined : Number(form.percentage),
+                  flatDiscountAmount: form.flatDiscountAmount === "" ? undefined : Number(form.flatDiscountAmount),
+                  startingPriceLabel: form.startingPriceLabel || undefined,
+                },
+                benefits: benefits.filter(Boolean),
+                eligibility: eligibility.filter(Boolean),
+                claimLimit: form.claimLimit === "" ? null : Number(form.claimLimit),
+                claimedCount: offer?.claimedCount ?? 0,
+                validFrom: form.validFrom ? new Date(form.validFrom).toISOString() : new Date().toISOString(),
+                validUntil: form.validUntil ? new Date(form.validUntil).toISOString() : new Date(Date.now() + 7 * 86400000).toISOString(),
+                priority: Number(form.priority),
+                isFeatured: form.isFeatured,
+                isDealOfTheDay: form.isDealOfTheDay,
+                isFlashDeal: form.isFlashDeal,
+                status: form.status,
+                createdAt: "",
+                updatedAt: "",
+                deletedAt: null,
+              } as SerializedOffer}
+              onClaim={() => {}}
+            />
+          </div>
+        </div>
+      )}
 
       <Button type="submit" disabled={pending}>
         {pending ? <Loader2 className="size-4 animate-spin" /> : offer ? "Save changes" : "Create offer"}

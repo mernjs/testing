@@ -21,7 +21,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function BreakdownTable({ title, rows, labelFor }: { title: string; rows: { key: string; label: string; views: number; clicks: number }[]; labelFor?: (key: string) => string }) {
+function BreakdownTable({ title, rows, labelFor }: { title: string; rows: { key: string; label: string; views: number; clicks: number; claims: number }[]; labelFor?: (key: string) => string }) {
   return (
     <GlassCard>
       <CardHeader>
@@ -33,7 +33,8 @@ function BreakdownTable({ title, rows, labelFor }: { title: string; rows: { key:
             <tr className="border-b border-border/60 text-left text-xs text-muted-foreground">
               <th className="py-2 pr-3 font-medium">{title}</th>
               <th className="py-2 pr-3 font-medium">Views</th>
-              <th className="py-2 font-medium">Clicks</th>
+              <th className="py-2 pr-3 font-medium">Clicks</th>
+              <th className="py-2 font-medium">Claims</th>
             </tr>
           </thead>
           <tbody>
@@ -41,12 +42,13 @@ function BreakdownTable({ title, rows, labelFor }: { title: string; rows: { key:
               <tr key={r.key} className="border-b border-border/40 last:border-0">
                 <td className="py-2 pr-3 text-foreground">{labelFor ? labelFor(r.key) : r.label}</td>
                 <td className="py-2 pr-3 text-muted-foreground">{r.views}</td>
-                <td className="py-2 text-muted-foreground">{r.clicks}</td>
+                <td className="py-2 pr-3 text-muted-foreground">{r.clicks}</td>
+                <td className="py-2 font-semibold text-foreground">{r.claims || "—"}</td>
               </tr>
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={3} className="py-4 text-center text-muted-foreground">
+                <td colSpan={4} className="py-4 text-center text-muted-foreground">
                   No data yet.
                 </td>
               </tr>
@@ -154,6 +156,20 @@ export default async function CampaignAnalyticsPage({ params }: { params: Promis
             <p className="text-xs text-muted-foreground">Popup Closes</p>
             <p className="text-lg font-bold text-foreground">{promo.popupCloses.toLocaleString("en-IN")}</p>
           </div>
+        </CardContent>
+      </GlassCard>
+
+      <GlassCard>
+        <CardHeader>
+          <CardTitle className="text-base">Engagement</CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          <div><p className="text-xs text-muted-foreground">Details opened</p><p className="text-lg font-bold text-foreground">{funnel.detailOpens.toLocaleString("en-IN")}</p></div>
+          <div><p className="text-xs text-muted-foreground">Personalised views</p><p className="text-lg font-bold text-foreground">{funnel.personalizedViews.toLocaleString("en-IN")}</p></div>
+          <div><p className="text-xs text-muted-foreground">Shares</p><p className="text-lg font-bold text-foreground">{funnel.shares.toLocaleString("en-IN")}</p></div>
+          <div><p className="text-xs text-muted-foreground">Countdowns expired</p><p className="text-lg font-bold text-foreground">{funnel.countdownExpiries.toLocaleString("en-IN")}</p></div>
+          <div><p className="text-xs text-muted-foreground">WhatsApp clicks</p><p className="text-lg font-bold text-foreground">{funnel.whatsappClicks.toLocaleString("en-IN")}</p></div>
+          <div><p className="text-xs text-muted-foreground">Call clicks</p><p className="text-lg font-bold text-foreground">{funnel.callClicks.toLocaleString("en-IN")}</p></div>
         </CardContent>
       </GlassCard>
 
