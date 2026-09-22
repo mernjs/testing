@@ -166,7 +166,7 @@ Browse current roles and apply on the [Careers page](${SITE}/careers). Internshi
     answer: `You can reach YashOrbit here:
 
 - **Email:** support@yashorbit.com
-- **Phone / WhatsApp:** +91 8072278460
+- **Phone / WhatsApp:** +91 9919064239
 - **Office:** 4th Floor, Tower B, Logix Cyber Park, Sector 62, Noida, Uttar Pradesh 201309
 
 Or send a project brief through the [contact form](${SITE}/contact) — the technical team replies within 24 hours.`,

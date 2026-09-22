@@ -11,13 +11,13 @@ export const emails = {
 } as const;
 
 export const phone = {
-  display: "+91 8072278460",
-  href: "tel:+918072278460",
+  display: "+91 9919064239",
+  href: "tel:+919919064239",
 };
 
 export const whatsapp = {
-  number: "918072278460",
-  href: "https://wa.me/918072278460",
+  number: "919919064239",
+  href: "https://wa.me/919919064239",
   displayMessage: "Chat with us on WhatsApp",
 };
 

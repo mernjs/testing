@@ -1335,11 +1335,11 @@ export default function HomeContent() {
                   </div>
                   <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">support@yashorbit.com</span>
                 </a>
-                <a href="tel:+918072278460" className="flex items-center gap-3 group">
+                <a href="tel:+919919064239" className="flex items-center gap-3 group">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
                     <Phone className="w-4 h-4 text-primary group-hover:text-primary-foreground transition-colors" />
                   </div>
-                  <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">+91 8072278460</span>
+                  <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">+91 9919064239</span>
                 </a>
               </div>
             </motion.div>
