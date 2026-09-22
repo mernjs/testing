@@ -21,16 +21,16 @@ import {
 } from "lucide-react";
 
 const MODULE_ICONS: Record<string, React.ReactNode> = {
-  admin: <ShieldCheck className="size-5 text-indigo-500" />,
-  hrms: <Users className="size-5 text-blue-500" />,
-  pms: <Briefcase className="size-5 text-emerald-500" />,
-  prms: <Layers className="size-5 text-amber-500" />,
-  tms: <GraduationCap className="size-5 text-purple-500" />,
-  fms: <DollarSign className="size-5 text-rose-500" />,
-  messenger: <MessageSquare className="size-5 text-cyan-500" />,
-  lms: <BookOpen className="size-5 text-teal-500" />,
-  portal: <UserCheck className="size-5 text-orange-500" />,
-  workspace: <LayoutDashboard className="size-5 text-violet-500" />,
+  admin: <ShieldCheck className="size-5 text-primary" />,
+  hrms: <Users className="size-5 text-yashorbit-blue" />,
+  pms: <Briefcase className="size-5 text-primary" />,
+  prms: <Layers className="size-5 text-yashorbit-blue" />,
+  tms: <GraduationCap className="size-5 text-primary" />,
+  fms: <DollarSign className="size-5 text-yashorbit-blue" />,
+  messenger: <MessageSquare className="size-5 text-primary" />,
+  lms: <BookOpen className="size-5 text-yashorbit-blue" />,
+  portal: <UserCheck className="size-5 text-primary" />,
+  workspace: <LayoutDashboard className="size-5 text-yashorbit-blue" />,
 };
 
 export default function PanelAccessMatrix({

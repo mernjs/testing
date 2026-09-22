@@ -3,9 +3,9 @@ import HomeContent from "./Content";
 import { homeFaqs } from "./faqs";
 import { socialMetadata, defaultOgImage, faqJsonLd } from "@/lib/seo";
 
-const title = "YashOrbit Technologies | Official Website — Web, Mobile & AI Solutions";
+const title = "YashOrbit — Tech Solutions Built Around Your Business";
 const description =
-  "YashOrbit (YashOrbit Technologies Pvt. Ltd.) is a software development company engineering custom web, mobile, and AI/ML systems designed around your business goals.";
+  "YashOrbit is a software development company engineering custom web, mobile, desktop, AI/ML & AI automation systems — designed around your business goals.";
 const path = "/";
 
 export const metadata: Metadata = {
@@ -16,15 +16,24 @@ export const metadata: Metadata = {
     "YashOrbit Technologies",
     "YashOrbit Technologies Pvt Ltd",
     "software development company",
-    "business technology solutions",
-    "web app development",
-    "mobile app development",
-    "AI/ML solutions",
+    "custom software development",
+    "web app development company",
+    "mobile app development company",
+    "desktop app development",
+    "AI/ML software development",
+    "AI automation solutions",
     "AI agent development",
-    "custom software solutions",
+    "enterprise software development",
+    "MVP development company",
   ],
   alternates: { canonical: path },
-  ...socialMetadata({ title, description, path, image: defaultOgImage, imageAlt: "YashOrbit Technologies — Official Website" }),
+  ...socialMetadata({
+    title,
+    description,
+    path,
+    image: defaultOgImage,
+    imageAlt: "YashOrbit — Custom Software & AI/ML, Built Around Your Business",
+  }),
 };
 
 export default function Home() {

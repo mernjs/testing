@@ -136,12 +136,12 @@ const developmentProcess = [
 ];
 
 const aiEcosystemNodes = [
-  { label: "RAG Solutions", icon: Network, color: "text-amber-500", detail: "Grounding model responses in your own proprietary data." },
-  { label: "Agentic AI", icon: Bot, color: "text-indigo-500", detail: "Autonomous agents that plan, act, and self-correct." },
-  { label: "Conversational AI", icon: Mic, color: "text-rose-500", detail: "Natural, task-oriented chat and voice interfaces for your product." },
-  { label: "Generative AI", icon: Sparkles, color: "text-emerald-500", detail: "On-demand content, code, and creative generation." },
-  { label: "AI Automation", icon: UsersIcon, color: "text-teal-500", detail: "Task-specific agents that automate real workflows end-to-end." },
-  { label: "Computer Vision", icon: BrainCircuit, color: "text-blue-500", detail: "Understanding and acting on images and video in real time." },
+  { label: "RAG Solutions", icon: Network, color: "text-primary", detail: "Grounding model responses in your own proprietary data." },
+  { label: "Agentic AI", icon: Bot, color: "text-yashorbit-blue", detail: "Autonomous agents that plan, act, and self-correct." },
+  { label: "Conversational AI", icon: Mic, color: "text-yashorbit-coral", detail: "Natural, task-oriented chat and voice interfaces for your product." },
+  { label: "Generative AI", icon: Sparkles, color: "text-primary/70", detail: "On-demand content, code, and creative generation." },
+  { label: "AI Automation", icon: UsersIcon, color: "text-yashorbit-blue/70", detail: "Task-specific agents that automate real workflows end-to-end." },
+  { label: "Computer Vision", icon: BrainCircuit, color: "text-yashorbit-coral/70", detail: "Understanding and acting on images and video in real time." },
 ];
 
 const engagementAssurances = [

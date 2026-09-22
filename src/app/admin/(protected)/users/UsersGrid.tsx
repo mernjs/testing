@@ -272,7 +272,7 @@ export default function UsersGrid({
             </div>
             {row.employeeId && (
               <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                <BadgeCheck className="size-2.5 text-blue-500" /> Emp #{row.employeeId}
+                <BadgeCheck className="size-2.5 text-primary" /> Emp #{row.employeeId}
               </p>
             )}
           </div>

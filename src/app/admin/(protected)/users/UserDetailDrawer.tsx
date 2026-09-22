@@ -152,7 +152,7 @@ export default function UserDetailDrawer({
                   <span className="font-mono text-xs text-muted-foreground">ID: {user._id}</span>
                   {user.employeeId && (
                     <Badge variant="outline" className="text-[10px] gap-1">
-                      <BadgeCheck className="size-3 text-blue-500" />
+                      <BadgeCheck className="size-3 text-primary" />
                       Employee #{user.employeeId}
                     </Badge>
                   )}
@@ -274,7 +274,7 @@ export default function UserDetailDrawer({
                       <SelectContent className="w-full min-w-[var(--radix-select-trigger-width)] max-w-none">
                         <SelectItem value="employee" className="py-2.5 w-full">
                           <div className="flex items-start gap-2.5 w-full">
-                            <div className="mt-0.5 p-1 rounded-md border shrink-0 text-blue-500 bg-blue-500/10 border-blue-500/20">
+                            <div className="mt-0.5 p-1 rounded-md border shrink-0 text-primary bg-primary/10 border-primary/20">
                               <User className="size-3.5" />
                             </div>
                             <div className="min-w-0 flex-1">
@@ -307,7 +307,7 @@ export default function UserDetailDrawer({
                         </SelectItem>
                         <SelectItem value="system" className="py-2.5 w-full">
                           <div className="flex items-start gap-2.5 w-full">
-                            <div className="mt-0.5 p-1 rounded-md border shrink-0 text-purple-500 bg-purple-500/10 border-purple-500/20">
+                            <div className="mt-0.5 p-1 rounded-md border shrink-0 text-yashorbit-blue bg-yashorbit-blue/10 border-yashorbit-blue/20">
                               <KeyRound className="size-3.5" />
                             </div>
                             <div className="min-w-0 flex-1">

@@ -853,7 +853,7 @@ export default async function HubDashboardPage({
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { label: "Attendance Portal", desc: "Clock in, leaves & payslips", href: "/hrms/me", icon: <UserCheck className="size-5 text-emerald-500" />, tag: "HRMS", external: true },
-            { label: "Team Chat", desc: "Channels, DMs & video calls", href: "/messenger", icon: <MessagesSquare className="size-5 text-sky-500" />, tag: "Messenger", external: true },
+            { label: "Team Chat", desc: "Channels, DMs & video calls", href: "/messenger", icon: <MessagesSquare className="size-5 text-yashorbit-blue" />, tag: "Messenger", external: true },
             { label: "My Tasks & Projects", desc: "Timesheets & deliverables", href: "/pms", icon: <FolderKanban className="size-5 text-amber-500" />, tag: "PMS", external: true },
             { label: "Change Password", desc: "Update security credentials", href: "/workspace/change-password", icon: <KeyRound className="size-5 text-rose-500" />, tag: "Security", external: false },
           ].map((action) => (

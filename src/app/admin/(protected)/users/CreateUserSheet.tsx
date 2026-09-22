@@ -30,7 +30,7 @@ const USER_TYPE_META = [
     label: "Employee",
     description: "Full internal team member with standard panel access",
     icon: User,
-    color: "text-blue-500 bg-blue-500/10 border-blue-500/20",
+    color: "text-primary bg-primary/10 border-primary/20",
   },
   {
     value: "contractor",
@@ -51,7 +51,7 @@ const USER_TYPE_META = [
     label: "System Service Account",
     description: "Automated API bot, webhook worker, or background process",
     icon: Cpu,
-    color: "text-purple-500 bg-purple-500/10 border-purple-500/20",
+    color: "text-yashorbit-blue bg-yashorbit-blue/10 border-yashorbit-blue/20",
   },
 ];
 

@@ -63,7 +63,7 @@ const PANEL_GRID = [
     icon: <Landmark className="size-5" />,
     analyticsHref: "/admin/analytics/fms",
     panelHref: "/fms",
-    color: "from-emerald-500 to-teal-600",
+    color: "from-primary to-yashorbit-coral",
   },
   {
     key: "hrms",
@@ -71,7 +71,7 @@ const PANEL_GRID = [
     icon: <Users className="size-5" />,
     analyticsHref: "/admin/analytics/hrms",
     panelHref: "/hrms",
-    color: "from-blue-500 to-indigo-600",
+    color: "from-yashorbit-blue to-primary",
   },
   {
     key: "lms",
@@ -79,7 +79,7 @@ const PANEL_GRID = [
     icon: <LayoutGrid className="size-5" />,
     analyticsHref: "/admin/analytics/lms",
     panelHref: "/lms",
-    color: "from-violet-500 to-purple-600",
+    color: "from-primary to-yashorbit-blue",
   },
   {
     key: "messenger",
@@ -87,7 +87,7 @@ const PANEL_GRID = [
     icon: <MessagesSquare className="size-5" />,
     analyticsHref: "/admin/analytics/messenger",
     panelHref: "/messenger",
-    color: "from-sky-500 to-cyan-600",
+    color: "from-yashorbit-blue to-yashorbit-coral",
   },
   {
     key: "pms",
@@ -95,7 +95,7 @@ const PANEL_GRID = [
     icon: <FolderKanban className="size-5" />,
     analyticsHref: "/admin/analytics/pms",
     panelHref: "/pms",
-    color: "from-orange-500 to-amber-600",
+    color: "from-yashorbit-coral to-yashorbit-blue",
   },
   {
     key: "portal",
@@ -103,7 +103,7 @@ const PANEL_GRID = [
     icon: <Globe className="size-5" />,
     analyticsHref: "/admin/analytics/portal",
     panelHref: "/portal",
-    color: "from-rose-500 to-pink-600",
+    color: "from-primary/80 to-yashorbit-blue/80",
   },
   {
     key: "prms",
@@ -111,7 +111,7 @@ const PANEL_GRID = [
     icon: <ShoppingCart className="size-5" />,
     analyticsHref: "/admin/analytics/prms",
     panelHref: "/prms",
-    color: "from-yellow-500 to-orange-500",
+    color: "from-yashorbit-blue/80 to-primary/80",
   },
   {
     key: "tms",
@@ -119,7 +119,7 @@ const PANEL_GRID = [
     icon: <GraduationCap className="size-5" />,
     analyticsHref: "/admin/analytics/tms",
     panelHref: "/tms",
-    color: "from-fuchsia-500 to-pink-500",
+    color: "from-yashorbit-coral to-primary",
   },
   {
     key: "workspace",
@@ -127,7 +127,7 @@ const PANEL_GRID = [
     icon: <LayoutDashboard className="size-5" />,
     analyticsHref: "/admin/analytics/workspace",
     panelHref: "/workspace",
-    color: "from-slate-500 to-gray-600",
+    color: "from-yashorbit-blue to-yashorbit-coral/80",
   },
 ];
 

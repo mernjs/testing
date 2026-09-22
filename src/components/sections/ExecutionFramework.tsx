@@ -9,7 +9,7 @@ const steps = [
     title: "Think: Strategic Alignment",
     desc: "Technology must serve your business. Before writing code, we dive deep into your domain to uncover bottlenecks and map user journeys — ensuring we build solutions that align perfectly with your goals and eliminate costly technical debt.",
     icon: Lightbulb,
-    color: "text-sky-500",
+    color: "text-yashorbit-blue",
     image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop",
   },
   {
