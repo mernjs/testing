@@ -5,7 +5,7 @@ import { socialMetadata, defaultOgImage, faqJsonLd } from "@/lib/seo";
 
 const title = "YashOrbit — Tech Solutions Built Around Your Business";
 const description =
-  "YashOrbit is a software development company engineering custom web, mobile, desktop, AI/ML & AI automation systems — designed around your business goals.";
+    "YashOrbit builds custom web, mobile, desktop, AI/ML, GenAI, Conversational AI, Agentic AI, and intelligent automation solutions for startups and enterprises with scalable, business-focused software engineering.",
 const path = "/";
 
 export const metadata: Metadata = {
