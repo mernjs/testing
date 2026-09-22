@@ -5,24 +5,25 @@ import { motion } from "framer-motion";
 import { ArrowRight, Bot, Loader2, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useChat, type PreChatFieldMode } from "@/components/chat/ChatProvider";
+import { CATEGORIES } from "@/lib/categories";
 
-const FIELD_META: { key: "name" | "email" | "phone" | "company"; label: string; type: string; placeholder: string }[] = [
+const TEXT_FIELD_META: { key: "name" | "email" | "phone"; label: string; type: string; placeholder: string }[] = [
   { key: "name", label: "Name", type: "text", placeholder: "Jane Doe" },
   { key: "email", label: "Email", type: "email", placeholder: "jane@company.com" },
   { key: "phone", label: "Phone", type: "tel", placeholder: "+91 98765 43210" },
-  { key: "company", label: "Company", type: "text", placeholder: "Acme Inc." },
 ];
 
 export function PreChatForm({ wide = false }: { wide?: boolean }) {
   const { config, identify } = useChat();
   const preChat = config?.preChat;
-  const [values, setValues] = React.useState({ name: "", email: "", phone: "", company: "" });
+  const [values, setValues] = React.useState({ name: "", email: "", phone: "", service: "" });
   const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [submitting, setSubmitting] = React.useState(false);
 
   if (!preChat) return null;
 
-  const visibleFields = FIELD_META.filter((f) => preChat.fields[f.key] !== "off");
+  const visibleTextFields = TEXT_FIELD_META.filter((f) => preChat.fields[f.key] !== "off");
+  const showService = preChat.fields.service !== "off";
 
   function set(key: string, value: string) {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -40,9 +41,12 @@ export function PreChatForm({ wide = false }: { wide?: boolean }) {
 
     // Light client-side check; the server is authoritative.
     const localErrors: Record<string, string> = {};
-    for (const f of visibleFields) {
+    for (const f of visibleTextFields) {
       const mode = preChat!.fields[f.key] as PreChatFieldMode;
       if (mode === "required" && !values[f.key].trim()) localErrors[f.key] = `${f.label} is required.`;
+    }
+    if (showService && preChat!.fields.service === "required" && !values.service) {
+      localErrors.service = "Choose the service you're interested in.";
     }
     if (values.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) {
       localErrors.email = "Enter a valid email address.";
@@ -82,7 +86,7 @@ export function PreChatForm({ wide = false }: { wide?: boolean }) {
         </div>
 
         <form onSubmit={submit} className="space-y-3">
-          {visibleFields.map((f) => {
+          {visibleTextFields.map((f) => {
             const required = preChat.fields[f.key] === "required";
             return (
               <div key={f.key} className="flex flex-col gap-1">
@@ -106,6 +110,36 @@ export function PreChatForm({ wide = false }: { wide?: boolean }) {
               </div>
             );
           })}
+
+          {showService && (
+            <div className="flex flex-col gap-1">
+              <label htmlFor="prechat-service" className="text-xs font-medium text-foreground">
+                Main Service
+                {preChat.fields.service === "required" && <span className="ml-0.5 text-primary">*</span>}
+              </label>
+              <select
+                id="prechat-service"
+                value={values.service}
+                onChange={(e) => set("service", e.target.value)}
+                aria-invalid={Boolean(errors.service)}
+                className={cn(
+                  "h-10 rounded-lg border bg-background px-3 text-[15px] outline-none transition-colors focus-visible:ring-3 focus-visible:ring-primary/15",
+                  values.service ? "text-foreground" : "text-muted-foreground/60",
+                  errors.service ? "border-destructive focus-visible:border-destructive" : "border-border focus-visible:border-primary/50"
+                )}
+              >
+                <option value="" disabled>
+                  What are you interested in?
+                </option>
+                {CATEGORIES.map((c) => (
+                  <option key={c.slug} value={c.slug} className="text-foreground">
+                    {c.label}
+                  </option>
+                ))}
+              </select>
+              {errors.service && <p className="text-[11px] text-destructive">{errors.service}</p>}
+            </div>
+          )}
 
           <button
             type="submit"

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LayoutDashboard, LogIn } from "lucide-react";
+import { PORTAL_SESSION_CHANGED_EVENT } from "@/components/chat/ChatProvider";
 
 type Session = { signedIn: boolean; firstName: string | null } | null;
 
@@ -11,20 +12,26 @@ type Session = { signedIn: boolean; firstName: string | null } | null;
  * signed-in portal users. Checked client-side (one tiny no-store request) so
  * the public pages stay statically renderable. Renders nothing until known,
  * so a signed-in user never sees a flash of "Login".
+ *
+ * Also re-checks on `portal:session-changed` — fired by the Ask AI chat when
+ * the pre-chat form auto-creates and signs in an account — so this flips to
+ * Dashboard immediately without a page reload or leaving the chat.
  */
 export default function PortalAuthLink({ variant, onNavigate }: { variant: "desktop" | "mobile"; onNavigate?: () => void }) {
   const [session, setSession] = useState<Session>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  const refresh = useCallback(() => {
     fetch("/api/portal/session", { cache: "no-store" })
       .then((r) => r.json())
-      .then((j) => !cancelled && setSession(j))
-      .catch(() => !cancelled && setSession({ signedIn: false, firstName: null }));
-    return () => {
-      cancelled = true;
-    };
+      .then((j) => setSession(j))
+      .catch(() => setSession({ signedIn: false, firstName: null }));
   }, []);
+
+  useEffect(() => {
+    refresh();
+    window.addEventListener(PORTAL_SESSION_CHANGED_EVENT, refresh);
+    return () => window.removeEventListener(PORTAL_SESSION_CHANGED_EVENT, refresh);
+  }, [refresh]);
 
   if (!session) return variant === "desktop" ? <span className="h-9 w-28" aria-hidden /> : null;
 

@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
     { header: "Visitor Name", value: (r) => r.visitorName },
     { header: "Visitor Email", value: (r) => r.visitorEmail },
     { header: "Visitor Phone", value: (r) => r.visitorPhone },
-    { header: "Visitor Company", value: (r) => r.visitorCompany },
+    { header: "Main Service", value: (r) => r.visitorService },
     { header: "Device", value: (r) => r.device },
     { header: "Browser", value: (r) => r.browser },
     { header: "OS", value: (r) => r.os },

@@ -2,6 +2,7 @@ import "server-only";
 import type { Collection } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import type { PreChatConfig } from "@/lib/chatbot-config";
+import { isValidCategory, type CategorySlug } from "@/lib/categories";
 
 export const CHAT_VISITORS_COLLECTION = "chat_visitors";
 
@@ -10,7 +11,8 @@ export interface ChatVisitorProfile {
   name: string | null;
   email: string | null;
   phone: string | null;
-  company: string | null;
+  /** The "Main Service" the visitor picked in the pre-chat form — one of the 5 primary services. */
+  service: CategorySlug | null;
   ipHash: string | null;
   capturedAt: Date;
   updatedAt: Date;
@@ -21,7 +23,7 @@ export interface SerializedChatVisitor {
   name: string | null;
   email: string | null;
   phone: string | null;
-  company: string | null;
+  service: CategorySlug | null;
   capturedAt: string;
 }
 
@@ -45,14 +47,14 @@ export interface IdentityInput {
   name?: unknown;
   email?: unknown;
   phone?: unknown;
-  company?: unknown;
+  service?: unknown;
 }
 
 export interface CleanIdentity {
   name: string | null;
   email: string | null;
   phone: string | null;
-  company: string | null;
+  service: CategorySlug | null;
 }
 
 /** Validates a pre-chat submission against the configured field requirements. */
@@ -69,7 +71,8 @@ export function validateIdentity(
   const name = text(input.name).slice(0, 120);
   const email = text(input.email).slice(0, 254);
   const phone = text(input.phone).slice(0, 40);
-  const company = text(input.company).slice(0, 160);
+  const serviceRaw = text(input.service);
+  const service = isValidCategory(serviceRaw) ? serviceRaw : "";
 
   const check = (mode: PreChatConfig["fields"][keyof PreChatConfig["fields"]], value: string, field: string, label: string) => {
     if (mode === "off") return;
@@ -79,7 +82,8 @@ export function validateIdentity(
   check(preChat.fields.name, name, "name", "Name");
   check(preChat.fields.email, email, "email", "Email");
   check(preChat.fields.phone, phone, "phone", "Phone number");
-  check(preChat.fields.company, company, "company", "Company");
+  check(preChat.fields.service, service, "service", "Main service");
+  if (serviceRaw && !service) errors.service = "Choose a valid service.";
 
   if (email && !EMAIL_RE.test(email)) errors.email = "Enter a valid email address.";
   if (phone && !PHONE_RE.test(phone)) errors.phone = "Enter a valid phone number.";
@@ -91,7 +95,7 @@ export function validateIdentity(
       name: name || null,
       email: email || null,
       phone: phone || null,
-      company: company || null,
+      service: service || null,
     },
   };
 }
@@ -109,7 +113,7 @@ export async function upsertVisitorProfile(
         name: data.name,
         email: data.email,
         phone: data.phone,
-        company: data.company,
+        service: data.service,
         ipHash: data.ipHash,
         updatedAt: now,
       },
@@ -138,7 +142,7 @@ export async function getVisitorProfiles(
       name: d.name,
       email: d.email,
       phone: d.phone,
-      company: d.company,
+      service: d.service,
       capturedAt: new Date(d.capturedAt).toISOString(),
     });
   }

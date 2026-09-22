@@ -206,8 +206,8 @@ export default function ChatbotConfigForm({
           {preChat.enabled && (
             <>
               <div className="grid gap-4 sm:grid-cols-2">
-                {(["name", "email", "phone", "company"] as const).map((f) => (
-                  <Field key={f} label={f[0].toUpperCase() + f.slice(1)}>
+                {(["name", "email", "phone", "service"] as const).map((f) => (
+                  <Field key={f} label={f === "service" ? "Main Service" : f[0].toUpperCase() + f.slice(1)}>
                     <select
                       value={preChat.fields[f]}
                       onChange={(e) => setField(f, e.target.value)}

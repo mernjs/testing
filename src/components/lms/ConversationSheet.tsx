@@ -5,10 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
-  Building2,
   Clock,
   Fingerprint,
   Globe,
+  Layers,
   Loader2,
   Mail,
   Monitor,
@@ -123,7 +123,7 @@ export default function ConversationSheet({
 
         {session && (
           <div className="flex flex-col gap-4 px-4 pb-4">
-            {(session.visitorName || session.visitorEmail || session.visitorPhone || session.visitorCompany) && (
+            {(session.visitorName || session.visitorEmail || session.visitorPhone || session.visitorService) && (
               <div className="rounded-xl border border-primary/20 bg-primary/5 p-3">
                 <p className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-primary">
                   <UserRound className="size-3" /> Identified visitor
@@ -142,8 +142,8 @@ export default function ConversationSheet({
                   {session.visitorPhone && (
                     <MetaRow icon={<Phone className="size-4" />} label="Phone" value={session.visitorPhone} />
                   )}
-                  {session.visitorCompany && (
-                    <MetaRow icon={<Building2 className="size-4" />} label="Company" value={session.visitorCompany} />
+                  {session.visitorService && (
+                    <MetaRow icon={<Layers className="size-4" />} label="Main Service" value={session.visitorService} />
                   )}
                 </div>
               </div>

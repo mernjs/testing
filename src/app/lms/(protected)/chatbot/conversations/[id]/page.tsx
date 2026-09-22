@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
-  Building2,
   Clock,
   Fingerprint,
   Globe,
+  Layers,
   Mail,
   Monitor,
   MessageSquare,
@@ -66,7 +66,7 @@ export default async function ConversationDetailPage({
             <CardTitle>Session details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            {(s.visitorName || s.visitorEmail || s.visitorPhone || s.visitorCompany) && (
+            {(s.visitorName || s.visitorEmail || s.visitorPhone || s.visitorService) && (
               <div className="mb-1 space-y-3 rounded-lg border border-primary/20 bg-primary/5 p-3">
                 <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-primary">
                   <UserRound className="size-3" /> Identified visitor
@@ -74,8 +74,8 @@ export default async function ConversationDetailPage({
                 {s.visitorName && <Detail icon={<UserRound className="size-4" />} label="Name" value={s.visitorName} />}
                 {s.visitorEmail && <Detail icon={<Mail className="size-4" />} label="Email" value={s.visitorEmail} />}
                 {s.visitorPhone && <Detail icon={<Phone className="size-4" />} label="Phone" value={s.visitorPhone} />}
-                {s.visitorCompany && (
-                  <Detail icon={<Building2 className="size-4" />} label="Company" value={s.visitorCompany} />
+                {s.visitorService && (
+                  <Detail icon={<Layers className="size-4" />} label="Main Service" value={s.visitorService} />
                 )}
               </div>
             )}

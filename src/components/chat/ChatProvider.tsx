@@ -47,7 +47,7 @@ export interface PreChatFormConfig {
   enabled: boolean;
   title: string;
   description: string;
-  fields: { name: PreChatFieldMode; email: PreChatFieldMode; phone: PreChatFieldMode; company: PreChatFieldMode };
+  fields: { name: PreChatFieldMode; email: PreChatFieldMode; phone: PreChatFieldMode; service: PreChatFieldMode };
   consentText: string;
 }
 
@@ -55,8 +55,14 @@ export interface IdentityInput {
   name: string;
   email: string;
   phone: string;
-  company: string;
+  /** Main Service slug — one of the 5 primary services (see `@/lib/categories`). */
+  service: string;
 }
+
+/** Fired on `window` whenever the visitor's portal sign-in state may have changed
+ *  (e.g. the pre-chat form just auto-created their account), so the header's
+ *  Login/Signup ⇄ Dashboard link can refresh without a page reload. */
+export const PORTAL_SESSION_CHANGED_EVENT = "portal:session-changed";
 
 export interface VoicePublicConfig {
   enabled: boolean;
@@ -88,7 +94,7 @@ const DEFAULT_PRECHAT: PreChatFormConfig = {
   enabled: false,
   title: "Before we start",
   description: "",
-  fields: { name: "required", email: "required", phone: "optional", company: "optional" },
+  fields: { name: "required", email: "required", phone: "optional", service: "required" },
   consentText: "",
 };
 
@@ -108,7 +114,7 @@ interface ChatContextValue {
   visitorName: string | null;
   /** True when the pre-chat form must be completed before chatting. */
   needsIdentification: boolean;
-  identify: (data: IdentityInput) => Promise<{ ok: boolean; fieldErrors?: Record<string, string> }>;
+  identify: (data: IdentityInput) => Promise<{ ok: boolean; fieldErrors?: Record<string, string>; portalSignedIn?: boolean }>;
   send: (text: string, opts?: SendOptions) => void;
   /** Appends a local assistant message (not persisted) — used for the Voice Mode greeting. */
   pushAssistantMessage: (content: string, opts?: { voice?: boolean }) => void;
@@ -478,7 +484,7 @@ export function ChatProvider({
   );
 
   const identify = React.useCallback(
-    async (data: IdentityInput): Promise<{ ok: boolean; fieldErrors?: Record<string, string> }> => {
+    async (data: IdentityInput): Promise<{ ok: boolean; fieldErrors?: Record<string, string>; portalSignedIn?: boolean }> => {
       try {
         const res = await fetch("/api/chat/identify", {
           method: "POST",
@@ -491,7 +497,13 @@ export function ChatProvider({
         }
         setIdentified(true);
         setVisitorName(json.name ?? data.name ?? null);
-        return { ok: true };
+        // The pre-chat submission may have just created (and signed the visitor
+        // into) their portal account — let the header know to swap Login/Signup
+        // for Dashboard, without leaving this chat window or reloading.
+        if (json.portalSignedIn && typeof window !== "undefined") {
+          window.dispatchEvent(new Event(PORTAL_SESSION_CHANGED_EVENT));
+        }
+        return { ok: true, portalSignedIn: Boolean(json.portalSignedIn) };
       } catch {
         return { ok: false, fieldErrors: { email: "Network error. Please try again." } };
       }

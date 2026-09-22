@@ -26,7 +26,8 @@ export interface PreChatConfig {
     name: PreChatFieldMode;
     email: PreChatFieldMode;
     phone: PreChatFieldMode;
-    company: PreChatFieldMode;
+    /** "Main Service" dropdown — one of the 5 primary services. Drives which lead source / account role gets created. */
+    service: PreChatFieldMode;
   };
   consentText: string;
 }
@@ -113,7 +114,7 @@ const DEFAULT_CONFIG: Omit<ChatbotConfig, "_id" | "createdAt" | "updatedAt"> = {
     title: "Before we start",
     description:
       "Tell us who you are so our team can follow up on anything the assistant can't fully answer.",
-    fields: { name: "required", email: "required", phone: "optional", company: "optional" },
+    fields: { name: "required", email: "required", phone: "optional", service: "required" },
     consentText:
       "By continuing you agree that YashOrbit may contact you about your enquiry. We never share your details.",
   },
@@ -257,7 +258,7 @@ function validatePreChat(
       name: field(rawFields.name, "required"),
       email: field(rawFields.email, "required"),
       phone: field(rawFields.phone, "optional"),
-      company: field(rawFields.company, "optional"),
+      service: field(rawFields.service, "required"),
     },
     consentText: str(raw.consentText, 400),
   };

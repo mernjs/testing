@@ -10,6 +10,12 @@ import {
   type SerializedChatMessage,
 } from "@/lib/chatbot-sessions";
 import { getVisitorProfile, getVisitorProfiles } from "@/lib/chat-visitors";
+import { getCategoryLabel, isValidCategory } from "@/lib/categories";
+
+/** Visitor-facing service slug → the human label shown in staff views/exports. */
+function serviceLabel(service: string | null | undefined): string | null {
+  return service && isValidCategory(service) ? getCategoryLabel(service) : null;
+}
 
 function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -162,7 +168,7 @@ export interface ConversationDetail {
     visitorName: string | null;
     visitorEmail: string | null;
     visitorPhone: string | null;
-    visitorCompany: string | null;
+    visitorService: string | null;
     visitorCapturedAt: string | null;
     ipHash: string | null;
     userAgent: string | null;
@@ -203,7 +209,7 @@ export async function getConversation(idOrSessionId: string): Promise<Conversati
       visitorName: profile?.name ?? null,
       visitorEmail: profile?.email ?? null,
       visitorPhone: profile?.phone ?? null,
-      visitorCompany: profile?.company ?? null,
+      visitorService: serviceLabel(profile?.service),
       visitorCapturedAt: profile ? new Date(profile.capturedAt).toISOString() : null,
       ipHash: session.ipHash,
       userAgent: session.userAgent,
@@ -244,7 +250,7 @@ export interface ConversationExportRow {
   visitorName: string;
   visitorEmail: string;
   visitorPhone: string;
-  visitorCompany: string;
+  visitorService: string;
   device: string;
   browser: string;
   os: string;
@@ -293,7 +299,7 @@ export async function exportConversations(opts: ConversationFilters & { ids?: st
       visitorName: profile?.name ?? "",
       visitorEmail: profile?.email ?? "",
       visitorPhone: profile?.phone ?? "",
-      visitorCompany: profile?.company ?? "",
+      visitorService: serviceLabel(profile?.service) ?? "",
       device: s?.device ?? "",
       browser: s?.browser ?? "",
       os: s?.os ?? "",
