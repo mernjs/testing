@@ -417,13 +417,6 @@ export default function Header() {
 
         <div className="flex xl:hidden gap-4 items-center ml-auto">
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            className="p-2.5 rounded-full hover:bg-muted/80 backdrop-blur-sm transition-all"
-          >
-            {isDark ? <Sun className="w-5 h-5 text-foreground" /> : <Moon className="w-5 h-5 text-foreground" />}
-          </button>
-          <button
             type="button"
             aria-label="Open main menu"
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-foreground"
@@ -436,6 +429,13 @@ export default function Header() {
             }}
           >
             <Menu className="h-6 w-6" aria-hidden="true" />
+          </button>
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            className="p-2.5 rounded-full hover:bg-muted/80 backdrop-blur-sm transition-all"
+          >
+            {isDark ? <Sun className="w-5 h-5 text-foreground" /> : <Moon className="w-5 h-5 text-foreground" />}
           </button>
         </div>
 
@@ -524,14 +524,7 @@ export default function Header() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-3 pl-2 border-l border-border/40">
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-              className="p-2.5 rounded-full bg-muted/30 hover:bg-muted/80 backdrop-blur-sm transition-all border border-border/50"
-            >
-              {isDark ? <Sun className="w-4 h-4 text-foreground" /> : <Moon className="w-4 h-4 text-foreground" />}
-            </button>
+          <div className="flex items-center gap-3">
             <PortalAuthLink variant="desktop" />
             <Link
               href="/contact"
@@ -541,6 +534,13 @@ export default function Header() {
                 Let&apos;s Talk <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
             </Link>
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              className="p-2.5 rounded-full bg-muted/30 hover:bg-muted/80 backdrop-blur-sm transition-all border border-border/50"
+            >
+              {isDark ? <Sun className="w-4 h-4 text-foreground" /> : <Moon className="w-4 h-4 text-foreground" />}
+            </button>
           </div>
         </div>
       </nav>
