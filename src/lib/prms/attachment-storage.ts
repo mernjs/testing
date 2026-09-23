@@ -1,16 +1,14 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
-import { createReadStream } from "node:fs";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { putObject, getObject, deleteObject } from "@/lib/storage/blob";
 
 /**
  * PRMS attachment storage (requisition / expense / invoice / contract files).
- * Lives outside `public/`, served only through the authed API route
- * `/api/prms/attachments/[key]`. Mirrors `src/lib/pms/attachment-storage.ts`.
+ * Served only through the authed API route `/api/prms/attachments/[key]`.
+ * Mirrors `src/lib/fms/attachment-storage.ts`.
  */
 
-const DIR = path.join(process.cwd(), "uploads", "prms-attachments");
+const FOLDER = "prms-attachments";
 
 const MAX_BYTES = 15 * 1024 * 1024; // 15 MB
 const ALLOWED_EXT = new Set(["pdf", "png", "jpg", "jpeg", "webp", "doc", "docx", "xls", "xlsx", "csv", "txt"]);
@@ -34,24 +32,17 @@ export function isAllowedAttachment(file: File): { ok: true } | { ok: false; err
 }
 
 export async function saveAttachmentFile(file: File): Promise<StoredAttachment> {
-  await mkdir(DIR, { recursive: true });
-  const storageKey = `${randomUUID()}.${extensionFor(file.name)}`;
+  const key = `${randomUUID()}.${extensionFor(file.name)}`;
   const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(DIR, storageKey), buffer);
-  return {
-    storageKey,
-    filename: file.name,
-    contentType: file.type || "application/octet-stream",
-    size: file.size,
-  };
+  const contentType = file.type || "application/octet-stream";
+  const { storageKey } = await putObject(FOLDER, key, buffer, contentType);
+  return { storageKey, filename: file.name, contentType, size: file.size };
 }
 
-export function readAttachmentStream(storageKey: string) {
-  // `storageKey` is always a generated `<uuid>.<ext>` — reject anything else.
-  if (!/^[a-f0-9-]{36}\.[a-z0-9]+$/i.test(storageKey)) return null;
-  return createReadStream(path.join(DIR, storageKey));
+export async function readAttachmentStream(storageKey: string) {
+  return getObject(storageKey);
 }
 
 export async function deleteAttachmentFile(storageKey: string) {
-  await unlink(path.join(DIR, storageKey)).catch(() => {});
+  await deleteObject(storageKey);
 }

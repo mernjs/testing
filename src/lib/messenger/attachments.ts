@@ -1,15 +1,12 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
-import { createReadStream } from "node:fs";
-import { mkdir, stat, unlink, writeFile } from "node:fs/promises";
-import path from "node:path";
 import { getDb } from "@/lib/mongodb";
 import { newId } from "@/lib/messenger/db";
+import { putObject, getObject, deleteObject } from "@/lib/storage/blob";
 import type { MessageScope } from "@/lib/messenger/messages";
 
 /**
- * Message attachments live in `uploads/messenger-files/` — deliberately outside
- * `public/` so they are only ever served through the authenticated route
+ * Message attachments are served only through the authenticated route
  * `/api/messenger/files/[key]` (which re-checks that the caller can see the
  * message the file is attached to). Mirrors `src/lib/pms/document-storage.ts`.
  *
@@ -17,7 +14,7 @@ import type { MessageScope } from "@/lib/messenger/messages";
  * `shared_files`) so the future Files hub + the dashboard KPI have a ledger.
  */
 
-const FILES_DIR = path.join(process.cwd(), "uploads", "messenger-files");
+const FOLDER = "messenger-files";
 export const SHARED_FILES_COLLECTION = "chat_shared_files";
 
 export const MAX_UPLOAD_BYTES = 25 * 1024 * 1024; // 25 MB
@@ -105,12 +102,11 @@ export async function saveAttachment(file: File): Promise<Attachment> {
   const ext = extOf(file.name);
   if (!ALLOWED_EXT.has(ext)) throw new Error(`Files of type .${ext} aren't allowed.`);
 
-  await mkdir(FILES_DIR, { recursive: true });
-  const storageKey = `${randomUUID()}.${ext}`;
+  const key = `${randomUUID()}.${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(FILES_DIR, storageKey), buffer);
-
   const contentType = file.type || "application/octet-stream";
+  const { storageKey } = await putObject(FOLDER, key, buffer, contentType);
+
   return {
     storageKey,
     filename: file.name,
@@ -120,26 +116,16 @@ export async function saveAttachment(file: File): Promise<Attachment> {
   };
 }
 
-export function readAttachmentStream(storageKey: string) {
-  if (!/^[a-zA-Z0-9._-]+$/.test(storageKey)) return null;
-  try {
-    return createReadStream(path.join(FILES_DIR, storageKey));
-  } catch {
-    return null;
-  }
+export async function readAttachmentStream(storageKey: string) {
+  return getObject(storageKey);
 }
 
 export async function attachmentExists(storageKey: string): Promise<boolean> {
-  try {
-    await stat(path.join(FILES_DIR, storageKey));
-    return true;
-  } catch {
-    return false;
-  }
+  return (await getObject(storageKey)) !== null;
 }
 
 export async function deleteAttachmentFile(storageKey: string): Promise<void> {
-  await unlink(path.join(FILES_DIR, storageKey)).catch(() => {});
+  await deleteObject(storageKey);
 }
 
 export async function recordSharedFile(args: {

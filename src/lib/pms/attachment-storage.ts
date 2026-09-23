@@ -1,12 +1,10 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
-import { createReadStream } from "node:fs";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { putObject, getObject, deleteObject } from "@/lib/storage/blob";
 
-/** Task attachment storage — outside `public/`, served only via the authed route. */
+/** Task attachment storage — served only via the authed route. */
 
-const DIR = path.join(process.cwd(), "uploads", "pms-attachments");
+const FOLDER = "pms-attachments";
 
 export interface StoredAttachment {
   storageKey: string;
@@ -21,22 +19,17 @@ function extensionFor(filename: string): string {
 }
 
 export async function saveAttachmentFile(file: File): Promise<StoredAttachment> {
-  await mkdir(DIR, { recursive: true });
-  const storageKey = `${randomUUID()}.${extensionFor(file.name)}`;
+  const key = `${randomUUID()}.${extensionFor(file.name)}`;
   const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(DIR, storageKey), buffer);
-  return {
-    storageKey,
-    filename: file.name,
-    contentType: file.type || "application/octet-stream",
-    size: file.size,
-  };
+  const contentType = file.type || "application/octet-stream";
+  const { storageKey } = await putObject(FOLDER, key, buffer, contentType);
+  return { storageKey, filename: file.name, contentType, size: file.size };
 }
 
-export function readAttachmentStream(storageKey: string) {
-  return createReadStream(path.join(DIR, storageKey));
+export async function readAttachmentStream(storageKey: string) {
+  return getObject(storageKey);
 }
 
 export async function deleteAttachmentFile(storageKey: string) {
-  await unlink(path.join(DIR, storageKey)).catch(() => {});
+  await deleteObject(storageKey);
 }

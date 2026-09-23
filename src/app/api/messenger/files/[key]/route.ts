@@ -1,4 +1,3 @@
-import { Readable } from "node:stream";
 import { NextResponse, type NextRequest } from "next/server";
 import { getCurrentChatUser } from "@/lib/messenger-auth";
 import { getSharedFileByKey, readAttachmentStream } from "@/lib/messenger/attachments";
@@ -66,12 +65,11 @@ export async function GET(_req: NextRequest, ctx: RouteContext<"/api/messenger/f
   if (!meta) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const nodeStream = readAttachmentStream(key);
-  if (!nodeStream) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  const webStream = Readable.toWeb(nodeStream) as ReadableStream<Uint8Array>;
+  const object = await readAttachmentStream(key);
+  if (!object) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const disposition = meta.kind === "image" || meta.kind === "video" || meta.kind === "voice" ? "inline" : "attachment";
-  return new NextResponse(webStream, {
+  return new NextResponse(object.stream, {
     headers: {
       "Content-Type": meta.contentType || "application/octet-stream",
       "Content-Disposition": `${disposition}; filename="${encodeURIComponent(meta.name)}"`,

@@ -1,4 +1,3 @@
-import { Readable } from "node:stream";
 import { NextRequest, NextResponse } from "next/server";
 import { isAuthorizedLmsRequest } from "@/lib/api-auth";
 import { getPdfDocument } from "@/lib/kb-pdf";
@@ -17,8 +16,10 @@ export async function GET(req: NextRequest, { params }: Context) {
     return NextResponse.json({ error: "Document not found." }, { status: 404 });
   }
 
-  const webStream = Readable.toWeb(readKbFileStream(doc.storageKey)) as ReadableStream<Uint8Array>;
-  return new NextResponse(webStream, {
+  const object = await readKbFileStream(doc.storageKey);
+  if (!object) return NextResponse.json({ error: "Document not found." }, { status: 404 });
+
+  return new NextResponse(object.stream, {
     headers: {
       "Content-Type": doc.contentType,
       "Content-Disposition": `attachment; filename="${encodeURIComponent(doc.filename)}"`,

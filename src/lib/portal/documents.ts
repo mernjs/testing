@@ -1,13 +1,11 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
-import { createReadStream } from "node:fs";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
-import path from "node:path";
 import { getDb } from "@/lib/mongodb";
 import { newId } from "@/lib/portal/db";
 import { getApplication } from "@/lib/career-applications";
 import { listProjectsForClient } from "@/lib/pms/projects";
 import { listCurrentDocuments, getDocument, serializeDocument } from "@/lib/pms/documents";
+import { putObject, getObject, deleteObject } from "@/lib/storage/blob";
 import type { CurrentPortalUser } from "@/lib/portal-auth";
 
 /**
@@ -18,7 +16,7 @@ import type { CurrentPortalUser } from "@/lib/portal-auth";
  */
 
 export const PORTAL_DOCS_COLLECTION = "portal_documents";
-const PORTAL_DOCS_DIR = path.join(process.cwd(), "uploads", "portal-documents");
+const FOLDER = "portal-documents";
 
 export interface PortalDocument {
   _id: string;
@@ -71,10 +69,9 @@ export async function sharePortalDocument(
   file: File,
   opts: { category?: string; uploadedBy?: string | null; leadId?: string | null } = {}
 ): Promise<PortalDocument> {
-  await mkdir(PORTAL_DOCS_DIR, { recursive: true });
   const ext = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "bin";
-  const storageKey = `${randomUUID()}.${ext}`;
-  await writeFile(path.join(PORTAL_DOCS_DIR, storageKey), Buffer.from(await file.arrayBuffer()));
+  const key = `${randomUUID()}.${ext}`;
+  const { storageKey } = await putObject(FOLDER, key, Buffer.from(await file.arrayBuffer()), file.type || "application/octet-stream");
   const doc: PortalDocument = {
     _id: newId(),
     ownerUserId,
@@ -118,16 +115,11 @@ export async function deletePortalDocument(id: string, ownerUserId: string): Pro
   const doc = await c.findOne({ _id: id, ownerUserId });
   if (!doc) return;
   await c.updateOne({ _id: id }, { $set: { deletedAt: new Date() } });
-  await unlink(path.join(PORTAL_DOCS_DIR, doc.storageKey)).catch(() => {});
+  await deleteObject(doc.storageKey);
 }
 
-export function readPortalDocStream(storageKey: string) {
-  if (!/^[a-zA-Z0-9._-]+$/.test(storageKey)) return null;
-  try {
-    return createReadStream(path.join(PORTAL_DOCS_DIR, storageKey));
-  } catch {
-    return null;
-  }
+export async function readPortalDocStream(storageKey: string) {
+  return getObject(storageKey);
 }
 
 async function getStaffDoc(id: string): Promise<PortalDocument | null> {
@@ -199,7 +191,7 @@ export async function listPortalDocuments(user: CurrentPortalUser): Promise<Port
 // ---------------------------------------------------------------------------
 
 export interface DownloadTarget {
-  stream: NodeJS.ReadableStream;
+  stream: ReadableStream<Uint8Array>;
   filename: string;
   contentType: string;
 }
@@ -212,8 +204,8 @@ export async function resolvePortalDownload(
   if (type === "staff") {
     const d = await getStaffDoc(ref);
     if (!d || d.ownerUserId !== user.id) return null;
-    const s = readPortalDocStream(d.storageKey);
-    return s ? { stream: s, filename: d.name, contentType: d.contentType } : null;
+    const result = await readPortalDocStream(d.storageKey);
+    return result ? { stream: result.stream, filename: d.name, contentType: d.contentType } : null;
   }
 
   if (type === "resume") {
@@ -221,7 +213,9 @@ export async function resolvePortalDownload(
     const app = await getApplication(ref).catch(() => null);
     if (!app?.resume?.storageKey) return null;
     const { readResumeFile } = await import("@/lib/resume-storage");
-    return { stream: readResumeFile(app.resume.storageKey), filename: app.resume.filename || "Resume", contentType: app.resume.contentType || "application/pdf" };
+    const result = await readResumeFile(app.resume.storageKey);
+    if (!result) return null;
+    return { stream: result.stream, filename: app.resume.filename || "Resume", contentType: app.resume.contentType || "application/pdf" };
   }
 
   if (type === "project") {
@@ -231,7 +225,9 @@ export async function resolvePortalDownload(
     const projects = await listProjectsForClient(user.clientId).catch(() => []);
     if (!projects.some((p) => p._id === doc.projectId)) return null;
     const { readDocumentStream } = await import("@/lib/pms/document-storage");
-    return { stream: readDocumentStream(doc.storageKey), filename: doc.filename, contentType: doc.contentType || "application/octet-stream" };
+    const result = await readDocumentStream(doc.storageKey);
+    if (!result) return null;
+    return { stream: result.stream, filename: doc.filename, contentType: doc.contentType || "application/octet-stream" };
   }
 
   return null;

@@ -1,4 +1,3 @@
-import { Readable } from "node:stream";
 import { NextRequest, NextResponse } from "next/server";
 import { isAuthorizedLmsRequest } from "@/lib/api-auth";
 import { getVoiceMessageAudioKey } from "@/lib/voice-conversations";
@@ -18,8 +17,10 @@ export async function GET(req: NextRequest, { params }: Context) {
   const key = await getVoiceMessageAudioKey(id, msg);
   if (!key) return NextResponse.json({ error: "Audio not found." }, { status: 404 });
 
-  const webStream = Readable.toWeb(readVoiceAudioStream(key)) as ReadableStream<Uint8Array>;
-  return new NextResponse(webStream, {
+  const object = await readVoiceAudioStream(key);
+  if (!object) return NextResponse.json({ error: "Audio not found." }, { status: 404 });
+
+  return new NextResponse(object.stream, {
     headers: {
       "Content-Type": "audio/mpeg",
       "Cache-Control": "private, max-age=3600",

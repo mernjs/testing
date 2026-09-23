@@ -1,16 +1,13 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
-import { createReadStream } from "node:fs";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { putObject, getObject, deleteObject } from "@/lib/storage/blob";
 
 /**
- * Project document storage. Deliberately outside `public/` — served only
- * through the authenticated download route. Mirrors
- * `src/lib/hrms/document-storage.ts`.
+ * Project document storage — served only through the authenticated download
+ * route. Mirrors `src/lib/hrms/document-storage.ts`.
  */
 
-const DOCS_DIR = path.join(process.cwd(), "uploads", "pms-documents");
+const FOLDER = "pms-documents";
 
 export interface StoredDocument {
   storageKey: string;
@@ -25,22 +22,17 @@ function extensionFor(filename: string): string {
 }
 
 export async function saveDocumentFile(file: File): Promise<StoredDocument> {
-  await mkdir(DOCS_DIR, { recursive: true });
-  const storageKey = `${randomUUID()}.${extensionFor(file.name)}`;
+  const key = `${randomUUID()}.${extensionFor(file.name)}`;
   const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(DOCS_DIR, storageKey), buffer);
-  return {
-    storageKey,
-    filename: file.name,
-    contentType: file.type || "application/octet-stream",
-    size: file.size,
-  };
+  const contentType = file.type || "application/octet-stream";
+  const { storageKey } = await putObject(FOLDER, key, buffer, contentType);
+  return { storageKey, filename: file.name, contentType, size: file.size };
 }
 
-export function readDocumentStream(storageKey: string) {
-  return createReadStream(path.join(DOCS_DIR, storageKey));
+export async function readDocumentStream(storageKey: string) {
+  return getObject(storageKey);
 }
 
 export async function deleteDocumentFile(storageKey: string) {
-  await unlink(path.join(DOCS_DIR, storageKey)).catch(() => {});
+  await deleteObject(storageKey);
 }

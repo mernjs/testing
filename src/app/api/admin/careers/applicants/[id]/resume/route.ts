@@ -1,4 +1,3 @@
-import { Readable } from "node:stream";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentAdminUser } from "@/lib/admin-auth";
 import { hasAdminAccess } from "@/lib/admin-roles";
@@ -17,10 +16,10 @@ export async function GET(_req: NextRequest, { params }: Context) {
     return NextResponse.json({ error: "Resume not found." }, { status: 404 });
   }
 
-  const downloadStream = openResumeDownloadStream(application.resume.storageKey);
-  const webStream = Readable.toWeb(downloadStream) as ReadableStream<Uint8Array>;
+  const object = await openResumeDownloadStream(application.resume.storageKey);
+  if (!object) return NextResponse.json({ error: "Resume not found." }, { status: 404 });
 
-  return new NextResponse(webStream, {
+  return new NextResponse(object.stream, {
     headers: {
       "Content-Type": application.resume.contentType,
       "Content-Disposition": `attachment; filename="${encodeURIComponent(application.resume.filename)}"`,

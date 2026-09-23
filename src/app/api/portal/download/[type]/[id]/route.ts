@@ -1,4 +1,3 @@
-import { Readable } from "node:stream";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentPortalUser } from "@/lib/portal-auth";
 import { resolvePortalDownload } from "@/lib/portal/documents";
@@ -26,8 +25,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ typ
     summary: target.filename,
   }).catch(() => {});
 
-  const webStream = Readable.toWeb(target.stream as Readable) as ReadableStream<Uint8Array>;
-  return new NextResponse(webStream, {
+  return new NextResponse(target.stream, {
     headers: {
       "Content-Type": target.contentType || "application/octet-stream",
       "Content-Disposition": `inline; filename="${encodeURIComponent(target.filename)}"`,

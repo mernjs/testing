@@ -1,4 +1,3 @@
-import { Readable } from "node:stream";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentPmsUser } from "@/lib/pms-auth";
 import { canManageProjects } from "@/lib/pms-roles";
@@ -17,9 +16,10 @@ export async function GET(req: NextRequest, { params }: Context) {
   if (!doc) return NextResponse.json({ error: "Document not found." }, { status: 404 });
 
   const inline = req.nextUrl.searchParams.get("inline") === "1";
-  const webStream = Readable.toWeb(readDocumentStream(doc.storageKey)) as ReadableStream<Uint8Array>;
+  const object = await readDocumentStream(doc.storageKey);
+  if (!object) return NextResponse.json({ error: "Document not found." }, { status: 404 });
 
-  return new NextResponse(webStream, {
+  return new NextResponse(object.stream, {
     headers: {
       "Content-Type": doc.contentType,
       "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${encodeURIComponent(doc.filename)}"`,

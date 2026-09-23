@@ -1,4 +1,3 @@
-import { Readable } from "node:stream";
 import { NextResponse, type NextRequest } from "next/server";
 import { getDb } from "@/lib/mongodb";
 import { getCurrentPortalUser } from "@/lib/portal-auth";
@@ -46,12 +45,11 @@ export async function GET(_req: NextRequest, ctx: RouteContext<"/api/lead-messag
   }
   if (!allowed) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const nodeStream = readLeadAttachmentStream(key);
-  if (!nodeStream) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  const webStream = Readable.toWeb(nodeStream) as ReadableStream<Uint8Array>;
+  const object = await readLeadAttachmentStream(key);
+  if (!object) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const disposition = attachment.kind === "image" || attachment.kind === "video" || attachment.kind === "voice" ? "inline" : "attachment";
-  return new NextResponse(webStream, {
+  return new NextResponse(object.stream, {
     headers: {
       "Content-Type": attachment.contentType || "application/octet-stream",
       "Content-Disposition": `${disposition}; filename="${encodeURIComponent(attachment.filename)}"`,

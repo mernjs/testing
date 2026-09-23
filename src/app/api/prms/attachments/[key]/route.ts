@@ -1,4 +1,3 @@
-import { Readable } from "node:stream";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentPrmsUser } from "@/lib/prms-auth";
 import { hasPrmsStaffRole } from "@/lib/prms-roles";
@@ -8,9 +7,9 @@ import { getDb } from "@/lib/mongodb";
 type Context = { params: Promise<{ key: string }> };
 
 /**
- * Authed streamer for PRMS attachments in `uploads/prms-attachments/`. Any
- * signed-in PRMS user may fetch a file that is referenced by a requisition they
- * can see (their own, or any if they hold a staff role).
+ * Authed streamer for PRMS attachments. Any signed-in PRMS user may fetch a
+ * file that is referenced by a requisition they can see (their own, or any
+ * if they hold a staff role).
  */
 export async function GET(_req: NextRequest, { params }: Context) {
   const user = await getCurrentPrmsUser();
@@ -32,11 +31,10 @@ export async function GET(_req: NextRequest, { params }: Context) {
   }
 
   const meta = req.attachments?.find((a) => a.storageKey === key);
-  const nodeStream = readAttachmentStream(key);
-  if (!nodeStream) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  const webStream = Readable.toWeb(nodeStream) as ReadableStream<Uint8Array>;
+  const object = await readAttachmentStream(key);
+  if (!object) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  return new NextResponse(webStream, {
+  return new NextResponse(object.stream, {
     headers: {
       "Content-Type": meta?.contentType || "application/octet-stream",
       "Content-Disposition": `inline; filename="${encodeURIComponent(meta?.filename ?? key)}"`,
