@@ -66,6 +66,8 @@ export interface LeadRecord {
   status: LeadStatus;
   externalUserId: string;
   ownerStaffId: string | null;
+  /** A portal-authored reply landed in the Communication Center since staff last opened this lead. */
+  hasUnreadPortalReply: boolean;
   sourceRef: LeadSourceRef | null;
   applicationId: string | null; // career_applications._id
   offerId: string | null; // hrms_offers._id
@@ -137,8 +139,21 @@ export interface LeadMessage {
   body: string;
   visibility: "internal" | "portal";
   channel: LeadMessageChannel;
+  authorType: "staff" | "portal";
   authorStaffId: string | null;
+  authorPortalUserId: string | null;
+  attachments: LeadMessageAttachment[];
   createdAt: Date;
+}
+
+export type LeadMessageAttachmentKind = "image" | "voice" | "video" | "file";
+
+export interface LeadMessageAttachment {
+  storageKey: string;
+  filename: string;
+  contentType: string;
+  size: number;
+  kind: LeadMessageAttachmentKind;
 }
 
 export interface SerializedLeadMessage extends Omit<LeadMessage, "createdAt"> {

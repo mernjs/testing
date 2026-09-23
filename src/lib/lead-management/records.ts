@@ -80,6 +80,7 @@ export async function createLeadRecord(input: CreateLeadInput): Promise<LeadReco
     status: "open",
     externalUserId: input.externalUserId,
     ownerStaffId: input.ownerStaffId ?? null,
+    hasUnreadPortalReply: false,
     sourceRef: input.sourceRef ?? null,
     applicationId: input.applicationId ?? null,
     offerId: null,
@@ -254,6 +255,22 @@ export async function assignLeadOwner(leadId: string, ownerStaffId: string | nul
     actorId,
     visibleToLead: false,
   });
+}
+
+/** A portal user replied in the Communication Center — flags it for staff attention on the leads list. */
+export async function markLeadPortalReplyReceived(leadId: string): Promise<void> {
+  // No `updatedBy` here — that field is stamped with staff ids everywhere else in this
+  // record, and a portal user's id landing there would silently break any future
+  // "last edited by" resolution against `admin_users`.
+  await (await collection()).updateOne({ _id: leadId }, { $set: { hasUnreadPortalReply: true, updatedAt: new Date() } });
+}
+
+/** Staff opened the lead's Communication Center — clears the unread flag. */
+export async function clearLeadPortalUnread(leadId: string, actorId: string): Promise<void> {
+  await (await collection()).updateOne(
+    { _id: leadId, hasUnreadPortalReply: true },
+    { $set: { hasUnreadPortalReply: false, updatedAt: new Date(), updatedBy: actorId } }
+  );
 }
 
 export async function setLeadLink(

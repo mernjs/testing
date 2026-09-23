@@ -68,7 +68,7 @@ export async function seedPeople(db, tms, pms) {
     const stepTimes = Array.from({ length: idx + 1 }, (_, i) => new Date(created.getTime() + (totalMs * i) / Math.max(1, idx + 0.4)));
     const lead = {
       _id: `demo-lead-${++ln}`, code: `LEAD-2026-${String(9000 + ln).padStart(4, "0")}`, type, source, name: u.displayName, email: u.email, phone: u.phone, subService: subService ?? null, message,
-      stage: stageKey, stageEnteredAt: stepTimes[idx], status: terminal ?? "open", externalUserId: u._id, ownerStaffId: null, sourceRef: null, applicationId: links.applicationId ?? null, offerId: links.offerId ?? null,
+      stage: stageKey, stageEnteredAt: stepTimes[idx], status: terminal ?? "open", externalUserId: u._id, ownerStaffId: null, hasUnreadPortalReply: false, sourceRef: null, applicationId: links.applicationId ?? null, offerId: links.offerId ?? null,
       studentId: links.studentId ?? null, clientId: links.clientId ?? null, projectId: links.projectId ?? null, createdAt: created, updatedAt: stepTimes[idx], createdBy: null, updatedBy: null, deletedAt: null,
     };
     leads.push(lead);
@@ -95,7 +95,7 @@ export async function seedPeople(db, tms, pms) {
     ].slice(0, u._rich ? 4 : rint(1, 3));
     msgs.forEach(([channel, body], i) => {
       const at = new Date(created.getTime() + (totalMs * (i + 1)) / (msgs.length + 1));
-      messages.push({ _id: `demo-msg-${++mn}`, leadId: lead._id, body, visibility: "portal", channel, authorStaffId: null, createdAt: at });
+      messages.push({ _id: `demo-msg-${++mn}`, leadId: lead._id, body, visibility: "portal", channel, authorType: "staff", authorStaffId: null, authorPortalUserId: null, attachments: [], createdAt: at });
       ev("message_sent", "Message from our team", body.slice(0, 80), at, "staff");
     });
     return lead;

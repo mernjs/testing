@@ -28,6 +28,7 @@ import {
   SlidersVertical,
   WalletCards,
   BellRing,
+  Inbox,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -99,6 +100,7 @@ export default function LmsSidebar({ onNavigate, collapsed = false }: { onNaviga
 
       <SectionLabel collapsed={collapsed}>Lead Management</SectionLabel>
       <NavLink href="/lms/leads" label="Leads" icon={Users} collapsed={collapsed} onNavigate={onNavigate} />
+      <NavLink href="/lms/messages" label="Messages" icon={Inbox} collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/careers" label="Applicants" icon={Briefcase} collapsed={collapsed} onNavigate={onNavigate} />
 
       <SectionLabel collapsed={collapsed}>Festival Offers</SectionLabel>

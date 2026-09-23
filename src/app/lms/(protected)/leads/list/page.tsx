@@ -104,6 +104,11 @@ export default async function LeadsListPage({
                     <Link href={`/lms/leads/${l._id}`} className="font-medium text-foreground hover:text-primary hover:underline">
                       {l.name}
                     </Link>
+                    {l.hasUnreadPortalReply && (
+                      <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                        <span className="size-1.5 rounded-full bg-primary" /> New reply
+                      </span>
+                    )}
                     <span className="block text-xs text-muted-foreground">{l.code} · {l.email} · {l.phone}</span>
                   </td>
                   <td className="py-2 pr-3 text-muted-foreground">{TYPE_LABEL[l.type]}</td>

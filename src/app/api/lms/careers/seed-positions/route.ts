@@ -6,9 +6,12 @@ import { getDb } from "@/lib/mongodb";
 /**
  * Idempotent upsert of job_positions from the static job listings in
  * jobs-data.ts. Re-run any time a role is added, removed, or its status
- * changes in code — never deletes positions missing from code (a closed
- * role should stay referenceable by any past application), only upserts
- * by slug and flips `isOpen` when a role's status changed.
+ * changes in code — never DELETES positions missing from code (a closed
+ * role should stay referenceable by any past application), but any
+ * existing position whose slug is no longer in `jobs` at all (fully
+ * removed from the listing, not just marked closed/draft) gets flipped to
+ * `isOpen: false` so it stops appearing as a selectable open role while
+ * remaining resolvable for historical applications.
  */
 export async function POST() {
   const lmsUser = await getCurrentLmsUser();
@@ -21,6 +24,7 @@ export async function POST() {
   await collection.createIndex({ slug: 1 }, { unique: true });
 
   const now = new Date();
+  const currentSlugs = jobs.map((job) => job.slug);
   let upserted = 0;
   for (const job of jobs) {
     const isOpen = (job.status ?? "published") === "published";
@@ -35,5 +39,10 @@ export async function POST() {
     upserted += 1;
   }
 
-  return NextResponse.json({ upserted });
+  const closedOrphans = await collection.updateMany(
+    { slug: { $nin: currentSlugs }, isOpen: true },
+    { $set: { isOpen: false, updatedAt: now } }
+  );
+
+  return NextResponse.json({ upserted, closedOrphans: closedOrphans.modifiedCount });
 }

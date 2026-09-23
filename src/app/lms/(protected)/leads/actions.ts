@@ -9,11 +9,13 @@ import {
   getLeadRecord,
   setLeadLink,
   mirrorLinkToAccount,
+  clearLeadPortalUnread,
 } from "@/lib/lead-management/records";
 import { postLeadMessage } from "@/lib/lead-management/messages";
 import { recordLeadEvent } from "@/lib/lead-management/timeline";
 import { provisionLeadAndAccount } from "@/lib/lead-management/provision";
 import { isPortalRole } from "@/lib/portal-roles";
+import type { LeadMessageAttachment } from "@/lib/lead-management/types";
 import { getStudent } from "@/lib/tms/students";
 import { getClient } from "@/lib/pms/clients";
 import { getProject } from "@/lib/pms/projects";
@@ -59,7 +61,7 @@ export async function assignLeadToMeAction(leadId: string, unassign: boolean): P
 export async function addLeadNoteAction(leadId: string, body: string): Promise<{ error?: string }> {
   const user = await requireLmsUser();
   if (!body.trim()) return { error: "Note is empty." };
-  await postLeadMessage({ leadId, body, visibility: "internal", channel: "note", authorStaffId: user.id });
+  await postLeadMessage({ leadId, body, visibility: "internal", channel: "note", authorType: "staff", authorStaffId: user.id });
   touch(leadId);
   return {};
 }
@@ -67,12 +69,20 @@ export async function addLeadNoteAction(leadId: string, body: string): Promise<{
 export async function sendLeadMessageAction(
   leadId: string,
   body: string,
-  channel: "message" | "document_request" | "interview_reminder"
+  channel: "message" | "document_request" | "interview_reminder",
+  attachments?: LeadMessageAttachment[]
 ): Promise<{ error?: string }> {
   const user = await requireLmsUser();
-  if (!body.trim()) return { error: "Message is empty." };
-  await postLeadMessage({ leadId, body, visibility: "portal", channel, authorStaffId: user.id });
+  if (!body.trim() && !attachments?.length) return { error: "Message is empty." };
+  await postLeadMessage({ leadId, body, visibility: "portal", channel, authorType: "staff", authorStaffId: user.id, attachments });
   touch(leadId);
+  return {};
+}
+
+/** Staff opened the Communication Center — clears the "new portal reply" flag on the leads list. */
+export async function clearLeadUnreadAction(leadId: string): Promise<{ error?: string }> {
+  const user = await requireLmsUser();
+  await clearLeadPortalUnread(leadId, user.id);
   return {};
 }
 
