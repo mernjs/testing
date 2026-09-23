@@ -4,6 +4,7 @@ import path from "path";
 import { siteUrl } from "@/lib/seo";
 import { blogPosts } from "@/lib/blog";
 import { jobs } from "@/app/(site)/careers/jobs-data";
+import { getSeoSiteState } from "@/lib/seo-panel/public";
 
 const APP_DIR = path.join(process.cwd(), "src/app/(site)");
 
@@ -38,7 +39,8 @@ function discoverRoutes(dir: string, base = ""): string[] {
   return routes;
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+/** The code-defined sitemap: every discovered public route. Also used as the chatbot knowledge-base crawl list. */
+export function baseSitemap(): MetadataRoute.Sitemap {
   const blogDates = new Map(blogPosts.map((post) => [`/blog/${post.slug}`, post.date]));
   const jobMap = new Map(jobs.map((job) => [`/careers/${job.slug}`, job]));
 
@@ -71,4 +73,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: route === "/" ? 1 : blogDate ? 0.6 : job ? 0.7 : 0.7,
     };
   });
+}
+
+/**
+ * The served sitemap: the code-defined routes with the SEO panel's per-page
+ * settings applied (/seo/sitemap, /seo/pages) — pages excluded there, or
+ * set to noindex, are dropped; priority / change frequency overrides win.
+ */
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const entries = baseSitemap();
+  const { sitemap: overrides, overrides: meta } = await getSeoSiteState();
+  const out: MetadataRoute.Sitemap = [];
+  for (const entry of entries) {
+    const path = new URL(entry.url).pathname || "/";
+    const o = overrides[path];
+    if (o?.exclude || meta[path]?.robots?.index === false) continue;
+    out.push({
+      ...entry,
+      ...(o?.priority !== undefined ? { priority: o.priority } : {}),
+      ...(o?.changeFrequency ? { changeFrequency: o.changeFrequency } : {}),
+    });
+  }
+  return out;
 }

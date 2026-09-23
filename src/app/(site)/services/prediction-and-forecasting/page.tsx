@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import PredictionForecastingContent from "./Content";
 import { predictionForecastingFaqs } from "./faqs";
 import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
@@ -10,13 +11,15 @@ const path = "/services/prediction-and-forecasting";
 
 const image = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["Prediction & Forecasting Services", "Data-Driven", "AI Powered", "Real-Time Insights", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/services/prediction-and-forecasting", baseMetadata);
 
 export default function PredictionForecastingPage() {
   const jsonLd = [

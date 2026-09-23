@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import AIMLSolutionsContent from "./Content";
 import { aiMlSolutionsFaqs } from "./faqs";
 import { socialMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
@@ -10,13 +11,15 @@ const path = "/services/ai-ml-solutions";
 
 const image = "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["AI/ML Solutions Services", "Custom Models", "AI Powered", "Production-Grade", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/services/ai-ml-solutions", baseMetadata);
 
 export default function AIMLSolutionsPage() {
   const jsonLd = [

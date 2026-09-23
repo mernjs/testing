@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import PredictiveAIWorkflowsContent from "./Content";
 import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
@@ -8,7 +9,7 @@ const description =
 const path = "/ai-automations/predictive-ai-workflows";
 const image = "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: [
@@ -23,6 +24,8 @@ export const metadata: Metadata = {
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/ai-automations/predictive-ai-workflows", baseMetadata);
 
 export default function PredictiveAIWorkflowsPage() {
   const jsonLd = [

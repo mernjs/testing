@@ -227,6 +227,33 @@ given, access to internal systems to get that.
 
 ---
 
+## SEO Panel (`/seo`)
+
+**What it is**: the single place YashOrbit's search presence is managed —
+automated website audits, technical and on-page SEO, keywords and rank
+tracking, content SEO, internal links, backlinks, competitors, the sitemap,
+robots.txt and structured data, plus the issue and task queue that gets
+problems fixed. It is SEO only: campaigns and leads stay in the LMS.
+
+**Why it exists**: search visibility was spread across hard-coded page
+metadata, a static robots.txt, Search Console and spreadsheets. The panel
+is now the source of truth, and the public website reads from it. Page
+titles, descriptions, canonicals, robots directives, social tags, sitemap
+inclusion, robots.txt and JSON-LD edited here go live without a deploy.
+
+**Benefits**:
+- A crawler audits the whole site against 50+ technical, on-page, content,
+  link, mobile, performance and structured-data checks. Every finding comes
+  with a recommendation, and a fix is verified automatically by the next
+  audit.
+- Numbers are labelled by trust. Search Console, Analytics and our own crawl
+  are *verified*; keyword-tool and competitor figures are *estimated*.
+  Nothing is presented as more certain than it is.
+- Guard-railed changes: robots.txt and schema are validated before they can
+  be published, and every change is audit-logged with a before/after diff.
+
+---
+
 ## The common thread
 
 Every panel above is real, in active use, and built specifically around how

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import MeanStackContent from "./Content";
 import { meanStackFaqs } from "./faqs";
 import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
@@ -10,13 +11,15 @@ const path = "/industrial-training/mean-stack";
 
 const image = "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["MEAN Stack Training", "Angular", "TypeScript", "RxJS", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/industrial-training/mean-stack", baseMetadata);
 
 export default function MeanStackTrainingPage() {
   const jsonLd = [

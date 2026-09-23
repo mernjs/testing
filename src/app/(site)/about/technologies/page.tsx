@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import TechnologiesContent from "./Content";
 import { technologiesFaqs } from "./faqs";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
@@ -10,13 +11,15 @@ const path = "/about/technologies";
 
 const image = "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["Technologies", "18 Categories", "CRM", "No-Code", "Low-Code", "Desktop Apps", "AI Coding Tools", "Production-tested", "AI-native", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/about/technologies", baseMetadata);
 
 export default function TechnologiesPage() {
   const jsonLd = [

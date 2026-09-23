@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import MernStackContent from "./Content";
 import { mernStackFaqs } from "./faqs";
 import { socialMetadata, courseJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
@@ -10,13 +11,15 @@ const path = "/industrial-training/mern-stack";
 
 const image = "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["MERN Stack Training", "MongoDB", "React", "Node.js", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/industrial-training/mern-stack", baseMetadata);
 
 export default function MernStackTrainingPage() {
   const jsonLd = [

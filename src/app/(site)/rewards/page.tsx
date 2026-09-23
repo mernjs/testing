@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import { getCurrentPortalUser } from "@/lib/portal-auth";
 import { getRewardsGuide } from "@/lib/wallet/guide";
 import { GUIDE_FAQS } from "@/lib/wallet/earn-guide";
@@ -10,12 +11,14 @@ const description =
   "Every way to earn YashOrbit credits — signup, journey stages, referrals, daily visits and more — how much you get, when, what to complete, and how to use credits with offers and coupon codes.";
 const path = "/rewards";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image: defaultOgImage }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/rewards", baseMetadata);
 
 // Amounts come from the live reward rules, so this page is rendered per request.
 export const dynamic = "force-dynamic";

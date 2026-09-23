@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import SocialMediaAiReelsGeneratorContent from "./Content";
 import { socialMediaAiReelsGeneratorFaqs } from "./faqs";
 import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
@@ -10,13 +11,15 @@ const path = "/live-demos/social-media-ai-reels-generator";
 
 const image = "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["Social Media AI Reels Generator", "AI Video Generation", "Voice Cloning", "Image to Video AI", "Live Demo", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/live-demos/social-media-ai-reels-generator", baseMetadata);
 
 export default function SocialMediaAiReelsGeneratorPage() {
   const jsonLd = [

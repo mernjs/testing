@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import LeadershipContent from "./Content";
 import { socialMetadata, breadcrumbJsonLd, personJsonLd } from "@/lib/seo";
 
@@ -9,13 +10,15 @@ const path = "/about/leadership";
 
 const image = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["YashOrbit founders", "YashOrbit leadership team", "Co-Founder & CEO", "Co-Founder & COO", "CTO", "CFO", "CHRO", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/about/leadership", baseMetadata);
 
 export default function LeadershipPage() {
   const jsonLd = [

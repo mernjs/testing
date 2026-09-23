@@ -12,7 +12,7 @@ import {
   type VectorStoreUploadResult,
 } from "@/lib/kb-openai";
 import { KbRunLogger, type KbRunType } from "@/lib/kb-runs";
-import siteSitemap from "@/app/sitemap";
+import { baseSitemap } from "@/app/sitemap";
 
 export const KB_WEBSITE_PAGES_COLLECTION = "kb_website_pages";
 
@@ -72,7 +72,7 @@ async function getPagesCollection(): Promise<Collection<KbWebsitePage>> {
 // ---------------------------------------------------------------------------
 
 export function listCrawlTargets(): { path: string; url: string }[] {
-  const entries = siteSitemap();
+  const entries = baseSitemap();
   const targets: { path: string; url: string }[] = [];
   for (const entry of entries) {
     const raw = typeof entry.url === "string" ? entry.url : String(entry.url);

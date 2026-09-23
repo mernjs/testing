@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import { socialMetadata, defaultOgImage } from "@/lib/seo";
 import AskContent from "./Content";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: "Ask YashOrbit Chatbot — AI Assistant",
   description:
     "Ask the YashOrbit AI Assistant anything about our services, products, industries, training programs, and how we work. Answers are grounded in our knowledge base.",
@@ -16,6 +17,8 @@ export const metadata: Metadata = {
     image: defaultOgImage,
   }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/ask", baseMetadata);
 
 export default function AskPage() {
   return <AskContent />;

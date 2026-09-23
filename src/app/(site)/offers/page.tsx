@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import { cache } from "react";
 import { resolveOffersPage } from "@/lib/offers/state";
 import { dispatchCampaignStart } from "@/lib/offers/subscriptions";
@@ -41,6 +42,10 @@ const GENERIC_FAQS = [
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
+  return withSeoOverrides("/offers", await offersMetadata());
+}
+
+async function offersMetadata(): Promise<Metadata> {
   const page = await loadPage();
   const campaign = page.active?.campaign ?? page.next?.campaign ?? null;
   const title =

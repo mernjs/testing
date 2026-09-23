@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import GenerativeAIContent from "./Content";
 import { socialMetadata, breadcrumbJsonLd, articleJsonLd } from "@/lib/seo";
 import { getBlogPost } from "@/lib/blog";
@@ -6,13 +7,15 @@ import { getBlogPost } from "@/lib/blog";
 const post = getBlogPost("generative-ai-for-business-practical-use-cases")!;
 const path = `/blog/${post.slug}`;
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: post.seoTitle,
   description: post.description,
   keywords: post.keywords,
   alternates: { canonical: path },
   ...socialMetadata({ title: post.seoTitle, description: post.description, path, image: post.image, imageAlt: post.imageAlt }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/blog/generative-ai-for-business-practical-use-cases", baseMetadata);
 
 export default function Page() {
   const jsonLd = [

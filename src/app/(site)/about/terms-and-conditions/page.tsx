@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import TermsAndConditionsContent from "./Content";
 import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
 
@@ -9,13 +10,15 @@ const path = "/about/terms-and-conditions";
 
 const image = "https://images.unsplash.com/photo-1589391886645-d51941baf7fb?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["Terms and Conditions", "Terms of Use", "Legal Terms", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/about/terms-and-conditions", baseMetadata);
 
 export default function TermsAndConditionsPage() {
   const breadcrumbs = breadcrumbJsonLd([

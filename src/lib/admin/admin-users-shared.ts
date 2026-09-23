@@ -4,6 +4,7 @@ import { normalizePmsRoles } from "@/lib/pms-roles";
 import { normalizePrmsRoles } from "@/lib/prms-roles";
 import { normalizeFmsRoles } from "@/lib/fms-roles";
 import { effectiveSopRoles, hasSopAccess } from "@/lib/sop-roles";
+import { normalizeSeoRoles } from "@/lib/seo-roles";
 import { normalizeTmsRoles } from "@/lib/tms-roles";
 import { normalizeChatRoles } from "@/lib/messenger-roles";
 import { normalizeLmsRoles } from "@/lib/lms-roles";
@@ -86,6 +87,13 @@ export function getPanelAccessSummary(user: AdminUserRow): PanelAccessSummaryIte
       hasAccess: isSuperAdmin || hasSopAccess(roles),
       // Explicit sop_* roles plus what the account's HRMS role implies (employee → reader, manager/hr → manager).
       roles: effectiveSopRoles(roles),
+      isSuperAdmin,
+    },
+    {
+      key: "seo",
+      name: "SEO Panel",
+      hasAccess: isSuperAdmin || normalizeSeoRoles(roles).length > 0,
+      roles: normalizeSeoRoles(roles),
       isSuperAdmin,
     },
     {

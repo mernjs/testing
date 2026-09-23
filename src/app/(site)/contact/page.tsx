@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import ContactContent from "./Content";
 import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
 import { getSubServices, isValidCategory, type CategorySlug } from "@/lib/categories";
@@ -9,7 +10,7 @@ const description =
 const path = "/contact";
 const image = "https://images.unsplash.com/photo-1519337265831-281ec6cc8514?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: [
@@ -22,6 +23,8 @@ export const metadata: Metadata = {
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/contact", baseMetadata);
 
 export default async function ContactPage({
   searchParams,

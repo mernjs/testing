@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import HomeContent from "./Content";
 import { homeFaqs } from "./faqs";
 import { socialMetadata, defaultOgImage, faqJsonLd } from "@/lib/seo";
@@ -8,7 +9,7 @@ const description =
     "YashOrbit builds custom web, mobile, desktop, AI/ML, GenAI, Conversational AI, Agentic AI, and intelligent automation solutions for startups and enterprises with scalable, business-focused software engineering."
 const path = "/";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: [
@@ -35,6 +36,8 @@ export const metadata: Metadata = {
     imageAlt: "YashOrbit — Custom Software & AI/ML, Built Around Your Business",
   }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/", baseMetadata);
 
 export default function Home() {
   const jsonLd = faqJsonLd(homeFaqs);

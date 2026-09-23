@@ -5,6 +5,7 @@ import { TMS_ROLES, TMS_ROLE_META } from "@/lib/tms-roles";
 import { CHAT_ROLES, CHAT_ROLE_META } from "@/lib/messenger-roles";
 import { FMS_ROLES, FMS_ROLE_META } from "@/lib/fms-roles";
 import { SOP_ROLES, SOP_ROLE_META } from "@/lib/sop-roles";
+import { SEO_ROLES, SEO_ROLE_META } from "@/lib/seo-roles";
 
 /**
  * Every real role literal that can appear in `admin_users.roles`, grouped by
@@ -52,6 +53,7 @@ export const ROLE_GROUPS: RoleGroup[] = [
   group("YashChat (Messenger)", CHAT_ROLES, CHAT_ROLE_META),
   group("Finance (FMS)", FMS_ROLES, FMS_ROLE_META),
   group("SOP Panel", SOP_ROLES, SOP_ROLE_META),
+  group("SEO Panel", SEO_ROLES, SEO_ROLE_META),
   {
     module: "LMS (CRM & Learning)",
     roles: [

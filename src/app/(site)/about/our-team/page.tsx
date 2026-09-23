@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import OurTeamContent from "./Content";
 import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
 
@@ -9,13 +10,15 @@ const path = "/about/our-team";
 
 const image = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["Our Team", "Leadership", "21 Specialists", "Senior-Led Team", "Remote-first", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/about/our-team", baseMetadata);
 
 export default function OurTeamPage() {
   const jsonLd = [

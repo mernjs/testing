@@ -13,7 +13,9 @@ import OptionSelect, { type Option } from "@/components/sop/OptionSelect";
 
 export type FieldDef =
   | { key: string; label: string; type: "text"; placeholder?: string; hint?: string; maxLength?: number }
-  | { key: string; label: string; type: "textarea"; placeholder?: string; hint?: string }
+  | { key: string; label: string; type: "textarea"; placeholder?: string; hint?: string; rows?: number }
+  | { key: string; label: string; type: "number"; placeholder?: string; hint?: string; min?: number; max?: number; step?: number }
+  | { key: string; label: string; type: "date"; hint?: string }
   | { key: string; label: string; type: "select"; options: Option[]; noneLabel?: string; hint?: string }
   | { key: string; label: string; type: "checkbox"; hint?: string }
   | { key: string; label: string; type: "color" };
@@ -29,6 +31,7 @@ export default function EditDialog({
   initial,
   submitLabel = "Save",
   onSubmit,
+  columns = 1,
 }: {
   trigger: ReactNode;
   title: string;
@@ -37,6 +40,8 @@ export default function EditDialog({
   initial: Values;
   submitLabel?: string;
   onSubmit: (values: Values) => Promise<{ ok: boolean; error?: string }>;
+  /** 2 = a wider dialog with a two-column field grid (long forms); textareas span both columns. */
+  columns?: 1 | 2;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -71,18 +76,20 @@ export default function EditDialog({
       }}
     >
       <DialogTrigger render={<span className="contents" />}>{trigger}</DialogTrigger>
-      <DialogContent>
+      <DialogContent className={columns === 2 ? "max-h-[90vh] max-w-[760px] overflow-y-auto" : "max-h-[90vh] overflow-y-auto"}>
         <form onSubmit={submit}>
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
             {description && <DialogDescription>{description}</DialogDescription>}
           </DialogHeader>
-          <div className="space-y-3 px-4 pb-2">
+          <div className={columns === 2 ? "grid gap-3 px-4 pb-2 sm:grid-cols-2" : "space-y-3 px-4 pb-2"}>
             {fields.map((f) => (
-              <div key={f.key} className="space-y-1.5">
+              <div key={f.key} className={columns === 2 && f.type === "textarea" ? "space-y-1.5 sm:col-span-2" : "space-y-1.5"}>
                 {f.type !== "checkbox" && <Label htmlFor={`f-${f.key}`}>{f.label}</Label>}
                 {f.type === "text" && <Input id={`f-${f.key}`} value={String(values[f.key] ?? "")} maxLength={f.maxLength} placeholder={f.placeholder} onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))} />}
-                {f.type === "textarea" && <Textarea id={`f-${f.key}`} rows={3} value={String(values[f.key] ?? "")} placeholder={f.placeholder} onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))} />}
+                {f.type === "textarea" && <Textarea id={`f-${f.key}`} rows={f.rows ?? 3} value={String(values[f.key] ?? "")} placeholder={f.placeholder} onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))} />}
+                {f.type === "number" && <Input id={`f-${f.key}`} type="number" inputMode="decimal" min={f.min} max={f.max} step={f.step ?? "any"} value={String(values[f.key] ?? "")} placeholder={f.placeholder} onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))} />}
+                {f.type === "date" && <Input id={`f-${f.key}`} type="date" value={String(values[f.key] ?? "")} onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))} />}
                 {f.type === "select" && <OptionSelect id={`f-${f.key}`} value={String(values[f.key] ?? "")} options={f.options} noneLabel={f.noneLabel} onChange={(x) => setValues((v) => ({ ...v, [f.key]: x }))} />}
                 {f.type === "color" && <input id={`f-${f.key}`} type="color" value={String(values[f.key] || "#3b82f6")} onChange={(e) => setValues((v) => ({ ...v, [f.key]: e.target.value }))} className="h-8 w-16 cursor-pointer rounded-md border border-input bg-transparent p-0.5" />}
                 {f.type === "checkbox" && (
@@ -94,7 +101,7 @@ export default function EditDialog({
                 {"hint" in f && f.hint && <p className="text-[11px] text-muted-foreground">{f.hint}</p>}
               </div>
             ))}
-            {error && <p role="alert" className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>}
+            {error && <p role="alert" className={columns === 2 ? "rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive sm:col-span-2" : "rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"}>{error}</p>}
           </div>
           <DialogFooter>
             <Button type="submit" disabled={pending}>

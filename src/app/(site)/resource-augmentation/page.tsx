@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import ResourceAugmentationContent from "./Content";
 import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
@@ -8,7 +9,7 @@ const description =
 const path = "/resource-augmentation";
 const image = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: [
@@ -24,6 +25,8 @@ export const metadata: Metadata = {
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/resource-augmentation", baseMetadata);
 
 export default function ResourceAugmentationPage() {
   const jsonLd = [

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import PredictiveAnalyticsEngineContent from "./Content";
 import { predictiveAnalyticsEngineFaqs } from "./faqs";
 import { socialMetadata, softwareApplicationJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
@@ -10,13 +11,15 @@ const path = "/products/predictive-analytics-engine";
 
 const image = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["Predictive Analytics Engine", "Machine Learning", "Demand Forecasting", "API-First", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/products/predictive-analytics-engine", baseMetadata);
 
 export default function PredictiveAnalyticsEnginePage() {
   const jsonLd = [

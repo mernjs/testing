@@ -19,6 +19,7 @@
  */
 
 import { SOP_PERMISSIONS, SOP_PERMISSION_KEY, SOP_PERMISSION_META } from "@/lib/sop-roles";
+import { SEO_PERMISSIONS, SEO_PERMISSION_KEY, SEO_PERMISSION_META } from "@/lib/seo-roles";
 
 export interface PermissionOption {
   key: string;
@@ -376,6 +377,16 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       key: SOP_PERMISSION_KEY[p],
       label: SOP_PERMISSION_META[p].label,
       description: SOP_PERMISSION_META[p].description,
+    })),
+  },
+  {
+    module: "SEO Panel",
+    // Derived from the SEO role model so the catalog can never drift from the
+    // permissions `seoCan()` actually checks.
+    permissions: SEO_PERMISSIONS.map((p) => ({
+      key: SEO_PERMISSION_KEY[p],
+      label: SEO_PERMISSION_META[p].label,
+      description: SEO_PERMISSION_META[p].description,
     })),
   },
   {

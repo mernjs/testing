@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import SoftwareDevelopmentContent from "./Content";
 import { socialMetadata, breadcrumbJsonLd, serviceJsonLd } from "@/lib/seo";
 
@@ -8,7 +9,7 @@ const description =
 const path = "/software-development";
 const image = "https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: [
@@ -25,6 +26,8 @@ export const metadata: Metadata = {
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/software-development", baseMetadata);
 
 export default function SoftwareDevelopmentPage() {
   const jsonLd = [

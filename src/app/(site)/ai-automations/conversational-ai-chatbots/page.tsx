@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import ConversationalAIChatbotsContent from "./Content";
 import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
@@ -8,7 +9,7 @@ const description =
 const path = "/ai-automations/conversational-ai-chatbots";
 const image = "https://images.unsplash.com/photo-1531746790731-6c087fecd65a?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: [
@@ -23,6 +24,8 @@ export const metadata: Metadata = {
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/ai-automations/conversational-ai-chatbots", baseMetadata);
 
 export default function ConversationalAIChatbotsPage() {
   const jsonLd = [

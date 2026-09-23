@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import { redirect } from "next/navigation";
 import { getCurrentPortalUser } from "@/lib/portal-auth";
 import { resolveReferralCode } from "@/lib/wallet/referral-capture";
@@ -8,12 +9,14 @@ import { REFERRAL_QUALIFYING_EVENT_LABELS } from "@/lib/wallet/constants";
 import { resolveCampaign, DEFAULT_CAMPAIGN_SETTINGS } from "@/lib/wallet/campaigns";
 import RegisterContent from "./Content";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: "Create Your Account — Access the Portal & Earn Credits | YashOrbit",
   description: "Sign up free to access your YashOrbit portal, track your journey, and earn credits for every step you complete.",
   alternates: { canonical: "/register" },
   robots: { index: true, follow: true },
 };
+
+export const generateMetadata = () => withSeoOverrides("/register", baseMetadata);
 
 export const dynamic = "force-dynamic";
 

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import Content from "./Content";
 import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
 import { getJobBySlug } from "../jobs-data";
@@ -9,13 +10,15 @@ const description = `Apply for the ${job.title} role at YashOrbit. ${job.summary
 const path = "/careers/ui-ux-designer";
 const image = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: [job.title, "YashOrbit careers", job.category, "job openings Noida"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/careers/ui-ux-designer", baseMetadata);
 
 export default function Page() {
   const breadcrumbs = breadcrumbJsonLd([

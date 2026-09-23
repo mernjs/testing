@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import GenerativeAiInternshipContent from "./Content";
 import { generativeAiInternshipFaqs } from "./faqs";
 import { socialMetadata, courseJsonLd, internshipJobPostingJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
@@ -10,13 +11,15 @@ const path = "/internship-program/generative-ai";
 
 const image = "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["Generative AI Internship", "Paid Internship", "LLM Internship", "AI Internship", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/internship-program/generative-ai", baseMetadata);
 
 export default function GenerativeAiInternshipPage() {
   const jsonLd = [

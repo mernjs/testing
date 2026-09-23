@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import { Workflow } from "lucide-react";
 import IntelligentProcessAutomationContent from "./Content";
 import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
@@ -9,7 +10,7 @@ const description =
 const path = "/ai-automations/intelligent-process-automation";
 const image = "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: [
@@ -23,6 +24,8 @@ export const metadata: Metadata = {
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/ai-automations/intelligent-process-automation", baseMetadata);
 
 export default function IntelligentProcessAutomationPage() {
   const jsonLd = [

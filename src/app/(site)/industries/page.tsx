@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import IndustriesContent from "./Content";
 import { socialMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
@@ -8,7 +9,7 @@ const description =
 const path = "/industries";
 const image = "https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: [
@@ -24,6 +25,8 @@ export const metadata: Metadata = {
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/industries", baseMetadata);
 
 export default function IndustriesPage() {
   const jsonLd = [

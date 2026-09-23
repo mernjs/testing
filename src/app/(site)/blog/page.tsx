@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import BlogContent from "./Content";
 import { socialMetadata, breadcrumbJsonLd, siteUrl } from "@/lib/seo";
 import { blogPosts } from "@/lib/blog";
@@ -9,13 +10,15 @@ const description =
 const path = "/blog";
 const image = "https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["YashOrbit blog", "software development blog", "web development insights", "AI/ML articles", "tech blog"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/blog", baseMetadata);
 
 export default function BlogPage() {
   const jsonLd = [

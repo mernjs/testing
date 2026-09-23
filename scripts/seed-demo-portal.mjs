@@ -30,6 +30,7 @@ import { seedProcurement } from "./demo/procurement.mjs";
 import { seedPrmsOps } from "./demo/prms-ops.mjs";
 import { seedMarketing } from "./demo/marketing.mjs";
 import { seedSop, SOP_DEMO_ACCOUNTS } from "./demo/sop.mjs";
+import { seedSeo, SEO_DEMO_ACCOUNTS } from "./demo/seo.mjs";
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -63,6 +64,9 @@ try {
   console.log("\n[+] SOP panel…");
   const sop = await seedSop(db);
   console.log(`   ${sop.sops} SOPs, ${sop.versions} versions, ${sop.assignments} assignments`);
+  console.log("\n[+] SEO panel…");
+  const seo = await seedSeo(db);
+  console.log(`   ${seo.keywords} keywords, ${seo.readings} position readings, ${seo.backlinks} backlinks, ${seo.tasks} tasks`);
 
   console.log("\n==========================================================================");
   console.log("✨ Done. Portal demo logins (password for all: Demo@12345) — sign in at /login");
@@ -70,6 +74,8 @@ try {
   for (const a of DEMO_ACCOUNTS) console.log(`  • ${a.label.padEnd(34)} ${a.email}`);
   console.log("\n  SOP panel logins (same password) — sign in at /sop/login");
   for (const a of SOP_DEMO_ACCOUNTS) console.log(`  • ${a.label.padEnd(34)} ${a.email}`);
+  console.log("\n  SEO panel logins (same password) — sign in at /seo/login");
+  for (const a of SEO_DEMO_ACCOUNTS) console.log(`  • ${a.label.padEnd(34)} ${a.email}`);
   console.log("\n  Every other seeded portal account uses the same password; find them in /lms/wallet → Balances.");
 } catch (err) {
   console.error("❌ Demo seeder failed:", err);

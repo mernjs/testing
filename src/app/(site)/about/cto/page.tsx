@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import CtoContent from "./Content";
 import { socialMetadata, breadcrumbJsonLd, personJsonLd } from "@/lib/seo";
 
@@ -9,13 +10,15 @@ const path = "/about/cto";
 
 const image = "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["Chief Technology Officer", "CTO", "Engineering Leadership", "Technical Architecture", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/about/cto", baseMetadata);
 
 export default function CtoPage() {
   const jsonLd = [

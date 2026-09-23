@@ -35,6 +35,7 @@ import {
   RefreshCw,
   Trophy,
   BookText,
+  SearchCheck,
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { normalizeRoles } from "@/lib/hrms-roles";
@@ -45,6 +46,7 @@ import { normalizeChatRoles } from "@/lib/messenger-roles";
 import { normalizeAdminRoles } from "@/lib/admin-roles";
 import { normalizeFmsRoles } from "@/lib/fms-roles";
 import { effectiveSopRoles, hasSopAccess } from "@/lib/sop-roles";
+import { hasSeoAccess, normalizeSeoRoles } from "@/lib/seo-roles";
 import { formatDateTime } from "@/lib/utils";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
@@ -151,6 +153,16 @@ export default async function HubDashboardPage({
     : [];
   const sopOverdue = sopPending.filter((a) => typeof a.dueDate === "string" && a.dueDate < today).length;
 
+  // ── SEO issues needing attention (Workspace shows the SEO panel's live health) ──
+  const seoAccess = hasSeoAccess(roles);
+  const [seoOpenIssues, seoCritical, seoMyTasks] = seoAccess
+    ? await Promise.all([
+        db.collection("seo_issues").countDocuments({ status: { $in: ["open", "in_progress"] } }).catch(() => 0),
+        db.collection("seo_issues").countDocuments({ status: { $in: ["open", "in_progress"] }, severity: "critical" }).catch(() => 0),
+        db.collection("seo_tasks").countDocuments({ assigneeId: user.id, status: { $in: ["todo", "in_progress", "in_review"] } }).catch(() => 0),
+      ])
+    : [0, 0, 0];
+
   // ── Tiles ──────────────────────────────────────────────────────────────────
   const tiles: ModuleTile[] = [
     {
@@ -209,6 +221,20 @@ export default async function HubDashboardPage({
       kpi: [
         { label: "To acknowledge", value: String(sopPending.length) },
         { label: "Overdue", value: String(sopOverdue) },
+      ],
+    },
+    {
+      key: "seo",
+      label: "SEO Panel",
+      description: "Website audits, keywords, rankings, backlinks & technical SEO.",
+      href: "/seo",
+      icon: <SearchCheck className="size-5" />,
+      visible: seoAccess,
+      roleBadge: normalizeSeoRoles(roles).join(", ").replace(/_/g, " "),
+      kpi: [
+        { label: "Open issues", value: String(seoOpenIssues) },
+        { label: "Critical", value: String(seoCritical) },
+        { label: "My tasks", value: String(seoMyTasks) },
       ],
     },
     {

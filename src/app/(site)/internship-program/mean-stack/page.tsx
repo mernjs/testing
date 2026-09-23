@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import MeanInternshipContent from "./Content";
 import { meanInternshipFaqs } from "./faqs";
 import { socialMetadata, courseJsonLd, internshipJobPostingJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
@@ -10,13 +11,15 @@ const path = "/internship-program/mean-stack";
 
 const image = "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["MEAN Stack Internship", "Paid Internship", "Angular Internship", "Node.js Internship", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/internship-program/mean-stack", baseMetadata);
 
 export default function MeanInternshipPage() {
   const jsonLd = [

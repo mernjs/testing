@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import PrivacyPolicyContent from "./Content";
 import { socialMetadata, breadcrumbJsonLd } from "@/lib/seo";
 
@@ -9,13 +10,15 @@ const path = "/about/privacy-policy";
 
 const image = "https://images.unsplash.com/photo-1633265486064-086b219458ec?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["Privacy Policy", "Transparent Policy", "Secure by Design", "GDPR Aware", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/about/privacy-policy", baseMetadata);
 
 export default function PrivacyPolicyPage() {
   const breadcrumbs = breadcrumbJsonLd([

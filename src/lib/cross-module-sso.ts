@@ -18,6 +18,8 @@ import { normalizeAdminRoles } from "@/lib/admin-roles";
 import { createAdminSession, setAdminSessionCookie, clearAdminSessionCookie } from "@/lib/admin-auth";
 import { hasSopAccess } from "@/lib/sop-roles";
 import { createSopSession, setSopSessionCookie, clearSopSessionCookie } from "@/lib/sop-auth";
+import { hasSeoAccess } from "@/lib/seo-roles";
+import { createSeoSession, setSeoSessionCookie, clearSeoSessionCookie } from "@/lib/seo-auth";
 import { createHubSession, setHubSessionCookie, clearHubSessionCookie } from "@/lib/hub-auth";
 
 /**
@@ -50,7 +52,7 @@ import { createHubSession, setHubSessionCookie, clearHubSessionCookie } from "@/
  * applicant records, structurally outside this system.
  */
 
-export type SsoModule = "hrms" | "pms" | "prms" | "tms" | "messenger" | "lms" | "admin" | "hub" | "fms" | "sop";
+export type SsoModule = "hrms" | "pms" | "prms" | "tms" | "messenger" | "lms" | "admin" | "hub" | "fms" | "sop" | "seo";
 
 interface ModuleEntry {
   key: SsoModule;
@@ -115,6 +117,14 @@ const MODULES: ModuleEntry[] = [
     clearCookie: clearSopSessionCookie,
     collection: "sop_sessions",
     hasAccess: (roles) => hasSopAccess(roles),
+  },
+  {
+    key: "seo",
+    create: createSeoSession,
+    setCookie: setSeoSessionCookie,
+    clearCookie: clearSeoSessionCookie,
+    collection: "seo_sessions",
+    hasAccess: (roles) => hasSeoAccess(roles),
   },
   {
     key: "tms",

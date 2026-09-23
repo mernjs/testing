@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import CoFounderCooContent from "./Content";
 import { socialMetadata, breadcrumbJsonLd, personJsonLd } from "@/lib/seo";
 
@@ -9,13 +10,15 @@ const path = "/about/co-founder-coo";
 
 const image = "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["Co-Founder & COO", "Operations Leadership", "Founder Insights", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/about/co-founder-coo", baseMetadata);
 
 export default function CoFounderCooPage() {
   const jsonLd = [

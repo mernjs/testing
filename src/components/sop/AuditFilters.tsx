@@ -14,11 +14,13 @@ export default function AuditFilters({
   actions,
   entities,
   exportHref,
+  searchPlaceholder = "Actor, SOP or details",
 }: {
   values: { search: string; action: string; entity: string; from: string; to: string; sop: string };
   actions: { value: string; label: string }[];
   entities: { value: string; label: string }[];
   exportHref: string | null;
+  searchPlaceholder?: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -48,7 +50,7 @@ export default function AuditFilters({
           <Label htmlFor="audit-search" className="text-xs text-muted-foreground">Search</Label>
           <div className="relative">
             <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-            <Input id="audit-search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Actor, SOP or details" className="h-9 w-56 rounded-xl pl-8" />
+            <Input id="audit-search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder={searchPlaceholder} className="h-9 w-56 rounded-xl pl-8" />
           </div>
         </div>
         <div className="w-40 space-y-1.5">

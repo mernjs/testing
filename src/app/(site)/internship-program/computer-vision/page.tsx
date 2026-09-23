@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
 import ComputerVisionInternshipContent from "./Content";
 import { computerVisionInternshipFaqs } from "./faqs";
 import { socialMetadata, courseJsonLd, internshipJobPostingJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
@@ -10,13 +11,15 @@ const path = "/internship-program/computer-vision";
 
 const image = "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1200&auto=format&fit=crop";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title,
   description,
   keywords: ["Computer Vision Internship", "Paid Internship", "OpenCV Internship", "Deep Learning Internship", "YashOrbit"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };
+
+export const generateMetadata = () => withSeoOverrides("/internship-program/computer-vision", baseMetadata);
 
 export default function ComputerVisionInternshipPage() {
   const jsonLd = [
