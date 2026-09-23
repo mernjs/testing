@@ -34,6 +34,7 @@ import {
   ListTodo,
   RefreshCw,
   Trophy,
+  BookText,
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { normalizeRoles } from "@/lib/hrms-roles";
@@ -43,6 +44,7 @@ import { normalizeTmsRoles } from "@/lib/tms-roles";
 import { normalizeChatRoles } from "@/lib/messenger-roles";
 import { normalizeAdminRoles } from "@/lib/admin-roles";
 import { normalizeFmsRoles } from "@/lib/fms-roles";
+import { effectiveSopRoles, hasSopAccess } from "@/lib/sop-roles";
 import { formatDateTime } from "@/lib/utils";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
@@ -67,6 +69,8 @@ interface ModuleTile {
   icon: React.ReactNode;
   visible: boolean;
   roleBadge: string;
+  /** Optional live figures shown on the tile. */
+  kpi?: { label: string; value: string }[];
 }
 
 function nameFromEmail(email: string): string {
@@ -136,6 +140,17 @@ export default async function HubDashboardPage({
     employeeId ? getPmsDashboard(employeeId, pmsRange).catch(() => null) : null,
   ]);
 
+  // ── SOP assignments awaiting this person (Workspace shows assigned SOPs + reminders) ──
+  const sopAccess = hasSopAccess(roles);
+  const sopPending = sopAccess
+    ? await db
+        .collection("sop_assignments")
+        .find({ userId: user.id, acknowledgedAt: null }, { projection: { dueDate: 1 } })
+        .toArray()
+        .catch(() => [])
+    : [];
+  const sopOverdue = sopPending.filter((a) => typeof a.dueDate === "string" && a.dueDate < today).length;
+
   // ── Tiles ──────────────────────────────────────────────────────────────────
   const tiles: ModuleTile[] = [
     {
@@ -182,6 +197,19 @@ export default async function HubDashboardPage({
       icon: <Wallet className="size-5" />,
       visible: fmsRoles.length > 0,
       roleBadge: fmsRoles.join(", ").replace(/_/g, " "),
+    },
+    {
+      key: "sop",
+      label: "SOP Library",
+      description: "Standard operating procedures & acknowledgements.",
+      href: "/sop",
+      icon: <BookText className="size-5" />,
+      visible: sopAccess,
+      roleBadge: effectiveSopRoles(roles).join(", ").replace(/_/g, " "),
+      kpi: [
+        { label: "To acknowledge", value: String(sopPending.length) },
+        { label: "Overdue", value: String(sopOverdue) },
+      ],
     },
     {
       key: "messenger",
@@ -794,6 +822,7 @@ export default async function HubDashboardPage({
                 description={tile.description}
                 icon={tile.icon}
                 index={i}
+                kpi={tile.kpi}
               />
               <div className="absolute top-3 right-3 pointer-events-none">
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">

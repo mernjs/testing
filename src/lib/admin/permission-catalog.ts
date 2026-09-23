@@ -18,6 +18,8 @@
  * each module's `(staff)/layout.tsx`.
  */
 
+import { SOP_PERMISSIONS, SOP_PERMISSION_KEY, SOP_PERMISSION_META } from "@/lib/sop-roles";
+
 export interface PermissionOption {
   key: string;
   label: string;
@@ -364,6 +366,17 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
         description: "Upload and share official documents with applicants, trainees, or clients.",
       },
     ],
+  },
+  {
+    module: "SOP Panel",
+    // Derived from the SOP role model so the catalog can never drift from the
+    // permissions `sopCan()` actually checks. There is no review/approve entry —
+    // SOP publishing is a direct action.
+    permissions: SOP_PERMISSIONS.map((p) => ({
+      key: SOP_PERMISSION_KEY[p],
+      label: SOP_PERMISSION_META[p].label,
+      description: SOP_PERMISSION_META[p].description,
+    })),
   },
   {
     module: "Workspace Panel",

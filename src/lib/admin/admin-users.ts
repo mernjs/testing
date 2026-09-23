@@ -90,6 +90,7 @@ function getRolesForPanel(panel: string): string[] {
   if (p === "prms") return ["super_admin", "prms_admin", "procurement_manager", "finance", "dept_manager", "prms_employee"];
   if (p === "tms") return ["super_admin", "tms_admin", "tms_instructor", "tms_coordinator"];
   if (p === "fms") return ["super_admin", "fms_admin", "fms_accountant", "fms_auditor"];
+  if (p === "sop") return ["super_admin", "sop_admin", "sop_manager", "sop_author", "sop_employee"];
   if (p === "messenger") return ["super_admin", "chat_admin", "chat_moderator"];
   if (p === "lms") return ["super_admin", "lms_admin", "lms_manager", "lms_agent"];
   if (p === "portal") return ["super_admin", "portal_admin", "portal_manager"];

@@ -161,7 +161,7 @@ export default function FmsDataTable({
           {filters.map((f) => (
             <div key={f.key} className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-muted-foreground">{f.label}</label>
-              <Select value={f.value || "all"} onValueChange={(v) => updateParams({ [f.key]: !v || v === "all" ? undefined : v })}>
+              <Select items={[{ value: "all", label: "All" }, ...f.options]} value={f.value || "all"} onValueChange={(v) => updateParams({ [f.key]: !v || v === "all" ? undefined : v })}>
                 <SelectTrigger className="w-44 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40">
                   <SelectValue />
                 </SelectTrigger>

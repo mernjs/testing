@@ -18,6 +18,7 @@ import {
   Edit,
   UserCheck,
   LayoutDashboard,
+  BookText,
 } from "lucide-react";
 
 const MODULE_ICONS: Record<string, React.ReactNode> = {
@@ -27,6 +28,7 @@ const MODULE_ICONS: Record<string, React.ReactNode> = {
   prms: <Layers className="size-5 text-yashorbit-blue" />,
   tms: <GraduationCap className="size-5 text-primary" />,
   fms: <DollarSign className="size-5 text-yashorbit-blue" />,
+  sop: <BookText className="size-5 text-primary" />,
   messenger: <MessageSquare className="size-5 text-primary" />,
   lms: <BookOpen className="size-5 text-yashorbit-blue" />,
   portal: <UserCheck className="size-5 text-primary" />,

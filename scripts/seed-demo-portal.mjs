@@ -29,6 +29,7 @@ import { seedChatbot } from "./demo/chatbot.mjs";
 import { seedProcurement } from "./demo/procurement.mjs";
 import { seedPrmsOps } from "./demo/prms-ops.mjs";
 import { seedMarketing } from "./demo/marketing.mjs";
+import { seedSop, SOP_DEMO_ACCOUNTS } from "./demo/sop.mjs";
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -59,11 +60,16 @@ try {
   await seedProcurement(db, pms);
   await seedPrmsOps(db, pms);
   await seedMarketing(db);
+  console.log("\n[+] SOP panel…");
+  const sop = await seedSop(db);
+  console.log(`   ${sop.sops} SOPs, ${sop.versions} versions, ${sop.assignments} assignments`);
 
   console.log("\n==========================================================================");
   console.log("✨ Done. Portal demo logins (password for all: Demo@12345) — sign in at /login");
   console.log("==========================================================================");
   for (const a of DEMO_ACCOUNTS) console.log(`  • ${a.label.padEnd(34)} ${a.email}`);
+  console.log("\n  SOP panel logins (same password) — sign in at /sop/login");
+  for (const a of SOP_DEMO_ACCOUNTS) console.log(`  • ${a.label.padEnd(34)} ${a.email}`);
   console.log("\n  Every other seeded portal account uses the same password; find them in /lms/wallet → Balances.");
 } catch (err) {
   console.error("❌ Demo seeder failed:", err);
