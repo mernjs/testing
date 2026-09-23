@@ -167,7 +167,7 @@ export default function RobotsEditor({
               {revisions.map((r, i) => (
                 <li key={i} className="flex items-start justify-between gap-2">
                   <span className="min-w-0">
-                    <span className="block">Replaced {new Date(r.at).toLocaleString()} by {r.byEmail ?? "—"}</span>
+                    <span className="block">Replaced {r.at} by {r.byEmail ?? "—"}</span>
                     {r.note && <span className="block text-muted-foreground">“{r.note}”</span>}
                   </span>
                   {canEdit && <Button type="button" size="xs" variant="outline" onClick={() => setText(r.content ?? DEFAULT_ROBOTS_TXT)}>Load</Button>}

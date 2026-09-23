@@ -31,7 +31,7 @@ export default async function RobotsPage() {
         primaryHost={new URL(siteUrl).host}
         importantPaths={paths}
         canEdit={can(viewer, "MANAGE_ROBOTS")}
-        revisions={doc.revisions.map((r) => ({ content: r.content, at: r.at.toISOString(), byEmail: r.byEmail, note: r.note }))}
+        revisions={doc.revisions.map((r) => ({ content: r.content, at: formatDateTime(r.at), byEmail: r.byEmail, note: r.note }))}
       />
     </div>
   );
