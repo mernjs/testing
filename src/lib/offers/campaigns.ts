@@ -172,6 +172,28 @@ export async function getActiveCampaignForPage(pathname: string, now: Date = new
   return candidates.find((c) => pageIsTargeted(pathname, (c.display ?? DEFAULT_DISPLAY_CONFIG).pageTargeting)) ?? null;
 }
 
+/**
+ * The nearest not-yet-started campaign for a page — powers the "coming soon" strip/popup
+ * teaser so a scheduled campaign gets promoted site-wide before it goes live, not just once
+ * it's active. Same priority → page-targeting → dates resolution as `getActiveCampaignForPage`,
+ * just against a future date window (soonest start first, so a nearer campaign always wins
+ * over a farther one regardless of priority).
+ */
+export async function getUpcomingCampaignForPage(pathname: string, now: Date = new Date()): Promise<OfferCampaign | null> {
+  const collection = await getCollection();
+  const candidates = await collection
+    .find({
+      ...notDeleted,
+      status: { $in: ["scheduled", "active"] },
+      startDate: { $gt: now },
+      endDate: { $gt: now },
+    })
+    .sort({ startDate: 1, priority: -1, _id: -1 })
+    .limit(25)
+    .toArray();
+  return candidates.find((c) => pageIsTargeted(pathname, (c.display ?? DEFAULT_DISPLAY_CONFIG).pageTargeting)) ?? null;
+}
+
 // ---------------------------------------------------------------------------
 // Writes
 // ---------------------------------------------------------------------------

@@ -26,12 +26,12 @@ export default function OfferPromotions() {
     if (!display.strip) document.documentElement.style.setProperty("--offer-strip-h", "0px");
   }, [display.strip]);
 
-  if (!display.active || !display.campaign) return null;
+  if (!display.phase || !display.campaign) return null;
 
   return (
     <>
-      {display.strip && <OfferTopStrip campaign={display.campaign} strip={display.strip} endDate={display.campaign.endDate} />}
-      {display.popup && <OfferPopup campaign={display.campaign} popup={display.popup} endDate={display.campaign.endDate} />}
+      {display.strip && <OfferTopStrip campaign={display.campaign} strip={display.strip} phase={display.phase} endDate={display.campaign.endDate} />}
+      {display.popup && <OfferPopup campaign={display.campaign} popup={display.popup} phase={display.phase} endDate={display.campaign.endDate} />}
     </>
   );
 }

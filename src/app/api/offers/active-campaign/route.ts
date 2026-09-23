@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getActiveCampaignForPage } from "@/lib/offers/campaigns";
+import { getActiveCampaignForPage, getUpcomingCampaignForPage, type OfferCampaign } from "@/lib/offers/campaigns";
 import { getPopupTemplateMeta, audienceForPath } from "@/lib/offers/constants";
 import { whatsapp, phone } from "@/lib/contact";
 
@@ -10,23 +10,72 @@ function resolveCtaHref(actionType: string, actionValue: string): string {
 }
 
 /**
+ * Builds the strip/popup payload for a campaign. `phase: "live"` uses the admin-authored
+ * copy/CTA action as-is (it was written assuming the campaign is already running). `phase:
+ * "upcoming"` is a pre-launch teaser for a scheduled campaign that hasn't started yet — the
+ * authored "X is live" copy and "Claim Offer"/WhatsApp/Call actions don't make sense before
+ * launch, so those are overridden with generic coming-soon wording and a CTA straight to the
+ * Offers page (which already renders the full "coming soon" countdown experience with a
+ * Notify Me form). Everything else the admin configured — discount text, countdown toggle,
+ * close button, popup trigger/frequency/template emoji — carries over unchanged.
+ */
+function buildDisplay(campaign: OfferCampaign, phase: "live" | "upcoming") {
+  const display = campaign.display;
+  const upcoming = phase === "upcoming";
+
+  const strip = display.strip?.enabled
+    ? {
+        message: upcoming ? `${campaign.name} — coming soon` : display.strip.message || campaign.name,
+        discountText: display.strip.discountText,
+        ctaText: upcoming ? "Notify Me" : display.strip.ctaText,
+        ctaHref: upcoming ? "/offers" : resolveCtaHref(display.strip.ctaActionType, display.strip.ctaActionValue),
+        showCountdown: display.strip.showCountdown,
+        allowClose: display.strip.allowClose,
+      }
+    : null;
+
+  const templateMeta = getPopupTemplateMeta(display.popup?.template);
+  const popup = display.popup?.enabled
+    ? {
+        template: display.popup.template,
+        emoji: templateMeta.emoji,
+        heading: upcoming ? "Coming Soon" : templateMeta.heading,
+        ctaText: upcoming ? "Notify Me" : display.popup.ctaText,
+        ctaHref: upcoming ? "/offers" : resolveCtaHref(display.popup.ctaActionType, display.popup.ctaActionValue),
+        showCountdown: display.popup.showCountdown,
+        trigger: { type: display.popup.triggerType, value: display.popup.triggerValue },
+        frequency: display.popup.frequency,
+      }
+    : null;
+
+  return { strip, popup };
+}
+
+/**
  * Public, best-effort read for the global top strip + popup — the single
  * source both components fetch from (never duplicated queries). Never
  * throws a 4xx/5xx for "nothing to show"; an inactive/missing campaign is a
  * normal `{ active: false }` response so the calling component can hide
  * gracefully without treating it as an error.
+ *
+ * Resolves a live campaign first; if none is running, falls back to the nearest scheduled
+ * campaign so its "coming soon" countdown can be promoted site-wide before launch too —
+ * not just once it goes live.
  */
 export async function GET(req: NextRequest) {
   const page = req.nextUrl.searchParams.get("page") || "/";
 
   try {
-    const campaign = await getActiveCampaignForPage(page);
-    if (!campaign) return NextResponse.json({ active: false, serverTime: Date.now() });
-
-    const display = campaign.display;
-    if (!display?.strip?.enabled && !display?.popup?.enabled) {
-      return NextResponse.json({ active: false, serverTime: Date.now() });
+    let campaign = await getActiveCampaignForPage(page);
+    let phase: "live" | "upcoming" = "live";
+    if (!campaign) {
+      campaign = await getUpcomingCampaignForPage(page);
+      phase = "upcoming";
     }
+    if (!campaign) return NextResponse.json({ active: false, phase: null, serverTime: Date.now() });
+
+    const { strip, popup } = buildDisplay(campaign, phase);
+    if (!strip && !popup) return NextResponse.json({ active: false, phase: null, serverTime: Date.now() });
 
     const base = {
       id: campaign._id,
@@ -36,33 +85,9 @@ export async function GET(req: NextRequest) {
       endDate: campaign.endDate.toISOString(),
     };
 
-    const strip = display.strip?.enabled
-      ? {
-          message: display.strip.message || campaign.name,
-          discountText: display.strip.discountText,
-          ctaText: display.strip.ctaText,
-          ctaHref: resolveCtaHref(display.strip.ctaActionType, display.strip.ctaActionValue),
-          showCountdown: display.strip.showCountdown,
-          allowClose: display.strip.allowClose,
-        }
-      : null;
-
-    const templateMeta = getPopupTemplateMeta(display.popup?.template);
-    const popup = display.popup?.enabled
-      ? {
-          template: display.popup.template,
-          emoji: templateMeta.emoji,
-          heading: templateMeta.heading,
-          ctaText: display.popup.ctaText,
-          ctaHref: resolveCtaHref(display.popup.ctaActionType, display.popup.ctaActionValue),
-          showCountdown: display.popup.showCountdown,
-          trigger: { type: display.popup.triggerType, value: display.popup.triggerValue },
-          frequency: display.popup.frequency,
-        }
-      : null;
-
     return NextResponse.json({
-      active: true,
+      active: phase === "live",
+      phase,
       // Lets every countdown use the server clock instead of the visitor's (possibly wrong) device clock.
       serverTime: Date.now(),
       campaign: base,

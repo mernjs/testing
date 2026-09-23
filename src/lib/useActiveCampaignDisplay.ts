@@ -26,7 +26,10 @@ export interface ActiveDisplayPopup {
 }
 
 export interface ActiveDisplay {
+  /** True only once the campaign window has actually started — false during the "upcoming" teaser too. */
   active: boolean;
+  /** `null` when nothing to show; `"live"` for a running campaign; `"upcoming"` for a pre-launch teaser. */
+  phase: "live" | "upcoming" | null;
   campaign?: { id: string; slug: string; name: string; startDate?: string; endDate: string };
   serverTime?: number;
   audience?: Audience;
@@ -35,7 +38,7 @@ export interface ActiveDisplay {
 }
 
 const POLL_MS = 90_000; // re-check periodically so a campaign transition (expiry/rotation) shows up without a hard reload
-const INACTIVE: ActiveDisplay = { active: false, strip: null, popup: null };
+const INACTIVE: ActiveDisplay = { active: false, phase: null, strip: null, popup: null };
 
 /**
  * Single shared fetch for both the top strip and the popup — one request per
@@ -59,7 +62,7 @@ export function useActiveCampaignDisplay(): ActiveDisplay {
         if (!res.ok) return;
         const json = (await res.json()) as ActiveDisplay;
         if (typeof json.serverTime === "number") setServerTime(json.serverTime);
-        if (!cancelled) setData(json.active ? json : INACTIVE);
+        if (!cancelled) setData(json.phase ? json : INACTIVE);
       } catch {
         /* network error — keep the last good display */
       }

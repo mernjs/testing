@@ -170,7 +170,7 @@ export default function LiveCountdown({
         className={`inline-flex items-center gap-1.5 tabular-nums ${urgent ? "font-bold text-red-400" : onDark ? "text-background/80" : "text-muted-foreground"} ${className}`}
       >
         <Clock className={`size-3.5 ${urgent && animate ? "animate-pulse" : ""}`} />
-        <span className="text-[0.7rem] uppercase tracking-wide opacity-80">{urgency.label || "Ends in"}</span>
+        <span className="text-[0.7rem] uppercase tracking-wide opacity-80">{label ?? urgency.label ?? "Ends in"}</span>
         <span className="font-semibold">
           {days > 0 && `${pad2(days)}d `}
           {pad2(hours)}h {pad2(minutes)}m {pad2(seconds)}s

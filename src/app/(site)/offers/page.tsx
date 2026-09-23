@@ -12,6 +12,13 @@ import { PORTAL_ROLE_META } from "@/lib/portal-roles";
 import { socialMetadata, breadcrumbJsonLd, faqJsonLd, defaultOgImage, siteUrl } from "@/lib/seo";
 import OffersContent from "./Content";
 
+// This page's whole point is to reflect the live DB state (campaign status/dates set in the
+// LMS) on every request with no admin-side deploy. The "coming_soon"/"future"/"none" branches
+// never touch a request-time API (cookies/headers), so Next's automatic static optimization
+// would otherwise happily prerender and freeze whichever state was live at build time — silently
+// breaking that promise. Force this route dynamic so every state is always resolved fresh.
+export const dynamic = "force-dynamic";
+
 // One state resolution per request, shared by generateMetadata and the page body.
 const loadPage = cache(() => resolveOffersPage());
 

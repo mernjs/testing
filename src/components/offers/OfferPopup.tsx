@@ -13,12 +13,15 @@ import type { ActiveDisplayPopup } from "@/lib/useActiveCampaignDisplay";
 export default function OfferPopup({
   campaign,
   popup,
+  phase,
   endDate,
 }: {
   campaign: { id: string; slug: string; name: string; startDate?: string };
   popup: ActiveDisplayPopup;
+  phase: "live" | "upcoming";
   endDate: string;
 }) {
+  const upcoming = phase === "upcoming";
   const [open, setOpen] = useState(false);
   const track = useOfferTracking(campaign.id);
   const { isClaimOpen } = useOfferClaim();
@@ -104,11 +107,17 @@ export default function OfferPopup({
           </div>
           <p className="mt-4 text-xs font-bold uppercase tracking-widest text-primary">{popup.heading}</p>
           <h2 className="mt-1 text-2xl font-black tracking-tight text-foreground">{campaign.name}</h2>
-          <p className="mt-2 text-sm text-muted-foreground">Limited-time offers on software, AI, courses, internships and developer hiring.</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {upcoming ? "Limited-time offers on software, AI, courses, internships and developer hiring — get ready." : "Limited-time offers on software, AI, courses, internships and developer hiring."}
+          </p>
 
           {popup.showCountdown && (
             <div className="mt-5 flex justify-center">
-              <CampaignCountdown endDate={endDate} startDate={campaign.startDate} />
+              {upcoming && campaign.startDate ? (
+                <CampaignCountdown endDate={campaign.startDate} label="Goes live in" showUrgency={false} />
+              ) : (
+                <CampaignCountdown endDate={endDate} startDate={campaign.startDate} />
+              )}
             </div>
           )}
 

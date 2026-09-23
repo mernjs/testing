@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Flame, X } from "lucide-react";
+import { Flame, Sparkles, X } from "lucide-react";
 import LiveCountdown from "@/components/offers/LiveCountdown";
 import { isClaimHref } from "@/lib/offers/constants";
 import { useOfferTracking } from "@/lib/useOfferTracking";
@@ -22,12 +22,18 @@ function isClosed(campaignId: string): boolean {
 export default function OfferTopStrip({
   campaign,
   strip,
+  phase,
   endDate,
 }: {
-  campaign: { id: string; slug: string; name: string };
+  campaign: { id: string; slug: string; name: string; startDate?: string };
   strip: ActiveDisplayStrip;
+  phase: "live" | "upcoming";
   endDate: string;
 }) {
+  const upcoming = phase === "upcoming";
+  // Pre-launch: count down to the start date instead of the end date — LiveCountdown always
+  // counts down to whatever `endDate` it's given, so the "goes live at" moment is passed in its place.
+  const countdownTarget = upcoming && campaign.startDate ? campaign.startDate : endDate;
   const [closed, setClosed] = useState(() => isClosed(campaign.id));
   const ref = useRef<HTMLDivElement>(null);
   const track = useOfferTracking(campaign.id);
@@ -74,11 +80,11 @@ export default function OfferTopStrip({
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 py-2 text-center sm:justify-between sm:text-left">
         <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-xs sm:text-sm">
           <span className="inline-flex items-center gap-1 font-bold">
-            <Flame className="size-3.5 shrink-0 fill-current text-primary" />
+            {upcoming ? <Sparkles className="size-3.5 shrink-0 text-primary" /> : <Flame className="size-3.5 shrink-0 fill-current text-primary" />}
             {strip.message}
           </span>
           {strip.discountText && <span className="font-black text-primary">{strip.discountText}</span>}
-          {strip.showCountdown && <LiveCountdown endDate={endDate} variant="strip" onDark />}
+          {strip.showCountdown && <LiveCountdown endDate={countdownTarget} label={upcoming ? "Starts in" : undefined} variant="strip" onDark />}
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {/* "Claim Offer" always lands on the Offers page so the visitor can see every live offer and choose. */}
