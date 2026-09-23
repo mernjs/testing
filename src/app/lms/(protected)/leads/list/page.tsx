@@ -79,7 +79,7 @@ export default async function LeadsListPage({
             name="search"
             defaultValue={search}
             placeholder="Search name, email, code…"
-            className="h-8 w-56 rounded-lg border border-border bg-background px-2.5 text-sm outline-none focus:border-ring"
+            className="h-8 w-56 rounded-xl border border-border/50 bg-background px-3 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
           />
         </form>
       </div>

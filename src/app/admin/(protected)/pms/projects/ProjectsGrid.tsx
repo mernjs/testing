@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Eye, Trash2 } from "lucide-react";
+import { MoreHorizontal, Eye, Trash2, FolderKanban } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -242,6 +242,9 @@ export default function ProjectsGrid({
       sortDir={sortDir}
       emptyLabel="No projects match these filters."
       filters={filters}
+      filterTitle="Project Filters"
+      filterSubtitle="Search and filter projects"
+      filterIcon={FolderKanban}
       hasActiveFilters={hasActiveFilters}
       rowActions={(row) => <RowActions row={row} />}
       renderBulkActions={(ctx) => <BulkActions ctx={ctx} />}

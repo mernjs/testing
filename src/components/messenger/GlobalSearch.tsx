@@ -66,7 +66,7 @@ export default function GlobalSearch({ initialQuery }: { initialQuery: string })
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search messages, channels and people…"
-          className="h-11 pl-9 text-base"
+          className="h-11 rounded-xl border-border/50 bg-background pl-9 text-base text-foreground focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary"
           autoFocus
         />
         {loading && <Loader2 className="absolute top-1/2 right-3 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />}

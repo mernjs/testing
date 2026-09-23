@@ -129,15 +129,26 @@ export default function AttendanceRegister({
 
   return (
     <div className="space-y-4">
-      <GlassCard interactive={false}>
-        <CardContent className="flex flex-wrap items-end gap-3">
+      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+              <CalendarDays className="size-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Daily Attendance</h3>
+              <p className="text-xs text-muted-foreground">Pick a date and department to review check-ins for that day</p>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">Date</label>
             <div className="flex items-center gap-1">
               <Button type="button" variant="outline" size="icon-sm" onClick={() => setParam("date", addDays(date, -1))} aria-label="Previous day">
                 <ChevronLeft className="size-4" />
               </Button>
-              <Input type="date" value={date} onChange={(e) => setParam("date", e.target.value || undefined)} className="w-auto" />
+              <Input type="date" value={date} onChange={(e) => setParam("date", e.target.value || undefined)} className="h-9 w-auto rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40" />
               <Button type="button" variant="outline" size="icon-sm" onClick={() => setParam("date", addDays(date, 1))} aria-label="Next day">
                 <ChevronRight className="size-4" />
               </Button>
@@ -149,7 +160,7 @@ export default function AttendanceRegister({
               value={searchParams.get("department") || "all"}
               onValueChange={(v) => setParam("department", !v || v === "all" ? undefined : v)}
             >
-              <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-48 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All departments</SelectItem>
                 {departments.map((d) => (
@@ -163,8 +174,8 @@ export default function AttendanceRegister({
             {formatDate(date)} —{" "}
             {dayClass === "holiday" ? "Holiday" : dayClass === "weekly_off" ? "Weekly off" : "Working day"}
           </div>
-        </CardContent>
-      </GlassCard>
+        </div>
+      </div>
 
       {canEdit && selected.size > 0 && (
         <GlassCard interactive={false}>

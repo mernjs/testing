@@ -1,5 +1,6 @@
 "use client";
 
+import { MessageCircle } from "lucide-react";
 import AdminDataGrid, { type AdminDataGridColumn } from "@/components/admin/data-grid/AdminDataGrid";
 import { formatDateTime } from "@/lib/utils";
 
@@ -54,6 +55,9 @@ export default function DirectMessagesGrid({
       totalPages={totalPages}
       emptyLabel="No direct message conversations match these filters."
       filters={filters}
+      filterTitle="Direct Message Filters"
+      filterSubtitle="Search and filter direct message threads"
+      filterIcon={MessageCircle}
       hasActiveFilters={hasActiveFilters}
       toolbarExtra={
         <a

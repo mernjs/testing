@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { MoreHorizontal, Trash2, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -184,6 +184,9 @@ export default function DocumentsGrid({
       totalPages={totalPages}
       emptyLabel="No documents match these filters."
       filters={filters}
+      filterTitle="Document Filters"
+      filterSubtitle="Search and filter the shared document library"
+      filterIcon={FileText}
       hasActiveFilters={hasActiveFilters}
       toolbarExtra={
         <a

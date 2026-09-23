@@ -62,7 +62,7 @@ export default function GlobalSearch() {
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         placeholder="Search leads, applicants…"
-        className="h-8 w-full min-w-0 pl-8"
+        className="h-8 w-full min-w-0 rounded-xl border-border/50 bg-background pl-8 text-foreground focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary"
       />
 
       {showDropdown && (

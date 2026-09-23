@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Eye, Trash2 } from "lucide-react";
+import { MoreHorizontal, Eye, Trash2, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -221,6 +221,9 @@ export default function LeadsGrid({
       sortDir={sortDir}
       emptyLabel="No leads match these filters."
       filters={filters}
+      filterTitle="CRM Lead Filters"
+      filterSubtitle="Refine leads by stage, source, and owner"
+      filterIcon={Filter}
       hasActiveFilters={hasActiveFilters}
       rowActions={(row) => <RowActions row={row} />}
       renderBulkActions={(ctx) => <BulkActions ctx={ctx} />}

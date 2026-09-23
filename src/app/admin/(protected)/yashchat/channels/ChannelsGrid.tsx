@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Archive, ArchiveRestore } from "lucide-react";
+import { MoreHorizontal, Archive, ArchiveRestore, Hash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -128,6 +128,9 @@ export default function ChannelsGrid({
       totalPages={totalPages}
       emptyLabel="No channels match these filters."
       filters={filters}
+      filterTitle="Channel Filters"
+      filterSubtitle="Search and filter YashChat channels"
+      filterIcon={Hash}
       hasActiveFilters={hasActiveFilters}
       toolbarExtra={
         <a

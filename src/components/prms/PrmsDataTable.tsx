@@ -5,6 +5,8 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   Search,
+  SlidersHorizontal,
+  Filter,
   X,
   ChevronLeft,
   ChevronRight,
@@ -122,56 +124,69 @@ export default function PrmsDataTable({
 
   return (
     <div className="space-y-4">
-      <GlassCard interactive={false}>
-        <CardContent>
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Search</label>
-              <div className="relative">
-                <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-                <Input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder={searchPlaceholder} className="h-8 w-60 pl-8" />
-              </div>
-            </div>
-            {filters.map((f) => (
-              <div key={f.key} className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted-foreground">{f.label}</label>
-                <Select value={f.value || "all"} onValueChange={(v) => updateParams({ [f.key]: !v || v === "all" ? undefined : v })}>
-                  <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    {f.options.map((o) => (
-                      <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            ))}
-            {hasActiveFilters && (
-              <Button type="button" variant="ghost" size="sm" onClick={() => { setSearchInput(""); router.replace(pathname); }}>
-                <X className="size-3.5" data-icon="inline-start" />
-                Reset
-              </Button>
-            )}
-            {(exportBase || actions) && (
-              <div className="ml-auto flex gap-2">
-                {actions}
-                {exportBase && (
-                  <>
-                    <a href={`${exportBase}?format=csv&${exportQs}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
-                      <Download className="size-3.5" data-icon="inline-start" />
-                      CSV
-                    </a>
-                    <a href={`${exportBase}?format=xlsx&${exportQs}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
-                      <Download className="size-3.5" data-icon="inline-start" />
-                      Excel
-                    </a>
-                  </>
-                )}
-              </div>
-            )}
+      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+        <div className="flex items-center gap-3 border-b border-border/40 pb-4">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+            <SlidersHorizontal className="size-4" />
           </div>
-        </CardContent>
-      </GlassCard>
+          <div>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">Search & Filters</h3>
+            <p className="text-xs text-muted-foreground">Search records and narrow results using the filters below</p>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap items-end gap-3">
+          <div className="flex flex-col gap-1.5">
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <Search className="size-3.5 text-primary" />
+              Search
+            </label>
+            <div className="relative">
+              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder={searchPlaceholder} className="h-8 w-60 rounded-xl border-border/50 bg-background pl-8 text-xs placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-primary/50" />
+            </div>
+          </div>
+          {filters.map((f) => (
+            <div key={f.key} className="flex flex-col gap-1.5">
+              <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                <Filter className="size-3.5 text-primary" />
+                {f.label}
+              </label>
+              <Select value={f.value || "all"} onValueChange={(v) => updateParams({ [f.key]: !v || v === "all" ? undefined : v })}>
+                <SelectTrigger className="w-44 rounded-xl border-border/50 bg-background text-xs focus-visible:border-primary focus-visible:ring-primary/50"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  {f.options.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ))}
+          {hasActiveFilters && (
+            <Button type="button" variant="ghost" size="sm" onClick={() => { setSearchInput(""); router.replace(pathname); }}>
+              <X className="size-3.5" data-icon="inline-start" />
+              Reset
+            </Button>
+          )}
+          {(exportBase || actions) && (
+            <div className="ml-auto flex gap-2">
+              {actions}
+              {exportBase && (
+                <>
+                  <a href={`${exportBase}?format=csv&${exportQs}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                    <Download className="size-3.5" data-icon="inline-start" />
+                    CSV
+                  </a>
+                  <a href={`${exportBase}?format=xlsx&${exportQs}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                    <Download className="size-3.5" data-icon="inline-start" />
+                    Excel
+                  </a>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
 
       <GlassCard interactive={false}>
         <CardContent className="max-h-[65vh] overflow-auto">

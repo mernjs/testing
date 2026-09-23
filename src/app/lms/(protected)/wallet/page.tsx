@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { UserSearch } from "lucide-react";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -97,18 +98,32 @@ export default async function WalletOverviewPage({ searchParams }: { searchParam
         </GlassCard>
       </div>
 
-      <GlassCard interactive={false}>
-        <CardContent className="space-y-3 py-4">
+      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+        <div className="flex items-center gap-3 border-b border-border/40 pb-4">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+            <UserSearch className="size-4" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">Find a Wallet User</h3>
+            <p className="text-xs text-muted-foreground">Look up a wallet holder by their account email</p>
+          </div>
+        </div>
+        <div className="mt-4 space-y-3">
           <form className="flex gap-2" action="/lms/wallet">
-            <input name="q" defaultValue={q ?? ""} placeholder="Find a user by email…" className="h-9 w-full max-w-sm rounded-lg border border-border bg-background px-3 text-sm outline-none focus:border-ring" />
-            <button className="rounded-lg border border-border px-3 text-sm">Search</button>
+            <input
+              name="q"
+              defaultValue={q ?? ""}
+              placeholder="Find a user by email…"
+              className="h-9 w-full max-w-sm rounded-xl border border-border/50 bg-background px-3 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+            />
+            <button className="rounded-xl border border-border/50 px-3 text-xs font-medium text-foreground hover:bg-primary/5 transition-colors">Search</button>
           </form>
           {found.map((u) => (
             <Link key={u._id} href={`/lms/wallet/users/${u._id}`} className="block text-sm text-primary hover:underline">{u.displayName} — {u.email}</Link>
           ))}
           {term && found.length === 0 && <p className="text-sm text-muted-foreground">No users match.</p>}
-        </CardContent>
-      </GlassCard>
+        </div>
+      </div>
     </div>
   );
 }

@@ -8,6 +8,9 @@ import { toast } from "sonner";
 import {
   Search,
   Paperclip,
+  Filter,
+  Calendar,
+  ListFilter,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
@@ -182,70 +185,89 @@ export default function SubmissionsDataTable({
 
   return (
     <div className="space-y-4">
-      <GlassCard interactive={false}>
-        <CardContent>
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Search</label>
-              <div className="relative">
-                <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  placeholder="Name, email, or phone"
-                  className="h-8 w-56 pl-8"
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Status</label>
-              <Select value={initialStatus || "all"} onValueChange={(v) => updateParams({ status: !v || v === "all" ? undefined : v })}>
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All statuses</SelectItem>
-                  {LEAD_STATUSES.map((s) => (
-                    <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">From</label>
-              <Input
-                type="date"
-                defaultValue={initialDateFrom}
-                onChange={(e) => updateParams({ dateFrom: e.target.value || undefined })}
-                className="w-auto"
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">To</label>
-              <Input
-                type="date"
-                defaultValue={initialDateTo}
-                onChange={(e) => updateParams({ dateTo: e.target.value || undefined })}
-                className="w-auto"
-              />
-            </div>
-            {hasActiveFilters && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSearchInput("");
-                  router.replace(pathname);
-                }}
-              >
-                <X className="size-3.5" data-icon="inline-start" />
-                Reset
-              </Button>
-            )}
+      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+        <div className="flex items-center gap-3 border-b border-border/40 pb-4">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+            <ListFilter className="size-4" />
           </div>
-        </CardContent>
-      </GlassCard>
+          <div>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">Submission Filters</h3>
+            <p className="text-xs text-muted-foreground">Search and narrow submissions by status and date</p>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap items-end gap-3">
+          <div className="flex flex-col gap-1.5">
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <Search className="size-3.5 text-primary" />
+              Search
+            </label>
+            <div className="relative">
+              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Name, email, or phone"
+                className="h-8 w-56 rounded-xl border-border/50 bg-background pl-8 text-xs placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-primary/50"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <Filter className="size-3.5 text-primary" />
+              Status
+            </label>
+            <Select value={initialStatus || "all"} onValueChange={(v) => updateParams({ status: !v || v === "all" ? undefined : v })}>
+              <SelectTrigger className="w-40 rounded-xl border-border/50 bg-background text-xs focus-visible:border-primary focus-visible:ring-primary/50">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                {LEAD_STATUSES.map((s) => (
+                  <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <Calendar className="size-3.5 text-primary" />
+              From
+            </label>
+            <Input
+              type="date"
+              defaultValue={initialDateFrom}
+              onChange={(e) => updateParams({ dateFrom: e.target.value || undefined })}
+              className="w-auto rounded-xl border-border/50 bg-background text-xs focus-visible:border-primary focus-visible:ring-primary/50"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <Calendar className="size-3.5 text-primary" />
+              To
+            </label>
+            <Input
+              type="date"
+              defaultValue={initialDateTo}
+              onChange={(e) => updateParams({ dateTo: e.target.value || undefined })}
+              className="w-auto rounded-xl border-border/50 bg-background text-xs focus-visible:border-primary focus-visible:ring-primary/50"
+            />
+          </div>
+          {hasActiveFilters && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSearchInput("");
+                router.replace(pathname);
+              }}
+            >
+              <X className="size-3.5" data-icon="inline-start" />
+              Reset
+            </Button>
+          )}
+        </div>
+      </div>
 
       <GlassCard interactive={false}>
         <CardContent className="max-h-[65vh] overflow-auto">

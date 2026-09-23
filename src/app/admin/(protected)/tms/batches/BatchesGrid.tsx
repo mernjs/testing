@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { MoreHorizontal, Trash2, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -200,6 +200,9 @@ export default function BatchesGrid({
 
   return (
     <AdminDataGrid
+      filterTitle="Batch Filters"
+      filterSubtitle="Search and filter training batches"
+      filterIcon={Layers}
       columns={columns}
       rows={rows}
       getRowId={(row) => row._id}

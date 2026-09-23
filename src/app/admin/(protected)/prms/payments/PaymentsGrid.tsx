@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Trash2, Check } from "lucide-react";
+import { MoreHorizontal, Trash2, Check, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -184,6 +184,9 @@ export default function PaymentsGrid({
 
   return (
     <AdminDataGrid
+      filterTitle="Payment Filters"
+      filterSubtitle="Search and filter procurement payments"
+      filterIcon={CreditCard}
       columns={columns}
       rows={rows}
       getRowId={(row) => row._id}

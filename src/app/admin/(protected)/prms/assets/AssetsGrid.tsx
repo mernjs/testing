@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { MoreHorizontal, Trash2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -193,6 +193,9 @@ export default function AssetsGrid({
 
   return (
     <AdminDataGrid
+      filterTitle="Asset Filters"
+      filterSubtitle="Search and filter tracked assets"
+      filterIcon={Package}
       columns={columns}
       rows={rows}
       getRowId={(row) => row._id}

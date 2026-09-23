@@ -1,5 +1,6 @@
 "use client";
 
+import { Video } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import AdminDataGrid, { type AdminDataGridColumn } from "@/components/admin/data-grid/AdminDataGrid";
 import { formatDateTime } from "@/lib/utils";
@@ -64,6 +65,9 @@ export default function MeetingsGrid({
       totalPages={totalPages}
       emptyLabel="No meetings match these filters."
       filters={filters}
+      filterTitle="Meeting Filters"
+      filterSubtitle="Search and filter scheduled meetings"
+      filterIcon={Video}
       hasActiveFilters={hasActiveFilters}
       toolbarExtra={
         <a

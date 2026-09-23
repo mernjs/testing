@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Send, CheckCheck, Download, ChevronLeft, ChevronRight, Search, Clock, Loader, CircleCheck, CircleX, Ban } from "lucide-react";
+import { Send, CheckCheck, Download, ChevronLeft, ChevronRight, Search, Clock, Loader, CircleCheck, CircleX, Ban, Banknote } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import KpiCard from "@/components/lms/KpiCard";
@@ -130,12 +130,23 @@ export default function PayoutsDashboard({
         ))}
       </KpiGrid>
 
-      <GlassCard interactive={false}>
-        <CardContent className="flex flex-wrap items-end gap-3">
+      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+              <Banknote className="size-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Payout Filters</h3>
+              <p className="text-xs text-muted-foreground">Narrow down payouts by month, status, department, or search</p>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">Month</label>
             <Select value={filters.month || "all"} onValueChange={(v) => setParam("month", !v || v === "all" ? undefined : (v as string))}>
-              <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-40 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All months</SelectItem>
                 {months.map((m) => (
@@ -147,7 +158,7 @@ export default function PayoutsDashboard({
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">Status</label>
             <Select value={filters.status || "all"} onValueChange={(v) => setParam("status", !v || v === "all" ? undefined : (v as string))}>
-              <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-36 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All statuses</SelectItem>
                 {PAYOUT_STATUSES.map((s) => (
@@ -159,7 +170,7 @@ export default function PayoutsDashboard({
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">Department</label>
             <Select value={filters.department || "all"} onValueChange={(v) => setParam("department", !v || v === "all" ? undefined : (v as string))}>
-              <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-44 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All departments</SelectItem>
                 {departments.map((d) => (
@@ -178,15 +189,15 @@ export default function PayoutsDashboard({
               className="relative"
             >
               <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name, code, UTR" className="h-8 w-48 pl-8" />
+              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name, code, UTR" className="h-9 w-48 rounded-xl border-border/50 bg-background pl-8 focus-visible:border-primary focus-visible:ring-primary/40" />
             </form>
           </div>
           <a href={reportHref} className={buttonVariants({ variant: "outline", size: "sm" })}>
             <Download className="size-3.5" data-icon="inline-start" />
             Report
           </a>
-        </CardContent>
-      </GlassCard>
+        </div>
+      </div>
 
       {selected.size > 0 && (
         <GlassCard interactive={false}>

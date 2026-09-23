@@ -31,10 +31,10 @@ export default function DirectMessagesFilterBar({ initialSearch }: { initialSear
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-medium text-muted-foreground">Search</label>
+      <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">Search</label>
       <div className="relative">
         <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-        <Input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Last message preview" className="h-8 w-72 pl-8" />
+        <Input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Last message preview" className="h-9 w-72 pl-8 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40" />
       </div>
     </div>
   );

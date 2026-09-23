@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Trash2, ShieldOff, ShieldCheck } from "lucide-react";
+import { MoreHorizontal, Trash2, ShieldOff, ShieldCheck, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -205,6 +205,9 @@ export default function CertificatesGrid({
 
   return (
     <AdminDataGrid
+      filterTitle="Certificate Filters"
+      filterSubtitle="Search and filter issued certificates"
+      filterIcon={Award}
       columns={columns}
       rows={rows}
       getRowId={(row) => row._id}

@@ -2,9 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { CalendarRange, X, SlidersHorizontal } from "lucide-react";
-import { CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/lms/GlassCard";
+import { CalendarRange, SlidersHorizontal, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
@@ -92,38 +90,77 @@ export default function PrmsDashboardFilters({
   const activeCount = [departmentId, projectId, vendorId, category, paymentStatus, expenseType].filter(Boolean).length;
 
   return (
-    <GlassCard interactive={false}>
-      <CardContent className="p-4">
-
-        {/* Header row */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/50 pb-3 mb-4">
-          <div className="flex items-center gap-2">
-            <SlidersHorizontal className="size-4 text-primary" />
-            <span className="text-xs font-bold uppercase tracking-wider text-foreground">
-              Dashboard Analytics Filters
-            </span>
-            {activeCount > 0 && (
-              <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                {activeCount}
-              </span>
-            )}
+    <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+            <SlidersHorizontal className="size-4" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Dashboard Analytics Filters</h3>
+              {activeCount > 0 && (
+                <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                  {activeCount}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">Slice spend analytics by date, department, project and vendor</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1 rounded-xl border border-border/40 bg-muted/30 p-1 text-xs">
+            <button
+              type="button"
+              onClick={() => updateParams({ range: "today", dateFrom: undefined, dateTo: undefined })}
+              className={`rounded-lg px-2.5 py-1 font-medium transition-colors ${(range || "thisYear") === "today" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-primary/10 hover:text-primary"}`}
+            >
+              Today
+            </button>
+            <button
+              type="button"
+              onClick={() => updateParams({ range: "last7", dateFrom: undefined, dateTo: undefined })}
+              className={`rounded-lg px-2.5 py-1 font-medium transition-colors ${(range || "thisYear") === "last7" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-primary/10 hover:text-primary"}`}
+            >
+              Last 7 Days
+            </button>
+            <button
+              type="button"
+              onClick={() => updateParams({ range: "last30", dateFrom: undefined, dateTo: undefined })}
+              className={`rounded-lg px-2.5 py-1 font-medium transition-colors ${(range || "thisYear") === "last30" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-primary/10 hover:text-primary"}`}
+            >
+              Last 30 Days
+            </button>
+            <button
+              type="button"
+              onClick={() => updateParams({ range: "thisMonth", dateFrom: undefined, dateTo: undefined })}
+              className={`rounded-lg px-2.5 py-1 font-medium transition-colors ${(range || "thisYear") === "thisMonth" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-primary/10 hover:text-primary"}`}
+            >
+              This Month
+            </button>
+            <button
+              type="button"
+              onClick={() => updateParams({ range: "thisYear", dateFrom: undefined, dateTo: undefined })}
+              className={`rounded-lg px-2.5 py-1 font-medium transition-colors ${(range || "thisYear") === "thisYear" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-primary/10 hover:text-primary"}`}
+            >
+              This Year
+            </button>
           </div>
           {hasActiveFilters && (
-            <Button
+            <button
               type="button"
-              variant="ghost"
-              size="xs"
               onClick={() => router.replace(pathname)}
-              className="h-7 text-xs text-muted-foreground hover:text-destructive"
+              className="flex items-center gap-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 transition-all"
             >
-              <X className="size-3 mr-1" />
-              Reset All
-            </Button>
+              <RotateCcw className="size-3.5" />
+              Reset Filters
+            </button>
           )}
         </div>
+      </div>
 
-        {/* Filter controls */}
-        <div className="flex flex-wrap items-end gap-3">
+      {/* Filter controls */}
+      <div className="mt-4 flex flex-wrap items-end gap-3">
 
           {/* ── Date Range ── */}
           <div className="flex flex-col gap-1.5">
@@ -140,7 +177,7 @@ export default function PrmsDashboardFilters({
                 }
               }}
             >
-              <SelectTrigger className="w-40 h-8 text-xs"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-40 h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {DATE_RANGE_PRESETS.map((p) => (
                   <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
@@ -166,11 +203,11 @@ export default function PrmsDashboardFilters({
                   <div className="flex items-end gap-2">
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-medium text-muted-foreground">From</label>
-                      <Input type="date" value={pendingFrom} max={pendingTo || undefined} onChange={(e) => setPendingFrom(e.target.value)} className="w-auto h-8 text-xs" />
+                      <Input type="date" value={pendingFrom} max={pendingTo || undefined} onChange={(e) => setPendingFrom(e.target.value)} className="w-auto h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40" />
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-xs font-medium text-muted-foreground">To</label>
-                      <Input type="date" value={pendingTo} min={pendingFrom || undefined} onChange={(e) => setPendingTo(e.target.value)} className="w-auto h-8 text-xs" />
+                      <Input type="date" value={pendingTo} min={pendingFrom || undefined} onChange={(e) => setPendingTo(e.target.value)} className="w-auto h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40" />
                     </div>
                   </div>
                   <Button type="button" size="sm" onClick={applyCustom} disabled={!pendingFrom || !pendingTo} className="mt-2 w-full h-8 text-xs">
@@ -185,7 +222,7 @@ export default function PrmsDashboardFilters({
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-muted-foreground">Department</label>
             <Select value={departmentId || "all"} onValueChange={(v) => updateParams({ departmentId: !v || v === "all" ? undefined : v })}>
-              <SelectTrigger className="w-40 h-8 text-xs"><SelectValue placeholder="All Departments" /></SelectTrigger>
+              <SelectTrigger className="w-40 h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue placeholder="All Departments" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Departments</SelectItem>
                 {departments.map((d) => (<SelectItem key={d._id} value={d._id}>{d.name}</SelectItem>))}
@@ -197,7 +234,7 @@ export default function PrmsDashboardFilters({
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-muted-foreground">Project</label>
             <Select value={projectId || "all"} onValueChange={(v) => updateParams({ projectId: !v || v === "all" ? undefined : v })}>
-              <SelectTrigger className="w-40 h-8 text-xs"><SelectValue placeholder="All Projects" /></SelectTrigger>
+              <SelectTrigger className="w-40 h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue placeholder="All Projects" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Projects</SelectItem>
                 {projects.map((p) => (<SelectItem key={p._id} value={p._id}>{p.name}</SelectItem>))}
@@ -209,7 +246,7 @@ export default function PrmsDashboardFilters({
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-muted-foreground">Vendor</label>
             <Select value={vendorId || "all"} onValueChange={(v) => updateParams({ vendorId: !v || v === "all" ? undefined : v })}>
-              <SelectTrigger className="w-40 h-8 text-xs"><SelectValue placeholder="All Vendors" /></SelectTrigger>
+              <SelectTrigger className="w-40 h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue placeholder="All Vendors" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Vendors</SelectItem>
                 {vendors.map((v) => (<SelectItem key={v._id} value={v._id}>{v.companyName}</SelectItem>))}
@@ -221,7 +258,7 @@ export default function PrmsDashboardFilters({
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-muted-foreground">Category</label>
             <Select value={category || "all"} onValueChange={(v) => updateParams({ category: !v || v === "all" ? undefined : v })}>
-              <SelectTrigger className="w-40 h-8 text-xs"><SelectValue placeholder="All Categories" /></SelectTrigger>
+              <SelectTrigger className="w-40 h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue placeholder="All Categories" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
                 {EXPENSE_CATEGORIES.map((c) => (<SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>))}
@@ -233,7 +270,7 @@ export default function PrmsDashboardFilters({
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-muted-foreground">Payment Status</label>
             <Select value={paymentStatus || "all"} onValueChange={(v) => updateParams({ paymentStatus: !v || v === "all" ? undefined : v })}>
-              <SelectTrigger className="w-36 h-8 text-xs"><SelectValue placeholder="All Statuses" /></SelectTrigger>
+              <SelectTrigger className="w-36 h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue placeholder="All Statuses" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Statuses</SelectItem>
                 {PAYMENT_STATUS_OPTIONS.map((s) => (<SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>))}
@@ -245,7 +282,7 @@ export default function PrmsDashboardFilters({
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-muted-foreground">Expense Type</label>
             <Select value={expenseType || "all"} onValueChange={(v) => updateParams({ expenseType: !v || v === "all" ? undefined : v })}>
-              <SelectTrigger className="w-36 h-8 text-xs"><SelectValue placeholder="All Types" /></SelectTrigger>
+              <SelectTrigger className="w-36 h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue placeholder="All Types" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Types</SelectItem>
                 {EXPENSE_TYPE_OPTIONS.map((t) => (<SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>))}
@@ -299,7 +336,6 @@ export default function PrmsDashboardFilters({
           </div>
         )}
 
-      </CardContent>
-    </GlassCard>
+    </div>
   );
 }

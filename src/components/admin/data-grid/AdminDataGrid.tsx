@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ChevronsUpDown, X, Columns3 } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ChevronsUpDown, X, Columns3, SlidersHorizontal, RotateCcw, type LucideIcon } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -58,6 +58,12 @@ export interface AdminDataGridProps<T> {
   emptyLabel?: string;
   filters?: ReactNode;
   hasActiveFilters?: boolean;
+  /** Heading shown above the filters slot. Defaults to a generic "Search & Filters". */
+  filterTitle?: string;
+  /** Subtitle shown under the filter heading. */
+  filterSubtitle?: string;
+  /** Icon badge shown next to the filter heading. Defaults to SlidersHorizontal. */
+  filterIcon?: LucideIcon;
   renderBulkActions?: (ctx: BulkActionsContext) => ReactNode;
   rowActions?: (row: T) => ReactNode;
   /** Extra control rendered in the table toolbar, next to Columns (e.g. "New account"). */
@@ -76,6 +82,9 @@ export default function AdminDataGrid<T>({
   emptyLabel = "No records match these filters.",
   filters,
   hasActiveFilters,
+  filterTitle = "Search & Filters",
+  filterSubtitle = "Refine the results below in real time",
+  filterIcon: FilterIcon = SlidersHorizontal,
   renderBulkActions,
   rowActions,
   toolbarExtra,
@@ -138,19 +147,30 @@ export default function AdminDataGrid<T>({
   return (
     <div className="space-y-4">
       {(filters || hasActiveFilters !== undefined) && (
-        <GlassCard interactive={false}>
-          <CardContent>
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div className="flex flex-wrap items-end gap-3">{filters}</div>
-              {hasActiveFilters && (
-                <Button type="button" variant="ghost" size="sm" onClick={() => router.replace(pathname)}>
-                  <X className="size-3.5" data-icon="inline-start" />
-                  Reset
-                </Button>
-              )}
+        <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+                <FilterIcon className="size-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold tracking-tight text-foreground">{filterTitle}</h3>
+                <p className="text-xs text-muted-foreground">{filterSubtitle}</p>
+              </div>
             </div>
-          </CardContent>
-        </GlassCard>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={() => router.replace(pathname)}
+                className="flex items-center gap-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 transition-all"
+              >
+                <RotateCcw className="size-3.5" />
+                Reset Filters
+              </button>
+            )}
+          </div>
+          <div className="mt-4 flex flex-wrap items-end gap-3">{filters}</div>
+        </div>
       )}
 
       <GlassCard interactive={false}>

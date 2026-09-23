@@ -198,7 +198,7 @@ export function ChatSidebar({ onNavigate }: { onNavigate?: () => void }) {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search conversations"
             aria-label="Search conversations"
-            className="h-9 w-full rounded-lg border border-border bg-background pl-9 pr-3 text-sm outline-none transition-colors placeholder:text-muted-foreground/60 focus-visible:border-primary/50 focus-visible:ring-3 focus-visible:ring-primary/15"
+            className="h-9 w-full rounded-xl border border-border/50 bg-background pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
           />
         </div>
       )}

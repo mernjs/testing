@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Eye, Trash2, Paperclip, Download, Calendar } from "lucide-react";
+import { MoreHorizontal, Eye, Trash2, Paperclip, Download, Calendar, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -255,6 +255,9 @@ export default function ApplicantsGrid({
       sortDir={sortDir}
       emptyLabel="No applicants match these filters."
       filters={filters}
+      filterTitle="Applicant Filters"
+      filterSubtitle="Narrow down job applicants by role and status"
+      filterIcon={Briefcase}
       hasActiveFilters={hasActiveFilters}
       rowActions={(row) => <RowActions row={row} />}
       renderBulkActions={(ctx) => <BulkActions ctx={ctx} />}

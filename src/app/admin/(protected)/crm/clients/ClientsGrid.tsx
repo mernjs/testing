@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Pencil, History, Trash2, ExternalLink } from "lucide-react";
+import { MoreHorizontal, Pencil, History, Trash2, ExternalLink, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -248,6 +248,9 @@ export default function ClientsGrid({
         sortDir={sortDir}
         emptyLabel="No clients match these filters."
         filters={filters}
+        filterTitle="Client Filters"
+        filterSubtitle="Search and segment your client accounts"
+        filterIcon={Building2}
         hasActiveFilters={hasActiveFilters}
         rowActions={(row) => <RowActions row={row} onViewActivity={() => setActivityFor(row)} />}
         renderBulkActions={(ctx) => <BulkActions ctx={ctx} />}

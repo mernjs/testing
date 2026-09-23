@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { MoreHorizontal, Trash2, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -190,6 +190,9 @@ export default function ProgramsGrid({
 
   return (
     <AdminDataGrid
+      filterTitle="Program Filters"
+      filterSubtitle="Search and filter training programs"
+      filterIcon={GraduationCap}
       columns={columns}
       rows={rows}
       getRowId={(row) => row._id}

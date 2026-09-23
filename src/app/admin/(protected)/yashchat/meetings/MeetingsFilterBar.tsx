@@ -41,16 +41,16 @@ export default function MeetingsFilterBar({
   return (
     <>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-muted-foreground">Search</label>
+        <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">Search</label>
         <div className="relative">
           <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-          <Input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Meeting title" className="h-8 w-60 pl-8" />
+          <Input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Meeting title" className="h-9 w-60 pl-8 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40" />
         </div>
       </div>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-muted-foreground">Status</label>
+        <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">Status</label>
         <Select value={initialStatus || "all"} onValueChange={(v) => updateParams({ status: !v || v === "all" ? undefined : v })}>
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-36 h-9 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

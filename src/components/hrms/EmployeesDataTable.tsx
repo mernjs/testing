@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, X, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
+import { Search, Users, RotateCcw, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -78,61 +78,74 @@ export default function EmployeesDataTable({ items, total, page, totalPages, dep
 
   return (
     <div className="space-y-4">
-      <GlassCard interactive={false}>
-        <CardContent>
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Search</label>
-              <div className="relative">
-                <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-                <Input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Name, email, or code" className="h-8 w-56 pl-8" />
-              </div>
+      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+              <Users className="size-4" />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Status</label>
-              <Select value={initial.status || "all"} onValueChange={(v) => updateParams({ status: !v || v === "all" ? undefined : v })}>
-                <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All statuses</SelectItem>
-                  {EMPLOYEE_STATUSES.map((s) => (
-                    <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Employee Directory</h3>
+              <p className="text-xs text-muted-foreground">Search and filter your workforce by status, department, and type</p>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Department</label>
-              <Select value={initial.department || "all"} onValueChange={(v) => updateParams({ department: !v || v === "all" ? undefined : v })}>
-                <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All departments</SelectItem>
-                  {departments.map((d) => (
-                    <SelectItem key={d._id} value={d._id}>{d.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Type</label>
-              <Select value={initial.type || "all"} onValueChange={(v) => updateParams({ type: !v || v === "all" ? undefined : v })}>
-                <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Any type</SelectItem>
-                  {EMPLOYMENT_TYPES.map((t) => (
-                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {hasActiveFilters && (
-              <Button type="button" variant="ghost" size="sm" onClick={() => { setSearchInput(""); router.replace(pathname); }}>
-                <X className="size-3.5" data-icon="inline-start" />
-                Reset
-              </Button>
-            )}
           </div>
-        </CardContent>
-      </GlassCard>
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={() => { setSearchInput(""); router.replace(pathname); }}
+              className="flex items-center gap-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 transition-all"
+            >
+              <RotateCcw className="size-3.5" />
+              Reset Filters
+            </button>
+          )}
+        </div>
+        <div className="mt-4 flex flex-wrap items-end gap-3">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Search</label>
+            <div className="relative">
+              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Name, email, or code" className="h-9 w-56 rounded-xl border-border/50 bg-background pl-8 focus-visible:border-primary focus-visible:ring-primary/40" />
+            </div>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Status</label>
+            <Select value={initial.status || "all"} onValueChange={(v) => updateParams({ status: !v || v === "all" ? undefined : v })}>
+              <SelectTrigger className="h-9 w-40 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                {EMPLOYEE_STATUSES.map((s) => (
+                  <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Department</label>
+            <Select value={initial.department || "all"} onValueChange={(v) => updateParams({ department: !v || v === "all" ? undefined : v })}>
+              <SelectTrigger className="h-9 w-48 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All departments</SelectItem>
+                {departments.map((d) => (
+                  <SelectItem key={d._id} value={d._id}>{d.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Type</label>
+            <Select value={initial.type || "all"} onValueChange={(v) => updateParams({ type: !v || v === "all" ? undefined : v })}>
+              <SelectTrigger className="h-9 w-36 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Any type</SelectItem>
+                {EMPLOYMENT_TYPES.map((t) => (
+                  <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
 
       <GlassCard interactive={false}>
         <CardContent className="max-h-[65vh] overflow-auto">

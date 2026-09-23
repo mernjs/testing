@@ -47,21 +47,21 @@ export default function LeadsFilterBar({
   return (
     <>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-muted-foreground">Search</label>
+        <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">Search</label>
         <div className="relative">
           <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Name, email, or phone"
-            className="h-8 w-56 pl-8"
+            className="h-9 w-56 pl-8 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"
           />
         </div>
       </div>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-muted-foreground">Category</label>
+        <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">Category</label>
         <Select value={initialCategory || "all"} onValueChange={(v) => updateParams({ category: !v || v === "all" ? undefined : v })}>
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-48 h-9 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -73,9 +73,9 @@ export default function LeadsFilterBar({
         </Select>
       </div>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-muted-foreground">Status</label>
+        <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">Status</label>
         <Select value={initialStatus || "all"} onValueChange={(v) => updateParams({ status: !v || v === "all" ? undefined : v })}>
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="w-40 h-9 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -87,12 +87,12 @@ export default function LeadsFilterBar({
         </Select>
       </div>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-muted-foreground">From</label>
-        <Input type="date" defaultValue={initialDateFrom} onChange={(e) => updateParams({ dateFrom: e.target.value || undefined })} className="w-auto" />
+        <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">From</label>
+        <Input type="date" defaultValue={initialDateFrom} onChange={(e) => updateParams({ dateFrom: e.target.value || undefined })} className="w-auto h-9 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40" />
       </div>
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-medium text-muted-foreground">To</label>
-        <Input type="date" defaultValue={initialDateTo} onChange={(e) => updateParams({ dateTo: e.target.value || undefined })} className="w-auto" />
+        <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">To</label>
+        <Input type="date" defaultValue={initialDateTo} onChange={(e) => updateParams({ dateTo: e.target.value || undefined })} className="w-auto h-9 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40" />
       </div>
     </>
   );

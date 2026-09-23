@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckCircle2, AlertTriangle } from "lucide-react";
+import { CheckCircle2, AlertTriangle, CalendarClock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -29,17 +29,24 @@ export default async function TrialBalancePage({
         <p className="text-sm text-muted-foreground">Every account&apos;s total debits and credits{result.asOf ? ` as of ${new Date(result.asOf).toLocaleDateString()}` : ""}.</p>
       </div>
 
-      <GlassCard interactive={false}>
-        <CardContent className="py-4">
-          <form className="flex flex-wrap items-end gap-3" method="get">
-            <div>
-              <label className="mb-1 block text-xs text-muted-foreground">As of</label>
-              <Input type="date" name="asOf" defaultValue={sp.asOf ?? ""} className="h-9" />
-            </div>
-            <Button type="submit" size="sm" variant="secondary">Apply</Button>
-          </form>
-        </CardContent>
-      </GlassCard>
+      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+        <div className="flex items-center gap-3 border-b border-border/40 pb-4">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+            <CalendarClock className="size-4" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">As-of Date</h3>
+            <p className="text-xs text-muted-foreground">Snapshot every account&apos;s debit and credit totals as of a chosen date</p>
+          </div>
+        </div>
+        <form className="mt-4 flex flex-wrap items-end gap-3" method="get">
+          <div>
+            <label className="mb-1 block text-xs text-muted-foreground">As of</label>
+            <Input type="date" name="asOf" defaultValue={sp.asOf ?? ""} className="h-9 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40" />
+          </div>
+          <Button type="submit" size="sm" variant="secondary">Apply</Button>
+        </form>
+      </div>
 
       <KpiGrid>
         <KpiCard label="Total Debits" value={<span>{formatMoney(result.totalDebits)}</span>} accent />

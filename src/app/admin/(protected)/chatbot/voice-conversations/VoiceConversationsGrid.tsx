@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Trash2, ExternalLink } from "lucide-react";
+import { MoreHorizontal, Trash2, ExternalLink, Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -204,6 +204,9 @@ export default function VoiceConversationsGrid({
       sortDir={sortDir}
       emptyLabel="No voice conversations match these filters."
       filters={filters}
+      filterTitle="Voice Conversation Filters"
+      filterSubtitle="Search voice-bot conversations in real time"
+      filterIcon={Mic}
       hasActiveFilters={hasActiveFilters}
       rowActions={(row) => <RowActions row={row} />}
       renderBulkActions={(ctx) => <BulkActions ctx={ctx} />}

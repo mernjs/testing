@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { MoreHorizontal, Trash2, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -200,6 +200,9 @@ export default function InvoicesGrid({
 
   return (
     <AdminDataGrid
+      filterTitle="Invoice Filters"
+      filterSubtitle="Search and filter invoices"
+      filterIcon={FileText}
       columns={columns}
       rows={rows}
       getRowId={(row) => row._id}

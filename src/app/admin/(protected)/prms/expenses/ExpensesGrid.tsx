@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Trash2, Check, X as XIcon, Banknote } from "lucide-react";
+import { MoreHorizontal, Trash2, Check, X as XIcon, Banknote, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -236,6 +236,9 @@ export default function ExpensesGrid({
 
   return (
     <AdminDataGrid
+      filterTitle="Expense Filters"
+      filterSubtitle="Search and filter recorded expenses"
+      filterIcon={Receipt}
       columns={columns}
       rows={rows}
       getRowId={(row) => row._id}

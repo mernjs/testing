@@ -253,7 +253,13 @@ function AddMembersSheet({
           <SheetDescription>They&apos;ll get access to the full channel history.</SheetDescription>
         </SheetHeader>
         <div className="border-b border-border/60 p-3">
-          <Input value={q} onChange={(e) => runSearch(e.target.value)} placeholder="Search people…" autoFocus />
+          <Input
+            value={q}
+            onChange={(e) => runSearch(e.target.value)}
+            placeholder="Search people…"
+            autoFocus
+            className="rounded-xl border-border/50 bg-background px-3 py-1.5 text-foreground focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary"
+          />
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto p-2">
           {results.map((u) => (

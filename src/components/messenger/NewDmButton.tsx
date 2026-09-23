@@ -45,7 +45,13 @@ export default function NewDmButton({ users }: { users: U[] }) {
           <div className="border-b border-border/60 p-3">
             <div className="relative">
               <Search className="absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search people…" className="pl-8" autoFocus />
+              <Input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Search people…"
+                className="rounded-xl border-border/50 bg-background pl-8 pr-3 py-1.5 text-foreground focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary"
+                autoFocus
+              />
             </div>
             {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
           </div>

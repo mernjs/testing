@@ -115,7 +115,7 @@ export default function DataTableCard({ table, range }: { table: TableDef; range
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-              <input value={q} onChange={(e) => { setQ(e.target.value); setPage(0); }} placeholder="Search…" aria-label={`Search ${table.title}`} className="h-8 w-40 rounded-lg border border-border bg-background pl-8 pr-2 text-xs outline-none focus:border-ring" />
+              <input value={q} onChange={(e) => { setQ(e.target.value); setPage(0); }} placeholder="Search…" aria-label={`Search ${table.title}`} className="h-8 w-40 rounded-xl border border-border/50 bg-background pl-8 pr-2 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" />
             </div>
             <button type="button" onClick={exportCsv} disabled={rows.length === 0} className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border px-2.5 text-xs font-medium hover:border-primary disabled:opacity-50">
               <Download className="size-3.5" /> CSV

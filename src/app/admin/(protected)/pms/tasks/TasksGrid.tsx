@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Eye, Trash2 } from "lucide-react";
+import { MoreHorizontal, Eye, Trash2, ListChecks } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -220,6 +220,9 @@ export default function TasksGrid({
       sortDir={sortDir}
       emptyLabel="No tasks match these filters."
       filters={filters}
+      filterTitle="Task Filters"
+      filterSubtitle="Search and filter project tasks"
+      filterIcon={ListChecks}
       hasActiveFilters={hasActiveFilters}
       rowActions={(row) => <RowActions row={row} />}
       renderBulkActions={(ctx) => <BulkActions ctx={ctx} />}

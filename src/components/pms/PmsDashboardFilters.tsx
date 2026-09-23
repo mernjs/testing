@@ -2,9 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { CalendarRange, X, Filter, SlidersHorizontal } from "lucide-react";
-import { CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/lms/GlassCard";
+import { CalendarRange, Filter, SlidersHorizontal, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
@@ -72,37 +70,78 @@ export default function PmsDashboardFilters({
   const activeCount = [clientId, status, priority, billingModel, overdue].filter(Boolean).length;
 
   return (
-    <GlassCard interactive={false}>
-      <CardContent className="p-4">
-        {/* Header row */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/50 pb-3 mb-4">
-          <div className="flex items-center gap-2">
-            <SlidersHorizontal className="size-4 text-primary" />
-            <span className="text-xs font-bold uppercase tracking-wider text-foreground">
-              Dashboard Analytics Filters
-            </span>
-            {activeCount > 0 && (
-              <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                {activeCount}
-              </span>
-            )}
+    <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+      {/* Header row */}
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+            <SlidersHorizontal className="size-4" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Analytics Filters</h3>
+              {activeCount > 0 && (
+                <span className="flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+                  {activeCount}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">Filter dashboard analytics by client, status, and date range</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1 rounded-xl border border-border/40 bg-muted/30 p-1 text-xs">
+            <button
+              type="button"
+              onClick={() => updateParams({ range: "today", dateFrom: undefined, dateTo: undefined })}
+              className={`rounded-lg px-2.5 py-1 font-medium transition-colors ${(range || "thisYear") === "today" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-primary/10 hover:text-primary"}`}
+            >
+              Today
+            </button>
+            <button
+              type="button"
+              onClick={() => updateParams({ range: "last7", dateFrom: undefined, dateTo: undefined })}
+              className={`rounded-lg px-2.5 py-1 font-medium transition-colors ${(range || "thisYear") === "last7" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-primary/10 hover:text-primary"}`}
+            >
+              Last 7 Days
+            </button>
+            <button
+              type="button"
+              onClick={() => updateParams({ range: "last30", dateFrom: undefined, dateTo: undefined })}
+              className={`rounded-lg px-2.5 py-1 font-medium transition-colors ${(range || "thisYear") === "last30" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-primary/10 hover:text-primary"}`}
+            >
+              Last 30 Days
+            </button>
+            <button
+              type="button"
+              onClick={() => updateParams({ range: "thisMonth", dateFrom: undefined, dateTo: undefined })}
+              className={`rounded-lg px-2.5 py-1 font-medium transition-colors ${(range || "thisYear") === "thisMonth" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-primary/10 hover:text-primary"}`}
+            >
+              This Month
+            </button>
+            <button
+              type="button"
+              onClick={() => updateParams({ range: "thisYear", dateFrom: undefined, dateTo: undefined })}
+              className={`rounded-lg px-2.5 py-1 font-medium transition-colors ${(range || "thisYear") === "thisYear" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-primary/10 hover:text-primary"}`}
+            >
+              This Year
+            </button>
           </div>
           {hasActiveFilters && (
-            <Button
+            <button
               type="button"
-              variant="ghost"
-              size="xs"
               onClick={() => router.replace(pathname)}
-              className="h-7 text-xs text-muted-foreground hover:text-destructive"
+              className="flex items-center gap-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 transition-all"
             >
-              <X className="size-3 mr-1" />
-              Reset All
-            </Button>
+              <RotateCcw className="size-3.5" />
+              Reset Filters
+            </button>
           )}
         </div>
+      </div>
 
-        {/* Filter controls */}
-        <div className="flex flex-wrap items-end gap-3">
+      {/* Filter controls */}
+      <div className="mt-4 flex flex-wrap items-end gap-3">
 
           {/* ── Date Range ── */}
           <div className="flex flex-col gap-1.5">
@@ -119,7 +158,7 @@ export default function PmsDashboardFilters({
                 }
               }}
             >
-              <SelectTrigger className="w-40 h-8 text-xs">
+              <SelectTrigger className="w-40 h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -152,7 +191,7 @@ export default function PmsDashboardFilters({
                         value={pendingFrom}
                         max={pendingTo || undefined}
                         onChange={(e) => setPendingFrom(e.target.value)}
-                        className="w-auto h-8 text-xs"
+                        className="w-auto h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
@@ -162,7 +201,7 @@ export default function PmsDashboardFilters({
                         value={pendingTo}
                         min={pendingFrom || undefined}
                         onChange={(e) => setPendingTo(e.target.value)}
-                        className="w-auto h-8 text-xs"
+                        className="w-auto h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"
                       />
                     </div>
                   </div>
@@ -187,7 +226,7 @@ export default function PmsDashboardFilters({
               value={granularity || "month"}
               onValueChange={(v) => updateParams({ granularity: v || undefined })}
             >
-              <SelectTrigger className="w-28 h-8 text-xs">
+              <SelectTrigger className="w-28 h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -207,7 +246,7 @@ export default function PmsDashboardFilters({
                 value={clientId || "all"}
                 onValueChange={(v) => updateParams({ clientId: !v || v === "all" ? undefined : v })}
               >
-                <SelectTrigger className="w-44 h-8 text-xs">
+                <SelectTrigger className="w-44 h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40">
                   <SelectValue placeholder="All Clients" />
                 </SelectTrigger>
                 <SelectContent>
@@ -227,7 +266,7 @@ export default function PmsDashboardFilters({
               value={status || "all"}
               onValueChange={(v) => updateParams({ status: !v || v === "all" ? undefined : v })}
             >
-              <SelectTrigger className="w-36 h-8 text-xs">
+              <SelectTrigger className="w-36 h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40">
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
@@ -246,7 +285,7 @@ export default function PmsDashboardFilters({
               value={priority || "all"}
               onValueChange={(v) => updateParams({ priority: !v || v === "all" ? undefined : v })}
             >
-              <SelectTrigger className="w-32 h-8 text-xs">
+              <SelectTrigger className="w-32 h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40">
                 <SelectValue placeholder="All Priorities" />
               </SelectTrigger>
               <SelectContent>
@@ -265,7 +304,7 @@ export default function PmsDashboardFilters({
               value={billingModel || "all"}
               onValueChange={(v) => updateParams({ billingModel: !v || v === "all" ? undefined : v })}
             >
-              <SelectTrigger className="w-36 h-8 text-xs">
+              <SelectTrigger className="w-36 h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40">
                 <SelectValue placeholder="All Models" />
               </SelectTrigger>
               <SelectContent>
@@ -285,7 +324,7 @@ export default function PmsDashboardFilters({
               value={overdue || "all"}
               onValueChange={(v) => updateParams({ overdue: !v || v === "all" ? undefined : v })}
             >
-              <SelectTrigger className="w-36 h-8 text-xs">
+              <SelectTrigger className="w-36 h-9 text-xs rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40">
                 <SelectValue placeholder="All Health" />
               </SelectTrigger>
               <SelectContent>
@@ -337,7 +376,6 @@ export default function PmsDashboardFilters({
           </div>
         )}
 
-      </CardContent>
-    </GlassCard>
+    </div>
   );
 }

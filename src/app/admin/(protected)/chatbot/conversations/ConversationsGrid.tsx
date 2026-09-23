@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Trash2, ExternalLink, ShieldAlert } from "lucide-react";
+import { MoreHorizontal, Trash2, ExternalLink, ShieldAlert, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -200,6 +200,9 @@ export default function ConversationsGrid({
       sortDir={sortDir}
       emptyLabel="No conversations match these filters."
       filters={filters}
+      filterTitle="Conversation Filters"
+      filterSubtitle="Search chatbot conversations in real time"
+      filterIcon={MessageSquare}
       hasActiveFilters={hasActiveFilters}
       rowActions={(row) => <RowActions row={row} />}
       renderBulkActions={(ctx) => <BulkActions ctx={ctx} />}

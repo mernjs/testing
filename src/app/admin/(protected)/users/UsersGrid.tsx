@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   XCircle,
   BadgeCheck,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -372,6 +373,9 @@ export default function UsersGrid({
         sortDir={sortDir}
         emptyLabel="No accounts match these filters."
         filters={filters}
+        filterTitle="User Directory Filters"
+        filterSubtitle="Search and narrow the platform-wide user roster"
+        filterIcon={Users}
         hasActiveFilters={hasActiveFilters}
         toolbarExtra={
           <Button type="button" size="sm" onClick={() => setCreateOpen(true)} className="h-8 text-xs gap-1.5">

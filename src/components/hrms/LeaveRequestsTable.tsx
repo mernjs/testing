@@ -4,7 +4,7 @@ import { Fragment, useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Check, X, Ban, ChevronRight, ChevronLeft } from "lucide-react";
+import { Check, X, Ban, ChevronRight, ChevronLeft, CalendarOff } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -113,12 +113,23 @@ export default function LeaveRequestsTable({
 
   return (
     <div className="space-y-4">
-      <GlassCard interactive={false}>
-        <CardContent className="flex flex-wrap items-end gap-3">
+      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+              <CalendarOff className="size-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Leave Requests</h3>
+              <p className="text-xs text-muted-foreground">Filter requests by approval status and leave type</p>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">Status</label>
             <Select value={initial.status || "all"} onValueChange={(v) => setParam("status", !v || v === "all" ? undefined : v)}>
-              <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-40 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All statuses</SelectItem>
                 {LEAVE_REQUEST_STATUSES.map((s) => (
@@ -130,7 +141,7 @@ export default function LeaveRequestsTable({
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">Type</label>
             <Select value={initial.leaveType || "all"} onValueChange={(v) => setParam("leaveType", !v || v === "all" ? undefined : v)}>
-              <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-44 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All types</SelectItem>
                 {leaveTypes.map((t) => (
@@ -139,8 +150,8 @@ export default function LeaveRequestsTable({
               </SelectContent>
             </Select>
           </div>
-        </CardContent>
-      </GlassCard>
+        </div>
+      </div>
 
       <GlassCard interactive={false}>
         <CardContent className="max-h-[65vh] overflow-auto">

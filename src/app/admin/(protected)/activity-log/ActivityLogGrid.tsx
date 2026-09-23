@@ -1,6 +1,6 @@
 "use client";
 
-import { Download } from "lucide-react";
+import { Download, History } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import AdminDataGrid, { type AdminDataGridColumn } from "@/components/admin/data-grid/AdminDataGrid";
 import { formatDateTime } from "@/lib/utils";
@@ -80,6 +80,9 @@ export default function ActivityLogGrid({
       totalPages={totalPages}
       emptyLabel="No activity matches these filters."
       filters={filters}
+      filterTitle="Activity Log Filters"
+      filterSubtitle="Trace platform activity by actor, action, and date"
+      filterIcon={History}
       hasActiveFilters={hasActiveFilters}
       toolbarExtra={
         <a

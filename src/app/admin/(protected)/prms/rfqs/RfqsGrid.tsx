@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Eye, Trash2 } from "lucide-react";
+import { MoreHorizontal, Eye, Trash2, FileQuestionMark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -173,6 +173,9 @@ export default function RfqsGrid({
 
   return (
     <AdminDataGrid
+      filterTitle="RFQ Filters"
+      filterSubtitle="Search and filter requests for quotation"
+      filterIcon={FileQuestionMark}
       columns={columns}
       rows={rows}
       getRowId={(row) => row._id}

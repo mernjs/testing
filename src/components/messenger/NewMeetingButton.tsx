@@ -101,7 +101,12 @@ export default function NewMeetingButton({ users }: { users: U[] }) {
             </div>
             <div className="space-y-1.5">
               <Label>Invite ({invitees.size})</Label>
-              <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search people…" />
+              <Input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Search people…"
+                className="rounded-xl border-border/50 bg-background px-3 py-1.5 text-foreground focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary"
+              />
               <div className="max-h-44 overflow-y-auto rounded-xl border border-border/60 p-1">
                 {filtered.map((u) => (
                   <label key={u._id} className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-sm hover:bg-muted">

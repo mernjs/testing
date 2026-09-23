@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Trash2, AlertTriangle } from "lucide-react";
+import { MoreHorizontal, Trash2, AlertTriangle, Boxes } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -180,6 +180,9 @@ export default function InventoryGrid({
 
   return (
     <AdminDataGrid
+      filterTitle="Inventory Filters"
+      filterSubtitle="Search and filter inventory items"
+      filterIcon={Boxes}
       columns={columns}
       rows={rows}
       getRowId={(row) => row._id}

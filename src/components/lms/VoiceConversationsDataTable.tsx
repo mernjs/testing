@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
-import { ChevronDown, ChevronUp, ChevronsUpDown, Eye, Search, Trash2, X } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronsUpDown, Eye, Filter, Calendar, Mic, Monitor, Search, Trash2, X } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -130,80 +130,102 @@ export default function VoiceConversationsDataTable({
 
   return (
     <div className="space-y-3">
-      <GlassCard interactive={false}>
-        <CardContent>
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Search</label>
-              <div className="relative">
-                <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  placeholder="Session ID or spoken text"
-                  className="h-8 w-64 pl-8"
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Device</label>
-              <Select value={initialDevice || "all"} onValueChange={(v) => updateParams({ device: !v || v === "all" ? undefined : v })}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All devices</SelectItem>
-                  {DEVICE_OPTIONS.map((d) => (
-                    <SelectItem key={d} value={d}>
-                      {d[0].toUpperCase() + d.slice(1)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Duration</label>
-              <Select value={initialMinDuration || "0"} onValueChange={(v) => updateParams({ minDuration: !v || v === "0" ? undefined : v })}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {DURATION_OPTIONS.map((o) => (
-                    <SelectItem key={o.value} value={o.value}>
-                      {o.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">From</label>
-              <Input type="date" value={initialDateFrom} onChange={(e) => updateParams({ dateFrom: e.target.value || undefined })} className="w-auto" />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted-foreground">To</label>
-              <Input type="date" value={initialDateTo} onChange={(e) => updateParams({ dateTo: e.target.value || undefined })} className="w-auto" />
-            </div>
-            {hasActiveFilters && (
-              <Button type="button" variant="ghost" size="sm" onClick={() => { setSearchInput(""); router.replace(pathname); }}>
-                <X className="size-3.5" data-icon="inline-start" />
-                Reset
-              </Button>
-            )}
-            <div className="ml-auto">
-              <VoiceExportButton
-                params={{
-                  search: initialSearch,
-                  device: initialDevice,
-                  minDuration: initialMinDuration,
-                  dateFrom: initialDateFrom,
-                  dateTo: initialDateTo,
-                }}
+      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+        <div className="flex items-center gap-3 border-b border-border/40 pb-4">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+            <Mic className="size-4" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">Voice Conversation Filters</h3>
+            <p className="text-xs text-muted-foreground">Search and narrow voice sessions by device, duration, and date</p>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap items-end gap-3">
+          <div className="flex flex-col gap-1.5">
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <Search className="size-3.5 text-primary" />
+              Search
+            </label>
+            <div className="relative">
+              <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Session ID or spoken text"
+                className="h-8 w-64 rounded-xl border-border/50 bg-background pl-8 text-xs placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-primary/50"
               />
             </div>
           </div>
-        </CardContent>
-      </GlassCard>
+          <div className="flex flex-col gap-1.5">
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <Monitor className="size-3.5 text-primary" />
+              Device
+            </label>
+            <Select value={initialDevice || "all"} onValueChange={(v) => updateParams({ device: !v || v === "all" ? undefined : v })}>
+              <SelectTrigger className="w-32 rounded-xl border-border/50 bg-background text-xs focus-visible:border-primary focus-visible:ring-primary/50">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All devices</SelectItem>
+                {DEVICE_OPTIONS.map((d) => (
+                  <SelectItem key={d} value={d}>
+                    {d[0].toUpperCase() + d.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <Filter className="size-3.5 text-primary" />
+              Duration
+            </label>
+            <Select value={initialMinDuration || "0"} onValueChange={(v) => updateParams({ minDuration: !v || v === "0" ? undefined : v })}>
+              <SelectTrigger className="w-32 rounded-xl border-border/50 bg-background text-xs focus-visible:border-primary focus-visible:ring-primary/50">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {DURATION_OPTIONS.map((o) => (
+                  <SelectItem key={o.value} value={o.value}>
+                    {o.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <Calendar className="size-3.5 text-primary" />
+              From
+            </label>
+            <Input type="date" value={initialDateFrom} onChange={(e) => updateParams({ dateFrom: e.target.value || undefined })} className="w-auto rounded-xl border-border/50 bg-background text-xs focus-visible:border-primary focus-visible:ring-primary/50" />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <Calendar className="size-3.5 text-primary" />
+              To
+            </label>
+            <Input type="date" value={initialDateTo} onChange={(e) => updateParams({ dateTo: e.target.value || undefined })} className="w-auto rounded-xl border-border/50 bg-background text-xs focus-visible:border-primary focus-visible:ring-primary/50" />
+          </div>
+          {hasActiveFilters && (
+            <Button type="button" variant="ghost" size="sm" onClick={() => { setSearchInput(""); router.replace(pathname); }}>
+              <X className="size-3.5" data-icon="inline-start" />
+              Reset
+            </Button>
+          )}
+          <div className="ml-auto">
+            <VoiceExportButton
+              params={{
+                search: initialSearch,
+                device: initialDevice,
+                minDuration: initialMinDuration,
+                dateFrom: initialDateFrom,
+                dateTo: initialDateTo,
+              }}
+            />
+          </div>
+        </div>
+      </div>
 
       <GlassCard interactive={false}>
         <CardContent className="max-h-[65vh] overflow-auto p-0">

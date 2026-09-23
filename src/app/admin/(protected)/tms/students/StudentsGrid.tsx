@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Eye } from "lucide-react";
+import { Eye, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
@@ -122,6 +122,9 @@ export default function StudentsGrid({
 
   return (
     <AdminDataGrid
+      filterTitle="Student Filters"
+      filterSubtitle="Search and filter enrolled students"
+      filterIcon={UserCheck}
       columns={columns}
       rows={rows}
       getRowId={(row) => row._id}

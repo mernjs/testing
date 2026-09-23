@@ -54,10 +54,10 @@ export default function MyTasksView({ tasks, projects }: { tasks: MyTaskRow[]; p
             </div>
             <div className="relative">
               <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search tasks" className="h-8 w-52 pl-8" />
+              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search tasks" className="h-8 w-52 rounded-xl border-border/50 bg-background pl-8 text-xs placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-primary/50" />
             </div>
             <Select value={project} onValueChange={(v) => setProject(v ?? "all")}>
-              <SelectTrigger className="h-8 w-48"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-8 w-48 rounded-xl border-border/50 bg-background text-xs focus-visible:border-primary focus-visible:ring-primary/50"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All projects</SelectItem>
                 {projects.map((p) => (

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, History, Trash2, ExternalLink, Star } from "lucide-react";
+import { MoreHorizontal, History, Trash2, ExternalLink, Star, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -238,6 +238,9 @@ export default function VendorsGrid({
   return (
     <>
       <AdminDataGrid
+        filterTitle="Vendor Filters"
+        filterSubtitle="Search and filter vendor records"
+        filterIcon={Truck}
         columns={columns}
         rows={rows}
         getRowId={(row) => row._id}

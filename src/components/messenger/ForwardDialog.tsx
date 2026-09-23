@@ -93,7 +93,13 @@ export default function ForwardDialog({
           </div>
         )}
         <div className="border-b border-border/60 p-3">
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search conversations…" autoFocus />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search conversations…"
+            autoFocus
+            className="rounded-xl border-border/50 bg-background px-3 py-1.5 text-foreground focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary"
+          />
           {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto p-2">

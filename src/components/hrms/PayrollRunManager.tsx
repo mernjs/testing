@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Loader2, Play, Trash2 } from "lucide-react";
+import { Loader2, Play, Trash2, CalendarPlus } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { Button } from "@/components/ui/button";
@@ -73,18 +73,29 @@ export default function PayrollRunManager({ runs }: { runs: Run[] }) {
 
   return (
     <div className="space-y-4">
-      <GlassCard interactive={false}>
-        <CardContent className="flex flex-wrap items-end gap-3">
+      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+              <CalendarPlus className="size-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Generate Payroll Run</h3>
+              <p className="text-xs text-muted-foreground">Pick a month to generate payslips for all active employees</p>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">Month</label>
-            <Input type="month" value={month} onChange={(e) => setMonth(e.target.value)} className="w-auto" />
+            <Input type="month" value={month} onChange={(e) => setMonth(e.target.value)} className="h-9 w-auto rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40" />
           </div>
           <Button type="button" onClick={generate} disabled={pending}>
             {pending ? <Loader2 className="size-4 animate-spin" /> : <Play className="size-4" data-icon="inline-start" />}
             Generate Run
           </Button>
-        </CardContent>
-      </GlassCard>
+        </div>
+      </div>
 
       <GlassCard interactive={false}>
         <CardContent className="overflow-auto">

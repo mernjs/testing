@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Eye, Trash2 } from "lucide-react";
+import { MoreHorizontal, Eye, Trash2, Milestone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -210,6 +210,9 @@ export default function MilestonesGrid({
       sortDir={sortDir}
       emptyLabel="No milestones match these filters."
       filters={filters}
+      filterTitle="Milestone Filters"
+      filterSubtitle="Search and filter project milestones"
+      filterIcon={Milestone}
       hasActiveFilters={hasActiveFilters}
       rowActions={(row) => <RowActions row={row} />}
       renderBulkActions={(ctx) => <BulkActions ctx={ctx} />}

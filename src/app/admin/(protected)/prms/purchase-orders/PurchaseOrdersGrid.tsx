@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { MoreHorizontal, Trash2, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -182,6 +182,9 @@ export default function PurchaseOrdersGrid({
 
   return (
     <AdminDataGrid
+      filterTitle="Purchase Order Filters"
+      filterSubtitle="Search and filter purchase orders"
+      filterIcon={ShoppingCart}
       columns={columns}
       rows={rows}
       getRowId={(row) => row._id}

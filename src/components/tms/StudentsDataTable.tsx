@@ -3,10 +3,10 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Search, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Users, RotateCcw } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -60,20 +60,40 @@ export default function StudentsDataTable({ items, total, page, totalPages, init
 
   return (
     <div className="space-y-4">
-      <GlassCard interactive={false}>
-        <CardContent>
-          <div className="flex flex-wrap items-end gap-3">
+      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/40 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+              <Users className="size-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Student Filters</h3>
+              <p className="text-xs text-muted-foreground">Search the student roster by name, contact and status</p>
+            </div>
+          </div>
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={() => { setSearchInput(""); router.replace(pathname); }}
+              className="flex items-center gap-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-1.5 text-xs font-medium text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 transition-all"
+            >
+              <RotateCcw className="size-3.5" />
+              Reset Filters
+            </button>
+          )}
+        </div>
+        <div className="mt-4 flex flex-wrap items-end gap-3">
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-muted-foreground">Search</label>
               <div className="relative">
                 <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-                <Input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Name, code, email, mobile" className="h-8 w-64 pl-8" />
+                <Input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} placeholder="Name, code, email, mobile" className="h-9 w-64 pl-8 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40" />
               </div>
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-muted-foreground">Status</label>
               <Select value={initial.status || "all"} onValueChange={(v) => updateParams({ status: !v || v === "all" ? undefined : v })}>
-                <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="w-40 rounded-xl border-border/50 bg-background focus-visible:border-primary focus-visible:ring-primary/40"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All statuses</SelectItem>
                   {STUDENT_STATUSES.map((s) => (
@@ -82,15 +102,8 @@ export default function StudentsDataTable({ items, total, page, totalPages, init
                 </SelectContent>
               </Select>
             </div>
-            {hasActiveFilters && (
-              <Button type="button" variant="ghost" size="sm" onClick={() => { setSearchInput(""); router.replace(pathname); }}>
-                <X className="size-3.5" data-icon="inline-start" />
-                Reset
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </GlassCard>
+        </div>
+      </div>
 
       <GlassCard interactive={false}>
         <CardContent className="max-h-[65vh] overflow-auto">

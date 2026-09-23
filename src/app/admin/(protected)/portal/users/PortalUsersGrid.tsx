@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, ShieldOff, ShieldCheck, LogOut, ExternalLink, Lock } from "lucide-react";
+import { MoreHorizontal, ShieldOff, ShieldCheck, LogOut, ExternalLink, Lock, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -193,6 +193,9 @@ export default function PortalUsersGrid({
       sortDir={sortDir}
       emptyLabel="No portal users match these filters."
       filters={filters}
+      filterTitle="Portal User Filters"
+      filterSubtitle="Search external portal accounts"
+      filterIcon={Users}
       hasActiveFilters={hasActiveFilters}
       rowActions={(row) => <RowActions row={row} />}
       renderBulkActions={(ctx) => <BulkActions ctx={ctx} />}

@@ -182,7 +182,7 @@ export default function LmsMessagesInbox({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search leads…"
-              className="w-full rounded-lg border border-border bg-background py-1.5 pr-3 pl-8 text-xs outline-none focus:border-ring"
+              className="w-full rounded-xl border border-border/50 bg-background py-1.5 pr-3 pl-8 text-xs text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
             />
           </div>
         </div>

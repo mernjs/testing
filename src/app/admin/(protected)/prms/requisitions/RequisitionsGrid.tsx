@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Eye, Trash2 } from "lucide-react";
+import { MoreHorizontal, Eye, Trash2, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -200,6 +200,9 @@ export default function RequisitionsGrid({
 
   return (
     <AdminDataGrid
+      filterTitle="Requisition Filters"
+      filterSubtitle="Search and filter requisitions"
+      filterIcon={ClipboardList}
       columns={columns}
       rows={rows}
       getRowId={(row) => row._id}

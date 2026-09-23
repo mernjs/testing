@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Check, X as XIcon, Trash2 } from "lucide-react";
+import { MoreHorizontal, Check, X as XIcon, Trash2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -260,6 +260,9 @@ export default function TimesheetsGrid({
       sortDir={sortDir}
       emptyLabel="No timesheet entries match these filters."
       filters={filters}
+      filterTitle="Timesheet Filters"
+      filterSubtitle="Search and filter logged timesheets"
+      filterIcon={Clock}
       hasActiveFilters={hasActiveFilters}
       rowActions={(row) => <RowActions row={row} />}
       renderBulkActions={(ctx) => <BulkActions ctx={ctx} />}

@@ -79,7 +79,12 @@ export default function FilesHub() {
       <div className="flex flex-wrap items-end gap-3">
         <div className="relative min-w-52 flex-1">
           <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search file names…" className="pl-9" />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search file names…"
+            className="rounded-xl border-border/50 bg-background pl-9 pr-3 py-1.5 text-foreground focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary"
+          />
         </div>
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-medium text-muted-foreground">Type</label>
