@@ -304,6 +304,43 @@ setup once so everyone gets consistent, grounded answers.
 
 ---
 
+## Social Media Marketing — SMMS (`/smms`)
+
+**What it is**: an AI-first workspace for social media campaigns, ads and posts
+on Instagram, Facebook, YouTube, LinkedIn, Google Ads and Google Business
+Profile — both image and video content. The work moves through one flow:
+create → AI generate → edit → preview → schedule → publish → analytics.
+
+**Why it exists**: campaign strategy, ad copy, captions, video scripts and
+per-platform versions were being written by hand, one platform at a time, and
+nobody could see what was scheduled, approved or live.
+
+**Benefits**:
+- OpenAI turns a campaign brief into a strategy, audiences, keywords, hashtags
+  and ad concepts per platform. It turns one post idea into a separate,
+  within-limits version for each selected platform. It writes image and video
+  creatives (prompts, hooks, scene-by-scene scripts, thumbnails) and can
+  generate the images themselves.
+- Every AI output and every saved edit is a version that can be viewed and
+  restored. Regenerate, refine ("shorter", "lead with the offer"), duplicate,
+  and adapt an ad to another platform.
+- The AI writes from one central brand context. Company details, the service
+  catalogue, live Festival Offers and PMS clients are read live from the panels
+  that own them, never copied.
+- A central, private media library of images and videos. Uploads go straight
+  from the browser to storage, so large videos aren't capped.
+- Nothing is published without a person. A post goes out only through an
+  explicit Publish (via a connected Meta, Google or LinkedIn account, or by
+  "mark as published" after posting natively), or through a schedule that
+  someone with Publish permission approved. Editing withdraws the approval.
+  Paid ads are never launched or funded from the panel.
+- Ad spend and results aren't duplicated. Campaigns link to the LMS's imported
+  ad-platform data, and organic post performance is recorded per platform.
+- Five roles (Employee → Specialist → Manager → Admin, plus Super Admin), 13
+  overridable permissions, notifications and an append-only activity log.
+
+---
+
 ## The common thread
 
 Every panel above is real, in active use, and built specifically around how

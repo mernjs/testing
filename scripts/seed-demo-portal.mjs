@@ -33,6 +33,7 @@ import { seedSop, SOP_DEMO_ACCOUNTS } from "./demo/sop.mjs";
 import { seedDlms, DLMS_DEMO_ACCOUNTS } from "./demo/dlms.mjs";
 import OpenAI from "openai";
 import { seedAibots, AIBOTS_DEMO_ACCOUNTS } from "./demo/aibots.mjs";
+import { seedSmms, SMMS_DEMO_ACCOUNTS } from "./demo/smms.mjs";
 import { seedSeo, SEO_DEMO_ACCOUNTS } from "./demo/seo.mjs";
 
 const uri = process.env.MONGODB_URI;
@@ -80,6 +81,10 @@ try {
   const aibots = await seedAibots(db, { openai: process.env.OPENAI_API_KEY?.trim() ? new OpenAI() : null, log: console.log });
   console.log(`   ${aibots.bots} bots (${aibots.active} active), ${aibots.files} knowledge files, ${aibots.chats} chats, ${aibots.runs} usage rows${aibots.openai ? "" : " — no OpenAI key: metadata only"}`);
 
+  console.log("\n[+] Social Media (SMMS)…");
+  const smms = await seedSmms(db);
+  console.log(`   ${smms.campaigns} campaigns, ${smms.ads} ads, ${smms.posts} posts, ${smms.generations} versions`);
+
   console.log("\n==========================================================================");
   console.log("✨ Done. Portal demo logins (password for all: Demo@12345) — sign in at /login");
   console.log("==========================================================================");
@@ -92,6 +97,8 @@ try {
   for (const a of DLMS_DEMO_ACCOUNTS) console.log(`  • ${a.label.padEnd(34)} ${a.email}`);
   console.log("\n  AI Bots logins (same password) — sign in at /aibots/login");
   for (const a of AIBOTS_DEMO_ACCOUNTS) console.log(`  • ${a.label.padEnd(34)} ${a.email}`);
+  console.log("\n  Social Media logins (same password) — sign in at /smms/login");
+  for (const a of SMMS_DEMO_ACCOUNTS) console.log(`  • ${a.label.padEnd(34)} ${a.email}`);
   console.log("\n  Every other seeded portal account uses the same password; find them in /lms/wallet → Balances.");
 } catch (err) {
   console.error("❌ Demo seeder failed:", err);

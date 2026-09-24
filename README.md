@@ -421,3 +421,11 @@ Run a scheduler that calls `/api/wallet/expiry-sweep` daily with the cron bearer
   • Client                             demo.client@yashorbit.com
   • Business (hiring + services)       demo.business@yashorbit.com
   • Hiring (job applicant)             demo.hiring@yashorbit.com
+
+
+Needed in Vercel before going live
+
+SMMS_ENCRYPTION_KEY (your local .env already has one).
+CRON_SECRET.
+For publishing: META_APP_ID/META_APP_SECRET, GOOGLE_OAUTH_CLIENT_ID/GOOGLE_OAUTH_CLIENT_SECRET, LINKEDIN_CLIENT_ID/LINKEDIN_CLIENT_SECRET.
+For demo data, run npm run db:seed-smms. It creates the logins demo.smms.{admin,manager,specialist,employee}@yashorbit.com (password Demo@12345). Testing used a scratch database, which I dropped afterwards.

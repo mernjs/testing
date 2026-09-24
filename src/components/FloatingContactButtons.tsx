@@ -27,7 +27,7 @@ export default function FloatingContactButtons() {
   // Hide on the LMS panel, the AI Bots panel (its own chat composer and save
   // buttons sit in this corner) and on the dedicated chat page (which has the
   // full experience inline — no need for the floating duplicate there).
-  if (pathname?.startsWith("/lms") || pathname?.startsWith("/aibots") || pathname === "/ask") {
+  if (pathname?.startsWith("/lms") || pathname?.startsWith("/aibots") || pathname?.startsWith("/smms") || pathname === "/ask") {
     return chatOpen ? <ChatWidget open={chatOpen} onClose={() => setChatOpen(false)} /> : null;
   }
 

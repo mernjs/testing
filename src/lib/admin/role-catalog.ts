@@ -8,6 +8,7 @@ import { SOP_ROLES, SOP_ROLE_META } from "@/lib/sop-roles";
 import { SEO_ROLES, SEO_ROLE_META } from "@/lib/seo-roles";
 import { DLMS_ROLES, DLMS_ROLE_META } from "@/lib/dlms-roles";
 import { AIBOTS_ROLES, AIBOTS_ROLE_META } from "@/lib/aibots-roles";
+import { SMMS_ROLES, SMMS_ROLE_META } from "@/lib/smms-roles";
 
 /**
  * Every real role literal that can appear in `admin_users.roles`, grouped by
@@ -58,6 +59,7 @@ export const ROLE_GROUPS: RoleGroup[] = [
   group("SEO Panel", SEO_ROLES, SEO_ROLE_META),
   group("Digi Locker (DLMS)", DLMS_ROLES, DLMS_ROLE_META),
   group("AI Bots", AIBOTS_ROLES, AIBOTS_ROLE_META),
+  group("Social Media (SMMS)", SMMS_ROLES, SMMS_ROLE_META),
   {
     module: "LMS (CRM & Learning)",
     roles: [

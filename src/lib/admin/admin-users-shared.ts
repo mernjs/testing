@@ -7,6 +7,7 @@ import { effectiveSopRoles, hasSopAccess } from "@/lib/sop-roles";
 import { normalizeSeoRoles } from "@/lib/seo-roles";
 import { normalizeDlmsRoles } from "@/lib/dlms-roles";
 import { normalizeAibotsRoles } from "@/lib/aibots-roles";
+import { normalizeSmmsRoles } from "@/lib/smms-roles";
 import { normalizeTmsRoles } from "@/lib/tms-roles";
 import { normalizeChatRoles } from "@/lib/messenger-roles";
 import { normalizeLmsRoles } from "@/lib/lms-roles";
@@ -110,6 +111,13 @@ export function getPanelAccessSummary(user: AdminUserRow): PanelAccessSummaryIte
       name: "AI Bots",
       hasAccess: isSuperAdmin || normalizeAibotsRoles(roles).length > 0,
       roles: normalizeAibotsRoles(roles),
+      isSuperAdmin,
+    },
+    {
+      key: "smms",
+      name: "Social Media (SMMS)",
+      hasAccess: isSuperAdmin || normalizeSmmsRoles(roles).length > 0,
+      roles: normalizeSmmsRoles(roles),
       isSuperAdmin,
     },
     {

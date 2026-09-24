@@ -21,6 +21,7 @@
 import { SOP_PERMISSIONS, SOP_PERMISSION_KEY, SOP_PERMISSION_META } from "@/lib/sop-roles";
 import { DLMS_PERMISSIONS, DLMS_PERMISSION_KEY, DLMS_PERMISSION_META } from "@/lib/dlms-roles";
 import { AIBOTS_PERMISSIONS, AIBOTS_PERMISSION_KEY, AIBOTS_PERMISSION_META } from "@/lib/aibots-roles";
+import { SMMS_PERMISSIONS, SMMS_PERMISSION_KEY, SMMS_PERMISSION_META } from "@/lib/smms-roles";
 import { SEO_PERMISSIONS, SEO_PERMISSION_KEY, SEO_PERMISSION_META } from "@/lib/seo-roles";
 
 export interface PermissionOption {
@@ -409,6 +410,16 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       key: AIBOTS_PERMISSION_KEY[p],
       label: AIBOTS_PERMISSION_META[p].label,
       description: AIBOTS_PERMISSION_META[p].description,
+    })),
+  },
+  {
+    module: "Social Media (SMMS)",
+    // Derived from the SMMS role model so the catalog can never drift from
+    // the permissions `smmsCan()` actually checks.
+    permissions: SMMS_PERMISSIONS.map((p) => ({
+      key: SMMS_PERMISSION_KEY[p],
+      label: SMMS_PERMISSION_META[p].label,
+      description: SMMS_PERMISSION_META[p].description,
     })),
   },
   {

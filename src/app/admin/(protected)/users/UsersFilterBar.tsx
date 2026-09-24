@@ -92,6 +92,7 @@ export default function UsersFilterBar({
             <SelectItem value="seo">SEO Panel</SelectItem>
             <SelectItem value="dlms">Digi Locker (DLMS)</SelectItem>
             <SelectItem value="aibots">AI Bots</SelectItem>
+            <SelectItem value="smms">Social Media (SMMS)</SelectItem>
             <SelectItem value="messenger">Messenger Panel</SelectItem>
             <SelectItem value="lms">LMS (CRM &amp; Learning)</SelectItem>
             <SelectItem value="portal">External Portal</SelectItem>

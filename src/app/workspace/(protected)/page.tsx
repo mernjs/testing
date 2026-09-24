@@ -38,6 +38,7 @@ import {
   SearchCheck,
   Vault,
   Bot,
+  Megaphone,
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { normalizeRoles } from "@/lib/hrms-roles";
@@ -51,6 +52,7 @@ import { effectiveSopRoles, hasSopAccess } from "@/lib/sop-roles";
 import { hasSeoAccess, normalizeSeoRoles } from "@/lib/seo-roles";
 import { hasDlmsAccess, normalizeDlmsRoles, isDlmsManagerTier } from "@/lib/dlms-roles";
 import { hasAibotsAccess, normalizeAibotsRoles } from "@/lib/aibots-roles";
+import { hasSmmsAccess, normalizeSmmsRoles } from "@/lib/smms-roles";
 import { formatDateTime } from "@/lib/utils";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
@@ -197,6 +199,15 @@ export default async function HubDashboardPage({
       ])
     : [0, 0];
 
+  // ── Social Media: what's scheduled and what still needs approval (team-wide pipeline, same for every role). ──
+  const smmsAccess = hasSmmsAccess(roles);
+  const [smmsScheduled, smmsAwaiting] = smmsAccess
+    ? await Promise.all([
+        db.collection("smms_posts").countDocuments({ deletedAt: null, status: "scheduled" }).catch(() => 0),
+        db.collection("smms_posts").countDocuments({ deletedAt: null, status: "scheduled", approvedBy: null }).catch(() => 0),
+      ])
+    : [0, 0];
+
   // ── Tiles ──────────────────────────────────────────────────────────────────
   const tiles: ModuleTile[] = [
     {
@@ -297,6 +308,19 @@ export default async function HubDashboardPage({
       kpi: [
         { label: "My chats", value: String(aibotsChats) },
         { label: "Active today", value: String(aibotsToday) },
+      ],
+    },
+    {
+      key: "smms",
+      label: "Social Media",
+      description: "AI-written campaigns, ads and posts for Instagram, Facebook, YouTube, LinkedIn and Google — review, schedule, publish.",
+      href: "/smms",
+      icon: <Megaphone className="size-5" />,
+      visible: smmsAccess,
+      roleBadge: normalizeSmmsRoles(roles).join(", ").replace(/_/g, " "),
+      kpi: [
+        { label: "Scheduled posts", value: String(smmsScheduled) },
+        { label: "Awaiting approval", value: String(smmsAwaiting) },
       ],
     },
     {
