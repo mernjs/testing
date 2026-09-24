@@ -18,6 +18,7 @@
     "db:seed-wallet-rules": "node --env-file=.env scripts/seed-wallet-rules.mjs",
     "db:seed-sop": "node --env-file=.env scripts/seed-sop-demo.mjs",
     "db:seed-seo": "node --env-file=.env scripts/seed-seo-demo.mjs",
+    "db:seed-dlms": "node --env-file=.env scripts/seed-dlms-demo.mjs",
     "db:seed-all-panels": "node --env-file=.env scripts/seed-all-panels-demo.mjs",
     "db:seed-navratri-dussehra-offers": "node --env-file=.env scripts/seed-navratri-dussehra-offers.mjs"
   },

@@ -254,6 +254,31 @@ inclusion, robots.txt and JSON-LD edited here go live without a deploy.
 
 ---
 
+## Digi Locker — DLMS (`/dlms`)
+
+**What it is**: the secure vault for the logins, documents, URLs, accounts and
+notes that belong either to YashOrbit itself (the **Company Vault**) or to one
+specific client. Every record is owned by *Company* or by exactly one client.
+
+**Why it exists**: shared logins, registrar and hosting accounts, agreements,
+KYC files and certificates were scattered across chats, spreadsheets and
+personal drives, with no record of who opened what and no warning before
+something expired.
+
+**Benefits**:
+- Passwords are encrypted at rest, masked by default, and shown or copied only
+  by people with the *reveal* permission — each reveal is logged, and secrets
+  never appear in logs, notifications or list payloads.
+- One profile per client (credentials, URLs, documents, notes, expiry) built on
+  the existing client master and company record — nothing is duplicated.
+- Documents are private, versioned, and served only after a permission check.
+- A daily expiry sweep flags expired and soon-to-expire credentials, domains,
+  hosting, certificates and licences to DLMS managers.
+- Employees only see the clients (and, optionally, the company vault) they are
+  assigned to; managers and admins see everything.
+
+---
+
 ## The common thread
 
 Every panel above is real, in active use, and built specifically around how

@@ -287,6 +287,7 @@ export default function CreateUserSheet({
                       <SelectItem value="finance">Finance (FMS)</SelectItem>
                       <SelectItem value="sop">SOP Panel</SelectItem>
                       <SelectItem value="seo">SEO Panel</SelectItem>
+                      <SelectItem value="dlms">Digi Locker (DLMS)</SelectItem>
                       <SelectItem value="lms">LMS (CRM &amp; Learning)</SelectItem>
                       <SelectItem value="portal">External Portal</SelectItem>
                       <SelectItem value="workspace">Workspace Panel</SelectItem>

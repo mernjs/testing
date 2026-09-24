@@ -36,6 +36,7 @@ import {
   Trophy,
   BookText,
   SearchCheck,
+  Vault,
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { normalizeRoles } from "@/lib/hrms-roles";
@@ -47,6 +48,7 @@ import { normalizeAdminRoles } from "@/lib/admin-roles";
 import { normalizeFmsRoles } from "@/lib/fms-roles";
 import { effectiveSopRoles, hasSopAccess } from "@/lib/sop-roles";
 import { hasSeoAccess, normalizeSeoRoles } from "@/lib/seo-roles";
+import { hasDlmsAccess, normalizeDlmsRoles, isDlmsManagerTier } from "@/lib/dlms-roles";
 import { formatDateTime } from "@/lib/utils";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
@@ -163,6 +165,25 @@ export default async function HubDashboardPage({
       ])
     : [0, 0, 0];
 
+  // ── DLMS: vault items past / near expiry. Counts span every scope, so only manager-tier accounts (who see every scope anyway) get them. ──
+  const dlmsAccess = hasDlmsAccess(roles);
+  const dlmsSeesAll = dlmsAccess && isDlmsManagerTier({ roles });
+  const dlmsLimit = new Date(Date.now() + 30 * 86400000);
+  const dlmsLimitIso = `${dlmsLimit.getFullYear()}-${String(dlmsLimit.getMonth() + 1).padStart(2, "0")}-${String(dlmsLimit.getDate()).padStart(2, "0")}`;
+  const [dlmsExpired, dlmsExpiring] = dlmsSeesAll
+    ? await Promise.all(
+        [{ $lt: today }, { $gte: today, $lte: dlmsLimitIso }].map(async (range) =>
+          (
+            await Promise.all(
+              ["dlms_credentials", "dlms_documents", "dlms_links"].map((c) =>
+                db.collection(c).countDocuments({ deletedAt: null, status: "active", expiryDate: range }).catch(() => 0)
+              )
+            )
+          ).reduce((a, b) => a + b, 0)
+        )
+      )
+    : [0, 0];
+
   // ── Tiles ──────────────────────────────────────────────────────────────────
   const tiles: ModuleTile[] = [
     {
@@ -236,6 +257,21 @@ export default async function HubDashboardPage({
         { label: "Critical", value: String(seoCritical) },
         { label: "My tasks", value: String(seoMyTasks) },
       ],
+    },
+    {
+      key: "dlms",
+      label: "Digi Locker",
+      description: "Secure vault for company & client credentials, documents, URLs and notes.",
+      href: "/dlms",
+      icon: <Vault className="size-5" />,
+      visible: dlmsAccess,
+      roleBadge: normalizeDlmsRoles(roles).join(", ").replace(/_/g, " "),
+      kpi: dlmsSeesAll
+        ? [
+            { label: "Expired", value: String(dlmsExpired) },
+            { label: "Expiring 30d", value: String(dlmsExpiring) },
+          ]
+        : undefined,
     },
     {
       key: "messenger",
