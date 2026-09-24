@@ -1,0 +1,160 @@
+import "server-only";
+import { COLLECTIONS, aibotsCollection, newId, notDeleted } from "@/lib/aibots/db";
+import { chatsCollection, toListItem, type ChatListItem } from "@/lib/aibots/chats";
+import { botsCollection } from "@/lib/aibots/bots";
+import type { AibotsViewer } from "@/lib/aibots/viewer";
+
+/**
+ * One row per OpenAI execution (a user message, or a regenerate). This is the
+ * usage ledger behind the dashboard — ids, tokens, cost, status, timing. It
+ * never stores prompt or reply text.
+ */
+
+export type RunStatus = "completed" | "failed" | "stopped";
+
+export interface RunDoc {
+  _id: string;
+  chatId: string;
+  botId: string;
+  userId: string;
+  model: string;
+  responseId: string | null;
+  status: RunStatus;
+  regenerate: boolean;
+  inputTokens: number;
+  outputTokens: number;
+  costUsd: number;
+  durationMs: number;
+  /** Short, scrubbed error text for failed runs. */
+  error: string | null;
+  createdAt: Date;
+}
+
+let indexesEnsured = false;
+async function runsCollection() {
+  const col = await aibotsCollection<RunDoc>(COLLECTIONS.runs);
+  if (!indexesEnsured) {
+    indexesEnsured = true;
+    await Promise.all([
+      col.createIndex({ createdAt: -1 }).catch(() => {}),
+      col.createIndex({ userId: 1, createdAt: -1 }).catch(() => {}),
+      col.createIndex({ botId: 1, createdAt: -1 }).catch(() => {}),
+    ]);
+  }
+  return col;
+}
+
+export async function recordRun(run: Omit<RunDoc, "_id" | "createdAt">): Promise<void> {
+  try {
+    const col = await runsCollection();
+    await col.insertOne({ ...run, _id: newId(), error: run.error ? run.error.replace(/sk-[A-Za-z0-9_-]+/g, "[redacted]").slice(0, 300) : null, createdAt: new Date() });
+  } catch {
+    // The usage ledger must never break a reply.
+  }
+}
+
+function startOfToday(): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+export async function countUserRunsToday(userId: string): Promise<number> {
+  const col = await runsCollection();
+  return col.countDocuments({ userId, createdAt: { $gte: startOfToday() } });
+}
+
+export interface DashboardData {
+  scope: "all" | "mine";
+  totalBots: number;
+  activeBots: number;
+  totalChats: number;
+  chatsToday: number;
+  runs30: number;
+  failed30: number;
+  inputTokens30: number;
+  outputTokens30: number;
+  cost30: number;
+  daily: { date: string; runs: number; tokens: number; cost: number; failed: number }[];
+  topBots: { botId: string; name: string; icon: string; color: string; runs: number; tokens: number; cost: number }[];
+  recentChats: (ChatListItem & { botName: string })[];
+  recentFailures: { botName: string; model: string; error: string | null; createdAt: string }[];
+}
+
+/** Manager tier sees platform-wide numbers; everyone else sees their own usage. */
+export async function getDashboard(viewer: AibotsViewer): Promise<DashboardData> {
+  const mine = !viewer.seesAll;
+  // Day buckets use the server's timezone on both sides (Mongo defaults to UTC).
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  const who = mine ? { userId: viewer.userId } : {};
+  const since = new Date(Date.now() - 29 * 86400000);
+  since.setHours(0, 0, 0, 0);
+  const [bots, chats, runs] = await Promise.all([botsCollection(), chatsCollection(), runsCollection()]);
+
+  const [allBots, totalChats, chatsToday, totals, daily, top, recent, failures] = await Promise.all([
+    bots.find(notDeleted, { projection: { name: 1, icon: 1, color: 1, status: 1 } }).toArray(),
+    chats.countDocuments({ ...notDeleted, ...who }),
+    chats.countDocuments({ ...notDeleted, ...who, createdAt: { $gte: startOfToday() } }),
+    runs
+      .aggregate<{ runs: number; failed: number; inT: number; outT: number; cost: number }>([
+        { $match: { ...who, createdAt: { $gte: since } } },
+        { $group: { _id: null, runs: { $sum: 1 }, failed: { $sum: { $cond: [{ $eq: ["$status", "failed"] }, 1, 0] } }, inT: { $sum: "$inputTokens" }, outT: { $sum: "$outputTokens" }, cost: { $sum: "$costUsd" } } },
+      ])
+      .toArray(),
+    runs
+      .aggregate<{ _id: string; runs: number; tokens: number; cost: number; failed: number }>([
+        { $match: { ...who, createdAt: { $gte: since } } },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt", timezone: tz } },
+            runs: { $sum: 1 },
+            tokens: { $sum: { $add: ["$inputTokens", "$outputTokens"] } },
+            cost: { $sum: "$costUsd" },
+            failed: { $sum: { $cond: [{ $eq: ["$status", "failed"] }, 1, 0] } },
+          },
+        },
+      ])
+      .toArray(),
+    runs
+      .aggregate<{ _id: string; runs: number; tokens: number; cost: number }>([
+        { $match: { ...who, createdAt: { $gte: since } } },
+        { $group: { _id: "$botId", runs: { $sum: 1 }, tokens: { $sum: { $add: ["$inputTokens", "$outputTokens"] } }, cost: { $sum: "$costUsd" } } },
+        { $sort: { runs: -1 } },
+        { $limit: 6 },
+      ])
+      .toArray(),
+    chats.find({ ...notDeleted, ...who }).sort({ lastMessageAt: -1 }).limit(8).toArray(),
+    runs.find({ ...who, status: "failed" }).sort({ createdAt: -1 }).limit(5).toArray(),
+  ]);
+
+  const botById = new Map(allBots.map((b) => [b._id, b]));
+  const byDay = new Map(daily.map((d) => [d._id, d]));
+  const days: DashboardData["daily"] = [];
+  for (let i = 0; i < 30; i++) {
+    const d = new Date(since);
+    d.setDate(since.getDate() + i);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const row = byDay.get(key);
+    days.push({ date: key, runs: row?.runs ?? 0, tokens: row?.tokens ?? 0, cost: row?.cost ?? 0, failed: row?.failed ?? 0 });
+  }
+  const t = totals[0];
+  return {
+    scope: mine ? "mine" : "all",
+    totalBots: allBots.length,
+    activeBots: allBots.filter((b) => b.status === "active").length,
+    totalChats,
+    chatsToday,
+    runs30: t?.runs ?? 0,
+    failed30: t?.failed ?? 0,
+    inputTokens30: t?.inT ?? 0,
+    outputTokens30: t?.outT ?? 0,
+    cost30: t?.cost ?? 0,
+    daily: days,
+    topBots: top.map((r) => {
+      const b = botById.get(r._id);
+      return { botId: r._id, name: b?.name ?? "Deleted bot", icon: b?.icon ?? "bot", color: b?.color ?? "slate", runs: r.runs, tokens: r.tokens, cost: r.cost };
+    }),
+    recentChats: recent.map((c) => ({ ...toListItem(c), botName: botById.get(c.botId)?.name ?? "Deleted bot" })),
+    recentFailures: failures.map((f) => ({ botName: botById.get(f.botId)?.name ?? "Deleted bot", model: f.model, error: f.error, createdAt: f.createdAt.toISOString() })),
+  };
+}

@@ -1,6 +1,6 @@
 import "server-only";
 import type OpenAI from "openai";
-import { getOpenAI } from "@/lib/openai";
+import { getOpenAI, isUnsupportedParamError } from "@/lib/openai";
 import { getChatbotConfig, ensureVectorStore, type ChatbotConfig } from "@/lib/chatbot-config";
 import type { ChatCitation, ChatMessageDoc } from "@/lib/chatbot-sessions";
 import { findWebsitePageByFileId } from "@/lib/kb-website";
@@ -40,14 +40,6 @@ export async function prepareAnswer(
   const limit = Math.max(0, config.contextMessageLimit);
   const trimmed = limit > 0 ? history.slice(-limit) : [];
   return { config, vectorStoreId, input: buildResponsesInput(trimmed, newUserText) };
-}
-
-function isUnsupportedParamError(err: unknown, param: string): boolean {
-  if (!err || typeof err !== "object") return false;
-  const e = err as { status?: number; param?: string; message?: string };
-  if (e.status !== 400) return false;
-  if (e.param === param) return true;
-  return typeof e.message === "string" && e.message.toLowerCase().includes(param);
 }
 
 /**

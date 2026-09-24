@@ -6,6 +6,7 @@ import { normalizeFmsRoles } from "@/lib/fms-roles";
 import { effectiveSopRoles, hasSopAccess } from "@/lib/sop-roles";
 import { normalizeSeoRoles } from "@/lib/seo-roles";
 import { normalizeDlmsRoles } from "@/lib/dlms-roles";
+import { normalizeAibotsRoles } from "@/lib/aibots-roles";
 import { normalizeTmsRoles } from "@/lib/tms-roles";
 import { normalizeChatRoles } from "@/lib/messenger-roles";
 import { normalizeLmsRoles } from "@/lib/lms-roles";
@@ -102,6 +103,13 @@ export function getPanelAccessSummary(user: AdminUserRow): PanelAccessSummaryIte
       name: "Digi Locker (DLMS)",
       hasAccess: isSuperAdmin || normalizeDlmsRoles(roles).length > 0,
       roles: normalizeDlmsRoles(roles),
+      isSuperAdmin,
+    },
+    {
+      key: "aibots",
+      name: "AI Bots",
+      hasAccess: isSuperAdmin || normalizeAibotsRoles(roles).length > 0,
+      roles: normalizeAibotsRoles(roles),
       isSuperAdmin,
     },
     {

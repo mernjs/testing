@@ -278,7 +278,7 @@ export default function CreateUserSheet({
                       <SelectValue placeholder="All Panels" />
                     </SelectTrigger>
                     <SelectContent align="end">
-                      <SelectItem value="all">All Panels (12)</SelectItem>
+                      <SelectItem value="all">All Panels (13)</SelectItem>
                       <SelectItem value="hrms">HRMS Panel</SelectItem>
                       <SelectItem value="pms">PMS (Projects)</SelectItem>
                       <SelectItem value="procurement">Procurement (PRMS)</SelectItem>
@@ -288,6 +288,7 @@ export default function CreateUserSheet({
                       <SelectItem value="sop">SOP Panel</SelectItem>
                       <SelectItem value="seo">SEO Panel</SelectItem>
                       <SelectItem value="dlms">Digi Locker (DLMS)</SelectItem>
+                      <SelectItem value="ai bots">AI Bots</SelectItem>
                       <SelectItem value="lms">LMS (CRM &amp; Learning)</SelectItem>
                       <SelectItem value="portal">External Portal</SelectItem>
                       <SelectItem value="workspace">Workspace Panel</SelectItem>

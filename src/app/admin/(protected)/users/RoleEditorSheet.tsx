@@ -151,6 +151,7 @@ export default function RoleEditorSheet({
                     <SelectItem value="sop">SOP Panel</SelectItem>
                     <SelectItem value="seo">SEO Panel</SelectItem>
                     <SelectItem value="dlms">Digi Locker (DLMS)</SelectItem>
+                    <SelectItem value="ai bots">AI Bots</SelectItem>
                     <SelectItem value="lms">LMS (CRM)</SelectItem>
                     <SelectItem value="portal">External Portal</SelectItem>
                     <SelectItem value="workspace">Workspace Panel</SelectItem>

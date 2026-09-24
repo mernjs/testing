@@ -80,7 +80,7 @@ export default function UsersFilterBar({
             <SelectValue placeholder="All Panels" />
           </SelectTrigger>
           <SelectContent align="start">
-            <SelectItem value="all">All 12 Panels</SelectItem>
+            <SelectItem value="all">All 13 Panels</SelectItem>
             <SelectSeparator />
             <SelectItem value="admin">Super Admin Panel</SelectItem>
             <SelectItem value="hrms">HRMS Panel</SelectItem>
@@ -91,6 +91,7 @@ export default function UsersFilterBar({
             <SelectItem value="sop">SOP Panel</SelectItem>
             <SelectItem value="seo">SEO Panel</SelectItem>
             <SelectItem value="dlms">Digi Locker (DLMS)</SelectItem>
+            <SelectItem value="aibots">AI Bots</SelectItem>
             <SelectItem value="messenger">Messenger Panel</SelectItem>
             <SelectItem value="lms">LMS (CRM &amp; Learning)</SelectItem>
             <SelectItem value="portal">External Portal</SelectItem>

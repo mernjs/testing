@@ -21,6 +21,8 @@ import { createSopSession, setSopSessionCookie, clearSopSessionCookie } from "@/
 import { hasSeoAccess } from "@/lib/seo-roles";
 import { hasDlmsAccess } from "@/lib/dlms-roles";
 import { createDlmsSession, setDlmsSessionCookie, clearDlmsSessionCookie } from "@/lib/dlms-auth";
+import { hasAibotsAccess } from "@/lib/aibots-roles";
+import { createAibotsSession, setAibotsSessionCookie, clearAibotsSessionCookie } from "@/lib/aibots-auth";
 import { createSeoSession, setSeoSessionCookie, clearSeoSessionCookie } from "@/lib/seo-auth";
 import { createHubSession, setHubSessionCookie, clearHubSessionCookie } from "@/lib/hub-auth";
 
@@ -54,7 +56,7 @@ import { createHubSession, setHubSessionCookie, clearHubSessionCookie } from "@/
  * applicant records, structurally outside this system.
  */
 
-export type SsoModule = "hrms" | "pms" | "prms" | "tms" | "messenger" | "lms" | "admin" | "hub" | "fms" | "sop" | "seo" | "dlms";
+export type SsoModule = "hrms" | "pms" | "prms" | "tms" | "messenger" | "lms" | "admin" | "hub" | "fms" | "sop" | "seo" | "dlms" | "aibots";
 
 interface ModuleEntry {
   key: SsoModule;
@@ -135,6 +137,14 @@ const MODULES: ModuleEntry[] = [
     clearCookie: clearDlmsSessionCookie,
     collection: "dlms_sessions",
     hasAccess: (roles) => hasDlmsAccess(roles),
+  },
+  {
+    key: "aibots",
+    create: createAibotsSession,
+    setCookie: setAibotsSessionCookie,
+    clearCookie: clearAibotsSessionCookie,
+    collection: "aibots_sessions",
+    hasAccess: (roles) => hasAibotsAccess(roles),
   },
   {
     key: "tms",

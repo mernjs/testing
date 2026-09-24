@@ -21,6 +21,7 @@ import {
   BookText,
   SearchCheck,
   Vault,
+  Bot,
 } from "lucide-react";
 
 const MODULE_ICONS: Record<string, React.ReactNode> = {
@@ -33,6 +34,7 @@ const MODULE_ICONS: Record<string, React.ReactNode> = {
   sop: <BookText className="size-5 text-primary" />,
   seo: <SearchCheck className="size-5 text-yashorbit-blue" />,
   dlms: <Vault className="size-5 text-primary" />,
+  aibots: <Bot className="size-5 text-yashorbit-blue" />,
   messenger: <MessageSquare className="size-5 text-primary" />,
   lms: <BookOpen className="size-5 text-yashorbit-blue" />,
   portal: <UserCheck className="size-5 text-primary" />,

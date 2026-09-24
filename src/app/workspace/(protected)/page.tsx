@@ -37,6 +37,7 @@ import {
   BookText,
   SearchCheck,
   Vault,
+  Bot,
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { normalizeRoles } from "@/lib/hrms-roles";
@@ -49,6 +50,7 @@ import { normalizeFmsRoles } from "@/lib/fms-roles";
 import { effectiveSopRoles, hasSopAccess } from "@/lib/sop-roles";
 import { hasSeoAccess, normalizeSeoRoles } from "@/lib/seo-roles";
 import { hasDlmsAccess, normalizeDlmsRoles, isDlmsManagerTier } from "@/lib/dlms-roles";
+import { hasAibotsAccess, normalizeAibotsRoles } from "@/lib/aibots-roles";
 import { formatDateTime } from "@/lib/utils";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
@@ -184,6 +186,17 @@ export default async function HubDashboardPage({
       )
     : [0, 0];
 
+  // ── AI Bots: the viewer's own chats (bot visibility is per-bot, so no bot count here). ──
+  const aibotsAccess = hasAibotsAccess(roles);
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const [aibotsChats, aibotsToday] = aibotsAccess
+    ? await Promise.all([
+        db.collection("aibots_chats").countDocuments({ userId: user.id, deletedAt: null }).catch(() => 0),
+        db.collection("aibots_chats").countDocuments({ userId: user.id, deletedAt: null, lastMessageAt: { $gte: startOfDay } }).catch(() => 0),
+      ])
+    : [0, 0];
+
   // ── Tiles ──────────────────────────────────────────────────────────────────
   const tiles: ModuleTile[] = [
     {
@@ -272,6 +285,19 @@ export default async function HubDashboardPage({
             { label: "Expiring 30d", value: String(dlmsExpiring) },
           ]
         : undefined,
+    },
+    {
+      key: "aibots",
+      label: "AI Bots",
+      description: "Purpose-built AI assistants with their own knowledge — proposals, requirements, meetings and more.",
+      href: "/aibots",
+      icon: <Bot className="size-5" />,
+      visible: aibotsAccess,
+      roleBadge: normalizeAibotsRoles(roles).join(", ").replace(/_/g, " "),
+      kpi: [
+        { label: "My chats", value: String(aibotsChats) },
+        { label: "Active today", value: String(aibotsToday) },
+      ],
     },
     {
       key: "messenger",

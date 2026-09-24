@@ -279,6 +279,31 @@ something expired.
 
 ---
 
+## AI Bots (`/aibots`)
+
+**What it is**: a catalogue of purpose-built AI assistants — ProposalGPT,
+Requirement Analyzer AI, Meeting Assistant AI and whatever else the team
+creates — each with its own instructions, OpenAI model, private knowledge base
+and access list, plus a chat workspace for every one of them.
+
+**Why it exists**: people were pasting the same company profile, templates and
+"act as…" prompts into a general chatbot over and over. A bot captures that
+setup once so everyone gets consistent, grounded answers.
+
+**Benefits**:
+- A new bot is configuration, not code: create it, upload its knowledge files,
+  choose who can use it, and it appears in their sidebar straight away.
+- Every bot's knowledge lives in its own OpenAI vector store, searched only by
+  that bot. Chats keep their context in their own OpenAI Conversation.
+- Only application metadata is stored in the database (bots, file records,
+  chat pointers, a usage ledger). Transcripts are read back from OpenAI, and
+  the API key never leaves the server.
+- Role- and person-level access per bot, manager oversight of all chats, and an
+  audit log of every bot, file and chat change.
+- A dashboard of chats, executions, token usage, estimated cost and failures.
+
+---
+
 ## The common thread
 
 Every panel above is real, in active use, and built specifically around how
