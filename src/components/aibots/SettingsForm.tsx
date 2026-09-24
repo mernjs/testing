@@ -7,18 +7,32 @@ import { LoaderCircle, Plus, Save, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import OptionSelect from "@/components/sop/OptionSelect";
 import { saveSettingsAction } from "@/app/aibots/(protected)/actions";
 import type { ModelPrice } from "@/lib/aibots/constants";
 
 type Row = { id: string; label: string; input: string; output: string };
 
-export default function SettingsForm({ models, defaultModel, maxOutputTokens, dailyMessageLimit }: { models: ModelPrice[]; defaultModel: string; maxOutputTokens: number; dailyMessageLimit: number }) {
+export default function SettingsForm({
+  models,
+  defaultModel,
+  maxOutputTokens,
+  dailyMessageLimit,
+  generalInstructions,
+}: {
+  models: ModelPrice[];
+  defaultModel: string;
+  maxOutputTokens: number;
+  dailyMessageLimit: number;
+  generalInstructions: string;
+}) {
   const router = useRouter();
   const [rows, setRows] = useState<Row[]>(models.map((m) => ({ id: m.id, label: m.label, input: String(m.input), output: String(m.output) })));
   const [def, setDef] = useState(defaultModel);
   const [maxOut, setMaxOut] = useState(String(maxOutputTokens));
   const [daily, setDaily] = useState(String(dailyMessageLimit));
+  const [general, setGeneral] = useState(generalInstructions);
   const [pending, start] = useTransition();
   const patch = (i: number, p: Partial<Row>) => setRows((r) => r.map((x, j) => (j === i ? { ...x, ...p } : x)));
 
@@ -28,7 +42,7 @@ export default function SettingsForm({ models, defaultModel, maxOutputTokens, da
       onSubmit={(e) => {
         e.preventDefault();
         start(async () => {
-          const res = await saveSettingsAction({ models: rows, defaultModel: def, maxOutputTokens: maxOut, dailyMessageLimit: daily });
+          const res = await saveSettingsAction({ models: rows, defaultModel: def, maxOutputTokens: maxOut, dailyMessageLimit: daily, generalInstructions: general });
           if (!res.ok) return void toast.error(res.error);
           toast.success("Settings saved");
           router.refresh();
@@ -68,7 +82,7 @@ export default function SettingsForm({ models, defaultModel, maxOutputTokens, da
       </Button>
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-1.5">
-          <Label htmlFor="s-def">Default model for new bots</Label>
+          <Label htmlFor="s-def">Default model (new bots &amp; Start New Chat)</Label>
           <OptionSelect id="s-def" value={def} onChange={setDef} options={rows.filter((r) => r.id.trim()).map((r) => ({ value: r.id.trim(), label: r.label || r.id }))} />
         </div>
         <div className="space-y-1.5">
@@ -80,6 +94,11 @@ export default function SettingsForm({ models, defaultModel, maxOutputTokens, da
           <Input id="s-daily" type="number" min={0} max={10000} value={daily} onChange={(e) => setDaily(e.target.value)} />
           <p className="text-[11px] text-muted-foreground">0 = unlimited.</p>
         </div>
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="s-general">Start New Chat — instructions</Label>
+        <Textarea id="s-general" rows={5} maxLength={20000} value={general} onChange={(e) => setGeneral(e.target.value)} className="font-mono text-xs" />
+        <p className="text-[11px] text-muted-foreground">How the general assistant behaves. It has no knowledge base and runs on the default model above; changes apply to the next message in every general chat.</p>
       </div>
       <div className="flex justify-end">
         <Button type="submit" disabled={pending}>

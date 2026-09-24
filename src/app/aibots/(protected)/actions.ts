@@ -11,7 +11,7 @@ import { requireViewer, can, AibotsInputError, ForbiddenError, NotFoundError, ty
 import { recordAudit, diffSummary } from "@/lib/aibots/audit";
 import { markAibotsNotificationsRead, notifyAibotsUsers } from "@/lib/aibots/notifications";
 import { createBot, deleteBot, getBot, setBotStatus, updateBot, type BotInput } from "@/lib/aibots/bots";
-import { deleteBotFile, refreshProcessing, setBotFileEnabled, updateBotFileMeta, friendlyError } from "@/lib/aibots/knowledge";
+import { deleteBotFile, getBotFileText, refreshProcessing, setBotFileEnabled, updateBotFileMeta, friendlyError } from "@/lib/aibots/knowledge";
 import { deleteChat, renameChat } from "@/lib/aibots/chats";
 import { saveSettings } from "@/lib/aibots/settings";
 
@@ -27,7 +27,7 @@ type Ok<T = object> = { ok: true } & T;
 const SESSION_EXPIRED: Fail = { ok: false, error: "Your session has expired — please sign in again." };
 const DENIED: Fail = { ok: false, error: "You don't have permission to do that." };
 
-async function run<T extends object>(permission: AibotsPermission | null, fn: (v: AibotsViewer) => Promise<T>): Promise<Ok<T> | Fail> {
+async function run<T extends object>(permission: AibotsPermission | null, fn: (v: AibotsViewer) => Promise<T>, opts: { revalidate?: boolean } = {}): Promise<Ok<T> | Fail> {
   let v: AibotsViewer;
   try {
     v = await requireViewer();
@@ -38,7 +38,7 @@ async function run<T extends object>(permission: AibotsPermission | null, fn: (v
   try {
     const out = await fn(v);
     // The sidebar lists bots and chats, so every mutation refreshes the whole panel.
-    revalidatePath("/aibots", "layout");
+    if (opts.revalidate !== false) revalidatePath("/aibots", "layout");
     return { ok: true, ...out };
   } catch (err) {
     if (err instanceof AibotsInputError) return { ok: false, error: err.message };
@@ -141,6 +141,14 @@ export async function deleteFileAction(botId: string, fileId: string) {
     await recordAudit({ actorId: v.userId, actorEmail: v.email, action: "delete", entity: "file", entityId: fileId, entityLabel: f.title, botId, summary: `${bot.name}: removed from OpenAI` });
     return {};
   });
+}
+
+/** Read a knowledge file's indexed text. Anyone who can open the knowledge base may view it. */
+export async function viewFileAction(botId: string, fileId: string) {
+  return run(null, async (v) => {
+    if (!can(v, "EDIT_BOT") && !can(v, "MANAGE_KB") && !can(v, "UPLOAD_FILES") && !can(v, "DELETE_FILES")) throw new ForbiddenError();
+    return getBotFileText(await loadBot(botId), fileId);
+  }, { revalidate: false });
 }
 
 export async function refreshFilesAction(botId: string) {

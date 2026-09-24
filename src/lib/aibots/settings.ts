@@ -15,18 +15,24 @@ export interface AibotsSettings {
   maxOutputTokens: number;
   /** Per-user daily message cap across all bots (0 = unlimited). */
   dailyMessageLimit: number;
+  /** System instructions for "Start New Chat" — the general assistant that isn't tied to any bot. Uses `defaultModel`. */
+  generalInstructions: string;
   updatedAt: Date;
   updatedBy: string | null;
 }
 
 const ID = "main";
-export const DEFAULT_SETTINGS = { models: DEFAULT_MODELS, defaultModel: DEFAULT_MODELS[0].id, maxOutputTokens: 4000, dailyMessageLimit: 200 };
+export const DEFAULT_GENERAL_INSTRUCTIONS =
+  "You are YashOrbit's general AI assistant for employees. Help with writing, analysis, planning, research and everyday work questions. Be accurate and concise, ask a clarifying question when a request is ambiguous, and say when you don't know something rather than guessing.";
+
+export const DEFAULT_SETTINGS = { models: DEFAULT_MODELS, defaultModel: DEFAULT_MODELS[0].id, maxOutputTokens: 4000, dailyMessageLimit: 200, generalInstructions: DEFAULT_GENERAL_INSTRUCTIONS };
 
 export async function getSettings(): Promise<AibotsSettings> {
   const db = await getDb();
   const doc = await db.collection<AibotsSettings>(COLLECTIONS.settings).findOne({ _id: ID });
   const merged = { _id: ID, ...DEFAULT_SETTINGS, updatedAt: new Date(0), updatedBy: null, ...(doc ?? {}) };
   if (!merged.models?.length) merged.models = DEFAULT_MODELS;
+  if (!merged.generalInstructions?.trim()) merged.generalInstructions = DEFAULT_GENERAL_INSTRUCTIONS;
   return merged;
 }
 
@@ -44,7 +50,7 @@ export function estimateCost(settings: AibotsSettings, model: string, inputToken
 const MODEL_ID = /^[a-zA-Z0-9][a-zA-Z0-9._:-]{1,63}$/;
 
 export async function saveSettings(
-  input: { models: { id: unknown; label: unknown; input: unknown; output: unknown }[]; defaultModel: unknown; maxOutputTokens: unknown; dailyMessageLimit: unknown },
+  input: { models: { id: unknown; label: unknown; input: unknown; output: unknown }[]; defaultModel: unknown; maxOutputTokens: unknown; dailyMessageLimit: unknown; generalInstructions: unknown },
   actorId: string
 ): Promise<void> {
   const seen = new Set<string>();
@@ -65,7 +71,16 @@ export async function saveSettings(
   const db = await getDb();
   await db.collection<AibotsSettings>(COLLECTIONS.settings).updateOne(
     { _id: ID },
-    { $set: { models, defaultModel: seen.has(defaultModel) ? defaultModel : models[0].id, maxOutputTokens, dailyMessageLimit, ...updateStamp(actorId) } },
+    {
+      $set: {
+        models,
+        defaultModel: seen.has(defaultModel) ? defaultModel : models[0].id,
+        maxOutputTokens,
+        dailyMessageLimit,
+        generalInstructions: str(input.generalInstructions, 20000) || DEFAULT_GENERAL_INSTRUCTIONS,
+        ...updateStamp(actorId),
+      },
+    },
     { upsert: true }
   );
 }

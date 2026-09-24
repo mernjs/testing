@@ -6,7 +6,7 @@ import { PageHeader, SectionCard } from "@/components/aibots/AibotsUi";
 import AibotsFilterBar from "@/components/aibots/AibotsFilterBar";
 import ActionButton from "@/components/aibots/ActionButton";
 import { getViewer, can } from "@/lib/aibots/viewer";
-import { listAllBots } from "@/lib/aibots/bots";
+import { listAllBots, GENERAL_BOT_ID, GENERAL_BOT_NAME } from "@/lib/aibots/bots";
 import { listAllChats } from "@/lib/aibots/chats";
 import { deleteChatAction } from "@/app/aibots/(protected)/actions";
 import { formatDateTime } from "@/lib/utils";
@@ -19,7 +19,7 @@ export default async function AllChatsPage({ searchParams }: { searchParams: Pro
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const [bots, result] = await Promise.all([listAllBots(), listAllChats({ botId: sp.bot || undefined, q: sp.q || undefined, page })]);
-  const botName = new Map(bots.map((b) => [b._id, b.name]));
+  const botName = new Map([[GENERAL_BOT_ID, GENERAL_BOT_NAME], ...bots.map((b) => [b._id, b.name] as [string, string])]);
   const pageHref = (p: number) => {
     const qs = new URLSearchParams(Object.entries(sp).filter((e): e is [string, string] => !!e[1]));
     qs.set("page", String(p));
@@ -32,7 +32,7 @@ export default async function AllChatsPage({ searchParams }: { searchParams: Pro
       <AibotsFilterBar
         fields={[
           { key: "q", label: "Search", type: "search", placeholder: "Chat title or user email" },
-          { key: "bot", label: "Bot", type: "select", options: bots.map((b) => ({ value: b._id, label: b.name })), allLabel: "All bots" },
+          { key: "bot", label: "Bot", type: "select", options: [{ value: GENERAL_BOT_ID, label: GENERAL_BOT_NAME }, ...bots.map((b) => ({ value: b._id, label: b.name }))], allLabel: "All bots" },
         ]}
         values={{ q: sp.q ?? "", bot: sp.bot ?? "" }}
       />

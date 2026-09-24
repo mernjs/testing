@@ -4,7 +4,7 @@ import { isOpenAIConfigured } from "@/lib/openai";
 import { sanitizeUserMessage } from "@/lib/prompt-safety";
 import { getViewer, can, AibotsInputError, NotFoundError } from "@/lib/aibots/viewer";
 import { getUsableBot } from "@/lib/aibots/bots";
-import { autoTitle, chatsCollection, createChat, getChat, touchChat, type ChatDoc } from "@/lib/aibots/chats";
+import { autoTitle, chatsCollection, createChat, ensureConversation, getChat, touchChat, type ChatDoc } from "@/lib/aibots/chats";
 import { refreshProcessing, friendlyError } from "@/lib/aibots/knowledge";
 import { botHasKnowledge, buildUserContent, citationTitles, collectCitedFileIds, plainText, popLastTurn, startResponse, type UserContent } from "@/lib/aibots/engine";
 import { countUserRunsToday, recordRun } from "@/lib/aibots/runs";
@@ -79,6 +79,8 @@ export async function POST(req: NextRequest) {
       if (!chat) {
         chat = await createChat(viewer, bot._id, sanitized.text);
         isNew = true;
+      } else {
+        await ensureConversation(chat);
       }
     }
   } catch (err) {

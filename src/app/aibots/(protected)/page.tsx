@@ -8,6 +8,7 @@ import { PageHeader, SectionCard, Notice } from "@/components/aibots/AibotsUi";
 import BotAvatar from "@/components/aibots/BotAvatar";
 import { Button } from "@/components/ui/button";
 import { getViewer } from "@/lib/aibots/viewer";
+import { GENERAL_BOT_ID } from "@/lib/aibots/constants";
 import { getDashboard } from "@/lib/aibots/runs";
 import { isOpenAIConfigured } from "@/lib/openai";
 import { formatCompact, formatDateTime } from "@/lib/utils";
@@ -28,8 +29,8 @@ export default async function AibotsDashboardPage() {
         crumbs={[{ label: "Dashboard" }]}
         description={mine ? "Your AI bot usage over the last 30 days." : "Every bot, chat and OpenAI execution across the company — last 30 days."}
         actions={
-          <Button nativeButton={false} render={<Link href="/aibots/new" />}>
-            <MessageSquarePlus className="size-4" /> Generate Chat
+          <Button nativeButton={false} render={<Link href={`/aibots/b/${GENERAL_BOT_ID}`} />}>
+            <MessageSquarePlus className="size-4" /> Start New Chat
           </Button>
         }
       />
@@ -41,7 +42,7 @@ export default async function AibotsDashboardPage() {
       )}
 
       <KpiGrid>
-        <KpiCard label="Total Bots" value={d.totalBots} accent icon={<Bot className="size-4" />} />
+        <KpiCard label={mine ? "My Bots" : "Total Bots"} value={d.totalBots} accent icon={<Bot className="size-4" />} />
         <KpiCard label="Active Bots" value={d.activeBots} icon={<Power className="size-4" />} />
         <KpiCard label={mine ? "My Chats" : "Total Chats"} value={d.totalChats} icon={<MessagesSquare className="size-4" />} />
         <KpiCard label="Chats Today" value={d.chatsToday} icon={<CalendarDays className="size-4" />} />

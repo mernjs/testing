@@ -56,7 +56,15 @@ export default async function EditBotPage({ params, searchParams }: { params: Pr
       </nav>
       {!openAIReady && <Notice tone="warn">OpenAI isn&apos;t configured on this server (OPENAI_API_KEY), so knowledge files can&apos;t be uploaded and the bot can&apos;t reply yet.</Notice>}
       {tab === "config" && o ? (
-        <BotForm key={bot.updatedAt.toISOString()} botId={bot._id} initial={formValuesFor(bot, o.settings.defaultModel)} models={o.models} roleOptions={o.roleOptions} userOptions={o.userOptions} />
+        <BotForm
+          key={bot.updatedAt.toISOString()}
+          botId={bot._id}
+          initial={formValuesFor(bot, o.settings.defaultModel)}
+          models={o.models}
+          roleOptions={o.roleOptions}
+          userOptions={o.userOptions}
+          assignedFiles={files.filter((f) => f.enabled && (f.status === "ready" || f.status === "processing")).length}
+        />
       ) : (
         <KnowledgeBase botId={bot._id} files={files.map(toView)} openAIReady={openAIReady} can={{ upload: can(viewer, "UPLOAD_FILES"), manage: can(viewer, "MANAGE_KB"), del: can(viewer, "DELETE_FILES") }} />
       )}

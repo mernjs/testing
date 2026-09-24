@@ -20,7 +20,7 @@ export default async function AibotsSettingsPage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader title="Settings" crumbs={[{ label: "Settings" }]} description="OpenAI models, cost estimates and usage limits for every bot." />
+      <PageHeader title="Settings" crumbs={[{ label: "Settings" }]} description="OpenAI models, cost estimates, usage limits and the Start New Chat assistant." />
 
       <SectionCard title="OpenAI connection" description="All AI runs through OpenAI from this server — the key never reaches a browser.">
         <ul className="space-y-1.5 text-sm">
@@ -31,7 +31,7 @@ export default async function AibotsSettingsPage() {
       </SectionCard>
 
       <SectionCard title="Models & limits" description={settings.updatedAt.getTime() > 0 ? `Last changed ${formatDateTime(settings.updatedAt)}.` : "Using defaults — prices are estimates; check openai.com/api/pricing and adjust."}>
-        <SettingsForm models={settings.models} defaultModel={settings.defaultModel} maxOutputTokens={settings.maxOutputTokens} dailyMessageLimit={settings.dailyMessageLimit} />
+        <SettingsForm models={settings.models} defaultModel={settings.defaultModel} maxOutputTokens={settings.maxOutputTokens} dailyMessageLimit={settings.dailyMessageLimit} generalInstructions={settings.generalInstructions} />
       </SectionCard>
 
       <SectionCard title="Role permissions" description="Defaults per role. The Super Admin can override individual capabilities per person under Admin → Users.">

@@ -133,13 +133,13 @@ function ChatRow({ chat, href, active, canDelete }: { chat: ChatListItem; href: 
   );
 }
 
-function ChatHistory({ botId, chats, activeId, onPick }: { botId: string; chats: ChatListItem[]; activeId: string | null; onPick?: () => void }) {
+function ChatHistory({ botId, chats, activeId, onPick, onNewChat }: { botId: string; chats: ChatListItem[]; activeId: string | null; onPick?: () => void; onNewChat: (e: React.MouseEvent) => void }) {
   const [q, setQ] = useState("");
   const shown = q ? chats.filter((c) => c.title.toLowerCase().includes(q.toLowerCase())) : chats;
   return (
     <div className="flex h-full min-h-0 flex-col" onClick={(e) => (e.target as HTMLElement).closest("a") && onPick?.()}>
       <div className="space-y-2 border-b border-border/60 p-3">
-        <Button className="w-full" nativeButton={false} render={<Link href={`/aibots/b/${botId}`} />}>
+        <Button className="w-full" nativeButton={false} render={<Link href={`/aibots/b/${botId}`} onClick={onNewChat} />}>
           <MessageSquarePlus className="size-4" /> New chat
         </Button>
         <label className="flex items-center gap-2 rounded-lg border border-border/50 bg-background/60 px-2.5 py-1.5 text-xs text-muted-foreground focus-within:border-primary/40">
@@ -266,9 +266,10 @@ export default function ChatWorkspace({
   initialMessages,
   ownerEmail,
   readOnly = false,
-  canManageBot = false,
+  manageHref = null,
   openAIReady,
   historyError,
+  knowledgeFiles = 0,
 }: {
   bot: BotSummary;
   chats: ChatListItem[];
@@ -277,13 +278,19 @@ export default function ChatWorkspace({
   initialMessages: WorkspaceMessage[];
   ownerEmail: string;
   readOnly?: boolean;
-  canManageBot?: boolean;
+  /** Where "Configure" goes (the bot editor, or Settings for the general assistant); null hides it. */
+  manageHref?: string | null;
   openAIReady: boolean;
   historyError?: string | null;
+  /** Assigned knowledge files: > 0 → the bot answers only from its knowledge base; 0 → from its instructions. */
+  knowledgeFiles?: number;
 }) {
-  const router = useRouter();
   const [messages, setMessages] = useState<WorkspaceMessage[]>(initialMessages);
   const [activeChatId, setActiveChatId] = useState<string | null>(chatId);
+  const activeChatIdRef = useRef(activeChatId);
+  useEffect(() => {
+    activeChatIdRef.current = activeChatId;
+  }, [activeChatId]);
   const [title, setTitle] = useState<string | null>(chatTitle);
   const [input, setInput] = useState("");
   const [files, setFiles] = useState<File[]>([]);
@@ -297,6 +304,17 @@ export default function ChatWorkspace({
 
   const ownerLabel = readOnly ? ownerEmail : "You";
   const accept = useMemo(() => ATTACHMENT_EXTENSIONS.map((e) => `.${e}`).join(","), []);
+
+  // The history list is kept here rather than re-fetched after every reply: a
+  // server refresh would re-render this page under the new chat's URL and
+  // remount it, dropping a reply that is still streaming. Rename/delete still
+  // refresh, and a fresh `chats` prop replaces the local copy.
+  const [chatList, setChatList] = useState(chats);
+  const [chatsProp, setChatsProp] = useState(chats);
+  if (chats !== chatsProp) {
+    setChatsProp(chats);
+    setChatList(chats);
+  }
 
   // Abort an in-flight reply if the user navigates away.
   useEffect(() => () => abortRef.current?.abort(), []);
@@ -352,7 +370,13 @@ export default function ChatWorkspace({
           if (evt.type === "chat") {
             setActiveChatId(evt.chatId);
             setTitle(evt.title);
-            if (evt.isNew) newChatId = evt.chatId;
+            if (evt.isNew) {
+              newChatId = evt.chatId;
+              // Put the new chat's id in the URL — no navigation, no refetch.
+              window.history.replaceState(null, "", `/aibots/b/${bot._id}/${evt.chatId}`);
+              const item: ChatListItem = { _id: evt.chatId, botId: bot._id, title: evt.title, turns: 0, lastMessageAt: new Date().toISOString(), userEmail: ownerEmail };
+              setChatList((l) => [item, ...l.filter((c) => c._id !== evt.chatId)]);
+            }
           } else if (evt.type === "status") {
             patchLast((m) => (m.text ? m : { ...m, state: "searching" }));
           } else if (evt.type === "delta") {
@@ -374,11 +398,14 @@ export default function ChatWorkspace({
     } finally {
       abortRef.current = null;
       setBusy(false);
-      if (newChatId) {
-        // Put the new chat's id in the URL without remounting the transcript we just streamed.
-        window.history.replaceState(null, "", `/aibots/b/${bot._id}/${newChatId}`);
+      // Most recent chat first, as the server orders it.
+      const touched = newChatId ?? activeChatIdRef.current;
+      if (touched) {
+        setChatList((l) => {
+          const hit = l.find((c) => c._id === touched);
+          return hit ? [{ ...hit, lastMessageAt: new Date().toISOString() }, ...l.filter((c) => c._id !== touched)] : l;
+        });
       }
-      router.refresh();
     }
   }
 
@@ -423,6 +450,26 @@ export default function ChatWorkspace({
     });
   }
 
+  /**
+   * A chat started on this page got its id via `history.replaceState`, so the
+   * router still believes it is on `/aibots/b/<bot>` and a link there would be
+   * a no-op. Reset in place instead; a chat that was loaded from the server
+   * (`chatId` prop set) navigates normally.
+   */
+  function newChat(e: React.MouseEvent) {
+    if (chatId !== null) return;
+    e.preventDefault();
+    abortRef.current?.abort();
+    setMessages([]);
+    setActiveChatId(null);
+    setTitle(null);
+    setInput("");
+    setFiles([]);
+    setHistoryOpen(false);
+    window.history.replaceState(null, "", `/aibots/b/${bot._id}`);
+    textRef.current?.focus();
+  }
+
   function addFiles(list: FileList | null) {
     if (!list) return;
     const next = [...files, ...Array.from(list)].slice(0, MAX_ATTACHMENTS_PER_MESSAGE);
@@ -446,7 +493,7 @@ export default function ChatWorkspace({
       {/* Chat history */}
       {!readOnly && (
         <aside className="lms-surface hidden w-72 shrink-0 overflow-hidden rounded-3xl border border-border/40 bg-background/95 lg:block dark:bg-card/85">
-          <ChatHistory botId={bot._id} chats={chats} activeId={activeChatId} />
+          <ChatHistory botId={bot._id} chats={chatList} activeId={activeChatId} onNewChat={newChat} />
         </aside>
       )}
       {!readOnly && historyOpen && (
@@ -460,7 +507,7 @@ export default function ChatWorkspace({
               </Button>
             </div>
             <div className="min-h-0 flex-1">
-              <ChatHistory botId={bot._id} chats={chats} activeId={activeChatId} onPick={() => setHistoryOpen(false)} />
+              <ChatHistory botId={bot._id} chats={chatList} activeId={activeChatId} onPick={() => setHistoryOpen(false)} onNewChat={newChat} />
             </div>
           </div>
         </div>
@@ -481,18 +528,21 @@ export default function ChatWorkspace({
               {title && <span className="hidden truncate font-normal text-muted-foreground sm:inline">· {title}</span>}
             </p>
             <p className="truncate text-[11px] text-muted-foreground">
-              {bot.category} · {bot.model}
+              {bot.category} · {bot.model} ·{" "}
+              <span title={knowledgeFiles > 0 ? "Answers only from this bot's knowledge base — no outside knowledge." : "No knowledge base — answers from the bot's instructions."} className={cn("font-medium", knowledgeFiles > 0 ? "text-emerald-700 dark:text-emerald-400" : "")}>
+                {knowledgeFiles > 0 ? `Knowledge base only (${knowledgeFiles} file${knowledgeFiles === 1 ? "" : "s"})` : "Instructions only"}
+              </span>
               {readOnly && ` · chat of ${ownerEmail} (read-only)`}
             </p>
           </div>
-          {canManageBot && (
-            <Button size="sm" variant="ghost" nativeButton={false} render={<Link href={`/aibots/bots/${bot._id}`} />} aria-label="Bot settings">
+          {manageHref && (
+            <Button size="sm" variant="ghost" nativeButton={false} render={<Link href={manageHref} />} aria-label="Bot settings">
               <Settings2 className="size-4" />
               <span className="hidden sm:inline">Configure</span>
             </Button>
           )}
           {!readOnly && activeChatId && (
-            <Button size="sm" variant="outline" nativeButton={false} render={<Link href={`/aibots/b/${bot._id}`} />}>
+            <Button size="sm" variant="outline" nativeButton={false} render={<Link href={`/aibots/b/${bot._id}`} onClick={newChat} />}>
               <MessageSquarePlus className="size-4" />
               <span className="hidden sm:inline">New chat</span>
             </Button>
@@ -514,6 +564,11 @@ export default function ChatWorkspace({
               <BotAvatar icon={bot.icon} color={bot.color} size="lg" />
               <h2 className="text-xl font-bold text-foreground">{bot.name}</h2>
               <p className="text-sm text-muted-foreground">{bot.description || "Ask anything to get started."}</p>
+              {knowledgeFiles > 0 && (
+                <p className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-900 dark:text-emerald-200">
+                  Answers come only from this bot&apos;s {knowledgeFiles} knowledge file{knowledgeFiles === 1 ? "" : "s"}. If something isn&apos;t in them, it will say so.
+                </p>
+              )}
               {!openAIReady && <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-200">OpenAI isn&apos;t configured on this server yet, so this bot can&apos;t reply.</p>}
               {!readOnly && bot.starterPrompts.length > 0 && (
                 <div className="mt-2 grid w-full gap-2 sm:grid-cols-2">

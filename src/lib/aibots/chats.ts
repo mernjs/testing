@@ -104,6 +104,19 @@ export async function createChat(viewer: AibotsViewer, botId: string, firstMessa
   return chat;
 }
 
+/**
+ * The chat's OpenAI Conversation, created on first use when the chat has none
+ * (e.g. demo chats seeded without an OpenAI key).
+ */
+export async function ensureConversation(chat: ChatDoc): Promise<string> {
+  if (chat.conversationId) return chat.conversationId;
+  const conversation = await getOpenAI().conversations.create({ metadata: { app: "yashorbit-aibots", bot_id: chat.botId, user_id: chat.userId } });
+  const col = await chatsCollection();
+  await col.updateOne({ _id: chat._id, conversationId: null }, { $set: { conversationId: conversation.id } });
+  chat.conversationId = conversation.id;
+  return conversation.id;
+}
+
 export async function touchChat(chatId: string, opts: { countTurn: boolean }): Promise<void> {
   const col = await chatsCollection();
   const now = new Date();

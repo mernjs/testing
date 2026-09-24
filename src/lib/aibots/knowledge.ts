@@ -269,6 +269,25 @@ export async function refreshProcessing(bot: BotDoc): Promise<void> {
   );
 }
 
+const VIEW_MAX_CHARS = 60000;
+
+/**
+ * "Read" for a knowledge file: the text OpenAI extracted and indexed for it,
+ * read back from the bot's vector store (OpenAI doesn't allow downloading the
+ * original bytes of an `assistants` file, and we don't keep a copy).
+ */
+export async function getBotFileText(bot: BotDoc, fileId: string): Promise<{ text: string; truncated: boolean }> {
+  const f = await getFile(bot._id, fileId);
+  if (!bot.vectorStoreId || !f.vectorStoreFileId || !f.enabled) throw new AibotsInputError("Enable the file to view its indexed content.");
+  if (f.status !== "ready") throw new AibotsInputError(f.status === "processing" ? "OpenAI is still indexing this file — try again in a moment." : "This file wasn't indexed — replace it with a new upload.");
+  let text = "";
+  for await (const chunk of getOpenAI().vectorStores.files.content(f.vectorStoreFileId, { vector_store_id: bot.vectorStoreId })) {
+    if (chunk.text) text += (text ? "\n\n" : "") + chunk.text;
+    if (text.length > VIEW_MAX_CHARS) return { text: text.slice(0, VIEW_MAX_CHARS), truncated: true };
+  }
+  return { text, truncated: false };
+}
+
 /** Bot deletion: every OpenAI File, then the vector store. Best-effort. */
 export async function purgeBotFiles(bot: BotDoc): Promise<void> {
   const col = await filesCollection();

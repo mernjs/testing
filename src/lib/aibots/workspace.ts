@@ -8,6 +8,9 @@ import type { WorkspaceMessage } from "@/components/aibots/ChatWorkspace";
 /** Reads a chat's transcript back from its OpenAI Conversation and shapes it for the workspace. */
 export async function workspaceMessages(chat: ChatDoc): Promise<{ messages: WorkspaceMessage[]; error: string | null }> {
   if (!isOpenAIConfigured()) return { messages: [], error: "OpenAI isn't configured on this server, so this chat's history can't be loaded." };
+  if (!chat.conversationId && chat.turns > 0) {
+    return { messages: [], error: "This chat's earlier messages aren't available (it was created without an OpenAI conversation, e.g. as demo data). New messages start a fresh conversation." };
+  }
   try {
     const transcript = await loadTranscript(chat);
     const allCited = [...new Set(transcript.flatMap((m) => m.citedFileIds))];

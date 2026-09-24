@@ -31,6 +31,7 @@ import { seedPrmsOps } from "./demo/prms-ops.mjs";
 import { seedMarketing } from "./demo/marketing.mjs";
 import { seedSop, SOP_DEMO_ACCOUNTS } from "./demo/sop.mjs";
 import { seedDlms, DLMS_DEMO_ACCOUNTS } from "./demo/dlms.mjs";
+import OpenAI from "openai";
 import { seedAibots, AIBOTS_DEMO_ACCOUNTS } from "./demo/aibots.mjs";
 import { seedSeo, SEO_DEMO_ACCOUNTS } from "./demo/seo.mjs";
 
@@ -75,8 +76,9 @@ try {
   console.log(`   ${dlms.credentials} credentials, ${dlms.links} URLs/accounts, ${dlms.documents} documents, ${dlms.notes} notes`);
 
   console.log("\n[+] AI Bots…");
-  const aibots = await seedAibots(db);
-  console.log(`   ${aibots.bots} bots (${aibots.active} active)`);
+  // Creates OpenAI vector stores + conversations only when a key is configured (see scripts/demo/aibots.mjs).
+  const aibots = await seedAibots(db, { openai: process.env.OPENAI_API_KEY?.trim() ? new OpenAI() : null, log: console.log });
+  console.log(`   ${aibots.bots} bots (${aibots.active} active), ${aibots.files} knowledge files, ${aibots.chats} chats, ${aibots.runs} usage rows${aibots.openai ? "" : " — no OpenAI key: metadata only"}`);
 
   console.log("\n==========================================================================");
   console.log("✨ Done. Portal demo logins (password for all: Demo@12345) — sign in at /login");

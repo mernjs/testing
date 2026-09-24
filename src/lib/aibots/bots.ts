@@ -4,7 +4,7 @@ import { getDb } from "@/lib/mongodb";
 import { getOpenAI, isOpenAIConfigured } from "@/lib/openai";
 import { hasAibotsAccess } from "@/lib/aibots-roles";
 import { COLLECTIONS, aibotsCollection, createStamp, escapeRegex, newId, notDeleted, str, updateStamp, type Stamps } from "@/lib/aibots/db";
-import { BOT_COLORS, BOT_ICONS, LIMITS, type BotColor, type BotIcon, type BotStatus } from "@/lib/aibots/constants";
+import { BOT_COLORS, BOT_ICONS, GENERAL_BOT_ID, GENERAL_BOT_NAME, LIMITS, type BotColor, type BotIcon, type BotStatus } from "@/lib/aibots/constants";
 import { AibotsInputError, NotFoundError, can, type AibotsViewer } from "@/lib/aibots/viewer";
 import { getSettings } from "@/lib/aibots/settings";
 
@@ -117,10 +117,56 @@ export async function getBot(botId: string): Promise<BotDoc | null> {
   return col.findOne({ _id: botId, ...notDeleted });
 }
 
-/** Loads a bot the viewer may chat with, or throws NotFound (never reveals a restricted bot exists). */
-export async function getUsableBot(viewer: AibotsViewer, botId: string): Promise<BotDoc> {
+/**
+ * "Start New Chat" — the general assistant. It is not a bot row: it has no
+ * knowledge base or access list, its instructions live in AI Bots settings and
+ * it runs on the default model. Its chats use this reserved id as `botId`, so
+ * the same workspace, history and usage ledger serve it unchanged.
+ */
+export { GENERAL_BOT_ID, GENERAL_BOT_NAME };
+
+export async function generalBot(): Promise<BotDoc> {
+  const settings = await getSettings();
+  const epoch = new Date(0);
+  return {
+    _id: GENERAL_BOT_ID,
+    name: GENERAL_BOT_NAME,
+    icon: "sparkles",
+    color: "indigo",
+    description: "Ask anything — writing, analysis, planning or research. Not tied to any bot or knowledge base.",
+    category: "General",
+    instructions: settings.generalInstructions,
+    model: settings.defaultModel,
+    temperature: null,
+    allowAttachments: true,
+    starterPrompts: ["Draft a polite follow-up email to a client", "Summarise the key points of this text", "Help me plan my week", "Explain this concept simply"],
+    access: { mode: "all", roles: [], userIds: [] },
+    status: "active",
+    vectorStoreId: null,
+    createdAt: epoch,
+    updatedAt: epoch,
+    createdBy: null,
+    updatedBy: null,
+    deletedAt: null,
+  };
+}
+
+/**
+ * The bot a chat runs on — a database bot, or the general assistant — or null
+ * when the viewer may not use it (never reveals that a restricted bot exists).
+ * Editing, knowledge and deletion always go through `getBot`, which never
+ * returns the general assistant.
+ */
+export async function getChatBot(viewer: AibotsViewer, botId: string): Promise<BotDoc | null> {
+  if (botId === GENERAL_BOT_ID) return can(viewer, "USE_BOT") || can(viewer, "EDIT_BOT") ? generalBot() : null;
   const bot = await getBot(botId);
-  if (!bot || !canUseBot(viewer, bot)) throw new NotFoundError();
+  return bot && canUseBot(viewer, bot) ? bot : null;
+}
+
+/** Loads a bot the viewer may chat with, or throws NotFound. */
+export async function getUsableBot(viewer: AibotsViewer, botId: string): Promise<BotDoc> {
+  const bot = await getChatBot(viewer, botId);
+  if (!bot) throw new NotFoundError();
   return bot;
 }
 

@@ -89,3 +89,7 @@ export const DEFAULT_MODELS: ModelPrice[] = [
 ];
 
 export const ATTACHMENT_MARKER = "[[yo-attachment:";
+
+/** Reserved `botId` of "Start New Chat" — the general assistant, which is not a bot row (see `generalBot`). */
+export const GENERAL_BOT_ID = "general";
+export const GENERAL_BOT_NAME = "General Chat";

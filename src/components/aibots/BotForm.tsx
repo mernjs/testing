@@ -10,7 +10,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import OptionSelect, { type Option } from "@/components/sop/OptionSelect";
 import MultiPicker, { type PickerOption } from "@/components/sop/MultiPicker";
+import Link from "next/link";
 import { SectionCard } from "@/components/aibots/AibotsUi";
+import KnowledgeQueueFields, { useKnowledgeQueue } from "@/components/aibots/KnowledgeQueue";
+import { AnswerModeNotice } from "@/components/aibots/KnowledgeBase";
 import BotAvatar, { BotIconGlyph, BOT_COLOR_CLASSES } from "@/components/aibots/BotAvatar";
 import { cn } from "@/lib/utils";
 import { saveBotAction } from "@/app/aibots/(protected)/actions";
@@ -53,16 +56,26 @@ export default function BotForm({
   models,
   roleOptions,
   userOptions,
+  assignedFiles = 0,
+  canUpload = false,
+  openAIReady = true,
 }: {
   botId: string | null;
   initial: BotFormValues;
   models: Option[];
   roleOptions: PickerOption[];
   userOptions: PickerOption[];
+  /** Edit mode: how many knowledge files are assigned (decides the answer mode). */
+  assignedFiles?: number;
+  /** Create mode: may the user upload knowledge files with the new bot? */
+  canUpload?: boolean;
+  openAIReady?: boolean;
 }) {
   const router = useRouter();
   const [v, setV] = useState<BotFormValues>(initial);
   const [pending, start] = useTransition();
+  const queue = useKnowledgeQueue();
+  const busy = pending || queue.running;
   const set = <K extends keyof BotFormValues>(k: K, value: BotFormValues[K]) => setV((p) => ({ ...p, [k]: value }));
   const prompts = [...v.starterPrompts, ...Array(LIMITS.starterPromptsMax).fill("")].slice(0, LIMITS.starterPromptsMax);
 
@@ -82,7 +95,14 @@ export default function BotForm({
         toast.success("Bot saved — changes apply to the next message in every chat.");
         router.refresh();
       } else {
-        toast.success(`${v.name} created — add its knowledge base next.`);
+        // The bot exists now, so its own vector store can take the queued files.
+        if (queue.pending > 0) {
+          const up = await queue.uploadAll(res.botId);
+          if (up.failed > 0) toast.error(`${v.name} was created, but ${up.failed} file${up.failed === 1 ? "" : "s"} failed to upload — retry them on the Knowledge Base tab.`);
+          else toast.success(`${v.name} created with ${up.ok} knowledge file${up.ok === 1 ? "" : "s"} — it answers only from them.`);
+        } else {
+          toast.success(`${v.name} created. It answers from its instructions until you add knowledge files.`);
+        }
         router.push(`/aibots/bots/${res.botId}?tab=knowledge`);
       }
     });
@@ -100,7 +120,7 @@ export default function BotForm({
             <Field label="Bot name" htmlFor="b-name">
               <Input id="b-name" required maxLength={LIMITS.nameMax} value={v.name} onChange={(e) => set("name", e.target.value)} placeholder="e.g. ProposalGPT" />
             </Field>
-            <Field label="Category" htmlFor="b-cat" hint="Groups bots in Generate Chat.">
+            <Field label="Category" htmlFor="b-cat" hint="Shown with the bot in chats and on Manage Bots.">
               <Input id="b-cat" list="b-cat-list" maxLength={40} value={v.category} onChange={(e) => set("category", e.target.value)} placeholder="e.g. Pre-sales" />
               <datalist id="b-cat-list">
                 {BOT_CATEGORY_SUGGESTIONS.map((c) => (
@@ -210,6 +230,27 @@ export default function BotForm({
         </label>
       </SectionCard>
 
+      <SectionCard
+        title="Knowledge base"
+        description={botId ? "This bot's own knowledge files. Manage them on the Knowledge Base tab." : "Optional. Files uploaded here go to this bot's own OpenAI vector store — no other bot can search them."}
+      >
+        <div className="space-y-3">
+          <AnswerModeNotice assigned={botId ? assignedFiles : queue.pending} />
+          {botId ? (
+            <Button type="button" variant="outline" size="sm" nativeButton={false} render={<Link href={`/aibots/bots/${botId}?tab=knowledge`} />}>
+              Manage knowledge files ({assignedFiles} assigned)
+            </Button>
+          ) : canUpload ? (
+            <>
+              <KnowledgeQueueFields queue={queue} disabled={!openAIReady || pending} idPrefix="new-kb" />
+              {!openAIReady && <p className="text-[11px] text-muted-foreground">OpenAI isn&apos;t configured on this server, so files can&apos;t be uploaded yet.</p>}
+            </>
+          ) : (
+            <p className="text-xs text-muted-foreground">You don&apos;t have permission to upload knowledge files. Someone with that permission can add them after the bot is created.</p>
+          )}
+        </div>
+      </SectionCard>
+
       <SectionCard title="Access" description="Who sees this bot in their sidebar and can chat with it. AI Bots managers can always open every bot.">
         <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Access mode">
           {(
@@ -243,9 +284,9 @@ export default function BotForm({
       </SectionCard>
 
       <div className="flex justify-end">
-        <Button type="submit" disabled={pending}>
-          {pending ? <LoaderCircle className="size-4 animate-spin" /> : <Save className="size-4" />}
-          {botId ? "Save changes" : "Create bot"}
+        <Button type="submit" disabled={busy}>
+          {busy ? <LoaderCircle className="size-4 animate-spin" /> : <Save className="size-4" />}
+          {botId ? "Save changes" : queue.running ? "Uploading knowledge…" : queue.pending > 0 ? `Create bot & upload ${queue.pending} file${queue.pending === 1 ? "" : "s"}` : "Create bot"}
         </Button>
       </div>
     </form>

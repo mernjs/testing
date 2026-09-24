@@ -1,7 +1,7 @@
 import "server-only";
 import { COLLECTIONS, aibotsCollection, newId, notDeleted } from "@/lib/aibots/db";
 import { chatsCollection, toListItem, type ChatListItem } from "@/lib/aibots/chats";
-import { botsCollection } from "@/lib/aibots/bots";
+import { botsCollection, listUsableBots, GENERAL_BOT_ID, GENERAL_BOT_NAME } from "@/lib/aibots/bots";
 import type { AibotsViewer } from "@/lib/aibots/viewer";
 
 /**
@@ -91,8 +91,10 @@ export async function getDashboard(viewer: AibotsViewer): Promise<DashboardData>
   since.setHours(0, 0, 0, 0);
   const [bots, chats, runs] = await Promise.all([botsCollection(), chatsCollection(), runsCollection()]);
 
-  const [allBots, totalChats, chatsToday, totals, daily, top, recent, failures] = await Promise.all([
+  const [allBots, usable, totalChats, chatsToday, totals, daily, top, recent, failures] = await Promise.all([
     bots.find(notDeleted, { projection: { name: 1, icon: 1, color: 1, status: 1 } }).toArray(),
+    // A user's bot counts cover only the bots they can use (all active); managers see every bot.
+    mine ? listUsableBots(viewer) : Promise.resolve(null),
     chats.countDocuments({ ...notDeleted, ...who }),
     chats.countDocuments({ ...notDeleted, ...who, createdAt: { $gte: startOfToday() } }),
     runs
@@ -127,7 +129,8 @@ export async function getDashboard(viewer: AibotsViewer): Promise<DashboardData>
     runs.find({ ...who, status: "failed" }).sort({ createdAt: -1 }).limit(5).toArray(),
   ]);
 
-  const botById = new Map(allBots.map((b) => [b._id, b]));
+  const botById = new Map<string, { name: string; icon: string; color: string }>(allBots.map((b) => [b._id, b]));
+  botById.set(GENERAL_BOT_ID, { name: GENERAL_BOT_NAME, icon: "sparkles", color: "indigo" });
   const byDay = new Map(daily.map((d) => [d._id, d]));
   const days: DashboardData["daily"] = [];
   for (let i = 0; i < 30; i++) {
@@ -140,8 +143,8 @@ export async function getDashboard(viewer: AibotsViewer): Promise<DashboardData>
   const t = totals[0];
   return {
     scope: mine ? "mine" : "all",
-    totalBots: allBots.length,
-    activeBots: allBots.filter((b) => b.status === "active").length,
+    totalBots: usable ? usable.length : allBots.length,
+    activeBots: usable ? usable.length : allBots.filter((b) => b.status === "active").length,
     totalChats,
     chatsToday,
     runs30: t?.runs ?? 0,

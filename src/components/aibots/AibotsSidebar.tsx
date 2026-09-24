@@ -8,6 +8,7 @@ import { LayoutDashboard, MessageSquarePlus, Plus, Bot, MessagesSquare, ScrollTe
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import BotAvatar from "@/components/aibots/BotAvatar";
+import { GENERAL_BOT_ID } from "@/lib/aibots/constants";
 
 /** Which optional sections this viewer may see — computed on the server from the real permission model. */
 export interface AibotsNavFlags {
@@ -93,9 +94,11 @@ export default function AibotsSidebar({ flags, bots, onNavigate, collapsed = fal
 
   return (
     <nav className="flex h-full flex-col gap-1 p-3">
-      <NavLink {...common} href="/aibots/new" label="Generate Chat" icon={<MessageSquarePlus className="size-4" />} highlight />
-      {flags.createBot && <NavLink {...common} href="/aibots/bots/new" label="Create Bot" icon={<Plus className="size-4" />} exact />}
       <NavLink {...common} href="/aibots" label="Dashboard" icon={<LayoutDashboard className="size-4" />} exact />
+
+      <SectionLabel collapsed={collapsed}>Create</SectionLabel>
+      <NavLink {...common} href={`/aibots/b/${GENERAL_BOT_ID}`} label="Start New Chat" icon={<MessageSquarePlus className="size-4" />} highlight />
+      {flags.createBot && <NavLink {...common} href="/aibots/bots/new" label="Create Bot" icon={<Plus className="size-4" />} exact />}
 
       <SectionLabel collapsed={collapsed}>AI Bots</SectionLabel>
       {!collapsed && bots.length > 8 && (

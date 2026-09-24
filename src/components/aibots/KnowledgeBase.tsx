@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { CheckCircle2, CircleAlert, FileText, LoaderCircle, Pencil, RefreshCw, Trash2, Upload, X, CircleSlash } from "lucide-react";
+import { BookLock, CheckCircle2, CircleAlert, Eye, FileText, LoaderCircle, MessageSquareText, Pencil, RefreshCw, Trash2, Upload, CircleSlash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,15 +11,33 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SectionCard, EmptyState } from "@/components/aibots/AibotsUi";
 import ActionButton from "@/components/aibots/ActionButton";
+import KnowledgeQueueFields, { CategoryInput, KB_ACCEPT, fileSize, postKnowledgeFile, useKnowledgeQueue } from "@/components/aibots/KnowledgeQueue";
 import { cn } from "@/lib/utils";
-import { deleteFileAction, refreshFilesAction, setFileEnabledAction, updateFileMetaAction } from "@/app/aibots/(protected)/actions";
-import { FILE_CATEGORY_SUGGESTIONS, FILE_STATUS_LABEL, KB_CONVERTED_EXTENSIONS, KB_EXTENSIONS, MAX_UPLOAD_BYTES, type KbFileStatus } from "@/lib/aibots/constants";
+import { deleteFileAction, refreshFilesAction, setFileEnabledAction, updateFileMetaAction, viewFileAction } from "@/app/aibots/(protected)/actions";
+import { FILE_STATUS_LABEL, KB_CONVERTED_EXTENSIONS, type KbFileStatus } from "@/lib/aibots/constants";
 import type { KbFileView } from "@/lib/aibots/knowledge";
 
-const ACCEPT = KB_EXTENSIONS.map((e) => `.${e}`).join(",");
+/** Files that count as the bot's assigned knowledge base (mirrors `countAssignedFiles` on the server). */
+export const isAssigned = (f: Pick<KbFileView, "enabled" | "status">) => f.enabled && (f.status === "ready" || f.status === "processing");
 
-function size(n: number) {
-  return n < 1024 * 1024 ? `${Math.max(1, Math.round(n / 1024))} KB` : `${(n / 1024 / 1024).toFixed(1)} MB`;
+/** Which answer mode the bot is in — shown wherever the knowledge base is managed. */
+export function AnswerModeNotice({ assigned }: { assigned: number }) {
+  return assigned > 0 ? (
+    <div className="flex items-start gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-950 dark:text-emerald-100">
+      <BookLock className="mt-0.5 size-4 shrink-0" />
+      <p>
+        <strong>Answers only from the knowledge base.</strong>{" "}
+        {`This bot searches its ${assigned} assigned file${assigned === 1 ? "" : "s"} on every message and answers strictly from them — it won't use outside knowledge, and says so when the answer isn't in the files. Disabled files don't count.`}
+      </p>
+    </div>
+  ) : (
+    <div className="flex items-start gap-3 rounded-2xl border border-border/60 bg-muted/40 px-4 py-3 text-sm text-foreground">
+      <MessageSquareText className="mt-0.5 size-4 shrink-0" />
+      <p>
+        <strong>Answers from instructions only.</strong> No knowledge base is assigned, so the bot answers from its configured instructions. Upload (or enable) a file to switch it to knowledge-base-only answers.
+      </p>
+    </div>
+  );
 }
 
 function StatusPill({ status, error }: { status: KbFileStatus; error: string | null }) {
@@ -38,138 +56,72 @@ function StatusPill({ status, error }: { status: KbFileStatus; error: string | n
   );
 }
 
-async function postFile(botId: string, form: FormData): Promise<{ ok: boolean; error?: string }> {
-  try {
-    const res = await fetch(`/api/aibots/bots/${botId}/files`, { method: "POST", body: form });
-    return await res.json().catch(() => ({ ok: false, error: res.status === 413 ? "That file is too large." : "Upload failed." }));
-  } catch {
-    return { ok: false, error: "Network error — the upload didn't finish." };
-  }
-}
-
-function CategoryInput({ id, value, onChange }: { id: string; value: string; onChange: (v: string) => void }) {
-  return (
-    <>
-      <Input id={id} list={`${id}-list`} maxLength={60} value={value} onChange={(e) => onChange(e.target.value)} placeholder="e.g. Case Studies" />
-      <datalist id={`${id}-list`}>
-        {FILE_CATEGORY_SUGGESTIONS.map((c) => (
-          <option key={c} value={c} />
-        ))}
-      </datalist>
-    </>
-  );
-}
-
 /** New files: pick several, give them a shared category/description, upload one by one. */
 function Uploader({ botId, disabled }: { botId: string; disabled: boolean }) {
   const router = useRouter();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [queue, setQueue] = useState<{ file: File; title: string; state: "queued" | "uploading" | "done" | "error"; error?: string }[]>([]);
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-  const [running, setRunning] = useState(false);
+  const queue = useKnowledgeQueue();
 
-  function add(list: FileList | null) {
-    if (!list) return;
-    const next = Array.from(list).map((file) => {
-      const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
-      const error = !KB_EXTENSIONS.includes(ext) ? "Unsupported type" : file.size > MAX_UPLOAD_BYTES ? `Over ${MAX_UPLOAD_BYTES / 1024 / 1024} MB` : file.size === 0 ? "Empty file" : undefined;
-      return { file, title: file.name.replace(/\.[^.]+$/, ""), state: error ? ("error" as const) : ("queued" as const), error };
-    });
-    setQueue((q) => [...q.filter((x) => x.state !== "done"), ...next]);
-  }
-
-  async function uploadAll() {
-    setRunning(true);
-    let okCount = 0;
-    for (let i = 0; i < queue.length; i++) {
-      if (queue[i].state !== "queued") continue;
-      setQueue((q) => q.map((x, j) => (j === i ? { ...x, state: "uploading" } : x)));
-      const form = new FormData();
-      form.set("file", queue[i].file);
-      form.set("title", queue[i].title);
-      form.set("category", category);
-      form.set("description", description);
-      const res = await postFile(botId, form);
-      if (res.ok) okCount++;
-      setQueue((q) => q.map((x, j) => (j === i ? { ...x, state: res.ok ? "done" : "error", error: res.error } : x)));
-    }
-    setRunning(false);
-    if (okCount) {
-      toast.success(`${okCount} file${okCount === 1 ? "" : "s"} sent to OpenAI for indexing.`);
+  async function upload() {
+    const { ok } = await queue.uploadAll(botId);
+    if (ok) {
+      toast.success(`${ok} file${ok === 1 ? "" : "s"} sent to OpenAI for indexing.`);
       router.refresh();
     }
   }
 
-  const pending = queue.filter((q) => q.state === "queued").length;
-
   return (
-    <SectionCard title="Upload knowledge" description={`PDF, Word, text, Markdown, PowerPoint, HTML, JSON, CSV or Excel · up to ${MAX_UPLOAD_BYTES / 1024 / 1024} MB each. Files go straight to this bot's private OpenAI vector store.`}>
-      <input ref={inputRef} type="file" multiple accept={ACCEPT} className="hidden" onChange={(e) => (add(e.target.files), (e.target.value = ""))} />
-      <button
-        type="button"
-        disabled={disabled || running}
-        onClick={() => inputRef.current?.click()}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => {
-          e.preventDefault();
-          if (!disabled && !running) add(e.dataTransfer.files);
-        }}
-        className="flex w-full flex-col items-center gap-1 rounded-2xl border-2 border-dashed border-border/70 px-4 py-6 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/5 disabled:opacity-50"
-      >
-        <Upload className="size-5" />
-        <span className="font-medium text-foreground">Drop files here or click to choose</span>
-        <span className="text-[11px]">CSV and Excel are converted to text first — OpenAI file search can&apos;t index them directly.</span>
-      </button>
-      {queue.length > 0 && (
-        <div className="mt-3 space-y-3">
-          <ul className="space-y-1.5">
-            {queue.map((q, i) => (
-              <li key={i} className="flex items-center gap-2 rounded-xl border border-border/50 px-3 py-2">
-                <FileText className="size-4 shrink-0 text-muted-foreground" />
-                <Input
-                  value={q.title}
-                  disabled={q.state !== "queued"}
-                  onChange={(e) => setQueue((all) => all.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))}
-                  aria-label={`Title for ${q.file.name}`}
-                  className="h-8 min-w-0 flex-1"
-                />
-                <span className="hidden shrink-0 text-[11px] text-muted-foreground sm:inline">{size(q.file.size)}</span>
-                <span className="w-24 shrink-0 text-right text-[11px]">
-                  {q.state === "uploading" && <LoaderCircle className="ml-auto size-4 animate-spin text-primary" />}
-                  {q.state === "done" && <span className="text-emerald-600">Uploaded</span>}
-                  {q.state === "error" && <span className="text-destructive">{q.error ?? "Failed"}</span>}
-                  {q.state === "queued" && (
-                    <button type="button" onClick={() => setQueue((all) => all.filter((_, j) => j !== i))} aria-label={`Remove ${q.file.name}`} className="text-muted-foreground hover:text-foreground">
-                      <X className="ml-auto size-4" />
-                    </button>
-                  )}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="kb-cat">Category for these files</Label>
-              <CategoryInput id="kb-cat" value={category} onChange={setCategory} />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="kb-desc">Description (optional)</Label>
-              <Input id="kb-desc" maxLength={500} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What these files contain" />
-            </div>
-          </div>
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="ghost" onClick={() => setQueue([])} disabled={running}>
-              Clear
-            </Button>
-            <Button type="button" onClick={uploadAll} disabled={running || pending === 0}>
-              {running ? <LoaderCircle className="size-4 animate-spin" /> : <Upload className="size-4" />}
-              Upload {pending || ""} file{pending === 1 ? "" : "s"}
-            </Button>
-          </div>
+    <SectionCard title="Upload knowledge" description="Files go straight to this bot's own OpenAI vector store — no other bot can search them.">
+      <KnowledgeQueueFields queue={queue} disabled={disabled} />
+      {queue.items.length > 0 && (
+        <div className="mt-3 flex justify-end gap-2">
+          <Button type="button" variant="ghost" onClick={queue.clear} disabled={queue.running}>
+            Clear
+          </Button>
+          <Button type="button" onClick={upload} disabled={queue.running || queue.pending === 0}>
+            {queue.running ? <LoaderCircle className="size-4 animate-spin" /> : <Upload className="size-4" />}
+            Upload {queue.pending || ""} file{queue.pending === 1 ? "" : "s"}
+          </Button>
         </div>
       )}
     </SectionCard>
+  );
+}
+
+function ViewDialog({ botId, file, onClose }: { botId: string; file: KbFileView; onClose: () => void }) {
+  const [state, setState] = useState<{ loading: boolean; text?: string; truncated?: boolean; error?: string }>({ loading: true });
+  useEffect(() => {
+    let live = true;
+    viewFileAction(botId, file._id).then((res) => {
+      if (!live) return;
+      setState(res.ok ? { loading: false, text: res.text, truncated: res.truncated } : { loading: false, error: res.error });
+    });
+    return () => {
+      live = false;
+    };
+  }, [botId, file._id]);
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="sm:max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>{file.title}</DialogTitle>
+          <DialogDescription>
+            {file.filename} · the text OpenAI indexed for this bot&apos;s knowledge base{file.converted ? " (converted from a spreadsheet)" : ""}.
+          </DialogDescription>
+        </DialogHeader>
+        {state.loading ? (
+          <p className="flex items-center gap-2 py-8 text-sm text-muted-foreground">
+            <LoaderCircle className="size-4 animate-spin" /> Loading from OpenAI…
+          </p>
+        ) : state.error ? (
+          <p className="py-6 text-sm text-destructive">{state.error}</p>
+        ) : (
+          <div className="max-h-[60vh] overflow-y-auto rounded-xl border border-border/60 bg-muted/30 p-3">
+            <pre className="font-mono text-xs whitespace-pre-wrap text-foreground">{state.text || "(No text was extracted from this file.)"}</pre>
+            {state.truncated && <p className="mt-2 text-[11px] text-muted-foreground">Showing the first part only.</p>}
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -233,7 +185,7 @@ function ReplaceButton({ botId, file }: { botId: string; file: KbFileView }) {
       <input
         ref={ref}
         type="file"
-        accept={ACCEPT}
+        accept={KB_ACCEPT}
         className="hidden"
         onChange={async (e) => {
           const f = e.target.files?.[0];
@@ -243,7 +195,7 @@ function ReplaceButton({ botId, file }: { botId: string; file: KbFileView }) {
           const form = new FormData();
           form.set("file", f);
           form.set("fileId", file._id);
-          const res = await postFile(botId, form);
+          const res = await postKnowledgeFile(botId, form);
           setBusy(false);
           if (!res.ok) return void toast.error(res.error ?? "Upload failed.");
           toast.success(`${file.title} replaced — re-indexing in OpenAI.`);
@@ -270,6 +222,7 @@ export default function KnowledgeBase({
 }) {
   const router = useRouter();
   const [editing, setEditing] = useState<KbFileView | null>(null);
+  const [viewing, setViewing] = useState<KbFileView | null>(null);
   const processing = files.some((f) => f.status === "processing");
 
   // While OpenAI is still indexing, poll its real status.
@@ -286,6 +239,7 @@ export default function KnowledgeBase({
 
   return (
     <div className="space-y-4">
+      <AnswerModeNotice assigned={files.filter(isAssigned).length} />
       {can.upload && <Uploader botId={botId} disabled={!openAIReady} />}
       <SectionCard
         title={`Knowledge files (${files.length})`}
@@ -293,7 +247,7 @@ export default function KnowledgeBase({
       >
         {files.length === 0 ? (
           <EmptyState icon={<FileText className="size-5" />} title="No knowledge files yet">
-            Without files the bot answers from its instructions and the model&apos;s general knowledge only.
+            Without files the bot answers from its configured instructions. Once a file is uploaded it answers only from its knowledge base.
           </EmptyState>
         ) : (
           <div className="overflow-x-auto">
@@ -322,13 +276,16 @@ export default function KnowledgeBase({
                       {f.status === "failed" && f.lastError && <p className="line-clamp-2 text-[11px] text-destructive">{f.lastError}</p>}
                     </td>
                     <td className="px-3 py-2 text-xs">{f.category}</td>
-                    <td className="px-3 py-2 text-xs whitespace-nowrap text-muted-foreground">{size(f.size)}</td>
+                    <td className="px-3 py-2 text-xs whitespace-nowrap text-muted-foreground">{fileSize(f.size)}</td>
                     <td className="px-3 py-2">
                       <StatusPill status={f.status} error={f.lastError} />
                     </td>
                     <td className="px-3 py-2 text-xs whitespace-nowrap text-muted-foreground">{new Date(f.updatedAt).toLocaleDateString()}</td>
                     <td className="py-2 pl-3">
                       <div className="flex items-center justify-end gap-0.5">
+                        <Button size="icon-xs" variant="ghost" onClick={() => setViewing(f)} aria-label={`View ${f.title}`} title="View indexed content">
+                          <Eye className="size-3.5" />
+                        </Button>
                         {can.manage && (
                           <>
                             <ActionButton
@@ -373,6 +330,7 @@ export default function KnowledgeBase({
         )}
       </SectionCard>
       {editing && <EditDialog botId={botId} file={editing} onClose={() => setEditing(null)} />}
+      {viewing && <ViewDialog botId={botId} file={viewing} onClose={() => setViewing(null)} />}
     </div>
   );
 }
