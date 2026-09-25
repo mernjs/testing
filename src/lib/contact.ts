@@ -26,4 +26,4 @@ export const linkedin = {
   href: "#",
 };
 
-export const mapsUrl = "https://www.google.com/maps/search/?api=1&query=4th+Floor%2C+Tower+B%2C+Logix+Cyber+Park%2C+Sector+62%2C+Noida%2C+Uttar+Pradesh+201309";
+export const mapsUrl = "https://www.google.com/maps/search/?api=1&query=No+163%2C+MM+Colony%2C+A+Block%2C+Aminjikarai%2C+Chennai%2C+Tamil+Nadu+600029";

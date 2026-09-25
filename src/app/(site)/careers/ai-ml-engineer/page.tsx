@@ -16,7 +16,7 @@ const isDraft = job.status === "draft";
 const baseMetadata: Metadata = {
   title,
   description,
-  keywords: [job.title, "YashOrbit careers", job.category, "job openings Noida"],
+  keywords: [job.title, "YashOrbit careers", job.category, "job openings Chennai"],
   alternates: { canonical: path },
   ...(isDraft ? { robots: { index: false, follow: false } } : {}),
   ...socialMetadata({ title, description, path, image }),

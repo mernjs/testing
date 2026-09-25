@@ -148,7 +148,7 @@ Share a project brief through the [contact page](${SITE}/contact) and we'll come
     sources: [{ title: "About YashOrbit", url: `${SITE}/about` }],
     answer: `**YashOrbit Technologies Pvt. Ltd.** is a software development company that builds web, mobile, and AI/ML products for growing businesses, and runs industrial training and internship programs.
 
-We work with both early-stage startups and established enterprises, and our office is in Logix Cyber Park, Sector 62, Noida. See the About page for our mission and case studies.`,
+We work with both early-stage startups and established enterprises, and our office is in Aminjikarai, Chennai. See the About page for our mission and case studies.`,
   },
   {
     id: "careers",
@@ -166,7 +166,7 @@ Browse current roles and apply on the [Careers page](${SITE}/careers). Internshi
 
 - **Email:** support@yashorbit.com
 - **Phone / WhatsApp:** +91 8072278460
-- **Office:** 4th Floor, Tower B, Logix Cyber Park, Sector 62, Noida, Uttar Pradesh 201309
+- **Office:** No 163, MM Colony, A Block, Aminjikarai, Chennai, Tamil Nadu 600029, India
 
 Or send a project brief through the [contact form](${SITE}/contact) — the technical team replies within 24 hours.`,
   },

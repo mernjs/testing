@@ -73,7 +73,7 @@ export const perks: Perk[] = [
   { title: "Growth-First Culture", description: "Real ownership from day one, with mentorship from senior engineers and leaders.", icon: Rocket },
   { title: "Learning & Development", description: "A dedicated budget for courses, certifications, and conference passes.", icon: GraduationCap },
   { title: "Health & Wellness", description: "Comprehensive health coverage for you and your family.", icon: HeartHandshake },
-  { title: "Flexible, Hybrid Work", description: "Hybrid-friendly roles out of Noida, built around outcomes, not hours logged.", icon: Clock },
+  { title: "Flexible, Hybrid Work", description: "Hybrid-friendly roles out of Chennai, built around outcomes, not hours logged.", icon: Clock },
   { title: "Competitive Compensation", description: "Market-benchmarked salaries plus performance-based bonuses.", icon: Gauge },
   { title: "Cutting-Edge Projects", description: "Work on real GenAI, ML, and full-stack products shipped to real users.", icon: Sparkles },
 ];
@@ -129,7 +129,7 @@ export const jobs: Job[] = [
     icon: Code2,
     summary: "Ship full-stack features across MongoDB, Express, React, and Node in production apps used by real clients.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "1–4 Years",
     responsibilities: [
       { title: "API Development", description: "Design and build RESTful APIs and services with Node.js and Express." },
@@ -155,7 +155,7 @@ export const jobs: Job[] = [
     icon: Sparkles,
     summary: "Build generative AI features — from prompt pipelines to production LLM integrations — that ship real products, not prototypes.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "1–3 Years",
     responsibilities: [
       { title: "LLM Integration", description: "Design prompting strategies, RAG pipelines, and LLM-powered features." },
@@ -181,7 +181,7 @@ export const jobs: Job[] = [
     icon: Cpu,
     summary: "Design, train, and deploy machine learning models that power real product decisions — from forecasting to computer vision.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "2–5 Years",
     responsibilities: [
       { title: "Model Development", description: "Build and evaluate ML models for classification, forecasting, and vision tasks." },
@@ -207,7 +207,7 @@ export const jobs: Job[] = [
     icon: Smartphone,
     summary: "Build and ship native Android experiences used by thousands of daily users, from architecture to Play Store release.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "1–4 Years",
     responsibilities: [
       { title: "Native Development", description: "Develop native Android apps using Kotlin and modern Jetpack libraries." },
@@ -233,7 +233,7 @@ export const jobs: Job[] = [
     icon: Apple,
     summary: "Craft polished, native iOS apps with Swift, from prototype to App Store release, across client and in-house products.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "1–4 Years",
     responsibilities: [
       { title: "Native Development", description: "Build native iOS apps using Swift and SwiftUI/UIKit." },
@@ -259,7 +259,7 @@ export const jobs: Job[] = [
     icon: CheckCircle2,
     summary: "Own test strategy, automation, and release quality across our web and mobile products, catching issues before users do.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "1–3 Years",
     responsibilities: [
       { title: "Test Planning", description: "Write and execute test plans across web, mobile, and API layers." },
@@ -285,7 +285,7 @@ export const jobs: Job[] = [
     icon: Palette,
     summary: "Design intuitive, accessible interfaces from wireframes to polished, production-ready UI across web and mobile products.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "1–4 Years",
     responsibilities: [
       { title: "Product Design", description: "Translate product requirements into wireframes, flows, and prototypes." },
@@ -311,7 +311,7 @@ export const jobs: Job[] = [
     icon: Handshake,
     summary: "Identify new opportunities, build client relationships, and grow our project pipeline across global markets.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "2–6 Years",
     responsibilities: [
       { title: "Prospecting", description: "Identify and qualify new business opportunities across target markets." },
@@ -337,7 +337,7 @@ export const jobs: Job[] = [
     icon: BarChart3,
     summary: "Translate business needs into clear requirements that engineering can build against, bridging clients and delivery teams.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "1–4 Years",
     responsibilities: [
       { title: "Requirements Gathering", description: "Gather and document business and functional requirements." },
@@ -363,7 +363,7 @@ export const jobs: Job[] = [
     icon: ClipboardList,
     summary: "Plan, coordinate, and deliver client projects on time and within scope, keeping teams aligned from kickoff to launch.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "2–6 Years",
     responsibilities: [
       { title: "Project Planning", description: "Own project plans, timelines, and resource allocation." },
@@ -389,7 +389,7 @@ export const jobs: Job[] = [
     icon: FileText,
     summary: "Prepare proposals and bid responses that win new business on global freelance platforms and enterprise RFPs.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "1–3 Years",
     responsibilities: [
       { title: "Bid Sourcing", description: "Identify and shortlist relevant bids across freelance and enterprise platforms." },
@@ -415,7 +415,7 @@ export const jobs: Job[] = [
     icon: Calculator,
     summary: "Manage client accounts, billing, and financial operations with precision, keeping the business's finances healthy.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "2–5 Years",
     responsibilities: [
       { title: "Billing Operations", description: "Manage invoicing, billing cycles, and payment follow-ups." },
@@ -441,7 +441,7 @@ export const jobs: Job[] = [
     icon: Database,
     summary: "Maintain reporting systems and dashboards that keep leadership decisions data-driven across the business.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "1–3 Years",
     responsibilities: [
       { title: "Dashboarding", description: "Build and maintain dashboards and MIS reports across departments." },
@@ -467,7 +467,7 @@ export const jobs: Job[] = [
     icon: Users,
     summary: "Own recruitment, onboarding, and employee engagement, helping us hire and retain the people who build our products.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "1–4 Years",
     responsibilities: [
       { title: "Recruitment", description: "Manage end-to-end hiring: sourcing, screening, and interview coordination." },
@@ -493,7 +493,7 @@ export const jobs: Job[] = [
     icon: PenTool,
     summary: "Write documentation, blogs, and case studies that explain complex tech simply, for both technical and business audiences.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "1–3 Years",
     responsibilities: [
       { title: "Content Creation", description: "Write blog posts, case studies, and product documentation." },
@@ -519,7 +519,7 @@ export const jobs: Job[] = [
     icon: Megaphone,
     summary: "Run SEO, paid, and social campaigns that grow our brand and generate qualified leads across channels.",
     employmentType: "Full-time",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     experience: "1–4 Years",
     responsibilities: [
       { title: "Campaign Execution", description: "Plan and execute SEO, paid ads, and social media campaigns." },

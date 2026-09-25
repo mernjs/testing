@@ -23,7 +23,7 @@ const baseMetadata: Metadata = {
     "Business Analyst jobs",
     "Project Manager jobs",
     "Digital Marketing jobs",
-    "software jobs Noida",
+    "software jobs Chennai",
   ],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),

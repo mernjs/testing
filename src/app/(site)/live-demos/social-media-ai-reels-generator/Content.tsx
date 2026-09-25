@@ -4,7 +4,6 @@ import {
   Video, Users2, Cloud, Sparkles,
   Code2, Server, Database, Package, Lock, Layers,
   Mic, Wand2, Share2,
-  Bot, Camera, Briefcase,
 } from "lucide-react";
 import PageHero from "@/components/sections/PageHero";
 import CourseOverview from "@/components/sections/CourseOverview";
@@ -15,7 +14,6 @@ import FeatureHighlights from "@/components/sections/FeatureHighlights";
 import ProductGallery from "@/components/sections/ProductGallery";
 import CaseStudyShowcase from "@/components/sections/CaseStudyShowcase";
 import FAQAccordion from "@/components/sections/FAQAccordion";
-import RelatedServices from "@/components/sections/RelatedServices";
 import DetailCTA from "@/components/sections/DetailCTA";
 import LiveDemoSection from "@/components/sections/LiveDemoSection";
 import { socialMediaAiReelsGeneratorFaqs } from "./faqs";

@@ -19,7 +19,7 @@ export const internshipRoles: InternshipRole[] = [
     category: "Engineering & Development",
     summary: "A paid, 8–12 week MERN Stack internship — work inside a live MongoDB, Express, React, and Node.js codebase on real feature tickets, under a dedicated mentor.",
     duration: "8–12 Weeks",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     stipend: "Performance-based Stipend + Certificate",
     responsibilities: [
       "Develop responsive UI components in React and Tailwind CSS.",
@@ -41,7 +41,7 @@ export const internshipRoles: InternshipRole[] = [
     category: "Engineering & Development",
     summary: "A paid, 8–12 week MEAN Stack internship — build enterprise features with MongoDB, Express, Angular, and Node.js with 1-on-1 mentorship.",
     duration: "8–12 Weeks",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     stipend: "Performance-based Stipend + Certificate",
     responsibilities: [
       "Build dynamic Angular components and TypeScript services.",
@@ -63,7 +63,7 @@ export const internshipRoles: InternshipRole[] = [
     category: "Artificial Intelligence & ML",
     summary: "Work on live LLM features, prompt pipelines, and RAG architectures in production applications under expert AI engineering mentors.",
     duration: "8–12 Weeks",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     stipend: "Performance-based Stipend + Certificate",
     responsibilities: [
       "Build and evaluate prompt templates and RAG retrieval pipelines.",
@@ -85,7 +85,7 @@ export const internshipRoles: InternshipRole[] = [
     category: "Artificial Intelligence & ML",
     summary: "Hands-on internship building autonomous tool-using agents, multi-agent frameworks, and workflow automation under senior AI mentors.",
     duration: "8–12 Weeks",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     stipend: "Performance-based Stipend + Certificate",
     responsibilities: [
       "Develop custom tools and function-calling modules for AI agents.",
@@ -107,7 +107,7 @@ export const internshipRoles: InternshipRole[] = [
     category: "Artificial Intelligence & ML",
     summary: "Build, train, and test 24/7 conversational chatbots and voice agents integrated with messaging platforms and web applications.",
     duration: "8–12 Weeks",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     stipend: "Performance-based Stipend + Certificate",
     responsibilities: [
       "Design conversation flows, intent recognition, and entity extraction.",
@@ -129,7 +129,7 @@ export const internshipRoles: InternshipRole[] = [
     category: "Artificial Intelligence & ML",
     summary: "Work on computer vision models for object detection, image classification, and real-time video analytics on live projects.",
     duration: "8–12 Weeks",
-    location: "Noida, India · Hybrid",
+    location: "Chennai, India · Hybrid",
     stipend: "Performance-based Stipend + Certificate",
     responsibilities: [
       "Annotate and preprocess image datasets for model training.",

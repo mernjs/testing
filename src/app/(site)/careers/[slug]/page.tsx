@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return withSeoOverrides(path, {
     title,
     description,
-    keywords: [job.title, "YashOrbit careers", job.category, "job openings Noida"],
+    keywords: [job.title, "YashOrbit careers", job.category, "job openings Chennai"],
     alternates: { canonical: path },
     ...(isDraft ? { robots: { index: false, follow: false } } : {}),
     ...socialMetadata({ title, description, path, image }),

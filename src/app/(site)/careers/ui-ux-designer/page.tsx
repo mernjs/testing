@@ -13,7 +13,7 @@ const image = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80
 const baseMetadata: Metadata = {
   title,
   description,
-  keywords: [job.title, "YashOrbit careers", job.category, "job openings Noida"],
+  keywords: [job.title, "YashOrbit careers", job.category, "job openings Chennai"],
   alternates: { canonical: path },
   ...socialMetadata({ title, description, path, image }),
 };

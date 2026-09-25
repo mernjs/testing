@@ -13,10 +13,10 @@ export const organizationInfo = {
   email: "contact@yashorbit.com",
   telephone: "+91 8072278460",
   address: {
-    streetAddress: "Sector 62",
-    addressLocality: "Noida",
-    addressRegion: "Uttar Pradesh",
-    postalCode: "201309",
+    streetAddress: "No 163, MM Colony, A Block, Aminjikarai",
+    addressLocality: "Chennai",
+    addressRegion: "Tamil Nadu",
+    postalCode: "600029",
     addressCountry: "IN",
   },
 };
@@ -84,8 +84,8 @@ export function localBusinessJsonLd() {
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: 28.6273,
-      longitude: 77.3725,
+      latitude: 13.0735,
+      longitude: 80.2206,
     },
     openingHoursSpecification: [
       {
@@ -181,13 +181,13 @@ export function courseJsonLd({
       courseWorkload: duration,
       location: {
         "@type": "Place",
-        name: "YashOrbit Noida Campus",
+        name: "YashOrbit Chennai Office",
         address: {
           "@type": "PostalAddress",
-          streetAddress: "Sector 62",
-          addressLocality: "Noida",
-          addressRegion: "Uttar Pradesh",
-          postalCode: "201309",
+          streetAddress: "No 163, MM Colony, A Block, Aminjikarai",
+          addressLocality: "Chennai",
+          addressRegion: "Tamil Nadu",
+          postalCode: "600029",
           addressCountry: "IN",
         },
       },
@@ -238,10 +238,10 @@ export function internshipJobPostingJsonLd({
       "@type": "Place",
       address: {
         "@type": "PostalAddress",
-        streetAddress: "Sector 62",
-        addressLocality: "Noida",
-        addressRegion: "Uttar Pradesh",
-        postalCode: "201309",
+        streetAddress: "No 163, MM Colony, A Block, Aminjikarai",
+        addressLocality: "Chennai",
+        addressRegion: "Tamil Nadu",
+        postalCode: "600029",
         addressCountry: "IN",
       },
     },
