@@ -5,7 +5,7 @@ import Link from "next/link";
 import PortalAuthLink from "@/components/PortalAuthLink";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, LayoutGrid, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Newspaper, Workflow, BarChart3, FileSearch, TrendingUp, Plug, BrainCircuit } from "lucide-react";
+import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, LineChart, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, HardHat, Hotel, ShieldAlert, Camera, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Newspaper, Workflow, BarChart3, FileSearch, TrendingUp, Plug, BrainCircuit } from "lucide-react";
 import { useTheme } from "next-themes";
 import { InstagramIcon, XIcon, FacebookIcon, GithubIcon, YoutubeIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
 import { socialLinks as socialLinksData, whatsapp } from "@/lib/contact";
@@ -57,7 +57,6 @@ const navigation = [
       { name: "What We Do", href: "/about/what-we-do", description: "Our core operations", icon: Zap },
       { name: "Technologies", href: "/about/technologies", description: "Our full tech stack", icon: Layers },
       { name: "Success Stories", href: "/about/success-stories", description: "Client impact cases", icon: Box },
-      { name: "Our Team", href: "/about/our-team", description: "The experts behind it", icon: LayoutGrid },
       { name: "Blog", href: "/blog", description: "Engineering insights & updates", icon: Newspaper },
     ],
   },
@@ -86,19 +85,6 @@ const navigation = [
   //     { name: "AI Integration Services", href: "/ai-automations/ai-integration-services", description: "Embed AI into your stack", icon: Plug },
   //   ],
   // },
-  {
-    name: "Products",
-    href: "/products",
-    featured: { title: "Next-Gen Tools", description: "Proprietary software products.", image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=600&auto=format&fit=crop" },
-    items: [
-      { name: "AI Construction Platform", href: "/products/ai-construction-platform", description: "Document analyzer & AI chat", icon: HardHat },
-      { name: "Smart Spam Filter", href: "/products/smart-spam-filter", description: "Dynamic spam call scoring", icon: Zap },
-      { name: "AI Voice Assistant", href: "/products/ai-voice-assistant", description: "Human-like voice AI", icon: Bot },
-      { name: "Predictive Analytics Engine", href: "/products/predictive-analytics-engine", description: "ML-driven forecasting", icon: LineChart },
-      { name: "Image Recognition System", href: "/products/image-recognition-system", description: "Serverless computer vision", icon: Camera },
-      { name: "AI Job Board Portal", href: "/products/ai-job-board-portal", description: "ATS with AI matching", icon: Briefcase },
-    ],
-  },
   // {
   //   name: "Resource Augmentation",
   //   href: "/resource-augmentation",
@@ -190,7 +176,6 @@ const mobileNavigation = [
       { name: "What We Do", href: "/about/what-we-do", icon: Zap },
       { name: "Technologies", href: "/about/technologies", icon: Layers },
       { name: "Success Stories", href: "/about/success-stories", icon: Box },
-      { name: "Our Team", href: "/about/our-team", icon: LayoutGrid },
       { name: "Blog", href: "/blog", icon: Newspaper },
     ],
   },
@@ -220,19 +205,6 @@ const mobileNavigation = [
   //     { name: "Robotic Process Automation", href: "/ai-automations/robotic-process-automation", icon: Bot },
   //   ],
   // },
-  {
-    name: "Products",
-    href: "/products",
-    icon: Box,
-    items: [
-      { name: "AI Construction Platform", href: "/products/ai-construction-platform", icon: HardHat },
-      { name: "Smart Spam Filter", href: "/products/smart-spam-filter", icon: ShieldAlert },
-      { name: "AI Voice Assistant", href: "/products/ai-voice-assistant", icon: Bot },
-      { name: "Predictive Analytics Engine", href: "/products/predictive-analytics-engine", icon: LineChart },
-      { name: "Image Recognition System", href: "/products/image-recognition-system", icon: Camera },
-      { name: "AI Job Board Portal", href: "/products/ai-job-board-portal", icon: Briefcase },
-    ],
-  },
   // {
   //   name: "Resource Augmentation",
   //   href: "/resource-augmentation",
@@ -756,12 +728,12 @@ export default function Header() {
                         support@yashorbit.com
                       </span>
                     </a>
-                    <a href="tel:+919919064239" className="group flex items-center gap-3">
+                    <a href="tel:+918072278460" className="group flex items-center gap-3">
                       <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary">
                         <Phone className="h-4 w-4 text-primary transition-colors group-hover:text-primary-foreground" />
                       </span>
                       <span className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
-                        +91 9919064239
+                        +91 8072278460
                       </span>
                     </a>
                   </div>

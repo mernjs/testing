@@ -4,7 +4,7 @@ import * as cheerio from "cheerio";
 import { ObjectId, type Collection } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import { siteUrl, organizationInfo } from "@/lib/seo";
-import { emails, phone, whatsapp, socialLinks, mapsUrl } from "@/lib/contact";
+import { emails, whatsapp, socialLinks, mapsUrl } from "@/lib/contact";
 import { ensureVectorStore } from "@/lib/chatbot-config";
 import {
   uploadTextToVectorStore,
@@ -210,7 +210,7 @@ function buildCompanyFactsDocument(): { title: string; text: string } {
     `Website: ${organizationInfo.url}`,
     `Primary contact email: ${organizationInfo.email}`,
     `Support email: ${emails.support}`,
-    `Phone: ${organizationInfo.telephone} (also ${phone.display})`,
+    `Phone: ${organizationInfo.telephone}`,
     `WhatsApp: ${whatsapp.href}`,
     `Office address: ${a.streetAddress}, ${a.addressLocality}, ${a.addressRegion} ${a.postalCode}, ${a.addressCountry}`,
     `Map: ${mapsUrl}`,

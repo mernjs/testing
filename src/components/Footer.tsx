@@ -170,7 +170,7 @@ export default function Footer() {
               </div>
             </div>
           </div>
-          <div className="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6 xl:col-span-2 xl:mt-0">
+          <div className="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5 xl:col-span-2 xl:mt-0">
             <div>
               <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
@@ -257,50 +257,6 @@ export default function Footer() {
             <div>
               <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
-                Products
-              </h3>
-              <ul role="list" className="mt-6 space-y-4">
-                <li>
-                  <Link href="/products/ai-construction-platform" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    AI Construction Platform
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/products/smart-spam-filter" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Smart Spam Filter
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/products/ai-voice-assistant" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    AI Voice Assistant
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/products/predictive-analytics-engine" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Predictive Analytics Engine
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/products/image-recognition-system" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Image Recognition System
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/products/ai-job-board-portal" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    AI Job Board Portal
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/products" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
-                    View All Products
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
-                <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 Company
               </h3>
               <ul role="list" className="mt-6 space-y-4">
@@ -312,11 +268,6 @@ export default function Footer() {
                 <li>
                   <Link href="/about/our-mission" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
                     Our Mission
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about/our-team" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Our Team
                   </Link>
                 </li>
                 <li>

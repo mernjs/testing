@@ -198,15 +198,6 @@ export default function SocialMediaAiReelsGeneratorContent() {
         faqs={socialMediaAiReelsGeneratorFaqs}
       />
 
-      <RelatedServices
-        tone="muted"
-        title="Related products"
-        services={[
-          { title: "AI Voice Assistant", description: "See another application of the same voice AI technology.", href: "/products/ai-voice-assistant", icon: Bot },
-          { title: "Image Recognition System", description: "Explore more of our computer vision and image AI work.", href: "/products/image-recognition-system", icon: Camera },
-          { title: "AI Job Board Portal", description: "See how we apply AI automation across a different product.", href: "/products/ai-job-board-portal", icon: Briefcase },
-        ]}
-      />
 
       <DetailCTA
         heading="Ready to turn your photos into reels?"

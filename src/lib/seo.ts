@@ -11,7 +11,7 @@ export const organizationInfo = {
   url: siteUrl,
   logo: `${siteUrl}/brand/icon-tile-512.png`,
   email: "contact@yashorbit.com",
-  telephone: "+91 93159 47683",
+  telephone: "+91 8072278460",
   address: {
     streetAddress: "Sector 62",
     addressLocality: "Noida",

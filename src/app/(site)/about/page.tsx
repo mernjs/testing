@@ -3,9 +3,9 @@ import { withSeoOverrides } from "@/lib/seo-panel/public";
 import AboutContent from "./Content";
 import { socialMetadata, breadcrumbJsonLd, organizationJsonLd } from "@/lib/seo";
 
-const title = "About YashOrbit — Mission, Team & Values | YashOrbit";
+const title = "About YashOrbit — Mission & Values | YashOrbit";
 const description =
-  "Discover YashOrbit's mission, the technologies we build with, our leadership team, and real success stories from businesses we've helped scale.";
+  "Discover YashOrbit's mission, the technologies we build with, and real success stories from businesses we've helped scale.";
 const path = "/about";
 const image = "https://images.unsplash.com/photo-1560264280-88b68371db39?q=80&w=1200&auto=format&fit=crop";
 
@@ -15,8 +15,6 @@ const baseMetadata: Metadata = {
   keywords: [
     "about YashOrbit",
     "YashOrbit mission",
-    "YashOrbit team",
-    "YashOrbit leadership",
     "software company success stories",
     "technology partner",
   ],

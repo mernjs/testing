@@ -69,7 +69,6 @@ AI-assisted workflows let us move faster than traditional timelines without cutt
     keywords: ["ai", "a.i", "automation", "automations", "machine learning", "ml", "rpa", "chatbot", "conversational", "llm", "agent"],
     sources: [
       { title: "AI & Automations", url: `${SITE}/ai-automations` },
-      { title: "Our Products", url: `${SITE}/products` },
     ],
     answer: `YashOrbit's **AI & automation** work includes:
 
@@ -149,7 +148,7 @@ Share a project brief through the [contact page](${SITE}/contact) and we'll come
     sources: [{ title: "About YashOrbit", url: `${SITE}/about` }],
     answer: `**YashOrbit Technologies Pvt. Ltd.** is a software development company that builds web, mobile, and AI/ML products for growing businesses, and runs industrial training and internship programs.
 
-We work with both early-stage startups and established enterprises, and our office is in Logix Cyber Park, Sector 62, Noida. See the About page for the leadership team and case studies.`,
+We work with both early-stage startups and established enterprises, and our office is in Logix Cyber Park, Sector 62, Noida. See the About page for our mission and case studies.`,
   },
   {
     id: "careers",
@@ -166,7 +165,7 @@ Browse current roles and apply on the [Careers page](${SITE}/careers). Internshi
     answer: `You can reach YashOrbit here:
 
 - **Email:** support@yashorbit.com
-- **Phone / WhatsApp:** +91 9919064239
+- **Phone / WhatsApp:** +91 8072278460
 - **Office:** 4th Floor, Tower B, Logix Cyber Park, Sector 62, Noida, Uttar Pradesh 201309
 
 Or send a project brief through the [contact form](${SITE}/contact) — the technical team replies within 24 hours.`,
@@ -174,10 +173,10 @@ Or send a project brief through the [contact form](${SITE}/contact) — the tech
   {
     id: "products",
     keywords: ["product", "products", "platform", "platforms", "predictive analytics", "solution"],
-    sources: [{ title: "Our Products", url: `${SITE}/products` }],
+    sources: [{ title: "AI & Automations", url: `${SITE}/ai-automations` }],
     answer: `Alongside custom work, YashOrbit ships its own **software products** — including a Predictive Analytics Engine and other AI platforms.
 
-The [Products page](${SITE}/products) has the current lineup with feature details and demo requests.`,
+Tell us what you need and we can walk you through a demo.`,
   },
   {
     id: "resource-augmentation",
