@@ -16,6 +16,7 @@ const baseMetadata: Metadata = {
   description,
   keywords: ["AI Voice Assistant", "Voice AI", "Hybrid App", "Human-Like Agent", "YashOrbit"],
   alternates: { canonical: path },
+  robots: { index: false, follow: false },
   ...socialMetadata({ title, description, path, image }),
 };
 

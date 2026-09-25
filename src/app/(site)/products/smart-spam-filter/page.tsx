@@ -16,6 +16,7 @@ const baseMetadata: Metadata = {
   description,
   keywords: ["Smart Spam Filter", "PWA", "Dynamic Spam Scoring", "Intelligent Routing", "YashOrbit"],
   alternates: { canonical: path },
+  robots: { index: false, follow: false },
   ...socialMetadata({ title, description, path, image }),
 };
 

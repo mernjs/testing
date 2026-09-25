@@ -16,6 +16,7 @@ const baseMetadata: Metadata = {
   description,
   keywords: ["Predictive Analytics Engine", "Machine Learning", "Demand Forecasting", "API-First", "YashOrbit"],
   alternates: { canonical: path },
+  robots: { index: false, follow: false },
   ...socialMetadata({ title, description, path, image }),
 };
 

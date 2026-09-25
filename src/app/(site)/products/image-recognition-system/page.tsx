@@ -16,6 +16,7 @@ const baseMetadata: Metadata = {
   description,
   keywords: ["Image Recognition System", "Computer Vision", "Serverless", "Fleet Monitoring", "YashOrbit"],
   alternates: { canonical: path },
+  robots: { index: false, follow: false },
   ...socialMetadata({ title, description, path, image }),
 };
 

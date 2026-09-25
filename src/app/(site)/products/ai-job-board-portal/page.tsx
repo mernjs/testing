@@ -16,6 +16,7 @@ const baseMetadata: Metadata = {
   description,
   keywords: ["AI Job Board Portal", "Integrated ATS", "Job Board", "OpenAI Powered", "YashOrbit"],
   alternates: { canonical: path },
+  robots: { index: false, follow: false },
   ...socialMetadata({ title, description, path, image }),
 };
 

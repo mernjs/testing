@@ -32,6 +32,11 @@ const EXCLUDED_ROUTES = new Set<string>([
   "/products/image-recognition-system",
   "/products/predictive-analytics-engine",
   "/products/smart-spam-filter",
+  // Policy pages — unlinked from the visible site, noindex.
+  "/about/privacy-policy",
+  "/about/terms-and-conditions",
+  "/about/refund-cancellation-policy",
+  "/about/acceptable-use-policy",
 ]);
 
 /** Recursively finds every route that has a page.tsx under the (site) route group. */

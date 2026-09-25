@@ -15,6 +15,7 @@ const baseMetadata: Metadata = {
   description,
   keywords: ["Terms and Conditions", "Terms of Use", "Legal Terms", "YashOrbit"],
   alternates: { canonical: path },
+  robots: { index: false, follow: false },
   ...socialMetadata({ title, description, path, image }),
 };
 

@@ -22,6 +22,7 @@ const baseMetadata: Metadata = {
     "AI job board portal",
   ],
   alternates: { canonical: path },
+  robots: { index: false, follow: false },
   ...socialMetadata({ title, description, path, image }),
 };
 

@@ -16,6 +16,7 @@ const baseMetadata: Metadata = {
   description,
   keywords: ["AI Construction Platform", "AI Document Analyzer", "RAG AI Chat", "Subscriptions", "YashOrbit"],
   alternates: { canonical: path },
+  robots: { index: false, follow: false },
   ...socialMetadata({ title, description, path, image }),
 };
 
