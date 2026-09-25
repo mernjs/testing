@@ -170,7 +170,7 @@ export default function Footer() {
               </div>
             </div>
           </div>
-          <div className="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5 xl:col-span-2 xl:mt-0">
+          <div className="mt-16 grid grid-cols-2 gap-8 lg:grid-cols-4 xl:col-span-2 xl:mt-0">
             <div>
               <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
@@ -183,23 +183,23 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/services/web-app-development" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Web Development
+                  <Link href="/ai-automations" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    AI & Automations
                   </Link>
                 </li>
                 <li>
-                  <Link href="/services/mobile-app-development" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Mobile Apps
+                  <Link href="/industrial-training" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Industrial Training
                   </Link>
                 </li>
                 <li>
-                  <Link href="/services/ai-ml-solutions" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    AI & ML
+                  <Link href="/resource-augmentation" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Resource Augmentation
                   </Link>
                 </li>
                 <li>
-                  <Link href="/services/ai-agent" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    AI Agent
+                  <Link href="/internship-program" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Internship Program
                   </Link>
                 </li>
                 <li>
@@ -210,7 +210,8 @@ export default function Footer() {
                 </li>
               </ul>
             </div>
-            <div>
+            {/* AI & Automations column — hidden for now; remove `hidden` to show it again (and set lg:grid-cols-5 above). */}
+            <div className="hidden">
               <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 AI & Automations
