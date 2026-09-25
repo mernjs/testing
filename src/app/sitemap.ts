@@ -16,22 +16,6 @@ const APP_DIR = path.join(process.cwd(), "src/app/(site)");
 const EXCLUDED_ROUTES = new Set<string>([
   "/services/prediction-forecasting", // duplicate of /services/prediction-and-forecasting, noindex
   "/ask", // AI chatbot page — thin app shell, sets robots: { index: false }
-  // Team & leadership pages — unlinked from the site nav, reachable by direct URL only.
-  "/about/our-team",
-  "/about/leadership",
-  "/about/co-founder-ceo",
-  "/about/co-founder-coo",
-  "/about/cto",
-  "/about/cfo",
-  "/about/chro",
-  // Products pages — unlinked from the site nav, reachable by direct URL only.
-  "/products",
-  "/products/ai-construction-platform",
-  "/products/ai-job-board-portal",
-  "/products/ai-voice-assistant",
-  "/products/image-recognition-system",
-  "/products/predictive-analytics-engine",
-  "/products/smart-spam-filter",
   // Policy pages — unlinked from the visible site, noindex.
   "/about/privacy-policy",
   "/about/terms-and-conditions",
