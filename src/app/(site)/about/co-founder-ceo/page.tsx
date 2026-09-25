@@ -15,6 +15,7 @@ const baseMetadata: Metadata = {
   description,
   keywords: ["Yashita Singh", "Co-Founder & CEO", "Founder Insights", "Leadership Vision", "YashOrbit"],
   alternates: { canonical: path },
+  robots: { index: false, follow: false },
   ...socialMetadata({ title, description, path, image }),
 };
 

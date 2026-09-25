@@ -15,6 +15,7 @@ const baseMetadata: Metadata = {
   description,
   keywords: ["Chief Human Resources Officer", "CHRO", "People Leadership", "Talent & Culture", "YashOrbit"],
   alternates: { canonical: path },
+  robots: { index: false, follow: false },
   ...socialMetadata({ title, description, path, image }),
 };
 
