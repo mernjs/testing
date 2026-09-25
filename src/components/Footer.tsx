@@ -388,7 +388,8 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-16 border-t border-secondary-foreground/10 dark:border-white/10 sm:mt-20 lg:mt-24">
+        {/* Bottom bar (copyright + legal links) — hidden for now; remove `hidden` to show it again. */}
+        <div className="hidden mt-16 border-t border-secondary-foreground/10 dark:border-white/10 sm:mt-20 lg:mt-24">
           <div className="mt-8 rounded-2xl bg-white/40 dark:bg-white/5 px-4 py-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs leading-5 text-secondary-foreground/85">
               &copy; {new Date().getFullYear()} <span className="text-secondary-foreground">Yash</span><span className="text-primary">Orbit</span> Technologies Pvt. Ltd. All rights reserved.
