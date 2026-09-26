@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ProductItem } from "@/lib/products-data";
 import {
   Lock,
@@ -23,6 +24,7 @@ import {
   DollarSign,
   Database,
   Code2,
+  Plus,
   LucideIcon,
 } from "lucide-react";
 
@@ -42,6 +44,8 @@ export default function ProductMockup({
   compact = false,
 }: ProductMockupProps) {
   const [activeScreenIndex, setActiveScreenIndex] = useState(initialScreenIndex);
+  const [activeHotspotId, setActiveHotspotId] = useState<string | null>(null);
+
   const activeScreen = product.screens[activeScreenIndex] || product.screens[0];
 
   return (
@@ -107,6 +111,55 @@ export default function ProductMockup({
       {/* Mockup Canvas */}
       <div className={`relative bg-background/95 p-4 md:p-6 overflow-hidden ${compact ? "min-h-[220px]" : "min-h-[340px]"}`}>
         {renderMockupContent(activeScreen?.mockupType || "admin-overview")}
+
+        {/* Interactive UI Hotspots Overlay Layer */}
+        {product.hotspots && product.hotspots.length > 0 && !compact && (
+          <div className="absolute inset-0 pointer-events-auto">
+            {product.hotspots.map((hs) => {
+              const isHovered = activeHotspotId === hs.id;
+              return (
+                <div
+                  key={hs.id}
+                  style={{ left: `${hs.x}%`, top: `${hs.y}%` }}
+                  className="absolute -translate-x-1/2 -translate-y-1/2 z-30"
+                >
+                  <button
+                    onMouseEnter={() => setActiveHotspotId(hs.id)}
+                    onMouseLeave={() => setActiveHotspotId(null)}
+                    onClick={() => setActiveHotspotId(activeHotspotId === hs.id ? null : hs.id)}
+                    className="group relative flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/40 focus:outline-none transition-transform hover:scale-110"
+                    aria-label={hs.title}
+                  >
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                    <Plus className="h-3.5 w-3.5 transition-transform group-hover:rotate-45" />
+                  </button>
+
+                  {/* Feature Popover */}
+                  <AnimatePresence>
+                    {isHovered && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 5 }}
+                        className="absolute left-1/2 -translate-x-1/2 bottom-8 w-60 z-40 rounded-xl border border-border/80 bg-background/95 p-3 shadow-2xl backdrop-blur-xl pointer-events-none"
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-bold text-xs text-foreground">{hs.title}</span>
+                          {hs.badge && (
+                            <span className="px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[9px] font-bold">
+                              {hs.badge}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[11px] text-muted-foreground leading-relaxed">{hs.description}</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Subtle Glow Overlay */}
@@ -132,7 +185,7 @@ function renderMockupContent(type: string) {
               <span className="flex items-center gap-2 text-foreground">
                 <Activity className="w-4 h-4 text-primary" /> Super Admin Live Stream (15 Panels Synchronized)
               </span>
-              <span className="text-emerald-500 font-mono text-[11px]">LIVE 60fps</span>
+              <span className="text-primary font-mono text-[11px]">LIVE 60fps</span>
             </div>
             <div className="space-y-2 text-xs font-mono">
               <div className="flex items-center justify-between p-2 rounded-lg bg-background/80 border border-border/40">
@@ -165,7 +218,7 @@ function renderMockupContent(type: string) {
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2">
             <div className="text-xs font-semibold text-foreground mb-2 flex items-center justify-between">
               <span>Recruitment AI Candidate Pipeline</span>
-              <span className="text-primary text-[11px] font-mono">Synced with Careers Page</span>
+              <span className="text-primary/80 text-[11px] font-mono">Synced with Careers Page</span>
             </div>
             <CandidateRow name="Sarah Jenkins" role="GenAI Engineer" score="98% AI Match" status="Shortlisted" />
             <CandidateRow name="David Miller" role="Full Stack MERN" score="92% AI Match" status="Interview Scheduled" />
@@ -202,10 +255,10 @@ function renderMockupContent(type: string) {
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2">
             <div className="flex items-center justify-between text-xs font-semibold mb-1">
-              <span className="flex items-center gap-1.5 text-purple-400">
-                <Bot className="w-4 h-4 text-purple-500" /> Live AI Voice & Chat Assistant Transcript
+              <span className="flex items-center gap-1.5 text-secondary-foreground">
+                <Bot className="w-4 h-4 text-secondary-foreground" /> Live AI Voice & Chat Assistant Transcript
               </span>
-              <span className="text-[10px] bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded-full font-mono">Autonomous AI Active</span>
+              <span className="text-[10px] bg-secondary/15 text-secondary-foreground border border-secondary/20 px-2 py-0.5 rounded-full font-mono">Autonomous AI Active</span>
             </div>
             <div className="space-y-1.5 text-xs">
               <ChatBubble sender="Prospect" text="Hi, we need an AI-powered HRMS and assessment portal built." align="left" />
@@ -228,8 +281,8 @@ function renderMockupContent(type: string) {
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-3">
             <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="text-foreground flex items-center gap-2"><Sparkles className="w-4 h-4 text-violet-500" /> Active RAG Bot Catalog</span>
-              <span className="text-violet-400 text-[11px] font-mono">+ Create New Bot</span>
+              <span className="text-foreground flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> Active RAG Bot Catalog</span>
+              <span className="text-primary text-[11px] font-mono">+ Create New Bot</span>
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <BotCard name="ProposalGPT" kb="24 Sales Files" model="GPT-4o" usage="1.2k chats" />
@@ -252,8 +305,8 @@ function renderMockupContent(type: string) {
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
             <div className="flex items-center justify-between font-semibold text-foreground">
-              <span className="flex items-center gap-2"><Sparkles className="w-4 h-4 text-pink-500" /> AI Reel Script Generator (Scene-by-Scene)</span>
-              <span className="text-pink-400 text-[11px]">Ready for Approval</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> AI Reel Script Generator (Scene-by-Scene)</span>
+              <span className="text-primary text-[11px]">Ready for Approval</span>
             </div>
             <div className="bg-background/80 p-3 rounded-lg border border-border/50 font-mono space-y-1 text-[11px]">
               <p className="text-muted-foreground"><strong className="text-primary">Hook (0-3s):</strong> &quot;Stop using 10 separate SaaS tools for your company!&quot;</p>
@@ -275,13 +328,13 @@ function renderMockupContent(type: string) {
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
             <div className="flex items-center justify-between font-semibold text-foreground">
-              <span className="flex items-center gap-2"><Code2 className="w-4 h-4 text-indigo-500" /> Candidate Coding Exam Sandbox</span>
-              <span className="text-emerald-500 font-mono text-[11px]">Timer: 44m 20s remaining</span>
+              <span className="flex items-center gap-2"><Code2 className="w-4 h-4 text-secondary-foreground" /> Candidate Coding Exam Sandbox</span>
+              <span className="text-primary font-mono text-[11px]">Timer: 44m 20s remaining</span>
             </div>
             <div className="bg-background/90 p-3 rounded-lg border border-border/50 font-mono text-[11px] text-muted-foreground space-y-1">
-              <p className="text-purple-400 font-mono">{"// Task 2: Implement AI resume similarity scoring function"}</p>
-              <p><span className="text-blue-400">function</span> <span className="text-amber-400">calculateSimilarity</span>(candidate, requirement) &#123;</p>
-              <p className="pl-4">return openAiVectorStore.<span className="text-emerald-400">search</span>(candidate.embedding);</p>
+              <p className="text-secondary-foreground/70 font-mono">{"// Task 2: Implement AI resume similarity scoring function"}</p>
+              <p><span className="text-secondary-foreground">function</span> <span className="text-primary">calculateSimilarity</span>(candidate, requirement) &#123;</p>
+              <p className="pl-4">return openAiVectorStore.<span className="text-primary/80">search</span>(candidate.embedding);</p>
               <p>&#125;</p>
             </div>
           </div>
@@ -300,16 +353,16 @@ function renderMockupContent(type: string) {
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
             <div className="flex items-center justify-between font-semibold text-foreground">
               <span>Dynamic Meta Tag & Schema Publisher</span>
-              <span className="text-emerald-500 font-mono text-[11px]">No Deployment Needed</span>
+              <span className="text-primary font-mono text-[11px]">No Deployment Needed</span>
             </div>
             <div className="space-y-1.5 font-mono text-[11px]">
               <div className="p-2 rounded bg-background border border-border/40 flex justify-between">
                 <span className="text-foreground">Page Title: YashOrbit — AI-Powered Software Platform</span>
-                <span className="text-emerald-400">Published</span>
+                <span className="text-primary">Published</span>
               </div>
               <div className="p-2 rounded bg-background border border-border/40 flex justify-between">
                 <span className="text-muted-foreground">JSON-LD Schema: SoftwareApplication Schema</span>
-                <span className="text-emerald-400 font-mono">Validated</span>
+                <span className="text-primary font-mono">Validated</span>
               </div>
             </div>
           </div>
@@ -327,7 +380,7 @@ function renderMockupContent(type: string) {
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
             <div className="flex items-center justify-between font-semibold text-foreground">
-              <span className="flex items-center gap-2"><KeyRound className="w-4 h-4 text-amber-500" /> Multi-Tenant Client Vault</span>
+              <span className="flex items-center gap-2"><KeyRound className="w-4 h-4 text-primary" /> Multi-Tenant Client Vault</span>
               <span className="text-muted-foreground text-[11px]">Role Gated</span>
             </div>
             <div className="space-y-1 font-mono text-[11px]">
@@ -349,7 +402,7 @@ function renderMockupContent(type: string) {
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
             <div className="flex items-center justify-between font-semibold text-foreground">
               <span>YashOrbit Enterprise Ecosystem Control</span>
-              <span className="text-emerald-500 font-mono text-[11px]">Active Suite</span>
+              <span className="text-primary font-mono text-[11px]">Active Suite</span>
             </div>
             <p className="text-muted-foreground text-[11px] leading-relaxed">
               Provides unified access, role governance, real-time analytics, and embedded AI automation across all enterprise operations.
@@ -374,21 +427,24 @@ function MetricWidget({
   icon: LucideIcon;
   color?: string;
 }) {
+  // Map all color variants → brand tokens only (primary = coral #E56043, secondary = blue #1D428A)
   const colorMap: Record<string, string> = {
-    emerald: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
-    blue: "text-blue-500 bg-blue-500/10 border-blue-500/20",
-    purple: "text-purple-500 bg-purple-500/10 border-purple-500/20",
-    amber: "text-amber-500 bg-amber-500/10 border-amber-500/20",
-    rose: "text-rose-500 bg-rose-500/10 border-rose-500/20",
-    teal: "text-teal-500 bg-teal-500/10 border-teal-500/20",
-    cyan: "text-cyan-500 bg-cyan-500/10 border-cyan-500/20",
-    violet: "text-violet-500 bg-violet-500/10 border-violet-500/20",
-    indigo: "text-indigo-500 bg-indigo-500/10 border-indigo-500/20",
-    pink: "text-pink-500 bg-pink-500/10 border-pink-500/20",
-    fuchsia: "text-fuchsia-500 bg-fuchsia-500/10 border-fuchsia-500/20",
+    // warm / action variants → primary (coral)
+    emerald: "text-primary bg-primary/10 border-primary/20",
+    rose:    "text-primary bg-primary/10 border-primary/20",
+    amber:   "text-primary bg-primary/10 border-primary/20",
+    pink:    "text-primary bg-primary/10 border-primary/20",
+    fuchsia: "text-primary bg-primary/10 border-primary/20",
+    // cool / informational variants → secondary (blue)
+    blue:    "text-secondary-foreground bg-secondary/15 border-secondary/25",
+    purple:  "text-secondary-foreground bg-secondary/15 border-secondary/25",
+    teal:    "text-secondary-foreground bg-secondary/15 border-secondary/25",
+    cyan:    "text-secondary-foreground bg-secondary/15 border-secondary/25",
+    violet:  "text-secondary-foreground bg-secondary/15 border-secondary/25",
+    indigo:  "text-secondary-foreground bg-secondary/15 border-secondary/25",
   };
 
-  const style = colorMap[color] || colorMap.blue;
+  const style = colorMap[color] || "text-primary bg-primary/10 border-primary/20";
 
   return (
     <div className="rounded-xl border border-border/50 bg-background/80 p-3 shadow-sm backdrop-blur-md transition-all hover:border-primary/30">
@@ -399,7 +455,7 @@ function MetricWidget({
         </div>
       </div>
       <div className="text-base font-extrabold tracking-tight text-foreground">{value}</div>
-      {change && <div className="text-[10px] font-semibold text-emerald-500 mt-0.5">{change}</div>}
+      {change && <div className="text-[10px] font-semibold text-primary mt-0.5">{change}</div>}
     </div>
   );
 }
@@ -417,10 +473,10 @@ function CandidateRow({ name, role, score, status }: { name: string; role: strin
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <span className="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 text-[10px] font-mono border border-purple-500/20">
+        <span className="px-2 py-0.5 rounded-full bg-secondary/15 text-secondary-foreground text-[10px] font-mono border border-secondary/20">
           {score}
         </span>
-        <span className="text-[10px] font-medium text-emerald-500">{status}</span>
+        <span className="text-[10px] font-semibold text-primary">{status}</span>
       </div>
     </div>
   );
@@ -451,10 +507,10 @@ function ChatBubble({ sender, text, align, ai }: { sender: string; text: string;
       <div
         className={`max-w-[85%] p-2.5 rounded-2xl text-[11px] leading-relaxed ${
           ai
-            ? "bg-purple-600/20 text-foreground border border-purple-500/30 rounded-tr-xs"
+            ? "bg-secondary/20 text-foreground border border-secondary/30"
             : align === "right"
-            ? "bg-primary text-primary-foreground rounded-tr-xs"
-            : "bg-background border border-border/50 text-foreground rounded-tl-xs"
+            ? "bg-primary text-primary-foreground"
+            : "bg-background border border-border/50 text-foreground"
         }`}
       >
         {text}
@@ -468,9 +524,9 @@ function BotCard({ name, kb, model, usage }: { name: string; kb: string; model: 
     <div className="p-2.5 rounded-lg bg-background/90 border border-border/40 space-y-1">
       <div className="flex items-center justify-between">
         <span className="font-bold text-foreground text-[11px] flex items-center gap-1">
-          <Bot className="w-3 h-3 text-purple-400" /> {name}
+          <Bot className="w-3 h-3 text-primary" /> {name}
         </span>
-        <span className="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 font-mono">{model}</span>
+        <span className="text-[9px] px-1.5 py-0.5 rounded bg-secondary/15 text-secondary-foreground font-mono">{model}</span>
       </div>
       <div className="flex items-center justify-between text-[10px] text-muted-foreground">
         <span>KB: {kb}</span>
@@ -489,7 +545,7 @@ function VaultItem({ title, username, secret, status }: { title: string; usernam
       </div>
       <div className="flex items-center gap-2">
         <span className="font-mono text-muted-foreground">{secret}</span>
-        <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">{status}</span>
+        <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">{status}</span>
       </div>
     </div>
   );

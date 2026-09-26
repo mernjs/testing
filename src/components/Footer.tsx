@@ -171,6 +171,53 @@ export default function Footer() {
             </div>
           </div>
           <div className="mt-16 grid grid-cols-2 gap-8 lg:grid-cols-4 xl:col-span-2 xl:mt-0">
+            {/* 1. About */}
+            <div>
+              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
+                <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
+                About
+              </h3>
+              <ul role="list" className="mt-6 space-y-4">
+                <li>
+                  <Link href="/about/our-mission" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Our Mission
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about/what-we-do" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    What We Do
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about/technologies" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Technologies
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about/success-stories" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Success Stories
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/blog" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Blog & Insights
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/services/our-saas-product" className="inline-block text-sm leading-6 text-primary font-semibold hover:translate-x-1 transition-all duration-200">
+                    Our SaaS Products
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
+                    View All About
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* 2. Services */}
             <div>
               <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
@@ -178,8 +225,8 @@ export default function Footer() {
               </h3>
               <ul role="list" className="mt-6 space-y-4">
                 <li>
-                  <Link href="/products" className="inline-block text-sm leading-6 text-primary font-semibold hover:translate-x-1 transition-all duration-200">
-                    Our Products Showcase
+                  <Link href="/services/our-saas-product" className="inline-block text-sm leading-6 text-primary font-semibold hover:translate-x-1 transition-all duration-200">
+                    Our SaaS Product
                   </Link>
                 </li>
                 <li>
@@ -215,139 +262,54 @@ export default function Footer() {
                 </li>
               </ul>
             </div>
-            {/* AI & Automations column — hidden for now; remove `hidden` to show it again (and set lg:grid-cols-5 above). */}
-            <div className="hidden">
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
-                <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
-                AI & Automations
-              </h3>
-              <ul role="list" className="mt-6 space-y-4">
-                <li>
-                  <Link href="/ai-automations/intelligent-process-automation" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Process Automation
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/ai-automations/conversational-ai-chatbots" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Conversational AI
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/ai-automations/ai-powered-data-analytics" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    AI Data Analytics
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/ai-automations/document-intelligence" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Document Intelligence
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/ai-automations/predictive-ai-workflows" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Predictive Workflows
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/ai-automations/ai-integration-services" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    AI Integration
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/ai-automations" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
-                    View All AI Automations
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </li>
-              </ul>
-            </div>
+
+            {/* 3. Industries */}
             <div>
               <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
-                Company
+                Industries
               </h3>
               <ul role="list" className="mt-6 space-y-4">
                 <li>
-                  <Link href="/about/what-we-do" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    About Us
+                  <Link href="/industries/healthcare" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Healthcare
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about/our-mission" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Our Mission
+                  <Link href="/industries/ecommerce" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Ecommerce
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about/technologies" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Technologies
+                  <Link href="/industries/insurance" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Insurance
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about/success-stories" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Success Stories
+                  <Link href="/industries/agriculture" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Agriculture
                   </Link>
                 </li>
                 <li>
-                  <Link href="/resource-augmentation" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Resource Augmentation
+                  <Link href="/industries/education" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Education
                   </Link>
                 </li>
                 <li>
-                  <Link href="/blog" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Blog
+                  <Link href="/industries/real-estate" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Real Estate
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
-                    View All Company
+                  <Link href="/industries" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
+                    View All Industries
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </li>
               </ul>
             </div>
-            <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
-                <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
-                Training
-              </h3>
-              <ul role="list" className="mt-6 space-y-4">
-                <li>
-                  <Link href="/industrial-training/mern-stack" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    MERN Stack
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/industrial-training/mean-stack" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    MEAN Stack
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/industrial-training/generative-ai" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Generative AI
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/industrial-training/agentic-ai" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Agentic AI
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/industrial-training/conversational-ai" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Conversational AI
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/industrial-training/computer-vision" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Computer Vision
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/industrial-training" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
-                    View All Programs
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </li>
-              </ul>
-            </div>
+
+            {/* 4. Careers */}
             <div>
               <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
@@ -365,23 +327,23 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/careers/ai-ml-engineer" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    AI/ML Engineer
+                  </Link>
+                </li>
+                <li>
                   <Link href="/careers/ui-ux-designer" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
                     UI/UX Designer
                   </Link>
                 </li>
                 <li>
-                  <Link href="/careers/business-analyst" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Business Analyst
+                  <Link href="/careers/business-development-manager" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Business Development
                   </Link>
                 </li>
                 <li>
-                  <Link href="/careers/project-manager" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Project Manager
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/careers/digital-marketing" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Digital Marketing
+                  <Link href="/careers/hr-executive" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    HR Executive
                   </Link>
                 </li>
                 <li>

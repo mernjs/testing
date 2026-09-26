@@ -31,6 +31,15 @@ export interface ProductFeature {
   aiPowered?: boolean;
 }
 
+export interface Hotspot {
+  id: string;
+  x: number; // percentage from left (0 - 100)
+  y: number; // percentage from top (0 - 100)
+  title: string;
+  description: string;
+  badge?: string;
+}
+
 export interface ProductItem {
   id: string;
   slug: string;
@@ -44,12 +53,15 @@ export interface ProductItem {
   shortDescription: string;
   fullDescription: string;
   primaryPurpose: string;
+  problemSolved: string;
+  businessOutcome: string;
   targetDepartments: string[];
   targetUsers: string[];
   aiCapabilities: string[];
   keyFeatures: ProductFeature[];
   metrics: { label: string; value: string }[];
   screens: ProductScreen[];
+  hotspots: Hotspot[];
   accentColor: string;
   isFeatured?: boolean;
 }
@@ -71,7 +83,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
     slug: "admin-command-center",
     name: "YashOrbit Executive Command Center",
     badge: "Super Admin Platform",
-    tagline: "Real-Time Executive Intelligence & Multi-Panel Governance",
+    tagline: "Real-time business intelligence, automated governance, and cross-module financial control.",
     category: "Executive & Operations",
     panelPath: "/admin",
     iconName: "ShieldCheck",
@@ -79,8 +91,10 @@ export const PRODUCTS_DATA: ProductItem[] = [
     accentColor: "from-blue-600 to-indigo-600",
     isFeatured: true,
     shortDescription: "Central executive dashboard aggregating live operational metrics, revenue streams, single sign-on security, and role governance across all 15 platform modules.",
-    fullDescription: "The Super Admin Command Center serves as the nerve center for leadership. Instead of logging into separate SaaS applications, executives gain instant, single-pane-of-glass visibility into company-wide revenue, active client projects, HR headcount, procurement spend, and OpenAI API token consumption—all updated in real time with zero manual reconciliation.",
+    fullDescription: "The Executive Command Center serves as the nerve center for leadership. Instead of logging into separate SaaS applications, executives gain instant, single-pane-of-glass visibility into company-wide revenue, active client projects, HR headcount, procurement spend, and OpenAI API token consumption—all updated in real time with zero manual reconciliation.",
     primaryPurpose: "Unify cross-module enterprise operations, automate identity & access control, and provide real-time executive decision intelligence.",
+    problemSolved: "Fragmented reporting across disconnected tools causing leadership blind spots and delayed strategic decisions.",
+    businessOutcome: "Complete operational visibility with 100% audited role governance and zero manual spreadsheet consolidation.",
     targetDepartments: ["Executive Leadership", "IT & Security", "Operations Management", "Finance"],
     targetUsers: ["Super Admin", "Chief Executive Officer", "CTO", "Head of Operations"],
     aiCapabilities: [
@@ -114,6 +128,32 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Session Security Audit", value: "100% Logged" },
       { label: "SSO Provisioning Speed", value: "< 50ms" },
     ],
+    hotspots: [
+      {
+        id: "h-admin-1",
+        x: 22,
+        y: 28,
+        title: "Live Operational Revenue",
+        description: "Aggregates revenue across PMS project billings, TMS training fees, and active client contracts live.",
+        badge: "Real-Time Stream",
+      },
+      {
+        id: "h-admin-2",
+        x: 72,
+        y: 28,
+        title: "AI API Token Ledger",
+        description: "Monitors token consumption and dollar spend across OpenAI GPT-4o models across all departments.",
+        badge: "AI Cost Oversight",
+      },
+      {
+        id: "h-admin-3",
+        x: 48,
+        y: 68,
+        title: "Cross-Module Audit Stream",
+        description: "Immutable live stream logging every privilege change, invoice sign-off, and bot execution.",
+        badge: "100% Audited",
+      },
+    ],
     screens: [
       {
         id: "exec-dashboard",
@@ -141,9 +181,9 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: "staff-hub",
     slug: "staff-hub",
-    name: "YashOrbit Workspace Hub",
+    name: "Smart Workspace Launcher",
     badge: "SSO Launchpad",
-    tagline: "Universal Employee Front Door & Contextual Workspace Launcher",
+    tagline: "Unified single sign-on experience giving every team member instant access to their personalized toolset.",
     category: "Executive & Operations",
     panelPath: "/workspace",
     iconName: "LayoutDashboard",
@@ -153,6 +193,8 @@ export const PRODUCTS_DATA: ProductItem[] = [
     shortDescription: "A unified single sign-on hub presenting employees with a personalized, role-gated application suite and instant one-click launch access.",
     fullDescription: "Eliminating bookmark sprawl and password fatigue, the Staff Hub provides every employee with a clean, personalized workspace. Based on their active roles, staff see exactly the applications they are authorized to use, alongside team announcements, pending task items, and quick action shortcuts.",
     primaryPurpose: "Streamline employee onboarding, centralize tool access, and eliminate login friction across the enterprise.",
+    problemSolved: "Password fatigue, bookmark sprawl, and security risks from employees accessing tools outside their scope.",
+    businessOutcome: "60% faster onboarding for new team members and zero password reset helpdesk tickets.",
     targetDepartments: ["All Departments", "HR & People", "Internal Staff"],
     targetUsers: ["Employees", "Team Leads", "Contractors", "New Hires"],
     aiCapabilities: [
@@ -179,6 +221,16 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Module Accessibility", value: "Role-Gated" },
       { label: "Onboarding Time", value: "-60% Reduction" },
     ],
+    hotspots: [
+      {
+        id: "h-hub-1",
+        x: 35,
+        y: 40,
+        title: "Role-Gated Module Grid",
+        description: "Displays only authorized products matching employee access roles.",
+        badge: "Role-Adaptive",
+      },
+    ],
     screens: [
       {
         id: "workspace-launcher",
@@ -199,9 +251,9 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: "hrms-suite",
     slug: "hrms-suite",
-    name: "YashOrbit HRMS Intelligence",
+    name: "Workforce Intelligence Suite (HRMS)",
     badge: "Human Capital Management",
-    tagline: "End-to-End HR, Automated Payroll & AI Recruitment Pipeline",
+    tagline: "Automate HR operations, biometric payroll, and AI-powered talent acquisition.",
     category: "HR & Talent",
     panelPath: "/hrms",
     iconName: "Users",
@@ -211,6 +263,8 @@ export const PRODUCTS_DATA: ProductItem[] = [
     shortDescription: "Integrated HR management system covering employee records, org trees, self-service leave, attendance, payroll, and AI applicant screening.",
     fullDescription: "HRMS eliminates spreadsheet-driven HR by establishing a single, permission-gated system of record. From candidate shortlisting that converts straight into an employee record, to attendance-linked payroll calculation and complete audit logs on salary changes, HRMS automates workforce administration effortlessly.",
     primaryPurpose: "Manage employee lifecycles, automate attendance and payroll, and accelerate candidate recruitment with AI.",
+    problemSolved: "Spreadsheet payroll errors, slow manual resume screening, and untracked employee record changes.",
+    businessOutcome: "100% accurate biometric payroll calculation and 4x faster candidate shortlisting with AI resume matching.",
     targetDepartments: ["Human Resources", "Talent Acquisition", "Finance & Payroll", "Management"],
     targetUsers: ["HR Manager", "Recruiter", "Payroll Specialist", "Employees"],
     aiCapabilities: [
@@ -243,6 +297,24 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Hire to Onboard", value: "1-Click Sync" },
       { label: "Audit Compliance", value: "Full Logged" },
     ],
+    hotspots: [
+      {
+        id: "h-hrms-1",
+        x: 75,
+        y: 30,
+        title: "AI Candidate Matching",
+        description: "OpenAI matches resume credentials against open job requirements with percentage scores.",
+        badge: "AI Resume Matcher",
+      },
+      {
+        id: "h-hrms-2",
+        x: 50,
+        y: 75,
+        title: "Biometric Payroll Engine",
+        description: "Computes tax deductions and net salary against verified clock-in data.",
+        badge: "Automated Payroll",
+      },
+    ],
     screens: [
       {
         id: "hrms-dashboard",
@@ -270,9 +342,9 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: "pms-project-command",
     slug: "pms-project-command",
-    name: "YashOrbit PMS Project Command",
+    name: "Smart Project Operations (PMS)",
     badge: "Project & Financial Engine",
-    tagline: "Profitability-Driven Project Management & Timesheet Billing",
+    tagline: "Plan, collaborate, and control project margins from one intelligent delivery hub.",
     category: "Project & Delivery",
     panelPath: "/pms",
     iconName: "Kanban",
@@ -282,6 +354,8 @@ export const PRODUCTS_DATA: ProductItem[] = [
     shortDescription: "Profitability-focused project management system tracking clients, tasks, milestones, timesheets, and real-time cost versus billing margins.",
     fullDescription: "Unlike generic task managers like Jira or Trello, PMS is engineered around real business profitability. It connects logged employee timesheets directly to hourly billing rates and project budgets, giving delivery managers exact cost-versus-margin visibility before completion deadlines.",
     primaryPurpose: "Track delivery project health, enforce workflow quality gates, and ensure billable profitability on every account.",
+    problemSolved: "Projects exceeding budgets without delivery managers knowing until after client billing cycle ends.",
+    businessOutcome: "Real-time cost vs billing margin tracking and guarded milestone quality gates.",
     targetDepartments: ["Engineering & Delivery", "Project Management Office", "Client Services", "Finance"],
     targetUsers: ["Project Manager", "Scrum Master", "Delivery Lead", "Developers"],
     aiCapabilities: [
@@ -309,6 +383,24 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Workflow Integrity", value: "Guarded Gates" },
       { label: "Timesheet Leakage", value: "0% Unbilled" },
     ],
+    hotspots: [
+      {
+        id: "h-pms-1",
+        x: 82,
+        y: 26,
+        title: "Project Margin Calculator",
+        description: "Live cost vs billable revenue comparison derived from logged developer hours.",
+        badge: "Margin Guard",
+      },
+      {
+        id: "h-pms-2",
+        x: 48,
+        y: 65,
+        title: "Guarded Quality Gates",
+        description: "Prevents tasks from moving to completion without required QA sign-off.",
+        badge: "Quality Gate",
+      },
+    ],
     screens: [
       {
         id: "pms-board",
@@ -329,9 +421,9 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: "prms-procurement",
     slug: "prms-procurement",
-    name: "YashOrbit PRMS Procurement",
+    name: "Enterprise Spend & Asset Vault (PRMS)",
     badge: "Resource & Supply Chain",
-    tagline: "Multi-Level Requisitions, Asset Life-Cycle & SaaS Expense Control",
+    tagline: "Multi-tier procurement approvals, SaaS subscription monitoring, and automated budget enforcement.",
     category: "Procurement & Finance",
     panelPath: "/prms",
     iconName: "ShoppingCart",
@@ -341,6 +433,8 @@ export const PRODUCTS_DATA: ProductItem[] = [
     shortDescription: "Enterprise procurement and resource management platform controlling vendor RFQs, purchase orders, asset inventory, SaaS subscriptions, and approval chains.",
     fullDescription: "PRMS protects company capital by replacing loose email approvals with structured multi-tier authorization workflows. Every equipment requisition, software license purchase, or vendor payment moves through transparent threshold rules, linked directly to asset tracking and department budget caps.",
     primaryPurpose: "Enforce purchasing approvals, eliminate duplicate SaaS/infrastructure spend, and track asset lifecycles across teams.",
+    problemSolved: "Untracked software subscriptions, unapproved vendor expenses, and unrecorded hardware assets.",
+    businessOutcome: "35% reduction in unused SaaS subscription costs and 100% audited purchasing approvals.",
     targetDepartments: ["Procurement", "Finance & Accounts", "IT Asset Management", "Administration"],
     targetUsers: ["Procurement Officer", "CFO / Finance Manager", "Asset Admin", "Department Heads"],
     aiCapabilities: [
@@ -372,6 +466,16 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Unused SaaS Spend", value: "-35% Cost Cut" },
       { label: "Asset Visibility", value: "Full Lifecycle" },
     ],
+    hotspots: [
+      {
+        id: "h-prms-1",
+        x: 45,
+        y: 45,
+        title: "Multi-Tier Threshold Router",
+        description: "Routes POs above $10,000 to CFO and CTO automatically before money moves.",
+        badge: "Spend Control",
+      },
+    ],
     screens: [
       {
         id: "prms-approval",
@@ -392,9 +496,9 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: "tms-academy",
     slug: "tms-academy",
-    name: "YashOrbit TMS Academy",
+    name: "Academy & Talent Progression Platform (TMS)",
     badge: "Education & Internships",
-    tagline: "End-to-End Student Lifecycle, Mentor Batches & Placement Analytics",
+    tagline: "End-to-end student lifecycle management, mentor batching, and QR-verified certifications.",
     category: "HR & Talent",
     panelPath: "/tms",
     iconName: "GraduationCap",
@@ -404,6 +508,8 @@ export const PRODUCTS_DATA: ProductItem[] = [
     shortDescription: "Training and internship management system covering student enrollment, batch scheduling, mentor allocation, project reviews, and verifiable certificates.",
     fullDescription: "TMS powers YashOrbit’s professional training business. It handles candidate applications, fee payments, batch class schedules, mentor assignments, project evaluation, and hiring partner placements—all anchored by QR-verifiable graduation certificates.",
     primaryPurpose: "Streamline industrial training programs, monitor student progression, and prove placement outcomes.",
+    problemSolved: "Unstructured internship management, scattered spreadsheets, and unverified student certificates.",
+    businessOutcome: "Digitized student lifecycles with public QR verification for prospective employers.",
     targetDepartments: ["Industrial Training", "Academic Operations", "Placement Cell", "Mentorship Team"],
     targetUsers: ["Training Director", "Mentor / Instructor", "Student Counselor", "Students"],
     aiCapabilities: [
@@ -430,6 +536,16 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Certificate Verifier", value: "Instant QR" },
       { label: "Placement Rate", value: "Real Data" },
     ],
+    hotspots: [
+      {
+        id: "h-tms-1",
+        x: 60,
+        y: 40,
+        title: "Public QR Verification Issuer",
+        description: "Generates tamper-proof graduation certificates verifiable at /verify/<code>.",
+        badge: "Instant Verification",
+      },
+    ],
     screens: [
       {
         id: "tms-batches",
@@ -450,9 +566,9 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: "messenger-yashchat",
     slug: "messenger-yashchat",
-    name: "YashOrbit Messenger (YashChat)",
+    name: "YashChat Enterprise Comms",
     badge: "Contextual Team Comms",
-    tagline: "Enterprise Communication Engine with Project Channels & AI Summaries",
+    tagline: "Context-aware team messaging with project channels and automated thread summarization.",
     category: "Executive & Operations",
     panelPath: "/messenger",
     iconName: "MessageSquare",
@@ -462,6 +578,8 @@ export const PRODUCTS_DATA: ProductItem[] = [
     shortDescription: "In-house team communication platform featuring direct messaging, project-linked channels, team announcements, file sharing, and embedded AI assistants.",
     fullDescription: "YashChat provides an internal alternative to third-party messaging apps like Slack or Teams, eliminating seat licensing fees while keeping company communication tied directly to active PMS projects and employee org structures.",
     primaryPurpose: "Enable fast, secure, context-aware collaboration across cross-functional teams without third-party data leakage.",
+    problemSolved: "Expensive third-party chat seat fees and communication occurring outside project context.",
+    businessOutcome: "Zero per-seat SaaS messaging costs and project channels automatically synced from PMS teams.",
     targetDepartments: ["All Delivery Teams", "Engineering", "Design", "Management"],
     targetUsers: ["Employees", "Project Leads", "Executives"],
     aiCapabilities: [
@@ -489,6 +607,16 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Project Sync", value: "Automatic" },
       { label: "Data Security", value: "100% In-House" },
     ],
+    hotspots: [
+      {
+        id: "h-chat-1",
+        x: 70,
+        y: 45,
+        title: "AI Thread Summarizer",
+        description: "Generates quick 3-bullet summaries of long technical discussions inside channels.",
+        badge: "AI Summarizer",
+      },
+    ],
     screens: [
       {
         id: "chat-workspace",
@@ -509,9 +637,9 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: "lms-sales-crm",
     slug: "lms-sales-crm",
-    name: "YashOrbit LMS AI Sales CRM",
+    name: "AI Growth & Sales Pipeline (CRM)",
     badge: "CRM & Autonomous Sales",
-    tagline: "Inbound Lead Intelligence & 24/7 AI Chatbot / Voice Assistant",
+    tagline: "Convert inquiries with 24/7 autonomous AI voice & chat qualification.",
     category: "Sales & Marketing",
     panelPath: "/lms",
     iconName: "Filter",
@@ -521,6 +649,8 @@ export const PRODUCTS_DATA: ProductItem[] = [
     shortDescription: "Intelligent lead management CRM capturing inbound site inquiries, client pipelines, campaign analytics, backed by an autonomous 24/7 AI chatbot and voice assistant.",
     fullDescription: "LMS ensures zero lead decay by instantly capturing every inquiry from public touchpoints. An integrated OpenAI chatbot and voice assistant qualifies prospective clients around the clock, books consultations, and feeds structured lead scoring straight to sales managers.",
     primaryPurpose: "Capture, qualify, nurture, and convert sales leads and applicant pipelines automatically.",
+    problemSolved: "Slow response times causing lead decay and lost prospective client deals during non-business hours.",
+    businessOutcome: "Instant sub-second response times, 24/7 autonomous lead qualification, and +42% higher conversion rates.",
     targetDepartments: ["Sales & BD", "Marketing", "Customer Acquisition"],
     targetUsers: ["Business Development Manager", "Sales Rep", "Growth Director"],
     aiCapabilities: [
@@ -549,6 +679,16 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Lead Qualification", value: "24/7 Autonomous" },
       { label: "Conversion Lift", value: "+42% Higher" },
     ],
+    hotspots: [
+      {
+        id: "h-lms-1",
+        x: 50,
+        y: 40,
+        title: "24/7 Autonomous AI Agent",
+        description: "Interacts with prospects, answers FAQs, scores intent, and requests work email automatically.",
+        badge: "24/7 AI Voice & Chat",
+      },
+    ],
     screens: [
       {
         id: "crm-pipeline",
@@ -569,9 +709,9 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: "external-portal",
     slug: "external-portal",
-    name: "YashOrbit Stakeholder Portal",
+    name: "Stakeholder Portal & Client Hub",
     badge: "Client & Partner Hub",
-    tagline: "Isolated Self-Service Portal for Clients, Candidates & Trainees",
+    tagline: "Secure, isolated self-service workspace for clients, candidates, and trainees.",
     category: "Assessment & Security",
     panelPath: "/portal",
     iconName: "Globe",
@@ -581,6 +721,8 @@ export const PRODUCTS_DATA: ProductItem[] = [
     shortDescription: "Secure client and candidate self-service portal with dedicated external identity storage, delivering project progress, invoices, and application status.",
     fullDescription: "External Portal gives clients, applicants, and trainees real-time visibility into their respective milestones without exposing internal systems. Built on a completely isolated identity database, external users enjoy a sleek, transparent portal experience.",
     primaryPurpose: "Provide self-service transparency to clients and applicants while keeping internal staff infrastructure secure.",
+    problemSolved: "Constant status update emails and security risks from giving external parties access to internal software.",
+    businessOutcome: "75% reduction in status inquiry calls and 100% isolated security boundary.",
     targetDepartments: ["Client Services", "Recruitment", "Trainee Relations"],
     targetUsers: ["External Clients", "Job Applicants", "Enrolled Trainees"],
     aiCapabilities: [
@@ -606,6 +748,16 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Security Boundary", value: "100% Isolated" },
       { label: "Client Satisfaction", value: "4.9 / 5 Rating" },
     ],
+    hotspots: [
+      {
+        id: "h-portal-1",
+        x: 40,
+        y: 45,
+        title: "Client Self-Service Dashboard",
+        description: "Clients track active sprint deliverables, timesheet hours, and invoices directly.",
+        badge: "Client Self-Service",
+      },
+    ],
     screens: [
       {
         id: "client-dashboard",
@@ -626,9 +778,9 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: "seo-panel",
     slug: "seo-panel",
-    name: "YashOrbit SEO Intelligence Platform",
+    name: "SEO Growth & Meta Intelligence Engine",
     badge: "Search & Growth Engine",
-    tagline: "Automated Site Audit, Technical SEO & Live Dynamic Meta Publishing",
+    tagline: "Automate 50+ check technical audits and publish instant dynamic meta updates without deploys.",
     category: "Sales & Marketing",
     panelPath: "/seo",
     iconName: "Search",
@@ -638,6 +790,8 @@ export const PRODUCTS_DATA: ProductItem[] = [
     shortDescription: "Comprehensive SEO platform running automated 50+ check audits, rank tracking, keyword analysis, schema validation, and dynamic meta edits without code deploys.",
     fullDescription: "SEO Panel replaces static meta tags and scattered spreadsheet audits with a live search control center. Its crawler continuously checks 50+ technical, content, and mobile parameters, while allowing marketers to publish title, description, and JSON-LD schema edits instantly to the website.",
     primaryPurpose: "Maximize search rankings, eliminate technical SEO bugs, and publish optimized metadata without developer intervention.",
+    problemSolved: "Slow developer turnaround for meta tags, technical SEO errors, and unindexed target keywords.",
+    businessOutcome: "Instant no-code SEO publishing and continuous 50+ check automated site health crawling.",
     targetDepartments: ["Digital Marketing", "SEO Team", "Content Operations", "Web Development"],
     targetUsers: ["SEO Specialist", "Content Strategist", "Growth Lead"],
     aiCapabilities: [
@@ -669,6 +823,16 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Publish Speed", value: "Instant No-Deploy" },
       { label: "Health Score", value: "98 / 100 Audit" },
     ],
+    hotspots: [
+      {
+        id: "h-seo-1",
+        x: 65,
+        y: 35,
+        title: "No-Code Meta Publisher",
+        description: "Publish page title, canonical, and JSON-LD schema changes instantly without code deploys.",
+        badge: "No-Deploy Live",
+      },
+    ],
     screens: [
       {
         id: "seo-audit",
@@ -689,9 +853,9 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: "dlms-digilocker",
     slug: "dlms-digilocker",
-    name: "YashOrbit DigiLocker (DLMS)",
+    name: "DigiLocker Secret & Document Vault",
     badge: "Enterprise Vault & Security",
-    tagline: "Multi-Tenant Password Vault, Secret Masking & Document Locker",
+    tagline: "Encrypted multi-tenant password vault with automated expiration alerts and audited reveals.",
     category: "Assessment & Security",
     panelPath: "/dlms",
     iconName: "KeyRound",
@@ -701,6 +865,8 @@ export const PRODUCTS_DATA: ProductItem[] = [
     shortDescription: "Ultra-secure vault managing company and client credentials, hosting logins, SSL certificates, and agreements with encrypted storage and reveal audit logging.",
     fullDescription: "DLMS ends dangerous credential sharing via chat apps. It isolates company secrets and client vaults with field-level encryption, default masking, permission-gated reveals, and daily expiry sweeps that alert managers before domains or SSL certificates expire.",
     primaryPurpose: "Store company and client credentials securely, audit access reveals, and prevent service expiration outages.",
+    problemSolved: "Passwords leaked over Slack/WhatsApp and unexpected downtime caused by expired SSL certs or domain renewals.",
+    businessOutcome: "Field-level password masking, immutable reveal audit logs, and zero expiry downtime.",
     targetDepartments: ["IT Infrastructure", "Security & Compliance", "Account Management"],
     targetUsers: ["System Administrator", "Account Manager", "Security Officer"],
     aiCapabilities: [
@@ -727,6 +893,16 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Reveal Audit", value: "Immutable Log" },
       { label: "Outage Prevention", value: "Daily Sweeps" },
     ],
+    hotspots: [
+      {
+        id: "h-dlms-1",
+        x: 75,
+        y: 40,
+        title: "Immutable Reveal Logger",
+        description: "Logs every password unmask or copy action with user ID, timestamp, and IP address.",
+        badge: "Audited Reveals",
+      },
+    ],
     screens: [
       {
         id: "dlms-vault",
@@ -747,9 +923,9 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: "aibots-studio",
     slug: "aibots-studio",
-    name: "YashOrbit AI Bots Studio",
+    name: "AI Assistant Studio & Vector RAG Engine",
     badge: "Enterprise AI Assistant Engine",
-    tagline: "No-Code Assistant Factory Powered by Private Vector Knowledge Bases",
+    tagline: "Construct, train, and deploy private OpenAI vector store AI assistants in minutes.",
     category: "AI & Intelligence",
     panelPath: "/aibots",
     iconName: "Bot",
@@ -759,6 +935,8 @@ export const PRODUCTS_DATA: ProductItem[] = [
     shortDescription: "Enterprise AI assistant studio enabling teams to build, train, and deploy purpose-built GPT bots with private OpenAI vector stores and token spend tracking.",
     fullDescription: "AI Bots Studio turns custom prompt setups into reusable company assets. Staff can create specialized assistants—such as ProposalGPT, Requirement Analyzer AI, or Code Inspector—upload proprietary PDF/Doc context, restrict user access, and chat in a secure workspace without API key leakage.",
     primaryPurpose: "Build, manage, and audit custom organizational AI agents with private company knowledge bases.",
+    problemSolved: "Employees re-prompting generic AI tools without grounded company context or enterprise data privacy.",
+    businessOutcome: "Dedicated organizational AI bots trained on private vector knowledge bases with per-token spend oversight.",
     targetDepartments: ["AI & Engineering", "Business Analysis", "Sales & Support", "Product Management"],
     targetUsers: ["AI Engineer", "Business Analyst", "Product Manager", "Team Staff"],
     aiCapabilities: [
@@ -792,6 +970,24 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Vector Retrieval", value: "Private RAG" },
       { label: "Cost Oversight", value: "Per-Token Ledger" },
     ],
+    hotspots: [
+      {
+        id: "h-bots-1",
+        x: 35,
+        y: 45,
+        title: "Private RAG Vector Store",
+        description: "Indexes PDFs and docs into dedicated vector stores searched exclusively by authorized bots.",
+        badge: "Vector RAG",
+      },
+      {
+        id: "h-bots-2",
+        x: 75,
+        y: 45,
+        title: "Token & Cost Ledger",
+        description: "Calculates exact token burn and dollar spend per bot and department in real time.",
+        badge: "Cost Ledger",
+      },
+    ],
     screens: [
       {
         id: "aibots-factory",
@@ -819,9 +1015,9 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: "smms-social-engine",
     slug: "smms-social-engine",
-    name: "YashOrbit SMMS AI Social Engine",
+    name: "Autonomous AI Marketing Studio (SMMS)",
     badge: "Autonomous Social Media",
-    tagline: "AI Campaign Strategist, Multi-Platform Content & Reel Script Generator",
+    tagline: "Turn campaign briefs into multi-platform social strategy, AI images, and scene-by-scene reel scripts.",
     category: "Sales & Marketing",
     panelPath: "/smms",
     iconName: "Megaphone",
@@ -831,6 +1027,8 @@ export const PRODUCTS_DATA: ProductItem[] = [
     shortDescription: "AI-first social media marketing workspace generating multi-platform posts, video reel scripts, image assets, and scheduling content for Instagram, YouTube, and LinkedIn.",
     fullDescription: "SMMS streamlines social marketing by transforming a single campaign brief into multi-platform collateral. Using live brand context pulled from the website and PMS, OpenAI crafts platform-specific copy, visual prompts, scene-by-scene video reel scripts, and manages human approval before publishing.",
     primaryPurpose: "Automate social media content generation, reel creation, ad copy, and multi-channel posting.",
+    problemSolved: "Time-consuming social post drafting and expensive scene-by-scene video reel script production.",
+    businessOutcome: "10x faster multi-platform content creation with strict human sign-off guardrails.",
     targetDepartments: ["Social Media Marketing", "Growth & Ads", "Brand Management", "Creative Studio"],
     targetUsers: ["Social Media Manager", "Growth Marketer", "Content Specialist", "Brand Lead"],
     aiCapabilities: [
@@ -864,6 +1062,16 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Supported Platforms", value: "6 Channels" },
       { label: "Approval Security", value: "100% Guarded" },
     ],
+    hotspots: [
+      {
+        id: "h-smms-1",
+        x: 50,
+        y: 70,
+        title: "Scene-by-Scene Reel Generator",
+        description: "Generates timestamped visual cues, hooks, and voiceovers for Instagram & YouTube shorts.",
+        badge: "AI Video Reels",
+      },
+    ],
     screens: [
       {
         id: "smms-generator",
@@ -884,9 +1092,9 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: "ots-exam-engine",
     slug: "ots-exam-engine",
-    name: "YashOrbit OTS Assessment Engine",
+    name: "OTS Assessment & AI Proctoring Engine",
     badge: "Testing & Evaluation Engine",
-    tagline: "Universal Assessment Engine with 17 Question Types & AI Proctoring",
+    tagline: "Universal examination engine with 17 question formats, code grading, and server-enforced security.",
     category: "Assessment & Security",
     panelPath: "/ots",
     iconName: "FileQuestion",
@@ -896,6 +1104,8 @@ export const PRODUCTS_DATA: ProductItem[] = [
     shortDescription: "Comprehensive test engine powering employee compliance, applicant screening, and student exams with 17 question types, timed security, and auto-evaluation.",
     fullDescription: "OTS replaces scattered quiz forms with an enterprise assessment engine. Supporting 17 question types (including coding sandbox, SQL, video response, matching), OTS handles test creation, targeted assignment, proctored candidate test-taking, server-enforced timers, auto-grading, and certificate issuance.",
     primaryPurpose: "Evaluate employee skills, screen job candidates, and examine training students with high security.",
+    problemSolved: "Online test cheating, manual code evaluation delays, and rigid quiz formats.",
+    businessOutcome: "Server-enforced proctored exams with instant automated objective and coding sandbox evaluation.",
     targetDepartments: ["Recruitment & HR", "Academic Testing", "Technical Training", "Compliance"],
     targetUsers: ["Recruiter", "Technical Examiner", "Instructor", "Candidates"],
     aiCapabilities: [
@@ -927,6 +1137,16 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Exam Security", value: "Server Enforced" },
       { label: "Grading Speed", value: "Instant Auto" },
     ],
+    hotspots: [
+      {
+        id: "h-ots-1",
+        x: 50,
+        y: 65,
+        title: "Live Code Execution Sandbox",
+        description: "Evaluates candidate code submissions against test cases with instant auto-grading.",
+        badge: "Auto Code Sandbox",
+      },
+    ],
     screens: [
       {
         id: "ots-builder",
@@ -947,9 +1167,9 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: "web-portal",
     slug: "web-portal",
-    name: "YashOrbit Public Web Portal",
+    name: "Digital Marketing Front Door",
     badge: "Brand Front Door",
-    tagline: "Unified Marketing Front Door & High-Conversion Service Showcase",
+    tagline: "High-converting brand showcase capturing inbound client leads directly into your sales CRM.",
     category: "Sales & Marketing",
     panelPath: "/",
     iconName: "Laptop",
@@ -959,6 +1179,8 @@ export const PRODUCTS_DATA: ProductItem[] = [
     shortDescription: "Public website showcase featuring company profile, service catalog, case studies, blog, and live job postings directly feeding the internal CRM.",
     fullDescription: "The public site serves as the primary acquisition channel for clients and talent. Designed with modern aesthetics, glassmorphism, dark/light theme options, and embedded AI chatbots, every form submission feeds directly into LMS and HRMS without manual data entry.",
     primaryPurpose: "Showcase enterprise capability, capture qualified leads, and attract top engineering talent.",
+    problemSolved: "Static websites with disconnected contact forms and manual lead re-typing.",
+    businessOutcome: "Instant direct lead capture into LMS CRM and direct candidate application intake into HRMS.",
     targetDepartments: ["Marketing", "Sales", "Careers"],
     targetUsers: ["Prospective Clients", "Candidates", "Partners"],
     aiCapabilities: [
@@ -983,6 +1205,16 @@ export const PRODUCTS_DATA: ProductItem[] = [
       { label: "Lead Pipeline Sync", value: "Instant Direct" },
       { label: "Lighthouse Performance", value: "95+ Score" },
       { label: "Design System", value: "100% Unified" },
+    ],
+    hotspots: [
+      {
+        id: "h-web-1",
+        x: 50,
+        y: 40,
+        title: "Direct CRM Form Intake",
+        description: "Routes form submissions and AI chat consultations into active LMS pipelines instantly.",
+        badge: "Direct CRM Intake",
+      },
     ],
     screens: [
       {

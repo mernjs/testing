@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProductItem } from "@/lib/products-data";
 import ProductMockup from "./ProductMockup";
@@ -15,6 +15,9 @@ import {
   Users,
   Building2,
   Layers,
+  AlertCircle,
+  TrendingUp,
+  Target,
 } from "lucide-react";
 
 interface ProductDetailModalProps {
@@ -23,6 +26,8 @@ interface ProductDetailModalProps {
 }
 
 export default function ProductDetailModal({ product, onClose }: ProductDetailModalProps) {
+  const [activeTab, setActiveTab] = useState<"preview" | "outcomes" | "features">("preview");
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -74,7 +79,7 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
                     {product.badge}
                   </span>
                 </div>
-                <p className="text-xs font-medium text-muted-foreground mt-0.5">{product.tagline}</p>
+                <p className="text-xs font-medium text-primary mt-0.5">{product.tagline}</p>
               </div>
             </div>
 
@@ -87,109 +92,179 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
             </button>
           </div>
 
+          {/* Modal Navigation Tabs */}
+          <div className="flex items-center gap-2 border-b border-border/60 bg-muted/20 px-6 py-2 shrink-0">
+            <button
+              onClick={() => setActiveTab("preview")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                activeTab === "preview"
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5" /> Live UI Showcase & Hotspots
+            </button>
+
+            <button
+              onClick={() => setActiveTab("outcomes")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                activeTab === "outcomes"
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              }`}
+            >
+              <Target className="w-3.5 h-3.5" /> Problem Solved & Business ROI
+            </button>
+
+            <button
+              onClick={() => setActiveTab("features")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                activeTab === "features"
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" /> Capabilities & AI Engine
+            </button>
+          </div>
+
           {/* Modal Body */}
           <div className="overflow-y-auto p-6 md:p-8 space-y-8">
-            {/* Interactive Browser UI Preview Screen */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-primary" />
-                  Live Product UI Showcase & Screen Switcher
-                </h3>
-                <span className="text-xs text-muted-foreground font-mono">Interactive Mockup</span>
-              </div>
-              <ProductMockup product={product} showTabSelector={true} compact={false} />
-            </div>
-
-            {/* Metrics Bar */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {product.metrics.map((metric, idx) => (
-                <div key={idx} className="rounded-2xl border border-border/60 bg-muted/30 p-4 text-center">
-                  <div className="text-2xl font-black tracking-tight text-primary">{metric.value}</div>
-                  <div className="text-xs font-medium text-muted-foreground mt-1">{metric.label}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Product Overview & Purpose */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-              <div className="md:col-span-7 space-y-4">
-                <h3 className="text-lg font-bold text-foreground">Product Overview</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">{product.fullDescription}</p>
-
-                <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 space-y-2">
-                  <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Primary Business Purpose</h4>
-                  <p className="text-sm text-foreground/90 font-medium">{product.primaryPurpose}</p>
-                </div>
-              </div>
-
-              <div className="md:col-span-5 space-y-6">
-                {/* Target Departments */}
-                <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
-                    <Building2 className="w-3.5 h-3.5 text-primary" /> Target Departments
-                  </h4>
-                  <div className="flex flex-wrap gap-1.5">
-                    {product.targetDepartments.map((dept, idx) => (
-                      <span key={idx} className="px-3 py-1 rounded-full bg-muted border border-border/60 text-xs font-medium text-foreground">
-                        {dept}
-                      </span>
-                    ))}
+            {/* Tab 1: Live UI Showcase */}
+            {activeTab === "preview" && (
+              <div className="space-y-6">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-primary" />
+                      Live Application Interface & Interactive Hotspots
+                    </h3>
+                    <span className="text-xs text-primary font-mono">Hover Pulsing Callout Pins</span>
                   </div>
+                  <ProductMockup product={product} showTabSelector={true} compact={false} />
                 </div>
 
-                {/* Target Users */}
-                <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-primary" /> Key User Roles
-                  </h4>
-                  <div className="flex flex-wrap gap-1.5">
-                    {product.targetUsers.map((user, idx) => (
-                      <span key={idx} className="px-3 py-1 rounded-full bg-secondary/15 border border-secondary/20 text-xs font-medium text-secondary-foreground">
-                        {user}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Key Features Breakdown */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-primary" /> Key Capabilities & Features
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {product.keyFeatures.map((feat, idx) => (
-                  <div key={idx} className="rounded-2xl border border-border/60 bg-muted/20 p-4 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-sm text-foreground">{feat.title}</span>
-                      {feat.aiPowered && (
-                        <span className="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 text-[10px] font-bold border border-purple-500/20 flex items-center gap-1">
-                          <Sparkles className="w-3 h-3" /> AI Feature
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{feat.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* AI Capabilities Section */}
-            {product.aiCapabilities && product.aiCapabilities.length > 0 && (
-              <div className="rounded-3xl border border-purple-500/30 bg-purple-500/5 p-6 space-y-4">
-                <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-purple-400" /> Embedded AI & Intelligence Capabilities
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {product.aiCapabilities.map((aiCap, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 text-xs text-foreground/90">
-                      <Zap className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
-                      <span>{aiCap}</span>
+                {/* Metrics Bar */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {product.metrics.map((metric, idx) => (
+                    <div key={idx} className="rounded-2xl border border-border/60 bg-muted/30 p-4 text-center">
+                      <div className="text-2xl font-black tracking-tight text-primary">{metric.value}</div>
+                      <div className="text-xs font-medium text-muted-foreground mt-1">{metric.label}</div>
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Tab 2: Business ROI & Outcomes */}
+            {activeTab === "outcomes" && (
+              <div className="space-y-6">
+                {/* Problem Solved & Outcome Highlights */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="rounded-3xl border border-secondary/25 bg-secondary/8 p-6 space-y-3">
+                    <div className="flex items-center gap-2 text-secondary-foreground font-bold text-sm uppercase tracking-wider">
+                      <AlertCircle className="w-5 h-5 text-secondary-foreground" /> What Problem Does This Solve?
+                    </div>
+                    <p className="text-sm text-foreground/90 font-medium leading-relaxed">
+                      {product.problemSolved}
+                    </p>
+                  </div>
+
+                  <div className="rounded-3xl border border-primary/25 bg-primary/8 p-6 space-y-3">
+                    <div className="flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider">
+                      <TrendingUp className="w-5 h-5 text-primary" /> Primary Business Outcome
+                    </div>
+                    <p className="text-sm text-foreground/90 font-semibold leading-relaxed">
+                      {product.businessOutcome}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                  <div className="md:col-span-7 space-y-4">
+                    <h3 className="text-lg font-bold text-foreground">Detailed Product Overview</h3>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{product.fullDescription}</p>
+
+                    <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 space-y-2">
+                      <h4 className="text-xs font-bold text-primary uppercase tracking-wider">Primary Purpose</h4>
+                      <p className="text-sm text-foreground/90 font-medium">{product.primaryPurpose}</p>
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-5 space-y-6">
+                    {/* Target Departments */}
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                        <Building2 className="w-3.5 h-3.5 text-primary" /> Target Departments
+                      </h4>
+                      <div className="flex flex-wrap gap-1.5">
+                        {product.targetDepartments.map((dept, idx) => (
+                          <span key={idx} className="px-3 py-1 rounded-full bg-muted border border-border/60 text-xs font-medium text-foreground">
+                            {dept}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Target Users */}
+                    <div className="space-y-2">
+                      <h4 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5 text-primary" /> Key User Roles
+                      </h4>
+                      <div className="flex flex-wrap gap-1.5">
+                        {product.targetUsers.map((user, idx) => (
+                          <span key={idx} className="px-3 py-1 rounded-full bg-secondary/15 border border-secondary/20 text-xs font-medium text-secondary-foreground">
+                            {user}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Tab 3: Features & AI Capabilities */}
+            {activeTab === "features" && (
+              <div className="space-y-6">
+                {/* Key Features Breakdown */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-primary" /> Major Capabilities & Features
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {product.keyFeatures.map((feat, idx) => (
+                      <div key={idx} className="rounded-2xl border border-border/60 bg-muted/20 p-4 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-sm text-foreground">{feat.title}</span>
+                          {feat.aiPowered && (
+                            <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold border border-primary/20 flex items-center gap-1">
+                              <Sparkles className="w-3 h-3" /> AI Feature
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed">{feat.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* AI Capabilities Section */}
+                {product.aiCapabilities && product.aiCapabilities.length > 0 && (
+                  <div className="rounded-3xl border border-primary/25 bg-primary/8 p-6 space-y-4">
+                    <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-primary" /> Embedded AI & Intelligence Capabilities
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {product.aiCapabilities.map((aiCap, idx) => (
+                        <div key={idx} className="flex items-start gap-2.5 text-xs text-foreground/90">
+                          <Zap className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                          <span>{aiCap}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

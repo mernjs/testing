@@ -4,16 +4,16 @@ import ProductsContent from "./Content";
 import { socialMetadata, defaultOgImage } from "@/lib/seo";
 import { PRODUCTS_DATA } from "@/lib/products-data";
 
-const title = "Our Products — AI-Powered Enterprise Application Ecosystem | YashOrbit";
+const title = "Our SaaS Product — AI-Powered Enterprise Application Ecosystem | YashOrbit";
 const description =
   "Explore YashOrbit's complete ecosystem of 15 specialized, AI-powered enterprise products spanning HRMS, PMS, PRMS, TMS, AI Bots Studio, Sales CRM, SEO Intelligence, and Online Examination systems.";
-const path = "/products";
+const path = "/services/our-saas-product";
 
 const baseMetadata: Metadata = {
   title,
   description,
   keywords: [
-    "YashOrbit Products",
+    "YashOrbit SaaS Product",
     "Enterprise AI Applications",
     "AI SaaS Platform",
     "HRMS Software",
@@ -32,13 +32,13 @@ const baseMetadata: Metadata = {
     description,
     path,
     image: defaultOgImage,
-    imageAlt: "YashOrbit Products — AI-Powered Enterprise Application Ecosystem",
+    imageAlt: "YashOrbit Our SaaS Product — AI-Powered Enterprise Application Ecosystem",
   }),
 };
 
-export const generateMetadata = () => withSeoOverrides("/products", baseMetadata);
+export const generateMetadata = () => withSeoOverrides("/services/our-saas-product", baseMetadata);
 
-export default function ProductsPage() {
+export default function OurSaasProductPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -52,7 +52,7 @@ export default function ProductsPage() {
         name: product.name,
         description: product.shortDescription,
         category: product.category,
-        url: `https://yashorbit.com/products#${product.slug}`,
+        url: `https://yashorbit.com/services/our-saas-product#${product.slug}`,
       },
     })),
   };

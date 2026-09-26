@@ -49,19 +49,6 @@ const socialLinks = socialLinksData.map((social) => ({ ...social, icon: socialIc
 
 const navigation = [
   {
-    name: "Products",
-    href: "/products",
-    featured: { title: "AI Product Ecosystem", description: "Explore our 15 integrated AI applications.", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop" },
-    items: [
-      { name: "AI Bots Studio", href: "/products", description: "No-code OpenAI vector RAG bots", icon: Bot },
-      { name: "HRMS Intelligence", href: "/products", description: "HR, automated payroll & AI hiring", icon: Users },
-      { name: "Project Command (PMS)", href: "/products", description: "Profitability-driven delivery & billing", icon: Kanban },
-      { name: "AI Sales CRM (LMS)", href: "/products", description: "24/7 lead qualification voice/chat bot", icon: Filter },
-      { name: "AI Social Engine (SMMS)", href: "/products", description: "Multi-channel posts & reel scripts", icon: Megaphone },
-      { name: "OTS Exam Engine", href: "/products", description: "17 question formats & proctoring", icon: FileQuestion },
-    ],
-  },
-  {
     name: "About",
     href: "/about",
     featured: { title: "Our Mission", description: "Learn how we empower businesses globally.", image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop" },
@@ -76,8 +63,9 @@ const navigation = [
   {
     name: "Services",
     href: "/services",
-    featured: { title: "Digital Transformation", description: "End-to-end tech solutions.", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop" },
+    featured: { title: "Digital Transformation & SaaS Platform", description: "End-to-end tech solutions and SaaS products.", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop" },
     items: [
+      { name: "Our SaaS Product", href: "/services/our-saas-product", description: "15-application integrated AI SaaS ecosystem", icon: Sparkles },
       { name: "Software Development", href: "/software-development", description: "Custom web, mobile & desktop software", icon: Code2 },
       { name: "AI & Automations", href: "/ai-automations", description: "Workflows, chatbots, RAG & RPA bots", icon: BrainCircuit },
       { name: "Industrial Training", href: "/industrial-training", description: "Mentor-led, project-based learning", icon: GraduationCap },
@@ -181,19 +169,6 @@ const navigation = [
 // above so the desktop mega menu's content/layout is untouched).
 const mobileNavigation = [
   {
-    name: "Products",
-    href: "/products",
-    icon: Box,
-    items: [
-      { name: "AI Bots Studio", href: "/products", icon: Bot },
-      { name: "HRMS Intelligence", href: "/products", icon: Users },
-      { name: "Project Command (PMS)", href: "/products", icon: Kanban },
-      { name: "AI Sales CRM (LMS)", href: "/products", icon: Filter },
-      { name: "AI Social Engine (SMMS)", href: "/products", icon: Megaphone },
-      { name: "OTS Exam Engine", href: "/products", icon: FileQuestion },
-    ],
-  },
-  {
     name: "About",
     href: "/about",
     icon: Compass,
@@ -210,6 +185,7 @@ const mobileNavigation = [
     href: "/services",
     icon: Layers,
     items: [
+      { name: "Our SaaS Product", href: "/services/our-saas-product", icon: Sparkles },
       { name: "Software Development", href: "/software-development", icon: Code2 },
       { name: "AI & Automations", href: "/ai-automations", icon: BrainCircuit },
       { name: "Industrial Training", href: "/industrial-training", icon: GraduationCap },
