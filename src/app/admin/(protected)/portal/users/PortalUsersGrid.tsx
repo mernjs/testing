@@ -32,6 +32,8 @@ export interface AdminPortalUserRow {
   linkedRecordHref: string | null;
 }
 
+import LoginAsPortalUserButton from "@/app/lms/(protected)/leads/list/LoginAsPortalUserButton";
+
 function RowActions({ row }: { row: AdminPortalUserRow }) {
   const [isPending, startTransition] = useTransition();
 
@@ -52,35 +54,39 @@ function RowActions({ row }: { row: AdminPortalUserRow }) {
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button type="button" variant="ghost" size="icon-sm" aria-label="Row actions">
-            <MoreHorizontal className="size-4" />
-          </Button>
-        }
-      />
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={toggleStatus} disabled={isPending}>
-          {row.status === "active" ? <ShieldOff className="size-3.5" /> : <ShieldCheck className="size-3.5" />}
-          {row.status === "active" ? "Suspend" : "Reactivate"}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={forceLogout} disabled={isPending || row.activeSessions === 0}>
-          <LogOut className="size-3.5" />
-          Force logout ({row.activeSessions})
-        </DropdownMenuItem>
-        {row.linkedRecordHref && (
-          <DropdownMenuItem
-            render={
-              <a href={row.linkedRecordHref} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="size-3.5" />
-                View linked record
-              </a>
-            }
-          />
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex items-center gap-1">
+      <LoginAsPortalUserButton externalUserId={row._id} displayName={row.displayName} variant="icon" />
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <Button type="button" variant="ghost" size="icon-sm" aria-label="Row actions">
+              <MoreHorizontal className="size-4" />
+            </Button>
+          }
+        />
+        <DropdownMenuContent align="end">
+          <LoginAsPortalUserButton externalUserId={row._id} displayName={row.displayName} variant="dropdown-item" />
+          <DropdownMenuItem onClick={toggleStatus} disabled={isPending}>
+            {row.status === "active" ? <ShieldOff className="size-3.5" /> : <ShieldCheck className="size-3.5" />}
+            {row.status === "active" ? "Suspend" : "Reactivate"}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={forceLogout} disabled={isPending || row.activeSessions === 0}>
+            <LogOut className="size-3.5" />
+            Force logout ({row.activeSessions})
+          </DropdownMenuItem>
+          {row.linkedRecordHref && (
+            <DropdownMenuItem
+              render={
+                <a href={row.linkedRecordHref} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="size-3.5" />
+                  View linked record
+                </a>
+              }
+            />
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }
 

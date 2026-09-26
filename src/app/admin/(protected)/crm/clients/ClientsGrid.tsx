@@ -31,6 +31,7 @@ import ClientStatusSelect from "./ClientStatusSelect";
 import ClientEditSheet from "./ClientEditSheet";
 import ActivityLogSheet from "./ActivityLogSheet";
 import { deleteClientAction, bulkUpdateClientStatusAction, bulkDeleteClientsAction } from "./actions";
+import LoginAsPortalUserButton from "@/app/lms/(protected)/leads/list/LoginAsPortalUserButton";
 
 export type AdminClientRow = SerializedClient & { projectCount: number };
 
@@ -66,6 +67,12 @@ function RowActions({ row, onViewActivity }: { row: AdminClientRow; onViewActivi
                 Edit record
               </DropdownMenuItem>
             }
+          />
+          <LoginAsPortalUserButton
+            clientId={row._id}
+            email={row.primaryContact?.email || undefined}
+            displayName={row.companyName}
+            variant="dropdown-item"
           />
           <DropdownMenuItem onClick={onViewActivity}>
             <History className="size-3.5" />

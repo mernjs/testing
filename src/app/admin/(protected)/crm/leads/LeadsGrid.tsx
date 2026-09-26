@@ -30,6 +30,7 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import type { AdminLeadRow } from "@/lib/admin/crm-leads";
 import LeadStatusSelect from "./LeadStatusSelect";
 import { deleteLeadAction, bulkUpdateLeadStatusAction, bulkDeleteLeadsAction } from "./actions";
+import LoginAsPortalUserButton from "@/app/lms/(protected)/leads/list/LoginAsPortalUserButton";
 
 function RowActions({ row }: { row: AdminLeadRow }) {
   const [isPending, startTransition] = useTransition();
@@ -62,6 +63,12 @@ function RowActions({ row }: { row: AdminLeadRow }) {
                 View full details
               </Link>
             }
+          />
+          <LoginAsPortalUserButton
+            leadId={row._id}
+            email={row.email ?? undefined}
+            displayName={row.name}
+            variant="dropdown-item"
           />
           <DropdownMenuItem variant="destructive" onClick={() => setOpen(true)}>
             <Trash2 className="size-3.5" />

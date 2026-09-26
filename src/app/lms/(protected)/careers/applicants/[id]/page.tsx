@@ -34,6 +34,7 @@ import { getApplicantProfile } from "@/lib/careers/applicant-profile";
 import { getCurrentLmsUser } from "@/lib/lms-auth";
 import { DEFAULT_CAREER_APPLICATION_STATUS, getCareerApplicationStatusMeta } from "@/lib/career-application-status";
 import { cn, formatCurrency, formatDateTime } from "@/lib/utils";
+import LoginAsPortalUserButton from "@/app/lms/(protected)/leads/list/LoginAsPortalUserButton";
 
 export const dynamic = "force-dynamic";
 
@@ -376,7 +377,17 @@ export default async function ApplicantDetailPage({ params, searchParams }: { pa
           <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{application.name}</h1>
           <p className="text-sm text-muted-foreground">{`${application.positionTitle} · applied ${formatDateTime(application.createdAt)}${lead ? ` · ${lead.code}` : ""}`}</p>
         </div>
-        <CareerStatusBadge status={application.status} />
+
+        <div className="flex flex-wrap items-center gap-2">
+          <LoginAsPortalUserButton
+            applicationId={id}
+            leadId={lead?.id}
+            externalUserId={account?.id}
+            displayName={application.name}
+            variant="full"
+          />
+          <CareerStatusBadge status={application.status} />
+        </div>
       </div>
 
       <Tabs

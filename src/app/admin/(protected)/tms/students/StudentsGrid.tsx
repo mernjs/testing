@@ -13,6 +13,8 @@ import { formatDate } from "@/lib/utils";
 import StudentStatusSelect from "./StudentStatusSelect";
 import { bulkUpdateStudentStatusAction } from "./actions";
 
+import LoginAsPortalUserButton from "@/app/lms/(protected)/leads/list/LoginAsPortalUserButton";
+
 export interface AdminStudentRow {
   _id: string;
   studentCode: string;
@@ -26,9 +28,17 @@ export interface AdminStudentRow {
 
 function RowActions({ row }: { row: AdminStudentRow }) {
   return (
-    <Button variant="ghost" size="icon-sm" aria-label="View full details" nativeButton={false} render={<Link href={`/tms/students/${row._id}`} />}>
-      <Eye className="size-3.5" />
-    </Button>
+    <div className="flex items-center gap-1">
+      <LoginAsPortalUserButton
+        studentId={row._id}
+        email={row.email ?? undefined}
+        displayName={row.fullName}
+        variant="icon"
+      />
+      <Button variant="ghost" size="icon-sm" aria-label="View full details" nativeButton={false} render={<Link href={`/tms/students/${row._id}`} />}>
+        <Eye className="size-3.5" />
+      </Button>
+    </div>
   );
 }
 

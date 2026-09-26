@@ -44,6 +44,8 @@ export interface AdminApplicantRow {
   nextInterview: { title: string; mode: string; status: string; scheduledAt: string } | null;
 }
 
+import LoginAsPortalUserButton from "@/app/lms/(protected)/leads/list/LoginAsPortalUserButton";
+
 function RowActions({ row }: { row: AdminApplicantRow }) {
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
@@ -59,6 +61,7 @@ function RowActions({ row }: { row: AdminApplicantRow }) {
 
   return (
     <div className="flex items-center gap-1">
+      <LoginAsPortalUserButton applicationId={row._id} displayName={row.name} variant="icon" />
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
@@ -68,6 +71,7 @@ function RowActions({ row }: { row: AdminApplicantRow }) {
           }
         />
         <DropdownMenuContent align="end">
+          <LoginAsPortalUserButton applicationId={row._id} displayName={row.name} variant="dropdown-item" />
           <DropdownMenuItem
             render={
               <Link href={`/lms/careers/applicants/${row._id}`}>

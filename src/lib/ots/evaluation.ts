@@ -172,7 +172,7 @@ export async function settleAttempt(attemptId: string, actor: { id: string; emai
     await notifyCandidates([{ ref: asg.candidate, assignmentId: asg._id, type: "ots_result", title: `Final result available: ${test.name}`, body: "All your answers have now been evaluated.", dedupeKey: `ots_result:${attemptId}:final` }]);
   }
 
-  if ((publish || (wasPublished && status === "evaluated")) && asg.candidate.kind === "lead") {
+  if ((publish || (wasPublished && status === "evaluated")) && (asg.candidate.kind as string) === "lead") {
     try {
       const { sendActivityChatMessage } = await import("@/lib/lead-management/activity-notifier");
       await sendActivityChatMessage({

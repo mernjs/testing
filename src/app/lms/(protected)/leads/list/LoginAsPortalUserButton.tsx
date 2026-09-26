@@ -5,19 +5,28 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { LogIn, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { loginAsPortalUserAction } from "../impersonate-actions";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { loginAsPortalUserAction, type ImpersonateTargetOptions } from "../impersonate-actions";
 
-interface LoginAsPortalUserButtonProps {
-  externalUserId: string;
+export interface LoginAsPortalUserButtonProps {
+  externalUserId?: string;
   leadId?: string;
+  applicationId?: string;
+  studentId?: string;
+  clientId?: string;
+  email?: string;
   displayName?: string;
-  /** When true renders a full-width labelled button; default is icon-only. */
-  variant?: "icon" | "full";
+  /** Button style variant */
+  variant?: "icon" | "full" | "dropdown-item";
 }
 
 export default function LoginAsPortalUserButton({
   externalUserId,
   leadId,
+  applicationId,
+  studentId,
+  clientId,
+  email,
   displayName,
   variant = "icon",
 }: LoginAsPortalUserButtonProps) {
@@ -25,11 +34,20 @@ export default function LoginAsPortalUserButton({
   const [isPending, startTransition] = useTransition();
   const [clicked, setClicked] = useState(false);
 
-  function handleClick() {
+  function handleClick(e?: React.MouseEvent) {
+    if (e) e.stopPropagation();
     if (isPending || clicked) return;
     setClicked(true);
     startTransition(async () => {
-      const result = await loginAsPortalUserAction(externalUserId, leadId);
+      const target: ImpersonateTargetOptions = {
+        externalUserId,
+        leadId,
+        applicationId,
+        studentId,
+        clientId,
+        email,
+      };
+      const result = await loginAsPortalUserAction(target);
       if (!result.ok) {
         toast.error(result.error);
         setClicked(false);
@@ -44,6 +62,21 @@ export default function LoginAsPortalUserButton({
     });
   }
 
+  const elemId = `login-as-portal-user-${externalUserId || leadId || applicationId || studentId || clientId || email || "target"}`;
+
+  if (variant === "dropdown-item") {
+    return (
+      <DropdownMenuItem onClick={handleClick} disabled={isPending || clicked}>
+        {isPending || clicked ? (
+          <Loader2 className="size-3.5 animate-spin" />
+        ) : (
+          <LogIn className="size-3.5" />
+        )}
+        Login as Portal User
+      </DropdownMenuItem>
+    );
+  }
+
   if (variant === "full") {
     return (
       <Button
@@ -52,8 +85,8 @@ export default function LoginAsPortalUserButton({
         size="sm"
         onClick={handleClick}
         disabled={isPending || clicked}
-        id={`login-as-portal-user-${externalUserId}`}
-        title="Open this lead's portal account in the External Portal"
+        id={elemId}
+        title="Login to this user's portal account"
       >
         {isPending || clicked ? (
           <Loader2 className="size-3.5 animate-spin" data-icon="inline-start" />
@@ -73,7 +106,7 @@ export default function LoginAsPortalUserButton({
       onClick={handleClick}
       disabled={isPending || clicked}
       aria-label="Login as portal user"
-      id={`login-as-portal-user-${externalUserId}`}
+      id={elemId}
       title="Login as this portal user"
     >
       {isPending || clicked ? (
