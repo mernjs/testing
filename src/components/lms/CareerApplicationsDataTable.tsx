@@ -19,6 +19,7 @@ import {
   X,
   Trash2,
   Eye,
+  UserRound,
 } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -333,9 +334,9 @@ export default function CareerApplicationsDataTable({
                       </button>
                     </TableCell>
                     <TableCell>
-                      <button type="button" onClick={() => openSheet(application)} className="font-medium hover:underline">
+                      <Link href={`/lms/careers/applicants/${application._id}`} className="font-medium hover:text-primary hover:underline" title="Open full applicant profile">
                         {application.name}
-                      </button>
+                      </Link>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       <div>{application.email}</div>
@@ -345,9 +346,14 @@ export default function CareerApplicationsDataTable({
                     <TableCell><CareerStatusBadge status={application.status} /></TableCell>
                     <TableCell className="text-muted-foreground">{formatDate(application.createdAt)}</TableCell>
                     <TableCell>
-                      <Button type="button" variant="ghost" size="icon-sm" onClick={() => openSheet(application)} aria-label="View">
-                        <Eye className="size-3.5" />
-                      </Button>
+                      <div className="flex items-center gap-0.5">
+                        <Button type="button" variant="ghost" size="icon-sm" onClick={() => openSheet(application)} aria-label="Quick view" title="Quick view">
+                          <Eye className="size-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="icon-sm" nativeButton={false} render={<Link href={`/lms/careers/applicants/${application._id}`} />} aria-label="Open profile" title="Open full profile">
+                          <UserRound className="size-3.5" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                   {expanded.has(application._id) && (
