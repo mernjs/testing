@@ -178,6 +178,11 @@ export default function Footer() {
               </h3>
               <ul role="list" className="mt-6 space-y-4">
                 <li>
+                  <Link href="/products" className="inline-block text-sm leading-6 text-primary font-semibold hover:translate-x-1 transition-all duration-200">
+                    Our Products Showcase
+                  </Link>
+                </li>
+                <li>
                   <Link href="/software-development" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
                     Software Development
                   </Link>

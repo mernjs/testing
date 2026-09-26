@@ -5,7 +5,7 @@ import Link from "next/link";
 import PortalAuthLink from "@/components/PortalAuthLink";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, Hotel, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Newspaper, Workflow, BarChart3, FileSearch, TrendingUp, Plug, BrainCircuit } from "lucide-react";
+import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, Hotel, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Newspaper, Workflow, BarChart3, FileSearch, TrendingUp, Plug, BrainCircuit, Megaphone, FileQuestion, Kanban, Filter } from "lucide-react";
 import { useTheme } from "next-themes";
 import { InstagramIcon, XIcon, FacebookIcon, GithubIcon, YoutubeIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
 import { socialLinks as socialLinksData, whatsapp } from "@/lib/contact";
@@ -48,6 +48,19 @@ const socialIcons = { Facebook: FacebookIcon, GitHub: GithubIcon, "X (Twitter)":
 const socialLinks = socialLinksData.map((social) => ({ ...social, icon: socialIcons[social.name] }));
 
 const navigation = [
+  {
+    name: "Products",
+    href: "/products",
+    featured: { title: "AI Product Ecosystem", description: "Explore our 15 integrated AI applications.", image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop" },
+    items: [
+      { name: "AI Bots Studio", href: "/products", description: "No-code OpenAI vector RAG bots", icon: Bot },
+      { name: "HRMS Intelligence", href: "/products", description: "HR, automated payroll & AI hiring", icon: Users },
+      { name: "Project Command (PMS)", href: "/products", description: "Profitability-driven delivery & billing", icon: Kanban },
+      { name: "AI Sales CRM (LMS)", href: "/products", description: "24/7 lead qualification voice/chat bot", icon: Filter },
+      { name: "AI Social Engine (SMMS)", href: "/products", description: "Multi-channel posts & reel scripts", icon: Megaphone },
+      { name: "OTS Exam Engine", href: "/products", description: "17 question formats & proctoring", icon: FileQuestion },
+    ],
+  },
   {
     name: "About",
     href: "/about",
@@ -167,6 +180,19 @@ const navigation = [
 // Mobile-only nav data: mirrors real, existing routes (kept separate from `navigation`
 // above so the desktop mega menu's content/layout is untouched).
 const mobileNavigation = [
+  {
+    name: "Products",
+    href: "/products",
+    icon: Box,
+    items: [
+      { name: "AI Bots Studio", href: "/products", icon: Bot },
+      { name: "HRMS Intelligence", href: "/products", icon: Users },
+      { name: "Project Command (PMS)", href: "/products", icon: Kanban },
+      { name: "AI Sales CRM (LMS)", href: "/products", icon: Filter },
+      { name: "AI Social Engine (SMMS)", href: "/products", icon: Megaphone },
+      { name: "OTS Exam Engine", href: "/products", icon: FileQuestion },
+    ],
+  },
   {
     name: "About",
     href: "/about",
