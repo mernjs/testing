@@ -23,6 +23,7 @@
     "db:seed-smms": "node --env-file=.env scripts/seed-smms-demo.mjs",
     "db:seed-ots": "node --env-file=.env scripts/seed-ots-demo.mjs",
     "db:seed-ots-careers": "node --env-file=.env scripts/seed-ots-careers-demo.mjs",
+    "db:seed-ots-production": "node --env-file=.env scripts/seed-ots-production.mjs",
     "db:seed-all-panels": "node --env-file=.env scripts/seed-all-panels-demo.mjs",
     "db:seed-navratri-dussehra-offers": "node --env-file=.env scripts/seed-navratri-dussehra-offers.mjs"
   },
