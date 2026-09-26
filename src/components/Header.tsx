@@ -5,7 +5,7 @@ import Link from "next/link";
 import PortalAuthLink from "@/components/PortalAuthLink";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, Hotel, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Newspaper, Workflow, BarChart3, FileSearch, TrendingUp, Plug, BrainCircuit, Megaphone, FileQuestion, Kanban, Filter } from "lucide-react";
+import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, Hotel, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Newspaper, Workflow, BarChart3, FileSearch, TrendingUp, Plug, BrainCircuit, Megaphone, FileQuestion, Kanban, Filter, ShieldCheck, FileText } from "lucide-react";
 import { useTheme } from "next-themes";
 import { InstagramIcon, XIcon, FacebookIcon, GithubIcon, YoutubeIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
 import { socialLinks as socialLinksData, whatsapp } from "@/lib/contact";
@@ -58,6 +58,9 @@ const navigation = [
       { name: "Technologies", href: "/about/technologies", description: "Our full tech stack", icon: Layers },
       { name: "Success Stories", href: "/about/success-stories", description: "Client impact cases", icon: Box },
       { name: "Blog", href: "/blog", description: "Engineering insights & updates", icon: Newspaper },
+      { name: "Our SaaS Product", href: "/services/our-saas-product", description: "15-application AI platform", icon: Sparkles },
+      { name: "Privacy Policy", href: "/about/privacy-policy", description: "Data protection & privacy", icon: ShieldCheck },
+      { name: "Terms & Conditions", href: "/about/terms-and-conditions", description: "Terms of service agreement", icon: FileQuestion },
     ],
   },
   {
@@ -67,45 +70,14 @@ const navigation = [
     items: [
       { name: "Our SaaS Product", href: "/services/our-saas-product", description: "15-application integrated AI SaaS ecosystem", icon: Sparkles },
       { name: "Software Development", href: "/software-development", description: "Custom web, mobile & desktop software", icon: Code2 },
+      { name: "Digital Marketing", href: "/digital-marketing", description: "SEO, ads, social media & growth strategies", icon: Megaphone },
       { name: "AI & Automations", href: "/ai-automations", description: "Workflows, chatbots, RAG & RPA bots", icon: BrainCircuit },
       { name: "Industrial Training", href: "/industrial-training", description: "Mentor-led, project-based learning", icon: GraduationCap },
       { name: "Resource Augmentation", href: "/resource-augmentation", description: "Dedicated developers & team hiring", icon: UserPlus },
       { name: "Internship Program", href: "/internship-program", description: "Hands-on live project internships", icon: Briefcase },
+      { name: "Offers & Campaigns", href: "/offers", description: "Exclusive campaign deals & offers", icon: Zap },
     ],
   },
-  // {
-  //   name: "AI & Automations",
-  //   href: "/ai-automations",
-  //   featured: { title: "AI-Driven Automation", description: "Automate workflows, documents, and decisions with AI.", image: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?q=80&w=600&auto=format&fit=crop" },
-  //   items: [
-  //     { name: "Intelligent Process Automation", href: "/ai-automations/intelligent-process-automation", description: "End-to-end workflow automation", icon: Workflow },
-  //     { name: "Conversational AI & Chatbots", href: "/ai-automations/conversational-ai-chatbots", description: "24/7 intelligent engagement", icon: MessageSquare },
-  //     { name: "AI-Powered Data Analytics", href: "/ai-automations/ai-powered-data-analytics", description: "Turn data into intelligence", icon: BarChart3 },
-  //     { name: "Document Intelligence", href: "/ai-automations/document-intelligence", description: "Automate document extraction", icon: FileSearch },
-  //     { name: "Predictive AI Workflows", href: "/ai-automations/predictive-ai-workflows", description: "Act before problems surface", icon: TrendingUp },
-  //     { name: "AI Integration Services", href: "/ai-automations/ai-integration-services", description: "Embed AI into your stack", icon: Plug },
-  //   ],
-  // },
-  // {
-  //   name: "Resource Augmentation",
-  //   href: "/resource-augmentation",
-  //   featured: { title: "Resource Augmentation", description: "Flexible engagement models, vetted talent.", image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop" },
-  //   items: [
-  //     { name: "Single Resource", href: "/resource-augmentation/single-resource", description: "Hire an individual developer", icon: UserCheck },
-  //     { name: "Package-Based Team", href: "/resource-augmentation/package-based-team", description: "A complete, pre-built team", icon: Users },
-  //     { name: "Hourly / On-Demand", href: "/resource-augmentation/hourly-on-demand", description: "Pay only for hours used", icon: Clock },
-  //     { name: "Project-Based", href: "/resource-augmentation/project-based", description: "Fixed-scope, milestone-priced", icon: Target },
-  //   ],
-  // },
-  // Hidden from nav; page still exists, just not linked or indexed via the menu.
-  // {
-  //   name: "Live Demos",
-  //   href: "/live-demos",
-  //   featured: { title: "Try It Yourself", description: "Real, working in-house AI projects.", image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?q=80&w=600&auto=format&fit=crop" },
-  //   items: [
-  //     { name: "Social Media AI Reels Generator", href: "/live-demos/social-media-ai-reels-generator", description: "Image-to-video AI, live demo", icon: Video },
-  //   ],
-  // },
   {
     name: "Industries",
     href: "/industries",
@@ -117,43 +89,14 @@ const navigation = [
       { name: "Agriculture", href: "/industries/agriculture", description: "Precision farming platforms", icon: Tractor },
       { name: "Education", href: "/industries/education", description: "Transforming education", icon: GraduationCap },
       { name: "Real Estate", href: "/industries/real-estate", description: "Property management", icon: Building2 },
-      // { name: "Social Media", href: "/industries/social-media", description: "Feeds & community at scale", icon: Share2 },
-      // { name: "Travel", href: "/industries/travel", description: "Booking & itinerary platforms", icon: Plane },
-      // { name: "Construction", href: "/industries/construction", description: "Job site visibility", icon: HardHat },
-      // { name: "Hotels", href: "/industries/hotels", description: "Guest experience platforms", icon: Hotel },
-      // { name: "Finance", href: "/industries/finance", description: "Secure financial tech", icon: Landmark },
+      { name: "Finance", href: "/industries/finance", description: "Secure financial tech", icon: Landmark },
+      { name: "Travel & Hospitality", href: "/industries/travel", description: "Booking & itinerary platforms", icon: Plane },
     ],
   },
-  // {
-  //   name: "Training",
-  //   href: "/industrial-training",
-  //   featured: { title: "Become Industry-Ready", description: "Hands-on, mentor-led training programs.", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop" },
-  //   items: [
-  //     { name: "MERN Stack", href: "/industrial-training/mern-stack", description: "MongoDB, Express, React, Node", icon: Code2 },
-  //     { name: "MEAN Stack", href: "/industrial-training/mean-stack", description: "MongoDB, Express, Angular, Node", icon: Database },
-  //     { name: "Generative AI", href: "/industrial-training/generative-ai", description: "LLMs, prompting, fine-tuning", icon: Sparkles },
-  //     { name: "Agentic AI", href: "/industrial-training/agentic-ai", description: "Autonomous, tool-using agents", icon: Bot },
-  //     { name: "Conversational AI", href: "/industrial-training/conversational-ai", description: "Chatbots & voice assistants", icon: MessageSquare },
-  //     { name: "Computer Vision", href: "/industrial-training/computer-vision", description: "Image & video intelligence", icon: ScanEye },
-  //   ],
-  // },
-  // {
-  //   name: "Internship",
-  //   href: "/internship-program",
-  //   featured: { title: "Intern on Real Work", description: "Paid, mentor-led internships across six tracks.", image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=600&auto=format&fit=crop" },
-  //   items: [
-  //     { name: "MERN Stack Internship", href: "/internship-program/mern-stack", description: "MongoDB, Express, React, Node", icon: Code2 },
-  //     { name: "MEAN Stack Internship", href: "/internship-program/mean-stack", description: "MongoDB, Express, Angular, Node", icon: Database },
-  //     { name: "Generative AI Internship", href: "/internship-program/generative-ai", description: "LLM pipelines & RAG systems", icon: Sparkles },
-  //     { name: "Agentic AI Internship", href: "/internship-program/agentic-ai", description: "Autonomous, tool-using agents", icon: Bot },
-  //     { name: "Conversational AI Internship", href: "/internship-program/conversational-ai", description: "Chatbots & voice assistants", icon: MessageSquare },
-  //     { name: "Computer Vision Internship", href: "/internship-program/computer-vision", description: "Image & video intelligence", icon: ScanEye },
-  //   ],
-  // },
   {
     name: "Careers",
     href: "/careers",
-    featured: { title: "Careers at YashOrbit", description: "Join our growing team building AI-powered products.", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=600&auto=format&fit=crop" },
+    featured: { title: "Careers at YashOrbit", description: "Join our growing team building AI-powered products.", image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop" },
     items: [
       { name: "MERN Developer", href: "/careers/mern-developer", description: "Full-stack MongoDB, Express, React, Node", icon: Code2 },
       { name: "GenAI Developer", href: "/careers/genai-developer", description: "LLM-powered products & pipelines", icon: Sparkles },
@@ -161,12 +104,13 @@ const navigation = [
       { name: "UI/UX Designer", href: "/careers/ui-ux-designer", description: "Product design across web & mobile", icon: Palette },
       { name: "Business Development Manager", href: "/careers/business-development-manager", description: "Grow our client pipeline", icon: Handshake },
       { name: "HR Executive", href: "/careers/hr-executive", description: "Recruitment & employee experience", icon: Users },
+      { name: "DevOps Engineer", href: "/careers/devops-engineer", description: "Cloud infrastructure & CI/CD", icon: Workflow },
+      { name: "Open Positions", href: "/careers", description: "Explore all open roles", icon: Briefcase },
     ],
   },
 ];
 
-// Mobile-only nav data: mirrors real, existing routes (kept separate from `navigation`
-// above so the desktop mega menu's content/layout is untouched).
+// Mobile-only nav data: mirrors real, existing routes
 const mobileNavigation = [
   {
     name: "About",
@@ -178,6 +122,9 @@ const mobileNavigation = [
       { name: "Technologies", href: "/about/technologies", icon: Layers },
       { name: "Success Stories", href: "/about/success-stories", icon: Box },
       { name: "Blog", href: "/blog", icon: Newspaper },
+      { name: "Our SaaS Product", href: "/services/our-saas-product", icon: Sparkles },
+      { name: "Privacy Policy", href: "/about/privacy-policy", icon: ShieldCheck },
+      { name: "Terms & Conditions", href: "/about/terms-and-conditions", icon: FileQuestion },
     ],
   },
   {
@@ -187,46 +134,14 @@ const mobileNavigation = [
     items: [
       { name: "Our SaaS Product", href: "/services/our-saas-product", icon: Sparkles },
       { name: "Software Development", href: "/software-development", icon: Code2 },
+      { name: "Digital Marketing", href: "/digital-marketing", icon: Megaphone },
       { name: "AI & Automations", href: "/ai-automations", icon: BrainCircuit },
       { name: "Industrial Training", href: "/industrial-training", icon: GraduationCap },
       { name: "Resource Augmentation", href: "/resource-augmentation", icon: UserPlus },
       { name: "Internship Program", href: "/internship-program", icon: Briefcase },
+      { name: "Offers & Campaigns", href: "/offers", icon: Zap },
     ],
   },
-  // {
-  //   name: "AI & Automations",
-  //   href: "/ai-automations",
-  //   icon: BrainCircuit,
-  //   items: [
-  //     { name: "Intelligent Process Automation", href: "/ai-automations/intelligent-process-automation", icon: Workflow },
-  //     { name: "Conversational AI & Chatbots", href: "/ai-automations/conversational-ai-chatbots", icon: MessageSquare },
-  //     { name: "AI-Powered Data Analytics", href: "/ai-automations/ai-powered-data-analytics", icon: BarChart3 },
-  //     { name: "Document Intelligence", href: "/ai-automations/document-intelligence", icon: FileSearch },
-  //     { name: "Predictive AI Workflows", href: "/ai-automations/predictive-ai-workflows", icon: TrendingUp },
-  //     { name: "AI Integration Services", href: "/ai-automations/ai-integration-services", icon: Plug },
-  //     { name: "Robotic Process Automation", href: "/ai-automations/robotic-process-automation", icon: Bot },
-  //   ],
-  // },
-  // {
-  //   name: "Resource Augmentation",
-  //   href: "/resource-augmentation",
-  //   icon: UserPlus,
-  //   items: [
-  //     { name: "Single Resource", href: "/resource-augmentation/single-resource", icon: UserCheck },
-  //     { name: "Package-Based Team", href: "/resource-augmentation/package-based-team", icon: Users },
-  //     { name: "Hourly / On-Demand", href: "/resource-augmentation/hourly-on-demand", icon: Clock },
-  //     { name: "Project-Based", href: "/resource-augmentation/project-based", icon: Target },
-  //   ],
-  // },
-  // Hidden from nav; page still exists, just not linked or indexed via the menu.
-  // {
-  //   name: "Live Demos",
-  //   href: "/live-demos",
-  //   icon: Sparkles,
-  //   items: [
-  //     { name: "Social Media AI Reels Generator", href: "/live-demos/social-media-ai-reels-generator", icon: Video },
-  //   ],
-  // },
   {
     name: "Industries",
     href: "/industries",
@@ -238,39 +153,10 @@ const mobileNavigation = [
       { name: "Agriculture", href: "/industries/agriculture", icon: Tractor },
       { name: "Education", href: "/industries/education", icon: GraduationCap },
       { name: "Real Estate", href: "/industries/real-estate", icon: Building2 },
-      // { name: "Social Media", href: "/industries/social-media", icon: Share2 },
-      // { name: "Travel", href: "/industries/travel", icon: Plane },
-      // { name: "Construction", href: "/industries/construction", icon: HardHat },
-      // { name: "Hotels", href: "/industries/hotels", icon: Hotel },
-      // { name: "Finance", href: "/industries/finance", icon: Landmark },
+      { name: "Finance", href: "/industries/finance", icon: Landmark },
+      { name: "Travel & Hospitality", href: "/industries/travel", icon: Plane },
     ],
   },
-  // {
-  //   name: "Training",
-  //   href: "/industrial-training",
-  //   icon: Code2,
-  //   items: [
-  //     { name: "MERN Stack", href: "/industrial-training/mern-stack", icon: Code2 },
-  //     { name: "MEAN Stack", href: "/industrial-training/mean-stack", icon: Database },
-  //     { name: "Generative AI", href: "/industrial-training/generative-ai", icon: Sparkles },
-  //     { name: "Agentic AI", href: "/industrial-training/agentic-ai", icon: Bot },
-  //     { name: "Conversational AI", href: "/industrial-training/conversational-ai", icon: MessageSquare },
-  //     { name: "Computer Vision", href: "/industrial-training/computer-vision", icon: ScanEye },
-  //   ],
-  // },
-  // {
-  //   name: "Internship",
-  //   href: "/internship-program",
-  //   icon: Briefcase,
-  //   items: [
-  //     { name: "MERN Stack Internship", href: "/internship-program/mern-stack", icon: Code2 },
-  //     { name: "MEAN Stack Internship", href: "/internship-program/mean-stack", icon: Database },
-  //     { name: "Generative AI Internship", href: "/internship-program/generative-ai", icon: Sparkles },
-  //     { name: "Agentic AI Internship", href: "/internship-program/agentic-ai", icon: Bot },
-  //     { name: "Conversational AI Internship", href: "/internship-program/conversational-ai", icon: MessageSquare },
-  //     { name: "Computer Vision Internship", href: "/internship-program/computer-vision", icon: ScanEye },
-  //   ],
-  // },
   {
     name: "Careers",
     href: "/careers",
@@ -282,6 +168,8 @@ const mobileNavigation = [
       { name: "UI/UX Designer", href: "/careers/ui-ux-designer", icon: Palette },
       { name: "Business Development Manager", href: "/careers/business-development-manager", icon: Handshake },
       { name: "HR Executive", href: "/careers/hr-executive", icon: Users },
+      { name: "DevOps Engineer", href: "/careers/devops-engineer", icon: Workflow },
+      { name: "Open Positions", href: "/careers", icon: Briefcase },
     ],
   },
 ];
@@ -447,7 +335,7 @@ export default function Header() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.98 }}
                       transition={{ duration: 0.2, ease: "easeOut" }}
-                      className="absolute left-1/2 z-50 mt-4 flex w-screen max-w-3xl -translate-x-1/2 px-4"
+                      className="absolute left-1/2 z-50 mt-4 flex w-screen max-w-5xl -translate-x-1/2 px-4"
                     >
                       <div className="relative w-full flex-auto">
                         <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-primary/20 via-primary/0 to-secondary/20 blur-2xl pointer-events-none" />
@@ -456,18 +344,18 @@ export default function Header() {
                           <div className="h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
                           <div className="grid grid-cols-5 p-2">
                             <FeaturedCard item={item} />
-                            <div className="col-span-3 p-6 grid grid-cols-2 gap-4">
+                            <div className="col-span-3 p-5 grid grid-cols-2 gap-x-6 gap-y-2.5">
                               {item.items.map((subItem) => (
                                 <Link
                                   key={subItem.name}
                                   href={subItem.href}
-                                  className="group relative flex items-start gap-4 rounded-xl p-3 hover:bg-muted/50 transition-colors"
+                                  className="group relative flex items-start gap-3.5 rounded-xl p-2.5 hover:bg-muted/50 transition-colors"
                                 >
-                                  <div className="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-border/50 group-hover:from-primary group-hover:to-[#ff8e75] group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                                    <subItem.icon className="h-5 w-5 text-muted-foreground group-hover:text-white transition-colors duration-300" />
+                                  <div className="flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-border/50 group-hover:from-primary group-hover:to-[#ff8e75] group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                                    <subItem.icon className="h-4.5 w-4.5 text-muted-foreground group-hover:text-white transition-colors duration-300" />
                                   </div>
-                                  <div>
-                                    <div className="font-semibold text-foreground text-sm mb-1 group-hover:text-primary transition-colors">
+                                  <div className="min-w-0 flex-1">
+                                    <div className="font-semibold text-foreground text-sm mb-0.5 group-hover:text-primary transition-colors whitespace-nowrap">
                                       {subItem.name}
                                     </div>
                                     <p className="text-xs text-muted-foreground line-clamp-1">{subItem.description}</p>

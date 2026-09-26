@@ -177,7 +177,7 @@ export default function Footer() {
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 About
               </h3>
-              <ul role="list" className="mt-6 space-y-4">
+              <ul role="list" className="mt-6 space-y-3">
                 <li>
                   <Link href="/about/our-mission" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
                     Our Mission
@@ -205,10 +205,20 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link href="/services/our-saas-product" className="inline-block text-sm leading-6 text-primary font-semibold hover:translate-x-1 transition-all duration-200">
-                    Our SaaS Products
+                    Our SaaS Product
                   </Link>
                 </li>
                 <li>
+                  <Link href="/about/privacy-policy" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about/terms-and-conditions" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Terms & Conditions
+                  </Link>
+                </li>
+                <li className="pt-1">
                   <Link href="/about" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
                     View All About
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -223,7 +233,7 @@ export default function Footer() {
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 Services
               </h3>
-              <ul role="list" className="mt-6 space-y-4">
+              <ul role="list" className="mt-6 space-y-3">
                 <li>
                   <Link href="/services/our-saas-product" className="inline-block text-sm leading-6 text-primary font-semibold hover:translate-x-1 transition-all duration-200">
                     Our SaaS Product
@@ -232,6 +242,11 @@ export default function Footer() {
                 <li>
                   <Link href="/software-development" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
                     Software Development
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/digital-marketing" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Digital Marketing
                   </Link>
                 </li>
                 <li>
@@ -255,6 +270,11 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/offers" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Offers & Campaigns
+                  </Link>
+                </li>
+                <li className="pt-1">
                   <Link href="/services" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
                     View All Services
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -269,7 +289,7 @@ export default function Footer() {
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 Industries
               </h3>
-              <ul role="list" className="mt-6 space-y-4">
+              <ul role="list" className="mt-6 space-y-3">
                 <li>
                   <Link href="/industries/healthcare" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
                     Healthcare
@@ -301,6 +321,16 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/industries/finance" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Finance
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/industries/travel" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Travel & Hospitality
+                  </Link>
+                </li>
+                <li className="pt-1">
                   <Link href="/industries" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
                     View All Industries
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -315,7 +345,7 @@ export default function Footer() {
                 <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
                 Careers
               </h3>
-              <ul role="list" className="mt-6 space-y-4">
+              <ul role="list" className="mt-6 space-y-3">
                 <li>
                   <Link href="/careers/mern-developer" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
                     MERN Developer
@@ -347,6 +377,16 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/careers/devops-engineer" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    DevOps Engineer
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/careers" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
+                    Open Positions
+                  </Link>
+                </li>
+                <li className="pt-1">
                   <Link href="/careers" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
                     View All Careers
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />

@@ -1,5 +1,6 @@
 export const CATEGORIES = [
   { slug: "software-development", label: "Software Development", collection: "leads_software_development" },
+  { slug: "digital-marketing", label: "Digital Marketing", collection: "leads_digital_marketing" },
   { slug: "ai-automations", label: "AI & Automations", collection: "leads_ai_automations" },
   { slug: "industrial-training", label: "Industrial Training", collection: "leads_industrial_training" },
   { slug: "resource-augmentation", label: "Resource Augmentation", collection: "leads_resource_augmentation" },
@@ -42,6 +43,20 @@ const SUB_SERVICES: Record<CategorySlug, SubService[]> = {
     { slug: "ai-ml-solutions", label: "AI/ML Solutions" },
     { slug: "vision-intelligence", label: "Vision Intelligence" },
     { slug: "ar-vr", label: "AR/VR" },
+  ],
+  "digital-marketing": [
+    { slug: "seo", label: "SEO Services" },
+    { slug: "performance-marketing", label: "Performance Marketing" },
+    { slug: "social-media-marketing", label: "Social Media Marketing" },
+    { slug: "content-marketing", label: "Content Marketing" },
+    { slug: "email-marketing", label: "Email Marketing" },
+    { slug: "lead-generation", label: "Lead Generation" },
+    { slug: "conversion-rate-optimization", label: "Conversion Rate Optimization" },
+    { slug: "online-reputation-management", label: "Online Reputation Management" },
+    { slug: "local-digital-marketing", label: "Local Digital Marketing" },
+    { slug: "ecommerce-marketing", label: "E-commerce Marketing" },
+    { slug: "influencer-marketing", label: "Influencer Marketing" },
+    { slug: "marketing-analytics", label: "Marketing Analytics & Reporting" },
   ],
   "ai-automations": [
     { slug: "intelligent-process-automation", label: "Intelligent Process Automation" },

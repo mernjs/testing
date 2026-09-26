@@ -320,6 +320,8 @@ export function getServiceHref(category: CategorySlug, subService: string): stri
   switch (category) {
     case "software-development":
       return subService === "all" ? "/software-development" : `/services/${subService}`;
+    case "digital-marketing":
+      return subService === "all" ? "/digital-marketing" : `/services/digital-marketing/${subService}`;
     case "ai-automations":
       return subService === "all" ? "/ai-automations" : `/ai-automations/${subService}`;
     case "resource-augmentation":
@@ -490,6 +492,7 @@ export const TARGETABLE_PAGES = [
   { path: "/", label: "Homepage" },
   { path: "/services", label: "Services hub" },
   { path: "/software-development", label: "Software Development" },
+  { path: "/digital-marketing", label: "Digital Marketing" },
   { path: "/ai-automations", label: "AI & Automations" },
   { path: "/industrial-training", label: "Training" },
   { path: "/internship-program", label: "Internship" },
@@ -525,7 +528,7 @@ export function audienceForPath(pathname: string): Audience {
   if (pathMatchesTarget(pathname, "/industrial-training")) return "STUDENT";
   if (pathMatchesTarget(pathname, "/resource-augmentation")) return "HIRING";
   if (pathMatchesTarget(pathname, "/careers")) return "STUDENT";
-  if (pathMatchesTarget(pathname, "/software-development") || pathMatchesTarget(pathname, "/ai-automations") || pathMatchesTarget(pathname, "/services")) return "CLIENT";
+  if (pathMatchesTarget(pathname, "/software-development") || pathMatchesTarget(pathname, "/digital-marketing") || pathMatchesTarget(pathname, "/ai-automations") || pathMatchesTarget(pathname, "/services")) return "CLIENT";
   return "ALL";
 }
 
@@ -535,6 +538,7 @@ export function categoryForPath(pathname: string): CategorySlug | undefined {
   if (pathMatchesTarget(pathname, "/industrial-training")) return "industrial-training";
   if (pathMatchesTarget(pathname, "/resource-augmentation")) return "resource-augmentation";
   if (pathMatchesTarget(pathname, "/ai-automations")) return "ai-automations";
+  if (pathMatchesTarget(pathname, "/digital-marketing")) return "digital-marketing";
   if (pathMatchesTarget(pathname, "/software-development")) return "software-development";
   return undefined;
 }

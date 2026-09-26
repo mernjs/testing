@@ -65,7 +65,7 @@ export default function ProductsContent() {
 
   async function handleCtaSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const ok = await ctaLead.submit("saas-products", {
+    const ok = await ctaLead.submit("software-development", {
       name: ctaName,
       phone: ctaPhone,
       message: ctaMessage,

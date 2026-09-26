@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Code2, Bot, Users, GraduationCap, Briefcase } from "lucide-react";
+import { Code2, Bot, Users, GraduationCap, Briefcase, Megaphone } from "lucide-react";
 import OffersHero from "@/components/offers/OffersHero";
 import AudienceSelector from "@/components/offers/AudienceSelector";
 import DealOfTheDaySection from "@/components/offers/DealOfTheDaySection";
@@ -34,6 +34,12 @@ const CATEGORY_META: Record<CategorySlug, { id: string; icon: typeof Code2; titl
     title: "Software Development Offers",
     description: "Web, mobile, AI and cloud engineering — for business clients ready to build.",
   },
+  "digital-marketing": {
+    id: "digital-marketing-offers",
+    icon: Megaphone,
+    title: "Digital Marketing Offers",
+    description: "SEO, ads, social media & growth strategies — designed for business growth.",
+  },
   "ai-automations": {
     id: "ai-automation-offers",
     icon: Bot,
@@ -62,6 +68,7 @@ const CATEGORY_META: Record<CategorySlug, { id: string; icon: typeof Code2; titl
 
 const DEFAULT_ORDER: CategorySlug[] = [
   "software-development",
+  "digital-marketing",
   "ai-automations",
   "resource-augmentation",
   "industrial-training",
@@ -69,7 +76,7 @@ const DEFAULT_ORDER: CategorySlug[] = [
 ];
 
 const TAB_PRIORITY: Record<PublicAudienceTabKey, CategorySlug[]> = {
-  CLIENT: ["software-development", "ai-automations", "resource-augmentation"],
+  CLIENT: ["software-development", "digital-marketing", "ai-automations", "resource-augmentation"],
   STUDENT: ["industrial-training", "internship-program"],
   HIRING: ["resource-augmentation"],
 };

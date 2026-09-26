@@ -16,6 +16,7 @@ export const LEAD_SOURCES = [
   "internship",
   "industrial_training",
   "software_development",
+  "digital_marketing",
   "ai_automation",
   "resource_augmentation",
   "client_inquiry",
@@ -28,6 +29,7 @@ export const LEAD_SOURCE_META: Record<LeadManagementSource, { label: string; typ
   internship: { label: "Internship Program", type: "intern" },
   industrial_training: { label: "Industrial Training", type: "trainee" },
   software_development: { label: "Software Development Inquiry", type: "client" },
+  digital_marketing: { label: "Digital Marketing Inquiry", type: "client" },
   ai_automation: { label: "AI & Automation Inquiry", type: "client" },
   resource_augmentation: { label: "Resource Augmentation Inquiry", type: "client" },
   client_inquiry: { label: "Client Contact / Project Inquiry", type: "client" },
@@ -37,6 +39,7 @@ export const LEAD_SOURCE_META: Record<LeadManagementSource, { label: string; typ
 /** Maps a public `/api/leads/[category]` slug to a lead source + type. */
 export const CATEGORY_TO_SOURCE: Record<CategorySlug, LeadManagementSource> = {
   "software-development": "software_development",
+  "digital-marketing": "digital_marketing",
   "ai-automations": "ai_automation",
   "industrial-training": "industrial_training",
   "resource-augmentation": "resource_augmentation",

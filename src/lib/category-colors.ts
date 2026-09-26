@@ -13,6 +13,7 @@ export interface ThemedColor {
  */
 export const CATEGORY_CHART_COLORS: Record<CategorySlug, ThemedColor> = {
   "software-development": { light: "#1D428A", dark: "#3b6fd4" },
+  "digital-marketing": { light: "#059669", dark: "#34d399" },
   "ai-automations": { light: "#E56043", dark: "#E56043" },
   "industrial-training": { light: "#ff8e75", dark: "#ff8e75" },
   "resource-augmentation": { light: "#7ba0d9", dark: "#5f84c2" },

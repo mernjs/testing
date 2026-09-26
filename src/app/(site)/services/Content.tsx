@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Layers, Code2, GraduationCap, UserPlus, Briefcase, BrainCircuit } from "lucide-react";
+import { Layers, Code2, GraduationCap, UserPlus, Briefcase, BrainCircuit, Megaphone } from "lucide-react";
 import ListingHero from "@/components/sections/ListingHero";
 import FeaturedListingCard from "@/components/sections/FeaturedListingCard";
 import ListingCard from "@/components/sections/ListingCard";
@@ -16,6 +16,15 @@ const items = [
     icon: Code2,
     image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1200&auto=format&fit=crop",
     highlights: ["Web & Mobile Apps", "Desktop & Cloud", "Enterprise Ready"],
+  },
+  {
+    title: "Digital Marketing",
+    subtitle: "Data-driven strategies that grow your brand & revenue.",
+    description: "Grow your brand, reach the right audience, generate qualified leads, and increase conversions with data-driven digital marketing strategies tailored to your business.",
+    href: "/digital-marketing",
+    icon: Megaphone,
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop",
+    highlights: ["SEO & Content", "Performance Ads", "Social & Analytics"],
   },
   {
     title: "Industrial Training",
@@ -63,7 +72,7 @@ export default function ServicesContent() {
       <ListingHero
         eyebrow="our services portfolio"
         title="Our Services"
-        description="Explore YashOrbit's five specialized service pillars — engineered to deliver custom software, enterprise AI & automations, industry-ready training, talent augmentation, and real-world internships."
+        description="Explore YashOrbit's six specialized service pillars — engineered to deliver custom software, digital marketing, enterprise AI & automations, industry-ready training, talent augmentation, and real-world internships."
         icon={Layers}
         image="https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=1400&auto=format&fit=crop"
       />
