@@ -119,6 +119,20 @@ export async function createInterview(
     updatedAt: now,
   };
   await c.insertOne(doc);
+  if (leadId) {
+    try {
+      const { sendActivityChatMessage } = await import("@/lib/lead-management/activity-notifier");
+      await sendActivityChatMessage({
+        leadId,
+        activityType: "interview_scheduled",
+        title: `Interview Scheduled: ${data.title.trim()}`,
+        details: `Scheduled for ${new Date(data.scheduledAt).toLocaleString("en-IN")} (${data.mode}). Check the Interview Schedule section in your portal for link and instructions.`,
+        actorStaffId: actorId,
+      });
+    } catch (err) {
+      console.error("Failed to post interview chat message:", err);
+    }
+  }
   return doc;
 }
 
@@ -126,10 +140,24 @@ export async function updateInterviewStatus(id: string, status: InterviewStatus)
   const c = await collection();
   await c.updateOne({ _id: id }, { $set: { status, updatedAt: new Date() } });
 
+  const iv = await c.findOne({ _id: id });
+  if (iv?.leadId) {
+    try {
+      const { sendActivityChatMessage } = await import("@/lib/lead-management/activity-notifier");
+      await sendActivityChatMessage({
+        leadId: iv.leadId,
+        activityType: "interview_scheduled",
+        title: `Interview ${status === "completed" ? "Completed" : status === "cancelled" ? "Cancelled" : "Updated"}`,
+        details: status === "completed" ? `Your interview "${iv.title}" has been marked completed.` : status === "cancelled" ? `Your interview "${iv.title}" has been cancelled.` : `Your interview "${iv.title}" status has been updated.`,
+      });
+    } catch {
+      /* non-blocking */
+    }
+  }
+
   // Wallet & Credits: attending an interview round earns credits (best-effort; never affects the status change).
   if (status === "completed") {
     try {
-      const iv = await c.findOne({ _id: id });
       if (iv) {
         const { externalUsers } = await import("@/lib/portal-auth");
         const { awardActivity } = await import("@/lib/wallet/earn");

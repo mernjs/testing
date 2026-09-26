@@ -4,6 +4,7 @@ import { hashPassword } from "@/lib/lms-auth";
 import { externalUsers, type ExternalUserDoc } from "@/lib/portal-auth";
 import { newId } from "@/lib/portal/db";
 import { notifyPortalUser } from "@/lib/portal/notifications";
+import { sendActivityChatMessage } from "@/lib/lead-management/activity-notifier";
 import { recordPortalAudit } from "@/lib/portal/audit";
 import { PORTAL_ROLE_META } from "@/lib/portal-roles";
 import { createLeadRecord } from "@/lib/lead-management/records";
@@ -159,6 +160,16 @@ export async function provisionLeadAndAccount(input: ProvisionInput): Promise<Pr
       ? "Your account is ready. Track everything here — it updates live as our team progresses your request."
       : `A new request (${lead.code}) has been added to your portal.`,
     link: "/portal",
+  });
+  await sendActivityChatMessage({
+    leadId: lead._id,
+    activityType: "welcome",
+    title: isNewAccount ? `Welcome to your ${PORTAL_ROLE_META[role].portalName}` : `Submission Received (${lead.code})`,
+    stageKey: lead.stage,
+    details: isNewAccount
+      ? "Your account is active. Track your progress, send messages, and receive real-time updates directly in this thread."
+      : `Your new request (${lead.code}) has been received and added to your portal timeline.`,
+    actorStaffId: input.actorId ?? null,
   });
   await recordPortalAudit({
     actorId: externalUserId,

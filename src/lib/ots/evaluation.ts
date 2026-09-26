@@ -171,6 +171,22 @@ export async function settleAttempt(attemptId: string, actor: { id: string; emai
   } else if (wasPublished && status === "evaluated" && att.status === "pending_evaluation" && opts.notify !== false && policy !== "never") {
     await notifyCandidates([{ ref: asg.candidate, assignmentId: asg._id, type: "ots_result", title: `Final result available: ${test.name}`, body: "All your answers have now been evaluated.", dedupeKey: `ots_result:${attemptId}:final` }]);
   }
+
+  if ((publish || (wasPublished && status === "evaluated")) && asg.candidate.kind === "lead") {
+    try {
+      const { sendActivityChatMessage } = await import("@/lib/lead-management/activity-notifier");
+      await sendActivityChatMessage({
+        leadId: asg.candidate.id,
+        activityType: "test_result",
+        title: `Test Results Available: ${test.name}`,
+        details: `Attempt #${att.attemptNo} score is ${result.finalScore}/${result.totalMarks} (${result.percentage}%). You can review your submitted answers in the Tests & Assessments tab.`,
+        actorStaffId: actor.id,
+      });
+    } catch {
+      /* non-blocking */
+    }
+  }
+
   await issueCertificateIfEligible(asg._id, actor);
   return updated;
 }

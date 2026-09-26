@@ -64,6 +64,8 @@ async function collection() {
 // Staff upload (used by the seed script + any future staff "share document" UI)
 // ---------------------------------------------------------------------------
 
+import { sendActivityChatMessage } from "@/lib/lead-management/activity-notifier";
+
 export async function sharePortalDocument(
   ownerUserId: string,
   file: File,
@@ -86,6 +88,17 @@ export async function sharePortalDocument(
     deletedAt: null,
   };
   await (await collection()).insertOne(doc);
+
+  if (opts.leadId) {
+    await sendActivityChatMessage({
+      leadId: opts.leadId,
+      activityType: "document_update",
+      title: `Document Uploaded: ${file.name}`,
+      details: `A new document (${file.name}) in category "${opts.category ?? "General"}" has been added to your Documents section.`,
+      actorStaffId: opts.uploadedBy ?? null,
+    });
+  }
+
   return doc;
 }
 

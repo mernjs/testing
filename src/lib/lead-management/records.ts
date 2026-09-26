@@ -3,6 +3,7 @@ import { getDb } from "@/lib/mongodb";
 import { externalUsers } from "@/lib/portal-auth";
 import { newId, nextSequence, formatCode } from "@/lib/portal/db";
 import { notifyPortalUser } from "@/lib/portal/notifications";
+import { sendActivityChatMessage } from "@/lib/lead-management/activity-notifier";
 import { awardActivity } from "@/lib/wallet/earn";
 import { recordLeadEvent } from "@/lib/lead-management/timeline";
 import { firstStage, isValidStage, nextStageOptions, stageMeta } from "@/lib/lead-management/workflows";
@@ -196,6 +197,18 @@ export async function advanceLeadStage(
     title: "Status updated",
     body: `Your ${labelForType(lead.type)} is now: ${meta.portalLabel}.`,
     link: "/portal/journey",
+  });
+  await sendActivityChatMessage({
+    leadId,
+    activityType: "stage_change",
+    title: `Stage Advanced: ${meta.portalLabel}`,
+    stageKey: toStage,
+    details: meta.terminal === "won"
+      ? "Congratulations! Your request has successfully completed all stages."
+      : meta.terminal === "lost"
+        ? "Your request status has been updated."
+        : `Your ${labelForType(lead.type)} has progressed to the ${meta.portalLabel} stage. Check your portal dashboard for details.`,
+    actorStaffId: actorId,
   });
 
   // Wallet & Credits: every completed journey stage earns credits (rule per account type, optionally per stage). Lost/rejected outcomes never pay.
