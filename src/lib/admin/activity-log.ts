@@ -29,6 +29,7 @@ const SOURCES: { module: ActivityLogModule; collection: string }[] = [
   { module: "tms", collection: "training_audit_logs" },
   { module: "hrms", collection: "hrms_audit_logs" },
   { module: "portal", collection: "portal_activity_logs" },
+  { module: "ots", collection: "ots_activity_logs" },
 ];
 
 export interface AdminActivityRow {

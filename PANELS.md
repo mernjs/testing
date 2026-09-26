@@ -341,6 +341,74 @@ nobody could see what was scheduled, approved or live.
 
 ---
 
+## Online Test System — OTS (`/ots`)
+
+**What it is**: one test engine for every kind of assessment — employee
+technical and compliance tests, certification exams, applicant screening, and
+course, chapter, mock and final exams for students. It covers the whole flow:
+create → configure → add questions → assign → take → submit → evaluate →
+result → history. Staff build and assign tests at `/ots`. Employees take their
+tests under OTS → My Tests. Applicants and students take theirs in the External
+Portal (Tests & Exams / Assessments). All three groups use the same engine and
+the same exam screen.
+
+**Why it exists**: hiring screens, training quizzes, compliance checks and
+course exams were each run with separate forms and spreadsheets. None of them
+could be reused, timed, marked consistently or compared.
+
+**Benefits**:
+- One reusable question bank with 17 question types:
+  - choice, true/false and yes/no;
+  - short answer, long answer and fill-in-the-blank;
+  - code output, coding, SQL and debugging;
+  - match-the-following and ordering;
+  - image-, audio- and video-based questions.
+
+  It supports import/export (CSV/Excel), bulk creation and "used in N tests"
+  tracking. Each question type is one registry entry, so adding a new type
+  doesn't touch the test engine.
+- Tests are built step by step: sections, section timers and section marks,
+  questions picked by hand, and automatic rules (e.g. "10 beginner +
+  10 intermediate + 5 advanced"). The builder also covers random question and
+  option order, questions per attempt, negative marking, attempts with
+  latest/highest/average scoring, navigation rules, result visibility and
+  certificates.
+- Tests can be assigned to a department, role/designation, team, employee
+  type, platform role, individual employee or staff user, individual
+  applicant, applicants for a position, a student, a TMS batch or a course.
+  People are resolved live from HRMS, Careers and TMS. The same test is never
+  assigned twice to someone who already has it open, and a later re-sync picks
+  up people who joined since.
+- Timing is enforced on the server. A reload or closed tab never adds time.
+  Timed-out attempts are submitted as `TIMEOUT_AUTO_SUBMISSION`, and
+  submitting twice has no effect.
+- Configurable exam security:
+  - full screen required;
+  - tab-switch detection;
+  - copy/paste and right-click blocking;
+  - one window at a time;
+  - IP and device recorded;
+  - automatic submission after N violations.
+
+  Every event goes to the audit log. This makes cheating harder and visible; it
+  does not make an online exam cheat-proof.
+- Objective answers are marked automatically. Subjective ones go to an
+  evaluation queue. Evaluators can override marks, managers publish held
+  results, and pass/fail, section-wise scores and certificates follow
+  automatically.
+- Certificates can be verified publicly at the same `/verify/<code>` page as
+  training certificates.
+- Reports and analytics show performance by test, person, department, role,
+  applicant, student, batch, course, question (hardest, most-missed,
+  most-skipped, time per question), section, attempt, pass/fail, time and
+  difficulty, with CSV/Excel export.
+- OTS never becomes a people master. Employees, applicants, students,
+  departments, roles, batches and courses stay in HRMS, Careers and TMS.
+  Recruiters, HR and trainers see a person's tests right on the applicant,
+  employee and student pages.
+
+---
+
 ## The common thread
 
 Every panel above is real, in active use, and built specifically around how

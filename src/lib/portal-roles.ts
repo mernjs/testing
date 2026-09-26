@@ -90,6 +90,7 @@ function learnerNav(programLabel: string, scheduleLabel: string): PortalNavItem[
       { href: "/portal/schedule", label: scheduleLabel, icon: "CalendarClock" },
       { href: "/portal/projects", label: "Projects", icon: "FolderKanban" },
       { href: "/portal/assignments", label: "Assignments", icon: "ClipboardList" },
+      { href: "/portal/tests", label: "Tests & Exams", icon: "FileCheck2" },
       { href: "/portal/attendance", label: "Attendance", icon: "CalendarCheck" },
       { href: "/portal/certificates", label: "Certificates", icon: "Award" },
     ]),
@@ -106,6 +107,7 @@ export const PORTAL_NAV: Record<PortalRole, PortalNavItem[]> = {
     ...inGroup("Recruitment", [
       { href: "/portal/application", label: "My Application", icon: "FileText" },
       { href: "/portal/interviews", label: "Interview Schedule", icon: "CalendarClock" },
+      { href: "/portal/tests", label: "Assessments", icon: "FileCheck2" },
     ]),
     ...inGroup("Finance", [WALLET_ITEM]),
     ...REWARDS_NAV,
@@ -128,6 +130,9 @@ export const PORTAL_NAV: Record<PortalRole, PortalNavItem[]> = {
 };
 
 /** Route-group access — which roles may open a `(learner)` / `(applicant)` / `(client)` page. */
+/** Portal roles that can take Online Test System tests (`/portal/tests`, `/portal/exam`). */
+export const TEST_TAKER_ROLES: PortalRole[] = ["job_applicant", "intern", "trainee"];
+
 export const ROUTE_GROUP_ROLES = {
   applicant: ["job_applicant"] as PortalRole[],
   learner: ["intern", "trainee"] as PortalRole[],

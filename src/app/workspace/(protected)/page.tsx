@@ -39,6 +39,7 @@ import {
   Vault,
   Bot,
   Megaphone,
+  FileCheck2,
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { normalizeRoles } from "@/lib/hrms-roles";
@@ -53,6 +54,8 @@ import { hasSeoAccess, normalizeSeoRoles } from "@/lib/seo-roles";
 import { hasDlmsAccess, normalizeDlmsRoles, isDlmsManagerTier } from "@/lib/dlms-roles";
 import { hasAibotsAccess, normalizeAibotsRoles } from "@/lib/aibots-roles";
 import { hasSmmsAccess, normalizeSmmsRoles } from "@/lib/smms-roles";
+import { hasOtsAccess, effectiveOtsRoles, otsCan } from "@/lib/ots-roles";
+import { staffCandidateRefs } from "@/lib/ots/people";
 import { formatDateTime } from "@/lib/utils";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
@@ -64,6 +67,7 @@ import TimeSeriesChart from "@/components/lms/TimeSeriesChart";
 import CategoryBarChart from "@/components/lms/CategoryBarChart";
 // HRMS employee-level dashboard
 import { getEmployeeDashboard as getHrmsDashboard } from "@/lib/hrms/dashboard-me";
+import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 // PMS employee-level dashboard
 import { getEmployeeDashboard as getPmsDashboard } from "@/lib/pms/employee-dashboard";
@@ -208,6 +212,26 @@ export default async function HubDashboardPage({
       ])
     : [0, 0];
 
+  // ── Online Tests: the viewer's own open tests, plus answers waiting for evaluators. ──
+  const otsAccess = hasOtsAccess(roles);
+  let otsMine = 0;
+  let otsToEvaluate: number | null = null;
+  if (otsAccess) {
+    const me = ObjectId.isValid(user.id)
+      ? await db
+          .collection<{ _id: ObjectId; employeeId?: string | null; studentId?: string | null; permissionOverrides?: Record<string, boolean> }>("admin_users")
+          .findOne({ _id: new ObjectId(user.id) }, { projection: { employeeId: 1, studentId: 1, permissionOverrides: 1 } })
+          .catch(() => null)
+      : null;
+    const { refs } = await staffCandidateRefs({ id: user.id, email: user.email, employeeId: me?.employeeId ?? null, studentId: me?.studentId ?? null }).catch(() => ({ refs: [] }));
+    otsMine = await db
+      .collection("ots_assignments")
+      .countDocuments({ candidateKey: { $in: refs.map((r) => `${r.kind}:${r.id}`) }, status: { $in: ["assigned", "in_progress"] }, deletedAt: null })
+      .catch(() => 0);
+    if (otsCan({ roles, permissionOverrides: me?.permissionOverrides ?? {} }, "EVALUATE_ANSWERS"))
+      otsToEvaluate = await db.collection("ots_attempts").countDocuments({ status: "pending_evaluation" }).catch(() => 0);
+  }
+
   // ── Tiles ──────────────────────────────────────────────────────────────────
   const tiles: ModuleTile[] = [
     {
@@ -321,6 +345,19 @@ export default async function HubDashboardPage({
       kpi: [
         { label: "Scheduled posts", value: String(smmsScheduled) },
         { label: "Awaiting approval", value: String(smmsAwaiting) },
+      ],
+    },
+    {
+      key: "ots",
+      label: "Online Tests",
+      description: "Assessments, screening tests and exams — take your assigned tests, or build, assign and evaluate them.",
+      href: "/ots",
+      icon: <FileCheck2 className="size-5" />,
+      visible: otsAccess,
+      roleBadge: effectiveOtsRoles(roles).join(", ").replace(/_/g, " "),
+      kpi: [
+        { label: "My open tests", value: String(otsMine) },
+        ...(otsToEvaluate !== null ? [{ label: "To evaluate", value: String(otsToEvaluate) }] : []),
       ],
     },
     {

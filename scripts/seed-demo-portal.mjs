@@ -34,6 +34,7 @@ import { seedDlms, DLMS_DEMO_ACCOUNTS } from "./demo/dlms.mjs";
 import OpenAI from "openai";
 import { seedAibots, AIBOTS_DEMO_ACCOUNTS } from "./demo/aibots.mjs";
 import { seedSmms, SMMS_DEMO_ACCOUNTS } from "./demo/smms.mjs";
+import { seedOts, OTS_DEMO_ACCOUNTS, OTS_PORTAL_ACCOUNTS } from "./demo/ots.mjs";
 import { seedSeo, SEO_DEMO_ACCOUNTS } from "./demo/seo.mjs";
 
 const uri = process.env.MONGODB_URI;
@@ -85,6 +86,10 @@ try {
   const smms = await seedSmms(db);
   console.log(`   ${smms.campaigns} campaigns, ${smms.ads} ads, ${smms.posts} posts, ${smms.generations} versions`);
 
+  console.log("\n[+] Online Test System (OTS)…");
+  const ots = await seedOts(db);
+  console.log(`   ${ots.questions} questions, ${ots.tests} tests, ${ots.assignments} assignments, ${ots.attempts} attempts, ${ots.certificates} certificates`);
+
   console.log("\n==========================================================================");
   console.log("✨ Done. Portal demo logins (password for all: Demo@12345) — sign in at /login");
   console.log("==========================================================================");
@@ -99,6 +104,8 @@ try {
   for (const a of AIBOTS_DEMO_ACCOUNTS) console.log(`  • ${a.label.padEnd(34)} ${a.email}`);
   console.log("\n  Social Media logins (same password) — sign in at /smms/login");
   for (const a of SMMS_DEMO_ACCOUNTS) console.log(`  • ${a.label.padEnd(34)} ${a.email}`);
+  console.log("\n  Online Test System logins (same password) — sign in at /ots/login (applicant / student at /login)");
+  for (const a of [...OTS_DEMO_ACCOUNTS, ...OTS_PORTAL_ACCOUNTS]) console.log(`  • ${a.label.padEnd(34)} ${a.email}`);
   console.log("\n  Every other seeded portal account uses the same password; find them in /lms/wallet → Balances.");
 } catch (err) {
   console.error("❌ Demo seeder failed:", err);

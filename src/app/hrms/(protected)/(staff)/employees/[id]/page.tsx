@@ -18,6 +18,7 @@ import EmployeeDocumentsManager from "@/components/hrms/EmployeeDocumentsManager
 import SalaryRevisionManager from "@/components/hrms/SalaryRevisionManager";
 import CreatePortalLoginPanel from "@/components/hrms/CreatePortalLoginPanel";
 import BankAccountsManager from "@/components/hrms/BankAccountsManager";
+import OtsCandidatePanel from "@/components/ots/OtsCandidatePanel";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 import { canManageEmployees, canManagePayroll, canApproveLeave, canRunPayroll, canManageEmployeeDocuments } from "@/lib/hrms-roles";
 import { getEmployee, employeeFullName } from "@/lib/hrms/employees";
@@ -316,6 +317,7 @@ export default async function EmployeeProfilePage({
               { key: "salary", label: "Salary & Bank", content: salaryTab },
               { key: "attendance", label: "Attendance", content: attendanceTab },
               { key: "leave", label: "Leave", content: leaveTab },
+              { key: "assessments", label: "Assessments", content: <OtsCandidatePanel kind="employee" id={id} title="Assessments & Certifications" /> },
               {
                 key: "documents",
                 label: "Documents",

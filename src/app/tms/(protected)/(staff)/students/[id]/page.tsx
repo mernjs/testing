@@ -14,6 +14,7 @@ import StudentForm from "@/components/tms/StudentForm";
 import AssignBatchForm from "@/components/tms/AssignBatchForm";
 import EnrollmentControls from "@/components/tms/EnrollmentControls";
 import StudentLoginPanel from "@/components/tms/StudentLoginPanel";
+import OtsCandidatePanel from "@/components/ots/OtsCandidatePanel";
 import { getCurrentTmsUser } from "@/lib/tms-auth";
 import { canManageStudents } from "@/lib/tms-roles";
 import { getStudentOverview } from "@/lib/tms/student-dashboard";
@@ -210,6 +211,8 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
           {canManage && (
             <StudentLoginPanel studentId={s._id} defaultEmail={s.email ?? ""} status={loginStatus} />
           )}
+
+          <OtsCandidatePanel kind="student" id={s._id} title="Tests & Exams" />
         </div>
       </div>
     </div>

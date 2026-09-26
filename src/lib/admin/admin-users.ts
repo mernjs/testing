@@ -95,6 +95,8 @@ function getRolesForPanel(panel: string): string[] {
   if (p === "dlms") return ["super_admin", "dlms_admin", "dlms_manager", "dlms_employee"];
   if (p === "aibots") return ["super_admin", "aibots_admin", "aibots_manager", "aibots_user"];
   if (p === "smms") return ["super_admin", "smms_admin", "smms_manager", "smms_specialist", "smms_employee"];
+  // OTS access is also implied by HRMS employee/hr and TMS roles (see `ots-roles.ts`).
+  if (p === "ots") return ["super_admin", "ots_admin", "ots_manager", "ots_author", "ots_evaluator", "ots_candidate", "employee", "hr", "training_student", "tms_admin", "tms_manager", "mentor"];
   if (p === "messenger") return ["super_admin", "chat_admin", "chat_moderator"];
   if (p === "lms") return ["super_admin", "lms_admin", "lms_manager", "lms_agent"];
   if (p === "portal") return ["super_admin", "portal_admin", "portal_manager"];

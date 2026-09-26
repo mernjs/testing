@@ -23,6 +23,7 @@ import {
   Vault,
   Bot,
   Megaphone,
+  FileCheck2,
 } from "lucide-react";
 
 const MODULE_ICONS: Record<string, React.ReactNode> = {
@@ -37,6 +38,7 @@ const MODULE_ICONS: Record<string, React.ReactNode> = {
   dlms: <Vault className="size-5 text-primary" />,
   aibots: <Bot className="size-5 text-yashorbit-blue" />,
   smms: <Megaphone className="size-5 text-primary" />,
+  ots: <FileCheck2 className="size-5 text-yashorbit-blue" />,
   messenger: <MessageSquare className="size-5 text-primary" />,
   lms: <BookOpen className="size-5 text-yashorbit-blue" />,
   portal: <UserCheck className="size-5 text-primary" />,

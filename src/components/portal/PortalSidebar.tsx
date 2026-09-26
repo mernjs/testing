@@ -26,6 +26,7 @@ import {
   Flame,
   Trophy,
   ListChecks,
+  FileCheck2,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -54,6 +55,7 @@ const ICONS: Record<string, LucideIcon> = {
   Flame,
   Trophy,
   ListChecks,
+  FileCheck2,
 };
 
 function NavLink({

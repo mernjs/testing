@@ -22,6 +22,7 @@ import { SOP_PERMISSIONS, SOP_PERMISSION_KEY, SOP_PERMISSION_META } from "@/lib/
 import { DLMS_PERMISSIONS, DLMS_PERMISSION_KEY, DLMS_PERMISSION_META } from "@/lib/dlms-roles";
 import { AIBOTS_PERMISSIONS, AIBOTS_PERMISSION_KEY, AIBOTS_PERMISSION_META } from "@/lib/aibots-roles";
 import { SMMS_PERMISSIONS, SMMS_PERMISSION_KEY, SMMS_PERMISSION_META } from "@/lib/smms-roles";
+import { OTS_PERMISSIONS, OTS_PERMISSION_KEY, OTS_PERMISSION_META } from "@/lib/ots-roles";
 import { SEO_PERMISSIONS, SEO_PERMISSION_KEY, SEO_PERMISSION_META } from "@/lib/seo-roles";
 
 export interface PermissionOption {
@@ -420,6 +421,16 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       key: SMMS_PERMISSION_KEY[p],
       label: SMMS_PERMISSION_META[p].label,
       description: SMMS_PERMISSION_META[p].description,
+    })),
+  },
+  {
+    module: "Online Tests (OTS)",
+    // Derived from the OTS role model so the catalog can never drift from
+    // the permissions `otsCan()` actually checks.
+    permissions: OTS_PERMISSIONS.map((p) => ({
+      key: OTS_PERMISSION_KEY[p],
+      label: OTS_PERMISSION_META[p].label,
+      description: OTS_PERMISSION_META[p].description,
     })),
   },
   {

@@ -8,6 +8,7 @@ import { normalizeSeoRoles } from "@/lib/seo-roles";
 import { normalizeDlmsRoles } from "@/lib/dlms-roles";
 import { normalizeAibotsRoles } from "@/lib/aibots-roles";
 import { normalizeSmmsRoles } from "@/lib/smms-roles";
+import { effectiveOtsRoles, hasOtsAccess } from "@/lib/ots-roles";
 import { normalizeTmsRoles } from "@/lib/tms-roles";
 import { normalizeChatRoles } from "@/lib/messenger-roles";
 import { normalizeLmsRoles } from "@/lib/lms-roles";
@@ -118,6 +119,14 @@ export function getPanelAccessSummary(user: AdminUserRow): PanelAccessSummaryIte
       name: "Social Media (SMMS)",
       hasAccess: isSuperAdmin || normalizeSmmsRoles(roles).length > 0,
       roles: normalizeSmmsRoles(roles),
+      isSuperAdmin,
+    },
+    {
+      key: "ots",
+      name: "Online Tests (OTS)",
+      hasAccess: isSuperAdmin || hasOtsAccess(roles),
+      // Explicit ots_* roles plus what HRMS / TMS roles imply (employee → test taker, hr / TMS admin → manager, mentor → evaluator).
+      roles: effectiveOtsRoles(roles),
       isSuperAdmin,
     },
     {

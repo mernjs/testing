@@ -9,6 +9,7 @@ import StatusSelect from "./StatusSelect";
 import NotesEditor from "./NotesEditor";
 import DeleteButton from "./DeleteButton";
 import InterviewSchedule from "./InterviewSchedule";
+import OtsCandidatePanel from "@/components/ots/OtsCandidatePanel";
 import { getApplication } from "@/lib/career-applications";
 import { listInterviewsForApplication } from "@/lib/portal/interviews";
 import { DEFAULT_CAREER_APPLICATION_STATUS } from "@/lib/career-application-status";
@@ -93,6 +94,8 @@ export default async function ApplicantDetailPage({ params }: { params: Promise<
           <InterviewSchedule applicationId={id} initial={interviews} />
         </CardContent>
       </GlassCard>
+
+      <OtsCandidatePanel kind="applicant" id={id} title="Assessments & Screening Tests" />
 
       <GlassCard>
         <CardHeader><CardTitle>Internal HR Notes</CardTitle></CardHeader>

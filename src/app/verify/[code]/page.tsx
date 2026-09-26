@@ -7,6 +7,7 @@ import { getCertificateByCode, type CertificateView } from "@/lib/tms/certificat
 import { getDb } from "@/lib/mongodb";
 import { getTmsSettings } from "@/lib/tms/settings";
 import { CERTIFICATE_TYPES } from "@/lib/tms/constants";
+import { certificateState, getCertificateByCode as getOtsCertificateByCode, type OtsCertificate } from "@/lib/ots/certificates";
 
 export const metadata: Metadata = {
   title: "Certificate Verification",
@@ -32,9 +33,59 @@ async function loadView(code: string): Promise<CertificateView | null> {
   };
 }
 
+const fmtDate = (d: Date) => d.toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
+
+/** Online Test System certificates share this one public verification URL (codes are random, so they never collide). */
+function OtsVerification({ cert }: { cert: OtsCertificate }) {
+  const state = certificateState(cert);
+  const valid = state === "valid";
+  const rows: [string, string][] = [
+    ["Certificate ID", cert.certificateNumber],
+    ["Awarded to", cert.candidateName],
+    ["Test", cert.testName],
+    ["Score", `${cert.score}/${cert.totalMarks} (${cert.percentage}%)`],
+    ["Issued on", fmtDate(cert.issuedOn)],
+    ["Valid until", cert.validUntil ? fmtDate(cert.validUntil) : "No expiry"],
+    ["Organization", cert.organization],
+  ];
+  return (
+    <div className="lms-shell flex min-h-screen flex-col items-center justify-center gap-6 bg-[#e9ebee] px-4 py-12 dark:bg-background">
+      <div className="flex items-center gap-2 text-lg font-bold">
+        <BrandMark className="size-7 shrink-0" />
+        {brandify("YashOrbit")} <span className="text-foreground">Assessments</span>
+      </div>
+      <div className="w-full max-w-md rounded-3xl border border-border/40 bg-background/95 p-6 shadow-none backdrop-blur-md dark:bg-card/85">
+        <div className="flex flex-col items-center gap-2 border-b border-border/60 pb-4 text-center">
+          {valid ? <CheckCircle2 className="size-12 text-green-600 dark:text-green-400" /> : <XCircle className="size-12 text-destructive" />}
+          <h1 className="text-xl font-bold text-foreground">{valid ? "Verified certificate" : state === "expired" ? "Certificate expired" : "Certificate revoked"}</h1>
+          <p className="text-sm text-muted-foreground">
+            {valid ? `${cert.title} — issued by ${cert.organization}.` : state === "expired" ? "This certificate was genuine but its validity period has ended." : `This certificate was revoked${cert.revokedReason ? `: ${cert.revokedReason}` : "."}`}
+          </p>
+        </div>
+        <dl className="space-y-2.5 py-4 text-sm">
+          {rows.map(([k, v]) => (
+            <div key={k} className="flex justify-between gap-3">
+              <dt className="text-muted-foreground">{k}</dt>
+              <dd className="text-right font-medium">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <ShieldCheck className="size-3.5" />
+        Independent verification · <Link href="/" className="hover:underline">yashorbit.com</Link>
+      </p>
+    </div>
+  );
+}
+
 export default async function VerifyCertificatePage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
   const [cert, settings] = await Promise.all([loadView(code), getTmsSettings()]);
+  if (!cert) {
+    const ots = await getOtsCertificateByCode(code);
+    if (ots) return <OtsVerification cert={ots} />;
+  }
 
   const valid = cert && !cert.revoked;
 
