@@ -17,6 +17,7 @@ import LeadLinksPanel from "./LeadLinksPanel";
 import LeadInterviewsPanel from "./LeadInterviewsPanel";
 import LeadDocsPanel from "./LeadDocsPanel";
 import LeadTimelineView from "./LeadTimelineView";
+import LoginAsPortalUserButton from "../list/LoginAsPortalUserButton";
 
 export const dynamic = "force-dynamic";
 
@@ -76,13 +77,21 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
             </a>
           </div>
         </div>
-        <div className="text-right text-xs text-muted-foreground">
+        <div className="text-right text-xs text-muted-foreground space-y-1.5">
           <p>Portal account: {lead.externalUserId.slice(0, 8)}…</p>
           {lead.applicationId && (
             <Link href={`/lms/careers/applicants/${lead.applicationId}`} className="inline-flex items-center gap-1 text-primary hover:underline">
               Career application <ExternalLink className="size-3" />
             </Link>
           )}
+          <div>
+            <LoginAsPortalUserButton
+              externalUserId={lead.externalUserId}
+              leadId={lead._id}
+              displayName={lead.name}
+              variant="full"
+            />
+          </div>
         </div>
       </div>
 

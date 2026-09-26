@@ -9,6 +9,7 @@ import { LEAD_SOURCE_META } from "@/lib/lead-management/types";
 import type { LeadType, LeadManagementSource } from "@/lib/lead-management/types";
 import { isPortalRole } from "@/lib/portal-roles";
 import { formatDateTime } from "@/lib/utils";
+import LoginAsPortalUserButton from "./LoginAsPortalUserButton";
 
 export const dynamic = "force-dynamic";
 
@@ -94,7 +95,8 @@ export default async function LeadsListPage({
                 <th className="py-2 pr-3 font-medium">Source</th>
                 <th className="py-2 pr-3 font-medium">Stage</th>
                 <th className="py-2 pr-3 font-medium">Status</th>
-                <th className="py-2 font-medium">Created</th>
+                <th className="py-2 pr-3 font-medium">Created</th>
+                <th className="py-2 font-medium sr-only">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -127,12 +129,20 @@ export default async function LeadsListPage({
                       {l.status}
                     </span>
                   </td>
-                  <td className="py-2 text-muted-foreground">{formatDateTime(l.createdAt)}</td>
+                  <td className="py-2 pr-3 text-muted-foreground">{formatDateTime(l.createdAt)}</td>
+                  <td className="py-2">
+                    <LoginAsPortalUserButton
+                      externalUserId={l.externalUserId}
+                      leadId={l._id}
+                      displayName={l.name}
+                      variant="icon"
+                    />
+                  </td>
                 </tr>
               ))}
               {leads.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-6 text-center text-muted-foreground">No leads match.</td>
+                  <td colSpan={7} className="py-6 text-center text-muted-foreground">No leads match.</td>
                 </tr>
               )}
             </tbody>

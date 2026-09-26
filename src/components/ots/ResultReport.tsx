@@ -1,4 +1,7 @@
-import { CheckCircle2, XCircle, MinusCircle, CircleDashed, CircleSlash } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { CheckCircle2, XCircle, MinusCircle, CircleDashed, CircleSlash, Filter } from "lucide-react";
 import QuestionRenderer from "@/components/ots/QuestionRenderer";
 import MarkItemForm from "@/components/ots/MarkItemForm";
 import { SectionCard, Stat, Notice, Chip, PassBadge } from "@/components/ots/OtsUi";
@@ -17,6 +20,19 @@ const STATUS: Record<string, { label: string; icon: React.ReactNode; tone: "gree
 /** One attempt's result — candidates see what the test allows; evaluators get marking controls. */
 export default function ResultReport({ view, candidateName, evaluator }: { view: ResultView; candidateName?: string; evaluator?: { canEvaluate: boolean; canOverride: boolean; negatives: number[] } }) {
   const r = view.result;
+  const [filter, setFilter] = useState<"all" | "correct" | "incorrect" | "unanswered">("all");
+
+  const correctCount = view.items.filter((i) => i.status === "correct").length;
+  const incorrectCount = view.items.filter((i) => i.status === "incorrect").length;
+  const unansweredCount = view.items.filter((i) => i.status === "unanswered").length;
+
+  const filteredItems = view.items.filter((i) => {
+    if (filter === "correct") return i.status === "correct";
+    if (filter === "incorrect") return i.status === "incorrect";
+    if (filter === "unanswered") return i.status === "unanswered";
+    return true;
+  });
+
   return (
     <div className="space-y-4">
       {!view.visible && <Notice>{view.hiddenReason}</Notice>}
@@ -75,34 +91,99 @@ export default function ResultReport({ view, candidateName, evaluator }: { view:
         </>
       )}
       {view.items.length > 0 && (
-        <SectionCard title="Answers" description={view.detail === "correct" ? "Your answers with the correct answers." : "Your answers and the marks they earned."}>
+        <SectionCard title="Answers & Question Review" description="Review your submitted answers alongside correct solutions and explanations.">
+          <div className="mb-4 flex flex-wrap items-center gap-2 border-b border-border/40 pb-3">
+            <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+              <Filter className="size-3.5" /> Filter:
+            </span>
+            <button
+              type="button"
+              onClick={() => setFilter("all")}
+              className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${filter === "all" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+            >
+              All ({view.items.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter("correct")}
+              className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${filter === "correct" ? "bg-emerald-600 text-white" : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20"}`}
+            >
+              Correct ({correctCount})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter("incorrect")}
+              className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${filter === "incorrect" ? "bg-rose-600 text-white" : "bg-rose-500/10 text-rose-700 dark:text-rose-400 hover:bg-rose-500/20"}`}
+            >
+              Incorrect ({incorrectCount})
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilter("unanswered")}
+              className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${filter === "unanswered" ? "bg-secondary text-secondary-foreground" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}
+            >
+              Unanswered ({unansweredCount})
+            </button>
+          </div>
+
           <ol className="space-y-6">
-            {view.items.map((it) => {
+            {filteredItems.map((it) => {
               const st = STATUS[it.status] ?? STATUS.pending;
               return (
-                <li key={it.index} className="space-y-2 border-b border-border/40 pb-5 last:border-0">
-                  <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-                    <span className="font-semibold text-foreground">{`Q${it.index + 1}.`}</span>
-                    <Chip>{it.typeLabel}</Chip>
-                    <Chip tone={st.tone}>
-                      <span className="mr-1">{st.icon}</span>
-                      {st.label}
-                    </Chip>
-                    <Chip tone="blue">{`${it.awarded === null ? "—" : fmtMarks(it.awarded)} / ${fmtMarks(it.marks)}`}</Chip>
-                    {view.sections.length > 1 && <span>{view.sections[it.section]}</span>}
-                    {it.timeSec > 0 && <span>{`· ${fmtDuration(it.timeSec)}`}</span>}
-                    {evaluator && <span className="font-mono">{it.code}</span>}
+                <li key={it.index} className="space-y-3 rounded-xl border border-border/50 bg-background/50 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/40 pb-2.5 text-xs">
+                    <div className="flex flex-wrap items-center gap-1.5 text-muted-foreground">
+                      <span className="font-bold text-foreground text-sm">{`Q${it.index + 1}.`}</span>
+                      <Chip>{it.typeLabel}</Chip>
+                      <Chip tone={st.tone}>
+                        <span className="mr-1">{st.icon}</span>
+                        {st.label}
+                      </Chip>
+                      {view.sections.length > 1 && <span>{view.sections[it.section]}</span>}
+                      {it.timeSec > 0 && <span>{`· ${fmtDuration(it.timeSec)}`}</span>}
+                      {evaluator && <span className="font-mono">{it.code}</span>}
+                    </div>
+                    <div className="font-semibold">
+                      Marks: <span className={it.status === "correct" ? "text-emerald-600 dark:text-emerald-400" : it.status === "incorrect" ? "text-rose-600 dark:text-rose-400" : "text-muted-foreground"}>{`${it.awarded === null ? "—" : fmtMarks(it.awarded)} / ${fmtMarks(it.marks)}`}</span>
+                    </div>
                   </div>
-                  <QuestionRenderer prompt={it.prompt} media={it.media} view={it.view} response={it.response} readOnly inputId={`r-${it.index}`} />
-                  {it.correctAnswer && <p className="rounded-lg bg-emerald-500/10 px-3 py-2 text-xs text-emerald-800 dark:text-emerald-300">{`Correct answer: ${it.correctAnswer}`}</p>}
-                  {it.explanation && <p className="rounded-lg bg-muted/50 px-3 py-2 text-xs whitespace-pre-wrap">{`Explanation: ${it.explanation}`}</p>}
-                  {it.comment && <p className="rounded-lg bg-primary/5 px-3 py-2 text-xs">{`Evaluator: ${it.comment}`}</p>}
+
+                  <QuestionRenderer prompt={it.prompt} media={it.media} view={it.view} response={it.response} readOnly inputId={`r-${it.index}`} outcomeStatus={it.status} />
+
+                  {it.responseText && (
+                    <div className="rounded-lg border border-border/50 bg-muted/30 px-3 py-2 text-xs">
+                      <span className="font-bold text-foreground">Your Submitted Answer: </span>
+                      <span className={it.status === "correct" ? "text-emerald-700 dark:text-emerald-300 font-medium" : it.status === "incorrect" ? "text-rose-700 dark:text-rose-300 font-medium" : "text-foreground"}>
+                        {it.responseText}
+                      </span>
+                    </div>
+                  )}
+
+                  {it.correctAnswer && (
+                    <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 text-xs text-emerald-900 dark:text-emerald-200">
+                      <span className="font-bold">Correct Answer: </span>
+                      <span>{it.correctAnswer}</span>
+                    </div>
+                  )}
+
+                  {it.explanation && (
+                    <div className="rounded-lg bg-muted/60 border border-border/50 px-3 py-2 text-xs text-foreground whitespace-pre-wrap">
+                      <span className="font-bold text-muted-foreground block mb-0.5">Explanation:</span>
+                      {it.explanation}
+                    </div>
+                  )}
+
+                  {it.comment && <div className="rounded-lg bg-primary/5 px-3 py-2 text-xs">{`Evaluator: ${it.comment}`}</div>}
+
                   {evaluator && (evaluator.canEvaluate || evaluator.canOverride) && view.status !== "in_progress" && (
                     <MarkItemForm key={`${it.index}-${it.status}-${it.awarded}`} attemptId={view.attemptId} index={it.index} max={it.marks} min={-(evaluator.negatives[it.index] ?? 0)} current={it.awarded} comment={it.comment} pending={it.status === "pending" && evaluator.canEvaluate} override={evaluator.canOverride} />
                   )}
                 </li>
               );
             })}
+            {filteredItems.length === 0 && (
+              <p className="py-6 text-center text-xs text-muted-foreground">No questions match the selected filter.</p>
+            )}
           </ol>
         </SectionCard>
       )}

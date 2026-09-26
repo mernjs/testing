@@ -70,7 +70,7 @@ export function TestCard({ card, channel, paths }: { card: CandidateCard; channe
           )}
           {card.latestAttemptId && !card.canResume && (
             <Button size="sm" variant="outline" nativeButton={false} render={<Link href={`${paths.results}/${card.latestAttemptId}`} />}>
-              View Result
+              Review Answers
             </Button>
           )}
           {card.certificate && card.certificate.state !== "revoked" && (

@@ -38,6 +38,7 @@ export default function QuestionRenderer({
   onChange,
   readOnly = false,
   inputId = "q",
+  outcomeStatus,
 }: {
   prompt: string;
   media?: QuestionMedia | null;
@@ -46,6 +47,7 @@ export default function QuestionRenderer({
   onChange?: (r: QuestionResponse | null) => void;
   readOnly?: boolean;
   inputId?: string;
+  outcomeStatus?: string;
 }) {
   const set = (r: QuestionResponse | null) => {
     if (!readOnly) onChange?.(r);
@@ -56,7 +58,7 @@ export default function QuestionRenderer({
       {view.kind === "fill_blank" ? <FillBlank prompt={prompt} view={view} response={response} set={set} readOnly={readOnly} /> : <PromptText prompt={prompt} />}
       <QuestionMediaView media={media} />
 
-      {view.kind === "choice" && <Choice view={view} response={response} set={set} readOnly={readOnly} name={inputId} />}
+      {view.kind === "choice" && <Choice view={view} response={response} set={set} readOnly={readOnly} name={inputId} outcomeStatus={outcomeStatus} />}
 
       {view.kind === "text" && (
         <div className="space-y-1">
@@ -196,19 +198,31 @@ export default function QuestionRenderer({
   );
 }
 
-function Choice({ view, response, set, readOnly, name }: { view: Extract<PublicDefinition, { kind: "choice" }>; response: QuestionResponse | null | undefined; set: (r: QuestionResponse | null) => void; readOnly: boolean; name: string }) {
+function Choice({ view, response, set, readOnly, name, outcomeStatus }: { view: Extract<PublicDefinition, { kind: "choice" }>; response: QuestionResponse | null | undefined; set: (r: QuestionResponse | null) => void; readOnly: boolean; name: string; outcomeStatus?: string }) {
   const selected = (response as { selected?: string[] } | null)?.selected ?? [];
   return (
     <div className="space-y-2" role={view.multiple ? "group" : "radiogroup"}>
       {view.multiple && <p className="text-xs text-muted-foreground">Select all that apply.</p>}
       {view.options.map((o, i) => {
         const on = selected.includes(o.id);
+        const choiceTone = !readOnly
+          ? on ? "border-primary/60 bg-primary/5" : "border-border/60 hover:bg-muted/40"
+          : on
+            ? outcomeStatus === "correct"
+              ? "border-emerald-500/80 bg-emerald-500/10 text-emerald-900 dark:text-emerald-200 font-medium"
+              : outcomeStatus === "incorrect"
+                ? "border-rose-500/80 bg-rose-500/10 text-rose-900 dark:text-rose-200 font-medium"
+                : outcomeStatus === "partial"
+                  ? "border-amber-500/80 bg-amber-500/10 text-amber-900 dark:text-amber-200 font-medium"
+                  : "border-primary/60 bg-primary/5"
+            : "border-border/60 opacity-85";
+
         return (
           <label
             key={o.id}
             className={cn(
               "flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-2.5 text-sm transition-colors",
-              on ? "border-primary/60 bg-primary/5" : "border-border/60 hover:bg-muted/40",
+              choiceTone,
               readOnly && "cursor-default"
             )}
           >
@@ -227,6 +241,11 @@ function Choice({ view, response, set, readOnly, name }: { view: Extract<PublicD
             />
             <span className="mr-1 font-semibold text-muted-foreground">{String.fromCharCode(65 + i)}.</span>
             <span className="min-w-0 flex-1 whitespace-pre-wrap">{o.text}</span>
+            {readOnly && on && (
+              <span className="text-[11px] font-semibold tracking-wide uppercase">
+                {outcomeStatus === "correct" ? "✓ Your Selection" : outcomeStatus === "incorrect" ? "✗ Your Selection" : "Your Selection"}
+              </span>
+            )}
           </label>
         );
       })}

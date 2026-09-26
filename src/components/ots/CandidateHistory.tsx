@@ -28,6 +28,7 @@ export default function CandidateHistory({ rows, paths }: { rows: HistoryRow[]; 
                 <TableHead>Result</TableHead>
                 <TableHead>Time taken</TableHead>
                 <TableHead>Certificate</TableHead>
+                <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -47,6 +48,14 @@ export default function CandidateHistory({ rows, paths }: { rows: HistoryRow[]; 
                   <TableCell>{r.visible ? <PassBadge passed={r.passed} provisional={r.provisional} /> : <span className="text-xs text-muted-foreground">{r.status === "pending_evaluation" ? "Awaiting evaluation" : "Not released"}</span>}</TableCell>
                   <TableCell className="text-xs">{fmtDuration(r.timeTakenSec)}</TableCell>
                   <TableCell className="text-xs">{r.certificate ? <Link href={paths.certificates} className="text-primary hover:underline">{r.certificate.number}</Link> : "—"}</TableCell>
+                  <TableCell className="text-right">
+                    <Link
+                      href={`${paths.results}/${r.attemptId}`}
+                      className="inline-flex items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors"
+                    >
+                      Review Answers
+                    </Link>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -598,32 +598,31 @@ export function buildResultView(att: Attempt, a: Assignment, t: Test | null, asS
         : policy === "after_evaluation"
           ? "Results are released once every answer has been evaluated."
           : "Results will be published by the organisers.";
-  const items: ResultItemView[] =
-    visible && detail !== "score"
-      ? att.paper.map((p, i) => {
-          const ans = att.answers[i];
-          const spec = QUESTION_TYPES[p.type];
-          return {
-            index: i,
-            section: p.section,
-            code: p.code,
-            type: p.type,
-            typeLabel: spec.label,
-            prompt: p.prompt,
-            media: p.media,
-            view: p.view,
-            response: ans.response,
-            responseText: spec.describeResponse(p.definition, ans.response),
-            marks: p.marks,
-            awarded: p.outcome?.awarded ?? null,
-            status: p.outcome?.status ?? "pending",
-            comment: p.outcome?.comment ?? "",
-            correctAnswer: detail === "correct" && (asStaff || att.status === "evaluated") ? spec.correctAnswer(p.definition) : null,
-            explanation: showExplanations && p.explanation ? p.explanation : null,
-            timeSec: Math.round(ans.timeMs / 1000),
-          };
-        })
-      : [];
+  const items: ResultItemView[] = visible
+    ? att.paper.map((p, i) => {
+        const ans = att.answers[i];
+        const spec = QUESTION_TYPES[p.type];
+        return {
+          index: i,
+          section: p.section,
+          code: p.code,
+          type: p.type,
+          typeLabel: spec.label,
+          prompt: p.prompt,
+          media: p.media,
+          view: p.view,
+          response: ans?.response ?? null,
+          responseText: spec.describeResponse(p.definition, ans?.response ?? null),
+          marks: p.marks,
+          awarded: p.outcome?.awarded ?? null,
+          status: p.outcome?.status ?? "pending",
+          comment: p.outcome?.comment ?? "",
+          correctAnswer: spec.correctAnswer(p.definition),
+          explanation: (showExplanations || asStaff || att.status === "evaluated") && p.explanation ? p.explanation : null,
+          timeSec: ans ? Math.round(ans.timeMs / 1000) : 0,
+        };
+      })
+    : [];
   return {
     attemptId: att._id,
     assignmentId: att.assignmentId,
