@@ -7,7 +7,7 @@ export type SubscriptionSource = (typeof SUBSCRIPTION_SOURCES)[number];
 export interface SubscriptionInput {
   email: string;
   name?: string;
-  phone?: string;
+  phone: string;
   interest?: Audience | null;
   message?: string;
   /** null = "tell me about any upcoming campaign". */
@@ -24,12 +24,13 @@ export function validateSubscription(raw: Record<string, unknown>): { valid: tru
 
   const name = typeof raw.name === "string" ? raw.name.trim().slice(0, 100) || undefined : undefined;
   const phoneRaw = typeof raw.phone === "string" ? raw.phone.trim() : "";
-  if (phoneRaw && !/^[+()\d\s-]{7,20}$/.test(phoneRaw)) errors.phone = "Enter a valid phone number.";
+  if (!phoneRaw) errors.phone = "Phone number is required.";
+  else if (!/^[+()\d\s-]{7,20}$/.test(phoneRaw)) errors.phone = "Enter a valid phone number.";
   const message = typeof raw.message === "string" ? raw.message.trim().slice(0, 600) || undefined : undefined;
   const interest = isValidAudience(raw.interest) ? raw.interest : null;
   const source = SUBSCRIPTION_SOURCES.includes(raw.source as SubscriptionSource) ? (raw.source as SubscriptionSource) : "none";
   const campaignId = typeof raw.campaignId === "string" && raw.campaignId ? raw.campaignId.slice(0, 100) : null;
 
   if (Object.keys(errors).length > 0) return { valid: false, errors };
-  return { valid: true, data: { email, name, phone: phoneRaw || undefined, interest, message, campaignId, source } };
+  return { valid: true, data: { email, name, phone: phoneRaw, interest, message, campaignId, source } };
 }

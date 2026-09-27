@@ -60,6 +60,7 @@ export default function ProductsContent() {
   const { ref: ctaCardBodyRef, minHeight: ctaCardMinHeight } = useStableCardHeight(ctaLead.status === "success");
   const [ctaSelectedProduct, setCtaSelectedProduct] = useState<string>("All SaaS Products");
   const [ctaName, setCtaName] = useState<string>("");
+  const [ctaEmail, setCtaEmail] = useState<string>("");
   const [ctaPhone, setCtaPhone] = useState<string>("");
   const [ctaMessage, setCtaMessage] = useState<string>("");
 
@@ -67,6 +68,7 @@ export default function ProductsContent() {
     e.preventDefault();
     const ok = await ctaLead.submit("software-development", {
       name: ctaName,
+      email: ctaEmail,
       phone: ctaPhone,
       message: ctaMessage,
       subService: ctaSelectedProduct,
@@ -74,6 +76,7 @@ export default function ProductsContent() {
     });
     if (ok) {
       setCtaName("");
+      setCtaEmail("");
       setCtaPhone("");
       setCtaMessage("");
     }
@@ -978,6 +981,18 @@ export default function ProductsContent() {
                             />
                             {ctaLead.fieldErrors.phone && <p className="text-xs text-red-500 mt-1">{ctaLead.fieldErrors.phone}</p>}
                           </div>
+                        </div>
+                        <div>
+                          <input
+                            type="email"
+                            placeholder="Email Address"
+                            value={ctaEmail}
+                            onChange={(e) => setCtaEmail(e.target.value)}
+                            required
+                            autoComplete="email"
+                            className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                          />
+                          {ctaLead.fieldErrors.email && <p className="text-xs text-red-500 mt-1">{ctaLead.fieldErrors.email}</p>}
                         </div>
 
                         <textarea

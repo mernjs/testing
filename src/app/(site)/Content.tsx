@@ -12,7 +12,7 @@ import {
   Mail, Phone, Workflow, Building2, GraduationCap, HelpCircle,
   Eye, Wallet, FileSignature, Copyright, BadgeCheck,
   UserPlus, MonitorPlay, UserCheck, ArrowLeftRight, CalendarClock, Handshake, LifeBuoy, Briefcase,
-  Loader2,
+  Loader2, Megaphone,
 } from "lucide-react";
 import ProcessOrbit from "@/components/sections/ProcessOrbit";
 import FAQAccordion from "@/components/sections/FAQAccordion";
@@ -27,9 +27,25 @@ import { SUCCESS_AUTO_HIDE_MS, useLeadSubmit } from "@/lib/useLeadSubmit";
 import { useStableCardHeight } from "@/lib/useStableCardHeight";
 import LeadSuccessState from "@/components/sections/LeadSuccessState";
 
+// Same order as the header "Services" dropdown (Offers & Campaigns aside — it's promotions, not a department).
 const coreDepartments = [
   {
     tag: "Department 01",
+    title: "Our SaaS Product",
+    description: "Our product department builds and runs YashOrbit's own 15-application AI SaaS ecosystem — HR, projects, procurement, CRM, SEO, marketing, assessments, and more on one integrated platform.",
+    services: [
+      "Executive Command Center", "HRMS", "Project Management", "Procurement & Finance",
+      "AI Sales CRM", "AI Marketing Studio", "AI Assistant Studio", "Assessment & Proctoring",
+    ],
+    icon: Sparkles,
+    href: "/services/our-saas-product",
+    cta: "Explore Our SaaS Product",
+    badge: "Flagship Platform",
+    featured: true,
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop",
+  },
+  {
+    tag: "Department 02",
     title: "Software Development",
     description: "Our engineering department designs, builds, and ships custom software — web, mobile, desktop, and cloud platforms.",
     services: [
@@ -43,7 +59,17 @@ const coreDepartments = [
     image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1200&auto=format&fit=crop",
   },
   {
-    tag: "Department 02",
+    tag: "Department 03",
+    title: "Digital Marketing",
+    description: "Our marketing department drives measurable growth through SEO, paid ads, social media, content, and conversion optimization.",
+    services: getSubServices("digital-marketing").map((s) => s.label),
+    icon: Megaphone,
+    href: "/digital-marketing",
+    cta: "Explore Digital Marketing",
+    image: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?q=80&w=1200&auto=format&fit=crop",
+  },
+  {
+    tag: "Department 04",
     title: "AI & Automations",
     description: "Our AI & Automation department delivers production-grade intelligent workflows, RAG chatbots, document pipelines, predictive triggers, and RPA bots.",
     services: [
@@ -53,12 +79,10 @@ const coreDepartments = [
     icon: BrainCircuit,
     href: "/ai-automations",
     cta: "Explore AI & Automations",
-    badge: "New & Featured Division",
-    featured: true,
     image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop",
   },
   {
-    tag: "Department 03",
+    tag: "Department 05",
     title: "Industrial Training",
     description: "Our training department runs mentor-led, project-based programs that take developers from fundamentals to job-ready.",
     services: [
@@ -70,7 +94,7 @@ const coreDepartments = [
     image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1200&auto=format&fit=crop",
   },
   {
-    tag: "Department 04",
+    tag: "Department 06",
     title: "Resource Augmentation",
     description: "Our staffing department places pre-vetted developers and full teams directly inside your workflow, fast.",
     services: engagementCategories.map((category) => category.title),
@@ -80,7 +104,7 @@ const coreDepartments = [
     image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop",
   },
   {
-    tag: "Department 05",
+    tag: "Department 07",
     title: "Internship Program",
     description: "Our internship department places students and freshers directly onto live engagements, working real feature tickets under a dedicated mentor.",
     services: [
@@ -170,6 +194,7 @@ export default function HomeContent() {
   const [heroCategory, setHeroCategory] = useState<CategorySlug>(CATEGORIES[0].slug);
   const [heroSubService, setHeroSubService] = useState<string>(getSubServices(CATEGORIES[0].slug)[0].slug);
   const [heroName, setHeroName] = useState("");
+  const [heroEmail, setHeroEmail] = useState("");
   const [heroPhone, setHeroPhone] = useState("");
   const [heroMessage, setHeroMessage] = useState("");
   const [heroResumeFile, setHeroResumeFile] = useState<File | null>(null);
@@ -186,6 +211,7 @@ export default function HomeContent() {
     e.preventDefault();
     const ok = await heroLead.submit(heroCategory, {
       name: heroName,
+      email: heroEmail,
       phone: heroPhone,
       message: heroWantsResume ? undefined : heroMessage,
       subService: heroSubService,
@@ -194,6 +220,7 @@ export default function HomeContent() {
     });
     if (ok) {
       setHeroName("");
+      setHeroEmail("");
       setHeroPhone("");
       setHeroMessage("");
       setHeroResumeFile(null);
@@ -511,15 +538,15 @@ export default function HomeContent() {
             category="How We're Structured"
             icon={Layers}
             heading="Our Specialized Service Departments"
-            description="YashOrbit operates through five specialized departments — engineered to deliver custom software, enterprise AI & automations, industry-ready training, talent augmentation, and real-world internships."
+            description="YashOrbit operates through seven specialized departments — delivering our own AI SaaS platform, custom software, digital marketing, enterprise AI & automations, industry-ready training, talent augmentation, and real-world internships."
             className="mx-auto"
           />
 
-          {/* Top 2 Featured Bento Cards — Software Engineering & AI & Automations */}
+          {/* Top 2 Featured Bento Cards — Our SaaS Product & Software Development */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             {coreDepartments.slice(0, 2).map((department) => {
               const IconComponent = department.icon;
-              const isAI = department.featured;
+              const isFeatured = department.featured;
               return (
                 <motion.div
                   key={department.title}
@@ -530,7 +557,7 @@ export default function HomeContent() {
                   className="group relative"
                 >
                   <div className={`absolute -inset-1 rounded-[2.5rem] bg-gradient-to-br ${
-                    isAI ? "from-primary/40 via-primary/10 to-secondary/30" : "from-primary/30 via-primary/0 to-secondary/30"
+                    isFeatured ? "from-primary/40 via-primary/10 to-secondary/30" : "from-primary/30 via-primary/0 to-secondary/30"
                   } opacity-60 group-hover:opacity-100 blur-2xl transition-opacity duration-500 pointer-events-none`} />
 
                   <Link
@@ -550,13 +577,13 @@ export default function HomeContent() {
                     </div>
 
                     {/* Ambient glow blobs */}
-                    <div className={`absolute -top-32 -right-16 w-80 h-80 ${isAI ? "bg-primary/25" : "bg-secondary/20"} rounded-full blur-[100px] pointer-events-none`} />
+                    <div className={`absolute -top-32 -right-16 w-80 h-80 ${isFeatured ? "bg-primary/25" : "bg-secondary/20"} rounded-full blur-[100px] pointer-events-none`} />
                     <div className="absolute -bottom-24 -left-16 w-64 h-64 bg-primary/15 rounded-full blur-[90px] pointer-events-none" />
 
                     <div className="relative z-10 mb-8">
                       <div className="flex items-center justify-between gap-4 mb-6">
                         <span className={`inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest ${
-                          isAI
+                          isFeatured
                             ? "text-primary-foreground bg-gradient-to-r from-primary to-[#ff8e75] shadow-lg shadow-primary/30"
                             : "text-foreground bg-background border border-border/50"
                         } px-3.5 py-1.5 rounded-full`}>
@@ -571,7 +598,7 @@ export default function HomeContent() {
 
                       <div className="flex items-center gap-4 mb-6">
                         <div className={`w-14 h-14 rounded-2xl ${
-                          isAI ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30" : "bg-primary/10 text-primary border border-border/50"
+                          isFeatured ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30" : "bg-primary/10 text-primary border border-border/50"
                         } flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                           <IconComponent className="w-7 h-7" />
                         </div>
@@ -610,8 +637,8 @@ export default function HomeContent() {
             })}
           </div>
 
-          {/* Remaining 3 Departments Grid — Compact & Clean */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Remaining Departments — Compact & Clean; a short last row stays centered */}
+          <div className="flex flex-wrap justify-center gap-6">
             {coreDepartments.slice(2).map((department, idx) => (
               <motion.div
                 key={department.title}
@@ -619,7 +646,7 @@ export default function HomeContent() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="group relative"
+                className="group relative w-full md:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)]"
               >
                 <div className="absolute -inset-1 rounded-[2rem] bg-gradient-to-br from-primary/25 via-primary/0 to-secondary/25 opacity-0 group-hover:opacity-100 blur-lg transition-opacity duration-500 pointer-events-none" />
 
@@ -1426,6 +1453,18 @@ export default function HomeContent() {
                       />
                       {heroLead.fieldErrors.phone && <p className="text-xs text-red-500 mt-1">{heroLead.fieldErrors.phone}</p>}
                     </div>
+                  </div>
+                  <div>
+                    <input
+                      type="email"
+                      placeholder="Email Address"
+                      value={heroEmail}
+                      onChange={(e) => setHeroEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                      className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                    />
+                    {heroLead.fieldErrors.email && <p className="text-xs text-red-500 mt-1">{heroLead.fieldErrors.email}</p>}
                   </div>
                   {heroWantsResume ? (
                     <div>

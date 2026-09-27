@@ -75,7 +75,7 @@ const navigation = [
       { name: "Industrial Training", href: "/industrial-training", description: "Mentor-led, project-based learning", icon: GraduationCap },
       { name: "Resource Augmentation", href: "/resource-augmentation", description: "Dedicated developers & team hiring", icon: UserPlus },
       { name: "Internship Program", href: "/internship-program", description: "Hands-on live project internships", icon: Briefcase },
-      { name: "Offers & Campaigns", href: "/offers", description: "Exclusive campaign deals & offers", icon: Zap },
+      // { name: "Offers & Campaigns", href: "/offers", description: "Exclusive campaign deals & offers", icon: Zap },
     ],
   },
   {
@@ -139,7 +139,7 @@ const mobileNavigation = [
       { name: "Industrial Training", href: "/industrial-training", icon: GraduationCap },
       { name: "Resource Augmentation", href: "/resource-augmentation", icon: UserPlus },
       { name: "Internship Program", href: "/internship-program", icon: Briefcase },
-      { name: "Offers & Campaigns", href: "/offers", icon: Zap },
+      // { name: "Offers & Campaigns", href: "/offers", icon: Zap },
     ],
   },
   {

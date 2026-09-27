@@ -114,7 +114,7 @@ const DEFAULT_CONFIG: Omit<ChatbotConfig, "_id" | "createdAt" | "updatedAt"> = {
     title: "Before we start",
     description:
       "Tell us who you are so our team can follow up on anything the assistant can't fully answer.",
-    fields: { name: "required", email: "required", phone: "optional", service: "required" },
+    fields: { name: "required", email: "required", phone: "required", service: "required" },
     consentText:
       "By continuing you agree that YashOrbit may contact you about your enquiry. We never share your details.",
   },
@@ -159,7 +159,8 @@ export async function getChatbotConfig(): Promise<ChatbotConfig> {
       preChat: {
         ...DEFAULT_CONFIG.preChat,
         ...existing.preChat,
-        fields: { ...DEFAULT_CONFIG.preChat.fields, ...existing.preChat?.fields },
+        // Email and phone are always required site-wide; older docs may still say otherwise.
+        fields: { ...DEFAULT_CONFIG.preChat.fields, ...existing.preChat?.fields, email: "required", phone: "required" },
       },
       voice: { ...DEFAULT_CONFIG.voice, ...existing.voice },
       _id: CONFIG_ID,
@@ -256,8 +257,9 @@ function validatePreChat(
     description: str(raw.description, 400),
     fields: {
       name: field(rawFields.name, "required"),
-      email: field(rawFields.email, "required"),
-      phone: field(rawFields.phone, "optional"),
+      // Always required site-wide — not admin-configurable.
+      email: "required",
+      phone: "required",
       service: field(rawFields.service, "required"),
     },
     consentText: str(raw.consentText, 400),

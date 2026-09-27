@@ -11,7 +11,7 @@ export const SUCCESS_AUTO_HIDE_MS = 30_000;
 
 export interface LeadFormData {
   name: string;
-  email?: string;
+  email: string;
   phone: string;
   message?: string;
   subService?: string;
@@ -33,7 +33,7 @@ export function useLeadSubmit() {
 
     const body = new FormData();
     body.set("name", data.name);
-    if (data.email) body.set("email", data.email);
+    body.set("email", data.email);
     body.set("phone", data.phone);
     if (data.message) body.set("message", data.message);
     if (data.subService) body.set("subService", data.subService);

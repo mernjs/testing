@@ -297,7 +297,7 @@ export default function ContactContent({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                       <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-2">Email</label>
-                      <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" placeholder="Enter your work email" />
+                      <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full rounded-xl border border-border/50 bg-background/50 px-4 py-3 text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors" placeholder="Enter your work email" />
                       {fieldErrors.email && <p className="text-xs text-red-500 mt-1">{fieldErrors.email}</p>}
                     </div>
                     <div>

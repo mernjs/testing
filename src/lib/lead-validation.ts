@@ -30,7 +30,7 @@ export interface LeadAttribution {
 
 export interface LeadRecord {
   name: string;
-  email?: string;
+  email: string;
   phone: string;
   message?: string;
   subService?: string;
@@ -63,12 +63,10 @@ export function validateLeadInput(input: LeadInput): { valid: true; data: LeadRe
   if (!phone) errors.phone = "Phone number is required.";
   else if (!PHONE_RE.test(phone)) errors.phone = "Enter a valid phone number.";
 
-  let email: string | undefined;
-  if (typeof input.email === "string" && input.email.trim()) {
-    email = input.email.trim();
-    if (!EMAIL_RE.test(email)) errors.email = "Enter a valid email address.";
-    else if (email.length > 254) errors.email = "Email must be 254 characters or fewer.";
-  }
+  const email = typeof input.email === "string" ? input.email.trim() : "";
+  if (!email) errors.email = "Email is required.";
+  else if (!EMAIL_RE.test(email)) errors.email = "Enter a valid email address.";
+  else if (email.length > 254) errors.email = "Email must be 254 characters or fewer.";
 
   let message: string | undefined;
   if (typeof input.message === "string" && input.message.trim()) {
@@ -135,8 +133,9 @@ export function validateLeadUpdate(input: LeadInput & LeadAdminInput): { valid: 
 
   if (input.email !== undefined) {
     const email = typeof input.email === "string" ? input.email.trim() : "";
-    if (email && !EMAIL_RE.test(email)) errors.email = "Enter a valid email address.";
-    else data.email = email || undefined;
+    if (!email) errors.email = "Email cannot be empty.";
+    else if (!EMAIL_RE.test(email)) errors.email = "Enter a valid email address.";
+    else data.email = email;
   }
 
   if (input.message !== undefined) {

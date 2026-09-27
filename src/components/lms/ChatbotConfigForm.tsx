@@ -209,8 +209,10 @@ export default function ChatbotConfigForm({
                 {(["name", "email", "phone", "service"] as const).map((f) => (
                   <Field key={f} label={f === "service" ? "Main Service" : f[0].toUpperCase() + f.slice(1)}>
                     <select
-                      value={preChat.fields[f]}
+                      value={f === "email" || f === "phone" ? "required" : preChat.fields[f]}
                       onChange={(e) => setField(f, e.target.value)}
+                      disabled={f === "email" || f === "phone"}
+                      title={f === "email" || f === "phone" ? "Email and phone are always required" : undefined}
                       className="h-8 w-40 rounded-lg border border-input bg-transparent px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
                     >
                       <option value="required">Required</option>

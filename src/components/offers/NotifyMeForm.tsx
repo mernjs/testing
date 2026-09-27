@@ -109,8 +109,8 @@ export default function NotifyMeForm({
           <Input value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div className="space-y-1.5">
-          <Label>Phone / WhatsApp (optional)</Label>
-          <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <Label>Phone / WhatsApp</Label>
+          <Input type="tel" required autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
           {fieldErrors.phone && <p className="text-xs text-destructive">{fieldErrors.phone}</p>}
         </div>
       </div>
