@@ -95,18 +95,54 @@ export function isPlatformHost(host: string): boolean {
   return platformRootDomains().some((root) => host === root || host.endsWith(`.${root}`));
 }
 
-// Host → company id, per server instance. Positive answers are cached longer
-// than negative ones so a freshly verified domain starts working quickly.
+// Host → company id. Positive answers are cached longer than negative ones so
+// a freshly verified domain starts working quickly.
+//
+// Invalidation has two layers:
+//  - the cache lives on `globalThis`, so the proxy bundle and the app bundle
+//    (separate module instances in one process) share it — a change made on
+//    this instance applies here at once;
+//  - a routing version in `platform_settings` is bumped on every change and
+//    checked at most every VERSION_CHECK_MS, so other instances follow within
+//    seconds instead of waiting out the TTL.
 const HIT_TTL_MS = 60_000;
 const MISS_TTL_MS = 5_000;
-const hostCache = new Map<string, { id: string | null; at: number }>();
-let ownerCache: { id: string; at: number } | null = null;
+const VERSION_CHECK_MS = 2_000;
+const ROUTING_VERSION_ID = "routing";
+
+interface RoutingCache {
+  hosts: Map<string, { id: string | null; at: number }>;
+  owner: { id: string; at: number } | null;
+  version: number | null;
+  versionCheckedAt: number;
+}
+const globalForRouting = globalThis as unknown as { __companyRouting?: RoutingCache };
+const routing: RoutingCache = (globalForRouting.__companyRouting ??= { hosts: new Map(), owner: null, version: null, versionCheckedAt: 0 });
+
+/** Clears this process's cache when another instance has changed routing since we last looked. */
+async function followRoutingVersion(): Promise<void> {
+  if (Date.now() - routing.versionCheckedAt < VERSION_CHECK_MS) return;
+  routing.versionCheckedAt = Date.now();
+  try {
+    const db = await getPlatformDb();
+    const doc = await db.collection<{ _id: string; version?: number }>("platform_settings").findOne({ _id: ROUTING_VERSION_ID });
+    const version = doc?.version ?? 0;
+    if (routing.version !== null && version !== routing.version) {
+      routing.hosts.clear();
+      routing.owner = null;
+    }
+    routing.version = version;
+  } catch {
+    // Routing keeps working from the TTL cache if the version can't be read.
+  }
+}
 
 export async function getPlatformOwnerCompanyId(): Promise<string | null> {
-  if (ownerCache && Date.now() - ownerCache.at < HIT_TTL_MS) return ownerCache.id;
+  await followRoutingVersion();
+  if (routing.owner && Date.now() - routing.owner.at < HIT_TTL_MS) return routing.owner.id;
   const db = await getPlatformDb();
   const owner = await db.collection<Company>(COMPANIES_COLLECTION).findOne({ isPlatformOwner: true, status: "active" }, { projection: { _id: 1 } });
-  ownerCache = owner ? { id: owner._id, at: Date.now() } : null;
+  routing.owner = owner ? { id: owner._id, at: Date.now() } : null;
   return owner?._id ?? null;
 }
 
@@ -138,17 +174,29 @@ async function lookupHost(host: string): Promise<string | null> {
 export async function resolveCompanyIdByHost(rawHost: string | null | undefined): Promise<string | null> {
   const host = normalizeHost(rawHost);
   if (!host) return null;
-  const hit = hostCache.get(host);
+  await followRoutingVersion();
+  const hit = routing.hosts.get(host);
   if (hit && Date.now() - hit.at < (hit.id ? HIT_TTL_MS : MISS_TTL_MS)) return hit.id;
   const id = await lookupHost(host);
-  hostCache.set(host, { id, at: Date.now() });
+  routing.hosts.set(host, { id, at: Date.now() });
   return id;
 }
 
-/** Drops cached routing so a domain/status change applies on this instance immediately. */
+/**
+ * Call after any domain or company-status change: applies at once in this
+ * process (proxy included) and bumps the shared routing version so every
+ * other instance drops its cache within VERSION_CHECK_MS.
+ */
 export function forgetCompanyRouting(): void {
-  hostCache.clear();
-  ownerCache = null;
+  routing.hosts.clear();
+  routing.owner = null;
+  void getPlatformDb()
+    .then((db) => db.collection<{ _id: string; version?: number }>("platform_settings").findOneAndUpdate({ _id: ROUTING_VERSION_ID }, { $inc: { version: 1 } }, { upsert: true, returnDocument: "after" }))
+    .then((doc) => {
+      // Our own bump isn't news to us.
+      if (doc?.version !== undefined) routing.version = doc.version;
+    })
+    .catch((err) => console.error("[tenancy] routing version bump failed", err));
 }
 
 export async function getCompany(companyId: string): Promise<Company | null> {

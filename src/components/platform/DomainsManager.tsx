@@ -5,7 +5,7 @@ import { AlertTriangle, Check, CheckCircle2, CircleDashed, Copy, Globe, Loader2,
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, formatDateTime } from "@/lib/utils";
 import type { CompanyDomainView, DomainActionResult, RecordState } from "@/lib/platform/domains/types";
 
 export interface DomainsManagerActions {
@@ -224,7 +224,12 @@ export default function DomainsManager({ initial, maxCustom, actions }: { initia
                     <Pill tone="muted">{d.kind === "subdomain" ? "Workspace address" : "Custom domain"}</Pill>
                     {d.status === "verified" && <SslPill domain={d} />}
                   </div>
-                  {d.lastCheckedAt && <p className="text-xs text-muted-foreground">Last checked {new Date(d.lastCheckedAt).toLocaleString()}</p>}
+                  {d.lastCheckedAt && (
+                    // Shown in the viewer's own time zone, which the server can't know — hence the hydration opt-out.
+                    <p className="text-xs text-muted-foreground" suppressHydrationWarning>
+                      Last checked {formatDateTime(d.lastCheckedAt)}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {(d.status === "pending" || d.hosting.ssl === "pending" || d.hosting.ssl === "error") && (
