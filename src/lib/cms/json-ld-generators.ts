@@ -1,4 +1,3 @@
-import { siteUrl } from "@/lib/seo";
 import type { BlogPostMeta } from "@/types/content";
 import type { Job } from "@/types/content";
 import type { EngagementCategory } from "@/types/content";
@@ -16,6 +15,8 @@ import type { PageSection } from "@/lib/cms/section-registry";
 type Entry = Record<string, unknown>;
 
 export interface JsonLdData {
+  /** The company's public origin (`companySiteUrl()`), no trailing slash. */
+  siteUrl: string;
   path: string;
   description: string;
   sections: PageSection[];
@@ -33,9 +34,9 @@ function blogList(e: Entry, d: JsonLdData) {
     "@type": "ItemList",
     name: str(e.name),
     description: d.description,
-    url: `${siteUrl}${d.path}`,
+    url: `${d.siteUrl}${d.path}`,
     numberOfItems: d.blog.length,
-    itemListElement: d.blog.map((post, index) => ({ "@type": "ListItem", position: index + 1, url: `${siteUrl}/blog/${post.slug}`, name: post.title })),
+    itemListElement: d.blog.map((post, index) => ({ "@type": "ListItem", position: index + 1, url: `${d.siteUrl}/blog/${post.slug}`, name: post.title })),
   };
 }
 
@@ -48,7 +49,7 @@ function productsList(e: Entry, d: JsonLdData) {
     itemListElement: d.products.map((product, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      item: { "@type": "Product", name: product.name, description: product.shortDescription, category: product.category, url: `${siteUrl}${d.path}#${product.slug}` },
+      item: { "@type": "Product", name: product.name, description: product.shortDescription, category: product.category, url: `${d.siteUrl}${d.path}#${product.slug}` },
     })),
   };
 }
@@ -64,7 +65,7 @@ function blogArticle(e: Entry, d: JsonLdData) {
     headline: post.title,
     description: post.description,
     image: post.imageAlt ? { "@type": "ImageObject", url: post.image, description: post.imageAlt } : post.image,
-    url: `${siteUrl}${path}`,
+    url: `${d.siteUrl}${path}`,
     datePublished: post.date,
     dateModified: post.date,
     inLanguage: "en-IN",
@@ -72,7 +73,7 @@ function blogArticle(e: Entry, d: JsonLdData) {
     ...(post.keywords?.length ? { keywords: post.keywords.join(", ") } : {}),
     author: { ...(e.author as Entry), ...(post.author ? { name: post.author } : {}) },
     publisher: e.publisher,
-    mainEntityOfPage: { "@type": "WebPage", "@id": `${siteUrl}${path}` },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${d.siteUrl}${path}` },
   };
 }
 
@@ -125,7 +126,7 @@ function jobPosting(e: Entry, d: JsonLdData) {
     hiringOrganization: e.hiringOrganization,
     jobLocation: e.jobLocation,
     directApply: true,
-    url: `${siteUrl}/careers/${job.slug}`,
+    url: `${d.siteUrl}/careers/${job.slug}`,
     skills: job.skills.join(", "),
   };
   if (job.validThrough) schema.validThrough = job.validThrough;

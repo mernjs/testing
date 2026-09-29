@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { notifyGoogleIndexing, IndexingNotificationType } from "@/lib/google-indexing";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 
 export async function POST(req: Request) {
   const secret = process.env.INDEXING_API_SECRET;
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       type?: IndexingNotificationType;
     };
 
-    const targetUrl = url || (slug ? `${siteUrl}/careers/${slug}` : null);
+    const targetUrl = url || (slug ? `${await companySiteUrl()}/careers/${slug}` : null);
 
     if (!targetUrl) {
       return NextResponse.json(

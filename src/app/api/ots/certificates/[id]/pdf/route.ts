@@ -4,7 +4,7 @@ import { resolveTaker } from "@/lib/ots/taker";
 import { getCertificate } from "@/lib/ots/certificates";
 import { getOtsSettings } from "@/lib/ots/settings";
 import { renderOtsCertificatePdf } from "@/components/ots/CertificatePdf";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 
 type Context = { params: Promise<{ id: string }> };
 
@@ -22,7 +22,7 @@ export async function GET(_req: Request, { params }: Context) {
   }
   if (!isStaff && !isOwner) return NextResponse.json({ error: viewer ? "Forbidden" : "Unauthorized" }, { status: viewer ? 403 : 401 });
   if (cert.revoked && !isStaff) return NextResponse.json({ error: "This certificate has been revoked." }, { status: 410 });
-  const settings = await getOtsSettings();
+  const [settings, siteUrl] = await Promise.all([getOtsSettings(), companySiteUrl()]);
   const buffer = await renderOtsCertificatePdf({
     certificateNumber: cert.certificateNumber,
     verificationCode: cert.verificationCode,

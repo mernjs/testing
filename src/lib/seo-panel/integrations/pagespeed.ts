@@ -1,5 +1,5 @@
 import "server-only";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { COLLECTIONS, seoCollection } from "@/lib/seo-panel/db";
 import { getSettings, integrationEnv } from "@/lib/seo-panel/settings";
 import { reconcileIssues, type IssueFinding } from "@/lib/seo-panel/issues";
@@ -83,7 +83,7 @@ export function cwvVerdict(p: PagePerformance): { level: "good" | "needs" | "poo
 /** Tests the given pages (max 25 per call) and reconciles their Core Web Vitals issues. */
 export async function runPageSpeed(paths: string[]): Promise<{ checked: number; failed: number; errors: string[] }> {
   const s = await getSettings();
-  const origin = /localhost|127\.0\.0\.1|\.local\b/.test(s.siteOrigin) ? siteUrl : s.siteOrigin;
+  const origin = /localhost|127\.0\.0\.1|\.local\b/.test(s.siteOrigin) ? await companySiteUrl() : s.siteOrigin;
   const pages = await seoCollection<SeoPage>(COLLECTIONS.pages);
   const findings: IssueFinding[] = [];
   const errors: string[] = [];

@@ -28,12 +28,13 @@ import { LineTrend, AreaTrend, ColumnBars, COLORS } from "@/components/seo/SeoCh
 import JobButton from "@/components/seo/JobButton";
 import { getViewer, can } from "@/lib/seo-panel/viewer";
 import { getDashboard } from "@/lib/seo-panel/analytics";
+import { companySiteHost } from "@/lib/platform/tenancy/site-url";
 import { formatDateTime } from "@/lib/utils";
 
 export default async function SeoDashboardPage() {
   const viewer = await getViewer();
   if (!viewer) redirect("/seo/login");
-  const d = await getDashboard(viewer.userId);
+  const [d, siteHost] = await Promise.all([getDashboard(viewer.userId), companySiteHost()]);
   const sc = d.scores;
   const gsc = d.search.connected;
   const noGsc = <span className="text-sm text-muted-foreground">Connect GSC</span>;
@@ -45,7 +46,7 @@ export default async function SeoDashboardPage() {
         crumbs={[{ label: "Dashboard" }]}
         description={
           <>
-            Health, visibility and workload for yashorbit.com. Every tile and chart opens the matching detail view.
+            Health, visibility and workload for {siteHost}. Every tile and chart opens the matching detail view.
             {d.run && <span className="ml-1">Last audit {formatDateTime(d.run.startedAt)}.</span>}
             {d.search.range && <span className="ml-1">Search data {d.search.range}.</span>}
           </>

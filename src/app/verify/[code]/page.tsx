@@ -8,6 +8,7 @@ import { getTmsSettings } from "@/lib/tms/settings";
 import { CERTIFICATE_TYPES } from "@/lib/tms/constants";
 import { certificateState, getCertificateByCode as getOtsCertificateByCode, type OtsCertificate } from "@/lib/ots/certificates";
 import { BrandName } from "@/components/platform/BrandProvider";
+import { companySiteHost } from "@/lib/platform/tenancy/site-url";
 
 export const metadata: Metadata = {
   title: "Certificate Verification",
@@ -36,7 +37,7 @@ async function loadView(code: string): Promise<CertificateView | null> {
 const fmtDate = (d: Date) => d.toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
 
 /** Online Test System certificates share this one public verification URL (codes are random, so they never collide). */
-function OtsVerification({ cert }: { cert: OtsCertificate }) {
+function OtsVerification({ cert, siteHost }: { cert: OtsCertificate; siteHost: string }) {
   const state = certificateState(cert);
   const valid = state === "valid";
   const rows: [string, string][] = [
@@ -73,7 +74,7 @@ function OtsVerification({ cert }: { cert: OtsCertificate }) {
       </div>
       <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
         <ShieldCheck className="size-3.5" />
-        Independent verification · <Link href="/" className="hover:underline">yashorbit.com</Link>
+        Independent verification · <Link href="/" className="hover:underline">{siteHost}</Link>
       </p>
     </div>
   );
@@ -81,10 +82,10 @@ function OtsVerification({ cert }: { cert: OtsCertificate }) {
 
 export default async function VerifyCertificatePage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
-  const [cert, settings] = await Promise.all([loadView(code), getTmsSettings()]);
+  const [cert, settings, siteHost] = await Promise.all([loadView(code), getTmsSettings(), companySiteHost()]);
   if (!cert) {
     const ots = await getOtsCertificateByCode(code);
-    if (ots) return <OtsVerification cert={ots} />;
+    if (ots) return <OtsVerification cert={ots} siteHost={siteHost} />;
   }
 
   const valid = cert && !cert.revoked;
@@ -169,7 +170,7 @@ export default async function VerifyCertificatePage({ params }: { params: Promis
 
       <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
         <ShieldCheck className="size-3.5" />
-        Independent verification · <Link href="/" className="hover:underline">yashorbit.com</Link>
+        Independent verification · <Link href="/" className="hover:underline">{siteHost}</Link>
       </p>
     </div>
   );

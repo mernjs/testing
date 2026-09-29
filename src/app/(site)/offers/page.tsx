@@ -10,7 +10,8 @@ import { getCurrentPortalUser } from "@/lib/portal-auth";
 import { getAvailableBalance } from "@/lib/wallet/redemption";
 import { tabForPortalRole } from "@/lib/offers/constants";
 import { PORTAL_ROLE_META } from "@/lib/portal-roles";
-import { breadcrumbJsonLd, faqJsonLd, socialMetadata, siteUrl } from "@/lib/seo";
+import { breadcrumbJsonLd, faqJsonLd, socialMetadata } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { getSiteInfo } from "@/lib/cms/site-info";
 import OffersContent from "./Content";
 
@@ -39,7 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 async function offersMetadata(): Promise<Metadata> {
-  const [page, { text, brand }] = await Promise.all([loadPage(), getSiteInfo()]);
+  const [page, { text, brand }, siteUrl] = await Promise.all([loadPage(), getSiteInfo(), companySiteUrl()]);
   const campaign = page.active?.campaign ?? page.next?.campaign ?? null;
   const vars = { campaign: campaign?.name ?? text["offers.meta.nextCampaign"] ?? "", headline: campaign?.theme.bannerHeadline ?? campaign?.name ?? "" };
   const title = fill(
@@ -61,12 +62,12 @@ async function offersMetadata(): Promise<Metadata> {
     title,
     description,
     alternates: { canonical: `${siteUrl}/offers` },
-    ...socialMetadata({ title, description, path: "/offers", image, imageAlt: title, siteName: brand.namePrimary + brand.nameAccent }),
+    ...socialMetadata({ title, description, path: "/offers", image, imageAlt: title, siteName: brand.namePrimary + brand.nameAccent, origin: siteUrl }),
   };
 }
 
 export default async function OffersPage() {
-  const [page, { text }] = await Promise.all([loadPage(), getSiteInfo()]);
+  const [page, { text }, siteUrl] = await Promise.all([loadPage(), getSiteInfo(), companySiteUrl()]);
   const GENERIC_FAQS = genericFaqs(text);
   const data = page.active;
 
@@ -94,7 +95,7 @@ export default async function OffersPage() {
     breadcrumbJsonLd([
       { name: text["offers.breadcrumb.home"] ?? "", path: "/" },
       { name: text["offers.breadcrumb.page"] ?? "", path: "/offers" },
-    ]),
+    ], siteUrl),
     faqJsonLd(faqs),
   ];
 

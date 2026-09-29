@@ -5,7 +5,10 @@ import SchemaEditor from "@/components/seo/SchemaEditor";
 import { getViewer, can } from "@/lib/seo-panel/viewer";
 import { schemasCol } from "@/lib/seo-panel/schema";
 import { allPages } from "@/lib/seo-panel/pages";
-import { organizationInfo, siteUrl } from "@/lib/seo";
+import { organizationInfo } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
+import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { getCompanyBrand } from "@/lib/platform/branding";
 import { formatDateTime } from "@/lib/utils";
 
 export default async function SchemaEditPage({ params }: { params: Promise<{ id: string }> }) {
@@ -16,8 +19,11 @@ export default async function SchemaEditPage({ params }: { params: Promise<{ id:
   if (isNew && !can(viewer, "MANAGE_SCHEMA")) redirect("/seo/schema");
   const schema = isNew ? null : await (await schemasCol()).findOne({ _id: id });
   if (!isNew && !schema) notFound();
-  const pages = await allPages();
-  const org = { name: organizationInfo.name, url: siteUrl, logo: organizationInfo.logo, telephone: organizationInfo.telephone, email: organizationInfo.email, address: organizationInfo.address };
+  const [pages, siteUrl, isOwner, brand] = await Promise.all([allPages(), companySiteUrl(), isPlatformOwnerContext(), getCompanyBrand()]);
+  // Template defaults: the platform owner's own details for the owner only — any other company starts from its brand and site.
+  const org = isOwner
+    ? { name: organizationInfo.name, url: siteUrl, logo: organizationInfo.logo, telephone: organizationInfo.telephone, email: organizationInfo.email, address: organizationInfo.address }
+    : { name: brand.name, url: siteUrl, logo: brand.logoUrl ?? "", telephone: "", email: "", address: { streetAddress: "", addressLocality: "", addressRegion: "", postalCode: "", addressCountry: "" } };
 
   return (
     <div className="space-y-4">

@@ -14,6 +14,7 @@ import { ColumnBars, AreaTrend, COLORS } from "@/components/seo/SeoCharts";
 import { getViewer, can } from "@/lib/seo-panel/viewer";
 import { listBacklinks, backlinkOverview, type Backlink } from "@/lib/seo-panel/backlinks";
 import { todayIso } from "@/lib/seo-panel/db";
+import { companySiteHost } from "@/lib/platform/tenancy/site-url";
 import { saveBacklinkAction, deleteBacklinkAction, importBacklinksAction } from "@/app/seo/(protected)/actions";
 import { cn, formatDateTime } from "@/lib/utils";
 
@@ -33,7 +34,7 @@ export default async function BacklinksPage({ searchParams }: { searchParams: Pr
   if (!viewer) redirect("/seo/login");
   const sp = await searchParams;
   const tab = sp.tab === "domains" || sp.tab === "anchors" ? sp.tab : "links";
-  const [o, list] = await Promise.all([backlinkOverview(), listBacklinks({ ...sp, page: Math.max(Number(sp.page) || 1, 1), pageSize: 30 })]);
+  const [o, list, siteHost] = await Promise.all([backlinkOverview(), listBacklinks({ ...sp, page: Math.max(Number(sp.page) || 1, 1), pageSize: 30 }), companySiteHost()]);
   const canManage = can(viewer, "MANAGE_BACKLINKS");
   const canDelete = can(viewer, "DELETE");
   const addFields: FieldDef[] = [
@@ -51,7 +52,7 @@ export default async function BacklinksPage({ searchParams }: { searchParams: Pr
       <PageHeader
         title="Backlinks"
         crumbs={[{ label: "Backlinks" }]}
-        description={<>Links from other sites to yashorbit.com. Lists come from people or backlink-tool exports (<TrustBadge trust="estimated" />); link <strong>status</strong> is <TrustBadge trust="verified" /> by fetching each source page.</>}
+        description={<>Links from other sites to {siteHost}. Lists come from people or backlink-tool exports (<TrustBadge trust="estimated" />); link <strong>status</strong> is <TrustBadge trust="verified" /> by fetching each source page.</>}
         actions={
           canManage && (
             <>

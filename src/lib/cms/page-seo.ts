@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { siteUrl } from "@/lib/seo";
 
 /**
  * A CMS page's SEO + structured data. Stored on the page (draft/live/version)
@@ -62,8 +61,11 @@ export function parsePageJsonLd(raw: unknown): PageJsonLd[] {
   return Array.isArray(raw) ? raw.filter((x): x is PageJsonLd => !!x && typeof x === "object" && !Array.isArray(x)).slice(0, 30) : [];
 }
 
-/** The page's Next.js metadata — same shape the site's pages have always produced. `siteName` = the brand (CMS → Site Identity). */
-export function buildPageMetadata(seo: PageSeo, path: string, siteName: string): Metadata {
+/**
+ * The page's Next.js metadata — same shape the site's pages have always produced. `siteName` = the brand (CMS → Site Identity);
+ * `siteUrl` = the company's public origin (`companySiteUrl()`).
+ */
+export function buildPageMetadata(seo: PageSeo, path: string, siteName: string, siteUrl: string): Metadata {
   const m: Metadata = { title: seo.title, description: seo.description };
   if (seo.keywords?.length) m.keywords = seo.keywords;
   if (seo.canonical) m.alternates = { canonical: seo.canonical };

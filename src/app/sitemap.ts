@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import fs from "fs";
 import path from "path";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { getRuntimeRecords } from "@/lib/cms/collections/store";
 import type { BlogPostMeta } from "@/types/content";
 import type { Job } from "@/types/content";
@@ -51,10 +51,11 @@ function discoverRoutes(dir: string, base = ""): string[] {
  * the blog / jobs / engagement collections (those pages are dynamic
  * `[slug]` routes, so they're listed from the records — code + published CMS
  * records — not from the filesystem). Also used as the chatbot knowledge-base
- * crawl list.
+ * crawl list. URLs are on the current company's own site origin.
  */
 export async function baseSitemap(): Promise<MetadataRoute.Sitemap> {
-  const [blogPosts, jobs, engagement] = await Promise.all([
+  const [siteUrl, blogPosts, jobs, engagement] = await Promise.all([
+    companySiteUrl(),
     getRuntimeRecords<BlogPostMeta>("blog"),
     getRuntimeRecords<Job>("jobs"),
     getRuntimeRecords<EngagementCategory>("engagement"),

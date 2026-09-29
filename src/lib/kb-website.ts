@@ -3,7 +3,9 @@ import { createHash } from "node:crypto";
 import * as cheerio from "cheerio";
 import { ObjectId, type Collection } from "mongodb";
 import { getDb } from "@/lib/mongodb";
-import { siteUrl, organizationInfo } from "@/lib/seo";
+import { organizationInfo } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
+import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 import { getSiteInfo } from "@/lib/cms/site-info";
 import { ensureVectorStore } from "@/lib/chatbot-config";
 import {
@@ -71,8 +73,18 @@ async function getPagesCollection(): Promise<Collection<KbWebsitePage>> {
 // Crawl target discovery — reuse the sitemap's route discovery + exclusions.
 // ---------------------------------------------------------------------------
 
+/**
+ * `CHATBOT_CRAWL_BASE_URL` is one platform-wide env var (for crawling a
+ * staging/local copy of YashOrbit's own site), so only the platform owner
+ * honours it — any other company always crawls its own site.
+ */
+export async function chatbotCrawlBaseOverride(): Promise<string | null> {
+  const override = process.env.CHATBOT_CRAWL_BASE_URL;
+  return override && (await isPlatformOwnerContext()) ? override : null;
+}
+
 export async function listCrawlTargets(): Promise<{ path: string; url: string }[]> {
-  const entries = await baseSitemap();
+  const [entries, siteUrl] = await Promise.all([baseSitemap(), companySiteUrl()]);
   const targets: { path: string; url: string }[] = [];
   for (const entry of entries) {
     const raw = typeof entry.url === "string" ? entry.url : String(entry.url);
@@ -200,6 +212,7 @@ function hashOf(text: string): string {
 
 async function buildCompanyFactsDocument(): Promise<{ title: string; text: string }> {
   const a = organizationInfo.address;
+  const siteUrl = await companySiteUrl();
   // Contact details + social links as currently published in CMS → Site Identity.
   const { contact, social } = await getSiteInfo();
   const lines = [
@@ -209,7 +222,7 @@ async function buildCompanyFactsDocument(): Promise<{ title: string; text: strin
     "",
     `Legal name: ${organizationInfo.legalName}`,
     `Common name: YashOrbit (YashOrbit Technologies Pvt. Ltd.)`,
-    `Website: ${organizationInfo.url}`,
+    `Website: ${siteUrl}`,
     `Primary contact email: ${organizationInfo.email}`,
     `Support email: ${contact.email}`,
     `Phone: ${organizationInfo.telephone}`,
@@ -222,7 +235,7 @@ async function buildCompanyFactsDocument(): Promise<{ title: string; text: strin
     "",
     "What YashOrbit does: custom software development (web, mobile, desktop), AI & automation solutions (workflows, chatbots, RAG systems, RPA), data analytics, plus industrial training and internship programs for developers.",
     "",
-    "To start a project or get a quote, visit the contact page at " + `${organizationInfo.url}/contact` + " or email " + organizationInfo.email + ".",
+    "To start a project or get a quote, visit the contact page at " + `${siteUrl}/contact` + " or email " + organizationInfo.email + ".",
   ];
   return { title: "YashOrbit — Company Facts", text: lines.join("\n") };
 }

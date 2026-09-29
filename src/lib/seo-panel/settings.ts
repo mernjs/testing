@@ -1,5 +1,7 @@
 import "server-only";
 import { siteUrl } from "@/lib/seo";
+import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { COLLECTIONS, seoCollection } from "@/lib/seo-panel/db";
 
 /**
@@ -50,7 +52,8 @@ export interface SeoSettings {
   updatedBy: string | null;
 }
 
-export const DEFAULT_SETTINGS: SeoSettings = {
+/** The platform owner's (YashOrbit's) defaults — see `defaultSettings()` for everyone else. */
+const OWNER_DEFAULT_SETTINGS: SeoSettings = {
   _id: "global",
   siteOrigin: siteUrl,
   crawl: {
@@ -82,9 +85,25 @@ export const DEFAULT_SETTINGS: SeoSettings = {
   updatedBy: null,
 };
 
+/**
+ * Defaults for a company that hasn't saved SEO settings: the owner's own
+ * values for the platform owner only. Any other company audits its own site
+ * (`companySiteUrl()`), has no Search Console property filled in, and nothing
+ * scheduled until it opts in — the daily cron must not start crawling a
+ * company's site the moment it signs up.
+ */
+async function defaultSettings(): Promise<SeoSettings> {
+  if (await isPlatformOwnerContext()) return OWNER_DEFAULT_SETTINGS;
+  return {
+    ...OWNER_DEFAULT_SETTINGS,
+    siteOrigin: await companySiteUrl(),
+    schedule: { auditFrequency: "off", syncSearchData: false, verifyBacklinks: false },
+    integrations: { ...OWNER_DEFAULT_SETTINGS.integrations, gsc: { ...OWNER_DEFAULT_SETTINGS.integrations.gsc, property: "" } },
+  };
+}
+
 /** Deep-merges a stored document over the defaults so new settings keys never read as undefined. */
-function withDefaults(doc: Partial<SeoSettings> | null): SeoSettings {
-  const d = DEFAULT_SETTINGS;
+function withDefaults(doc: Partial<SeoSettings> | null, d: SeoSettings): SeoSettings {
   if (!doc) return structuredClone(d);
   return {
     ...d,
@@ -104,7 +123,8 @@ function withDefaults(doc: Partial<SeoSettings> | null): SeoSettings {
 
 export async function getSettings(): Promise<SeoSettings> {
   const col = await seoCollection<SeoSettings>(COLLECTIONS.settings);
-  return withDefaults(await col.findOne({ _id: "global" }));
+  const [doc, defaults] = await Promise.all([col.findOne({ _id: "global" }), defaultSettings()]);
+  return withDefaults(doc, defaults);
 }
 
 export async function saveSettings(next: SeoSettings, actorId: string): Promise<void> {

@@ -7,12 +7,12 @@ import { buttonVariants } from "@/components/ui/button";
 import { getCurrentTmsUser } from "@/lib/tms-auth";
 import { listCertificatesForStudent } from "@/lib/tms/certificates";
 import { formatDate } from "@/lib/utils";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 
 export default async function MyCertificatesPage() {
   const user = await getCurrentTmsUser();
   if (!user?.studentId) redirect("/tms");
-  const certs = await listCertificatesForStudent(user.studentId);
+  const [certs, siteUrl] = await Promise.all([listCertificatesForStudent(user.studentId), companySiteUrl()]);
 
   return (
     <div className="space-y-4">

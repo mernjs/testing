@@ -9,6 +9,7 @@ import { getViewer, can } from "@/lib/seo-panel/viewer";
 import { getSettings, integrationEnv } from "@/lib/seo-panel/settings";
 import { SEO_PERMISSIONS, SEO_PERMISSION_META, SEO_ROLE_META, SEO_ROLE_PERMISSIONS } from "@/lib/seo-roles";
 import { formatDateTime } from "@/lib/utils";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 
 export const maxDuration = 300;
 
@@ -18,7 +19,7 @@ export default async function SeoSettingsPage() {
   const viewer = await getViewer();
   if (!viewer) redirect("/seo/login");
   if (!can(viewer, "MANAGE_INTEGRATIONS")) redirect("/seo");
-  const s = await getSettings();
+  const [s, siteUrl] = await Promise.all([getSettings(), companySiteUrl()]);
   const env = integrationEnv();
 
   return (
@@ -35,6 +36,7 @@ export default async function SeoSettingsPage() {
         }
       />
       <SeoSettingsForm
+        siteUrl={siteUrl}
         env={{
           serviceAccount: env.googleClientEmail,
           pagespeedKey: !!env.pagespeedKey,

@@ -5,6 +5,7 @@ import { getPublicPage, type PublicPage } from "@/lib/cms/public";
 import { buildPageMetadata } from "@/lib/cms/page-seo";
 import { withSeoOverrides } from "@/lib/seo-panel/public";
 import { getSiteInfo } from "@/lib/cms/site-info";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 
 /** The published CMS page at `path`, or a 404. */
 export async function requirePublicPage(path: string): Promise<PublicPage> {
@@ -15,7 +16,7 @@ export async function requirePublicPage(path: string): Promise<PublicPage> {
 
 /** A CMS page's metadata: its own SEO fields, with the SEO panel's per-page overrides on top. */
 export async function cmsPageMetadata(path: string): Promise<Metadata> {
-  const [page, { brand }] = await Promise.all([getPublicPage(path), getSiteInfo()]);
+  const [page, { brand }, siteUrl] = await Promise.all([getPublicPage(path), getSiteInfo(), companySiteUrl()]);
   if (!page?.seo) return {};
-  return withSeoOverrides(path, buildPageMetadata(page.seo, path, brand.namePrimary + brand.nameAccent));
+  return withSeoOverrides(path, buildPageMetadata(page.seo, path, brand.namePrimary + brand.nameAccent, siteUrl));
 }

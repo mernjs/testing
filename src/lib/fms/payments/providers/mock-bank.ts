@@ -11,6 +11,7 @@ import {
   registerPaymentProvider,
 } from "../provider";
 import { randomUUID } from "node:crypto";
+import { paymentPublicBaseUrl } from "@/lib/fms/payments/public-url";
 
 export const MockPaymentProvider: PaymentProvider = {
   id: "mock",
@@ -39,7 +40,7 @@ export const MockPaymentProvider: PaymentProvider = {
     return {
       ok: true,
       providerLinkId: linkId,
-      shortUrl: `${process.env.NEXT_PUBLIC_APP_URL || ""}/pay/${params.token}`,
+      shortUrl: `${await paymentPublicBaseUrl()}/pay/${params.token}`,
       rawPayload: { mode: "mock", linkId },
     };
   },
@@ -90,7 +91,7 @@ export const OfflineBankProvider: PaymentProvider = {
     return {
       ok: true,
       providerLinkId: `offlink_${params.token}`,
-      shortUrl: `${process.env.NEXT_PUBLIC_APP_URL || ""}/pay/${params.token}`,
+      shortUrl: `${await paymentPublicBaseUrl()}/pay/${params.token}`,
     };
   },
 

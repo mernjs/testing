@@ -10,10 +10,10 @@ import {
   type ChatbotConfigInput,
 } from "@/lib/chatbot-config";
 import { isOpenAIConfigured } from "@/lib/openai";
-import { beginWebsiteIndex, runWebsiteIndex, urlsForPageIds } from "@/lib/kb-website";
+import { beginWebsiteIndex, chatbotCrawlBaseOverride, runWebsiteIndex, urlsForPageIds } from "@/lib/kb-website";
 import { reindexPdf, deletePdf } from "@/lib/kb-pdf";
 import { deleteVoiceConversation, bulkDeleteVoiceConversations } from "@/lib/voice-conversations";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { afterForCompany } from "@/lib/platform/tenancy/context";
 
 // Every action re-checks the session — render-time gating on the page alone
@@ -24,8 +24,8 @@ async function requireLmsUser() {
   return lmsUser;
 }
 
-function crawlBaseUrl(): string {
-  return process.env.CHATBOT_CRAWL_BASE_URL || siteUrl;
+async function crawlBaseUrl(): Promise<string> {
+  return (await chatbotCrawlBaseOverride()) ?? (await companySiteUrl());
 }
 
 // ---------------------------------------------------------------------------
@@ -66,7 +66,8 @@ export async function triggerWebsiteIndexAction(mode: "full" | "incremental"): P
   if (!isOpenAIConfigured()) return { error: "OPENAI_API_KEY is not configured." };
   const incremental = mode === "incremental";
   const { runId, logger } = await beginWebsiteIndex({ triggeredBy: lmsUser.email, incremental });
-  await afterForCompany(() => runWebsiteIndex(logger, { baseUrl: crawlBaseUrl(), incremental, triggeredBy: lmsUser.email }));
+  const baseUrl = await crawlBaseUrl();
+  await afterForCompany(() => runWebsiteIndex(logger, { baseUrl, incremental, triggeredBy: lmsUser.email }));
   revalidatePath("/lms/chatbot/knowledge-base");
   return { runId };
 }
@@ -77,8 +78,9 @@ export async function reindexPagesAction(pageIds: string[]): Promise<{ runId?: s
   const urls = await urlsForPageIds(pageIds);
   if (urls.length === 0) return { error: "No matching pages selected." };
   const { runId, logger } = await beginWebsiteIndex({ triggeredBy: lmsUser.email, onlyUrls: urls });
+  const baseUrl = await crawlBaseUrl();
   await afterForCompany(() =>
-    runWebsiteIndex(logger, { baseUrl: crawlBaseUrl(), onlyUrls: urls, triggeredBy: lmsUser.email })
+    runWebsiteIndex(logger, { baseUrl, onlyUrls: urls, triggeredBy: lmsUser.email })
   );
   revalidatePath("/lms/chatbot/knowledge-base");
   return { runId };

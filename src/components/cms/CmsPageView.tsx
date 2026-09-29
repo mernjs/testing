@@ -2,6 +2,7 @@ import SectionRenderer from "@/components/cms/SectionRenderer";
 import { getRuntimeRecords } from "@/lib/cms/collections/store";
 import { jsonLdNeeds, resolveJsonLd } from "@/lib/cms/json-ld-generators";
 import type { PublicPage } from "@/lib/cms/public";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import type { BlogPostMeta } from "@/types/content";
 import type { Job } from "@/types/content";
 import type { EngagementCategory } from "@/types/content";
@@ -26,13 +27,15 @@ export default async function CmsPageView({
 }) {
   const needs = jsonLdNeeds(page.jsonLd);
   const none = Promise.resolve([]);
-  const [blog, jobs, engagement, products] = await Promise.all([
+  const [siteUrl, blog, jobs, engagement, products] = await Promise.all([
+    companySiteUrl(),
     needs.blog ? getRuntimeRecords<BlogPostMeta>("blog") : none,
     needs.jobs ? getRuntimeRecords<Job>("jobs") : none,
     needs.engagement ? getRuntimeRecords<EngagementCategory>("engagement") : none,
     needs.products ? getRuntimeRecords<ProductItem>("products") : none,
   ]);
   const jsonLd = resolveJsonLd(page.jsonLd, {
+    siteUrl,
     path: page.path,
     description: page.seo?.description ?? "",
     sections: page.sections,

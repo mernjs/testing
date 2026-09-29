@@ -25,7 +25,7 @@ function Section({ title, description, children, id }: { title: string; descript
   );
 }
 
-export default function SeoSettingsForm({ initial, env }: { initial: SettingsValues; env: { serviceAccount: string | null; pagespeedKey: boolean; gscLastSync: string | null; gscError: string | null; ga4LastSync: string | null; ga4Error: string | null } }) {
+export default function SeoSettingsForm({ initial, siteUrl, env }: { initial: SettingsValues; /** The company's public site, for placeholders. */ siteUrl: string; env: { serviceAccount: string | null; pagespeedKey: boolean; gscLastSync: string | null; gscError: string | null; ga4LastSync: string | null; ga4Error: string | null } }) {
   const router = useRouter();
   const [v, setV] = useState<SettingsValues>(initial);
   const [pending, startTransition] = useTransition();
@@ -70,7 +70,7 @@ export default function SeoSettingsForm({ initial, env }: { initial: SettingsVal
       }}
     >
       <Section title="Website" description="The origin the crawler audits. Keep production for live audits; point at a staging or local server to audit before deploying.">
-        <div className="max-w-md space-y-1.5"><Label htmlFor="s-origin" className="text-xs">Site origin</Label><Input id="s-origin" {...txt("siteOrigin")} placeholder="https://yashorbit.com" /></div>
+        <div className="max-w-md space-y-1.5"><Label htmlFor="s-origin" className="text-xs">Site origin</Label><Input id="s-origin" {...txt("siteOrigin")} placeholder={siteUrl} /></div>
       </Section>
 
       <Section title="Crawl" description="Scope and politeness of the website audit.">
@@ -124,7 +124,7 @@ export default function SeoSettingsForm({ initial, env }: { initial: SettingsVal
           <div className="space-y-2 rounded-xl border border-border/40 p-3">
             <p className="text-sm font-semibold">Google Search Console</p>
             {chk("gscEnabled", "Enabled")}
-            <div className="space-y-1.5"><Label className="text-xs">Property</Label><Input {...txt("gscProperty")} placeholder="sc-domain:yashorbit.com" /></div>
+            <div className="space-y-1.5"><Label className="text-xs">Property</Label><Input {...txt("gscProperty")} placeholder={`sc-domain:${new URL(siteUrl).hostname}`} /></div>
             <p className="text-[11px] text-muted-foreground">{env.gscLastSync ? `Last sync ${env.gscLastSync}` : "Never synced"}{env.gscError && <span className="block text-rose-600">{env.gscError}</span>}</p>
             <Button type="button" size="sm" variant="outline" disabled={!env.serviceAccount || testing !== null} onClick={() => test("gsc")}>{testing === "gsc" ? <Loader2 className="size-3.5 animate-spin" /> : <PlugZap className="size-3.5" data-icon="inline-start" />}Test connection</Button>
           </div>

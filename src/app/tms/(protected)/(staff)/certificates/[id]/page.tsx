@@ -10,7 +10,7 @@ import { getCurrentTmsUser } from "@/lib/tms-auth";
 import { canIssueCertificates } from "@/lib/tms-roles";
 import { certificateWithMeta } from "@/lib/tms/certificates";
 import { formatDate, formatDateTime } from "@/lib/utils";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 
 export default async function CertificateDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -19,7 +19,7 @@ export default async function CertificateDetailPage({ params }: { params: Promis
 
   const user = await getCurrentTmsUser();
   const canManage = user ? canIssueCertificates(user) : false;
-  const verifyUrl = `${siteUrl}/verify/${cert.verificationCode}`;
+  const verifyUrl = `${await companySiteUrl()}/verify/${cert.verificationCode}`;
 
   return (
     <div className="space-y-4">

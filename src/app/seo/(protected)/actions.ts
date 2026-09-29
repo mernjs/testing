@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { ObjectId } from "mongodb";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { getCurrentSeoUser } from "@/lib/seo-auth";
 import { destroySessionsEverywhere } from "@/lib/cross-module-sso";
 import { notifyGoogleIndexing } from "@/lib/google-indexing";
@@ -142,7 +142,7 @@ export async function requestIndexingAction(id: string) {
   return run("MANAGE_TECHNICAL_SEO", async (v) => {
     const page = await getPage(s(id, 60));
     if (!page) throw new SeoInputError("Page not found.");
-    const res = await notifyGoogleIndexing(`${siteUrl}${page.path === "/" ? "" : page.path}`, "URL_UPDATED");
+    const res = await notifyGoogleIndexing(`${await companySiteUrl()}${page.path === "/" ? "" : page.path}`, "URL_UPDATED");
     await recordAudit({ actorId: v.userId, actorEmail: v.email, action: "notify", entity: "page", entityId: page._id, entityLabel: page.path, path: page.path, summary: res.success ? "Indexing API: URL_UPDATED sent" : `Indexing API failed: ${res.message}` });
     if (!res.success) throw new SeoInputError(res.message ?? "The Indexing API request failed.");
     return { message: res.message ?? "Sent" };
@@ -511,10 +511,11 @@ export async function saveSettingsAction(input: Record<string, unknown>) {
       const val = Number(x);
       return Number.isFinite(val) ? Math.min(Math.max(Math.round(val), min), max) : fallback;
     };
+    const siteUrl = await companySiteUrl();
     const origin = cleanOrigin(s(input.siteOrigin, 300));
-    if (!origin) throw new SeoInputError("Site origin must be an http(s) URL, e.g. https://yashorbit.com.");
+    if (!origin) throw new SeoInputError(`Site origin must be an http(s) URL, e.g. ${siteUrl}.`);
     const property = s(input.gscProperty, 300).trim();
-    if (property && !/^(sc-domain:[a-z0-9.-]+|https?:\/\/[^\s]+\/)$/i.test(property)) throw new SeoInputError('Search Console property must look like "sc-domain:yashorbit.com" or "https://yashorbit.com/".');
+    if (property && !/^(sc-domain:[a-z0-9.-]+|https?:\/\/[^\s]+\/)$/i.test(property)) throw new SeoInputError(`Search Console property must look like "sc-domain:${new URL(siteUrl).hostname}" or "${siteUrl}/".`);
     const ga4 = s(input.ga4PropertyId, 30).trim();
     if (ga4 && !/^\d+$/.test(ga4)) throw new SeoInputError("GA4 property id is numeric (Admin → Property settings).");
     const freq = ["off", "daily", "weekly"].includes(String(input.auditFrequency)) ? (input.auditFrequency as SeoSettings["schedule"]["auditFrequency"]) : cur.schedule.auditFrequency;

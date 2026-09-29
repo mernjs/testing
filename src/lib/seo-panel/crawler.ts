@@ -1,5 +1,5 @@
 import "server-only";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { COLLECTIONS, newId, seoCollection } from "@/lib/seo-panel/db";
 import { analyzeHtml, type HtmlSnapshot } from "@/lib/seo-panel/analyze";
 import { fetchUrl, mapLimit, type FetchResult } from "@/lib/seo-panel/fetch";
@@ -125,7 +125,7 @@ async function runLocked(opts: { trigger: CrawlRun["trigger"]; actorId: string |
 async function crawl(run: CrawlRun, settings: SeoSettings): Promise<Partial<CrawlRun>> {
   const origin = settings.siteOrigin;
   const originUrl = new URL(origin);
-  const primaryHost = new URL(siteUrl).host;
+  const primaryHost = new URL(await companySiteUrl()).host;
   const internalHosts = new Set([bareHost(originUrl.host), bareHost(primaryHost)]);
   const isInternal = (u: URL) => internalHosts.has(bareHost(u.host));
   const t = settings.thresholds;

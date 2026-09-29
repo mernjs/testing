@@ -39,3 +39,7 @@ unaware of this layer beyond calling `getDb()`, which is company-scoped.
   `tenancy/collections.ts` → `GLOBAL_COLLECTIONS` and read via `getPlatformDb()`.
   Everything else is company-scoped by default.
 - Provider credentials (Resend, Vercel, …) are server-side env vars only.
+- Anything that links to "this company's website" (sitemap, robots, canonical /
+  Open Graph URLs, JSON-LD, SEO crawler, certificate verification, payment
+  links) uses `companySiteUrl()` from `tenancy/site-url.ts`, never `siteUrl`
+  from `src/lib/seo.ts` (that constant is the platform owner's own origin).

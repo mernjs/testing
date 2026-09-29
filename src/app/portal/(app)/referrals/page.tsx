@@ -12,6 +12,7 @@ import { EarnNav } from "@/components/portal/rewards/parts";
 import { formatDate } from "@/lib/utils";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 import { getCompanyBrand } from "@/lib/platform/branding";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 
 export const dynamic = "force-dynamic";
 export const generateMetadata = () => brandedMetadata("Referrals · {brand} Portal");
@@ -20,9 +21,9 @@ export default async function PortalReferralsPage() {
   const brand = await getCompanyBrand();
   const user = await guardPortalPage();
   const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "yashorbit.com";
-  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
-  const overview = await getReferralOverview(user.id, `${proto}://${host}`);
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  const proto = h.get("x-forwarded-proto") ?? (host?.startsWith("localhost") ? "http" : "https");
+  const overview = await getReferralOverview(user.id, host ? `${proto}://${host}` : await companySiteUrl());
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
