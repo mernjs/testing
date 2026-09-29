@@ -15,6 +15,7 @@ import { getPublicFooter } from "@/lib/cms/footer";
 import { themeCssBlock } from "@/lib/cms/theme";
 import { resolveSiteThemeState } from "@/lib/cms/theme-preview";
 import ThemePreviewBridge from "@/components/cms/theme/ThemePreviewBridge";
+import CmsAdminToolbar from "@/components/cms/CmsAdminToolbar";
 import { getSiteInfo } from "@/lib/cms/site-info";
 
 export default async function SiteLayout({
@@ -50,6 +51,8 @@ export default async function SiteLayout({
       <SiteFooter cmsFooter={cmsFooter} siteInfo={siteInfo} />
       <Toaster position="top-right" richColors closeButton />
       {preview && <ThemePreviewBridge themeName={preview.name} />}
+      {/* Signed-in CMS users only (client-side; visitors never request it). */}
+      <CmsAdminToolbar />
     </OfferClaimProvider>
   );
 }

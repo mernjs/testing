@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,9 @@ import { createRecordAction } from "../actions";
 
 export default function NewRecordDialog({ collection, singular }: { collection: string; singular: string }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const params = useSearchParams();
+  // `?new=1` (e.g. from the website's CMS toolbar "New" menu) opens the panel straight away.
+  const [open, setOpen] = useState(() => params.get("new") === "1");
   const [slug, setSlug] = useState("");
   const [pending, startTransition] = useTransition();
 

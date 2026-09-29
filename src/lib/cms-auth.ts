@@ -15,6 +15,8 @@ import { normalizeCmsRoles, hasCmsAccess } from "@/lib/cms-roles";
  */
 
 export const CMS_SESSION_COOKIE = "cms_session";
+/** Readable "a CMS user is signed in on this browser" hint for the public site's admin toolbar (see setCmsSessionCookie). */
+export const CMS_UI_HINT_COOKIE = "cms_ui";
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes
@@ -176,11 +178,15 @@ export async function setCmsSessionCookie(token: string): Promise<void> {
     path: "/",
     maxAge: SESSION_TTL_MS / 1000,
   });
+  // Readable, non-sensitive hint so the public site knows it's worth asking whether to show the
+  // CMS admin toolbar — visitors without it never make that request. Not an auth signal.
+  store.set(CMS_UI_HINT_COOKIE, "1", { httpOnly: false, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: SESSION_TTL_MS / 1000 });
 }
 
 export async function clearCmsSessionCookie(): Promise<void> {
   const store = await cookies();
   store.delete(CMS_SESSION_COOKIE);
+  store.delete(CMS_UI_HINT_COOKIE);
 }
 
 export async function getCurrentCmsUser(): Promise<CurrentCmsUser | null> {

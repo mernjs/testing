@@ -10,6 +10,9 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ConfirmProvider } from "@/components/cms/ui/ConfirmProvider";
 import { listPages } from "@/lib/cms/pages";
+import { getActiveThemeKey } from "@/lib/cms/theme";
+import { getMaintenanceMode } from "@/lib/cms/settings";
+import CmsNotices from "@/components/cms/CmsNotices";
 
 export const metadata = { title: "YashOrbit CMS", robots: { index: false, follow: false } };
 
@@ -21,11 +24,12 @@ export default async function ProtectedCmsLayout({ children }: { children: React
   const viewer = await getViewer();
   if (!viewer) redirect("/cms/login");
 
-  const pages = await listPages();
+  const [pages, maintenance, activeTheme] = await Promise.all([listPages(), getMaintenanceMode(), getActiveThemeKey()]);
   const flags: CmsNavFlags = {
     settings: can(viewer, "SETTINGS_MANAGE"),
     audit: can(viewer, "VIEW_AUDIT"),
     pendingPages: pages.filter((p) => p.hasUnpublishedChanges).length,
+    activeTheme,
   };
 
   return (
@@ -50,7 +54,10 @@ export default async function ProtectedCmsLayout({ children }: { children: React
             <div className="lms-surface relative z-30 shrink-0 rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md dark:bg-card/85">
               <CmsTopbar roles={user.roles} flags={flags} />
             </div>
-            <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">{children}</main>
+            <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">
+              <CmsNotices maintenance={maintenance.enabled} />
+              {children}
+            </main>
           </div>
         </div>
       </SidebarCollapseProvider>

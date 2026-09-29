@@ -32,6 +32,7 @@ export async function updateCmsMediaAction(id: string, patch: { name?: string; a
   if (!v) return { ok: false, error: SESSION_EXPIRED };
   if (!can(v, "MEDIA_UPLOAD")) return { ok: false, error: NO_PERMISSION };
   await updateMedia(id, patch, v.userId);
+  await recordAudit({ actorId: v.userId, actorEmail: v.email, action: "update", entity: "media", entityId: id, entityLabel: patch.name ?? id, summary: "Edited attachment details" });
   return { ok: true };
 }
 

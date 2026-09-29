@@ -12,12 +12,12 @@ export default async function CmsMediaPage() {
   const items = await listMedia();
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+    <div className="mx-auto max-w-7xl space-y-6 p-4 sm:p-6">
       <CmsPageHeader
         breadcrumbs={[{ label: "Media Library" }]}
         icon={ImageIcon}
         title="Media Library"
-        description={<>Images used across CMS-managed pages.</>}
+        description={<>Every image used across the website. Click a file to edit its title and alt text, copy its URL or delete it.</>}
       />
       <MediaLibraryGrid initialItems={items} canUpload={can(viewer, "MEDIA_UPLOAD")} canDelete={can(viewer, "MEDIA_DELETE")} />
     </div>

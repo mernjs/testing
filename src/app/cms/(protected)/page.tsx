@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {
-  Files, Image as ImageIcon, Menu as MenuIcon, Palette, ArrowRight, FileCheck2, Construction, Activity, Plus, Upload,
+  Files, Image as ImageIcon, Menu as MenuIcon, Palette, ArrowRight, FileCheck2, Activity, Plus, Upload,
   BadgeInfo, Database, CircleCheck, CircleDashed, PenLine, Archive, Newspaper, Briefcase, Users, Boxes, LayoutDashboard,
 } from "lucide-react";
 import GlassCard from "@/components/lms/GlassCard";
@@ -20,6 +20,10 @@ import type { CollectionKey } from "@/lib/cms/collections/types";
 import { SITE_AREAS, areaOf, timeAgo, displayTitle } from "@/lib/cms/site-areas";
 import { getViewer, can } from "@/lib/cms/viewer";
 import { cn } from "@/lib/utils";
+import { seoIssues } from "@/lib/cms/seo-checks";
+import DashboardWidgets, { type DashboardWidget } from "@/components/cms/dashboard/DashboardWidgets";
+import QuickDraft from "@/components/cms/dashboard/QuickDraft";
+import { CheckCircle2, AlertTriangle, HeartPulse, Paintbrush, ExternalLink, Sparkles, SearchCheck, PanelBottom } from "lucide-react";
 
 const COLLECTION_ICON: Record<CollectionKey, React.ComponentType<{ className?: string }>> = { blog: Newspaper, jobs: Briefcase, engagement: Users, products: Boxes };
 
@@ -55,29 +59,35 @@ export default async function CmsDashboardPage() {
     { href: "/cms/site-identity", label: "Site identity", icon: BadgeInfo, show: true },
   ].filter((q) => q.show);
 
-  return (
-    <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
-      <CmsPageHeader
-        icon={LayoutDashboard}
-        title="Dashboard"
-        description="An overview of the website's content, what's waiting to be published and recent activity."
-        actions={quick.map((q) => (
-          <Link key={q.href + q.label} href={q.href} className={buttonVariants({ variant: q.label === "New page" ? "default" : "outline", size: "sm" })}>
-            <q.icon className="size-3.5" /> {q.label}
-          </Link>
-        ))}
-      />
 
-      {settings.maintenanceMode.enabled && (
-        <Link href="/cms/settings" className="flex items-center gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-foreground transition-colors hover:bg-amber-500/15">
-          <Construction className="size-5 shrink-0 text-amber-600" />
-          <span>
-            <strong>Maintenance mode is on</strong> — public visitors currently see the maintenance page. Turn it off in Settings.
-          </span>
-          <ArrowRight className="ml-auto size-4 shrink-0" />
-        </Link>
-      )}
+  // Site Health (WordPress-style): each check passes or points at the screen that fixes it.
+  const seoProblems = pages
+    .filter((p) => p.status === "published")
+    .filter((p) => {
+      const seo = p.live?.seo ?? p.draft.seo ?? null;
+      return seoIssues({ title: seo?.title ?? "", description: seo?.description ?? "", canonical: seo?.canonical ?? null, noindex: seo?.robots?.index === false }).length > 0;
+    }).length;
+  const noAlt = media.filter((m) => !m.altText?.trim()).length;
+  const themeDraftPending = !!activeTheme && JSON.stringify(activeTheme.draftTokens) !== JSON.stringify(activeTheme.tokens);
+  const recordChanges = records.filter((r) => r.hasUnpublishedChanges && r.state !== "archived").length;
+  const health: HealthCheck[] = [
+    { ok: !settings.maintenanceMode.enabled, critical: true, good: "The website is open to visitors", bad: "Maintenance mode is on — visitors can't see the site", href: "/cms/settings" },
+    { ok: pending.length === 0, good: "Every page change is published", bad: `${pending.length} page${pending.length === 1 ? " has" : "s have"} unpublished changes`, href: "/cms/pages?status=pending" },
+    { ok: recordChanges === 0, good: "Blog, careers and other records are all published", bad: `${recordChanges} record${recordChanges === 1 ? " has" : "s have"} unpublished changes`, href: "/cms/collections" },
+    { ok: seoProblems === 0, good: "Every published page's search appearance looks good", bad: `${seoProblems} published page${seoProblems === 1 ? " needs" : "s need"} SEO attention`, href: "/cms/seo" },
+    { ok: noAlt === 0, good: "Every image has alt text", bad: `${noAlt} image${noAlt === 1 ? " is" : "s are"} missing alt text`, href: "/cms/media?filter=no-alt" },
+    { ok: !!settings.defaultOgImage, good: "A default social sharing image is set", bad: "No default social sharing image", href: "/cms/settings" },
+    { ok: !themeDraftPending, good: "The active theme has no unpublished customizations", bad: "The active theme has unpublished customizations", href: `/cms/customize/${activeKey}` },
+  ];
+  const recentDrafts = (collections.find((c) => c.key === "blog")?.rows ?? [])
+    .filter((r) => r.state === "draft")
+    .sort((a, b) => +new Date(b.updatedAt ?? 0) - +new Date(a.updatedAt ?? 0))
+    .slice(0, 3)
+    .map((r) => ({ slug: r.slug, title: r.title, edited: r.updatedAt ? timeAgo(r.updatedAt) : "" }));
 
+  const widgets: DashboardWidget[] = [
+    { id: "glance", label: "At a glance", span: "full", node: (
+      <>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Link href="/cms/pages"><KpiCard label="Published pages" value={published} icon={<Files className="size-4" />} accent /></Link>
         <Link href="/cms/pages?status=pending"><KpiCard label="Awaiting publish" value={pending.length} icon={<PenLine className="size-4" />} /></Link>
@@ -85,6 +95,10 @@ export default async function CmsDashboardPage() {
         <Link href="/cms/media"><KpiCard label="Media files" value={media.length} icon={<ImageIcon className="size-4" />} /></Link>
       </div>
 
+      </>
+    ) },
+    { id: "publishing", label: "Publishing status", span: "full", node: (
+      <>
       <GlassCard interactive={false} className="space-y-3 p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm font-semibold text-foreground">Publishing status</p>
@@ -103,8 +117,11 @@ export default async function CmsDashboardPage() {
         </div>
       </GlassCard>
 
-      <div className="grid gap-4 lg:grid-cols-5">
-        <GlassCard interactive={false} className="p-5 lg:col-span-3">
+      </>
+    ) },
+    { id: "needs-publishing", label: "Needs publishing", span: "wide", node: (
+      <>
+        <GlassCard interactive={false} className="h-full p-5">
           <div className="flex items-center justify-between gap-2">
             <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
               <PenLine className="size-4 text-primary" /> Needs publishing
@@ -136,7 +153,11 @@ export default async function CmsDashboardPage() {
           )}
         </GlassCard>
 
-        <GlassCard interactive={false} className="p-5 lg:col-span-2">
+      </>
+    ) },
+    { id: "activity", label: "Recent activity", span: "narrow", node: (
+      <>
+        <GlassCard interactive={false} className="h-full p-5">
           <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <Activity className="size-4 text-primary" /> Recent activity
           </p>
@@ -163,10 +184,13 @@ export default async function CmsDashboardPage() {
             Full audit log <ArrowRight className="size-3" />
           </Link>
         </GlassCard>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <GlassCard interactive={false} className="p-5">
+      </>
+    ) },
+    { id: "health", label: "Site Health", span: "half", node: <SiteHealth checks={health} /> },
+    { id: "quick-draft", label: "Quick Draft", span: "half", node: <QuickDraft recent={recentDrafts} /> },
+    { id: "areas", label: "Pages by site area", span: "half", node: (
+      <>
+        <GlassCard interactive={false} className="h-full p-5">
           <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <Files className="size-4 text-primary" /> Pages by site area
           </p>
@@ -185,7 +209,11 @@ export default async function CmsDashboardPage() {
           </ul>
         </GlassCard>
 
-        <GlassCard interactive={false} className="p-5">
+      </>
+    ) },
+    { id: "collections", label: "Collections", span: "half", node: (
+      <>
+        <GlassCard interactive={false} className="h-full p-5">
           <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <Database className="size-4 text-primary" /> Collections
           </p>
@@ -214,7 +242,109 @@ export default async function CmsDashboardPage() {
             <Link href="/cms/theme" className="flex items-center gap-1.5 hover:text-primary"><Palette className="size-3.5" /> Theme: {activeTheme?.name ?? activeKey}</Link>
           </div>
         </GlassCard>
-      </div>
+      </>
+    ) },
+  ];
+
+  return (
+    <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
+      <CmsPageHeader
+        icon={LayoutDashboard}
+        title="Dashboard"
+        description="An overview of the website's content, what's waiting to be published and recent activity."
+        actions={quick.map((q) => (
+          <Link key={q.href + q.label} href={q.href} className={buttonVariants({ variant: q.label === "New page" ? "default" : "outline", size: "sm" })}>
+            <q.icon className="size-3.5" /> {q.label}
+          </Link>
+        ))}
+      />
+
+
+      <DashboardWidgets welcome={<WelcomePanel activeTheme={activeKey} canCreate={viewer ? can(viewer, "PAGES_CREATE") : false} />} widgets={widgets} />
     </div>
+  );
+}
+
+interface HealthCheck {
+  ok: boolean;
+  critical?: boolean;
+  good: string;
+  bad: string;
+  href: string;
+}
+
+function SiteHealth({ checks }: { checks: HealthCheck[] }) {
+  const passed = checks.filter((c) => c.ok).length;
+  const score = Math.round((passed / checks.length) * 100);
+  const critical = checks.some((c) => !c.ok && c.critical);
+  const good = !critical && score >= 70;
+  const r = 26;
+  const circ = 2 * Math.PI * r;
+  const failing = checks.filter((c) => !c.ok).sort((a, b) => Number(!!b.critical) - Number(!!a.critical));
+  return (
+    <GlassCard interactive={false} className="h-full space-y-4 p-5">
+      <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
+        <HeartPulse className="size-4 text-primary" /> Site Health
+      </p>
+      <div className="flex items-center gap-4">
+        <svg viewBox="0 0 64 64" className="size-16 shrink-0 -rotate-90" role="img" aria-label={`Site health ${score}%`}>
+          <circle cx="32" cy="32" r={r} fill="none" strokeWidth="6" className="stroke-muted" />
+          <circle cx="32" cy="32" r={r} fill="none" strokeWidth="6" strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={circ * (1 - score / 100)} className={good ? "stroke-emerald-500" : critical ? "stroke-destructive" : "stroke-amber-500"} />
+        </svg>
+        <div>
+          <p className={cn("text-base font-semibold", good ? "text-emerald-600 dark:text-emerald-400" : critical ? "text-destructive" : "text-amber-600 dark:text-amber-400")}>
+            {good ? "Good" : critical ? "Needs attention" : "Should be improved"}
+          </p>
+          <p className="text-xs text-muted-foreground">{passed} of {checks.length} checks passed</p>
+        </div>
+      </div>
+      <ul className="space-y-1.5">
+        {[...failing, ...checks.filter((c) => c.ok)].map((c) => (
+          <li key={c.good}>
+            <Link href={c.href} className="group flex items-start gap-2 rounded-lg px-2 py-1 text-sm transition-colors hover:bg-primary/5">
+              {c.ok ? (
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-500" />
+              ) : (
+                <AlertTriangle className={cn("mt-0.5 size-4 shrink-0", c.critical ? "text-destructive" : "text-amber-500")} />
+              )}
+              <span className={cn("flex-1", c.ok ? "text-muted-foreground" : "text-foreground")}>{c.ok ? c.good : c.bad}</span>
+              {!c.ok && <ArrowRight className="mt-0.5 size-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </GlassCard>
+  );
+}
+
+function WelcomePanel({ activeTheme, canCreate }: { activeTheme: string; canCreate: boolean }) {
+  const col = "space-y-2.5";
+  const link = "flex items-center gap-2 text-sm text-foreground transition-colors hover:text-primary";
+  return (
+    <GlassCard interactive={false} className="overflow-hidden p-0">
+      <div className="bg-gradient-to-r from-primary/10 via-secondary/40 to-transparent px-6 pt-6 pb-4">
+        <p className="flex items-center gap-2 text-lg font-semibold text-foreground"><Sparkles className="size-5 text-primary" /> Welcome to your website CMS</p>
+        <p className="mt-1 text-sm text-muted-foreground">Everything on the public website is managed here. Some links to get you going:</p>
+      </div>
+      <div className="grid gap-6 px-6 pt-2 pb-6 sm:grid-cols-3">
+        <div className={col}>
+          <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Get started</p>
+          <Link href={`/cms/customize/${activeTheme}`} className={buttonVariants({ size: "sm" })}><Paintbrush className="size-3.5" /> Customize your site</Link>
+          <p className="text-xs text-muted-foreground">or <Link href="/cms/theme" className="text-primary hover:underline">change your theme completely</Link></p>
+        </div>
+        <div className={col}>
+          <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Next steps</p>
+          <Link href="/cms/collections/blog?new=1" className={link}><Newspaper className="size-4 text-primary" /> Write a blog post</Link>
+          {canCreate && <Link href="/cms/pages?new=1" className={link}><Plus className="size-4 text-primary" /> Add a page</Link>}
+          <a href="/" target="_blank" rel="noopener noreferrer" className={link}><ExternalLink className="size-4 text-primary" /> View your site</a>
+        </div>
+        <div className={col}>
+          <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">More actions</p>
+          <Link href="/cms/navigation" className={link}><MenuIcon className="size-4 text-primary" /> Manage menus</Link>
+          <Link href="/cms/footer" className={link}><PanelBottom className="size-4 text-primary" /> Edit the footer</Link>
+          <Link href="/cms/seo" className={link}><SearchCheck className="size-4 text-primary" /> Review SEO</Link>
+        </div>
+      </div>
+    </GlassCard>
   );
 }

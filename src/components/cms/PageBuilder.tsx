@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   Plus, ChevronUp, ChevronDown, Trash2, Pencil, Eye, EyeOff, Loader2,
-  History, Rocket, Copy, RotateCcw, FileText, ExternalLink, CloudCheck, LayoutTemplate, Undo2,
+  History, Rocket, Copy, RotateCcw, FileText, ExternalLink, CloudCheck, LayoutTemplate, Undo2, GitCompare, ArrowLeft,
 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import CmsPageHeader from "@/components/cms/ui/CmsPageHeader";
@@ -27,6 +27,7 @@ import GlassCard from "@/components/lms/GlassCard";
 import SectionConfigForm from "@/components/cms/SectionConfigForm";
 import { SECTION_REGISTRY, type PageSection } from "@/lib/cms/section-registry";
 import { moveOrderKey } from "@/lib/cms/order";
+import { diffSections, type SectionChange } from "@/lib/cms/section-diff";
 import { displayTitle } from "@/lib/cms/site-areas";
 import {
   saveSectionAction, removeSectionAction, reorderSectionAction, toggleSectionAction,
@@ -312,7 +313,7 @@ export default function PageBuilder({
           />
         )}
         {isDefaultTab && canRestore && (
-          <VersionHistoryDialog pageId={pageId} onRestored={(restoredSections) => { setSectionsByTab((prev) => ({ ...prev, [DEFAULT_TAB]: restoredSections })); setDirty(true); }} />
+          <VersionHistoryDialog pageId={pageId} currentSections={sectionsByTab[DEFAULT_TAB] ?? []} onRestored={(restoredSections) => { setSectionsByTab((prev) => ({ ...prev, [DEFAULT_TAB]: restoredSections })); setDirty(true); }} />
         )}
       </div>
 
@@ -451,8 +452,9 @@ function PublishDialog({ pageId, disabled, onPublished }: { pageId: string; disa
   );
 }
 
-function VersionHistoryDialog({ pageId, onRestored }: { pageId: string; onRestored: (sections: PageSection[]) => void }) {
+function VersionHistoryDialog({ pageId, currentSections, onRestored }: { pageId: string; currentSections: PageSection[]; onRestored: (sections: PageSection[]) => void }) {
   const [open, setOpen] = useState(false);
+  const [comparing, setComparing] = useState<CmsPageVersionDoc | null>(null);
   const [versions, setVersions] = useState<CmsPageVersionDoc[] | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -476,14 +478,18 @@ function VersionHistoryDialog({ pageId, onRestored }: { pageId: string; onRestor
   };
 
   return (
-    <Panel open={open} onOpenChange={(o) => (o ? load() : setOpen(false))}>
+    <Panel open={open} onOpenChange={(o) => { if (o) load(); else { setOpen(false); setComparing(null); } }}>
       <PanelTrigger render={<Button variant="outline" size="sm"><History className="size-3.5" /> Version history</Button>} />
-      <PanelContent>
+      <PanelContent size="lg">
         <PanelHeader>
           <PanelTitle>Version history</PanelTitle>
           <PanelDescription>Restoring loads that version&apos;s content into the draft — you still need to publish it.</PanelDescription>
         </PanelHeader>
         <PanelBody className="space-y-2">
+          {comparing ? (
+            <RevisionCompare version={comparing} current={currentSections} onBack={() => setComparing(null)} onRestore={() => restore(comparing.version)} pending={pending} />
+          ) : (
+          <>
           {pending && !versions && <Loader2 className="size-4 animate-spin text-muted-foreground" />}
           {versions?.length === 0 && <p className="text-sm text-muted-foreground">No published versions yet.</p>}
           {versions?.map((v) => (
@@ -494,13 +500,61 @@ function VersionHistoryDialog({ pageId, onRestored }: { pageId: string; onRestor
                 </p>
                 <p className="truncate text-xs text-muted-foreground">{v.changeSummary}</p>
               </div>
-              <Button size="sm" variant="outline" onClick={() => restore(v.version)} disabled={pending}>
-                Restore
-              </Button>
+              <div className="flex shrink-0 gap-1.5">
+                <Button size="sm" variant="ghost" onClick={() => setComparing(v)}>
+                  <GitCompare className="size-3.5" /> Compare
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => restore(v.version)} disabled={pending}>
+                  Restore
+                </Button>
+              </div>
             </div>
           ))}
+          </>
+          )}
         </PanelBody>
       </PanelContent>
     </Panel>
+  );
+}
+
+const CHANGE_STYLE: Record<SectionChange["kind"], { label: string; className: string }> = {
+  added: { label: "Added", className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" },
+  removed: { label: "Removed", className: "border-destructive/30 bg-destructive/10 text-destructive" },
+  edited: { label: "Edited", className: "border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-400" },
+  moved: { label: "Moved", className: "border-violet-500/30 bg-violet-500/10 text-violet-700 dark:text-violet-400" },
+  shown: { label: "Shown", className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400" },
+  hidden: { label: "Hidden", className: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400" },
+};
+
+/** WordPress-style revision compare, at section level: published version → current draft. */
+function RevisionCompare({ version, current, onBack, onRestore, pending }: { version: CmsPageVersionDoc; current: PageSection[]; onBack: () => void; onRestore: () => void; pending: boolean }) {
+  const changes = diffSections(version.sections, current);
+  const humanize = (k: string) => k.replace(/([A-Z])/g, " $1").replace(/[-_]/g, " ").toLowerCase();
+  return (
+    <div className="space-y-3">
+      <Button variant="ghost" size="sm" onClick={onBack} className="-ml-2"><ArrowLeft className="size-3.5" /> All versions</Button>
+      <div className="rounded-xl border border-border/60 bg-muted/40 p-3 text-sm">
+        Comparing <strong>v{version.version}</strong> <span className="text-muted-foreground">({new Date(version.publishedAt).toLocaleDateString()})</span> with your <strong>current draft</strong>
+      </div>
+      {changes.length === 0 ? (
+        <p className="py-6 text-center text-sm text-muted-foreground">No section differences — the draft&apos;s sections match this version.</p>
+      ) : (
+        <ul className="space-y-2">
+          {changes.map((c, i) => (
+            <li key={`${c.id}-${c.kind}-${i}`} className="flex items-start gap-3 rounded-lg border border-border/60 p-3">
+              <span className={cn("mt-0.5 shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase", CHANGE_STYLE[c.kind].className)}>{CHANGE_STYLE[c.kind].label}</span>
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-foreground">{SECTION_REGISTRY[c.type]?.label ?? c.type}</p>
+                <p className="truncate text-xs text-muted-foreground">{sectionSummary(c.config)}</p>
+                {c.fields && <p className="mt-1 text-xs text-muted-foreground">Changed: {c.fields.map(humanize).join(", ")}</p>}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="text-[11px] text-muted-foreground">SEO and structured-data changes aren&apos;t included in this comparison.</p>
+      <Button variant="outline" size="sm" onClick={onRestore} disabled={pending}><RotateCcw className="size-3.5" /> Restore v{version.version} into the draft</Button>
+    </div>
   );
 }

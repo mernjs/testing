@@ -142,14 +142,22 @@ export async function saveRecordDraft(key: CollectionKey, slug: string, raw: unk
   return { ok: true };
 }
 
-export async function createRecord(key: CollectionKey, rawSlug: string, actorId: string): Promise<Result<{ slug: string }>> {
+function withInit(blank: Record<string, unknown>, init?: Record<string, unknown>): Record<string, unknown> {
+  if (!init) return blank;
+  const out = { ...blank };
+  for (const [k, v] of Object.entries(init)) if (k in blank && typeof v === typeof blank[k]) out[k] = v;
+  return out;
+}
+
+/** `init` pre-fills fields the collection's blank record already has (e.g. `title` from the dashboard's Quick Draft). */
+export async function createRecord(key: CollectionKey, rawSlug: string, actorId: string, init?: Record<string, unknown>): Promise<Result<{ slug: string }>> {
   const def = COLLECTIONS[key];
   const slug = rawSlug.trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
   if (!slug) return { ok: false, error: "Choose a slug (letters, numbers and dashes)." };
   const c = await col();
   if (await c.findOne({ collection: key, slug })) return { ok: false, error: "A record with this slug already exists." };
   await c.insertOne({
-    _id: newId(), collection: key, slug, draft: def.blank(slug) as Record<string, unknown>, live: null, archived: false,
+    _id: newId(), collection: key, slug, draft: withInit(def.blank(slug) as Record<string, unknown>, init), live: null, archived: false,
     hasUnpublishedChanges: true, publishedAt: null, orderKey: await nextOrderKey(key), history: [], ...createStamp(actorId),
   });
   return { ok: true, slug };

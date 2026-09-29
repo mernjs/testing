@@ -69,3 +69,22 @@ export async function createRecordAction(key: string, slug: string): Promise<Res
   if (res.ok) await audit(v, "create", key, res.slug, "Created");
   return res;
 }
+
+/** Dashboard "Quick Draft": a new unpublished record with just a title (slug derived from it, made unique). */
+export async function quickDraftAction(key: string, title: string): Promise<Result<{ slug: string }>> {
+  if (!isKey(key)) return { ok: false, error: "Unknown collection." };
+  const clean = title.trim();
+  if (!clean) return { ok: false, error: "Give the draft a title." };
+  const { v, error } = await guard("COLLECTIONS_EDIT");
+  if (!v) return { ok: false, error };
+  const base = clean.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 70) || "untitled";
+  for (let n = 1; n <= 20; n++) {
+    const res = await createRecord(key, n === 1 ? base : `${base}-${n}`, v.userId, { title: clean });
+    if (res.ok) {
+      await audit(v, "create", key, res.slug, "Created (Quick Draft)");
+      return res;
+    }
+    if (!res.error.includes("already exists")) return res;
+  }
+  return { ok: false, error: "Couldn't find a free URL slug for that title." };
+}

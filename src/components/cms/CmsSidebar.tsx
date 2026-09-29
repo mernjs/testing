@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, Files, Image as ImageIcon, Menu as MenuIcon, PanelBottom, ClipboardList, Palette, Settings, ScrollText,
-  BadgeInfo, Layers, Newspaper, Briefcase, Users, Boxes, SearchCheck,
+  BadgeInfo, Layers, Newspaper, Briefcase, Users, Boxes, SearchCheck, Paintbrush,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -16,6 +16,8 @@ export interface CmsNavFlags {
   audit: boolean;
   /** Pages with unpublished changes — shown as a count on "Pages". */
   pendingPages?: number;
+  /** Key of the active theme, for the Appearance → Customize shortcut. */
+  activeTheme?: string;
 }
 
 type NavItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean; count?: number };
@@ -102,14 +104,6 @@ export default function CmsSidebar({ flags, onNavigate, collapsed = false }: { f
       ],
     },
     {
-      label: "Site structure",
-      items: [
-        { href: "/cms/navigation", label: "Header & Navigation", icon: MenuIcon },
-        { href: "/cms/footer", label: "Footer", icon: PanelBottom },
-        { href: "/cms/site-identity", label: "Site Identity", icon: BadgeInfo },
-      ],
-    },
-    {
       label: "Assets",
       items: [
         { href: "/cms/media", label: "Media Library", icon: ImageIcon },
@@ -117,14 +111,21 @@ export default function CmsSidebar({ flags, onNavigate, collapsed = false }: { f
       ],
     },
     {
-      label: "Design & SEO",
+      label: "Appearance",
       items: [
         { href: "/cms/theme", label: "Themes", icon: Palette },
-        { href: "/cms/seo", label: "SEO Overview", icon: SearchCheck },
+        { href: `/cms/customize/${flags.activeTheme ?? "default"}`, label: "Customize", icon: Paintbrush },
+        { href: "/cms/navigation", label: "Menus", icon: MenuIcon },
+        { href: "/cms/footer", label: "Footer", icon: PanelBottom },
+        { href: "/cms/site-identity", label: "Site Identity", icon: BadgeInfo },
       ],
     },
     {
-      label: "Governance",
+      label: "Search",
+      items: [{ href: "/cms/seo", label: "SEO Overview", icon: SearchCheck }],
+    },
+    {
+      label: "Settings",
       items: [
         ...(flags.settings ? [{ href: "/cms/settings", label: "Settings", icon: Settings }] : []),
         ...(flags.audit ? [{ href: "/cms/audit-logs", label: "Audit Logs", icon: ScrollText }] : []),

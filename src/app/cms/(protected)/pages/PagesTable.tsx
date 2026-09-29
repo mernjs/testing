@@ -1,9 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ExternalLink, Eye, FileText, Pencil, SearchX } from "lucide-react";
+import { ExternalLink, Eye, FileText, Pencil, SearchX, Rocket, Loader2, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { useConfirm } from "@/components/cms/ui/ConfirmProvider";
+import { bulkPublishPagesAction } from "./actions";
 import GlassCard from "@/components/lms/GlassCard";
 import { buttonVariants } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -30,8 +34,14 @@ const SORTS = [
   { value: "path", label: "URL path" },
 ];
 
-export default function PagesTable({ rows }: { rows: PageRow[] }) {
+const PAGE_SIZE = 25;
+
+export default function PagesTable({ rows, canPublish = false }: { rows: PageRow[]; canPublish?: boolean }) {
   const router = useRouter();
+  const confirm = useConfirm();
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [pageNo, setPageNo] = useState(1);
+  const [publishing, startPublish] = useTransition();
   const params = useSearchParams();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>((params.get("status") as StatusFilter) || "all");
@@ -39,6 +49,7 @@ export default function PagesTable({ rows }: { rows: PageRow[] }) {
   const area = params.get("area") ?? "all";
 
   const setArea = (value: string) => {
+    setPageNo(1);
     const next = new URLSearchParams(params.toString());
     if (value === "all") next.delete("area"); else next.set("area", value);
     router.replace(`/cms/pages${next.size ? `?${next}` : ""}`, { scroll: false });
@@ -60,13 +71,35 @@ export default function PagesTable({ rows }: { rows: PageRow[] }) {
       .sort((a, b) => (sort === "title" ? a.title.localeCompare(b.title) : sort === "path" ? a.path.localeCompare(b.path) : +new Date(b.updatedAt) - +new Date(a.updatedAt)));
   }, [inArea, status, query, sort]);
   const areas = SITE_AREAS.filter((a) => rows.some((r) => areaOf(r.path) === a.key));
+  const pageCount = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+  const current = Math.min(pageNo, pageCount);
+  const paged = visible.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
+  const allOnPage = paged.length > 0 && paged.every((r) => selected.has(r.id));
+  const toggle = (id: string, on: boolean) => setSelected((prev) => { const next = new Set(prev); if (on) next.add(id); else next.delete(id); return next; });
+  const togglePage = (on: boolean) => setSelected((prev) => { const next = new Set(prev); for (const r of paged) { if (on) next.add(r.id); else next.delete(r.id); } return next; });
+  const cols = canPublish ? "md:grid-cols-[20px_minmax(0,1fr)_170px_120px_112px]" : "md:grid-cols-[minmax(0,1fr)_170px_120px_112px]";
+
+  const bulkPublish = async () => {
+    const chosen = rows.filter((r) => selected.has(r.id));
+    const publishable = chosen.filter((r) => r.pending || r.status === "draft").length;
+    if (publishable === 0) { toast.info("The selected pages are already up to date."); return; }
+    if (!(await confirm({ title: `Publish ${publishable} page${publishable === 1 ? "" : "s"}?`, description: `Their current drafts go live on the website straight away.${chosen.length > publishable ? ` ${chosen.length - publishable} selected page${chosen.length - publishable === 1 ? " is" : "s are"} already up to date and will be skipped.` : ""}`, confirmLabel: "Publish" }))) return;
+    startPublish(async () => {
+      const res = await bulkPublishPagesAction([...selected]);
+      if (!res.ok) { toast.error(res.error); return; }
+      if (res.published) toast.success(`${res.published} page${res.published === 1 ? "" : "s"} published`);
+      for (const f of res.failed) toast.error(`${f.title}: ${f.error}`);
+      setSelected(new Set());
+      router.refresh();
+    });
+  };
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <FilterChips
           value={status}
-          onChange={setStatus}
+          onChange={(v) => { setStatus(v); setPageNo(1); }}
           options={[
             { value: "all", label: "All", count: counts.all },
             { value: "published", label: "Published", count: counts.published },
@@ -76,7 +109,7 @@ export default function PagesTable({ rows }: { rows: PageRow[] }) {
           ]}
         />
         <div className="flex flex-wrap items-center gap-2">
-          <SearchInput value={query} onChange={setQuery} placeholder="Search title or URL…" />
+          <SearchInput value={query} onChange={(v) => { setQuery(v); setPageNo(1); }} placeholder="Search title or URL…" />
           <ToolbarSelect label="Site area" icon={false} value={area} onChange={setArea} options={[{ value: "all", label: "All site areas" }, ...areas.map((a) => ({ value: a.key, label: a.label }))]} />
           <ToolbarSelect label="Sort by" value={sort} onChange={setSort} options={SORTS} />
         </div>
@@ -89,16 +122,30 @@ export default function PagesTable({ rows }: { rows: PageRow[] }) {
           description={query ? `Nothing matches “${query}” with the current filters.` : "Try a different status or site area."}
         />
       ) : (
+        <>
+        {selected.size > 0 && (
+          <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-primary/30 bg-primary/5 px-4 py-2.5 text-sm">
+            <span className="font-medium text-foreground">{selected.size} selected</span>
+            <span className="text-muted-foreground">·</span>
+            <span className="text-xs text-muted-foreground">Bulk actions:</span>
+            <Button size="sm" onClick={bulkPublish} disabled={publishing}>
+              {publishing ? <Loader2 className="size-3.5 animate-spin" /> : <Rocket className="size-3.5" />} Publish
+            </Button>
+            <Button variant="ghost" size="sm" className="ml-auto" onClick={() => setSelected(new Set())}><X className="size-3.5" /> Clear selection</Button>
+          </div>
+        )}
         <GlassCard interactive={false} className="gap-0 overflow-hidden p-0 py-0">
-          <div className="hidden grid-cols-[minmax(0,1fr)_170px_120px_112px] gap-4 border-b border-border/60 bg-muted/30 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground md:grid">
+          <div className={cn("hidden gap-4 border-b border-border/60 bg-muted/30 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground md:grid", cols)}>
+            {canPublish && <input type="checkbox" aria-label="Select all pages on this screen" className="size-4 accent-[var(--primary)]" checked={allOnPage} onChange={(e) => togglePage(e.target.checked)} />}
             <span>Page</span>
             <span>Status</span>
             <span>Last edited</span>
             <span className="text-right">Actions</span>
           </div>
           <ul className="divide-y divide-border/50">
-            {visible.map((r) => (
-              <li key={r.id} className="group grid grid-cols-1 gap-2 px-4 py-3 transition-colors hover:bg-primary/[0.03] md:grid-cols-[minmax(0,1fr)_170px_120px_112px] md:items-center md:gap-4">
+            {paged.map((r) => (
+              <li key={r.id} className={cn("group grid grid-cols-1 gap-2 px-4 py-3 transition-colors hover:bg-primary/[0.03] md:items-center md:gap-4", cols, selected.has(r.id) && "bg-primary/[0.04]")}>
+                {canPublish && <input type="checkbox" aria-label={`Select ${r.title}`} className="hidden size-4 accent-[var(--primary)] md:block" checked={selected.has(r.id)} onChange={(e) => toggle(r.id, e.target.checked)} />}
                 <Link href={`/cms/pages/${r.id}`} className="flex min-w-0 items-center gap-3">
                   <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"><FileText className="size-4" /></span>
                   <span className="min-w-0">
@@ -119,10 +166,21 @@ export default function PagesTable({ rows }: { rows: PageRow[] }) {
               </li>
             ))}
           </ul>
-          <div className="border-t border-border/60 px-4 py-2 text-xs text-muted-foreground">
-            Showing {visible.length} of {rows.length} pages
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/60 px-4 py-2 text-xs text-muted-foreground">
+            <span>
+              Showing {(current - 1) * PAGE_SIZE + 1}–{(current - 1) * PAGE_SIZE + paged.length} of {visible.length}
+              {visible.length !== rows.length ? ` (filtered from ${rows.length})` : ""} pages
+            </span>
+            {pageCount > 1 && (
+              <div className="flex items-center gap-1">
+                <Button variant="ghost" size="icon-xs" onClick={() => setPageNo(current - 1)} disabled={current === 1} aria-label="Previous page"><ChevronLeft className="size-3.5" /></Button>
+                <span className="px-1 tabular-nums">Page {current} of {pageCount}</span>
+                <Button variant="ghost" size="icon-xs" onClick={() => setPageNo(current + 1)} disabled={current === pageCount} aria-label="Next page"><ChevronRight className="size-3.5" /></Button>
+              </div>
+            )}
           </div>
         </GlassCard>
+        </>
       )}
     </div>
   );

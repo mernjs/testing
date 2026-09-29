@@ -7,6 +7,7 @@ import GlassCard from "@/components/lms/GlassCard";
 import { SearchInput, FilterChips } from "@/components/cms/ui/ListToolbar";
 import EmptyState from "@/components/cms/ui/EmptyState";
 import { cn } from "@/lib/utils";
+import { seoIssues, SEO_TITLE_LENGTH, SEO_DESCRIPTION_LENGTH } from "@/lib/cms/seo-checks";
 
 export interface SeoRow {
   id: string;
@@ -21,21 +22,9 @@ export interface SeoRow {
   pending: boolean;
 }
 
-/** Search-result length guidelines (characters). */
-const TITLE = { min: 30, max: 60 };
-const DESC = { min: 70, max: 160 };
-
-function issuesOf(r: SeoRow): string[] {
-  const out: string[] = [];
-  if (!r.title) out.push("Missing SEO title");
-  else if (r.title.length > TITLE.max) out.push(`Title is long (${r.title.length})`);
-  else if (r.title.length < TITLE.min) out.push(`Title is short (${r.title.length})`);
-  if (!r.description) out.push("Missing meta description");
-  else if (r.description.length > DESC.max) out.push(`Description is long (${r.description.length})`);
-  else if (r.description.length < DESC.min) out.push(`Description is short (${r.description.length})`);
-  if (!r.canonical && !r.noindex) out.push("No canonical URL");
-  return out;
-}
+const TITLE = SEO_TITLE_LENGTH;
+const DESC = SEO_DESCRIPTION_LENGTH;
+const issuesOf = seoIssues;
 
 function Length({ value, min, max }: { value: string; min: number; max: number }) {
   const n = value.length;
