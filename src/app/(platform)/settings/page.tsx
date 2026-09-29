@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowUpRight, Building2, Palette, Users } from "lucide-react";
+import { ArrowUpRight, Building2, Globe, Palette, Users } from "lucide-react";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getCurrentHubUser } from "@/lib/hub-auth";
@@ -9,10 +9,11 @@ import { getCompanyBrand } from "@/lib/platform/branding";
 
 export const metadata: Metadata = { title: "Company settings", robots: { index: false, follow: false } };
 
-/** The company owner's settings hub. Later phases add Domains, Billing, Integrations here. */
+/** The company owner's settings hub. Later phases add Billing, Integrations here. */
 const SECTIONS = [
   { href: "/onboarding", icon: Building2, title: "Company setup", description: "Profile, departments, invitations and which panels your team uses." },
   { href: "/settings/branding", icon: Palette, title: "Branding", description: "Logo, name and colour across panels, emails and PDFs." },
+  { href: "/settings/domains", icon: Globe, title: "Domains", description: "Your workspace address and your own custom domains, with automatic SSL." },
   { href: "/admin/users", icon: Users, title: "Users & roles", description: "Who can sign in and which panels each person can use." },
 ];
 
