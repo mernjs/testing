@@ -10,12 +10,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import OptionSelect from "@/components/sop/OptionSelect";
-import { validateRobots, isAllowed, DEFAULT_ROBOTS_TXT } from "@/lib/seo-panel/robots-parse";
+import { validateRobots, isAllowed } from "@/lib/seo-panel/robots-parse";
 import { publishRobotsAction } from "@/app/seo/(protected)/actions";
 
 export default function RobotsEditor({
   initial,
   managed,
+  defaultText,
   primaryHost,
   importantPaths,
   canEdit,
@@ -23,6 +24,8 @@ export default function RobotsEditor({
 }: {
   initial: string;
   managed: boolean;
+  /** The code-default file (a revision with no content = "serve the default"). */
+  defaultText: string;
   primaryHost: string;
   importantPaths: string[];
   canEdit: boolean;
@@ -170,7 +173,7 @@ export default function RobotsEditor({
                     <span className="block">Replaced {r.at} by {r.byEmail ?? "—"}</span>
                     {r.note && <span className="block text-muted-foreground">“{r.note}”</span>}
                   </span>
-                  {canEdit && <Button type="button" size="xs" variant="outline" onClick={() => setText(r.content ?? DEFAULT_ROBOTS_TXT)}>Load</Button>}
+                  {canEdit && <Button type="button" size="xs" variant="outline" onClick={() => setText(r.content ?? defaultText)}>Load</Button>}
                 </li>
               ))}
             </ul>

@@ -4,7 +4,7 @@ import { hasTmsStaffRole } from "@/lib/tms-roles";
 import { certificateWithMeta } from "@/lib/tms/certificates";
 import { getTmsSettings } from "@/lib/tms/settings";
 import { renderCertificatePdf } from "@/components/tms/CertificatePdf";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 
 type Context = { params: Promise<{ id: string }> };
 
@@ -21,7 +21,7 @@ export async function GET(_req: Request, { params }: Context) {
   if (!isStaff && !isOwner) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   if (cert.revoked && !isStaff) return NextResponse.json({ error: "This certificate has been revoked." }, { status: 410 });
 
-  const settings = await getTmsSettings();
+  const [settings, siteUrl] = await Promise.all([getTmsSettings(), companySiteUrl()]);
   const buffer = await renderCertificatePdf({
     certificateNumber: cert.certificateNumber,
     verificationCode: cert.verificationCode,

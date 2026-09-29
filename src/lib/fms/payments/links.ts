@@ -9,6 +9,7 @@ import {
   type AuditFields,
 } from "@/lib/fms/db";
 import { recordAudit } from "@/lib/fms/audit";
+import { paymentPublicBaseUrl } from "@/lib/fms/payments/public-url";
 import { PaymentSourceModule } from "./intents";
 
 export const PAYMENT_LINKS_COLLECTION = "fms_payment_links";
@@ -184,7 +185,7 @@ export async function createPaymentLink(
     summary: `Generated payment link for ₹${doc.amount} (Token: ${token.slice(0, 8)}...)`,
   });
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+  const baseUrl = await paymentPublicBaseUrl();
   return { ok: true, paymentLink: doc, publicUrl: `${baseUrl}/pay/${token}` };
 }
 

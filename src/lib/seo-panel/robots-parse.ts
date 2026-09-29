@@ -220,12 +220,21 @@ export function validateRobots(
   return { parsed, problems, blocksEverything, blockedImportant };
 }
 
-/** Byte-for-byte what the previous code-defined `src/app/robots.ts` served — the fallback until someone publishes from the panel. */
-export const DEFAULT_ROBOTS_TXT = `User-Agent: *
+/** The code-default robots.txt for a site at `siteUrl` (a company's public origin, no trailing slash). */
+export function robotsTxtTemplate(siteUrl: string): string {
+  return `User-Agent: *
 Allow: /
 Disallow: /lms
 Disallow: /tms
 Disallow: /verify
 
-Sitemap: https://www.yashorbit.com/sitemap.xml
+Sitemap: ${siteUrl}/sitemap.xml
 `;
+}
+
+/**
+ * The platform owner's fallback until someone publishes from the panel —
+ * byte-for-byte what the previous code-defined `src/app/robots.ts` served.
+ * Other companies get `robotsTxtTemplate(companySiteUrl())` (see `defaultRobots()`).
+ */
+export const DEFAULT_ROBOTS_TXT = robotsTxtTemplate("https://www.yashorbit.com");

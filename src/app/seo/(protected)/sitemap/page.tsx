@@ -11,7 +11,7 @@ import { listSitemapRecords } from "@/lib/seo-panel/sitemaps";
 import { allPages } from "@/lib/seo-panel/pages";
 import { getSettings, integrationEnv } from "@/lib/seo-panel/settings";
 import { submitSitemapAction } from "@/app/seo/(protected)/actions";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { formatDateTime } from "@/lib/utils";
 
 export const maxDuration = 300;
@@ -19,7 +19,7 @@ export const maxDuration = 300;
 export default async function SitemapPage() {
   const viewer = await getViewer();
   if (!viewer) redirect("/seo/login");
-  const [records, pages, settings] = await Promise.all([listSitemapRecords(), allPages(), getSettings()]);
+  const [records, pages, settings, siteUrl] = await Promise.all([listSitemapRecords(), allPages(), getSettings(), companySiteUrl()]);
   const canManage = can(viewer, "MANAGE_SITEMAP");
   const gscReady = settings.integrations.gsc.enabled && !!integrationEnv().google;
   const inSitemap = pages.filter((p) => p.inSitemap);

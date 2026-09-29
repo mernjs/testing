@@ -10,7 +10,7 @@ import { snapshotCompetitorSitemap } from "@/lib/seo-panel/competitors";
 import { discoverSitemaps, saveSitemapRecords } from "@/lib/seo-panel/sitemaps";
 import { getSettings } from "@/lib/seo-panel/settings";
 import { invalidateSite } from "@/lib/seo-panel/pages";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 
 /**
  * Long-running SEO jobs (external API calls / fetch loops) run through this
@@ -32,7 +32,7 @@ const JOBS: Record<string, { permission: SeoPermission; label: string; run: (bod
     run: async () => {
       invalidateSite("/sitemap.xml");
       const s = await getSettings();
-      const d = await discoverSitemaps(s.siteOrigin, { primaryHost: new URL(siteUrl).host });
+      const d = await discoverSitemaps(s.siteOrigin, { primaryHost: new URL(await companySiteUrl()).host });
       await saveSitemapRecords(d.records);
       return { sitemaps: d.records.length, urls: d.urls.length };
     },

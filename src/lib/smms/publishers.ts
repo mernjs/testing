@@ -1,6 +1,7 @@
 import "server-only";
 import { getObject } from "@/lib/storage/blob";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
+import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 import { signMediaToken } from "@/lib/smms/crypto";
 import { accessToken, pageToken, jsonFetch, GRAPH, LINKEDIN_VERSION } from "@/lib/smms/integrations";
 import { hashtagText } from "@/lib/smms/content";
@@ -38,11 +39,17 @@ export interface PublishOutput {
   url: string | null;
 }
 
-export function publicMediaUrl(mediaId: string): string {
+/**
+ * Signed media URL on the company's own site — the media route resolves the
+ * company from the host. `SMMS_PUBLIC_BASE_URL` is one platform-wide env var,
+ * so only the platform owner honours it.
+ */
+export async function publicMediaUrl(mediaId: string): Promise<string> {
   const exp = Date.now() + 60 * 60 * 1000;
   const sig = signMediaToken(mediaId, exp);
   if (!sig) throw new SmmsInputError("SMMS_ENCRYPTION_KEY isn't set, so media can't be handed to the platform.");
-  const base = (process.env.SMMS_PUBLIC_BASE_URL || siteUrl).replace(/\/$/, "");
+  const override = process.env.SMMS_PUBLIC_BASE_URL && (await isPlatformOwnerContext()) ? process.env.SMMS_PUBLIC_BASE_URL : null;
+  const base = (override || (await companySiteUrl())).replace(/\/$/, "");
   return `${base}/api/smms/media/public/${mediaId}?exp=${exp}&sig=${sig}`;
 }
 
@@ -69,11 +76,11 @@ async function facebook(i: PublishInput): Promise<PublishOutput> {
   const message = composeText("facebook", i.variant, i.link);
   const form = (o: Record<string, string>) => ({ method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ ...o, access_token: token }) });
   if (i.video) {
-    const r = await jsonFetch<{ id: string }>(`${GRAPH.replace("graph.", "graph-video.")}/${pageId}/videos`, form({ file_url: publicMediaUrl(i.video._id), description: message, ...(i.variant.title ? { title: i.variant.title } : {}) }));
+    const r = await jsonFetch<{ id: string }>(`${GRAPH.replace("graph.", "graph-video.")}/${pageId}/videos`, form({ file_url: await publicMediaUrl(i.video._id), description: message, ...(i.variant.title ? { title: i.variant.title } : {}) }));
     return { externalId: r.id, url: `https://www.facebook.com/${pageId}/videos/${r.id}` };
   }
   if (i.images.length > 0) {
-    const r = await jsonFetch<{ id: string; post_id?: string }>(`${GRAPH}/${pageId}/photos`, form({ url: publicMediaUrl(i.images[0]._id), caption: message }));
+    const r = await jsonFetch<{ id: string; post_id?: string }>(`${GRAPH}/${pageId}/photos`, form({ url: await publicMediaUrl(i.images[0]._id), caption: message }));
     return { externalId: r.post_id ?? r.id, url: `https://www.facebook.com/${r.post_id ?? r.id}` };
   }
   const r = await jsonFetch<{ id: string }>(`${GRAPH}/${pageId}/feed`, form({ message, ...(i.link ? { link: i.link } : {}) }));
@@ -89,13 +96,13 @@ async function instagram(i: PublishInput): Promise<PublishOutput> {
   const post = (url: string, o: Record<string, string>) => jsonFetch<{ id: string }>(url, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams({ ...o, access_token: token }) });
   let creationId: string;
   if (i.video) {
-    creationId = (await post(`${GRAPH}/${igId}/media`, { media_type: "REELS", video_url: publicMediaUrl(i.video._id), caption, ...(i.thumbnail ? { cover_url: publicMediaUrl(i.thumbnail._id) } : {}) })).id;
+    creationId = (await post(`${GRAPH}/${igId}/media`, { media_type: "REELS", video_url: await publicMediaUrl(i.video._id), caption, ...(i.thumbnail ? { cover_url: await publicMediaUrl(i.thumbnail._id) } : {}) })).id;
   } else if (i.images.length > 1) {
     const children: string[] = [];
-    for (const img of i.images.slice(0, 10)) children.push((await post(`${GRAPH}/${igId}/media`, { image_url: publicMediaUrl(img._id), is_carousel_item: "true" })).id);
+    for (const img of i.images.slice(0, 10)) children.push((await post(`${GRAPH}/${igId}/media`, { image_url: await publicMediaUrl(img._id), is_carousel_item: "true" })).id);
     creationId = (await post(`${GRAPH}/${igId}/media`, { media_type: "CAROUSEL", children: children.join(","), caption })).id;
   } else {
-    creationId = (await post(`${GRAPH}/${igId}/media`, { image_url: publicMediaUrl(i.images[0]._id), caption })).id;
+    creationId = (await post(`${GRAPH}/${igId}/media`, { image_url: await publicMediaUrl(i.images[0]._id), caption })).id;
   }
   // Containers (videos especially) must finish processing before they can be published.
   for (let n = 0; n < 24; n++) {
@@ -182,7 +189,7 @@ async function googleBusiness(i: PublishInput): Promise<PublishOutput> {
     topicType: "STANDARD",
     summary: composeText("google_business", i.variant, null),
     ...(i.link || actionType === "CALL" ? { callToAction: actionType === "CALL" ? { actionType } : { actionType, url: i.link } } : {}),
-    ...(i.images[0] ? { media: [{ mediaFormat: "PHOTO", sourceUrl: publicMediaUrl(i.images[0]._id) }] } : {}),
+    ...(i.images[0] ? { media: [{ mediaFormat: "PHOTO", sourceUrl: await publicMediaUrl(i.images[0]._id) }] } : {}),
   };
   const r = await jsonFetch<{ name: string; searchUrl?: string }>(`https://mybusiness.googleapis.com/v4/${location}/localPosts`, { method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify(body) });
   return { externalId: r.name, url: r.searchUrl ?? null };

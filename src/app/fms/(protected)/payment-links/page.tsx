@@ -5,6 +5,7 @@ import KpiGrid from "@/components/lms/KpiGrid";
 import FmsDataTable from "@/components/fms/FmsDataTable";
 import { getCurrentFmsUser } from "@/lib/fms-auth";
 import { listPaymentLinks, serializePaymentLink, PaymentLinkStatus } from "@/lib/fms/payments/links";
+import { paymentPublicBaseUrl } from "@/lib/fms/payments/public-url";
 import { formatMoney } from "@/lib/fms/constants";
 import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -28,7 +29,7 @@ export default async function PaymentLinksPage({
     pageSize: 20,
   });
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+  const baseUrl = await paymentPublicBaseUrl();
 
   return (
     <div className="space-y-4">

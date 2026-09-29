@@ -2,18 +2,18 @@ import { redirect } from "next/navigation";
 import { PageHeader, Notice } from "@/components/seo/SeoUi";
 import RobotsEditor from "@/components/seo/RobotsEditor";
 import { getViewer, can } from "@/lib/seo-panel/viewer";
-import { getRobotsDoc, effectiveRobots, importantPaths } from "@/lib/seo-panel/robots-store";
+import { getRobotsDoc, defaultRobots, importantPaths } from "@/lib/seo-panel/robots-store";
 import { fetchUrl } from "@/lib/seo-panel/fetch";
 import { getSettings } from "@/lib/seo-panel/settings";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { formatDateTime } from "@/lib/utils";
 
 export default async function RobotsPage() {
   const viewer = await getViewer();
   if (!viewer) redirect("/seo/login");
-  const [doc, paths, settings] = await Promise.all([getRobotsDoc(), importantPaths(), getSettings()]);
+  const [doc, paths, settings, siteUrl, defaultText] = await Promise.all([getRobotsDoc(), importantPaths(), getSettings(), companySiteUrl(), defaultRobots()]);
   const live = await fetchUrl(`${settings.siteOrigin}/robots.txt`, { timeoutMs: 8000 });
-  const managedText = effectiveRobots(doc);
+  const managedText = doc.content ?? defaultText;
   const liveDiffers = live.status === 200 && live.body !== null && live.body.trim() !== managedText.trim();
 
   return (
@@ -28,6 +28,7 @@ export default async function RobotsPage() {
       <RobotsEditor
         initial={managedText}
         managed={doc.content !== null}
+        defaultText={defaultText}
         primaryHost={new URL(siteUrl).host}
         importantPaths={paths}
         canEdit={can(viewer, "MANAGE_ROBOTS")}

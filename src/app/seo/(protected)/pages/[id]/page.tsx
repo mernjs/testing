@@ -20,7 +20,7 @@ import { listAudit, AUDIT_ACTION_LABEL } from "@/lib/seo-panel/audit";
 import { topQueries } from "@/lib/seo-panel/integrations/gsc";
 import { cwvVerdict } from "@/lib/seo-panel/integrations/pagespeed";
 import { saveSitemapSettingsAction, requestIndexingAction, deletePageAction } from "@/app/seo/(protected)/actions";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { formatDateTime, cn } from "@/lib/utils";
 
 export const maxDuration = 300;
@@ -40,7 +40,7 @@ export default async function PageDetail({ params, searchParams }: { params: Pro
   const page = await getPage(id);
   if (!page) notFound();
   const tab = TABS.some(([k]) => k === sp.tab) ? sp.tab! : "overview";
-  const settings = await getSettings();
+  const [settings, siteUrl] = await Promise.all([getSettings(), companySiteUrl()]);
   const c = page.crawl;
   const liveUrl = `${siteUrl}${page.path === "/" ? "" : page.path}`;
 

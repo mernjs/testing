@@ -4,8 +4,7 @@ import { runCrawl, latestCompletedRun, CrawlBusyError } from "@/lib/seo-panel/cr
 import { syncSearchConsole } from "@/lib/seo-panel/integrations/gsc";
 import { syncAnalytics } from "@/lib/seo-panel/integrations/ga4";
 import { verifyBacklinks } from "@/lib/seo-panel/backlinks";
-import { getPlatformOwnerCompanyId } from "@/lib/platform/tenancy/companies";
-import { runAsCompany } from "@/lib/platform/tenancy/context";
+import { forEachCompany } from "@/lib/platform/tenancy/context";
 
 export const maxDuration = 300;
 
@@ -15,17 +14,16 @@ export const maxDuration = 300;
  * (daily or weekly per Settings), and a weekly backlink re-verification on
  * Mondays. Refuses to run without a configured secret.
  *
- * Runs for the platform-owner company only: the crawler, backlink check and
- * PageSpeed still target the platform's own site URL (`siteUrl`), so running
- * them for another company would audit the wrong site into its workspace.
- * Fans out per company once site origins are per company.
+ * Runs once per active company, each against its own site (`companySiteUrl()`)
+ * and its own SEO settings. A company that hasn't enabled a schedule in
+ * /seo/settings is a no-op: new companies default to no scheduled audit, sync
+ * or backlink check (see `defaultSettings()`).
  */
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET;
   if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const ownerId = await getPlatformOwnerCompanyId();
-  if (!ownerId) return NextResponse.json({ ok: true, skipped: "no platform-owner company" });
-  return NextResponse.json(await runAsCompany(ownerId, runSeoHousekeeping));
+  const companies = await forEachCompany(() => runSeoHousekeeping());
+  return NextResponse.json({ ok: true, companies });
 }
 
 async function runSeoHousekeeping(): Promise<Record<string, unknown>> {
@@ -56,5 +54,5 @@ async function runSeoHousekeeping(): Promise<Record<string, unknown>> {
     });
   }
   if (s.schedule.verifyBacklinks && new Date().getDay() === 1) await attempt("backlinks", () => verifyBacklinks());
-  return { ok: true, ...out };
+  return out;
 }

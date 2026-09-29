@@ -1,5 +1,6 @@
 import "server-only";
 import { createHmac } from "node:crypto";
+import { paymentPublicBaseUrl } from "@/lib/fms/payments/public-url";
 import {
   PaymentProvider,
   CreateProviderIntentParams,
@@ -98,7 +99,7 @@ export const RazorpayProvider: PaymentProvider = {
             linkId: params.linkId,
             token: params.token,
           },
-          callback_url: `${process.env.NEXT_PUBLIC_APP_URL || ""}/pay/${params.token}`,
+          callback_url: `${await paymentPublicBaseUrl()}/pay/${params.token}`,
           callback_method: "get",
         }),
       });

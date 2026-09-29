@@ -1,5 +1,5 @@
 import "server-only";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { getServiceAccountToken } from "@/lib/google-service-account";
 import { COLLECTIONS, addDaysIso, seoCollection, todayIso } from "@/lib/seo-panel/db";
 import { getSettings, integrationEnv, markIntegrationSync } from "@/lib/seo-panel/settings";
@@ -220,7 +220,7 @@ export async function syncSearchConsole(): Promise<{ days: number; rows: number;
 
 /** URL Inspection API: Google's own index verdict for each page (quota 2,000/day per property). */
 export async function inspectIndexStatus(paths: string[]): Promise<{ checked: number; indexed: number; errors: string[] }> {
-  const settings = await getSettings();
+  const [settings, siteUrl] = await Promise.all([getSettings(), companySiteUrl()]);
   const property = settings.integrations.gsc.property;
   const pages = await seoCollection<SeoPage>(COLLECTIONS.pages);
   const errors: string[] = [];
@@ -246,7 +246,7 @@ export async function inspectIndexStatus(paths: string[]): Promise<{ checked: nu
 
 /** Submits (or re-submits) a sitemap to Search Console. Needs the full webmasters scope. */
 export async function submitSitemap(sitemapUrl: string): Promise<void> {
-  const settings = await getSettings();
+  const [settings, siteUrl] = await Promise.all([getSettings(), companySiteUrl()]);
   const property = settings.integrations.gsc.property;
   const prod = `${siteUrl}${new URL(sitemapUrl).pathname}`;
   await gscFetch(`${API}/sites/${encodeURIComponent(property)}/sitemaps/${encodeURIComponent(prod)}`, { method: "PUT" }, true);

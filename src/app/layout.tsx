@@ -8,6 +8,7 @@ import { SiteInfoProvider } from "@/components/cms/SiteInfoContext";
 import { getSiteInfo } from "@/lib/cms/site-info";
 import { parseSiteInfo } from "@/lib/cms/site-info-shared";
 import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { getSiteSeo, parseSiteSeo, siteMetadata } from "@/lib/cms/site-seo";
 import { currentCompanyIdOrNull, isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 import { getCompanyBrand } from "@/lib/platform/branding";
@@ -27,9 +28,11 @@ const geistMono = Geist_Mono({
 
 /** Site-wide SEO defaults every page inherits — CMS → Settings (see lib/cms/site-seo.ts). */
 export async function generateMetadata(): Promise<Metadata> {
-  const seo = (await currentCompanyIdOrNull()) ? await getSiteSeo() : parseSiteSeo(null);
+  // metadataBase = this company's own public site, so relative canonical / OG URLs resolve to it.
+  const hasCompany = (await currentCompanyIdOrNull()) !== null;
+  const [seo, origin] = hasCompany ? await Promise.all([getSiteSeo(), companySiteUrl()]) : [parseSiteSeo(null), siteUrl];
   return siteMetadata(seo, {
-    metadataBase: new URL(siteUrl),
+    metadataBase: new URL(origin),
     verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION },
   });
 }

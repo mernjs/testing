@@ -1,7 +1,7 @@
 import "server-only";
 import type { Filter } from "mongodb";
 import * as cheerio from "cheerio";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { COLLECTIONS, cleanIsoDate, createStamp, escapeRegex, newId, num, seoCollection, str, todayIso, updateStamp, type Stamps } from "@/lib/seo-panel/db";
 import { assertPublicUrl, fetchUrl, mapLimit, UnsafeUrlError } from "@/lib/seo-panel/fetch";
 import { getSettings } from "@/lib/seo-panel/settings";
@@ -47,7 +47,16 @@ export interface Backlink extends Stamps {
 }
 
 const bare = (h: string) => h.toLowerCase().replace(/^www\./, "");
-const OUR_HOST = bare(new URL(siteUrl).host);
+
+/** The current company's own site — resolved per call (never at import time), since every company has its own. */
+interface OurSite {
+  siteUrl: string;
+  host: string;
+}
+async function ourSite(): Promise<OurSite> {
+  const siteUrl = await companySiteUrl();
+  return { siteUrl, host: bare(new URL(siteUrl).host) };
+}
 
 let indexesEnsured = false;
 export async function backlinksCol() {
@@ -60,12 +69,12 @@ export async function backlinksCol() {
   return c;
 }
 
-function toTargetPath(v: string): string {
+function toTargetPath(v: string, ours: OurSite): string {
   const s = v.trim();
   if (!s) return "/";
   try {
-    const u = new URL(s, siteUrl);
-    if (bare(u.host) !== OUR_HOST) throw new SeoInputError(`Target "${s}" is not on ${OUR_HOST}.`);
+    const u = new URL(s, ours.siteUrl);
+    if (bare(u.host) !== ours.host) throw new SeoInputError(`Target "${s}" is not on ${ours.host}.`);
     const p = u.pathname.length > 1 && u.pathname.endsWith("/") ? u.pathname.slice(0, -1) : u.pathname;
     return p || "/";
   } catch (err) {
@@ -74,11 +83,11 @@ function toTargetPath(v: string): string {
   }
 }
 
-function toSource(v: string): { url: string; domain: string } {
+function toSource(v: string, ours: OurSite): { url: string; domain: string } {
   try {
     const u = new URL(v.trim());
     if (u.protocol !== "http:" && u.protocol !== "https:") throw new Error();
-    if (bare(u.host) === OUR_HOST) throw new SeoInputError("The source must be another website, not ours.");
+    if (bare(u.host) === ours.host) throw new SeoInputError("The source must be another website, not ours.");
     u.hash = "";
     return { url: u.toString(), domain: bare(u.host) };
   } catch (err) {
@@ -96,8 +105,9 @@ const relOf = (v: unknown): Rel => {
 };
 
 export async function createBacklink(input: { sourceUrl: string; targetUrl: string; anchor?: string; rel?: string; firstSeen?: string; domainRating?: unknown; notes?: string }, actorId: string): Promise<Backlink> {
-  const { url, domain } = toSource(input.sourceUrl);
-  const targetPath = toTargetPath(input.targetUrl);
+  const ours = await ourSite();
+  const { url, domain } = toSource(input.sourceUrl, ours);
+  const targetPath = toTargetPath(input.targetUrl, ours);
   const c = await backlinksCol();
   if (await c.findOne({ sourceUrl: url, targetPath })) throw new SeoInputError("That backlink is already tracked.");
   const doc: Backlink = {
@@ -131,7 +141,7 @@ export async function updateBacklink(id: string, input: { anchor?: string; rel?:
     rel: relOf(input.rel),
     domainRating: num(input.domainRating, 0, 100),
     notes: str(input.notes, 2000),
-    targetPath: input.targetUrl ? toTargetPath(input.targetUrl) : before.targetPath,
+    targetPath: input.targetUrl ? toTargetPath(input.targetUrl, await ourSite()) : before.targetPath,
     ...updateStamp(actorId),
   };
   await c.updateOne({ _id: id }, { $set: set });
@@ -152,14 +162,14 @@ export async function deleteBacklink(id: string): Promise<Backlink | null> {
 export async function importBacklinks(csv: string, source: string, actorId: string) {
   const { rows } = parseCsv(csv, 10000);
   if (rows.length === 0) throw new SeoInputError("The file has no data rows.");
-  const c = await backlinksCol();
+  const [c, ours] = await Promise.all([backlinksCol(), ourSite()]);
   let created = 0;
   let updated = 0;
   const errors: string[] = [];
   for (const [i, r] of rows.entries()) {
     try {
-      const { url, domain } = toSource(r.source_url ?? r.referring_page_url ?? r.source ?? r.from ?? "");
-      const targetPath = toTargetPath(r.target_url ?? r.target ?? r.to ?? "/");
+      const { url, domain } = toSource(r.source_url ?? r.referring_page_url ?? r.source ?? r.from ?? "", ours);
+      const targetPath = toTargetPath(r.target_url ?? r.target ?? r.to ?? "/", ours);
       const rel = r.rel ? relOf(r.rel) : r.nofollow ? relOf(["true", "yes", "1"].includes(r.nofollow.toLowerCase()) ? "nofollow" : "follow") : "follow";
       const dr = num(r.domain_rating ?? r.dr ?? r.da ?? r.authority, 0, 100);
       const existing = await c.findOne({ sourceUrl: url, targetPath });
@@ -198,7 +208,7 @@ export async function importBacklinks(csv: string, source: string, actorId: stri
 export async function verifyBacklinks(ids?: string[]): Promise<{ checked: number; live: number; lost: number; broken: number }> {
   const c = await backlinksCol();
   const list = await c.find(ids ? { _id: { $in: ids } } : {}).limit(500).toArray();
-  const settings = await getSettings();
+  const [settings, ours] = await Promise.all([getSettings(), ourSite()]);
   const pages = await seoCollection<SeoPage>(COLLECTIONS.pages);
   const pageStatus = new Map((await pages.find({}, { projection: { path: 1, "crawl.status": 1 } }).toArray()).map((p) => [p.path, p.crawl?.status ?? null]));
   const targetStatus = new Map<string, number>();
@@ -228,7 +238,7 @@ export async function verifyBacklinks(ids?: string[]): Promise<{ checked: number
           if (found) return;
           try {
             const u = new URL($(el).attr("href") as string, res.finalUrl);
-            if (bare(u.host) !== OUR_HOST) return;
+            if (bare(u.host) !== ours.host) return;
             anyToUs = true;
             const p = u.pathname.length > 1 && u.pathname.endsWith("/") ? u.pathname.slice(0, -1) : u.pathname || "/";
             if (p === b.targetPath) found = { rel: ($(el).attr("rel") ?? "").toLowerCase(), text: $(el).text().replace(/\s+/g, " ").trim() };

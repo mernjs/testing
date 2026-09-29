@@ -1,8 +1,9 @@
 import "server-only";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { COLLECTIONS, seoCollection } from "@/lib/seo-panel/db";
 import { invalidateSite } from "@/lib/seo-panel/pages";
-import { DEFAULT_ROBOTS_TXT, validateRobots } from "@/lib/seo-panel/robots-parse";
+import { DEFAULT_ROBOTS_TXT, robotsTxtTemplate, validateRobots } from "@/lib/seo-panel/robots-parse";
+import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 import { SeoInputError } from "@/lib/seo-panel/viewer";
 import type { SeoPage } from "@/lib/seo-panel/types";
 
@@ -37,8 +38,9 @@ export async function getRobotsDoc(): Promise<RobotsDoc> {
   return (await (await col()).findOne({ _id: "robots" })) ?? { _id: "robots", content: null, publishedAt: null, publishedBy: null, revisions: [] };
 }
 
-export function effectiveRobots(doc: RobotsDoc): string {
-  return doc.content ?? DEFAULT_ROBOTS_TXT;
+/** The code default served until a company publishes its own file: the owner's historical file, else one pointing at the company's own sitemap. */
+export async function defaultRobots(): Promise<string> {
+  return (await isPlatformOwnerContext()) ? DEFAULT_ROBOTS_TXT : robotsTxtTemplate(await companySiteUrl());
 }
 
 /** Paths the latest audit found indexable — the validator warns if a rule would block them. */
@@ -51,7 +53,7 @@ export async function publishRobots(content: string | null, opts: { actorId: str
   const before = await getRobotsDoc();
   if (content !== null) {
     const text = content.replace(/\r\n/g, "\n").trimEnd() + "\n";
-    const v = validateRobots(text, { primaryHost: new URL(siteUrl).host, importantPaths: await importantPaths() });
+    const v = validateRobots(text, { primaryHost: new URL(await companySiteUrl()).host, importantPaths: await importantPaths() });
     const errors = v.problems.filter((p) => p.level === "error" && !(v.blocksEverything && p.message.startsWith("This file blocks the home page")));
     if (errors.length > 0) throw new SeoInputError(`Fix ${errors.length} error(s) first: ${errors[0].message}`);
     if (v.blocksEverything && !opts.confirmBlockAll) throw new SeoInputError("This robots.txt would block the entire site. Tick the confirmation box if that is really intended.");

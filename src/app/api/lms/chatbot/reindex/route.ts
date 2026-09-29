@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentLmsUser } from "@/lib/lms-auth";
 import { isOpenAIConfigured } from "@/lib/openai";
-import { beginWebsiteIndex, runWebsiteIndex } from "@/lib/kb-website";
+import { beginWebsiteIndex, chatbotCrawlBaseOverride, runWebsiteIndex } from "@/lib/kb-website";
 import { listKbRuns, reapStaleRuns } from "@/lib/kb-runs";
-import { siteUrl } from "@/lib/seo";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { afterForCompany } from "@/lib/platform/tenancy/context";
 
 async function authorize(req: NextRequest): Promise<string | null> {
@@ -48,9 +48,9 @@ export async function POST(req: NextRequest) {
 
   const baseUrl =
     (typeof body.baseUrl === "string" && body.baseUrl) ||
-    process.env.CHATBOT_CRAWL_BASE_URL ||
+    (await chatbotCrawlBaseOverride()) ||
     req.nextUrl.origin ||
-    siteUrl;
+    (await companySiteUrl());
   const incremental = body.incremental === true;
 
   const { runId, logger } = await beginWebsiteIndex({ triggeredBy, incremental });

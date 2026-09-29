@@ -1,3 +1,8 @@
+/**
+ * The PLATFORM OWNER's (YashOrbit's) site origin. For "this company's public
+ * site" use `companySiteUrl()` (`src/lib/platform/tenancy/site-url.ts`),
+ * which returns exactly this value for the platform owner.
+ */
 export const siteUrl = "https://yashorbit.com";
 export const siteName = "YashOrbit";
 
@@ -123,14 +128,14 @@ interface SocialMetadataInput {
 /**
  * Builds matching openGraph + twitter metadata fields for a page. `image` may
  * be an absolute URL (e.g. Unsplash) or a site-relative path (resolved via
- * metadataBase).
+ * metadataBase). `origin` = the company's public site (`companySiteUrl()`).
  */
-export function socialMetadata({ title, description, path, image, imageAlt, siteName }: SocialMetadataInput & { siteName: string }) {
+export function socialMetadata({ title, description, path, image, imageAlt, siteName, origin = siteUrl }: SocialMetadataInput & { siteName: string; origin?: string }) {
   return {
     openGraph: {
       title,
       description,
-      url: `${siteUrl}${path}`,
+      url: `${origin}${path}`,
       siteName,
       images: [{ url: image, alt: imageAlt ?? title }],
       type: "website" as const,
@@ -407,7 +412,8 @@ interface BreadcrumbItem {
   path: string;
 }
 
-export function breadcrumbJsonLd(items: BreadcrumbItem[]) {
+/** `origin` = the company's public site (`companySiteUrl()`). */
+export function breadcrumbJsonLd(items: BreadcrumbItem[], origin: string = siteUrl) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -415,7 +421,7 @@ export function breadcrumbJsonLd(items: BreadcrumbItem[]) {
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: `${siteUrl}${item.path}`,
+      item: `${origin}${item.path}`,
     })),
   };
 }
