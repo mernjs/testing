@@ -9,6 +9,7 @@ import { syncAtProvider } from "@/lib/platform/tenancy/provisioning";
 import { activeDomainProvider } from "@/lib/platform/domains";
 import { routingRecord } from "@/lib/platform/domains/vercel";
 import type { CompanyDomainView, DnsRecord, DomainActionResult, RecordState } from "@/lib/platform/domains/types";
+import { forgetCompanySiteUrls } from "@/lib/platform/tenancy/site-url";
 
 /**
  * A company's own domains (`www.acme.com`), managed by its Super Admin from
@@ -208,6 +209,7 @@ export async function verifyCustomDomain(raw: string, resolver: TxtResolver = re
     // A record that was never attached (provider outage at add time) gets attached now.
     await syncAtProvider(d._id, d.provider?.attached ? "status" : "add");
     forgetCompanyRouting();
+    forgetCompanySiteUrls();
     return ok(`${d._id} is verified.`);
   }
 
@@ -222,6 +224,7 @@ export async function verifyCustomDomain(raw: string, resolver: TxtResolver = re
   if (txt.txt === "found" || providerProof) {
     const res = await domains.updateOne({ _id: d._id, companyId, status: "pending" }, { $set: { status: "verified", verifiedAt: now, lastCheck: txt } });
     forgetCompanyRouting();
+    forgetCompanySiteUrls();
     if (res.modifiedCount === 0) return ok(`${d._id} is verified.`);
     return ok(hosting.status?.dnsConfigured ? `${d._id} is verified and live.` : `${d._id} is verified. Traffic reaches your workspace once the routing record is in place.`);
   }
@@ -242,6 +245,8 @@ export async function setPrimaryDomain(raw: string): Promise<DomainActionResult>
   if (d.status !== "verified") return { ok: false, error: "Verify the domain before making it primary." };
   await domains.updateOne({ _id: d._id, companyId }, { $set: { isPrimary: true } });
   await domains.updateMany({ companyId, _id: { $ne: d._id }, isPrimary: true }, { $set: { isPrimary: false } });
+  // The primary domain is the company's public site URL (sitemap, canonical, links) — apply it now.
+  forgetCompanySiteUrls();
   return ok(`${d._id} is now your primary domain.`);
 }
 
@@ -263,6 +268,7 @@ export async function removeCustomDomain(raw: string): Promise<DomainActionResul
     if (fallback) await domains.updateOne({ _id: fallback._id, companyId }, { $set: { isPrimary: true } });
   }
   forgetCompanyRouting();
+  forgetCompanySiteUrls();
 
   try {
     const detached = await activeDomainProvider().remove(d._id);
