@@ -4,36 +4,37 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Ear, Loader2, RotateCcw, Volume2, VolumeX, Square, CircleDot } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useVoice, type VoicePhase } from "@/components/chat/VoiceProvider";
+import { useText } from "@/components/cms/TextContext";
 
-const PHASE: Record<
+const PHASE = (tx: (key: string) => string): Record<
   VoicePhase,
   { label: string; description: string; Icon: typeof Ear; tone: string }
-> = {
+> => ({
   ready: {
-    label: "Ready",
-    description: "Press the microphone button to ask a question.",
+    label: tx("chat.voiceStatusBar.ready"),
+    description: tx("chat.voiceStatusBar.press-the-microphone-button-to-ask-a-que"),
     Icon: CircleDot,
     tone: "text-foreground",
   },
   listening: {
-    label: "Listening",
-    description: "Go ahead — I'm listening. I'll stop automatically when you pause.",
+    label: tx("chat.voiceStatusBar.listening"),
+    description: tx("chat.voiceStatusBar.go-ahead-i-m-listening-i-ll-stop-automat"),
     Icon: Ear,
     tone: "text-primary",
   },
   processing: {
-    label: "Processing",
-    description: "Working on your answer…",
+    label: tx("chat.voiceStatusBar.processing"),
+    description: tx("chat.voiceStatusBar.working-on-your-answer"),
     Icon: Loader2,
     tone: "text-yashorbit-orange",
   },
   speaking: {
-    label: "Speaking",
-    description: "Playing the answer aloud. Press Stop to interrupt.",
+    label: tx("chat.voiceStatusBar.speaking"),
+    description: tx("chat.voiceStatusBar.playing-the-answer-aloud-press-stop-to-i"),
     Icon: Volume2,
     tone: "text-yashorbit-blue dark:text-secondary-foreground",
   },
-};
+});
 
 function fmt(ms: number): string {
   const s = Math.floor(ms / 1000);
@@ -41,10 +42,11 @@ function fmt(ms: number): string {
 }
 
 export function VoiceStatusBar() {
+  const tx = useText();
   const { phase, recordingMs, muted, canReplay, hint, error, toggleMute, replayLast, interrupt } =
     useVoice();
 
-  const meta = PHASE[phase];
+  const meta = PHASE(tx)[phase];
   const showTimer = phase === "listening";
   const canStop = phase === "speaking" || phase === "processing" || phase === "listening";
 
@@ -106,8 +108,7 @@ export function VoiceStatusBar() {
           className="inline-flex min-h-11 items-center gap-1.5 rounded-full border-2 border-border px-3.5 text-sm font-medium text-foreground/80 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/50 disabled:opacity-40"
         >
           <RotateCcw className="size-4" aria-hidden />
-          Replay
-        </button>
+          {tx("chat.voiceStatusBar.replay")}</button>
 
         <button
           type="button"
@@ -116,8 +117,7 @@ export function VoiceStatusBar() {
           className="inline-flex min-h-11 items-center gap-1.5 rounded-full border-2 border-destructive/50 px-3.5 text-sm font-semibold text-destructive transition-colors hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-destructive/40 disabled:opacity-40"
         >
           <Square className="size-4" fill="currentColor" aria-hidden />
-          Stop
-        </button>
+          {tx("chat.voiceStatusBar.stop")}</button>
       </div>
 
       {/* Transient hint / error — announced politely / assertively */}

@@ -3,6 +3,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Sparkles, LucideIcon } from "lucide-react";
+import { useSiteInfo } from "@/components/cms/SiteInfoContext";
+import type { BrandName } from "@/lib/brand";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -19,22 +21,24 @@ interface ListingHeroProps {
   image: string;
 }
 
-// Renders the hero title as-is, except any "YashOrbit" mention gets the same
+// Renders the hero title as-is, except any brand-name mention gets the same
 // two-tone brand treatment used in Header/Footer (Yash in the page color, Orbit in coral).
-function renderTitle(title: string) {
-  const idx = title.indexOf("YashOrbit");
+function renderTitle(title: string, brand: BrandName) {
+  const name = brand.namePrimary + brand.nameAccent;
+  const idx = name ? title.indexOf(name) : -1;
   if (idx === -1) return title;
   return (
     <>
       {title.slice(0, idx)}
-      <span className="text-foreground">Yash</span>
-      <span className="text-primary">Orbit</span>
-      {title.slice(idx + "YashOrbit".length)}
+      <span className="text-foreground">{brand.namePrimary}</span>
+      <span className="text-primary">{brand.nameAccent}</span>
+      {title.slice(idx + name.length)}
     </>
   );
 }
 
 export default function ListingHero({ eyebrow, title, description, icon: Icon, image }: ListingHeroProps) {
+  const { brand } = useSiteInfo();
   const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
 
   React.useEffect(() => {
@@ -97,7 +101,7 @@ export default function ListingHero({ eyebrow, title, description, icon: Icon, i
             <span className="capitalize">{eyebrow}</span>
           </motion.div>
           <motion.h1 variants={fadeIn} className="text-5xl font-black tracking-tight text-foreground sm:text-7xl mb-6">
-            {renderTitle(title)}
+            {renderTitle(title, brand)}
           </motion.h1>
           <motion.p variants={fadeIn} className="mx-auto max-w-2xl text-xl leading-relaxed text-muted-foreground">
             {description}

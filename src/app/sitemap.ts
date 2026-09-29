@@ -2,8 +2,10 @@ import type { MetadataRoute } from "next";
 import fs from "fs";
 import path from "path";
 import { siteUrl } from "@/lib/seo";
-import { blogPosts } from "@/lib/blog";
-import { jobs } from "@/app/(site)/careers/jobs-data";
+import { getRuntimeRecords } from "@/lib/cms/collections/store";
+import type { BlogPostMeta } from "@/types/content";
+import type { Job } from "@/types/content";
+import type { EngagementCategory } from "@/types/content";
 import { getSeoSiteState } from "@/lib/seo-panel/public";
 
 const APP_DIR = path.join(process.cwd(), "src/app/(site)");
@@ -44,8 +46,24 @@ function discoverRoutes(dir: string, base = ""): string[] {
   return routes;
 }
 
-/** The code-defined sitemap: every discovered public route. Also used as the chatbot knowledge-base crawl list. */
-export function baseSitemap(): MetadataRoute.Sitemap {
+/**
+ * Every public route: pages discovered on disk, plus one page per record in
+ * the blog / jobs / engagement collections (those pages are dynamic
+ * `[slug]` routes, so they're listed from the records — code + published CMS
+ * records — not from the filesystem). Also used as the chatbot knowledge-base
+ * crawl list.
+ */
+export async function baseSitemap(): Promise<MetadataRoute.Sitemap> {
+  const [blogPosts, jobs, engagement] = await Promise.all([
+    getRuntimeRecords<BlogPostMeta>("blog"),
+    getRuntimeRecords<Job>("jobs"),
+    getRuntimeRecords<EngagementCategory>("engagement"),
+  ]);
+  const recordRoutes = [
+    ...blogPosts.map((p) => `/blog/${p.slug}`),
+    ...jobs.map((j) => `/careers/${j.slug}`),
+    ...engagement.map((c) => `/resource-augmentation/${c.slug}`),
+  ];
   const blogDates = new Map(blogPosts.map((post) => [`/blog/${post.slug}`, post.date]));
   const jobMap = new Map(jobs.map((job) => [`/careers/${job.slug}`, job]));
 
@@ -56,7 +74,7 @@ export function baseSitemap(): MetadataRoute.Sitemap {
       .map((job) => `/careers/${job.slug}`)
   );
 
-  const routes = discoverRoutes(APP_DIR)
+  const routes = Array.from(new Set([...discoverRoutes(APP_DIR), ...recordRoutes]))
     .filter((route) => !EXCLUDED_ROUTES.has(route) && !excludedJobRoutes.has(route))
     .sort();
 
@@ -86,7 +104,7 @@ export function baseSitemap(): MetadataRoute.Sitemap {
  * set to noindex, are dropped; priority / change frequency overrides win.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const entries = baseSitemap();
+  const entries = await baseSitemap();
   const { sitemap: overrides, overrides: meta } = await getSeoSiteState();
   const out: MetadataRoute.Sitemap = [];
   for (const entry of entries) {

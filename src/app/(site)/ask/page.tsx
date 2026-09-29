@@ -1,24 +1,8 @@
-import type { Metadata } from "next";
-import { withSeoOverrides } from "@/lib/seo-panel/public";
-import { socialMetadata, defaultOgImage } from "@/lib/seo";
+import { cmsPageMetadata } from "@/lib/cms/page-route";
 import AskContent from "./Content";
 
-const baseMetadata: Metadata = {
-  title: "Ask YashOrbit Chatbot — AI Assistant",
-  description:
-    "Ask the YashOrbit AI Assistant anything about our services, products, industries, training programs, and how we work. Answers are grounded in our knowledge base.",
-  alternates: { canonical: "/ask" },
-  // Thin, app-shell page — keep it out of the index but let crawlers follow links.
-  robots: { index: false, follow: true },
-  ...socialMetadata({
-    title: "Ask YashOrbit Chatbot",
-    description: "Chat with the YashOrbit AI Assistant about our services, products, and training.",
-    path: "/ask",
-    image: defaultOgImage,
-  }),
-};
-
-export const generateMetadata = () => withSeoOverrides("/ask", baseMetadata);
+/** SEO: the CMS page "/ask". The chat itself is the AI chatbot (its settings live in the LMS chatbot panel). */
+export const generateMetadata = () => cmsPageMetadata("/ask");
 
 export default function AskPage() {
   return <AskContent />;

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2, Sparkles, LucideIcon } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
 interface FeaturedListingCardProps {
   icon: LucideIcon;
@@ -31,9 +32,11 @@ export default function FeaturedListingCard({
   highlights,
   href,
   image,
-  ctaLabel = "Explore More",
+  ctaLabel: ctaLabelProp,
   footnote,
 }: FeaturedListingCardProps) {
+  const l = useUiLabels();
+  const ctaLabel = ctaLabelProp ?? l.exploreMoreFeatured;
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -61,7 +64,7 @@ export default function FeaturedListingCard({
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-transparent lg:bg-gradient-to-r lg:from-black/20 lg:via-black/0 lg:to-transparent" />
           <span className="absolute top-6 left-6 inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider text-primary-foreground shadow-lg shadow-primary/30">
             <Sparkles className="w-3 h-3" />
-            Featured
+            {l.featured}
           </span>
           <div className="absolute bottom-6 left-6 w-14 h-14 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-xl lg:hidden">
             <Icon className="w-7 h-7 text-white" />
@@ -101,7 +104,7 @@ export default function FeaturedListingCard({
 
           {footnote && (
             <p className="text-sm text-muted-foreground mb-6 -mt-1">
-              <span className="font-semibold text-foreground">Best for:</span> {footnote}
+              <span className="font-semibold text-foreground">{l.bestForListing}</span> {footnote}
             </p>
           )}
 

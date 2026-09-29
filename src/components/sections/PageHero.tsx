@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ChevronRight, ArrowRight, CheckCircle2, Users, LucideIcon } from "lucide-react";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -34,6 +35,7 @@ export default function PageHero({
   image,
   primaryCta = { label: "Start a Project", href: "/contact", external: false },
 }: PageHeroProps) {
+  const l = useUiLabels();
   const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
 
   React.useEffect(() => {
@@ -93,7 +95,7 @@ export default function PageHero({
               className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-6"
             >
               <Link href="/" className="hover:text-primary transition-colors">
-                Home
+                {l.breadcrumbHome}
               </Link>
               <ChevronRight className="w-4 h-4" />
               <Link href={`/${category}`} className="hover:text-primary transition-colors capitalize">
@@ -176,8 +178,8 @@ export default function PageHero({
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold">Trusted Process</div>
-                  <div className="text-xs text-muted-foreground">Proven at scale</div>
+                  <div className="text-sm font-bold">{l.heroBadgeOneTitle}</div>
+                  <div className="text-xs text-muted-foreground">{l.heroBadgeOneText}</div>
                 </div>
               </motion.div>
 
@@ -190,8 +192,8 @@ export default function PageHero({
                   <Users className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold">Dedicated Experts</div>
-                  <div className="text-xs text-muted-foreground">On every project</div>
+                  <div className="text-sm font-bold">{l.heroBadgeTwoTitle}</div>
+                  <div className="text-xs text-muted-foreground">{l.heroBadgeTwoText}</div>
                 </div>
               </motion.div>
             </div>

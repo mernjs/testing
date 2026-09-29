@@ -6,8 +6,10 @@ import CampaignCountdown from "@/components/offers/CampaignCountdown";
 import { formatOfferBadge } from "@/lib/offers/constants";
 import { getCategoryLabel, getSubServices } from "@/lib/categories";
 import type { SerializedOffer } from "@/lib/offers/offers";
+import { useText } from "@/components/cms/TextContext";
 
 export default function DealOfTheDaySection({ offer, onClaim }: { offer: SerializedOffer; onClaim: (offer: SerializedOffer) => void }) {
+  const tx = useText();
   const serviceLabel =
     offer.subService === "all"
       ? getCategoryLabel(offer.category)
@@ -24,14 +26,13 @@ export default function DealOfTheDaySection({ offer, onClaim }: { offer: Seriali
           className="rounded-3xl border border-border/50 bg-background/90 backdrop-blur-md p-8 sm:p-12 text-center shadow-lg shadow-primary/5"
         >
           <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary">
-            <Flame className="size-3.5" /> Today&apos;s Tech Deal
-          </span>
+            <Flame className="size-3.5" />{tx("offers.dealOfTheDaySection.today-s-tech-deal")}</span>
           <p className="mt-4 text-sm font-medium text-muted-foreground">{serviceLabel}</p>
           <h2 className="mt-1 text-3xl font-black tracking-tight text-foreground sm:text-4xl">{offer.title}</h2>
           <p className="mt-3 text-3xl font-black text-primary sm:text-4xl">{offer.badgeText || formatOfferBadge(offer.pricing)}</p>
 
           <div className="mt-6 flex justify-center">
-            <CampaignCountdown endDate={offer.validUntil} startDate={offer.validFrom} label="Deal ends in" />
+            <CampaignCountdown endDate={offer.validUntil} startDate={offer.validFrom} label={tx("offers.dealOfTheDaySection.deal-ends-in")} />
           </div>
 
           <button
@@ -39,7 +40,7 @@ export default function DealOfTheDaySection({ offer, onClaim }: { offer: Seriali
             onClick={() => onClaim(offer)}
             className="group mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-8 py-4 text-sm font-semibold text-primary-foreground transition-transform hover:scale-105 shadow-lg shadow-primary/20"
           >
-            Grab This Deal <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+            {tx("offers.dealOfTheDaySection.grab-this-deal")}<ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
           </button>
         </motion.div>
       </div>

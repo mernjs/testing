@@ -8,6 +8,7 @@ import { cn, formatDateTime } from "@/lib/utils";
 import { Markdown } from "@/components/chat/Markdown";
 import { TypingIndicator } from "@/components/chat/TypingIndicator";
 import type { ChatMessage as ChatMessageType } from "@/components/chat/ChatProvider";
+import { useText } from "@/components/cms/TextContext";
 
 function StreamingCursor() {
   return (
@@ -16,12 +17,12 @@ function StreamingCursor() {
 }
 
 function Citations({ citations }: { citations: ChatMessageType["citations"] }) {
+  const tx = useText();
   if (citations.length === 0) return null;
   return (
     <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-border/50 pt-3">
       <span className="mr-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
-        Sources
-      </span>
+        {tx("chat.chatMessage.sources")}</span>
       {citations.map((c, i) => {
         const inner = (
           <>

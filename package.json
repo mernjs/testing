@@ -18,6 +18,8 @@
     "db:seed-wallet-rules": "node --env-file=.env scripts/seed-wallet-rules.mjs",
     "db:seed-sop": "node --env-file=.env scripts/seed-sop-demo.mjs",
     "db:seed-seo": "node --env-file=.env scripts/seed-seo-demo.mjs",
+    "db:seed-cms": "node --env-file=.env scripts/seed-cms-demo.mjs",
+    "db:migrate-cms-content": "npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/migrate-cms-content.ts",
     "db:seed-dlms": "node --env-file=.env scripts/seed-dlms-demo.mjs",
     "db:seed-aibots": "node --env-file=.env scripts/seed-aibots-demo.mjs",
     "db:seed-smms": "node --env-file=.env scripts/seed-smms-demo.mjs",

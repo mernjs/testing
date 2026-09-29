@@ -2,12 +2,13 @@
 
 import { motion } from "framer-motion";
 import { ArrowUpRight, Bot, Mic, Quote, Sparkles } from "lucide-react";
+import { useText } from "@/components/cms/TextContext";
 
-const CAPABILITIES = [
-  { icon: Sparkles, label: "Grounded in our knowledge base" },
-  { icon: Quote, label: "Answers cite their sources" },
-  { icon: Mic, label: "Switch to Voice Mode anytime" },
-];
+const CAPABILITIES = (tx: (key: string) => string) => ([
+  { icon: Sparkles, label: tx("chat.welcomeScreen.grounded-in-our-knowledge-base") },
+  { icon: Quote, label: tx("chat.welcomeScreen.answers-cite-their-sources") },
+  { icon: Mic, label: tx("chat.welcomeScreen.switch-to-voice-mode-anytime") },
+]);
 
 export function WelcomeScreen({
   welcomeMessage,
@@ -20,6 +21,7 @@ export function WelcomeScreen({
   onPick: (q: string) => void;
   demo?: boolean;
 }) {
+  const tx = useText();
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -35,19 +37,18 @@ export function WelcomeScreen({
       </div>
 
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">YashOrbit AI Assistant</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">{tx("chat.welcomeScreen.yashorbit-ai-assistant")}</h1>
         <p className="text-[15px] leading-relaxed text-muted-foreground">{welcomeMessage}</p>
       </div>
 
       {demo && (
         <p className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">
           <Sparkles className="size-3" aria-hidden />
-          Demo mode — every feature is live; answers are sample content
-        </p>
+          {tx("chat.welcomeScreen.demo-mode-every-feature-is-live-answers-")}</p>
       )}
 
       <ul className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-        {CAPABILITIES.map((c) => (
+        {CAPABILITIES(tx).map((c) => (
           <li key={c.label} className="flex items-center gap-1.5 text-xs text-muted-foreground/80">
             <c.icon className="size-3.5 text-primary/70" aria-hidden />
             {c.label}
@@ -58,8 +59,7 @@ export function WelcomeScreen({
       {suggestedQuestions.length > 0 && (
         <div className="w-full space-y-2 pt-2">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
-            Try asking
-          </p>
+            {tx("chat.welcomeScreen.try-asking")}</p>
           <div className="grid gap-2 sm:grid-cols-2">
             {suggestedQuestions.map((q, i) => (
               <motion.button

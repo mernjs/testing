@@ -2,9 +2,12 @@
 
 import { motion } from "framer-motion";
 import BlogCard from "@/components/sections/BlogCard";
-import type { BlogPostMeta } from "@/lib/blog";
+import type { BlogPostMeta } from "@/types/content";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
-export default function RelatedPosts({ posts, title = "Related reading" }: { posts: BlogPostMeta[]; title?: string }) {
+export default function RelatedPosts({ posts, title: titleProp }: { posts: BlogPostMeta[]; title?: string }) {
+  const l = useUiLabels();
+  const title = titleProp ?? l.relatedPostsTitle;
   if (posts.length === 0) return null;
 
   return (

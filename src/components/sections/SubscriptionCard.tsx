@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowRight, Target, LucideIcon } from "lucide-react";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
 interface SpecItem {
   icon: LucideIcon;
@@ -37,13 +38,16 @@ export default function SubscriptionCard({
   specs,
   bestFor,
   features,
-  featuresLabel = "What's Included",
+  featuresLabel: featuresLabelProp,
   href,
-  ctaLabel = "View Details",
+  ctaLabel: ctaLabelProp,
   featured = false,
   index = 0,
   compact = false,
 }: SubscriptionCardProps) {
+  const l = useUiLabels();
+  const ctaLabel = ctaLabelProp ?? l.viewDetails;
+  const featuresLabel = featuresLabelProp ?? l.planFeaturesLabel;
   const muted = featured ? "text-background/65" : "text-muted-foreground";
 
   const body = (
@@ -56,7 +60,7 @@ export default function SubscriptionCard({
     >
       {featured && (
         <span className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-4 py-1.5 text-xs font-bold uppercase tracking-wider shadow-lg">
-          Most Popular
+          {l.mostPopular}
         </span>
       )}
 
@@ -101,7 +105,7 @@ export default function SubscriptionCard({
         <div className={`flex items-start gap-2.5 rounded-xl p-4 mb-6 ${featured ? "bg-background/10" : "bg-primary/5"}`}>
           <Target className="w-4 h-4 text-primary flex-none mt-0.5" />
           <p className="text-sm leading-relaxed">
-            <span className="font-bold">Best for: </span>
+            <span className="font-bold">{l.bestForPlan}</span>
             {bestFor}
           </p>
         </div>

@@ -14,10 +14,11 @@ import { useOfferTracking } from "@/lib/useOfferTracking";
 import LiveCountdown from "@/components/offers/LiveCountdown";
 import { formatOfferBadge, estimateSavings } from "@/lib/offers/constants";
 import { claimProgress } from "@/lib/offers/live";
-import { whatsapp, phone as phoneContact } from "@/lib/contact";
+import { useSiteInfo } from "@/components/cms/SiteInfoContext";
 import { formatCurrency } from "@/lib/utils";
 import type { SerializedOffer } from "@/lib/offers/offers";
 import type { Audience } from "@/lib/offers/constants";
+import { useText } from "@/components/cms/TextContext";
 
 function claimAudienceFor(offer: SerializedOffer): Extract<Audience, "CLIENT" | "STUDENT" | "INTERN" | "HIRING"> {
   if (offer.category === "internship-program") return "INTERN";
@@ -38,6 +39,8 @@ export default function ClaimOfferModal({
   campaignId: string;
   onOpenChange: (open: boolean) => void;
 }) {
+  const tx = useText();
+  const { contact } = useSiteInfo();
   const { status, error, fieldErrors, pricing, portal, submit, reset } = useClaimOfferSubmit();
   const [expired, setExpired] = useState(false);
   const [fields, setFields] = useState<ClaimOfferFields>(EMPTY_FIELDS);
@@ -161,17 +164,17 @@ export default function ClaimOfferModal({
       <SheetContent side="right" className="w-full overflow-y-auto p-0">
         <SheetHeader className="border-b border-border/50">
           <SheetTitle>{offer ? offer.title : "Claim this offer"}</SheetTitle>
-          {offer && <SheetDescription>{offer.badgeText || formatOfferBadge(offer.pricing)} — claim this festival offer</SheetDescription>}
+          {offer && <SheetDescription>{offer.badgeText || formatOfferBadge(offer.pricing)}{tx("offers.claimOfferModal.claim-this-festival-offer")}</SheetDescription>}
           {offer && (
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <LiveCountdown endDate={offer.validUntil} variant="pill" onExpire={() => setExpired(true)} />
               {summary.savings > 0 && (
                 <span className="rounded-full bg-green-500/15 px-2.5 py-1 text-[11px] font-semibold text-green-600 dark:text-green-400">
-                  You save {formatCurrency(summary.savings, offer.pricing.currency)}
+                  {tx("offers.claimOfferModal.you-save")}{formatCurrency(summary.savings, offer.pricing.currency)}
                 </span>
               )}
               {progress.limit !== null && !progress.soldOut && (
-                <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">{progress.remaining} of {progress.limit} left</span>
+                <span className="rounded-full bg-muted px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">{progress.remaining}{tx("offers.claimOfferModal.of")}{progress.limit}{tx("offers.claimOfferModal.left")}</span>
               )}
             </div>
           )}
@@ -182,19 +185,19 @@ export default function ClaimOfferModal({
             {status === "success" ? (
               <div key="success" className="space-y-4">
                 <LeadSuccessState
-                  title="Offer claimed!"
-                  description="Our team will reach out shortly with your confirmed discount and next steps."
+                  title={tx("offers.claimOfferModal.offer-claimed")}
+                  description={tx("offers.claimOfferModal.our-team-will-reach-out-shortly-with-you")}
                   onDismiss={() => handleOpenChange(false)}
                   autoHideMs={SUCCESS_AUTO_HIDE_MS}
                 />
                 {pricing?.originalPrice != null && pricing.finalPrice != null && (
                   <div className="rounded-2xl border border-border/50 bg-muted/20 p-4 text-sm">
-                    <p className="mb-2 flex items-center gap-1.5 font-semibold text-foreground"><PartyPopper className="size-4 text-primary" /> Your locked-in price</p>
+                    <p className="mb-2 flex items-center gap-1.5 font-semibold text-foreground"><PartyPopper className="size-4 text-primary" />{tx("offers.claimOfferModal.your-locked-in-price")}</p>
                     <div className="flex items-baseline justify-between gap-2">
                       <span className="text-muted-foreground line-through">{formatCurrency(pricing.originalPrice, pricing.currency)}</span>
                       <span className="text-xl font-black text-primary">{formatCurrency(pricing.finalPrice, pricing.currency)}</span>
                     </div>
-                    {pricing.walletAmountApplied ? <p className="mt-1 text-xs text-muted-foreground">Includes {formatCurrency(pricing.walletAmountApplied, pricing.currency)} of YashOrbit Credits.</p> : null}
+                    {pricing.walletAmountApplied ? <p className="mt-1 text-xs text-muted-foreground">{tx("offers.claimOfferModal.includes")}{formatCurrency(pricing.walletAmountApplied, pricing.currency)}{tx("offers.claimOfferModal.of-yashorbit-credits")}</p> : null}
                   </div>
                 )}
                 <div className="flex flex-col gap-2">
@@ -203,7 +206,7 @@ export default function ClaimOfferModal({
                       {portal.isNewAccount ? "Open my portal — your account is ready" : "Sign in to track this claim"}
                     </Link>
                   )}
-                  <Button type="button" variant="outline" className="w-full" onClick={() => handleOpenChange(false)}>Keep exploring offers</Button>
+                  <Button type="button" variant="outline" className="w-full" onClick={() => handleOpenChange(false)}>{tx("offers.claimOfferModal.keep-exploring-offers")}</Button>
                 </div>
               </div>
             ) : (
@@ -211,18 +214,18 @@ export default function ClaimOfferModal({
                 {error && <p className="text-sm text-destructive">{error}</p>}
 
                 <div className="space-y-1.5">
-                  <Label>Full name</Label>
+                  <Label>{tx("offers.claimOfferModal.full-name")}</Label>
                   <Input value={fields.name} onChange={(e) => set("name", e.target.value)} required />
                   {fieldErrors.name && <p className="text-xs text-destructive">{fieldErrors.name}</p>}
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <Label>Email</Label>
+                    <Label>{tx("offers.claimOfferModal.email")}</Label>
                     <Input type="email" value={fields.email} onChange={(e) => set("email", e.target.value)} required />
                     {fieldErrors.email && <p className="text-xs text-destructive">{fieldErrors.email}</p>}
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Phone</Label>
+                    <Label>{tx("offers.claimOfferModal.phone")}</Label>
                     <Input value={fields.phone} onChange={(e) => set("phone", e.target.value)} required />
                     {fieldErrors.phone && <p className="text-xs text-destructive">{fieldErrors.phone}</p>}
                   </div>
@@ -231,15 +234,15 @@ export default function ClaimOfferModal({
                 {(audience === "CLIENT" || audience === "HIRING") && (
                   <>
                     <div className="space-y-1.5">
-                      <Label>Company (optional)</Label>
+                      <Label>{tx("offers.claimOfferModal.company-optional")}</Label>
                       <Input value={fields.company ?? ""} onChange={(e) => set("company", e.target.value)} />
                     </div>
                     <div className="space-y-1.5">
-                      <Label>Budget range (optional)</Label>
+                      <Label>{tx("offers.claimOfferModal.budget-range-optional")}</Label>
                       <Input value={fields.budgetRange ?? ""} onChange={(e) => set("budgetRange", e.target.value)} placeholder="e.g. ₹1L–3L" />
                     </div>
                     <div className="space-y-1.5">
-                      <Label>Message (optional)</Label>
+                      <Label>{tx("offers.claimOfferModal.message-optional")}</Label>
                       <textarea
                         value={fields.message ?? ""}
                         onChange={(e) => set("message", e.target.value)}
@@ -253,22 +256,22 @@ export default function ClaimOfferModal({
                 {audience === "STUDENT" && (
                   <>
                     <div className="space-y-1.5">
-                      <Label>College / University</Label>
+                      <Label>{tx("offers.claimOfferModal.college-university")}</Label>
                       <Input value={fields.college ?? ""} onChange={(e) => set("college", e.target.value)} required />
                       {fieldErrors.college && <p className="text-xs text-destructive">{fieldErrors.college}</p>}
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div className="space-y-1.5">
-                        <Label>Graduation year (optional)</Label>
+                        <Label>{tx("offers.claimOfferModal.graduation-year-optional")}</Label>
                         <Input value={fields.graduationYear ?? ""} onChange={(e) => set("graduationYear", e.target.value)} />
                       </div>
                       <div className="space-y-1.5">
-                        <Label>Experience level (optional)</Label>
-                        <Input value={fields.experienceLevel ?? ""} onChange={(e) => set("experienceLevel", e.target.value)} placeholder="Fresher / 1-2 yrs" />
+                        <Label>{tx("offers.claimOfferModal.experience-level-optional")}</Label>
+                        <Input value={fields.experienceLevel ?? ""} onChange={(e) => set("experienceLevel", e.target.value)} placeholder={tx("offers.claimOfferModal.fresher-1-2-yrs")} />
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <Label>Program interested in (optional)</Label>
+                      <Label>{tx("offers.claimOfferModal.program-interested-in-optional")}</Label>
                       <Input value={fields.program ?? ""} onChange={(e) => set("program", e.target.value)} />
                     </div>
                   </>
@@ -277,25 +280,25 @@ export default function ClaimOfferModal({
                 {audience === "INTERN" && (
                   <>
                     <div className="space-y-1.5">
-                      <Label>College / University</Label>
+                      <Label>{tx("offers.claimOfferModal.college-university")}</Label>
                       <Input value={fields.college ?? ""} onChange={(e) => set("college", e.target.value)} required />
                       {fieldErrors.college && <p className="text-xs text-destructive">{fieldErrors.college}</p>}
                     </div>
                     <div className="space-y-1.5">
-                      <Label>Internship track (optional)</Label>
+                      <Label>{tx("offers.claimOfferModal.internship-track-optional")}</Label>
                       <Input value={fields.track ?? ""} onChange={(e) => set("track", e.target.value)} />
                     </div>
                     <div className="space-y-1.5">
-                      <Label>Skills (optional)</Label>
+                      <Label>{tx("offers.claimOfferModal.skills-optional")}</Label>
                       <Input value={fields.skills ?? ""} onChange={(e) => set("skills", e.target.value)} />
                     </div>
                   </>
                 )}
 
                 <div className="space-y-1.5 rounded-xl border border-dashed border-border/60 p-3">
-                  <Label className="flex items-center gap-1.5"><Tag className="size-3.5" /> Coupon code (optional)</Label>
+                  <Label className="flex items-center gap-1.5"><Tag className="size-3.5" />{tx("offers.claimOfferModal.coupon-code-optional")}</Label>
                   <div className="flex gap-2">
-                    <Input value={couponCode} onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); setCouponPreview(null); }} placeholder="FESTIVE90" className="font-mono" />
+                    <Input value={couponCode} onChange={(e) => { setCouponCode(e.target.value.toUpperCase()); setCouponPreview(null); }} placeholder={tx("offers.claimOfferModal.festive90")} className="font-mono" />
                     <Button type="button" variant="outline" size="sm" onClick={checkCoupon} disabled={checkingCoupon || !couponCode.trim()}>
                       {checkingCoupon ? <Loader2 className="size-4 animate-spin" /> : "Apply"}
                     </Button>
@@ -303,23 +306,21 @@ export default function ClaimOfferModal({
                   {couponPreview && (
                     <p className={`text-xs ${couponPreview.ok ? "text-green-600 dark:text-green-400" : "text-destructive"}`}>{couponPreview.message}</p>
                   )}
-                  <p className="text-[11px] text-muted-foreground">Final pricing and coupon eligibility are always re-checked when you submit.</p>
+                  <p className="text-[11px] text-muted-foreground">{tx("offers.claimOfferModal.final-pricing-and-coupon-eligibility-are")}</p>
                 </div>
 
                 {wallet && (
                   <label className="flex items-center gap-2 rounded-xl border border-border/60 p-3 text-sm">
                     <input type="checkbox" checked={useWallet} onChange={(e) => setUseWallet(e.target.checked)} />
                     <span>
-                      Use my YashOrbit Credits ({wallet.available.toLocaleString("en-IN")} available)
-                      <span className="block text-[11px] text-muted-foreground">Applied only if the offer has a price and your claim email matches your account. Final amount is confirmed server-side.</span>
+                      {tx("offers.claimOfferModal.use-my-yashorbit-credits")}{wallet.available.toLocaleString("en-IN")}{tx("offers.claimOfferModal.available")}<span className="block text-[11px] text-muted-foreground">{tx("offers.claimOfferModal.applied-only-if-the-offer-has-a-price-an")}</span>
                     </span>
                   </label>
                 )}
 
                 {(expired || progress.soldOut) && (
                   <p className="rounded-xl bg-destructive/10 p-3 text-sm font-medium text-destructive">
-                    {progress.soldOut ? "This offer is fully claimed." : "This offer has just ended."} Please pick another live offer.
-                  </p>
+                    {progress.soldOut ? "This offer is fully claimed." : "This offer has just ended."}{tx("offers.claimOfferModal.please-pick-another-live-offer")}</p>
                 )}
 
                 <Button type="submit" className="w-full" disabled={status === "submitting" || expired || progress.soldOut}>
@@ -327,23 +328,21 @@ export default function ClaimOfferModal({
                 </Button>
 
                 <ul className="grid gap-1.5 text-[11px] text-muted-foreground sm:grid-cols-3">
-                  <li className="flex items-center gap-1.5"><ShieldCheck className="size-3.5 shrink-0 text-primary" /> No payment now</li>
-                  <li className="flex items-center gap-1.5"><Clock3 className="size-3.5 shrink-0 text-primary" /> Reply in 1 working day</li>
-                  <li className="flex items-center gap-1.5"><Tag className="size-3.5 shrink-0 text-primary" /> Price locked on claim</li>
+                  <li className="flex items-center gap-1.5"><ShieldCheck className="size-3.5 shrink-0 text-primary" />{tx("offers.claimOfferModal.no-payment-now")}</li>
+                  <li className="flex items-center gap-1.5"><Clock3 className="size-3.5 shrink-0 text-primary" />{tx("offers.claimOfferModal.reply-in-1-working-day")}</li>
+                  <li className="flex items-center gap-1.5"><Tag className="size-3.5 shrink-0 text-primary" />{tx("offers.claimOfferModal.price-locked-on-claim")}</li>
                 </ul>
 
                 <div className="flex items-center gap-2 border-t border-border/50 pt-3 text-xs">
-                  <span className="text-muted-foreground">Prefer to talk?</span>
-                  <a href={whatsapp.href} target="_blank" rel="noopener noreferrer" onClick={() => offer && track("whatsapp_click", { offerId: offer._id, category: offer.category })} className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
-                    <MessageCircle className="size-3.5" /> WhatsApp
-                  </a>
-                  <a href={phoneContact.href} onClick={() => offer && track("call_click", { offerId: offer._id, category: offer.category })} className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
-                    <Phone className="size-3.5" /> Call us
-                  </a>
+                  <span className="text-muted-foreground">{tx("offers.claimOfferModal.prefer-to-talk")}</span>
+                  <a href={contact.whatsappHref} target="_blank" rel="noopener noreferrer" onClick={() => offer && track("whatsapp_click", { offerId: offer._id, category: offer.category })} className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+                    <MessageCircle className="size-3.5" />{tx("offers.claimOfferModal.whatsapp")}</a>
+                  <a href={contact.phoneHref} onClick={() => offer && track("call_click", { offerId: offer._id, category: offer.category })} className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+                    <Phone className="size-3.5" />{tx("offers.claimOfferModal.call-us")}</a>
                 </div>
                 <p className="text-center text-[11px] text-muted-foreground">
-                  By submitting, you agree to be contacted about this offer. See our{" "}
-                  <a href="/about/terms-and-conditions" className="underline">terms</a>.
+                  {tx("offers.claimOfferModal.by-submitting-you-agree-to-be-contacted-")}{" "}
+                  <a href="/about/terms-and-conditions" className="underline">{tx("offers.claimOfferModal.terms")}</a>.
                 </p>
               </form>
             )}

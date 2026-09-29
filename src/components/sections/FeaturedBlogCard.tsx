@@ -4,14 +4,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, Calendar, Clock, Sparkles, CheckCircle2 } from "lucide-react";
-import { categoryIcons, defaultCategoryIcon, type BlogPostMeta } from "@/lib/blog";
+import type { BlogPostMeta } from "@/types/content";
+import DynamicIcon from "@/components/cms/DynamicIcon";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 }
 
 export default function FeaturedBlogCard({ post }: { post: BlogPostMeta }) {
-  const CategoryIcon = categoryIcons[post.category] ?? defaultCategoryIcon;
+  const l = useUiLabels();
 
   return (
     <motion.div
@@ -40,7 +42,7 @@ export default function FeaturedBlogCard({ post }: { post: BlogPostMeta }) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/5 to-transparent lg:bg-gradient-to-t lg:from-black/70 lg:via-black/5 lg:to-transparent" />
           <span className="absolute top-6 left-6 inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-1.5 text-[11px] font-bold uppercase tracking-wider text-primary-foreground shadow-lg shadow-primary/30">
             <Sparkles className="w-3 h-3" />
-            Featured
+            {l.featured}
           </span>
           <div className="absolute bottom-6 left-6 flex items-center gap-4 text-sm font-medium text-white/90">
             <span className="inline-flex items-center gap-1.5">
@@ -56,7 +58,7 @@ export default function FeaturedBlogCard({ post }: { post: BlogPostMeta }) {
 
         <div className="relative z-10 flex flex-col justify-center p-8 sm:p-10 lg:p-12">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/15 to-secondary/15 border border-primary/20 flex items-center justify-center mb-6 group-hover/featured:from-primary group-hover/featured:to-[#ff8e75] group-hover/featured:border-primary group-hover/featured:shadow-lg group-hover/featured:shadow-primary/20 group-hover/featured:scale-110 group-hover/featured:rotate-3 transition-all duration-300">
-            <CategoryIcon className="w-6 h-6 text-primary group-hover/featured:text-white transition-colors duration-300" />
+            <DynamicIcon name={post.icon} className="w-6 h-6 text-primary group-hover/featured:text-white transition-colors duration-300" />
           </div>
 
           <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary mb-5 w-fit">
@@ -83,7 +85,7 @@ export default function FeaturedBlogCard({ post }: { post: BlogPostMeta }) {
           </div>
 
           <span className="inline-flex items-center justify-center gap-2 rounded-full bg-foreground px-7 py-3.5 text-sm font-bold text-background w-fit transition-all shadow-lg shadow-foreground/10 group-hover/featured:bg-primary group-hover/featured:text-primary-foreground group-hover/featured:shadow-primary/30 group-hover/featured:scale-105">
-            Read Article
+            {l.readArticle}
             <ArrowRight className="w-4 h-4 group-hover/featured:translate-x-1 transition-transform" />
           </span>
         </div>

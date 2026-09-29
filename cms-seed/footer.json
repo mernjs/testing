@@ -1,0 +1,160 @@
+[
+ {
+  "title": "About",
+  "viewAllHref": "/about",
+  "viewAllLabel": "View All About",
+  "links": [
+   {
+    "label": "Our Mission",
+    "href": "/about/our-mission"
+   },
+   {
+    "label": "What We Do",
+    "href": "/about/what-we-do"
+   },
+   {
+    "label": "Technologies",
+    "href": "/about/technologies"
+   },
+   {
+    "label": "Success Stories",
+    "href": "/about/success-stories"
+   },
+   {
+    "label": "Blog & Insights",
+    "href": "/blog"
+   },
+   {
+    "label": "Our SaaS Product",
+    "href": "/services/our-saas-product",
+    "emphasized": true
+   },
+   {
+    "label": "Privacy Policy",
+    "href": "/about/privacy-policy"
+   },
+   {
+    "label": "Terms & Conditions",
+    "href": "/about/terms-and-conditions"
+   }
+  ]
+ },
+ {
+  "title": "Services",
+  "viewAllHref": "/services",
+  "viewAllLabel": "View All Services",
+  "links": [
+   {
+    "label": "Our SaaS Product",
+    "href": "/services/our-saas-product",
+    "emphasized": true
+   },
+   {
+    "label": "Software Development",
+    "href": "/software-development"
+   },
+   {
+    "label": "Digital Marketing",
+    "href": "/digital-marketing"
+   },
+   {
+    "label": "AI & Automations",
+    "href": "/ai-automations"
+   },
+   {
+    "label": "Industrial Training",
+    "href": "/industrial-training"
+   },
+   {
+    "label": "Resource Augmentation",
+    "href": "/resource-augmentation"
+   },
+   {
+    "label": "Internship Program",
+    "href": "/internship-program"
+   },
+   {
+    "label": "Offers & Campaigns",
+    "href": "/offers"
+   }
+  ]
+ },
+ {
+  "title": "Industries",
+  "viewAllHref": "/industries",
+  "viewAllLabel": "View All Industries",
+  "links": [
+   {
+    "label": "Healthcare",
+    "href": "/industries/healthcare"
+   },
+   {
+    "label": "Ecommerce",
+    "href": "/industries/ecommerce"
+   },
+   {
+    "label": "Insurance",
+    "href": "/industries/insurance"
+   },
+   {
+    "label": "Agriculture",
+    "href": "/industries/agriculture"
+   },
+   {
+    "label": "Education",
+    "href": "/industries/education"
+   },
+   {
+    "label": "Real Estate",
+    "href": "/industries/real-estate"
+   },
+   {
+    "label": "Finance",
+    "href": "/industries/finance"
+   },
+   {
+    "label": "Travel & Hospitality",
+    "href": "/industries/travel"
+   }
+  ]
+ },
+ {
+  "title": "Careers",
+  "viewAllHref": "/careers",
+  "viewAllLabel": "View All Careers",
+  "links": [
+   {
+    "label": "MERN Developer",
+    "href": "/careers/mern-developer"
+   },
+   {
+    "label": "GenAI Developer",
+    "href": "/careers/genai-developer"
+   },
+   {
+    "label": "AI/ML Engineer",
+    "href": "/careers/ai-ml-engineer"
+   },
+   {
+    "label": "UI/UX Designer",
+    "href": "/careers/ui-ux-designer"
+   },
+   {
+    "label": "Business Development",
+    "href": "/careers/business-development-manager"
+   },
+   {
+    "label": "HR Executive",
+    "href": "/careers/hr-executive"
+   },
+   {
+    "label": "DevOps Engineer",
+    "href": "/careers/devops-engineer"
+   },
+   {
+    "label": "Open Positions",
+    "href": "/careers"
+   }
+  ]
+ }
+]

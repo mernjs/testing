@@ -1,8 +1,9 @@
 "use client";
 
+import { useText } from "@/components/cms/TextContext";
 import React from "react";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { ProductItem } from "@/lib/products-data";
+import type { ProductItem } from "@/types/content";
 import ProductMockup from "./ProductMockup";
 import {
   Sparkles,
@@ -21,6 +22,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onSelect }: ProductCardProps) {
+  const tx = useText();
   const Icon = product.icon || ShieldCheck;
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
@@ -69,8 +71,7 @@ export default function ProductCard({ product, onSelect }: ProductCardProps) {
             {product.aiCapabilities && product.aiCapabilities.length > 0 && (
               <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-xs font-bold text-primary shadow-xs">
                 <Sparkles className="w-3.5 h-3.5" />
-                AI Embedded
-              </span>
+                {tx("catalog.productCard.ai-embedded")}</span>
             )}
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-muted/50 border border-border/40 text-[11px] font-semibold text-muted-foreground">
               <Layers className="w-3 h-3" />
@@ -105,7 +106,7 @@ export default function ProductCard({ product, onSelect }: ProductCardProps) {
             <div className="rounded-2xl border border-secondary/25 bg-secondary/8 p-4 space-y-2 hover:border-secondary/40 transition-colors">
               <div className="flex items-center gap-1.5 text-xs font-bold text-secondary-foreground uppercase tracking-wider">
                 <AlertCircle className="w-4 h-4 text-secondary-foreground shrink-0" />
-                <span>Problem Solved</span>
+                <span>{tx("catalog.productCard.problem-solved")}</span>
               </div>
               <p className="text-xs text-foreground/90 font-medium leading-relaxed">
                 {product.problemSolved}
@@ -117,7 +118,7 @@ export default function ProductCard({ product, onSelect }: ProductCardProps) {
             <div className="rounded-2xl border border-primary/25 bg-primary/8 p-4 space-y-2 hover:border-primary/40 transition-colors">
               <div className="flex items-center gap-1.5 text-xs font-bold text-primary uppercase tracking-wider">
                 <TrendingUp className="w-4 h-4 text-primary shrink-0" />
-                <span>Expected Outcome</span>
+                <span>{tx("catalog.productCard.expected-outcome")}</span>
               </div>
               <p className="text-xs text-foreground/90 font-medium leading-relaxed">
                 {product.businessOutcome}
@@ -134,8 +135,7 @@ export default function ProductCard({ product, onSelect }: ProductCardProps) {
         {/* Key Features Highlights */}
         <div className="space-y-2 pt-1">
           <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Key Capabilities
-          </div>
+            {tx("catalog.productCard.key-capabilities")}</div>
           <div className="grid grid-cols-1 gap-2">
             {product.keyFeatures.slice(0, 3).map((feat, idx) => (
               <div key={idx} className="flex items-start gap-2.5 text-xs">
@@ -167,7 +167,7 @@ export default function ProductCard({ product, onSelect }: ProductCardProps) {
           onClick={() => onSelect(product)}
           className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/30 active:scale-95 shadow-md shadow-primary/20 shrink-0"
         >
-          <span>Explore Product Details</span>
+          <span>{tx("catalog.productCard.explore-product-details")}</span>
           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
         </button>
       </div>

@@ -9,6 +9,7 @@ import { isClaimHref } from "@/lib/offers/constants";
 import { useOfferTracking } from "@/lib/useOfferTracking";
 import { popupMayShow, markPopupShown, markPopupClosed } from "@/lib/offers/popup-frequency";
 import type { ActiveDisplayPopup } from "@/lib/useActiveCampaignDisplay";
+import { useText } from "@/components/cms/TextContext";
 
 export default function OfferPopup({
   campaign,
@@ -21,6 +22,7 @@ export default function OfferPopup({
   phase: "live" | "upcoming";
   endDate: string;
 }) {
+  const tx = useText();
   const upcoming = phase === "upcoming";
   const [open, setOpen] = useState(false);
   const track = useOfferTracking(campaign.id);
@@ -114,7 +116,7 @@ export default function OfferPopup({
           {popup.showCountdown && (
             <div className="mt-5 flex justify-center">
               {upcoming && campaign.startDate ? (
-                <CampaignCountdown endDate={campaign.startDate} label="Goes live in" showUrgency={false} />
+                <CampaignCountdown endDate={campaign.startDate} label={tx("offers.offerPopup.goes-live-in")} showUrgency={false} />
               ) : (
                 <CampaignCountdown endDate={endDate} startDate={campaign.startDate} />
               )}
@@ -129,8 +131,7 @@ export default function OfferPopup({
             {popup.ctaText}
           </Link>
           <button type="button" onClick={() => handleOpenChange(false)} className="mt-3 text-xs text-muted-foreground hover:text-foreground hover:underline">
-            Maybe later
-          </button>
+            {tx("offers.offerPopup.maybe-later")}</button>
         </div>
       </DialogContent>
     </Dialog>

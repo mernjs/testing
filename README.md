@@ -429,3 +429,13 @@ SMMS_ENCRYPTION_KEY (your local .env already has one).
 CRON_SECRET.
 For publishing: META_APP_ID/META_APP_SECRET, GOOGLE_OAUTH_CLIENT_ID/GOOGLE_OAUTH_CLIENT_SECRET, LINKEDIN_CLIENT_ID/LINKEDIN_CLIENT_SECRET.
 For demo data, run npm run db:seed-smms. It creates the logins demo.smms.{admin,manager,specialist,employee}@yashorbit.com (password Demo@12345). Testing used a scratch database, which I dropped afterwards.
+
+# yashorbit (the database in .env)
+npm run db:migrate-cms-content                 # dry run: prints the database name and what it will create
+npm run db:migrate-cms-content -- --apply
+
+# yashorbit_prod: same cluster connection string, database name changed
+MONGODB_URI="mongodb+srv://…/yashorbit_prod?…" npm run db:migrate-cms-content -- --apply
+
+
+npm run db:migrate-cms-content -- --apply

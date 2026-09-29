@@ -8,13 +8,14 @@ import { Button } from "@/components/ui/button";
 import { useReferralCode } from "@/lib/useReferralCode";
 import type { SubscriptionSource } from "@/lib/offers/subscription-validation";
 import type { Audience } from "@/lib/offers/constants";
+import { useText } from "@/components/cms/TextContext";
 
-const INTERESTS: { value: Audience; label: string }[] = [
-  { value: "CLIENT", label: "Software / AI projects" },
-  { value: "STUDENT", label: "Courses & training" },
-  { value: "INTERN", label: "Internships" },
-  { value: "HIRING", label: "Hiring developers" },
-];
+const INTERESTS = (tx: (key: string) => string): { value: Audience; label: string }[] => ([
+  { value: "CLIENT", label: tx("offers.notifyMeForm.software-ai-projects") },
+  { value: "STUDENT", label: tx("offers.notifyMeForm.courses-training") },
+  { value: "INTERN", label: tx("offers.notifyMeForm.internships") },
+  { value: "HIRING", label: tx("offers.notifyMeForm.hiring-developers") },
+]);
 
 /**
  * One lead-capture form for every non-live state: "Notify me" for a coming-soon / future campaign
@@ -37,6 +38,7 @@ export default function NotifyMeForm({
   className?: string;
   onSubscribed?: () => void;
 }) {
+  const tx = useText();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -78,10 +80,9 @@ export default function NotifyMeForm({
     return (
       <div className={`rounded-3xl border border-primary/30 bg-primary/5 p-6 text-center ${className}`} role="status">
         <CheckCircle2 className="mx-auto size-10 text-primary" />
-        <p className="mt-3 text-lg font-bold text-foreground">You&apos;re on the list!</p>
+        <p className="mt-3 text-lg font-bold text-foreground">{tx("offers.notifyMeForm.you-re-on-the-list")}</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          {campaignName ? `We'll let you know the moment “${campaignName}” goes live.` : "We'll reach out as soon as the next offers are ready."} If you have a YashOrbit portal account you&apos;ll also get an in-portal notification.
-        </p>
+          {campaignName ? `We'll let you know the moment “${campaignName}” goes live.` : "We'll reach out as soon as the next offers are ready."}{tx("offers.notifyMeForm.if-you-have-a-yashorbit-portal-account-y")}</p>
       </div>
     );
   }
@@ -92,32 +93,32 @@ export default function NotifyMeForm({
         <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10"><Bell className="size-4 text-primary" /></span>
         <div>
           <p className="text-base font-bold text-foreground">{campaignName ? `Get notified — ${campaignName}` : "Get first access to new offers"}</p>
-          <p className="text-xs text-muted-foreground">One message when it&apos;s live. No spam.</p>
+          <p className="text-xs text-muted-foreground">{tx("offers.notifyMeForm.one-message-when-it-s-live-no-spam")}</p>
         </div>
       </div>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       <div className="space-y-1.5">
-        <Label htmlFor={`nm-email-${source}`}>Email</Label>
-        <Input id={`nm-email-${source}`} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" />
+        <Label htmlFor={`nm-email-${source}`}>{tx("offers.notifyMeForm.email")}</Label>
+        <Input id={`nm-email-${source}`} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={tx("offers.notifyMeForm.you-company-com")} />
         {fieldErrors.email && <p className="text-xs text-destructive">{fieldErrors.email}</p>}
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label>Name (optional)</Label>
+          <Label>{tx("offers.notifyMeForm.name-optional")}</Label>
           <Input value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div className="space-y-1.5">
-          <Label>Phone / WhatsApp</Label>
+          <Label>{tx("offers.notifyMeForm.phone-whatsapp")}</Label>
           <Input type="tel" required autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} />
           {fieldErrors.phone && <p className="text-xs text-destructive">{fieldErrors.phone}</p>}
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label>I&apos;m interested in</Label>
+        <Label>{tx("offers.notifyMeForm.i-m-interested-in")}</Label>
         <div className="flex flex-wrap gap-2">
-          {INTERESTS.map((i) => (
+          {INTERESTS(tx).map((i) => (
             <button
               key={i.value}
               type="button"
@@ -131,8 +132,8 @@ export default function NotifyMeForm({
       </div>
       {withMessage && (
         <div className="space-y-1.5">
-          <Label>What do you need? (optional)</Label>
-          <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-ring" placeholder="e.g. e-commerce app for 2 cities, ~3 month timeline" />
+          <Label>{tx("offers.notifyMeForm.what-do-you-need-optional")}</Label>
+          <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3} className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:border-ring" placeholder={tx("offers.notifyMeForm.e-g-e-commerce-app-for-2-cities-3-month-")} />
         </div>
       )}
       {/* honeypot — hidden from people, tempting to bots */}
@@ -141,7 +142,7 @@ export default function NotifyMeForm({
       <Button type="submit" className="w-full" disabled={state === "sending"}>
         {state === "sending" ? <Loader2 className="size-4 animate-spin" /> : cta}
       </Button>
-      <p className="text-center text-[11px] text-muted-foreground">By subscribing you agree to be contacted about offers. See our <a href="/about/terms-and-conditions" className="underline">terms</a>.</p>
+      <p className="text-center text-[11px] text-muted-foreground">{tx("offers.notifyMeForm.by-subscribing-you-agree-to-be-contacted")}<a href="/about/terms-and-conditions" className="underline">{tx("offers.notifyMeForm.terms")}</a>.</p>
     </form>
   );
 }

@@ -4,7 +4,9 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ChevronRight, Calendar, Clock, User } from "lucide-react";
-import { categoryIcons, defaultCategoryIcon, type BlogPostMeta } from "@/lib/blog";
+import type { BlogPostMeta } from "@/types/content";
+import DynamicIcon from "@/components/cms/DynamicIcon";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -18,8 +20,8 @@ function formatDate(dateStr: string) {
 }
 
 export default function ArticleHero({ post }: { post: BlogPostMeta }) {
+  const l = useUiLabels();
   const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
-  const CategoryIcon = categoryIcons[post.category] ?? defaultCategoryIcon;
 
   React.useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => setMousePosition({ x: e.clientX, y: e.clientY });
@@ -78,11 +80,11 @@ export default function ArticleHero({ post }: { post: BlogPostMeta }) {
               className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-6"
             >
               <Link href="/" className="hover:text-primary transition-colors">
-                Home
+                {l.breadcrumbHome}
               </Link>
               <ChevronRight className="w-4 h-4" />
               <Link href="/blog" className="hover:text-primary transition-colors">
-                Blog
+                {l.breadcrumbBlog}
               </Link>
               <ChevronRight className="w-4 h-4" />
               <span className="text-foreground line-clamp-1">{post.title}</span>
@@ -93,7 +95,7 @@ export default function ArticleHero({ post }: { post: BlogPostMeta }) {
                 variants={fadeIn}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/40 border border-border/50 text-sm font-medium text-foreground backdrop-blur-md mb-6 shadow-sm w-fit"
               >
-                <CategoryIcon className="w-4 h-4 text-primary" />
+                <DynamicIcon name={post.icon} className="w-4 h-4 text-primary" />
                 {post.category}
               </motion.div>
               <motion.h1
@@ -136,7 +138,7 @@ export default function ArticleHero({ post }: { post: BlogPostMeta }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/25 via-transparent to-secondary/30 mix-blend-overlay"></div>
                 <div className="absolute top-6 left-6 w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-xl">
-                  <CategoryIcon className="w-8 h-8 text-white" />
+                  <DynamicIcon name={post.icon} className="w-8 h-8 text-white" />
                 </div>
               </div>
 
@@ -150,7 +152,7 @@ export default function ArticleHero({ post }: { post: BlogPostMeta }) {
                 </div>
                 <div>
                   <div className="text-sm font-bold">{post.readTime}</div>
-                  <div className="text-xs text-muted-foreground">Reading time</div>
+                  <div className="text-xs text-muted-foreground">{l.readingTime}</div>
                 </div>
               </motion.div>
 

@@ -7,9 +7,13 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, Hotel, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Newspaper, Workflow, BarChart3, FileSearch, TrendingUp, Plug, BrainCircuit, Megaphone, FileQuestion, Kanban, Filter, ShieldCheck, FileText } from "lucide-react";
 import { useTheme } from "next-themes";
-import { InstagramIcon, XIcon, FacebookIcon, GithubIcon, YoutubeIcon, WhatsAppIcon } from "@/components/icons/SocialIcons";
-import { socialLinks as socialLinksData, whatsapp } from "@/lib/contact";
+import { WhatsAppIcon } from "@/components/icons/SocialIcons";
+import { socialIconFor } from "@/components/icons/social-icon-for";
+import { useSiteInfo } from "@/components/cms/SiteInfoContext";
+import type { SiteInfo } from "@/lib/cms/site-info-shared";
 import { loadAndToggleTawk } from "@/lib/tawk";
+import { resolveIcon } from "@/lib/cms/icon-map";
+import type { PublicNavTop } from "@/lib/cms/nav";
 
 function Logo({ className }: { className?: string }) {
   return (
@@ -44,143 +48,27 @@ function Logo({ className }: { className?: string }) {
   );
 }
 
-const socialIcons = { Facebook: FacebookIcon, GitHub: GithubIcon, "X (Twitter)": XIcon, Instagram: InstagramIcon, YouTube: YoutubeIcon };
-const socialLinks = socialLinksData.map((social) => ({ ...social, icon: socialIcons[social.name] }));
+/** The brand logo: the CMS Site Identity logo image when one is set, else the built-in SVG. */
+function SiteLogo({ className, logoUrl }: { className: string; logoUrl: string }) {
+  // eslint-disable-next-line @next/next/no-img-element -- CMS logo URL (any host)
+  return logoUrl ? <img src={logoUrl} alt="" className={`${className} object-contain`} /> : <Logo className={className} />;
+}
 
-const navigation = [
-  {
-    name: "About",
-    href: "/about",
-    featured: { title: "Our Mission", description: "Learn how we empower businesses globally.", image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop" },
-    items: [
-      { name: "Our Mission", href: "/about/our-mission", description: "Why we exist", icon: Compass },
-      { name: "What We Do", href: "/about/what-we-do", description: "Our core operations", icon: Zap },
-      { name: "Technologies", href: "/about/technologies", description: "Our full tech stack", icon: Layers },
-      { name: "Success Stories", href: "/about/success-stories", description: "Client impact cases", icon: Box },
-      { name: "Blog", href: "/blog", description: "Engineering insights & updates", icon: Newspaper },
-      { name: "Our SaaS Product", href: "/services/our-saas-product", description: "15-application AI platform", icon: Sparkles },
-      { name: "Privacy Policy", href: "/about/privacy-policy", description: "Data protection & privacy", icon: ShieldCheck },
-      { name: "Terms & Conditions", href: "/about/terms-and-conditions", description: "Terms of service agreement", icon: FileQuestion },
-    ],
-  },
-  {
-    name: "Services",
-    href: "/services",
-    featured: { title: "Digital Transformation & SaaS Platform", description: "End-to-end tech solutions and SaaS products.", image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop" },
-    items: [
-      { name: "Our SaaS Product", href: "/services/our-saas-product", description: "15-application integrated AI SaaS ecosystem", icon: Sparkles },
-      { name: "Software Development", href: "/software-development", description: "Custom web, mobile & desktop software", icon: Code2 },
-      { name: "Digital Marketing", href: "/digital-marketing", description: "SEO, ads, social media & growth strategies", icon: Megaphone },
-      { name: "AI & Automations", href: "/ai-automations", description: "Workflows, chatbots, RAG & RPA bots", icon: BrainCircuit },
-      { name: "Industrial Training", href: "/industrial-training", description: "Mentor-led, project-based learning", icon: GraduationCap },
-      { name: "Resource Augmentation", href: "/resource-augmentation", description: "Dedicated developers & team hiring", icon: UserPlus },
-      { name: "Internship Program", href: "/internship-program", description: "Hands-on live project internships", icon: Briefcase },
-      // { name: "Offers & Campaigns", href: "/offers", description: "Exclusive campaign deals & offers", icon: Zap },
-    ],
-  },
-  {
-    name: "Industries",
-    href: "/industries",
-    featured: { title: "Industry Focus", description: "Tailored tech across sectors.", image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop" },
-    items: [
-      { name: "Healthcare", href: "/industries/healthcare", description: "Patient portals & telehealth", icon: HeartPulse },
-      { name: "Ecommerce", href: "/industries/ecommerce", description: "Storefronts that convert", icon: ShoppingCart },
-      { name: "Insurance", href: "/industries/insurance", description: "Underwriting & claims", icon: Umbrella },
-      { name: "Agriculture", href: "/industries/agriculture", description: "Precision farming platforms", icon: Tractor },
-      { name: "Education", href: "/industries/education", description: "Transforming education", icon: GraduationCap },
-      { name: "Real Estate", href: "/industries/real-estate", description: "Property management", icon: Building2 },
-      { name: "Finance", href: "/industries/finance", description: "Secure financial tech", icon: Landmark },
-      { name: "Travel & Hospitality", href: "/industries/travel", description: "Booking & itinerary platforms", icon: Plane },
-    ],
-  },
-  {
-    name: "Careers",
-    href: "/careers",
-    featured: { title: "Careers at YashOrbit", description: "Join our growing team building AI-powered products.", image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop" },
-    items: [
-      { name: "MERN Developer", href: "/careers/mern-developer", description: "Full-stack MongoDB, Express, React, Node", icon: Code2 },
-      { name: "GenAI Developer", href: "/careers/genai-developer", description: "LLM-powered products & pipelines", icon: Sparkles },
-      { name: "AI/ML Engineer", href: "/careers/ai-ml-engineer", description: "Model training & deployment", icon: Cpu },
-      { name: "UI/UX Designer", href: "/careers/ui-ux-designer", description: "Product design across web & mobile", icon: Palette },
-      { name: "Business Development Manager", href: "/careers/business-development-manager", description: "Grow our client pipeline", icon: Handshake },
-      { name: "HR Executive", href: "/careers/hr-executive", description: "Recruitment & employee experience", icon: Users },
-      { name: "DevOps Engineer", href: "/careers/devops-engineer", description: "Cloud infrastructure & CI/CD", icon: Workflow },
-      { name: "Open Positions", href: "/careers", description: "Explore all open roles", icon: Briefcase },
-    ],
-  },
+const mobileContactLinksFor = (header: SiteInfo["header"], whatsappHref: string) => [
+  { name: header.consultLabel, type: "link" as const, href: header.consultHref, icon: Calendar },
+  { name: header.liveChatLabel, type: "action" as const, icon: MessageSquare },
+  { name: header.whatsappLabel, type: "external" as const, href: whatsappHref, icon: WhatsAppIcon },
 ];
 
-// Mobile-only nav data: mirrors real, existing routes
-const mobileNavigation = [
-  {
-    name: "About",
-    href: "/about",
-    icon: Compass,
-    items: [
-      { name: "Our Mission", href: "/about/our-mission", icon: Compass },
-      { name: "What We Do", href: "/about/what-we-do", icon: Zap },
-      { name: "Technologies", href: "/about/technologies", icon: Layers },
-      { name: "Success Stories", href: "/about/success-stories", icon: Box },
-      { name: "Blog", href: "/blog", icon: Newspaper },
-      { name: "Our SaaS Product", href: "/services/our-saas-product", icon: Sparkles },
-      { name: "Privacy Policy", href: "/about/privacy-policy", icon: ShieldCheck },
-      { name: "Terms & Conditions", href: "/about/terms-and-conditions", icon: FileQuestion },
-    ],
-  },
-  {
-    name: "Services",
-    href: "/services",
-    icon: Layers,
-    items: [
-      { name: "Our SaaS Product", href: "/services/our-saas-product", icon: Sparkles },
-      { name: "Software Development", href: "/software-development", icon: Code2 },
-      { name: "Digital Marketing", href: "/digital-marketing", icon: Megaphone },
-      { name: "AI & Automations", href: "/ai-automations", icon: BrainCircuit },
-      { name: "Industrial Training", href: "/industrial-training", icon: GraduationCap },
-      { name: "Resource Augmentation", href: "/resource-augmentation", icon: UserPlus },
-      { name: "Internship Program", href: "/internship-program", icon: Briefcase },
-      // { name: "Offers & Campaigns", href: "/offers", icon: Zap },
-    ],
-  },
-  {
-    name: "Industries",
-    href: "/industries",
-    icon: Globe,
-    items: [
-      { name: "Healthcare", href: "/industries/healthcare", icon: HeartPulse },
-      { name: "Ecommerce", href: "/industries/ecommerce", icon: ShoppingCart },
-      { name: "Insurance", href: "/industries/insurance", icon: Umbrella },
-      { name: "Agriculture", href: "/industries/agriculture", icon: Tractor },
-      { name: "Education", href: "/industries/education", icon: GraduationCap },
-      { name: "Real Estate", href: "/industries/real-estate", icon: Building2 },
-      { name: "Finance", href: "/industries/finance", icon: Landmark },
-      { name: "Travel & Hospitality", href: "/industries/travel", icon: Plane },
-    ],
-  },
-  {
-    name: "Careers",
-    href: "/careers",
-    icon: Briefcase,
-    items: [
-      { name: "MERN Developer", href: "/careers/mern-developer", icon: Code2 },
-      { name: "GenAI Developer", href: "/careers/genai-developer", icon: Sparkles },
-      { name: "AI/ML Engineer", href: "/careers/ai-ml-engineer", icon: Cpu },
-      { name: "UI/UX Designer", href: "/careers/ui-ux-designer", icon: Palette },
-      { name: "Business Development Manager", href: "/careers/business-development-manager", icon: Handshake },
-      { name: "HR Executive", href: "/careers/hr-executive", icon: Users },
-      { name: "DevOps Engineer", href: "/careers/devops-engineer", icon: Workflow },
-      { name: "Open Positions", href: "/careers", icon: Briefcase },
-    ],
-  },
-];
+/** A desktop mega-menu column, resolved from the CMS navigation. */
+interface NavColumn {
+  name: string;
+  href: string;
+  featured: { title: string; description: string; image: string };
+  items: { name: string; href: string; description: string; icon: React.ComponentType<{ className?: string }> }[];
+}
 
-const mobileContactLinks = [
-  { name: "Book a Consultation", type: "link" as const, href: "/contact", icon: Calendar },
-  { name: "Live Chat", type: "action" as const, icon: MessageSquare },
-  { name: "WhatsApp", type: "external" as const, href: whatsapp.href, icon: WhatsAppIcon },
-];
-
-function FeaturedCard({ item }: { item: (typeof navigation)[number] }) {
+function FeaturedCard({ item, featuredLabel }: { item: NavColumn; featuredLabel: string }) {
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
   const springConfig = { stiffness: 200, damping: 20, mass: 0.5 };
@@ -226,7 +114,7 @@ function FeaturedCard({ item }: { item: (typeof navigation)[number] }) {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
           </span>
-          Featured
+          {featuredLabel}
         </span>
 
         <div className="relative z-10 h-full min-h-[200px] flex flex-col justify-end" style={{ transform: "translateZ(20px)" }}>
@@ -246,8 +134,17 @@ function FeaturedCard({ item }: { item: (typeof navigation)[number] }) {
   );
 }
 
-export default function Header() {
+/**
+ * `variant` is chosen per theme in the CMS (src/lib/cms/component-variants.ts):
+ * "default" is the site's standard header; "menu" drops the desktop nav bar
+ * and uses the slide-out menu at every screen width.
+ */
+export default function Header({ cmsNavigation, variant = "default" }: { cmsNavigation: PublicNavTop[]; variant?: "default" | "menu" }) {
+  const menuOnly = variant === "menu";
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  // Brand, CTA, contact details and social links: CMS → Site Identity.
+  const { brand, header, contact, social } = useSiteInfo();
+  const mobileContactLinks = React.useMemo(() => mobileContactLinksFor(header, contact.whatsappHref), [header, contact.whatsappHref]);
   const [activeMenu, setActiveMenu] = React.useState<string | null>(null);
   const [openMobileSection, setOpenMobileSection] = React.useState<string | null>(null);
   const { theme, setTheme } = useTheme();
@@ -259,25 +156,47 @@ export default function Header() {
   }, []);
   const isDark = mounted && theme === "dark";
 
+  // The header menu — CMS → Navigation. Desktop and mobile menus share one source.
+  const navigation = React.useMemo(
+    () =>
+      cmsNavigation.map((top) => ({
+        name: top.name,
+        href: top.href,
+        featured: top.featured,
+        items: top.items.map((i) => ({ name: i.name, href: i.href, description: i.description ?? "", icon: resolveIcon(i.iconKey) })),
+      })),
+    [cmsNavigation]
+  );
+  const mobileNavigation = React.useMemo(
+    () =>
+      cmsNavigation.map((top) => ({
+        name: top.name,
+        href: top.href,
+        icon: resolveIcon(top.iconKey),
+        items: top.items.map((i) => ({ name: i.name, href: i.href, icon: resolveIcon(i.iconKey) })),
+      })),
+    [cmsNavigation]
+  );
+
   return (
     <>
     <header className="fixed inset-x-0 top-[var(--offer-strip-h,0px)] z-50 h-[88px] bg-background/80 dark:bg-muted/20 backdrop-blur-xl border-b border-border/50">
       <nav className="mx-auto flex h-full max-w-7xl items-center justify-between px-6 lg:px-8" aria-label="Global">
         <div className="flex shrink-0">
           <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2.5 group">
-            <Logo className="w-9 h-9 shrink-0 transition-transform duration-300 group-hover:scale-105" />
+            <SiteLogo logoUrl={brand.logoUrl} className="w-9 h-9 shrink-0 transition-transform duration-300 group-hover:scale-105" />
             <span className="flex flex-col leading-none">
               <span className="font-extrabold text-2xl tracking-tight">
-                <span className="text-foreground">Yash</span><span className="text-primary">Orbit</span>
+                <span className="text-foreground">{brand.namePrimary}</span><span className="text-primary">{brand.nameAccent}</span>
               </span>
               <span className="mt-0.5 whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.15em] text-foreground/80">
-                Technologies Pvt. Ltd.
+                {brand.subtitle}
               </span>
             </span>
           </Link>
         </div>
 
-        <div className="flex xl:hidden gap-4 items-center ml-auto">
+        <div className={`${menuOnly ? "flex" : "flex xl:hidden"} gap-4 items-center ml-auto`}>
           <button
             type="button"
             aria-label="Open main menu"
@@ -301,7 +220,7 @@ export default function Header() {
           </button>
         </div>
 
-        <div className="hidden xl:flex xl:items-center xl:gap-x-3 ml-auto relative h-full">
+        <div className={`${menuOnly ? "hidden" : "hidden xl:flex"} xl:items-center xl:gap-x-3 ml-auto relative h-full`}>
           <div className="flex items-center gap-x-0.5 relative h-full">
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
@@ -343,7 +262,7 @@ export default function Header() {
                         <div className="relative w-full flex-auto overflow-hidden rounded-3xl bg-background/95 dark:bg-muted/20 backdrop-blur-2xl shadow-2xl ring-1 ring-border border border-border/50">
                           <div className="h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
                           <div className="grid grid-cols-5 p-2">
-                            <FeaturedCard item={item} />
+                            <FeaturedCard item={item} featuredLabel={header.featuredLabel} />
                             <div className="col-span-3 p-5 grid grid-cols-2 gap-x-6 gap-y-2.5">
                               {item.items.map((subItem) => (
                                 <Link
@@ -374,26 +293,26 @@ export default function Header() {
             })}
 
             <Link
-              href="/ask"
+              href={header.askAiHref}
               className={`relative ml-1 flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-2 text-sm font-semibold transition-colors duration-200 ${
-                pathname === "/ask"
+                pathname === header.askAiHref
                   ? "text-primary"
                   : "text-foreground hover:text-primary hover:bg-muted/40"
               }`}
             >
               <Bot className="h-4 w-4 text-primary" />
-              Ask AI
+              {header.askAiLabel}
             </Link>
           </div>
 
           <div className="flex items-center gap-3">
             <PortalAuthLink variant="desktop" />
             <Link
-              href="/contact"
+              href={header.ctaHref}
               className="group relative inline-flex flex-none items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-all hover:scale-105 active:scale-95"
             >
               <span className="relative z-10 flex items-center gap-2 whitespace-nowrap">
-                Let&apos;s Talk <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                {header.ctaLabel} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
             </Link>
             <button
@@ -415,7 +334,7 @@ export default function Header() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] xl:hidden"
+            className={`fixed inset-0 z-[100] ${menuOnly ? "" : "xl:hidden"}`}
           >
             <div className="fixed inset-0 bg-background/80 backdrop-blur-md" onClick={() => setMobileMenuOpen(false)} />
             <motion.div
@@ -427,13 +346,13 @@ export default function Header() {
             >
               <div className="flex items-center justify-between">
                 <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                  <Logo className="w-8 h-8 shrink-0" />
+                  <SiteLogo logoUrl={brand.logoUrl} className="w-8 h-8 shrink-0" />
                   <span className="flex flex-col leading-none">
                     <span className="font-extrabold text-xl tracking-tight">
-                      <span className="text-foreground">Yash</span><span className="text-primary">Orbit</span>
+                      <span className="text-foreground">{brand.namePrimary}</span><span className="text-primary">{brand.nameAccent}</span>
                     </span>
                     <span className="mt-0.5 whitespace-nowrap text-[8px] font-bold uppercase tracking-[0.13em] text-foreground/80">
-                      Technologies Pvt. Ltd.
+                      {brand.subtitle}
                     </span>
                   </span>
                 </Link>
@@ -520,22 +439,22 @@ export default function Header() {
                   })}
 
                   <Link
-                    href="/ask"
+                    href={header.askAiHref}
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center gap-3 border-t border-border/50 py-4 ${
-                      pathname === "/ask" ? "text-primary" : "text-foreground"
+                      pathname === header.askAiHref ? "text-primary" : "text-foreground"
                     }`}
                   >
                     <span
                       className={`flex h-9 w-9 flex-none items-center justify-center rounded-lg border transition-colors ${
-                        pathname === "/ask"
+                        pathname === header.askAiHref
                           ? "border-primary/30 bg-primary/5 text-primary"
                           : "border-border/50 text-muted-foreground"
                       }`}
                     >
                       <Bot className="h-4 w-4" />
                     </span>
-                    <span className="text-base font-bold">Ask AI</span>
+                    <span className="text-base font-bold">{header.askAiLabel}</span>
                   </Link>
                 </div>
 
@@ -601,46 +520,49 @@ export default function Header() {
                   <div className="grid grid-cols-1 gap-3">
                     <PortalAuthLink variant="mobile" onNavigate={() => setMobileMenuOpen(false)} />
                     <Link
-                      href="/contact"
+                      href={header.ctaHref}
                       onClick={() => setMobileMenuOpen(false)}
                       className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 py-3.5 text-base font-semibold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.98]"
                     >
-                      Let&apos;s Talk <ArrowRight className="w-5 h-5" />
+                      {header.ctaLabel} <ArrowRight className="w-5 h-5" />
                     </Link>
                   </div>
 
                   <div className="flex flex-col gap-3">
-                    <a href="mailto:support@yashorbit.com" className="group flex items-center gap-3">
+                    <a href={`mailto:${contact.email}`} className="group flex items-center gap-3">
                       <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary">
                         <Mail className="h-4 w-4 text-primary transition-colors group-hover:text-primary-foreground" />
                       </span>
                       <span className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
-                        support@yashorbit.com
+                        {contact.email}
                       </span>
                     </a>
-                    <a href="tel:+918072278460" className="group flex items-center gap-3">
+                    <a href={contact.phoneHref} className="group flex items-center gap-3">
                       <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary">
                         <Phone className="h-4 w-4 text-primary transition-colors group-hover:text-primary-foreground" />
                       </span>
                       <span className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
-                        +91 8072278460
+                        {contact.phoneDisplay}
                       </span>
                     </a>
                   </div>
 
                   <div className="pt-1">
-                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">Follow Us</p>
+                    <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">{header.followLabel}</p>
                     <div className="flex items-center gap-3">
-                      {socialLinks.map((social) => (
+                      {social.map((link) => {
+                        const Icon = socialIconFor(link.name);
+                        return (
                         <a
-                          key={social.name}
-                          href={social.href}
+                          key={link.name}
+                          href={link.href}
                           className="flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-muted/50 text-muted-foreground transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground"
                         >
-                          <span className="sr-only">{social.name}</span>
-                          <social.icon className="h-4 w-4" />
+                          <span className="sr-only">{link.name}</span>
+                          <Icon className="h-4 w-4" />
                         </a>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 </div>

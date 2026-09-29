@@ -6,6 +6,7 @@ import CampaignCountdown from "@/components/offers/CampaignCountdown";
 import CampaignBackdrop from "@/components/offers/CampaignBackdrop";
 import { PUBLIC_AUDIENCE_TABS, getThemePreset, type PublicAudienceTabKey } from "@/lib/offers/constants";
 import type { SerializedCampaign } from "@/lib/offers/campaigns";
+import { useText } from "@/components/cms/TextContext";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -22,6 +23,7 @@ export default function OffersHero({
   onSelectAudience: (key: PublicAudienceTabKey) => void;
   onCampaignEnd?: () => void;
 }) {
+  const tx = useText();
   const headline = campaign?.theme.bannerHeadline ?? "Build More. Pay Less.";
   const subheadline =
     campaign?.theme.bannerSubheadline ??
@@ -57,12 +59,10 @@ export default function OffersHero({
 
           {!campaign && (
             <motion.p variants={fadeIn} className="text-sm text-white/70">
-              No festival campaign is live right now — check back soon, or explore our{" "}
+              {tx("offers.offersHero.no-festival-campaign-is-live-right-now-c")}{" "}
               <a href="/services" className="text-primary underline-offset-2 hover:underline">
-                full range of services
-              </a>{" "}
-              in the meantime.
-            </motion.p>
+                {tx("offers.offersHero.full-range-of-services")}</a>{" "}
+              {tx("offers.offersHero.in-the-meantime")}</motion.p>
           )}
 
           {campaign && (

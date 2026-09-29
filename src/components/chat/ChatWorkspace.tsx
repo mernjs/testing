@@ -8,19 +8,21 @@ import { useVoice } from "@/components/chat/VoiceProvider";
 import { ChatSidebar, ChatSidebarDrawer } from "@/components/chat/ChatSidebar";
 import { ChatConversation } from "@/components/chat/ChatConversation";
 import { ChatDock } from "@/components/chat/ChatDock";
+import { useText } from "@/components/cms/TextContext";
 
 function VoiceModeBadge() {
+  const tx = useText();
   const { supported, available, voiceMode } = useVoice();
   if (!supported || !available || !voiceMode) return null;
   return (
     <span className="hidden items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary sm:inline-flex">
       <span className="size-1.5 rounded-full bg-primary motion-safe:animate-pulse" aria-hidden />
-      Voice mode
-    </span>
+      {tx("chat.chatWorkspace.voice-mode")}</span>
   );
 }
 
 export function ChatWorkspace() {
+  const tx = useText();
   const { newConversation, messages, needsIdentification, ready, config } = useChat();
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const showSidebar = ready && !needsIdentification;
@@ -37,7 +39,7 @@ export function ChatWorkspace() {
               <Bot className="size-3.5" aria-hidden />
             </div>
             <span className="text-sm font-bold text-foreground">
-              Ask <span className="text-primary">YashOrbit</span>
+              {tx("chat.chatWorkspace.ask")}<span className="text-primary">{tx("chat.chatWorkspace.yashorbit")}</span>
             </span>
           </div>
           <div className="min-h-0 flex-1">
@@ -70,15 +72,14 @@ export function ChatWorkspace() {
                 <Bot className="size-3.5" aria-hidden />
               </div>
               <span className="text-sm font-bold text-foreground">
-                Ask <span className="text-primary">YashOrbit</span>
+                {tx("chat.chatWorkspace.ask")}<span className="text-primary">{tx("chat.chatWorkspace.yashorbit")}</span>
               </span>
             </div>
-            <span className="hidden text-sm font-semibold text-muted-foreground lg:inline">Conversation</span>
+            <span className="hidden text-sm font-semibold text-muted-foreground lg:inline">{tx("chat.chatWorkspace.conversation")}</span>
             {config?.demo && (
               <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/5 px-2 py-0.5 text-[11px] font-semibold text-primary">
                 <Sparkles className="size-3" aria-hidden />
-                Demo
-              </span>
+                {tx("chat.chatWorkspace.demo")}</span>
             )}
             <VoiceModeBadge />
           </div>
@@ -91,8 +92,7 @@ export function ChatWorkspace() {
               className="flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/40 disabled:opacity-40 lg:hidden"
             >
               <Plus className="size-3.5" aria-hidden />
-              New
-            </button>
+              {tx("chat.chatWorkspace.new")}</button>
           )}
         </header>
 

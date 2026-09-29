@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -27,13 +28,15 @@ interface DetailCTAProps {
 export default function DetailCTA({
   heading,
   description,
-  ctaLabel = "Start a Conversation",
+  ctaLabel: ctaLabelProp,
   ctaHref,
   external = false,
   checklist = ["Free consultation", "Dedicated team", "Agile methodology"],
   category,
   subService,
 }: DetailCTAProps) {
+  const l = useUiLabels();
+  const ctaLabel = ctaLabelProp ?? l.detailCtaLabel;
   const resolvedHref =
     ctaHref ??
     (category

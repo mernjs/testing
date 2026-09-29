@@ -24,6 +24,7 @@ import { AIBOTS_PERMISSIONS, AIBOTS_PERMISSION_KEY, AIBOTS_PERMISSION_META } fro
 import { SMMS_PERMISSIONS, SMMS_PERMISSION_KEY, SMMS_PERMISSION_META } from "@/lib/smms-roles";
 import { OTS_PERMISSIONS, OTS_PERMISSION_KEY, OTS_PERMISSION_META } from "@/lib/ots-roles";
 import { SEO_PERMISSIONS, SEO_PERMISSION_KEY, SEO_PERMISSION_META } from "@/lib/seo-roles";
+import { CMS_PERMISSIONS, CMS_PERMISSION_KEY, CMS_PERMISSION_META } from "@/lib/cms-roles";
 
 export interface PermissionOption {
   key: string;
@@ -431,6 +432,16 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       key: OTS_PERMISSION_KEY[p],
       label: OTS_PERMISSION_META[p].label,
       description: OTS_PERMISSION_META[p].description,
+    })),
+  },
+  {
+    module: "Website CMS",
+    // Derived from the CMS role model so the catalog can never drift from
+    // the permissions `cmsCan()` actually checks.
+    permissions: CMS_PERMISSIONS.map((p) => ({
+      key: CMS_PERMISSION_KEY[p],
+      label: CMS_PERMISSION_META[p].label,
+      description: CMS_PERMISSION_META[p].description,
     })),
   },
   {

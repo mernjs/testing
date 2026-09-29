@@ -1,8 +1,9 @@
 "use client";
 
+import { useText } from "@/components/cms/TextContext";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ProductItem } from "@/lib/products-data";
+import type { ProductItem } from "@/types/content";
 import {
   Lock,
   Globe,
@@ -43,6 +44,7 @@ export default function ProductMockup({
   showTabSelector = true,
   compact = false,
 }: ProductMockupProps) {
+  const tx = useText();
   const [activeScreenIndex, setActiveScreenIndex] = useState(initialScreenIndex);
   const [activeHotspotId, setActiveHotspotId] = useState<string | null>(null);
 
@@ -62,7 +64,7 @@ export default function ProductMockup({
           </div>
           <div className="hidden sm:flex items-center gap-1.5 ml-4 rounded-md bg-background/60 border border-border/50 px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
             <Lock className="w-3 h-3 text-emerald-500" />
-            <span className="truncate max-w-[200px]">yashorbit.com{product.panelPath}</span>
+            <span className="truncate max-w-[200px]">{tx("catalog.productMockup.yashorbit-com")}{product.panelPath}</span>
           </div>
         </div>
 
@@ -88,8 +90,7 @@ export default function ProductMockup({
         <div className="flex items-center gap-2">
           <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-[10px] font-bold uppercase tracking-wider text-primary border border-primary/20">
             <Sparkles className="w-2.5 h-2.5" />
-            Live Panel
-          </span>
+            {tx("catalog.productMockup.live-panel")}</span>
         </div>
       </div>
 
@@ -110,7 +111,7 @@ export default function ProductMockup({
 
       {/* Mockup Canvas */}
       <div className={`relative bg-background/95 p-4 md:p-6 overflow-hidden ${compact ? "min-h-[220px]" : "min-h-[340px]"}`}>
-        {renderMockupContent(activeScreen?.mockupType || "admin-overview")}
+        <MockupContent type={activeScreen?.mockupType || "admin-overview"} />
 
         {/* Interactive UI Hotspots Overlay Layer */}
         {product.hotspots && product.hotspots.length > 0 && !compact && (
@@ -168,37 +169,37 @@ export default function ProductMockup({
   );
 }
 
-function renderMockupContent(type: string) {
+function MockupContent({ type }: { type: string }) {
+  const tx = useText();
   switch (type) {
     case "admin-overview":
     case "admin-ai-ledger":
       return (
         <div className="space-y-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <MetricWidget label="Active Platform Revenue" value="$284,500" change="+18.4%" icon={TrendingUp} color="emerald" />
-            <MetricWidget label="Active Projects (PMS)" value="34 Live" change="100% On Track" icon={Activity} color="blue" />
-            <MetricWidget label="OpenAI Token Ledger" value="4.2M Tokens" change="Est. $64.20" icon={Bot} color="purple" />
-            <MetricWidget label="Headcount (HRMS)" value="142 Staff" change="98.2% Active" icon={Users} color="amber" />
+            <MetricWidget label={tx("catalog.productMockup.active-platform-revenue")} value="$284,500" change="+18.4%" icon={TrendingUp} color="emerald" />
+            <MetricWidget label={tx("catalog.productMockup.active-projects-pms")} value="34 Live" change="100% On Track" icon={Activity} color="blue" />
+            <MetricWidget label={tx("catalog.productMockup.openai-token-ledger")} value="4.2M Tokens" change="Est. $64.20" icon={Bot} color="purple" />
+            <MetricWidget label={tx("catalog.productMockup.headcount-hrms")} value="142 Staff" change="98.2% Active" icon={Users} color="amber" />
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-3">
             <div className="flex items-center justify-between text-xs font-semibold">
               <span className="flex items-center gap-2 text-foreground">
-                <Activity className="w-4 h-4 text-primary" /> Super Admin Live Stream (15 Panels Synchronized)
-              </span>
-              <span className="text-primary font-mono text-[11px]">LIVE 60fps</span>
+                <Activity className="w-4 h-4 text-primary" />{tx("catalog.productMockup.super-admin-live-stream-15-panels-synchr")}</span>
+              <span className="text-primary font-mono text-[11px]">{tx("catalog.productMockup.live-60fps")}</span>
             </div>
             <div className="space-y-2 text-xs font-mono">
               <div className="flex items-center justify-between p-2 rounded-lg bg-background/80 border border-border/40">
-                <span className="flex items-center gap-2 text-foreground"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> LMS Lead qualification completed</span>
-                <span className="text-muted-foreground">Just now</span>
+                <span className="flex items-center gap-2 text-foreground"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />{tx("catalog.productMockup.lms-lead-qualification-completed")}</span>
+                <span className="text-muted-foreground">{tx("catalog.productMockup.just-now")}</span>
               </div>
               <div className="flex items-center justify-between p-2 rounded-lg bg-background/80 border border-border/40">
-                <span className="flex items-center gap-2 text-foreground"><Bot className="w-3.5 h-3.5 text-purple-500" /> AI Bots Studio executed ProposalGPT</span>
-                <span className="text-muted-foreground">12s ago</span>
+                <span className="flex items-center gap-2 text-foreground"><Bot className="w-3.5 h-3.5 text-purple-500" />{tx("catalog.productMockup.ai-bots-studio-executed-proposalgpt")}</span>
+                <span className="text-muted-foreground">{tx("catalog.productMockup.12s-ago")}</span>
               </div>
               <div className="flex items-center justify-between p-2 rounded-lg bg-background/80 border border-border/40">
-                <span className="flex items-center gap-2 text-foreground"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> PRMS PO #8492 Approved by CFO</span>
-                <span className="text-muted-foreground">1m ago</span>
+                <span className="flex items-center gap-2 text-foreground"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />{tx("catalog.productMockup.prms-po-8492-approved-by-cfo")}</span>
+                <span className="text-muted-foreground">{tx("catalog.productMockup.1m-ago")}</span>
               </div>
             </div>
           </div>
@@ -211,14 +212,14 @@ function renderMockupContent(type: string) {
       return (
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-3">
-            <MetricWidget label="Total Employees" value="142 Staff" change="9 Departments" icon={Users} color="teal" />
-            <MetricWidget label="Monthly Payroll" value="$185,200" change="Biometric Verified" icon={DollarSign} color="emerald" />
-            <MetricWidget label="AI Resume Score" value="94% Match" change="12 Shortlisted" icon={Sparkles} color="purple" />
+            <MetricWidget label={tx("catalog.productMockup.total-employees")} value="142 Staff" change="9 Departments" icon={Users} color="teal" />
+            <MetricWidget label={tx("catalog.productMockup.monthly-payroll")} value="$185,200" change="Biometric Verified" icon={DollarSign} color="emerald" />
+            <MetricWidget label={tx("catalog.productMockup.ai-resume-score")} value="94% Match" change="12 Shortlisted" icon={Sparkles} color="purple" />
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2">
             <div className="text-xs font-semibold text-foreground mb-2 flex items-center justify-between">
-              <span>Recruitment AI Candidate Pipeline</span>
-              <span className="text-primary/80 text-[11px] font-mono">Synced with Careers Page</span>
+              <span>{tx("catalog.productMockup.recruitment-ai-candidate-pipeline")}</span>
+              <span className="text-primary/80 text-[11px] font-mono">{tx("catalog.productMockup.synced-with-careers-page")}</span>
             </div>
             <CandidateRow name="Sarah Jenkins" role="GenAI Engineer" score="98% AI Match" status="Shortlisted" />
             <CandidateRow name="David Miller" role="Full Stack MERN" score="92% AI Match" status="Interview Scheduled" />
@@ -232,14 +233,14 @@ function renderMockupContent(type: string) {
       return (
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-3">
-            <MetricWidget label="Active Projects" value="28 Delivery" change="100% Guarded" icon={Kanban} color="blue" />
-            <MetricWidget label="Logged Timesheets" value="1,840 hrs" change="Billing Ready" icon={Clock} color="cyan" />
-            <MetricWidget label="Avg Profit Margin" value="38.5%" icon={TrendingUp} color="emerald" />
+            <MetricWidget label={tx("catalog.productMockup.active-projects")} value="28 Delivery" change="100% Guarded" icon={Kanban} color="blue" />
+            <MetricWidget label={tx("catalog.productMockup.logged-timesheets")} value="1,840 hrs" change="Billing Ready" icon={Clock} color="cyan" />
+            <MetricWidget label={tx("catalog.productMockup.avg-profit-margin")} value="38.5%" icon={TrendingUp} color="emerald" />
           </div>
           <div className="grid grid-cols-3 gap-2 text-xs">
-            <KanbanCol title="In Progress" count={4} items={["Enterprise Portal v2.0", "AI Search Engine Optimization"]} />
-            <KanbanCol title="Quality Testing" count={2} items={["DLMS Vault Encryption Audit"]} />
-            <KanbanCol title="Completed & Billed" count={8} items={["OTS Assessment Engine"]} />
+            <KanbanCol title={tx("catalog.productMockup.in-progress")} count={4} items={["Enterprise Portal v2.0", "AI Search Engine Optimization"]} />
+            <KanbanCol title={tx("catalog.productMockup.quality-testing")} count={2} items={["DLMS Vault Encryption Audit"]} />
+            <KanbanCol title={tx("catalog.productMockup.completed-billed")} count={8} items={["OTS Assessment Engine"]} />
           </div>
         </div>
       );
@@ -249,21 +250,20 @@ function renderMockupContent(type: string) {
       return (
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-3">
-            <MetricWidget label="Total Inbound Leads" value="482 / mo" change="+34% MoM" icon={Users} color="rose" />
-            <MetricWidget label="24/7 AI Qualification" value="99.4%" change="0s Lag" icon={Bot} color="purple" />
-            <MetricWidget label="Pipeline Value" value="$1.42M" change="High Intent" icon={TrendingUp} color="emerald" />
+            <MetricWidget label={tx("catalog.productMockup.total-inbound-leads")} value="482 / mo" change="+34% MoM" icon={Users} color="rose" />
+            <MetricWidget label={tx("catalog.productMockup.24-7-ai-qualification")} value="99.4%" change="0s Lag" icon={Bot} color="purple" />
+            <MetricWidget label={tx("catalog.productMockup.pipeline-value")} value="$1.42M" change="High Intent" icon={TrendingUp} color="emerald" />
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2">
             <div className="flex items-center justify-between text-xs font-semibold mb-1">
               <span className="flex items-center gap-1.5 text-secondary-foreground">
-                <Bot className="w-4 h-4 text-secondary-foreground" /> Live AI Voice & Chat Assistant Transcript
-              </span>
-              <span className="text-[10px] bg-secondary/15 text-secondary-foreground border border-secondary/20 px-2 py-0.5 rounded-full font-mono">Autonomous AI Active</span>
+                <Bot className="w-4 h-4 text-secondary-foreground" />{tx("catalog.productMockup.live-ai-voice-chat-assistant-transcript")}</span>
+              <span className="text-[10px] bg-secondary/15 text-secondary-foreground border border-secondary/20 px-2 py-0.5 rounded-full font-mono">{tx("catalog.productMockup.autonomous-ai-active")}</span>
             </div>
             <div className="space-y-1.5 text-xs">
-              <ChatBubble sender="Prospect" text="Hi, we need an AI-powered HRMS and assessment portal built." align="left" />
-              <ChatBubble sender="YashOrbit AI Assistant" text="Great! YashOrbit offers integrated HRMS with AI candidate matching and OTS online testing. Can I get your work email to send a customized demo proposal?" align="right" ai />
-              <ChatBubble sender="Prospect" text="Sure, alex@enterprise.com. We have 200 employees." align="left" />
+              <ChatBubble sender="Prospect" text={tx("catalog.productMockup.hi-we-need-an-ai-powered-hrms-and-assess")} align="left" />
+              <ChatBubble sender="YashOrbit AI Assistant" text={tx("catalog.productMockup.great-yashorbit-offers-integrated-hrms-w")} align="right" ai />
+              <ChatBubble sender="Prospect" text={tx("catalog.productMockup.sure-alex-enterprise-com-we-have-200-emp")} align="left" />
             </div>
           </div>
         </div>
@@ -275,14 +275,14 @@ function renderMockupContent(type: string) {
       return (
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-3">
-            <MetricWidget label="Active Enterprise Bots" value="12 Bots" change="RAG Vector Indexed" icon={Bot} color="violet" />
-            <MetricWidget label="Private Vector KB" value="48 Documents" change="100% Encrypted" icon={Database} color="indigo" />
-            <MetricWidget label="Token Spend Ledger" value="$42.10 / mo" change="OpenAI GPT-4o" icon={Sparkles} color="fuchsia" />
+            <MetricWidget label={tx("catalog.productMockup.active-enterprise-bots")} value="12 Bots" change="RAG Vector Indexed" icon={Bot} color="violet" />
+            <MetricWidget label={tx("catalog.productMockup.private-vector-kb")} value="48 Documents" change="100% Encrypted" icon={Database} color="indigo" />
+            <MetricWidget label={tx("catalog.productMockup.token-spend-ledger")} value="$42.10 / mo" change="OpenAI GPT-4o" icon={Sparkles} color="fuchsia" />
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-3">
             <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="text-foreground flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> Active RAG Bot Catalog</span>
-              <span className="text-primary text-[11px] font-mono">+ Create New Bot</span>
+              <span className="text-foreground flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" />{tx("catalog.productMockup.active-rag-bot-catalog")}</span>
+              <span className="text-primary text-[11px] font-mono">{tx("catalog.productMockup.create-new-bot")}</span>
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <BotCard name="ProposalGPT" kb="24 Sales Files" model="GPT-4o" usage="1.2k chats" />
@@ -299,19 +299,19 @@ function renderMockupContent(type: string) {
       return (
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-3">
-            <MetricWidget label="Multi-Platform Output" value="6 Channels" change="IG, YT, LinkedIn, FB" icon={Share2} color="pink" />
-            <MetricWidget label="AI Video Reels" value="18 Generated" change="Scene Scripts Ready" icon={Play} color="rose" />
-            <MetricWidget label="Brand Voice Compliance" value="100% Context" change="Direct Panel Sync" icon={CheckCircle2} color="emerald" />
+            <MetricWidget label={tx("catalog.productMockup.multi-platform-output")} value="6 Channels" change="IG, YT, LinkedIn, FB" icon={Share2} color="pink" />
+            <MetricWidget label={tx("catalog.productMockup.ai-video-reels")} value="18 Generated" change="Scene Scripts Ready" icon={Play} color="rose" />
+            <MetricWidget label={tx("catalog.productMockup.brand-voice-compliance")} value="100% Context" change="Direct Panel Sync" icon={CheckCircle2} color="emerald" />
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
             <div className="flex items-center justify-between font-semibold text-foreground">
-              <span className="flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> AI Reel Script Generator (Scene-by-Scene)</span>
-              <span className="text-primary text-[11px]">Ready for Approval</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" />{tx("catalog.productMockup.ai-reel-script-generator-scene-by-scene")}</span>
+              <span className="text-primary text-[11px]">{tx("catalog.productMockup.ready-for-approval")}</span>
             </div>
             <div className="bg-background/80 p-3 rounded-lg border border-border/50 font-mono space-y-1 text-[11px]">
-              <p className="text-muted-foreground"><strong className="text-primary">Hook (0-3s):</strong> &quot;Stop using 10 separate SaaS tools for your company!&quot;</p>
-              <p className="text-muted-foreground"><strong className="text-foreground">Scene 1 (3-8s):</strong> Show unified Staff Hub SSO launcher with 15 integrated panels.</p>
-              <p className="text-muted-foreground"><strong className="text-foreground">CTA (8-15s):</strong> &quot;Visit YashOrbit.com to explore the complete AI ecosystem.&quot;</p>
+              <p className="text-muted-foreground"><strong className="text-primary">{tx("catalog.productMockup.hook-0-3s")}</strong>{tx("catalog.productMockup.stop-using-10-separate-saas-tools-for-yo")}</p>
+              <p className="text-muted-foreground"><strong className="text-foreground">{tx("catalog.productMockup.scene-1-3-8s")}</strong>{tx("catalog.productMockup.show-unified-staff-hub-sso-launcher-with")}</p>
+              <p className="text-muted-foreground"><strong className="text-foreground">{tx("catalog.productMockup.cta-8-15s")}</strong>{tx("catalog.productMockup.visit-yashorbit-com-to-explore-the-compl")}</p>
             </div>
           </div>
         </div>
@@ -322,19 +322,19 @@ function renderMockupContent(type: string) {
       return (
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-3">
-            <MetricWidget label="Question Formats" value="17 Types" change="Code, SQL, Video, MCQ" icon={FileQuestion} color="indigo" />
-            <MetricWidget label="Exam Security" value="Server Guarded" change="Anti-Cheat Proctor" icon={ShieldAlert} color="amber" />
-            <MetricWidget label="Automated Evaluation" value="Instant" change="Objective & Code" icon={CheckCircle2} color="emerald" />
+            <MetricWidget label={tx("catalog.productMockup.question-formats")} value="17 Types" change="Code, SQL, Video, MCQ" icon={FileQuestion} color="indigo" />
+            <MetricWidget label={tx("catalog.productMockup.exam-security")} value="Server Guarded" change="Anti-Cheat Proctor" icon={ShieldAlert} color="amber" />
+            <MetricWidget label={tx("catalog.productMockup.automated-evaluation")} value="Instant" change="Objective & Code" icon={CheckCircle2} color="emerald" />
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
             <div className="flex items-center justify-between font-semibold text-foreground">
-              <span className="flex items-center gap-2"><Code2 className="w-4 h-4 text-secondary-foreground" /> Candidate Coding Exam Sandbox</span>
-              <span className="text-primary font-mono text-[11px]">Timer: 44m 20s remaining</span>
+              <span className="flex items-center gap-2"><Code2 className="w-4 h-4 text-secondary-foreground" />{tx("catalog.productMockup.candidate-coding-exam-sandbox")}</span>
+              <span className="text-primary font-mono text-[11px]">{tx("catalog.productMockup.timer-44m-20s-remaining")}</span>
             </div>
             <div className="bg-background/90 p-3 rounded-lg border border-border/50 font-mono text-[11px] text-muted-foreground space-y-1">
               <p className="text-secondary-foreground/70 font-mono">{"// Task 2: Implement AI resume similarity scoring function"}</p>
-              <p><span className="text-secondary-foreground">function</span> <span className="text-primary">calculateSimilarity</span>(candidate, requirement) &#123;</p>
-              <p className="pl-4">return openAiVectorStore.<span className="text-primary/80">search</span>(candidate.embedding);</p>
+              <p><span className="text-secondary-foreground">{tx("catalog.productMockup.function")}</span> <span className="text-primary">{tx("catalog.productMockup.calculatesimilarity")}</span>{tx("catalog.productMockup.candidate-requirement")}</p>
+              <p className="pl-4">{tx("catalog.productMockup.return-openaivectorstore")}<span className="text-primary/80">{tx("catalog.productMockup.search")}</span>{tx("catalog.productMockup.candidate-embedding")}</p>
               <p>&#125;</p>
             </div>
           </div>
@@ -346,23 +346,23 @@ function renderMockupContent(type: string) {
       return (
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-3">
-            <MetricWidget label="Site Audit Score" value="98 / 100" change="50+ Checks Clean" icon={Search} color="purple" />
-            <MetricWidget label="Dynamic Meta Tags" value="Live No-Deploy" change="Instant Publish" icon={Zap} color="amber" />
-            <MetricWidget label="Keyword Tracking" value="142 Tracked" change="+14 Top 3" icon={TrendingUp} color="emerald" />
+            <MetricWidget label={tx("catalog.productMockup.site-audit-score")} value="98 / 100" change="50+ Checks Clean" icon={Search} color="purple" />
+            <MetricWidget label={tx("catalog.productMockup.dynamic-meta-tags")} value="Live No-Deploy" change="Instant Publish" icon={Zap} color="amber" />
+            <MetricWidget label={tx("catalog.productMockup.keyword-tracking")} value="142 Tracked" change="+14 Top 3" icon={TrendingUp} color="emerald" />
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
             <div className="flex items-center justify-between font-semibold text-foreground">
-              <span>Dynamic Meta Tag & Schema Publisher</span>
-              <span className="text-primary font-mono text-[11px]">No Deployment Needed</span>
+              <span>{tx("catalog.productMockup.dynamic-meta-tag-schema-publisher")}</span>
+              <span className="text-primary font-mono text-[11px]">{tx("catalog.productMockup.no-deployment-needed")}</span>
             </div>
             <div className="space-y-1.5 font-mono text-[11px]">
               <div className="p-2 rounded bg-background border border-border/40 flex justify-between">
-                <span className="text-foreground">Page Title: YashOrbit — AI-Powered Software Platform</span>
-                <span className="text-primary">Published</span>
+                <span className="text-foreground">{tx("catalog.productMockup.page-title-yashorbit-ai-powered-software")}</span>
+                <span className="text-primary">{tx("catalog.productMockup.published")}</span>
               </div>
               <div className="p-2 rounded bg-background border border-border/40 flex justify-between">
-                <span className="text-muted-foreground">JSON-LD Schema: SoftwareApplication Schema</span>
-                <span className="text-primary font-mono">Validated</span>
+                <span className="text-muted-foreground">{tx("catalog.productMockup.json-ld-schema-softwareapplication-schem")}</span>
+                <span className="text-primary font-mono">{tx("catalog.productMockup.validated")}</span>
               </div>
             </div>
           </div>
@@ -374,18 +374,18 @@ function renderMockupContent(type: string) {
       return (
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-3">
-            <MetricWidget label="Company Secrets" value="84 Credentials" change="100% Encrypted" icon={KeyRound} color="amber" />
-            <MetricWidget label="Secret Reveal Audit" value="Fully Logged" change="Masked by Default" icon={Lock} color="emerald" />
-            <MetricWidget label="Expiry Alerts" value="0 Expired" change="Daily Sweeps Active" icon={ShieldAlert} color="blue" />
+            <MetricWidget label={tx("catalog.productMockup.company-secrets")} value="84 Credentials" change="100% Encrypted" icon={KeyRound} color="amber" />
+            <MetricWidget label={tx("catalog.productMockup.secret-reveal-audit")} value="Fully Logged" change="Masked by Default" icon={Lock} color="emerald" />
+            <MetricWidget label={tx("catalog.productMockup.expiry-alerts")} value="0 Expired" change="Daily Sweeps Active" icon={ShieldAlert} color="blue" />
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
             <div className="flex items-center justify-between font-semibold text-foreground">
-              <span className="flex items-center gap-2"><KeyRound className="w-4 h-4 text-primary" /> Multi-Tenant Client Vault</span>
-              <span className="text-muted-foreground text-[11px]">Role Gated</span>
+              <span className="flex items-center gap-2"><KeyRound className="w-4 h-4 text-primary" />{tx("catalog.productMockup.multi-tenant-client-vault")}</span>
+              <span className="text-muted-foreground text-[11px]">{tx("catalog.productMockup.role-gated")}</span>
             </div>
             <div className="space-y-1 font-mono text-[11px]">
-              <VaultItem title="AWS Production Cloud" username="admin@yashorbit.com" secret="••••••••••••••••" status="Audit Logged" />
-              <VaultItem title="MongoDB Enterprise Cluster" username="dba_prod" secret="••••••••••••••••" status="Audit Logged" />
+              <VaultItem title={tx("catalog.productMockup.aws-production-cloud")} username="admin@yashorbit.com" secret="••••••••••••••••" status="Audit Logged" />
+              <VaultItem title={tx("catalog.productMockup.mongodb-enterprise-cluster")} username="dba_prod" secret="••••••••••••••••" status="Audit Logged" />
             </div>
           </div>
         </div>
@@ -395,18 +395,17 @@ function renderMockupContent(type: string) {
       return (
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-3">
-            <MetricWidget label="Integrated Panels" value="15 Systems" change="Single Identity" icon={Globe} color="blue" />
-            <MetricWidget label="AI-Powered" value="100% Embedded" change="OpenAI RAG" icon={Bot} color="purple" />
-            <MetricWidget label="Security Audit" value="100% RBAC" change="Real Time" icon={CheckCircle2} color="emerald" />
+            <MetricWidget label={tx("catalog.productMockup.integrated-panels")} value="15 Systems" change="Single Identity" icon={Globe} color="blue" />
+            <MetricWidget label={tx("catalog.productMockup.ai-powered")} value="100% Embedded" change="OpenAI RAG" icon={Bot} color="purple" />
+            <MetricWidget label={tx("catalog.productMockup.security-audit")} value="100% RBAC" change="Real Time" icon={CheckCircle2} color="emerald" />
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
             <div className="flex items-center justify-between font-semibold text-foreground">
-              <span>YashOrbit Enterprise Ecosystem Control</span>
-              <span className="text-primary font-mono text-[11px]">Active Suite</span>
+              <span>{tx("catalog.productMockup.yashorbit-enterprise-ecosystem-control")}</span>
+              <span className="text-primary font-mono text-[11px]">{tx("catalog.productMockup.active-suite")}</span>
             </div>
             <p className="text-muted-foreground text-[11px] leading-relaxed">
-              Provides unified access, role governance, real-time analytics, and embedded AI automation across all enterprise operations.
-            </p>
+              {tx("catalog.productMockup.provides-unified-access-role-governance-")}</p>
           </div>
         </div>
       );
@@ -520,6 +519,7 @@ function ChatBubble({ sender, text, align, ai }: { sender: string; text: string;
 }
 
 function BotCard({ name, kb, model, usage }: { name: string; kb: string; model: string; usage: string }) {
+  const tx = useText();
   return (
     <div className="p-2.5 rounded-lg bg-background/90 border border-border/40 space-y-1">
       <div className="flex items-center justify-between">
@@ -529,7 +529,7 @@ function BotCard({ name, kb, model, usage }: { name: string; kb: string; model: 
         <span className="text-[9px] px-1.5 py-0.5 rounded bg-secondary/15 text-secondary-foreground font-mono">{model}</span>
       </div>
       <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-        <span>KB: {kb}</span>
+        <span>{tx("catalog.productMockup.kb")}{kb}</span>
         <span>{usage}</span>
       </div>
     </div>

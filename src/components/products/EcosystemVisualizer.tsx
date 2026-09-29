@@ -1,5 +1,6 @@
 "use client";
 
+import { useText } from "@/components/cms/TextContext";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -36,73 +37,74 @@ interface SphereData {
 }
 
 export default function EcosystemVisualizer() {
+  const tx = useText();
   const [activeSphereId, setActiveSphereId] = useState<string>("growth");
 
   const spheres: SphereData[] = [
     {
       id: "growth",
-      name: "Customer Acquisition & Growth",
-      badge: "Inbound & Sales",
+      name: tx("catalog.ecosystemVisualizer.customer-acquisition-growth"),
+      badge: tx("catalog.ecosystemVisualizer.inbound-sales"),
       color: "from-primary/20 via-primary/10 to-transparent",
       borderColor: "border-primary/40",
       textColor: "text-primary",
       icon: Filter,
-      description: "Inbound site inquiries and AI chatbot interactions feed directly into active sales pipelines and social campaign generators.",
+      description: tx("catalog.ecosystemVisualizer.inbound-site-inquiries-and-ai-chatbot-in"),
       dataFlowTrigger: "Web Lead Intake → 24/7 AI Qualification → CRM Kanban → Campaign Brief",
       products: [
-        { name: "AI Growth & Sales Pipeline (CRM)", tag: "LMS", icon: Filter },
-        { name: "SEO Growth Engine", tag: "SEO", icon: Search },
-        { name: "Autonomous AI Marketing Studio", tag: "SMMS", icon: Megaphone },
-        { name: "Digital Marketing Front Door", tag: "Web", icon: Globe },
+        { name: tx("catalog.ecosystemVisualizer.ai-growth-sales-pipeline-crm"), tag: "LMS", icon: Filter },
+        { name: tx("catalog.ecosystemVisualizer.seo-growth-engine"), tag: "SEO", icon: Search },
+        { name: tx("catalog.ecosystemVisualizer.autonomous-ai-marketing-studio"), tag: "SMMS", icon: Megaphone },
+        { name: tx("catalog.ecosystemVisualizer.digital-marketing-front-door"), tag: "Web", icon: Globe },
       ],
     },
     {
       id: "workforce",
-      name: "Workforce & Talent Progression",
-      badge: "HR & Education",
+      name: tx("catalog.ecosystemVisualizer.workforce-talent-progression"),
+      badge: tx("catalog.ecosystemVisualizer.hr-education"),
       color: "from-secondary/20 via-secondary/10 to-transparent",
       borderColor: "border-secondary/40",
       textColor: "text-secondary-foreground",
       icon: Users,
-      description: "Hired job applicants convert instantly into employee records with attendance-linked payroll and proctored skill testing.",
+      description: tx("catalog.ecosystemVisualizer.hired-job-applicants-convert-instantly-i"),
       dataFlowTrigger: "Career Applicant → AI Resume Match → Employee Profile → Biometric Payroll",
       products: [
-        { name: "Workforce Intelligence Suite", tag: "HRMS", icon: Users },
-        { name: "OTS Assessment Engine", tag: "OTS", icon: FileQuestion },
-        { name: "Academy & Talent Platform", tag: "TMS", icon: GraduationCap },
+        { name: tx("catalog.ecosystemVisualizer.workforce-intelligence-suite"), tag: "HRMS", icon: Users },
+        { name: tx("catalog.ecosystemVisualizer.ots-assessment-engine"), tag: "OTS", icon: FileQuestion },
+        { name: tx("catalog.ecosystemVisualizer.academy-talent-platform"), tag: "TMS", icon: GraduationCap },
       ],
     },
     {
       id: "operations",
-      name: "Operations & Financial Control",
-      badge: "Delivery & Finance",
+      name: tx("catalog.ecosystemVisualizer.operations-financial-control"),
+      badge: tx("catalog.ecosystemVisualizer.delivery-finance"),
       color: "from-secondary/15 via-primary/5 to-transparent",
       borderColor: "border-secondary/35",
       textColor: "text-secondary-foreground",
       icon: Kanban,
-      description: "Project hours logged in timesheets drive real-time profitability tracking, automated client invoices, and spend approvals.",
+      description: tx("catalog.ecosystemVisualizer.project-hours-logged-in-timesheets-drive"),
       dataFlowTrigger: "PMS Timesheet → Profit Margin Calc → PRMS PO Approval → Client Billing",
       products: [
-        { name: "Smart Project Operations", tag: "PMS", icon: Kanban },
-        { name: "Enterprise Spend Vault", tag: "PRMS", icon: ShoppingCart },
-        { name: "YashChat Enterprise Comms", tag: "Chat", icon: MessageSquare },
+        { name: tx("catalog.ecosystemVisualizer.smart-project-operations"), tag: "PMS", icon: Kanban },
+        { name: tx("catalog.ecosystemVisualizer.enterprise-spend-vault"), tag: "PRMS", icon: ShoppingCart },
+        { name: tx("catalog.ecosystemVisualizer.yashchat-enterprise-comms"), tag: "Chat", icon: MessageSquare },
       ],
     },
     {
       id: "security",
-      name: "Security & AI Intelligence",
-      badge: "Governance & Vault",
+      name: tx("catalog.ecosystemVisualizer.security-ai-intelligence"),
+      badge: tx("catalog.ecosystemVisualizer.governance-vault"),
       color: "from-primary/15 via-secondary/10 to-transparent",
       borderColor: "border-primary/35",
       textColor: "text-primary",
       icon: ShieldCheck,
-      description: "Super Admin RBAC governance, encrypted credential vaults, isolated client portals, and custom OpenAI vector RAG bots.",
+      description: tx("catalog.ecosystemVisualizer.super-admin-rbac-governance-encrypted-cr"),
       dataFlowTrigger: "Single Sign-On → Central RBAC Audit → Encrypted Vault → Vector RAG Bot",
       products: [
-        { name: "Executive Command Center", tag: "Admin", icon: ShieldCheck },
-        { name: "AI Assistant Studio", tag: "AI Bots", icon: Bot },
-        { name: "DigiLocker Secret Vault", tag: "DLMS", icon: KeyRound },
-        { name: "Stakeholder Portal", tag: "Portal", icon: Lock },
+        { name: tx("catalog.ecosystemVisualizer.executive-command-center"), tag: "Admin", icon: ShieldCheck },
+        { name: tx("catalog.ecosystemVisualizer.ai-assistant-studio"), tag: "AI Bots", icon: Bot },
+        { name: tx("catalog.ecosystemVisualizer.digilocker-secret-vault"), tag: "DLMS", icon: KeyRound },
+        { name: tx("catalog.ecosystemVisualizer.stakeholder-portal"), tag: "Portal", icon: Lock },
       ],
     },
   ];
@@ -117,14 +119,11 @@ export default function EcosystemVisualizer() {
       {/* Title Header */}
       <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary">
-          <Zap className="w-3.5 h-3.5" /> Interactive Ecosystem Synergy
-        </span>
+          <Zap className="w-3.5 h-3.5" />{tx("catalog.ecosystemVisualizer.interactive-ecosystem-synergy")}</span>
         <h3 className="text-2xl md:text-3xl font-black text-foreground tracking-tight">
-          How 15 Applications Connect Into One Business Engine
-        </h3>
+          {tx("catalog.ecosystemVisualizer.how-15-applications-connect-into-one-bus")}</h3>
         <p className="text-xs md:text-sm text-muted-foreground">
-          Click any business sphere below to visualize real-time data flows and cross-module integration triggers.
-        </p>
+          {tx("catalog.ecosystemVisualizer.click-any-business-sphere-below-to-visua")}</p>
       </div>
 
       {/* Main Visualizer Area */}
@@ -154,7 +153,7 @@ export default function EcosystemVisualizer() {
                   </div>
                   <div>
                     <div className="font-bold text-sm text-foreground">{s.name}</div>
-                    <div className="text-[11px] text-muted-foreground">{s.products.length} Products</div>
+                    <div className="text-[11px] text-muted-foreground">{s.products.length}{tx("catalog.ecosystemVisualizer.products")}</div>
                   </div>
                 </div>
                 <span className={`text-xs font-semibold ${isSelected ? s.textColor : "text-muted-foreground"}`}>
@@ -170,11 +169,9 @@ export default function EcosystemVisualizer() {
           {/* Central Platform Engine Node */}
           <div className="p-4 rounded-xl border border-primary/30 bg-primary/5 text-center space-y-1 backdrop-blur-md">
             <div className="text-xs font-bold text-primary uppercase tracking-wider flex items-center justify-center gap-2">
-              <Sparkles className="w-3.5 h-3.5" /> YashOrbit Platform Core Engine
-            </div>
+              <Sparkles className="w-3.5 h-3.5" />{tx("catalog.ecosystemVisualizer.yashorbit-platform-core-engine")}</div>
             <p className="text-[11px] text-muted-foreground">
-              Single Sign-On Identity • Central RBAC Governance • OpenAI Vector RAG Engine • Executive Stream
-            </p>
+              {tx("catalog.ecosystemVisualizer.single-sign-on-identity-central-rbac-gov")}</p>
           </div>
 
           {/* Animated Connecting Data Flow Line */}
@@ -185,8 +182,7 @@ export default function EcosystemVisualizer() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
               </span>
-              REAL-TIME DATA FLOW TRIGGER
-            </div>
+              {tx("catalog.ecosystemVisualizer.real-time-data-flow-trigger")}</div>
           </div>
 
           {/* Active Sphere Detail View */}
@@ -200,7 +196,7 @@ export default function EcosystemVisualizer() {
               className="space-y-4"
             >
               <div className="p-3.5 rounded-xl border border-border/60 bg-muted/20 text-xs font-medium text-foreground leading-relaxed">
-                <span className="font-bold text-primary">Integration Trigger: </span>
+                <span className="font-bold text-primary">{tx("catalog.ecosystemVisualizer.integration-trigger")}</span>
                 {activeSphere.dataFlowTrigger}
               </div>
 
@@ -218,7 +214,7 @@ export default function EcosystemVisualizer() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="font-bold text-xs text-foreground truncate">{prod.name}</div>
-                        <div className="text-[10px] font-mono text-muted-foreground">{prod.tag} Panel</div>
+                        <div className="text-[10px] font-mono text-muted-foreground">{prod.tag}{tx("catalog.ecosystemVisualizer.panel")}</div>
                       </div>
                     </div>
                   );

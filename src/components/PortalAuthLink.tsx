@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { LayoutDashboard, LogIn } from "lucide-react";
 import { PORTAL_SESSION_CHANGED_EVENT } from "@/components/chat/ChatProvider";
+import { useSiteInfo } from "@/components/cms/SiteInfoContext";
 
 type Session = { signedIn: boolean; firstName: string | null } | null;
 
@@ -19,6 +20,7 @@ type Session = { signedIn: boolean; firstName: string | null } | null;
  */
 export default function PortalAuthLink({ variant, onNavigate }: { variant: "desktop" | "mobile"; onNavigate?: () => void }) {
   const [session, setSession] = useState<Session>(null);
+  const { header } = useSiteInfo();
 
   const refresh = useCallback(() => {
     fetch("/api/portal/session", { cache: "no-store" })
@@ -38,11 +40,11 @@ export default function PortalAuthLink({ variant, onNavigate }: { variant: "desk
   if (session.signedIn) {
     return variant === "desktop" ? (
       <Link href="/portal" className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-primary/40 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-primary-foreground">
-        <LayoutDashboard className="h-4 w-4" /> Dashboard
+        <LayoutDashboard className="h-4 w-4" />{` ${header.dashboardLabel}`}
       </Link>
     ) : (
       <Link href="/portal" onClick={onNavigate} className="flex w-full items-center justify-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-3 py-3.5 text-base font-semibold text-primary">
-        <LayoutDashboard className="h-5 w-5" /> Dashboard{session.firstName ? ` · ${session.firstName}` : ""}
+        <LayoutDashboard className="h-5 w-5" />{` ${header.dashboardLabel}`}{session.firstName ? ` · ${session.firstName}` : ""}
       </Link>
     );
   }
@@ -50,20 +52,20 @@ export default function PortalAuthLink({ variant, onNavigate }: { variant: "desk
   return variant === "desktop" ? (
     <div className="inline-flex items-center whitespace-nowrap rounded-full border border-border/60 bg-muted/30 text-sm font-semibold">
       <Link href="/login" className="inline-flex items-center gap-1.5 rounded-l-full px-3.5 py-2 text-foreground transition-colors hover:bg-muted/70 hover:text-primary">
-        <LogIn className="h-4 w-4" /> Login
+        <LogIn className="h-4 w-4" />{` ${header.loginLabel}`}
       </Link>
       <span className="h-4 w-px bg-border" aria-hidden />
       <Link href="/register" className="rounded-r-full px-3.5 py-2 text-foreground transition-colors hover:bg-primary hover:text-primary-foreground">
-        Sign up
+        {header.signupLabel}
       </Link>
     </div>
   ) : (
     <div className="grid grid-cols-2 gap-3">
       <Link href="/login" onClick={onNavigate} className="flex items-center justify-center gap-2 rounded-xl border border-border px-3 py-3.5 text-base font-semibold text-foreground">
-        <LogIn className="h-5 w-5" /> Login
+        <LogIn className="h-5 w-5" />{` ${header.loginLabel}`}
       </Link>
       <Link href="/register" onClick={onNavigate} className="flex items-center justify-center rounded-xl border border-primary/40 bg-primary/10 px-3 py-3.5 text-base font-semibold text-primary">
-        Sign up
+        {header.signupLabel}
       </Link>
     </div>
   );

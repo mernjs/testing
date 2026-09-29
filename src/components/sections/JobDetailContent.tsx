@@ -7,45 +7,74 @@ import PageHero from "@/components/sections/PageHero";
 import TrainingMeta from "@/components/sections/TrainingMeta";
 import ChecklistGrid from "@/components/sections/ChecklistGrid";
 import DetailCTA from "@/components/sections/DetailCTA";
-import type { Job } from "@/app/(site)/careers/jobs-data";
-import { perks, applicationSteps } from "@/app/(site)/careers/jobs-data";
+import type { LucideIcon } from "lucide-react";
+import type { Job } from "@/types/content";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
 };
 
-const CAREERS_IMAGE = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop";
+/** Every fixed string on a job page (CMS job-detail section config). `{title}` = the job's title. */
+export interface JobDetailCopy {
+  heroImage: string;
+  categoryLabel: string;
+  applyLabel: string;
+  departmentLabel: string;
+  employmentTypeLabel: string;
+  locationLabel: string;
+  experienceLabel: string;
+  responsibilitiesTitle: string;
+  responsibilitiesDescription: string;
+  qualificationsTitle: string;
+  qualificationsDescription: string;
+  niceToHaveTitle: string;
+  niceToHaveDescription: string;
+  skillsTitle: string;
+  skillsDescription: string;
+  perksTitle: string;
+  perksDescription: string;
+  stepsTitle: string;
+  stepsDescription: string;
+  ctaHeading: string;
+  ctaDescription: string;
+  ctaLabel: string;
+  ctaChecklist: string[];
+}
 
-export default function JobDetailContent({ job }: { job: Job }) {
+export interface JobPerk { title: string; description: string; icon: LucideIcon }
+export interface JobStep { title: string; duration: string; description: string; icon: LucideIcon }
+
+export default function JobDetailContent({ job, copy, perks, steps }: { job: Job; copy: JobDetailCopy; perks: JobPerk[]; steps: JobStep[] }) {
   const applyHref = `/careers/apply?position=${encodeURIComponent(job.slug)}`;
+  const t = (text: string) => text.replaceAll("{title}", job.title);
 
   return (
     <div className="flex flex-col min-h-screen selection:bg-primary/30 overflow-hidden">
       <PageHero
         category="careers"
-        categoryLabel="careers"
+        categoryLabel={copy.categoryLabel}
         title={job.title}
         subtitle={`${job.category} · ${job.employmentType}`}
         description={job.summary}
         icon={job.icon}
-        image={CAREERS_IMAGE}
-        primaryCta={{ label: "Apply Now", href: applyHref }}
+        image={copy.heroImage}
+        primaryCta={{ label: copy.applyLabel, href: applyHref }}
       />
 
       <TrainingMeta
         items={[
-          { icon: job.icon, label: "Department", value: job.category },
-          { icon: Clock, label: "Employment Type", value: job.employmentType },
-          { icon: MapPin, label: "Location", value: job.location },
-          { icon: BarChart3, label: "Experience", value: job.experience },
+          { icon: job.icon, label: copy.departmentLabel, value: job.category },
+          { icon: Clock, label: copy.employmentTypeLabel, value: job.employmentType },
+          { icon: MapPin, label: copy.locationLabel, value: job.location },
+          { icon: BarChart3, label: copy.experienceLabel, value: job.experience },
         ]}
       />
 
       <ChecklistGrid
         id="responsibilities"
-        title="Key Responsibilities"
-        description={`What you'll actually be doing day to day as our ${job.title}.`}
+        title={copy.responsibilitiesTitle}
+        description={t(copy.responsibilitiesDescription)}
         items={job.responsibilities}
         columns={2}
       />
@@ -53,8 +82,8 @@ export default function JobDetailContent({ job }: { job: Job }) {
       <ChecklistGrid
         id="qualifications"
         tone="muted"
-        title="What We're Looking For"
-        description="The experience and qualities that set you up to succeed in this role."
+        title={copy.qualificationsTitle}
+        description={t(copy.qualificationsDescription)}
         items={job.qualifications}
         columns={2}
       />
@@ -62,8 +91,8 @@ export default function JobDetailContent({ job }: { job: Job }) {
       <section className="py-24 sm:py-32 bg-background relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={fadeIn} className="max-w-2xl mb-10">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">Nice to Have</h2>
-            <p className="text-lg leading-8 text-muted-foreground">Not required, but these would make you stand out from the pile.</p>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">{copy.niceToHaveTitle}</h2>
+            <p className="text-lg leading-8 text-muted-foreground">{t(copy.niceToHaveDescription)}</p>
           </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {job.niceToHave.map((item, i) => (
@@ -92,8 +121,8 @@ export default function JobDetailContent({ job }: { job: Job }) {
             variants={fadeIn}
             className="max-w-2xl mb-10"
           >
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">Skills &amp; Tools</h2>
-            <p className="text-lg leading-8 text-muted-foreground">Technologies and tools you&apos;ll be working with in this role.</p>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">{copy.skillsTitle}</h2>
+            <p className="text-lg leading-8 text-muted-foreground">{t(copy.skillsDescription)}</p>
           </motion.div>
           <motion.div
             initial="hidden"
@@ -117,8 +146,8 @@ export default function JobDetailContent({ job }: { job: Job }) {
 
       <ChecklistGrid
         id="what-we-offer"
-        title="What We Offer"
-        description={`The perks and culture behind the ${job.title} role.`}
+        title={copy.perksTitle}
+        description={t(copy.perksDescription)}
         items={perks}
         columns={3}
       />
@@ -126,11 +155,11 @@ export default function JobDetailContent({ job }: { job: Job }) {
       <section className="py-24 sm:py-32 bg-muted/10 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={fadeIn} className="max-w-2xl mb-14">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">How to Apply</h2>
-            <p className="text-lg leading-8 text-muted-foreground">A simple, four-step process — no account required, no black hole.</p>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">{copy.stepsTitle}</h2>
+            <p className="text-lg leading-8 text-muted-foreground">{t(copy.stepsDescription)}</p>
           </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {applicationSteps.map((step, i) => (
+            {steps.map((step, i) => (
               <motion.div
                 key={step.title}
                 initial={{ opacity: 0, y: 15 }}
@@ -157,11 +186,11 @@ export default function JobDetailContent({ job }: { job: Job }) {
       </section>
 
       <DetailCTA
-        heading={`Ready to Apply for ${job.title}?`}
-        description="Send us your resume and a short note about why you're a fit. Our hiring team reviews every application personally."
-        ctaLabel="Apply Now"
+        heading={t(copy.ctaHeading)}
+        description={t(copy.ctaDescription)}
+        ctaLabel={copy.ctaLabel}
         ctaHref={applyHref}
-        checklist={["Quick response", "Direct to our hiring team", "No account required"]}
+        checklist={copy.ctaChecklist}
       />
     </div>
   );

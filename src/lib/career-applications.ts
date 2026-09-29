@@ -8,7 +8,8 @@ import { escapeRegExp } from "@/lib/text-search";
 import { staleThresholdDate } from "@/lib/stale-days";
 import { previousPeriodRange, computeGrowthPercent } from "@/lib/period-comparison";
 import { dateFormatFor, type DashboardGranularity } from "@/lib/granularity";
-import { jobs } from "@/app/(site)/careers/jobs-data";
+import type { Job } from "@/types/content";
+import { getRuntimeRecords } from "@/lib/cms/collections/store";
 
 export const APPLICATIONS_COLLECTION = "career_applications";
 const POSITIONS_COLLECTION = "job_positions";
@@ -92,7 +93,7 @@ interface BaseApplicationFilterOptions {
   positionSlug?: string;
   /** The applied-to position's stated experience requirement (e.g. "1–4 Years") —
    * applicants never report their own experience, so this reflects the role, not the
-   * candidate. Sourced from the static `jobs` listing, not stored per-application. */
+   * candidate. Sourced from the jobs listing (CMS jobs collection), not stored per-application. */
   experience?: string;
   /** The applied-to position's stated location — same caveat as `experience`. */
   location?: string;
@@ -102,27 +103,34 @@ interface BaseApplicationFilterOptions {
 
 const NOT_SPECIFIED = "Not specified";
 
-function experienceForSlug(slug: string | null | undefined): string {
+/** The live job listing — the CMS jobs collection (code data + published CMS jobs). */
+async function jobList(): Promise<Job[]> {
+  return getRuntimeRecords<Job>("jobs");
+}
+
+function experienceForSlug(jobs: Job[], slug: string | null | undefined): string {
   return jobs.find((j) => j.slug === slug)?.experience ?? NOT_SPECIFIED;
 }
 
-function locationForSlug(slug: string | null | undefined): string {
+function locationForSlug(jobs: Job[], slug: string | null | undefined): string {
   return jobs.find((j) => j.slug === slug)?.location ?? NOT_SPECIFIED;
 }
 
 /** Distinct experience-requirement values across every listed position, for the
  * dashboard's Experience filter. */
-export function getExperienceOptions(): string[] {
+export async function getExperienceOptions(): Promise<string[]> {
+  const jobs = await jobList();
   return Array.from(new Set(jobs.map((j) => j.experience))).sort();
 }
 
 /** Distinct location values across every listed position, for the dashboard's
  * Location filter. */
-export function getLocationOptions(): string[] {
+export async function getLocationOptions(): Promise<string[]> {
+  const jobs = await jobList();
   return Array.from(new Set(jobs.map((j) => j.location))).sort();
 }
 
-function buildApplicationFilter(opts: BaseApplicationFilterOptions): Record<string, unknown> {
+function buildApplicationFilter(opts: BaseApplicationFilterOptions, jobs: Job[]): Record<string, unknown> {
   const filter: Record<string, unknown> = {};
   if (opts.search && opts.search.trim()) {
     const regex = new RegExp(escapeRegExp(opts.search.trim()), "i");
@@ -206,7 +214,7 @@ export async function searchApplications(opts: SearchApplicationsOptions = {}) {
   const page = Math.max(opts.page ?? 1, 1);
   const pageSize = Math.min(Math.max(opts.pageSize ?? 20, 1), 100);
 
-  const filter = buildApplicationFilter(opts);
+  const filter = buildApplicationFilter(opts, await jobList());
   const sortField = opts.sortBy ?? "createdAt";
   const sortDir = opts.sortDir === "asc" ? 1 : -1;
 
@@ -237,7 +245,7 @@ export async function exportApplications(opts: ExportApplicationsOptions = {}): 
   const filter =
     opts.ids && opts.ids.length > 0
       ? { _id: { $in: opts.ids.filter((id) => ObjectId.isValid(id)).map((id) => new ObjectId(id)) } }
-      : buildApplicationFilter(opts);
+      : buildApplicationFilter(opts, await jobList());
 
   const sortField = opts.sortBy ?? "createdAt";
   const sortDir = opts.sortDir === "asc" ? 1 : -1;
@@ -324,15 +332,16 @@ export async function getCareerDashboardStats(
   filters: BaseApplicationFilterOptions & { granularity?: DashboardGranularity } = {}
 ): Promise<CareerDashboardStats> {
   const collection = await getApplicationsCollection();
-  const filter = buildApplicationFilter(filters);
+  const jobs = await jobList();
+  const filter = buildApplicationFilter(filters, jobs);
   const granularity = filters.granularity ?? "day";
   const dateFormat = dateFormatFor(granularity);
   const prevRange = previousPeriodRange(filters.dateFrom, filters.dateTo);
-  const prevFilter = prevRange ? buildApplicationFilter({ ...filters, dateFrom: prevRange.from, dateTo: prevRange.to }) : null;
+  const prevFilter = prevRange ? buildApplicationFilter({ ...filters, dateFrom: prevRange.from, dateTo: prevRange.to }, jobs) : null;
 
   // "Top hiring positions" is inherently about hires, not whatever status filter is
   // active — reuse every other filter but force status to "hired".
-  const hiringFilter = { ...buildApplicationFilter({ ...filters, status: undefined }), status: "hired" };
+  const hiringFilter = { ...buildApplicationFilter({ ...filters, status: undefined }, jobs), status: "hired" };
 
   const [total, statusAgg, positionAgg, hiringPositionAgg, positionSlugAgg, byBucketAgg, hiredByMonthAgg, recent, prevTotal, prevStatusAgg, prevByBucketAgg] =
     await Promise.all([
@@ -402,8 +411,8 @@ export async function getCareerDashboardStats(
   const experienceMap = new Map<string, number>();
   const locationMap = new Map<string, number>();
   for (const row of positionSlugAgg) {
-    const expLabel = experienceForSlug(row._id);
-    const locLabel = locationForSlug(row._id);
+    const expLabel = experienceForSlug(jobs, row._id);
+    const locLabel = locationForSlug(jobs, row._id);
     experienceMap.set(expLabel, (experienceMap.get(expLabel) ?? 0) + row.count);
     locationMap.set(locLabel, (locationMap.get(locLabel) ?? 0) + row.count);
   }

@@ -6,6 +6,7 @@ import { Flame } from "lucide-react";
 import { useOfferTracking } from "@/lib/useOfferTracking";
 import { formatOfferBadge } from "@/lib/offers/constants";
 import type { SerializedOffer } from "@/lib/offers/offers";
+import { useText } from "@/components/cms/TextContext";
 
 /** Desktop counterpart to `StickyMobileClaimBar` — a small floating CTA that appears once the visitor has scrolled past the hero. */
 export default function DesktopScrollCta({
@@ -17,6 +18,7 @@ export default function DesktopScrollCta({
   offer: SerializedOffer | null;
   onClaim: (offer: SerializedOffer) => void;
 }) {
+  const tx = useText();
   const [visible, setVisible] = useState(false);
   const track = useOfferTracking(campaignId);
 
@@ -48,7 +50,7 @@ export default function DesktopScrollCta({
           >
             <Flame className="size-4" />
             {offer.badgeText || formatOfferBadge(offer.pricing)}
-            <span className="hidden underline underline-offset-2 group-hover:inline">Claim Offer</span>
+            <span className="hidden underline underline-offset-2 group-hover:inline">{tx("offers.desktopScrollCta.claim-offer")}</span>
           </motion.button>
         )}
       </AnimatePresence>

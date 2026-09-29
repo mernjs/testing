@@ -1,0 +1,236 @@
+[
+ {
+  "name": "About",
+  "href": "/about",
+  "iconKey": "Compass",
+  "featured": {
+   "title": "Our Mission",
+   "description": "Learn how we empower businesses globally.",
+   "image": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop"
+  },
+  "items": [
+   {
+    "name": "Our Mission",
+    "href": "/about/our-mission",
+    "description": "Why we exist",
+    "iconKey": "Compass"
+   },
+   {
+    "name": "What We Do",
+    "href": "/about/what-we-do",
+    "description": "Our core operations",
+    "iconKey": "Zap"
+   },
+   {
+    "name": "Technologies",
+    "href": "/about/technologies",
+    "description": "Our full tech stack",
+    "iconKey": "Layers"
+   },
+   {
+    "name": "Success Stories",
+    "href": "/about/success-stories",
+    "description": "Client impact cases",
+    "iconKey": "Box"
+   },
+   {
+    "name": "Blog",
+    "href": "/blog",
+    "description": "Engineering insights & updates",
+    "iconKey": "Newspaper"
+   },
+   {
+    "name": "Our SaaS Product",
+    "href": "/services/our-saas-product",
+    "description": "15-application AI platform",
+    "iconKey": "Sparkles"
+   },
+   {
+    "name": "Privacy Policy",
+    "href": "/about/privacy-policy",
+    "description": "Data protection & privacy",
+    "iconKey": "ShieldCheck"
+   },
+   {
+    "name": "Terms & Conditions",
+    "href": "/about/terms-and-conditions",
+    "description": "Terms of service agreement",
+    "iconKey": "FileQuestion"
+   }
+  ]
+ },
+ {
+  "name": "Services",
+  "href": "/services",
+  "iconKey": "Layers",
+  "featured": {
+   "title": "Digital Transformation & SaaS Platform",
+   "description": "End-to-end tech solutions and SaaS products.",
+   "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop"
+  },
+  "items": [
+   {
+    "name": "Our SaaS Product",
+    "href": "/services/our-saas-product",
+    "description": "15-application integrated AI SaaS ecosystem",
+    "iconKey": "Sparkles"
+   },
+   {
+    "name": "Software Development",
+    "href": "/software-development",
+    "description": "Custom web, mobile & desktop software",
+    "iconKey": "Code2"
+   },
+   {
+    "name": "Digital Marketing",
+    "href": "/digital-marketing",
+    "description": "SEO, ads, social media & growth strategies",
+    "iconKey": "Megaphone"
+   },
+   {
+    "name": "AI & Automations",
+    "href": "/ai-automations",
+    "description": "Workflows, chatbots, RAG & RPA bots",
+    "iconKey": "BrainCircuit"
+   },
+   {
+    "name": "Industrial Training",
+    "href": "/industrial-training",
+    "description": "Mentor-led, project-based learning",
+    "iconKey": "GraduationCap"
+   },
+   {
+    "name": "Resource Augmentation",
+    "href": "/resource-augmentation",
+    "description": "Dedicated developers & team hiring",
+    "iconKey": "UserPlus"
+   },
+   {
+    "name": "Internship Program",
+    "href": "/internship-program",
+    "description": "Hands-on live project internships",
+    "iconKey": "Briefcase"
+   }
+  ]
+ },
+ {
+  "name": "Industries",
+  "href": "/industries",
+  "iconKey": "Globe",
+  "featured": {
+   "title": "Industry Focus",
+   "description": "Tailored tech across sectors.",
+   "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop"
+  },
+  "items": [
+   {
+    "name": "Healthcare",
+    "href": "/industries/healthcare",
+    "description": "Patient portals & telehealth",
+    "iconKey": "HeartPulse"
+   },
+   {
+    "name": "Ecommerce",
+    "href": "/industries/ecommerce",
+    "description": "Storefronts that convert",
+    "iconKey": "ShoppingCart"
+   },
+   {
+    "name": "Insurance",
+    "href": "/industries/insurance",
+    "description": "Underwriting & claims",
+    "iconKey": "Umbrella"
+   },
+   {
+    "name": "Agriculture",
+    "href": "/industries/agriculture",
+    "description": "Precision farming platforms",
+    "iconKey": "Tractor"
+   },
+   {
+    "name": "Education",
+    "href": "/industries/education",
+    "description": "Transforming education",
+    "iconKey": "GraduationCap"
+   },
+   {
+    "name": "Real Estate",
+    "href": "/industries/real-estate",
+    "description": "Property management",
+    "iconKey": "Building2"
+   },
+   {
+    "name": "Finance",
+    "href": "/industries/finance",
+    "description": "Secure financial tech",
+    "iconKey": "Landmark"
+   },
+   {
+    "name": "Travel & Hospitality",
+    "href": "/industries/travel",
+    "description": "Booking & itinerary platforms",
+    "iconKey": "Plane"
+   }
+  ]
+ },
+ {
+  "name": "Careers",
+  "href": "/careers",
+  "iconKey": "Briefcase",
+  "featured": {
+   "title": "Careers at YashOrbit",
+   "description": "Join our growing team building AI-powered products.",
+   "image": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop"
+  },
+  "items": [
+   {
+    "name": "MERN Developer",
+    "href": "/careers/mern-developer",
+    "description": "Full-stack MongoDB, Express, React, Node",
+    "iconKey": "Code2"
+   },
+   {
+    "name": "GenAI Developer",
+    "href": "/careers/genai-developer",
+    "description": "LLM-powered products & pipelines",
+    "iconKey": "Sparkles"
+   },
+   {
+    "name": "AI/ML Engineer",
+    "href": "/careers/ai-ml-engineer",
+    "description": "Model training & deployment",
+    "iconKey": "Cpu"
+   },
+   {
+    "name": "UI/UX Designer",
+    "href": "/careers/ui-ux-designer",
+    "description": "Product design across web & mobile",
+    "iconKey": "Palette"
+   },
+   {
+    "name": "Business Development Manager",
+    "href": "/careers/business-development-manager",
+    "description": "Grow our client pipeline",
+    "iconKey": "Handshake"
+   },
+   {
+    "name": "HR Executive",
+    "href": "/careers/hr-executive",
+    "description": "Recruitment & employee experience",
+    "iconKey": "Users"
+   },
+   {
+    "name": "DevOps Engineer",
+    "href": "/careers/devops-engineer",
+    "description": "Cloud infrastructure & CI/CD",
+    "iconKey": "Workflow"
+   },
+   {
+    "name": "Open Positions",
+    "href": "/careers",
+    "description": "Explore all open roles",
+    "iconKey": "Briefcase"
+   }
+  ]
+ }
+]

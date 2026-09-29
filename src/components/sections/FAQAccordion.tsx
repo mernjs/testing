@@ -3,6 +3,7 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, LucideIcon } from "lucide-react";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
 interface FAQ {
   question: React.ReactNode;
@@ -17,7 +18,9 @@ interface FAQAccordionProps {
   category?: string;
 }
 
-export default function FAQAccordion({ title = "Frequently asked questions", faqs, tone = "default", icon: Icon, category }: FAQAccordionProps) {
+export default function FAQAccordion({ title: titleProp, faqs, tone = "default", icon: Icon, category }: FAQAccordionProps) {
+  const l = useUiLabels();
+  const title = titleProp ?? l.faqTitle;
   const [openIndex, setOpenIndex] = React.useState<number | null>(0);
   const enhanced = Boolean(Icon || category);
 

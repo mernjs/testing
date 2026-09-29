@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { getCurrentLmsUser } from "@/lib/lms-auth";
-import { jobs } from "@/app/(site)/careers/jobs-data";
+import { getRuntimeRecords } from "@/lib/cms/collections/store";
+import type { Job } from "@/types/content";
 import { getDb } from "@/lib/mongodb";
 
 /**
- * Idempotent upsert of job_positions from the static job listings in
- * jobs-data.ts. Re-run any time a role is added, removed, or its status
+ * Idempotent upsert of job_positions from the job listings — the CMS jobs
+ * collection (jobs-data.ts plus any jobs published in the CMS). Re-run any time a role is added, removed, or its status
  * changes in code — never DELETES positions missing from code (a closed
  * role should stay referenceable by any past application), but any
  * existing position whose slug is no longer in `jobs` at all (fully
@@ -24,6 +25,7 @@ export async function POST() {
   await collection.createIndex({ slug: 1 }, { unique: true });
 
   const now = new Date();
+  const jobs = await getRuntimeRecords<Job>("jobs");
   const currentSlugs = jobs.map((job) => job.slug);
   let upserted = 0;
   for (const job of jobs) {

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useOfferTracking } from "@/lib/useOfferTracking";
 import { formatOfferBadge } from "@/lib/offers/constants";
 import type { SerializedOffer } from "@/lib/offers/offers";
+import { useText } from "@/components/cms/TextContext";
 
 const SESSION_FLAG = "offer_exit_intent_shown";
 
@@ -23,6 +24,7 @@ export default function ExitIntentModal({
   offer: SerializedOffer | null;
   onClaim: (offer: SerializedOffer) => void;
 }) {
+  const tx = useText();
   const [open, setOpen] = useState(false);
   const track = useOfferTracking(campaignId);
 
@@ -59,10 +61,9 @@ export default function ExitIntentModal({
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent side="top" className="mx-auto max-w-md rounded-b-2xl border-x border-b">
         <SheetHeader>
-          <SheetTitle>Wait! Your Festival Offer Is Still Available.</SheetTitle>
+          <SheetTitle>{tx("offers.exitIntentModal.wait-your-festival-offer-is-still-availa")}</SheetTitle>
           <SheetDescription>
-            Get {offer.badgeText || formatOfferBadge(offer.pricing)} on {offer.title} before the campaign ends.
-          </SheetDescription>
+            {tx("offers.exitIntentModal.get")}{offer.badgeText || formatOfferBadge(offer.pricing)}{tx("offers.exitIntentModal.on")}{offer.title}{tx("offers.exitIntentModal.before-the-campaign-ends")}</SheetDescription>
         </SheetHeader>
         <SheetFooter>
           <Button
@@ -71,8 +72,7 @@ export default function ExitIntentModal({
               onClaim(offer);
             }}
           >
-            Get My Exclusive Offer
-          </Button>
+            {tx("offers.exitIntentModal.get-my-exclusive-offer")}</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>

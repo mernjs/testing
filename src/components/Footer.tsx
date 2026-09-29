@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
-import { FacebookIcon, GithubIcon, XIcon, InstagramIcon, YoutubeIcon, WhatsAppIcon, LinkedinIcon } from "@/components/icons/SocialIcons";
-import { socialLinks, emails, phone, whatsapp, linkedin, mapsUrl } from "@/lib/contact";
+import { WhatsAppIcon, LinkedinIcon } from "@/components/icons/SocialIcons";
+import { socialIconFor } from "@/components/icons/social-icon-for";
+import type { SiteInfo } from "@/lib/cms/site-info-shared";
+import type { PublicFooterColumn } from "@/lib/cms/footer";
 
-const socialIcons = { Facebook: FacebookIcon, GitHub: GithubIcon, "X (Twitter)": XIcon, Instagram: InstagramIcon, YouTube: YoutubeIcon };
-
-export default function Footer() {
+export default function Footer({ cmsFooter, siteInfo }: { cmsFooter: PublicFooterColumn[]; siteInfo: SiteInfo }) {
+  const { brand, contact, social, footer } = siteInfo;
+  const footerColumns = cmsFooter;
   return (
     <footer className="relative bg-secondary dark:bg-[#1a1533] text-secondary-foreground border-t border-border mt-auto overflow-hidden">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/10 rounded-full blur-[140px] pointer-events-none"></div>
@@ -23,26 +25,26 @@ export default function Footer() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
               </span>
-              Available for new projects
+              {footer.badge}
             </span>
-            <h3 className="text-2xl sm:text-3xl font-black tracking-tight">Have a project in mind?</h3>
-            <p className="text-sm sm:text-base text-secondary-foreground/85 mt-2">Let&apos;s turn your idea into a scalable product.</p>
+            <h3 className="text-2xl sm:text-3xl font-black tracking-tight">{footer.ctaTitle}</h3>
+            <p className="text-sm sm:text-base text-secondary-foreground/85 mt-2">{footer.ctaText}</p>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-3 flex-shrink-0">
             <Link
-              href="/contact"
+              href={footer.ctaHref}
               className="group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/30"
             >
-              Start a Conversation <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              {footer.ctaLabel} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
             <a
-              href={whatsapp.href}
+              href={contact.whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center justify-center gap-2 rounded-full bg-foreground px-7 py-3.5 text-sm font-bold text-background hover:scale-105 active:scale-95 transition-all shadow-lg shadow-foreground/10"
             >
               <WhatsAppIcon className="w-4 h-4" />
-              Chat on WhatsApp
+              {footer.whatsappLabel}
             </a>
           </div>
         </div>
@@ -54,6 +56,11 @@ export default function Footer() {
             <Link href="/" className="flex items-center gap-2.5 w-fit">
               {/* Dark mode swaps to the reversed, ice-globe variant for better contrast against
                   the footer's dark surface. See public/brand/icon-on-blue.svg. */}
+              {brand.logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- CMS logo URL (any host)
+                <img src={brand.logoUrl} alt="" className="w-9 h-9 shrink-0 object-contain" />
+              ) : (
+                <>
               <svg viewBox="0 0 64 64" className="w-9 h-9 shrink-0 dark:hidden" aria-hidden="true">
                 <path d="M4,50 C0,60 40,38 50,26" fill="none" stroke="#ECF2FD" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
                 <circle cx="32" cy="32" r="25.5" fill="#1D428A" />
@@ -110,41 +117,43 @@ export default function Footer() {
                 <path d="M8,44 C2,57 45,31 56,12" fill="none" stroke="#E56043" strokeWidth="3" strokeLinecap="round" />
                 <polygon points="58.6,15.8 51.4,11.6 59.8,5.5" fill="#E56043" />
               </svg>
+                </>
+              )}
               <span className="flex flex-col leading-none">
                 <span className="font-extrabold text-2xl tracking-tight">
-                  <span className="text-secondary-foreground">Yash</span><span className="text-primary">Orbit</span>
+                  <span className="text-secondary-foreground">{brand.namePrimary}</span><span className="text-primary">{brand.nameAccent}</span>
                 </span>
                 <span className="mt-1 text-[10px] font-bold uppercase tracking-[0.15em] text-secondary-foreground/85">
-                  Technologies Pvt. Ltd.
+                  {brand.subtitle}
                 </span>
               </span>
             </Link>
             <p className="text-sm leading-6 text-secondary-foreground/85 max-w-xs">
-              YashOrbit Technologies Pvt. Ltd. builds custom web, mobile, and AI/ML software solutions engineered to accelerate business growth and deliver measurable competitive advantage.
+              {footer.about}
             </p>
 
             <div className="space-y-2.5">
               <a
-                href={`mailto:${emails.support}`}
+                href={`mailto:${contact.email}`}
                 className="flex items-center gap-2.5 text-sm text-secondary-foreground/85 hover:text-primary transition-colors"
               >
                 <Mail className="h-4 w-4 flex-none" aria-hidden="true" />
-                {emails.support}
+                {contact.email}
               </a>
               <a
-                href={phone.href}
+                href={contact.phoneHref}
                 className="flex items-center gap-2.5 text-sm text-secondary-foreground/85 hover:text-primary transition-colors"
               >
                 <Phone className="h-4 w-4 flex-none" aria-hidden="true" />
-                {phone.display}
+                {contact.phoneDisplay}
               </a>
             </div>
 
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-secondary-foreground/85 mb-3">Follow us</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-secondary-foreground/85 mb-3">{footer.followLabel}</p>
               <div className="flex gap-3">
-                {socialLinks.map((social) => {
-                  const Icon = socialIcons[social.name];
+                {social.map((social) => {
+                  const Icon = socialIconFor(social.name);
                   return (
                     <a
                       key={social.name}
@@ -159,7 +168,7 @@ export default function Footer() {
                   );
                 })}
                 <a
-                href={linkedin.href}
+                href={contact.linkedinHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-background/10 border border-secondary-foreground/15 dark:border-white/10 flex items-center justify-center hover:bg-primary hover:border-primary hover:scale-110 hover:shadow-lg hover:shadow-primary/30 transition-all duration-300"
@@ -171,243 +180,50 @@ export default function Footer() {
             </div>
           </div>
           <div className="mt-16 grid grid-cols-2 gap-8 lg:grid-cols-4 xl:col-span-2 xl:mt-0">
-            {/* 1. About */}
-            <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
-                <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
-                About
-              </h3>
-              <ul role="list" className="mt-6 space-y-3">
-                <li>
-                  <Link href="/about/our-mission" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Our Mission
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about/what-we-do" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    What We Do
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about/technologies" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Technologies
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about/success-stories" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Success Stories
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/blog" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Blog & Insights
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/services/our-saas-product" className="inline-block text-sm leading-6 text-primary font-semibold hover:translate-x-1 transition-all duration-200">
-                    Our SaaS Product
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about/privacy-policy" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about/terms-and-conditions" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Terms & Conditions
-                  </Link>
-                </li>
-                <li className="pt-1">
-                  <Link href="/about" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
-                    View All About
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* 2. Services */}
-            <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
-                <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
-                Services
-              </h3>
-              <ul role="list" className="mt-6 space-y-3">
-                <li>
-                  <Link href="/services/our-saas-product" className="inline-block text-sm leading-6 text-primary font-semibold hover:translate-x-1 transition-all duration-200">
-                    Our SaaS Product
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/software-development" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Software Development
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/digital-marketing" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Digital Marketing
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/ai-automations" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    AI & Automations
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/industrial-training" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Industrial Training
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/resource-augmentation" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Resource Augmentation
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/internship-program" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Internship Program
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/offers" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Offers & Campaigns
-                  </Link>
-                </li>
-                <li className="pt-1">
-                  <Link href="/services" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
-                    View All Services
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* 3. Industries */}
-            <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
-                <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
-                Industries
-              </h3>
-              <ul role="list" className="mt-6 space-y-3">
-                <li>
-                  <Link href="/industries/healthcare" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Healthcare
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/industries/ecommerce" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Ecommerce
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/industries/insurance" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Insurance
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/industries/agriculture" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Agriculture
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/industries/education" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Education
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/industries/real-estate" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Real Estate
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/industries/finance" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Finance
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/industries/travel" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Travel & Hospitality
-                  </Link>
-                </li>
-                <li className="pt-1">
-                  <Link href="/industries" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
-                    View All Industries
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* 4. Careers */}
-            <div>
-              <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
-                <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
-                Careers
-              </h3>
-              <ul role="list" className="mt-6 space-y-3">
-                <li>
-                  <Link href="/careers/mern-developer" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    MERN Developer
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/careers/genai-developer" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    GenAI Developer
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/careers/ai-ml-engineer" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    AI/ML Engineer
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/careers/ui-ux-designer" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    UI/UX Designer
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/careers/business-development-manager" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Business Development
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/careers/hr-executive" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    HR Executive
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/careers/devops-engineer" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    DevOps Engineer
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/careers" className="inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200">
-                    Open Positions
-                  </Link>
-                </li>
-                <li className="pt-1">
-                  <Link href="/careers" className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
-                    View All Careers
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </li>
-              </ul>
-            </div>
+            {footerColumns.map((column) => (
+              <div key={column.title}>
+                <h3 className="flex items-center gap-2 text-sm font-semibold leading-6 uppercase tracking-wider text-[#b83e23] dark:text-primary">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-br from-primary to-secondary" />
+                  {column.title}
+                </h3>
+                <ul role="list" className="mt-6 space-y-3">
+                  {column.links.map((link) => (
+                    <li key={link.href + link.label}>
+                      <Link
+                        href={link.href}
+                        className={
+                          link.emphasized
+                            ? "inline-block text-sm leading-6 text-primary font-semibold hover:translate-x-1 transition-all duration-200"
+                            : "inline-block text-sm leading-6 text-secondary-foreground/80 hover:text-primary hover:translate-x-1 transition-all duration-200"
+                        }
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                  {column.viewAllHref && (
+                    <li className="pt-1">
+                      <Link href={column.viewAllHref} className="group inline-flex items-center gap-1.5 text-sm font-semibold leading-6 text-secondary-foreground hover:text-primary transition-colors">
+                        {column.viewAllLabel || `View All ${column.title}`}
+                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
         {/* Bottom bar (copyright + legal links) — hidden for now; remove `hidden` to show it again. */}
         <div className="hidden mt-16 border-t border-secondary-foreground/10 dark:border-white/10 sm:mt-20 lg:mt-24">
           <div className="mt-8 rounded-2xl bg-white/40 dark:bg-white/5 px-4 py-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs leading-5 text-secondary-foreground/85">
-              &copy; {new Date().getFullYear()} <span className="text-secondary-foreground">Yash</span><span className="text-primary">Orbit</span> Technologies Pvt. Ltd. All rights reserved.
+              &copy; {new Date().getFullYear()} <span className="text-secondary-foreground">{brand.namePrimary}</span><span className="text-primary">{brand.nameAccent}</span> {footer.copyright}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-secondary-foreground/85">
-              <Link href="/about/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
-              <Link href="/about/terms-and-conditions" className="hover:text-primary transition-colors">Terms & Conditions</Link>
-              <Link href="/about/refund-cancellation-policy" className="hover:text-primary transition-colors">Refund & Cancellation</Link>
-              <Link href="/about/acceptable-use-policy" className="hover:text-primary transition-colors">Acceptable Use</Link>
-              <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
+              {footer.legalLinks.map((link) => (
+                <Link key={link.href + link.label} href={link.href} className="hover:text-primary transition-colors">{link.label}</Link>
+              ))}
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { ArrowRight, CheckCircle2, LucideIcon } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
 interface ListingCardProps {
   icon: LucideIcon;
@@ -35,10 +36,12 @@ export default function ListingCard({
   highlights,
   href,
   image,
-  ctaLabel = "Explore More",
+  ctaLabel: ctaLabelProp,
   footnote,
   featured = false,
 }: ListingCardProps) {
+  const l = useUiLabels();
+  const ctaLabel = ctaLabelProp ?? l.exploreMore;
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
   const springConfig = { stiffness: 200, damping: 20, mass: 0.5 };
@@ -68,7 +71,7 @@ export default function ListingCard({
     >
       {featured && (
         <span className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-primary to-[#ff8e75] text-primary-foreground px-4 py-1.5 text-xs font-bold uppercase tracking-wider shadow-lg shadow-primary/30">
-          Most Popular
+          {l.mostPopular}
         </span>
       )}
 
@@ -129,7 +132,7 @@ export default function ListingCard({
 
           {footnote && (
             <p className="text-sm text-muted-foreground mb-6 -mt-2">
-              <span className="font-semibold text-foreground">Best for:</span> {footnote}
+              <span className="font-semibold text-foreground">{l.bestForListing}</span> {footnote}
             </p>
           )}
 

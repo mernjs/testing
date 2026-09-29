@@ -4,7 +4,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import FloatingContactButtons from "@/components/FloatingContactButtons";
-import { siteUrl, siteName, defaultOgImage, organizationJsonLd, localBusinessJsonLd, websiteJsonLd } from "@/lib/seo";
+import { SiteInfoProvider } from "@/components/cms/SiteInfoContext";
+import { getSiteInfo } from "@/lib/cms/site-info";
+import { siteUrl } from "@/lib/seo";
+import { getSiteSeo, siteMetadata } from "@/lib/cms/site-seo";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,74 +19,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const title = "YashOrbit - Web, Mobile & AI/ML Software Development";
-const description = "YashOrbit is a software development company that partners with growing businesses to design, build, and scale web, mobile, and AI/ML products — from MVPs to production-grade systems.";
+/** Site-wide SEO defaults every page inherits — CMS → Settings (see lib/cms/site-seo.ts). */
+export async function generateMetadata(): Promise<Metadata> {
+  return siteMetadata(await getSiteSeo(), {
+    metadataBase: new URL(siteUrl),
+    verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION },
+  });
+}
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title,
-  description,
-  applicationName: siteName,
-  keywords: [
-    "YashOrbit",
-    "software development company",
-    "AI/ML solutions",
-    "web app development",
-    "mobile app development",
-    "AI agent development",
-    "custom software solutions",
-    "industrial training programs",
-    "digital transformation partner",
-  ],
-  authors: [{ name: siteName, url: siteUrl }],
-  creator: siteName,
-  publisher: siteName,
-  category: "technology",
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
-    },
-  },
-  alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    title,
-    description,
-    url: siteUrl,
-    siteName,
-    images: [{ url: defaultOgImage, width: 512, height: 512, alt: siteName }],
-    type: "website",
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title,
-    description,
-    images: [defaultOgImage],
-  },
-};
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const jsonLd = [organizationJsonLd(), localBusinessJsonLd(), websiteJsonLd()];
+  // Brand, contact details and social links (CMS → Site Identity); site-wide structured data (CMS → Settings).
+  const [siteInfo, { jsonLd }] = await Promise.all([getSiteInfo(), getSiteSeo()]);
 
   return (
     <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
@@ -138,8 +88,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <FloatingContactButtons />
+          <SiteInfoProvider value={siteInfo}>
+            {children}
+            <FloatingContactButtons />
+          </SiteInfoProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -20,9 +20,10 @@ export interface TechCategory {
 
 interface TechShowcaseProps {
   categories: TechCategory[];
+  searchPlaceholder: string;
 }
 
-export default function TechShowcase({ categories }: TechShowcaseProps) {
+export default function TechShowcase({ categories, searchPlaceholder }: TechShowcaseProps) {
   const [openId, setOpenId] = React.useState<string | null>(categories[0]?.id ?? null);
   const [query, setQuery] = React.useState("");
 
@@ -55,7 +56,7 @@ export default function TechShowcase({ categories }: TechShowcaseProps) {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search technologies — React, AWS, PyTorch…"
+            placeholder={searchPlaceholder}
             className="w-full rounded-full border border-border/50 bg-muted/20 pl-11 pr-10 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all duration-300 focus:border-primary/40 focus:bg-background"
           />
           {query && (

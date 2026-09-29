@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Keyboard, AudioLines } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useVoice } from "@/components/chat/VoiceProvider";
+import { useText } from "@/components/cms/TextContext";
 
 /**
  * Accessible two-option segmented control for switching between Text Mode and
@@ -22,6 +23,7 @@ export function VoiceModeToggle({
   className?: string;
   size?: "sm" | "md" | "lg";
 }) {
+  const tx = useText();
   const { voiceMode, setVoiceMode, available, supported } = useVoice();
   const reduceMotion = useReducedMotion();
   const groupRef = React.useRef<HTMLDivElement>(null);
@@ -30,10 +32,10 @@ export function VoiceModeToggle({
 
   const voiceOn = voiceMode && available;
   const options = [
-    { key: "text" as const, label: "Text", hint: "Type your questions", icon: Keyboard, on: !voiceOn, disabled: false },
+    { key: "text" as const, label: tx("chat.voiceModeToggle.text"), hint: tx("chat.voiceModeToggle.type-your-questions"), icon: Keyboard, on: !voiceOn, disabled: false },
     {
       key: "voice" as const,
-      label: "Voice",
+      label: tx("chat.voiceModeToggle.voice"),
       hint: available ? "Speak and listen" : "Voice is unavailable right now",
       icon: AudioLines,
       on: voiceOn,

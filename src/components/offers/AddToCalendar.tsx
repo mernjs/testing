@@ -1,6 +1,7 @@
 "use client";
 
 import { CalendarPlus } from "lucide-react";
+import { useText } from "@/components/cms/TextContext";
 
 function stamp(d: Date): string {
   return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
@@ -8,6 +9,7 @@ function stamp(d: Date): string {
 
 /** Real reminder, no backend needed: an .ics file (Apple/Outlook) or a Google Calendar link for the campaign start. */
 export default function AddToCalendar({ name, startsAt, endsAt, description }: { name: string; startsAt: string; endsAt: string; description?: string }) {
+  const tx = useText();
   const start = new Date(startsAt);
   const end = new Date(endsAt);
   const title = `${name} goes live — YashOrbit`;
@@ -47,11 +49,9 @@ export default function AddToCalendar({ name, startsAt, endsAt, description }: {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <button type="button" onClick={downloadIcs} className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/20">
-        <CalendarPlus className="size-4" /> Add to calendar
-      </button>
+        <CalendarPlus className="size-4" />{tx("offers.addToCalendar.add-to-calendar")}</button>
       <a href={google} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-white/70 underline underline-offset-2 hover:text-white">
-        Google Calendar
-      </a>
+        {tx("offers.addToCalendar.google-calendar")}</a>
     </div>
   );
 }

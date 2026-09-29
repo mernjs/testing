@@ -2,6 +2,7 @@
 
 import { formatOfferBadge } from "@/lib/offers/constants";
 import type { SerializedOffer } from "@/lib/offers/offers";
+import { useText } from "@/components/cms/TextContext";
 
 /** Lightweight always-accessible CTA on mobile — mirrors the spec's "sticky CTA" requirement. */
 export default function StickyMobileClaimBar({
@@ -11,6 +12,7 @@ export default function StickyMobileClaimBar({
   topOffer: SerializedOffer | null;
   onClaim: (offer: SerializedOffer) => void;
 }) {
+  const tx = useText();
   if (!topOffer) return null;
 
   return (
@@ -21,7 +23,7 @@ export default function StickyMobileClaimBar({
         className="flex w-full items-center justify-between gap-3 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground"
       >
         <span>🔥 {topOffer.badgeText || formatOfferBadge(topOffer.pricing)}</span>
-        <span className="underline underline-offset-2">Claim Offer</span>
+        <span className="underline underline-offset-2">{tx("offers.stickyMobileClaimBar.claim-offer")}</span>
       </button>
     </div>
   );

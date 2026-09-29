@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle2, ShieldCheck, Sparkles, Rocket } from "lucide-react";
+import { useSiteInfo } from "@/components/cms/SiteInfoContext";
+import type { BrandName } from "@/lib/brand";
 
 const ICONS = [CheckCircle2, ShieldCheck, Sparkles, Rocket];
 
@@ -27,23 +29,25 @@ function BrandMark() {
   );
 }
 
-// Renders the section title as-is, except any "YashOrbit" mention is swapped for the
+// Renders the section title as-is, except any brand-name mention is swapped for the
 // icon + two-tone wordmark, matching the treatment already used in Header/Footer.
-function renderTitle(title: string) {
-  const idx = title.indexOf("YashOrbit");
+function renderTitle(title: string, brand: BrandName) {
+  const name = brand.namePrimary + brand.nameAccent;
+  const idx = name ? title.indexOf(name) : -1;
   if (idx === -1) return title;
   return (
     <>
       {title.slice(0, idx)}
       <BrandMark />
-      <span className="text-foreground">Yash</span>
-      <span className="text-primary">Orbit</span>
-      {title.slice(idx + "YashOrbit".length)}
+      <span className="text-foreground">{brand.namePrimary}</span>
+      <span className="text-primary">{brand.nameAccent}</span>
+      {title.slice(idx + name.length)}
     </>
   );
 }
 
 export default function FeatureHighlights({ title, features }: FeatureHighlightsProps) {
+  const { brand } = useSiteInfo();
   // When `title` renders its own h3, feature items nest one level deeper as h4.
   // When there's no local title, the items sit directly under the page's own
   // section heading (h2) elsewhere, so they need to be h3 themselves.
@@ -51,7 +55,7 @@ export default function FeatureHighlights({ title, features }: FeatureHighlights
 
   return (
     <div id="features">
-      {title && <h3 className="text-xl font-bold mb-6 text-foreground">{renderTitle(title)}</h3>}
+      {title && <h3 className="text-xl font-bold mb-6 text-foreground">{renderTitle(title, brand)}</h3>}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         {features.map((f, i) => {
           const Icon = ICONS[i % ICONS.length];

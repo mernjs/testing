@@ -28,6 +28,8 @@ import { createSmmsSession, setSmmsSessionCookie, clearSmmsSessionCookie } from 
 import { hasOtsAccess } from "@/lib/ots-roles";
 import { createOtsSession, setOtsSessionCookie, clearOtsSessionCookie } from "@/lib/ots-auth";
 import { createSeoSession, setSeoSessionCookie, clearSeoSessionCookie } from "@/lib/seo-auth";
+import { hasCmsAccess } from "@/lib/cms-roles";
+import { createCmsSession, setCmsSessionCookie, clearCmsSessionCookie } from "@/lib/cms-auth";
 import { createHubSession, setHubSessionCookie, clearHubSessionCookie } from "@/lib/hub-auth";
 
 /**
@@ -60,7 +62,7 @@ import { createHubSession, setHubSessionCookie, clearHubSessionCookie } from "@/
  * applicant records, structurally outside this system.
  */
 
-export type SsoModule = "hrms" | "pms" | "prms" | "tms" | "messenger" | "lms" | "admin" | "hub" | "fms" | "sop" | "seo" | "dlms" | "aibots" | "smms" | "ots";
+export type SsoModule = "hrms" | "pms" | "prms" | "tms" | "messenger" | "lms" | "admin" | "hub" | "fms" | "sop" | "seo" | "dlms" | "aibots" | "smms" | "ots" | "cms";
 
 interface ModuleEntry {
   key: SsoModule;
@@ -133,6 +135,14 @@ const MODULES: ModuleEntry[] = [
     clearCookie: clearSeoSessionCookie,
     collection: "seo_sessions",
     hasAccess: (roles) => hasSeoAccess(roles),
+  },
+  {
+    key: "cms",
+    create: createCmsSession,
+    setCookie: setCmsSessionCookie,
+    clearCookie: clearCmsSessionCookie,
+    collection: "cms_sessions",
+    hasAccess: (roles) => hasCmsAccess(roles),
   },
   {
     key: "dlms",

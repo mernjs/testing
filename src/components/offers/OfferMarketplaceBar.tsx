@@ -2,15 +2,16 @@
 
 import { Search, X } from "lucide-react";
 import { OFFER_TYPES, type OfferType } from "@/lib/offers/constants";
+import { useText } from "@/components/cms/TextContext";
 
 export type MarketplaceSort = "featured" | "ending" | "discount" | "popular";
 
-const SORTS: { value: MarketplaceSort; label: string }[] = [
-  { value: "featured", label: "Featured" },
-  { value: "ending", label: "Ending soonest" },
-  { value: "discount", label: "Biggest discount" },
-  { value: "popular", label: "Most claimed" },
-];
+const SORTS = (tx: (key: string) => string): { value: MarketplaceSort; label: string }[] => ([
+  { value: "featured", label: tx("offers.offerMarketplaceBar.featured-2") },
+  { value: "ending", label: tx("offers.offerMarketplaceBar.ending-soonest") },
+  { value: "discount", label: tx("offers.offerMarketplaceBar.biggest-discount") },
+  { value: "popular", label: tx("offers.offerMarketplaceBar.most-claimed") },
+]);
 
 /**
  * Filter / search / sort strip for the offer marketplace. Type chips only show
@@ -36,6 +37,7 @@ export default function OfferMarketplaceBar({
   onSort: (s: MarketplaceSort) => void;
   total: number;
 }) {
+  const tx = useText();
   const available = OFFER_TYPES.filter((t) => (counts[t.value] ?? 0) > 0);
 
   return (
@@ -47,7 +49,7 @@ export default function OfferMarketplaceBar({
             <input
               value={query}
               onChange={(e) => onQuery(e.target.value)}
-              placeholder="Search offers — course, developer hiring, AI, app…"
+              placeholder={tx("offers.offerMarketplaceBar.search-offers-course-developer-hiring-ai")}
               className="h-10 w-full rounded-full border border-border bg-background pl-9 pr-9 text-sm outline-none focus:border-ring"
               aria-label="Search offers"
             />
@@ -63,7 +65,7 @@ export default function OfferMarketplaceBar({
             className="h-10 rounded-full border border-border bg-background px-4 text-sm outline-none focus:border-ring"
             aria-label="Sort offers"
           >
-            {SORTS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+            {SORTS(tx).map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
           </select>
         </div>
 
@@ -73,7 +75,7 @@ export default function OfferMarketplaceBar({
             onClick={() => onType(null)}
             className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${type === null ? "border-primary bg-primary text-primary-foreground" : "border-border/60 text-foreground hover:border-primary hover:text-primary"}`}
           >
-            All offers <span className="opacity-70">{total}</span>
+            {tx("offers.offerMarketplaceBar.all-offers")}<span className="opacity-70">{total}</span>
           </button>
           {available.map((t) => (
             <button

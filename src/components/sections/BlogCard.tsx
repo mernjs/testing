@@ -5,7 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { ArrowRight, Calendar, Clock, CheckCircle2 } from "lucide-react";
-import type { BlogPostMeta } from "@/lib/blog";
+import type { BlogPostMeta } from "@/types/content";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
 interface BlogCardProps {
   post: BlogPostMeta;
@@ -17,6 +18,7 @@ function formatDate(dateStr: string) {
 }
 
 export default function BlogCard({ post, index = 0 }: BlogCardProps) {
+  const l = useUiLabels();
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
   const springConfig = { stiffness: 200, damping: 20, mass: 0.5 };
@@ -95,7 +97,7 @@ export default function BlogCard({ post, index = 0 }: BlogCardProps) {
 
           <div className="pt-6 border-t border-border/50 mt-auto">
             <span className="inline-flex items-center gap-2 text-sm font-bold text-foreground group-hover/card:text-primary group-hover/card:gap-3 transition-all">
-              Read Article <ArrowRight className="w-4 h-4 group-hover/card:translate-x-1 transition-transform" />
+              {l.readArticle} <ArrowRight className="w-4 h-4 group-hover/card:translate-x-1 transition-transform" />
             </span>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Check, MessagesSquare, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useChat, type ChatSessionSummary } from "@/components/chat/ChatProvider";
+import { useText } from "@/components/cms/TextContext";
 
 function startOfDay(d: Date): number {
   const x = new Date(d);
@@ -59,6 +60,7 @@ function SessionRow({
   onRename: (title: string) => void;
   onDelete: () => void;
 }) {
+  const tx = useText();
   const [editing, setEditing] = React.useState(false);
   const [confirmDelete, setConfirmDelete] = React.useState(false);
   const [draft, setDraft] = React.useState(session.title);
@@ -103,20 +105,18 @@ function SessionRow({
   if (confirmDelete) {
     return (
       <div className="flex flex-col gap-2 rounded-xl border border-destructive/40 bg-destructive/5 px-3 py-2.5">
-        <p className="text-xs font-medium text-foreground">Delete this conversation?</p>
+        <p className="text-xs font-medium text-foreground">{tx("chat.chatSidebar.delete-this-conversation")}</p>
         <div className="flex gap-1.5">
           <button
             onClick={onDelete}
             className="rounded-lg bg-destructive px-2.5 py-1 text-xs font-semibold text-white hover:bg-destructive/90"
           >
-            Delete
-          </button>
+            {tx("chat.chatSidebar.delete")}</button>
           <button
             onClick={() => setConfirmDelete(false)}
             className="rounded-lg px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-muted"
           >
-            Cancel
-          </button>
+            {tx("chat.chatSidebar.cancel")}</button>
         </div>
       </div>
     );
@@ -168,6 +168,7 @@ function SessionRow({
 }
 
 export function ChatSidebar({ onNavigate }: { onNavigate?: () => void }) {
+  const tx = useText();
   const { sessions, activeSessionId, newConversation, switchSession, renameSession, deleteSession } = useChat();
   const [query, setQuery] = React.useState("");
 
@@ -187,8 +188,7 @@ export function ChatSidebar({ onNavigate }: { onNavigate?: () => void }) {
         className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-yashorbit-coral px-3 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition-all hover:shadow-md hover:shadow-primary/30 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/40"
       >
         <Plus className="size-4" aria-hidden />
-        New chat
-      </button>
+        {tx("chat.chatSidebar.new-chat")}</button>
 
       {sessions.length > 3 && (
         <div className="relative">
@@ -196,7 +196,7 @@ export function ChatSidebar({ onNavigate }: { onNavigate?: () => void }) {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search conversations"
+            placeholder={tx("chat.chatSidebar.search-conversations")}
             aria-label="Search conversations"
             className="h-9 w-full rounded-xl border border-border/50 bg-background pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
           />
@@ -210,12 +210,11 @@ export function ChatSidebar({ onNavigate }: { onNavigate?: () => void }) {
               <MessagesSquare className="size-5" aria-hidden />
             </div>
             <p className="text-xs text-muted-foreground">
-              Your conversations from this browser will appear here.
-            </p>
+              {tx("chat.chatSidebar.your-conversations-from-this-browser-wil")}</p>
           </div>
         ) : filtered.length === 0 ? (
           <p className="px-3 py-6 text-center text-xs text-muted-foreground">
-            No conversations match “{query}”.
+            {tx("chat.chatSidebar.no-conversations-match")}{query}”.
           </p>
         ) : (
           groups.map((group) => (
@@ -242,8 +241,7 @@ export function ChatSidebar({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       <p className="px-2 text-[11px] leading-tight text-muted-foreground/60">
-        History is stored for this browser only — no account needed.
-      </p>
+        {tx("chat.chatSidebar.history-is-stored-for-this-browser-only-")}</p>
     </div>
   );
 }
@@ -251,6 +249,7 @@ export function ChatSidebar({ onNavigate }: { onNavigate?: () => void }) {
 /** Mobile slide-over wrapper, mirroring the pattern in Header.tsx.
  * Mounted only while open (wrap in <AnimatePresence>). */
 export function ChatSidebarDrawer({ onClose }: { onClose: () => void }) {
+  const tx = useText();
   return (
     <div className="lg:hidden">
       <motion.div
@@ -268,7 +267,7 @@ export function ChatSidebarDrawer({ onClose }: { onClose: () => void }) {
         className="fixed inset-y-0 left-0 z-[71] flex w-[86%] max-w-xs flex-col border-r border-border bg-background shadow-2xl"
       >
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <span className="text-sm font-bold text-foreground">Chat history</span>
+          <span className="text-sm font-bold text-foreground">{tx("chat.chatSidebar.chat-history")}</span>
           <button
             onClick={onClose}
             aria-label="Close history"

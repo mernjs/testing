@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getActiveCampaignForPage, getUpcomingCampaignForPage, type OfferCampaign } from "@/lib/offers/campaigns";
 import { getPopupTemplateMeta, audienceForPath } from "@/lib/offers/constants";
-import { whatsapp, phone } from "@/lib/contact";
+import { getSiteInfo, type SiteInfo } from "@/lib/cms/site-info";
 
-function resolveCtaHref(actionType: string, actionValue: string): string {
-  if (actionType === "whatsapp") return whatsapp.href;
-  if (actionType === "call") return phone.href;
+function resolveCtaHref(contact: SiteInfo["contact"], actionType: string, actionValue: string): string {
+  if (actionType === "whatsapp") return contact.whatsappHref;
+  if (actionType === "call") return contact.phoneHref;
   return actionValue || "/offers";
 }
 
@@ -19,7 +19,7 @@ function resolveCtaHref(actionType: string, actionValue: string): string {
  * Notify Me form). Everything else the admin configured — discount text, countdown toggle,
  * close button, popup trigger/frequency/template emoji — carries over unchanged.
  */
-function buildDisplay(campaign: OfferCampaign, phase: "live" | "upcoming") {
+function buildDisplay(campaign: OfferCampaign, phase: "live" | "upcoming", contact: SiteInfo["contact"]) {
   const display = campaign.display;
   const upcoming = phase === "upcoming";
 
@@ -28,7 +28,7 @@ function buildDisplay(campaign: OfferCampaign, phase: "live" | "upcoming") {
         message: upcoming ? `${campaign.name} — coming soon` : display.strip.message || campaign.name,
         discountText: display.strip.discountText,
         ctaText: upcoming ? "Notify Me" : display.strip.ctaText,
-        ctaHref: upcoming ? "/offers" : resolveCtaHref(display.strip.ctaActionType, display.strip.ctaActionValue),
+        ctaHref: upcoming ? "/offers" : resolveCtaHref(contact, display.strip.ctaActionType, display.strip.ctaActionValue),
         showCountdown: display.strip.showCountdown,
         allowClose: display.strip.allowClose,
       }
@@ -41,7 +41,7 @@ function buildDisplay(campaign: OfferCampaign, phase: "live" | "upcoming") {
         emoji: templateMeta.emoji,
         heading: upcoming ? "Coming Soon" : templateMeta.heading,
         ctaText: upcoming ? "Notify Me" : display.popup.ctaText,
-        ctaHref: upcoming ? "/offers" : resolveCtaHref(display.popup.ctaActionType, display.popup.ctaActionValue),
+        ctaHref: upcoming ? "/offers" : resolveCtaHref(contact, display.popup.ctaActionType, display.popup.ctaActionValue),
         showCountdown: display.popup.showCountdown,
         trigger: { type: display.popup.triggerType, value: display.popup.triggerValue },
         frequency: display.popup.frequency,
@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
     }
     if (!campaign) return NextResponse.json({ active: false, phase: null, serverTime: Date.now() });
 
-    const { strip, popup } = buildDisplay(campaign, phase);
+    const { strip, popup } = buildDisplay(campaign, phase, (await getSiteInfo()).contact);
     if (!strip && !popup) return NextResponse.json({ active: false, phase: null, serverTime: Date.now() });
 
     const base = {

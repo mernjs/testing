@@ -1,69 +1,14 @@
-import type { Metadata } from "next";
-import { withSeoOverrides } from "@/lib/seo-panel/public";
-import ProductsContent from "./Content";
-import { socialMetadata, defaultOgImage } from "@/lib/seo";
-import { PRODUCTS_DATA } from "@/lib/products-data";
+import CmsPageView from "@/components/cms/CmsPageView";
+import { CollectionsProvider } from "@/components/cms/CollectionsContext";
+import { cmsPageMetadata, requirePublicPage } from "@/lib/cms/page-route";
+import { getRecords } from "@/lib/cms/collections/store";
 
-const title = "Our SaaS Product — AI-Powered Enterprise Application Ecosystem | YashOrbit";
-const description =
-  "Explore YashOrbit's complete ecosystem of 15 specialized, AI-powered enterprise products spanning HRMS, PMS, PRMS, TMS, AI Bots Studio, Sales CRM, SEO Intelligence, and Online Examination systems.";
 const path = "/services/our-saas-product";
 
-const baseMetadata: Metadata = {
-  title,
-  description,
-  keywords: [
-    "YashOrbit SaaS Product",
-    "Enterprise AI Applications",
-    "AI SaaS Platform",
-    "HRMS Software",
-    "Project Management System",
-    "Procurement Software",
-    "AI Bots Studio",
-    "Sales CRM",
-    "SEO Software",
-    "Online Assessment Engine",
-    "Single Sign-On Enterprise Suite",
-    "AI Business Software",
-  ],
-  alternates: { canonical: path },
-  ...socialMetadata({
-    title,
-    description,
-    path,
-    image: defaultOgImage,
-    imageAlt: "YashOrbit Our SaaS Product — AI-Powered Enterprise Application Ecosystem",
-  }),
-};
+export const generateMetadata = () => cmsPageMetadata(path);
 
-export const generateMetadata = () => withSeoOverrides("/services/our-saas-product", baseMetadata);
-
-export default function OurSaasProductPage() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: "YashOrbit AI-Powered Enterprise Products",
-    description: description,
-    itemListElement: PRODUCTS_DATA.map((product, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      item: {
-        "@type": "Product",
-        name: product.name,
-        description: product.shortDescription,
-        category: product.category,
-        url: `https://yashorbit.com/services/our-saas-product#${product.slug}`,
-      },
-    })),
-  };
-
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <ProductsContent />
-    </>
-  );
+/** The product catalogue page: provides the products collection (only this page needs it) around the CMS sections. */
+export default async function OurSaasProductPage() {
+  const [page, productRecords] = await Promise.all([requirePublicPage(path), getRecords("products")]);
+  return <CmsPageView page={page} wrapSections={(node) => <CollectionsProvider snapshot={{ products: productRecords }}>{node}</CollectionsProvider>} />;
 }

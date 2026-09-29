@@ -2,16 +2,18 @@
 
 import { motion } from "framer-motion";
 import { MousePointerClick, FileText, PhoneCall, BadgePercent, Rocket } from "lucide-react";
+import { useText } from "@/components/cms/TextContext";
 
-const STEPS = [
-  { title: "Choose Offer", description: "Pick the service, training or hiring offer that fits you.", icon: MousePointerClick },
-  { title: "Submit Details", description: "A short form — no unnecessary questions.", icon: FileText },
-  { title: "Get Consultation", description: "Our team reaches out to confirm scope and eligibility.", icon: PhoneCall },
-  { title: "Apply Discount", description: "Your coupon and offer discount are validated and applied.", icon: BadgePercent },
-  { title: "Start Your Journey", description: "Kick off the project, program or hiring engagement.", icon: Rocket },
-];
+const STEPS = (tx: (key: string) => string) => ([
+  { title: tx("offers.howItWorksSection.choose-offer"), description: tx("offers.howItWorksSection.pick-the-service-training-or-hiring-offe"), icon: MousePointerClick },
+  { title: tx("offers.howItWorksSection.submit-details"), description: tx("offers.howItWorksSection.a-short-form-no-unnecessary-questions"), icon: FileText },
+  { title: tx("offers.howItWorksSection.get-consultation"), description: tx("offers.howItWorksSection.our-team-reaches-out-to-confirm-scope-an"), icon: PhoneCall },
+  { title: tx("offers.howItWorksSection.apply-discount"), description: tx("offers.howItWorksSection.your-coupon-and-offer-discount-are-valid"), icon: BadgePercent },
+  { title: tx("offers.howItWorksSection.start-your-journey"), description: tx("offers.howItWorksSection.kick-off-the-project-program-or-hiring-e"), icon: Rocket },
+]);
 
 export default function HowItWorksSection() {
+  const tx = useText();
   return (
     <section className="py-20 sm:py-24 bg-background">
       <div className="mx-auto max-w-6xl px-6 lg:px-8">
@@ -22,10 +24,9 @@ export default function HowItWorksSection() {
           transition={{ duration: 0.5 }}
           className="mb-12 text-center text-3xl font-black tracking-tight text-foreground sm:text-4xl"
         >
-          How the offer works
-        </motion.h2>
+          {tx("offers.howItWorksSection.how-the-offer-works")}</motion.h2>
         <div className="grid gap-6 sm:grid-cols-5">
-          {STEPS.map((step, i) => (
+          {STEPS(tx).map((step, i) => (
             <motion.div
               key={step.title}
               initial={{ opacity: 0, y: 20 }}

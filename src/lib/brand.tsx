@@ -1,19 +1,48 @@
 import React from "react";
 
+/** The two-tone wordmark: `namePrimary` in the surrounding text colour, `nameAccent` in the brand accent. */
+export interface BrandName {
+  namePrimary: string;
+  nameAccent: string;
+}
+
 /**
- * Splits a string on every "YashOrbit" occurrence and re-wraps each one in the
- * same two-tone treatment used for the logo wordmark (Yash in the surrounding
- * text color, Orbit in the brand accent). Strings without a match pass through
+ * The internal admin panels' wordmark (LMS, HRMS, FMS … sign-in screens and
+ * sidebars). The PUBLIC website never uses this — its sections get the brand
+ * from CMS → Site Identity (see `SectionRenderContext.brand`).
+ */
+export const PANEL_BRAND: BrandName = { namePrimary: "Yash", nameAccent: "Orbit" };
+
+const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+function wordmark(brand: BrandName, key: number) {
+  return <span key={key}><span className="text-foreground">{brand.namePrimary}</span><span className="text-primary">{brand.nameAccent}</span></span>;
+}
+
+/**
+ * Splits a string on every mention of the brand name and re-wraps each one in
+ * the two-tone wordmark treatment. Strings without a match pass through
  * unchanged, so this is safe to call on any text.
  */
-export function brandify(text: string): React.ReactNode {
-  const parts = text.split(/(YashOrbit)/g);
+export function brandify(text: string, brand: BrandName = PANEL_BRAND): React.ReactNode {
+  const name = brand.namePrimary + brand.nameAccent;
+  if (!name) return text;
+  const parts = text.split(new RegExp(`(${escape(name)})`, "g"));
   if (parts.length === 1) return text;
-  return parts.map((part, i) =>
-    part === "YashOrbit" ? (
-      <span key={i}><span className="text-foreground">Yash</span><span className="text-primary">Orbit</span></span>
-    ) : (
-      part
-    )
-  );
+  return parts.map((part, i) => (part === name ? wordmark(brand, i) : part));
+}
+
+/** How CMS text marks a brand-styled mention (a plain brand name stays plain). `[[YashOrbit]]` is the older spelling. */
+export const BRAND_TOKEN = "[[brand]]";
+const TOKEN_RE = /(\[\[brand\]\]|\[\[YashOrbit\]\])/g;
+
+/**
+ * Like `brandify`, but only for occurrences written as the brand token — so
+ * CMS text can mix styled and plain mentions in one paragraph. Renders the
+ * same markup as `brandify`.
+ */
+export function brandTokens(text: string, brand: BrandName): React.ReactNode {
+  if (!TOKEN_RE.test(text)) return text;
+  TOKEN_RE.lastIndex = 0;
+  return text.split(TOKEN_RE).map((part, i) => (part === BRAND_TOKEN || part === "[[YashOrbit]]" ? wordmark(brand, i) : part));
 }

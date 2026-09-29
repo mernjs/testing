@@ -1,5 +1,6 @@
 "use client";
 
+import { useText } from "@/components/cms/TextContext";
 import * as React from "react";
 
 export interface ChatCitation {
@@ -90,13 +91,13 @@ const DEFAULT_VOICE: VoicePublicConfig = {
   mode: "elevenlabs",
 };
 
-const DEFAULT_PRECHAT: PreChatFormConfig = {
+const DEFAULT_PRECHAT = (tx: (key: string) => string): PreChatFormConfig => ({
   enabled: false,
-  title: "Before we start",
+  title: tx("chat.chatProvider.before-we-start"),
   description: "",
   fields: { name: "required", email: "required", phone: "optional", service: "required" },
   consentText: "",
-};
+});
 
 type ChatStatus = "idle" | "loading" | "streaming" | "error";
 
@@ -133,15 +134,15 @@ export function useChat(): ChatContextValue {
   return ctx;
 }
 
-const DEFAULT_CONFIG: ChatPublicConfig = {
+const DEFAULT_CONFIG = (tx: (key: string) => string): ChatPublicConfig => ({
   available: true,
   demo: false,
-  welcomeMessage: "Hi! Ask me anything about YashOrbit.",
+  welcomeMessage: tx("chat.chatProvider.hi-ask-me-anything-about-yashorbit"),
   suggestedQuestions: [],
   maxMessageChars: 2000,
-  preChat: DEFAULT_PRECHAT,
+  preChat: DEFAULT_PRECHAT(tx),
   voice: DEFAULT_VOICE,
-};
+});
 
 function uid(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -179,6 +180,7 @@ export function ChatProvider({
   /** When true, also loads the browser's full conversation list for the sidebar. */
   withHistorySidebar?: boolean;
 }) {
+  const tx = useText();
   const [messages, setMessages] = React.useState<ChatMessage[]>([]);
   const [status, setStatus] = React.useState<ChatStatus>("loading");
   const [error, setError] = React.useState<string | null>(null);
@@ -216,14 +218,14 @@ export function ChatProvider({
         if (withHistorySidebar) requests.push(fetch("/api/chat/sessions", { cache: "no-store" }));
         const [cfgRes, histRes, sessRes] = await Promise.all(requests);
 
-        const cfg = cfgRes.ok ? await cfgRes.json() : DEFAULT_CONFIG;
+        const cfg = cfgRes.ok ? await cfgRes.json() : DEFAULT_CONFIG(tx);
         const hist = histRes.ok ? await histRes.json() : { messages: [], sessionId: null };
         if (cancelled) return;
 
         setConfig({
-          ...DEFAULT_CONFIG,
+          ...DEFAULT_CONFIG(tx),
           ...cfg,
-          preChat: { ...DEFAULT_PRECHAT, ...cfg.preChat },
+          preChat: { ...DEFAULT_PRECHAT(tx), ...cfg.preChat },
           voice: { ...DEFAULT_VOICE, ...cfg.voice },
         });
         setIdentified(Boolean(cfg.identified));
@@ -235,7 +237,7 @@ export function ChatProvider({
           if (!cancelled) setSessions(sessData.sessions ?? []);
         }
       } catch {
-        if (!cancelled) setConfig(DEFAULT_CONFIG);
+        if (!cancelled) setConfig(DEFAULT_CONFIG(tx));
       } finally {
         if (!cancelled) {
           setStatus("idle");
@@ -246,7 +248,7 @@ export function ChatProvider({
     return () => {
       cancelled = true;
     };
-  }, [withHistorySidebar]);
+  }, [withHistorySidebar, tx]);
 
   const send = React.useCallback(
     (raw: string, opts?: SendOptions) => {

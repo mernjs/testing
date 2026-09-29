@@ -26,45 +26,46 @@ import { PUBLIC_AUDIENCE_TABS, estimateSavings, type PublicAudienceTabKey, type 
 import type { SerializedCampaign } from "@/lib/offers/campaigns";
 import type { SerializedOffer } from "@/lib/offers/offers";
 import type { CategorySlug } from "@/lib/categories";
+import { useText } from "@/components/cms/TextContext";
 
-const CATEGORY_META: Record<CategorySlug, { id: string; icon: typeof Code2; title: string; description: string }> = {
+const CATEGORY_META = (tx: (key: string) => string): Record<CategorySlug, { id: string; icon: typeof Code2; title: string; description: string }> => ({
   "software-development": {
     id: "software-development-offers",
     icon: Code2,
-    title: "Software Development Offers",
-    description: "Web, mobile, AI and cloud engineering — for business clients ready to build.",
+    title: tx("offers.content.software-development-offers"),
+    description: tx("offers.content.web-mobile-ai-and-cloud-engineering-for-"),
   },
   "digital-marketing": {
     id: "digital-marketing-offers",
     icon: Megaphone,
-    title: "Digital Marketing Offers",
-    description: "SEO, ads, social media & growth strategies — designed for business growth.",
+    title: tx("offers.content.digital-marketing-offers"),
+    description: tx("offers.content.seo-ads-social-media-growth-strategies-d"),
   },
   "ai-automations": {
     id: "ai-automation-offers",
     icon: Bot,
-    title: "AI & Automation Offers",
-    description: "Automate your business with AI agents, chatbots, and intelligent workflows.",
+    title: tx("offers.content.ai-automation-offers"),
+    description: tx("offers.content.automate-your-business-with-ai-agents-ch"),
   },
   "resource-augmentation": {
     id: "hiring-offers",
     icon: Users,
-    title: "Developer Hiring Offers",
-    description: "Hire pre-vetted developers — individual, dedicated team, or project-based.",
+    title: tx("offers.content.developer-hiring-offers"),
+    description: tx("offers.content.hire-pre-vetted-developers-individual-de"),
   },
   "industrial-training": {
     id: "training-offers",
     icon: GraduationCap,
-    title: "Student Training Offers",
-    description: "Launch your tech career for less — industry-focused, mentor-led programs.",
+    title: tx("offers.content.student-training-offers"),
+    description: tx("offers.content.launch-your-tech-career-for-less-industr"),
   },
   "internship-program": {
     id: "internship-offers",
     icon: Briefcase,
-    title: "Internship Offers",
-    description: "Turn your skills into real experience — live projects, mentorship, certificate.",
+    title: tx("offers.content.internship-offers"),
+    description: tx("offers.content.turn-your-skills-into-real-experience-li"),
   },
-};
+});
 
 const DEFAULT_ORDER: CategorySlug[] = [
   "software-development",
@@ -109,6 +110,7 @@ export default function OffersContent({
   /** Audience tab implied by the signed-in portal role (server-decided). */
   viewerTab: PublicAudienceTabKey | null;
 }) {
+  const tx = useText();
   const [tab, setTabState] = useState<PublicAudienceTabKey | null>(viewerTab);
   const [offers, setOffers] = useState<SerializedOffer[]>(initialOffers);
   const [detailOffer, setDetailOffer] = useState<SerializedOffer | null>(null);
@@ -240,7 +242,7 @@ export default function OffersContent({
 
   function handleSelectAudience(key: PublicAudienceTabKey) {
     setTab(key);
-    const id = CATEGORY_META[TAB_PRIORITY[key][0]].id;
+    const id = CATEGORY_META(tx)[TAB_PRIORITY[key][0]].id;
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -285,18 +287,15 @@ export default function OffersContent({
     <div className="flex flex-col min-h-screen selection:bg-primary/30 overflow-x-clip">
       {justLive && !campaignEnded && (
         <div className="border-b border-primary/30 bg-primary/10 px-4 py-3 text-center text-sm font-semibold text-primary">
-          🎉 {campaign?.name} just went live — claim your offers before they&apos;re gone!
-        </div>
+          🎉 {campaign?.name}{tx("offers.content.just-went-live-claim-your-offers-before-")}</div>
       )}
 
       {campaignEnded && (
         <div className="border-b border-destructive/30 bg-destructive/10 px-4 py-3 text-center text-sm font-medium text-destructive">
-          This campaign has just ended.{" "}
+          {tx("offers.content.this-campaign-has-just-ended")}{" "}
           <button type="button" onClick={() => window.location.reload()} className="underline underline-offset-2">
-            Refresh
-          </button>{" "}
-          to see what&apos;s live next.
-        </div>
+            {tx("offers.content.refresh")}</button>{" "}
+          {tx("offers.content.to-see-what-s-live-next")}</div>
       )}
 
       <OffersHero campaign={campaign} onSelectAudience={handleSelectAudience} onCampaignEnd={() => setCampaignEnded(true)} />
@@ -329,7 +328,7 @@ export default function OffersContent({
       {refining && (
         <section className="bg-background py-14">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <p className="mb-6 text-sm font-semibold text-muted-foreground">{results.length} {results.length === 1 ? "offer" : "offers"} found</p>
+            <p className="mb-6 text-sm font-semibold text-muted-foreground">{results.length} {results.length === 1 ? "offer" : "offers"}{tx("offers.content.found")}</p>
             {results.length > 0 ? (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {results.map((o) => (
@@ -338,9 +337,9 @@ export default function OffersContent({
               </div>
             ) : (
               <div className="rounded-2xl border border-dashed border-border/60 p-10 text-center">
-                <p className="font-semibold text-foreground">No offers match that yet.</p>
-                <p className="mt-1 text-sm text-muted-foreground">Try another category, or tell us what you need and we&apos;ll build you a custom offer.</p>
-                <button type="button" onClick={() => { setTypeFilter(null); setQuery(""); setSort("featured"); }} className="mt-4 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground">Clear filters</button>
+                <p className="font-semibold text-foreground">{tx("offers.content.no-offers-match-that-yet")}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{tx("offers.content.try-another-category-or-tell-us-what-you")}</p>
+                <button type="button" onClick={() => { setTypeFilter(null); setQuery(""); setSort("featured"); }} className="mt-4 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground">{tx("offers.content.clear-filters")}</button>
               </div>
             )}
           </div>
@@ -348,7 +347,7 @@ export default function OffersContent({
       )}
 
       {!refining && categories.map((category, i) => {
-        const meta = CATEGORY_META[category];
+        const meta = CATEGORY_META(tx)[category];
         const categoryOffers = visibleOffers.filter((o) => o.category === category);
         return (
           <CategoryOffersSection
@@ -373,7 +372,7 @@ export default function OffersContent({
       <FinalCtaSection
         hasCampaign={Boolean(campaign)}
         campaignId={campaign?._id}
-        onExploreOffers={() => document.getElementById(CATEGORY_META[DEFAULT_ORDER[0]].id)?.scrollIntoView({ behavior: "smooth" })}
+        onExploreOffers={() => document.getElementById(CATEGORY_META(tx)[DEFAULT_ORDER[0]].id)?.scrollIntoView({ behavior: "smooth" })}
       />
 
       <StickyMobileClaimBar topOffer={dealOfTheDay ?? visibleOffers[0] ?? null} onClaim={handleClaim} />

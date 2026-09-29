@@ -6,6 +6,7 @@ import OfferCard from "@/components/offers/OfferCard";
 import { PUBLIC_AUDIENCE_TABS, type PublicAudienceTabKey } from "@/lib/offers/constants";
 import { claimProgress, nowMs } from "@/lib/offers/live";
 import type { SerializedOffer } from "@/lib/offers/offers";
+import { useText } from "@/components/cms/TextContext";
 
 export interface OffersViewer {
   firstName: string | null;
@@ -47,6 +48,7 @@ export default function PersonalizedOffers({
   onExpire: (offer: SerializedOffer) => void;
   onPersonalizedView: (tab: PublicAudienceTabKey | null) => void;
 }) {
+  const tx = useText();
   // `nowMs()` is only meaningful client-side; evaluating it after mount keeps SSR/hydration identical.
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
@@ -96,8 +98,7 @@ export default function PersonalizedOffers({
           <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 px-5 py-4">
             <Wallet className="size-5 text-primary" />
             <p className="text-sm text-foreground">
-              {viewer.firstName ? `${viewer.firstName}, you` : "You"} have <span className="font-bold text-primary">{viewer.credits.toLocaleString("en-IN")} YashOrbit Credits</span> — apply them on top of any offer while claiming.
-            </p>
+              {viewer.firstName ? `${viewer.firstName}, you` : "You"}{tx("offers.personalizedOffers.have")}<span className="font-bold text-primary">{viewer.credits.toLocaleString("en-IN")}{tx("offers.personalizedOffers.yashorbit-credits")}</span>{tx("offers.personalizedOffers.apply-them-on-top-of-any-offer-while-cla")}</p>
           </div>
         )}
 
@@ -127,8 +128,8 @@ export default function PersonalizedOffers({
             <div className="mb-6 flex items-start gap-3">
               <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/15"><Timer className="size-5 text-amber-600 dark:text-amber-400" /></div>
               <div>
-                <h2 className="text-xl font-black tracking-tight text-foreground sm:text-2xl">Ending soon</h2>
-                <p className="text-sm text-muted-foreground">These expire within 3 days — once the timer hits zero they&apos;re gone.</p>
+                <h2 className="text-xl font-black tracking-tight text-foreground sm:text-2xl">{tx("offers.personalizedOffers.ending-soon")}</h2>
+                <p className="text-sm text-muted-foreground">{tx("offers.personalizedOffers.these-expire-within-3-days-once-the-time")}</p>
               </div>
             </div>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

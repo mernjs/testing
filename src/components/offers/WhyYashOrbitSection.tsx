@@ -3,34 +3,36 @@
 import { Rocket, Handshake, Building2, Headphones } from "lucide-react";
 import StatsBand from "@/components/sections/StatsBand";
 import ChecklistGrid from "@/components/sections/ChecklistGrid";
+import { useText } from "@/components/cms/TextContext";
 
 // Same figures already shown on /about/our-mission and /about/success-stories —
 // reused verbatim here, never re-invented for this page.
-const REAL_STATS = [
-  { value: 12, suffix: "+", label: "Projects Shipped", icon: Rocket },
-  { value: 100, suffix: "%", label: "Client Satisfaction", icon: Handshake },
-  { value: 4, suffix: "+", label: "Industries Served", icon: Building2 },
-  { value: 24, suffix: "/7", label: "Support Availability", icon: Headphones },
-];
+const REAL_STATS = (tx: (key: string) => string) => ([
+  { value: 12, suffix: "+", label: tx("offers.whyYashOrbitSection.projects-shipped"), icon: Rocket },
+  { value: 100, suffix: "%", label: tx("offers.whyYashOrbitSection.client-satisfaction"), icon: Handshake },
+  { value: 4, suffix: "+", label: tx("offers.whyYashOrbitSection.industries-served"), icon: Building2 },
+  { value: 24, suffix: "/7", label: tx("offers.whyYashOrbitSection.support-availability"), icon: Headphones },
+]);
 
-const TRUST_ITEMS = [
-  { title: "Experienced Engineering Team", description: "Senior engineers, not a rotating pool of freelancers." },
-  { title: "Real Project Experience", description: "Every offer is backed by production-grade delivery, not a portfolio filler." },
-  { title: "Senior Mentorship", description: "Training and internship programs are led by working engineers." },
-  { title: "100% Code Ownership", description: "Full source and IP ownership on every software engagement." },
-  { title: "NDA Protection", description: "Your project details and data stay confidential, always." },
-  { title: "Transparent Engagement", description: "Clear scope, clear pricing, clear timelines — no hidden costs." },
-];
+const TRUST_ITEMS = (tx: (key: string) => string) => ([
+  { title: tx("offers.whyYashOrbitSection.experienced-engineering-team"), description: tx("offers.whyYashOrbitSection.senior-engineers-not-a-rotating-pool-of-") },
+  { title: tx("offers.whyYashOrbitSection.real-project-experience"), description: tx("offers.whyYashOrbitSection.every-offer-is-backed-by-production-grad") },
+  { title: tx("offers.whyYashOrbitSection.senior-mentorship"), description: tx("offers.whyYashOrbitSection.training-and-internship-programs-are-led") },
+  { title: tx("offers.whyYashOrbitSection.100-code-ownership"), description: tx("offers.whyYashOrbitSection.full-source-and-ip-ownership-on-every-so") },
+  { title: tx("offers.whyYashOrbitSection.nda-protection"), description: tx("offers.whyYashOrbitSection.your-project-details-and-data-stay-confi") },
+  { title: tx("offers.whyYashOrbitSection.transparent-engagement"), description: tx("offers.whyYashOrbitSection.clear-scope-clear-pricing-clear-timeline") },
+]);
 
 export default function WhyYashOrbitSection() {
+  const tx = useText();
   return (
     <>
-      <StatsBand title="Why YashOrbit?" description="A festival discount is only worth it if the work behind it is real." stats={REAL_STATS} />
+      <StatsBand title={tx("offers.whyYashOrbitSection.why-yashorbit")} description={tx("offers.whyYashOrbitSection.a-festival-discount-is-only-worth-it-if-")} stats={REAL_STATS(tx)} />
       <ChecklistGrid
         id="why-yashorbit"
-        title="Built for trust, not just discounts"
-        description="A steep discount can make anyone pause — here's exactly what backs every festival offer on this page."
-        items={TRUST_ITEMS}
+        title={tx("offers.whyYashOrbitSection.built-for-trust-not-just-discounts")}
+        description={tx("offers.whyYashOrbitSection.a-steep-discount-can-make-anyone-pause-h")}
+        items={TRUST_ITEMS(tx)}
         columns={3}
         tone="muted"
       />

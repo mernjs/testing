@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
 interface LeadSuccessStateProps {
   title?: string;
@@ -14,12 +15,14 @@ interface LeadSuccessStateProps {
 }
 
 export default function LeadSuccessState({
-  title = "Message sent!",
+  title: titleProp,
   description,
   onDismiss,
   compact = false,
   autoHideMs = 30_000,
 }: LeadSuccessStateProps) {
+  const l = useUiLabels();
+  const title = titleProp ?? l.messageSent;
   const [secondsLeft, setSecondsLeft] = useState(Math.round(autoHideMs / 1000));
 
   useEffect(() => {
@@ -113,7 +116,7 @@ export default function LeadSuccessState({
           onClick={onDismiss}
           className="font-semibold text-primary hover:underline underline-offset-4"
         >
-          Send another message
+          {l.sendAnother}
         </button>
       </motion.div>
     </motion.div>

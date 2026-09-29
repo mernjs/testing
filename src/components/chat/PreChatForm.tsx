@@ -6,14 +6,16 @@ import { ArrowRight, Bot, Loader2, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useChat, type PreChatFieldMode } from "@/components/chat/ChatProvider";
 import { CATEGORIES } from "@/lib/categories";
+import { useText } from "@/components/cms/TextContext";
 
-const TEXT_FIELD_META: { key: "name" | "email" | "phone"; label: string; type: string; placeholder: string }[] = [
-  { key: "name", label: "Name", type: "text", placeholder: "Jane Doe" },
-  { key: "email", label: "Email", type: "email", placeholder: "jane@company.com" },
-  { key: "phone", label: "Phone", type: "tel", placeholder: "+91 98765 43210" },
-];
+const TEXT_FIELD_META = (tx: (key: string) => string): { key: "name" | "email" | "phone"; label: string; type: string; placeholder: string }[] => ([
+  { key: "name", label: tx("chat.preChatForm.name"), type: "text", placeholder: tx("chat.preChatForm.jane-doe") },
+  { key: "email", label: tx("chat.preChatForm.email"), type: "email", placeholder: tx("chat.preChatForm.jane-company-com") },
+  { key: "phone", label: tx("chat.preChatForm.phone"), type: "tel", placeholder: "+91 98765 43210" },
+]);
 
 export function PreChatForm({ wide = false }: { wide?: boolean }) {
+  const tx = useText();
   const { config, identify } = useChat();
   const preChat = config?.preChat;
   const [values, setValues] = React.useState({ name: "", email: "", phone: "", service: "" });
@@ -22,7 +24,7 @@ export function PreChatForm({ wide = false }: { wide?: boolean }) {
 
   if (!preChat) return null;
 
-  const visibleTextFields = TEXT_FIELD_META.filter((f) => preChat.fields[f.key] !== "off");
+  const visibleTextFields = TEXT_FIELD_META(tx).filter((f) => preChat.fields[f.key] !== "off");
   const showService = preChat.fields.service !== "off";
 
   function set(key: string, value: string) {
@@ -114,8 +116,7 @@ export function PreChatForm({ wide = false }: { wide?: boolean }) {
           {showService && (
             <div className="flex flex-col gap-1">
               <label htmlFor="prechat-service" className="text-xs font-medium text-foreground">
-                Main Service
-                {preChat.fields.service === "required" && <span className="ml-0.5 text-primary">*</span>}
+                {tx("chat.preChatForm.main-service")}{preChat.fields.service === "required" && <span className="ml-0.5 text-primary">*</span>}
               </label>
               <select
                 id="prechat-service"
@@ -129,8 +130,7 @@ export function PreChatForm({ wide = false }: { wide?: boolean }) {
                 )}
               >
                 <option value="" disabled>
-                  What are you interested in?
-                </option>
+                  {tx("chat.preChatForm.what-are-you-interested-in")}</option>
                 {CATEGORIES.map((c) => (
                   <option key={c.slug} value={c.slug} className="text-foreground">
                     {c.label}
@@ -147,8 +147,7 @@ export function PreChatForm({ wide = false }: { wide?: boolean }) {
             className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-yashorbit-coral px-4 py-3 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition-all hover:shadow-md hover:shadow-primary/30 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/40 disabled:opacity-60"
           >
             {submitting ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <ArrowRight className="size-4" aria-hidden />}
-            Start chat
-          </button>
+            {tx("chat.preChatForm.start-chat")}</button>
 
           {preChat.consentText && (
             <p className="flex items-start gap-1.5 pt-1 text-[10px] leading-tight text-muted-foreground/70">

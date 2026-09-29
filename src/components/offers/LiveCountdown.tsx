@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Clock } from "lucide-react";
 import { nowMs, getUrgency, splitDuration, pad2, URGENCY_STYLES } from "@/lib/offers/live";
+import { useText } from "@/components/cms/TextContext";
 
 /**
  * Remaining time to `endDate`, ticking exactly on the second boundary and
@@ -91,11 +92,12 @@ function Unit({ value, label, animate, tone, onDark }: { value: number; label: s
 
 /** Presentational pill for callers that already own a `useRemaining` value (avoids a second timer per offer card). */
 export function CountdownPill({ remaining, className = "" }: { remaining: number; className?: string }) {
+  const tx = useText();
   const reduce = useReducedMotion();
   const urgency = getUrgency(remaining);
   const styles = URGENCY_STYLES[urgency.level];
   const { days, hours, minutes, seconds } = splitDuration(remaining);
-  if (urgency.level === "ended") return <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${styles.chip} ${className}`}>Offer ended</span>;
+  if (urgency.level === "ended") return <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${styles.chip} ${className}`}>{tx("offers.liveCountdown.offer-ended")}</span>;
   return (
     <span
       role="timer"
@@ -137,6 +139,7 @@ export default function LiveCountdown({
   onExpire?: () => void;
   className?: string;
 }) {
+  const tx = useText();
   const remaining = useRemaining(endDate, onExpire);
   const reduce = useReducedMotion();
 
@@ -152,7 +155,7 @@ export default function LiveCountdown({
   const aria = urgency.level === "ended" ? "Offer ended" : `${days} days ${hours} hours ${minutes} minutes remaining`;
 
   if (variant === "inline") {
-    if (urgency.level === "ended") return <span className={className}>Ended</span>;
+    if (urgency.level === "ended") return <span className={className}>{tx("offers.liveCountdown.ended")}</span>;
     return (
       <span className={`tabular-nums ${className}`} role="timer" aria-label={aria}>
         {days > 0 ? `${days}d ${hours}h ${minutes}m` : `${hours}h ${minutes}m ${pad2(seconds)}s`}
@@ -161,7 +164,7 @@ export default function LiveCountdown({
   }
 
   if (variant === "strip") {
-    if (urgency.level === "ended") return <span className={onDark ? "text-background/70" : "text-muted-foreground"}>Ended</span>;
+    if (urgency.level === "ended") return <span className={onDark ? "text-background/70" : "text-muted-foreground"}>{tx("offers.liveCountdown.ended")}</span>;
     const urgent = urgency.level === "critical" || urgency.level === "urgent";
     return (
       <span
@@ -180,7 +183,7 @@ export default function LiveCountdown({
   }
 
   if (variant === "pill") {
-    if (urgency.level === "ended") return <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${styles.chip} ${className}`}>Offer ended</span>;
+    if (urgency.level === "ended") return <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${styles.chip} ${className}`}>{tx("offers.liveCountdown.offer-ended")}</span>;
     return (
       <span
         role="timer"
@@ -195,7 +198,7 @@ export default function LiveCountdown({
 
   // boxes
   if (urgency.level === "ended") {
-    return <p className={`text-sm font-semibold ${onDark ? "text-white/70" : "text-muted-foreground"} ${className}`}>This offer has ended.</p>;
+    return <p className={`text-sm font-semibold ${onDark ? "text-white/70" : "text-muted-foreground"} ${className}`}>{tx("offers.liveCountdown.this-offer-has-ended")}</p>;
   }
 
   let elapsedPct: number | null = null;
@@ -209,10 +212,10 @@ export default function LiveCountdown({
     <div className={`flex flex-col items-center gap-3 ${className}`}>
       <p className={`text-xs font-semibold uppercase tracking-widest ${onDark ? "text-white/70" : "text-muted-foreground"}`}>{label ?? "Offer ends in"}</p>
       <div className="flex items-center gap-1.5 sm:gap-2.5" role="timer" aria-label={aria}>
-        {days > 0 && <Unit value={days} label="Days" animate={animate} tone={styles.box} onDark={onDark} />}
-        <Unit value={hours} label="Hours" animate={animate} tone={styles.box} onDark={onDark} />
-        <Unit value={minutes} label="Minutes" animate={animate} tone={styles.box} onDark={onDark} />
-        <Unit value={seconds} label="Seconds" animate={animate} tone={styles.box} onDark={onDark} />
+        {days > 0 && <Unit value={days} label={tx("offers.liveCountdown.days")} animate={animate} tone={styles.box} onDark={onDark} />}
+        <Unit value={hours} label={tx("offers.liveCountdown.hours")} animate={animate} tone={styles.box} onDark={onDark} />
+        <Unit value={minutes} label={tx("offers.liveCountdown.minutes")} animate={animate} tone={styles.box} onDark={onDark} />
+        <Unit value={seconds} label={tx("offers.liveCountdown.seconds")} animate={animate} tone={styles.box} onDark={onDark} />
       </div>
       {showUrgency && urgency.message && (
         <p className={`flex items-center gap-1.5 text-xs font-semibold ${styles.text}`}>
@@ -225,7 +228,7 @@ export default function LiveCountdown({
           <div className={`h-1.5 overflow-hidden rounded-full ${onDark ? "bg-white/15" : "bg-muted"}`}>
             <div className={`h-full rounded-full transition-[width] duration-1000 ease-linear ${styles.bar}`} style={{ width: `${elapsedPct}%` }} />
           </div>
-          <p className={`mt-1 text-[10px] uppercase tracking-wide ${onDark ? "text-white/60" : "text-muted-foreground"}`}>{Math.round(elapsedPct)}% of the offer window gone</p>
+          <p className={`mt-1 text-[10px] uppercase tracking-wide ${onDark ? "text-white/60" : "text-muted-foreground"}`}>{Math.round(elapsedPct)}{tx("offers.liveCountdown.of-the-offer-window-gone")}</p>
         </div>
       )}
     </div>

@@ -2,20 +2,32 @@
 
 import { motion } from "framer-motion";
 import { ExternalLink, Play, Sparkles, Zap } from "lucide-react";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
 interface LiveDemoSectionProps {
   demoUrl: string;
   heading?: string;
   description?: string;
   previewImage: string;
+  badge: string;
+  launchLabel: string;
+  newTabNote: string;
+  previewAlt: string;
 }
 
 export default function LiveDemoSection({
   demoUrl,
-  heading = "Try it yourself, right now",
-  description = "No sign-up walls, no sales call required — launch the live product and see it work with your own image.",
+  heading: headingProp,
+  description: descriptionProp,
   previewImage,
+  badge,
+  launchLabel,
+  newTabNote,
+  previewAlt,
 }: LiveDemoSectionProps) {
+  const l = useUiLabels();
+  const description = descriptionProp ?? l.liveDemoDescription;
+  const heading = headingProp ?? l.liveDemoHeading;
   const displayUrl = demoUrl.replace(/^https?:\/\//, "");
 
   return (
@@ -33,7 +45,7 @@ export default function LiveDemoSection({
           >
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm font-bold text-primary mb-6">
               <Sparkles className="w-4 h-4" />
-              Live Product Demo
+              {badge}
             </span>
             <h2 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl mb-5 leading-[1.1]">
               {heading}
@@ -49,12 +61,12 @@ export default function LiveDemoSection({
                 className="group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-4 text-sm font-bold text-primary-foreground hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/30 w-full sm:w-auto"
               >
                 <Zap className="w-4 h-4" />
-                Launch Live Demo
+                {launchLabel}
                 <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </a>
             </div>
             <p className="text-xs text-muted-foreground mt-4">
-              Opens in a new tab — <span className="font-mono text-foreground/80">{displayUrl}</span>
+              {newTabNote}<span className="font-mono text-foreground/80">{displayUrl}</span>
             </p>
           </motion.div>
 
@@ -85,7 +97,7 @@ export default function LiveDemoSection({
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={previewImage}
-                  alt="Live product demo preview"
+                  alt={previewAlt}
                   className="absolute inset-0 w-full h-full object-cover scale-105 group-hover:scale-110 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />

@@ -1,8 +1,15 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { getSiteInfo } from "@/lib/cms/site-info";
 
 export const homeOgImageSize = { width: 1200, height: 630 };
+
+/** The share image's metadata (alt text from CMS → Site Identity → Share image). */
+export async function homeOgImageMetadata() {
+  const { shareImage } = await getSiteInfo();
+  return [{ id: "default", alt: shareImage.alt, size: homeOgImageSize, contentType: "image/png" }];
+}
 
 const PRIMARY = "#E56043";
 const BACKGROUND = "#1b1a1a";
@@ -15,6 +22,8 @@ const MUTED = "#a8a6a6";
  * here once rather than being duplicated across the two special files.
  */
 export async function renderHomeOgImage() {
+  // Brand + copy: CMS → Site Identity (brand, share image).
+  const { brand, shareImage } = await getSiteInfo();
   const logoData = await readFile(join(process.cwd(), "public/brand/icon-tile-512.png"), "base64");
   const logoSrc = `data:image/png;base64,${logoData}`;
 
@@ -63,7 +72,7 @@ export async function renderHomeOgImage() {
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           <img src={logoSrc} width={64} height={64} style={{ borderRadius: 16 }} />
           <span style={{ fontSize: 34, fontWeight: 700, color: FOREGROUND, letterSpacing: -0.5 }}>
-            YashOrbit
+            {brand.namePrimary + brand.nameAccent}
           </span>
           <span
             style={{
@@ -76,7 +85,7 @@ export async function renderHomeOgImage() {
               display: "flex",
             }}
           >
-            Technologies
+            {shareImage.tag}
           </span>
         </div>
 
@@ -90,10 +99,10 @@ export async function renderHomeOgImage() {
               letterSpacing: -1,
             }}
           >
-            Custom Software &amp; AI/ML, Built Around Your Business
+            {shareImage.headline}
           </span>
           <span style={{ fontSize: 28, color: MUTED, fontWeight: 400 }}>
-            Web, mobile, desktop &amp; AI/ML — senior-led, NDA &amp; IP protected, free live demo.
+            {shareImage.subline}
           </span>
         </div>
 
@@ -106,9 +115,9 @@ export async function renderHomeOgImage() {
             paddingTop: 28,
           }}
         >
-          <span style={{ fontSize: 22, color: FOREGROUND, fontWeight: 600 }}>yashorbit.com</span>
+          <span style={{ fontSize: 22, color: FOREGROUND, fontWeight: 600 }}>{shareImage.domain}</span>
           <div style={{ display: "flex", gap: 10 }}>
-            {["Senior-Led", "NDA Protected", "Free Live Demo"].map((label) => (
+            {shareImage.badges.map((label) => (
               <span
                 key={label}
                 style={{

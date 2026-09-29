@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Bot, MessageCircle, X } from "lucide-react";
 import { WhatsAppIcon } from "@/components/icons/SocialIcons";
-import { whatsapp } from "@/lib/contact";
+import { useSiteInfo } from "@/components/cms/SiteInfoContext";
 import { loadAndToggleTawk } from "@/lib/tawk";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 
@@ -13,6 +13,7 @@ export default function FloatingContactButtons() {
   const [open, setOpen] = React.useState(false);
   const [chatOpen, setChatOpen] = React.useState(false);
   const pathname = usePathname();
+  const { contact, floating } = useSiteInfo();
 
   const openLiveChat = () => {
     loadAndToggleTawk();
@@ -29,7 +30,9 @@ export default function FloatingContactButtons() {
   // full experience inline — no need for the floating duplicate there).
   // Never on an exam page: tests are distraction-free and a chat widget would be an aid.
   if (pathname?.startsWith("/ots/take") || pathname?.startsWith("/portal/exam")) return null;
-  if (pathname?.startsWith("/lms") || pathname?.startsWith("/aibots") || pathname?.startsWith("/smms") || pathname === "/ask") {
+  // The CMS is an admin panel too (its draft preview, /cms/preview, shows the site exactly as visitors see it).
+  const inCms = pathname?.startsWith("/cms") && !pathname.startsWith("/cms/preview");
+  if (pathname?.startsWith("/lms") || pathname?.startsWith("/aibots") || pathname?.startsWith("/smms") || inCms || pathname === "/ask") {
     return chatOpen ? <ChatWidget open={chatOpen} onClose={() => setChatOpen(false)} /> : null;
   }
 
@@ -57,7 +60,7 @@ export default function FloatingContactButtons() {
                 onClick={openAiChat}
                 className="group flex items-center gap-3 rounded-full bg-gradient-to-br from-primary to-yashorbit-coral pl-4 pr-1.5 py-1.5 text-sm font-bold text-white shadow-xl shadow-black/15 hover:scale-105 active:scale-95 transition-transform"
               >
-                Ask YashOrbit AI
+                {floating.assistantLabel}
                 <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-white/20">
                   <Bot className="h-4 w-4" />
                 </span>
@@ -69,13 +72,13 @@ export default function FloatingContactButtons() {
                   visible: { opacity: 1, y: 0, scale: 1 },
                 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                href={whatsapp.href}
+                href={contact.whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setOpen(false)}
                 className="group flex items-center gap-3 rounded-full bg-primary pl-4 pr-1.5 py-1.5 text-sm font-bold text-primary-foreground shadow-xl shadow-black/15 hover:scale-105 active:scale-95 transition-transform"
               >
-                WhatsApp
+                {floating.whatsappLabel}
                 <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-primary-foreground/15">
                   <WhatsAppIcon className="h-4 w-4" />
                 </span>
@@ -91,7 +94,7 @@ export default function FloatingContactButtons() {
                 onClick={openLiveChat}
                 className="group flex items-center gap-3 rounded-full bg-foreground pl-4 pr-1.5 py-1.5 text-sm font-bold text-background shadow-xl shadow-black/15 hover:scale-105 active:scale-95 transition-transform"
               >
-                Live Chat
+                {floating.liveChatLabel}
                 <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-background/15">
                   <MessageCircle className="h-4 w-4" />
                 </span>

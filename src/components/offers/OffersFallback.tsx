@@ -6,6 +6,7 @@ import HowItWorksSection from "@/components/offers/HowItWorksSection";
 import WhyYashOrbitSection from "@/components/offers/WhyYashOrbitSection";
 import OffersFaqSection from "@/components/offers/OffersFaqSection";
 import { formatDate } from "@/lib/utils";
+import { useText } from "@/components/cms/TextContext";
 
 /** State: no live and no scheduled campaign. Never an empty page — a lead-capture hero plus everything that is always true about YashOrbit. */
 export default function OffersFallback({
@@ -17,6 +18,7 @@ export default function OffersFallback({
   lastEnded: { name: string; endedAt: string } | null;
   faqs: { question: string; answer: string }[];
 }) {
+  const tx = useText();
   return (
     <div className="flex min-h-screen flex-col selection:bg-primary/30">
       <StateWatcher serverTime={serverTime} pollMs={90_000} />
@@ -29,19 +31,16 @@ export default function OffersFallback({
         <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-6 lg:grid-cols-2 lg:px-8">
           <div className="space-y-5 text-center lg:text-left">
             <span className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-muted/50 px-4 py-2 text-sm font-medium text-foreground">
-              <Sparkles className="size-4 text-primary" /> Next offers in the making
-            </span>
-            <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">No campaign is live — but the next one is coming.</h1>
+              <Sparkles className="size-4 text-primary" />{tx("offers.offersFallback.next-offers-in-the-making")}</span>
+            <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">{tx("offers.offersFallback.no-campaign-is-live-but-the-next-one-is-")}</h1>
             <p className="text-lg leading-relaxed text-muted-foreground">
-              Festival and seasonal offers on software, AI, training, internships and developer hiring run a few times a year. Join the list and you&apos;ll hear about the next one first.
-            </p>
+              {tx("offers.offersFallback.festival-and-seasonal-offers-on-software")}</p>
             {lastEnded && (
               <p className="inline-flex items-center gap-2 rounded-full bg-muted/60 px-4 py-2 text-xs font-medium text-muted-foreground">
-                <History className="size-3.5" /> “{lastEnded.name}” ended {formatDate(lastEnded.endedAt)} — don&apos;t miss the next one.
-              </p>
+                <History className="size-3.5" /> “{lastEnded.name}{tx("offers.offersFallback.ended")}{formatDate(lastEnded.endedAt)}{tx("offers.offersFallback.don-t-miss-the-next-one")}</p>
             )}
           </div>
-          <NotifyMeForm campaignId={null} source="none" withMessage cta="Get first access" />
+          <NotifyMeForm campaignId={null} source="none" withMessage cta={tx("offers.offersFallback.get-first-access")} />
         </div>
       </section>
 

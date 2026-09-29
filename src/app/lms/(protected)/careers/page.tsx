@@ -73,12 +73,12 @@ export default async function CareersDashboardPage({
     dateTo = resolved.to;
   }
 
-  const [stats, positions] = await Promise.all([
+  const [stats, positions, experienceOptions, locationOptions] = await Promise.all([
     getCareerDashboardStats({ status, positionSlug, experience, location, search, dateFrom, dateTo, granularity }),
     getAllJobPositions(),
+    getExperienceOptions(),
+    getLocationOptions(),
   ]);
-  const experienceOptions = getExperienceOptions();
-  const locationOptions = getLocationOptions();
 
   const hasActiveFilters = Boolean(
     sp.status || sp.position || sp.experience || sp.location || sp.search || sp.dateFrom || sp.dateTo || sp.range

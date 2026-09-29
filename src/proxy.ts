@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { isMaintenanceOn, isPublicSitePath } from "@/lib/cms/maintenance-gate";
 
 /**
  * First-touch referral capture, server side. A `?ref=CODE` on any page view
@@ -11,7 +12,17 @@ import type { NextRequest } from "next/server";
 const COOKIE = "yo_ref";
 const MAX_AGE = 30 * 24 * 60 * 60;
 
-export function proxy(request: NextRequest) {
+// Same name as CMS_SESSION_COOKIE in src/lib/cms-auth.ts (not imported: that module is heavier than the proxy needs).
+const CMS_SESSION_COOKIE = "cms_session";
+
+export async function proxy(request: NextRequest) {
+  // CMS maintenance mode: visitors to the public site get the maintenance page
+  // (503, so search engines retry instead of indexing it). Anyone signed in to
+  // the CMS still sees the real site, to check their work before reopening.
+  if (isPublicSitePath(request.nextUrl.pathname) && !request.cookies.get(CMS_SESSION_COOKIE) && (await isMaintenanceOn())) {
+    return NextResponse.rewrite(new URL("/maintenance", request.url), { status: 503, headers: { "Retry-After": "3600" } });
+  }
+
   const raw = request.nextUrl.searchParams.get("ref");
   const code = raw?.trim().toUpperCase();
   const response = NextResponse.next();

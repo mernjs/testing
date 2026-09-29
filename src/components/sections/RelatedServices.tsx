@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, LucideIcon } from "lucide-react";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
 interface RelatedService {
   title: string;
@@ -17,7 +18,9 @@ interface RelatedServicesProps {
   tone?: "default" | "muted";
 }
 
-export default function RelatedServices({ title = "Related services", services, tone = "default" }: RelatedServicesProps) {
+export default function RelatedServices({ title: titleProp, services, tone = "default" }: RelatedServicesProps) {
+  const l = useUiLabels();
+  const title = titleProp ?? l.relatedServicesTitle;
   return (
     <section id="related-services" className={`py-24 sm:py-32 relative ${tone === "muted" ? "bg-muted/10" : "bg-background"}`}>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -48,7 +51,7 @@ export default function RelatedServices({ title = "Related services", services, 
                 <h3 className="font-bold text-foreground mb-2 leading-snug">{service.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-4 flex-1">{service.description}</p>
                 <span className="inline-flex items-center text-sm font-semibold text-foreground group-hover:text-primary group-hover:gap-3 gap-2 transition-all">
-                  Explore service <ArrowRight className="w-4 h-4" />
+                  {l.exploreService} <ArrowRight className="w-4 h-4" />
                 </span>
               </Link>
             </motion.div>

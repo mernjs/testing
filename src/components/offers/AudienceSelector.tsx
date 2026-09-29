@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { PUBLIC_AUDIENCE_TABS, type PublicAudienceTabKey } from "@/lib/offers/constants";
+import { useText } from "@/components/cms/TextContext";
 
 export default function AudienceSelector({
   selected,
@@ -10,10 +11,11 @@ export default function AudienceSelector({
   selected: PublicAudienceTabKey | null;
   onSelect: (key: PublicAudienceTabKey | null) => void;
 }) {
+  const tx = useText();
   return (
     <section className="border-b border-border/50 bg-muted/10 py-8">
       <div className="mx-auto max-w-5xl px-6 lg:px-8">
-        <p className="mb-4 text-center text-sm font-semibold text-muted-foreground">What are you looking for?</p>
+        <p className="mb-4 text-center text-sm font-semibold text-muted-foreground">{tx("offers.audienceSelector.what-are-you-looking-for")}</p>
         <div className="flex flex-wrap items-center justify-center gap-2">
           {PUBLIC_AUDIENCE_TABS.map((tab) => {
             const active = selected === tab.key;
@@ -40,8 +42,7 @@ export default function AudienceSelector({
             onClick={() => onSelect(null)}
             className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${selected === null ? "bg-foreground text-background" : "text-muted-foreground hover:text-primary"}`}
           >
-            Explore Everything
-          </button>
+            {tx("offers.audienceSelector.explore-everything")}</button>
         </div>
       </div>
     </section>

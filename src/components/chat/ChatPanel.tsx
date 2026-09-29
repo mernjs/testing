@@ -4,10 +4,12 @@ import { Bot, Plus, X } from "lucide-react";
 import { useChat } from "@/components/chat/ChatProvider";
 import { ChatConversation } from "@/components/chat/ChatConversation";
 import { ChatDock } from "@/components/chat/ChatDock";
+import { useText } from "@/components/cms/TextContext";
 
 /** Widget chrome (used by the floating ChatWidget). The full-page /ask
  * experience uses ChatWorkspace instead. */
 export function ChatPanel({ onClose }: { onClose?: () => void }) {
+  const tx = useText();
   const { messages, newConversation } = useChat();
 
   return (
@@ -19,8 +21,8 @@ export function ChatPanel({ onClose }: { onClose?: () => void }) {
             <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-background bg-emerald-500" aria-hidden />
           </div>
           <div className="leading-tight">
-            <p className="text-sm font-bold text-foreground">Ask YashOrbit</p>
-            <p className="text-[11px] text-muted-foreground">AI assistant · answers from our knowledge base</p>
+            <p className="text-sm font-bold text-foreground">{tx("chat.chatPanel.ask-yashorbit")}</p>
+            <p className="text-[11px] text-muted-foreground">{tx("chat.chatPanel.ai-assistant-answers-from-our-knowledge-")}</p>
           </div>
         </div>
         <div className="flex items-center gap-1">
@@ -30,8 +32,7 @@ export function ChatPanel({ onClose }: { onClose?: () => void }) {
               onClick={newConversation}
               className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
-              <Plus className="size-3" aria-hidden /> New chat
-            </button>
+              <Plus className="size-3" aria-hidden />{tx("chat.chatPanel.new-chat")}</button>
           )}
           {onClose && (
             <button

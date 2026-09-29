@@ -10,7 +10,8 @@ import { getCurrentPortalUser } from "@/lib/portal-auth";
 import { getAvailableBalance } from "@/lib/wallet/redemption";
 import { tabForPortalRole } from "@/lib/offers/constants";
 import { PORTAL_ROLE_META } from "@/lib/portal-roles";
-import { socialMetadata, breadcrumbJsonLd, faqJsonLd, defaultOgImage, siteUrl } from "@/lib/seo";
+import { breadcrumbJsonLd, faqJsonLd, socialMetadata, siteUrl } from "@/lib/seo";
+import { getSiteInfo } from "@/lib/cms/site-info";
 import OffersContent from "./Content";
 
 // This page's whole point is to reflect the live DB state (campaign status/dates set in the
@@ -23,54 +24,50 @@ export const dynamic = "force-dynamic";
 // One state resolution per request, shared by generateMetadata and the page body.
 const loadPage = cache(() => resolveOffersPage());
 
-const GENERIC_FAQS = [
-  {
-    question: "Is the offer really available?",
-    answer:
-      "Yes — the offer you see is the live, currently-active campaign. Its exact end date is shown in the countdown above, and the page automatically stops showing it the moment it expires.",
-  },
-  {
-    question: "Is the discount the same on every service?",
-    answer:
-      "No. Discounts vary by service and program — each offer card shows its own exact discount. Where no fixed price exists for a service, we show \"Custom Quote\" instead of an invented number.",
-  },
-  {
-    question: "Can I use a coupon on top of an offer's discount?",
-    answer:
-      "Yes, where a valid coupon applies — the coupon discount stacks with the offer's own discount, capped so the total can never exceed the original price. All coupon validation happens on our server when you claim the offer.",
-  },
-];
+/** The page's own FAQs (after the campaign's): CMS text `offers.faq.<n>.question` / `.answer`, n = 1, 2, … */
+function genericFaqs(text: Record<string, string>) {
+  const out: { question: string; answer: string }[] = [];
+  for (let n = 1; text[`offers.faq.${n}.question`]; n++) out.push({ question: text[`offers.faq.${n}.question`], answer: text[`offers.faq.${n}.answer`] ?? "" });
+  return out;
+}
+
+/** "{campaign} — …" style templates from the CMS text. */
+const fill = (template: string, vars: Record<string, string>) => template.replace(/\{(\w+)\}/g, (_, k: string) => vars[k] ?? "");
 
 export async function generateMetadata(): Promise<Metadata> {
   return withSeoOverrides("/offers", await offersMetadata());
 }
 
 async function offersMetadata(): Promise<Metadata> {
-  const page = await loadPage();
+  const [page, { text, brand }] = await Promise.all([loadPage(), getSiteInfo()]);
   const campaign = page.active?.campaign ?? page.next?.campaign ?? null;
-  const title =
-    page.state === "active" && campaign ? `${campaign.name} — Festival Offers | YashOrbit`
-    : page.state === "none" ? "Offers & Deals | YashOrbit"
-    : campaign ? `${campaign.name} — Coming Soon | YashOrbit`
-    : "Festival Offers | YashOrbit";
-  const description =
-    page.state === "active" && campaign
-      ? `${campaign.theme.bannerHeadline ?? campaign.name}: limited-time offers on Software Development, AI & Automation, Training, Internships and Developer Hiring at YashOrbit.`
-      : page.state === "none"
-        ? "No festival campaign is live right now. Join the list to get first access to YashOrbit's next offers on software, AI, training, internships and developer hiring."
-        : `${campaign?.name ?? "Our next campaign"} is coming soon — get notified when YashOrbit's limited-time offers go live.`;
-  const image = campaign?.bannerImage ?? defaultOgImage;
+  const vars = { campaign: campaign?.name ?? text["offers.meta.nextCampaign"] ?? "", headline: campaign?.theme.bannerHeadline ?? campaign?.name ?? "" };
+  const title = fill(
+    page.state === "active" && campaign ? text["offers.meta.titleActive"]
+    : page.state === "none" ? text["offers.meta.titleNone"]
+    : campaign ? text["offers.meta.titleUpcoming"]
+    : text["offers.meta.titleDefault"],
+    vars
+  );
+  const description = fill(
+    page.state === "active" && campaign ? text["offers.meta.descriptionActive"]
+    : page.state === "none" ? text["offers.meta.descriptionNone"]
+    : text["offers.meta.descriptionUpcoming"],
+    vars
+  );
+  const image = campaign?.bannerImage ?? text["offers.meta.defaultImage"];
 
   return {
     title,
     description,
     alternates: { canonical: `${siteUrl}/offers` },
-    ...socialMetadata({ title, description, path: "/offers", image, imageAlt: title }),
+    ...socialMetadata({ title, description, path: "/offers", image, imageAlt: title, siteName: brand.namePrimary + brand.nameAccent }),
   };
 }
 
 export default async function OffersPage() {
-  const page = await loadPage();
+  const [page, { text }] = await Promise.all([loadPage(), getSiteInfo()]);
+  const GENERIC_FAQS = genericFaqs(text);
   const data = page.active;
 
   // Personalization: a signed-in portal user gets offers matched to their role plus their spendable credits.
@@ -95,8 +92,8 @@ export default async function OffersPage() {
 
   const jsonLd = [
     breadcrumbJsonLd([
-      { name: "Home", path: "/" },
-      { name: "Festival Offers", path: "/offers" },
+      { name: text["offers.breadcrumb.home"] ?? "", path: "/" },
+      { name: text["offers.breadcrumb.page"] ?? "", path: "/offers" },
     ]),
     faqJsonLd(faqs),
   ];

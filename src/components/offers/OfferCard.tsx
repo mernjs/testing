@@ -11,6 +11,7 @@ import { getUrgency, URGENCY_STYLES, claimProgress, nowMs } from "@/lib/offers/l
 import { getCategoryLabel, getSubServices } from "@/lib/categories";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { SerializedOffer } from "@/lib/offers/offers";
+import { useText } from "@/components/cms/TextContext";
 
 function subServiceLabel(offer: SerializedOffer): string {
   if (offer.subService === "all") return getCategoryLabel(offer.category);
@@ -48,6 +49,7 @@ export default function OfferCard({
   recommended?: boolean;
   compact?: boolean;
 }) {
+  const tx = useText();
   const [expired, setExpired] = useState(false);
   const remaining = useRemaining(offer.validUntil, () => {
     setExpired(true);
@@ -63,12 +65,12 @@ export default function OfferCard({
 
   // One status chip, most important state wins.
   let status: { label: string; className: string } | null = null;
-  if (ended) status = { label: "Ended", className: URGENCY_STYLES.ended.chip };
-  else if (progress.soldOut) status = { label: "Sold out", className: URGENCY_STYLES.critical.chip };
-  else if (notStarted) status = { label: "Starts soon", className: URGENCY_STYLES.upcoming.chip };
+  if (ended) status = { label: tx("offers.offerCard.ended"), className: URGENCY_STYLES.ended.chip };
+  else if (progress.soldOut) status = { label: tx("offers.offerCard.sold-out"), className: URGENCY_STYLES.critical.chip };
+  else if (notStarted) status = { label: tx("offers.offerCard.starts-soon"), className: URGENCY_STYLES.upcoming.chip };
   else if (progress.almostGone) status = { label: `Only ${progress.remaining} ${offer.limitKind === "quantity" ? "left" : "slots left"}`, className: URGENCY_STYLES.urgent.chip };
   else if (urgency && urgency.label) status = { label: urgency.label, className: URGENCY_STYLES[urgency.level].chip };
-  else status = { label: "Live now", className: "bg-green-500/15 text-green-600 dark:text-green-400" };
+  else status = { label: tx("offers.offerCard.live-now"), className: "bg-green-500/15 text-green-600 dark:text-green-400" };
 
   return (
     <motion.div
@@ -86,9 +88,9 @@ export default function OfferCard({
           <Flame className="size-3.5" /> {offer.isDealOfTheDay ? "Deal of the Day" : offer.isFlashDeal || offer.offerTypes?.includes("flash") ? "Flash Deal" : offer.offerTypes?.includes("hourly") ? "Hourly Rate Offer" : offer.offerTypes?.includes("combo") ? "Combo Offer" : offer.offerTypes?.includes("first_time") ? "Welcome Offer" : offer.offerTypes?.includes("renewal") ? "Renewal Offer" : "Festival Offer"}
         </span>
         {recommended ? (
-          <Badge className="gap-1"><Sparkles className="size-3" /> For you</Badge>
+          <Badge className="gap-1"><Sparkles className="size-3" />{tx("offers.offerCard.for-you")}</Badge>
         ) : offer.isFeatured ? (
-          <Badge variant="secondary">Most Popular</Badge>
+          <Badge variant="secondary">{tx("offers.offerCard.most-popular")}</Badge>
         ) : null}
       </div>
 
@@ -107,15 +109,15 @@ export default function OfferCard({
           <p className="mt-1 flex flex-wrap items-baseline gap-x-2 text-sm">
             {offer.pricing.unit && offer.pricing.unit !== "fixed" ? (
               <>
-                <span className="text-muted-foreground">Regular</span>
+                <span className="text-muted-foreground">{tx("offers.offerCard.regular")}</span>
                 <span className="text-muted-foreground line-through">{formatCurrency(original, offer.pricing.currency)}{unitSuffix(offer.pricing.unit)}</span>
-                {final !== null && <span className="font-bold text-foreground">Offer {formatCurrency(final, offer.pricing.currency)}{unitSuffix(offer.pricing.unit)}</span>}
+                {final !== null && <span className="font-bold text-foreground">{tx("offers.offerCard.offer")}{formatCurrency(final, offer.pricing.currency)}{unitSuffix(offer.pricing.unit)}</span>}
               </>
             ) : (
               <>
                 <span className="text-muted-foreground line-through">{formatCurrency(original, offer.pricing.currency)}</span>
                 {final !== null && <span className="font-bold text-foreground">{formatCurrency(final, offer.pricing.currency)}</span>}
-                {savings > 0 && <span className="text-xs font-semibold text-green-600 dark:text-green-400">Save {formatCurrency(savings, offer.pricing.currency)}</span>}
+                {savings > 0 && <span className="text-xs font-semibold text-green-600 dark:text-green-400">{tx("offers.offerCard.save")}{formatCurrency(savings, offer.pricing.currency)}</span>}
               </>
             )}
           </p>
@@ -154,8 +156,8 @@ export default function OfferCard({
           ))}
           {offer.benefits.length > 3 && (
             <li className="pl-6 text-xs text-muted-foreground">
-              +{offer.benefits.length - 3} more —{" "}
-              <button type="button" onClick={() => onDetails?.(offer)} className="font-medium text-primary hover:underline">see all</button>
+              +{offer.benefits.length - 3}{tx("offers.offerCard.more")}{" "}
+              <button type="button" onClick={() => onDetails?.(offer)} className="font-medium text-primary hover:underline">{tx("offers.offerCard.see-all")}</button>
             </li>
           )}
         </ul>
@@ -165,7 +167,7 @@ export default function OfferCard({
       {!compact && progress.limit !== null && progress.percent !== null && (
         <div className="mt-4" aria-label={`${progress.claimed} of ${progress.limit} claimed`}>
           <div className="mb-1 flex items-center justify-between text-[11px] font-medium text-muted-foreground">
-            <span className="inline-flex items-center gap-1"><Zap className="size-3 text-primary" />{offer.limitKind === "quantity" ? "Limited quantity" : "Limited slots"} · {progress.claimed}/{progress.limit} claimed</span>
+            <span className="inline-flex items-center gap-1"><Zap className="size-3 text-primary" />{offer.limitKind === "quantity" ? "Limited quantity" : "Limited slots"} · {progress.claimed}/{progress.limit}{tx("offers.offerCard.claimed")}</span>
             <span>{progress.soldOut ? "Sold out" : offer.limitKind === "quantity" ? `${progress.remaining} left in stock` : `${progress.remaining} slots left`}</span>
           </div>
           <div className="h-1.5 overflow-hidden rounded-full bg-muted">
@@ -175,12 +177,11 @@ export default function OfferCard({
       )}
       {!compact && progress.limit === null && progress.claimed >= 5 && (
         <p className="mt-4 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-          <Users className="size-3.5 text-primary" /> {progress.claimed.toLocaleString("en-IN")} people have claimed this
-        </p>
+          <Users className="size-3.5 text-primary" /> {progress.claimed.toLocaleString("en-IN")}{tx("offers.offerCard.people-have-claimed-this")}</p>
       )}
 
       <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
-        <CalendarClock className="size-3.5" /> Valid until {formatDate(offer.validUntil)}
+        <CalendarClock className="size-3.5" />{tx("offers.offerCard.valid-until")}{formatDate(offer.validUntil)}
       </p>
 
       <div className="mt-5 flex items-center gap-2">
@@ -199,13 +200,11 @@ export default function OfferCard({
             onClick={() => onDetails(offer)}
             className="inline-flex items-center gap-1.5 rounded-full border border-border/60 px-4 py-2.5 text-sm font-semibold text-foreground transition-colors hover:border-primary hover:text-primary"
           >
-            <Info className="size-4" /> Details
-          </button>
+            <Info className="size-4" />{tx("offers.offerCard.details")}</button>
         )}
       </div>
       <Link href={getServiceHref(offer.category, offer.subService)} className="mt-3 text-center text-xs text-muted-foreground hover:text-primary hover:underline">
-        Learn more about this service
-      </Link>
+        {tx("offers.offerCard.learn-more-about-this-service")}</Link>
     </motion.div>
   );
 }

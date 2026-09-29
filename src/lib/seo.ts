@@ -125,7 +125,7 @@ interface SocialMetadataInput {
  * be an absolute URL (e.g. Unsplash) or a site-relative path (resolved via
  * metadataBase).
  */
-export function socialMetadata({ title, description, path, image, imageAlt }: SocialMetadataInput) {
+export function socialMetadata({ title, description, path, image, imageAlt, siteName }: SocialMetadataInput & { siteName: string }) {
   return {
     openGraph: {
       title,

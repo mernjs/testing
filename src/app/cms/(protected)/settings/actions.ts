@@ -1,0 +1,16 @@
+"use server";
+
+import { requireViewer, can } from "@/lib/cms/viewer";
+import { recordAudit } from "@/lib/cms/audit";
+import { saveSettings, type CmsSettings } from "@/lib/cms/settings";
+
+type Result = { ok: true } | { ok: false; error: string };
+
+export async function saveSettingsAction(settings: CmsSettings): Promise<Result> {
+  const v = await requireViewer().catch(() => null);
+  if (!v) return { ok: false, error: "Your session has expired — please sign in again." };
+  if (!can(v, "SETTINGS_MANAGE")) return { ok: false, error: "You don't have permission to do that." };
+  await saveSettings(settings, v.userId);
+  await recordAudit({ actorId: v.userId, actorEmail: v.email, action: "settings", entity: "settings", entityId: "default", entityLabel: "CMS settings" });
+  return { ok: true };
+}

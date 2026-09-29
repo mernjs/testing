@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { TrendingUp, Quote } from "lucide-react";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
 interface CaseStudy {
   segment: string;
@@ -20,6 +21,7 @@ interface CaseStudyShowcaseProps {
 }
 
 export default function CaseStudyShowcase({ title, description, caseStudies, tone = "default" }: CaseStudyShowcaseProps) {
+  const l = useUiLabels();
   return (
     <section id="case-studies" className={`py-24 sm:py-32 relative ${tone === "muted" ? "bg-muted/10" : "bg-background"}`}>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -54,14 +56,14 @@ export default function CaseStudyShowcase({ title, description, caseStudies, ton
                 <div className="flex gap-3">
                   <Quote className="w-4 h-4 flex-none text-muted-foreground/60 mt-1" />
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    <span className="font-semibold text-foreground">Challenge: </span>
+                    <span className="font-semibold text-foreground">{l.caseChallenge}</span>
                     {study.challenge}
                   </p>
                 </div>
                 <div className="flex gap-3">
                   <Quote className="w-4 h-4 flex-none text-muted-foreground/60 mt-1" />
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    <span className="font-semibold text-foreground">Solution: </span>
+                    <span className="font-semibold text-foreground">{l.caseSolution}</span>
                     {study.solution}
                   </p>
                 </div>

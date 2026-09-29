@@ -4,7 +4,7 @@ import * as cheerio from "cheerio";
 import { ObjectId, type Collection } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import { siteUrl, organizationInfo } from "@/lib/seo";
-import { emails, whatsapp, socialLinks, mapsUrl } from "@/lib/contact";
+import { getSiteInfo } from "@/lib/cms/site-info";
 import { ensureVectorStore } from "@/lib/chatbot-config";
 import {
   uploadTextToVectorStore,
@@ -71,8 +71,8 @@ async function getPagesCollection(): Promise<Collection<KbWebsitePage>> {
 // Crawl target discovery — reuse the sitemap's route discovery + exclusions.
 // ---------------------------------------------------------------------------
 
-export function listCrawlTargets(): { path: string; url: string }[] {
-  const entries = baseSitemap();
+export async function listCrawlTargets(): Promise<{ path: string; url: string }[]> {
+  const entries = await baseSitemap();
   const targets: { path: string; url: string }[] = [];
   for (const entry of entries) {
     const raw = typeof entry.url === "string" ? entry.url : String(entry.url);
@@ -198,8 +198,10 @@ function hashOf(text: string): string {
 // isn't reliably scrapable as prose.
 // ---------------------------------------------------------------------------
 
-function buildCompanyFactsDocument(): { title: string; text: string } {
+async function buildCompanyFactsDocument(): Promise<{ title: string; text: string }> {
   const a = organizationInfo.address;
+  // Contact details + social links as currently published in CMS → Site Identity.
+  const { contact, social } = await getSiteInfo();
   const lines = [
     "# YashOrbit — Company Facts",
     "",
@@ -209,14 +211,14 @@ function buildCompanyFactsDocument(): { title: string; text: string } {
     `Common name: YashOrbit (YashOrbit Technologies Pvt. Ltd.)`,
     `Website: ${organizationInfo.url}`,
     `Primary contact email: ${organizationInfo.email}`,
-    `Support email: ${emails.support}`,
+    `Support email: ${contact.email}`,
     `Phone: ${organizationInfo.telephone}`,
-    `WhatsApp: ${whatsapp.href}`,
+    `WhatsApp: ${contact.whatsappHref}`,
     `Office address: ${a.streetAddress}, ${a.addressLocality}, ${a.addressRegion} ${a.postalCode}, ${a.addressCountry}`,
-    `Map: ${mapsUrl}`,
+    `Map: ${contact.mapsUrl}`,
     "",
     "Social profiles:",
-    ...socialLinks.map((s) => `- ${s.name}: ${s.href}`),
+    ...social.map((s) => `- ${s.name}: ${s.href}`),
     "",
     "What YashOrbit does: custom software development (web, mobile, desktop), AI & automation solutions (workflows, chatbots, RAG systems, RPA), data analytics, plus industrial training and internship programs for developers.",
     "",
@@ -355,7 +357,7 @@ export async function runWebsiteIndex(logger: KbRunLogger, opts: IndexWebsiteOpt
     const vectorStoreId = await ensureVectorStore();
     const collection = await getPagesCollection();
 
-    const allTargets = listCrawlTargets();
+    const allTargets = await listCrawlTargets();
     const targets = opts.onlyUrls
       ? allTargets.filter((t) => opts.onlyUrls!.includes(t.url))
       : allTargets;
@@ -408,7 +410,7 @@ export async function runWebsiteIndex(logger: KbRunLogger, opts: IndexWebsiteOpt
     }
 
     if (includeSynthetic) {
-      const facts = buildCompanyFactsDocument();
+      const facts = await buildCompanyFactsDocument();
       await indexOnePage(vectorStoreId, SYNTHETIC_COMPANY_FACTS_URL, facts, logger);
     }
 

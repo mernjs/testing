@@ -11,9 +11,9 @@
   --font-mono: var(--font-geist-mono), monospace;
   
   --color-yashorbit-orange: #E56043;
-  --color-yashorbit-coral: #ff8e75;
+  --color-yashorbit-coral: var(--brand-gradient, #ff8e75);
   --color-yashorbit-light: #ECF2FD;
-  --color-yashorbit-blue: #1D428A;
+  --color-yashorbit-blue: var(--brand-deep, #1D428A);
   --color-yashorbit-dark: #1b1a1a;
 
   --color-primary: var(--primary);

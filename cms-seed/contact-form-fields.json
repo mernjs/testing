@@ -1,0 +1,38 @@
+[
+ {
+  "name": "name",
+  "label": "Name",
+  "placeholder": "Enter your first name",
+  "helpText": "",
+  "required": true,
+  "visible": true,
+  "orderKey": 1024
+ },
+ {
+  "name": "email",
+  "label": "Email",
+  "placeholder": "Enter your work email",
+  "helpText": "",
+  "required": true,
+  "visible": true,
+  "orderKey": 2048
+ },
+ {
+  "name": "phone",
+  "label": "Phone Number",
+  "placeholder": "Enter your phone number",
+  "helpText": "",
+  "required": true,
+  "visible": true,
+  "orderKey": 3072
+ },
+ {
+  "name": "message",
+  "label": "Project Details",
+  "placeholder": "Tell us about your goals, timeline, and requirements...",
+  "helpText": "",
+  "required": false,
+  "visible": true,
+  "orderKey": 4096
+ }
+]

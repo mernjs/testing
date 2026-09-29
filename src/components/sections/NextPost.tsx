@@ -4,9 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import type { BlogPostMeta } from "@/lib/blog";
+import type { BlogPostMeta } from "@/types/content";
+import { useUiLabels } from "@/components/cms/SiteInfoContext";
 
 export default function NextPost({ post }: { post: BlogPostMeta }) {
+  const l = useUiLabels();
   return (
     <section className="py-20 sm:py-24 bg-background relative border-t border-border/50">
       <div className="mx-auto max-w-4xl px-6 lg:px-8">
@@ -17,7 +19,7 @@ export default function NextPost({ post }: { post: BlogPostMeta }) {
           transition={{ duration: 0.5 }}
           className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary mb-5"
         >
-          Up Next
+          {l.upNext}
           <ArrowRight className="w-3.5 h-3.5" />
         </motion.p>
 
@@ -53,7 +55,7 @@ export default function NextPost({ post }: { post: BlogPostMeta }) {
               </h3>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-5 line-clamp-2">{post.excerpt}</p>
               <span className="inline-flex items-center gap-2 text-sm font-bold text-foreground group-hover/card:text-primary group-hover/card:gap-3 transition-all">
-                Read Next Article <ArrowRight className="w-4 h-4 group-hover/card:translate-x-1 transition-transform" />
+                {l.readNextArticle} <ArrowRight className="w-4 h-4 group-hover/card:translate-x-1 transition-transform" />
               </span>
             </div>
           </Link>

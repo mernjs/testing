@@ -3,6 +3,7 @@
 import * as React from "react";
 import { ArrowUp, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useText } from "@/components/cms/TextContext";
 
 export function ChatComposer({
   disabled,
@@ -20,6 +21,7 @@ export function ChatComposer({
   /** Optional Text / Voice switch rendered inside the input, below the text row. */
   modeToggle?: React.ReactNode;
 }) {
+  const tx = useText();
   const [value, setValue] = React.useState("");
   const ref = React.useRef<HTMLTextAreaElement>(null);
 
@@ -68,7 +70,7 @@ export function ChatComposer({
             disabled={disabled}
             maxLength={maxChars}
             aria-label="Type your message to YashOrbit"
-            placeholder="Ask about YashOrbit…"
+            placeholder={tx("chat.chatComposer.ask-about-yashorbit")}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
@@ -99,8 +101,7 @@ export function ChatComposer({
 
       <div className="mt-1.5 flex items-center justify-between px-1">
         <p className="text-xs text-muted-foreground/70">
-          AI-generated · verify important details with our team
-        </p>
+          {tx("chat.chatComposer.ai-generated-verify-important-details-wi")}</p>
         {!modeToggle && counter}
       </div>
     </div>

@@ -5,8 +5,10 @@ import { Zap } from "lucide-react";
 import { formatOfferBadge } from "@/lib/offers/constants";
 import LiveCountdown from "@/components/offers/LiveCountdown";
 import type { SerializedOffer } from "@/lib/offers/offers";
+import { useText } from "@/components/cms/TextContext";
 
 export default function FlashDealsStrip({ offers, onClaim }: { offers: SerializedOffer[]; onClaim: (offer: SerializedOffer) => void }) {
+  const tx = useText();
   if (offers.length === 0) return null;
 
   return (
@@ -14,7 +16,7 @@ export default function FlashDealsStrip({ offers, onClaim }: { offers: Serialize
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mb-3 flex items-center gap-2 text-background">
           <Zap className="size-4 fill-current" />
-          <span className="text-xs font-bold uppercase tracking-widest">Flash Deals</span>
+          <span className="text-xs font-bold uppercase tracking-widest">{tx("offers.flashDealsStrip.flash-deals")}</span>
         </div>
         <div className="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:thin]">
           {offers.map((offer, i) => (

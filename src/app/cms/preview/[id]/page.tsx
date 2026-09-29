@@ -1,0 +1,57 @@
+import { notFound, redirect } from "next/navigation";
+import { getViewer } from "@/lib/cms/viewer";
+import { getPage } from "@/lib/cms/pages";
+import { getActiveThemeState, themeCssBlock } from "@/lib/cms/theme";
+import { getPublicNav } from "@/lib/cms/nav";
+import { getPublicFooter } from "@/lib/cms/footer";
+import { getSiteInfo } from "@/lib/cms/site-info";
+import { getSnapshot } from "@/lib/cms/collections/store";
+import SectionRenderer from "@/components/cms/SectionRenderer";
+import { CollectionsProvider } from "@/components/cms/CollectionsContext";
+import { ThemeVariantsProvider } from "@/components/cms/ThemeVariantsContext";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import FooterCompact from "@/components/FooterCompact";
+
+export const metadata = { title: "Draft preview", robots: { index: false, follow: false } };
+export const dynamic = "force-dynamic";
+
+/**
+ * A page's DRAFT rendered exactly like the public site (active theme, real
+ * header and footer) — for CMS users only, never cached, never indexed.
+ * Outside the CMS shell so it can be framed at real device widths.
+ */
+export default async function CmsDraftPreviewPage({ params }: { params: Promise<{ id: string }> }) {
+  if (!(await getViewer())) redirect("/cms/login");
+  const { id } = await params;
+  const page = await getPage(id);
+  if (!page) notFound();
+
+  const [{ tokens, components }, cmsNavigation, cmsFooter, siteInfo, collections] = await Promise.all([
+    getActiveThemeState(),
+    getPublicNav(),
+    getPublicFooter(),
+    getSiteInfo(),
+    getSnapshot(["blog", "jobs", "engagement", "products"]),
+  ]);
+  const SiteFooter = components.footer === "compact" ? FooterCompact : Footer;
+
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{ __html: themeCssBlock(tokens) }} />
+      <Header cmsNavigation={cmsNavigation} variant={components.header === "menu" ? "menu" : "default"} />
+      <main className="flex-grow pt-[88px]">
+        <CollectionsProvider snapshot={collections}>
+          <ThemeVariantsProvider sections={components.sections}>
+            {page.draft.sections.length ? (
+              <SectionRenderer sections={page.draft.sections} />
+            ) : (
+              <p className="px-6 py-24 text-center text-sm text-muted-foreground">This page has no sections yet.</p>
+            )}
+          </ThemeVariantsProvider>
+        </CollectionsProvider>
+      </main>
+      <SiteFooter cmsFooter={cmsFooter} siteInfo={siteInfo} />
+    </>
+  );
+}

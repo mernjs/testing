@@ -10,6 +10,7 @@ import { DLMS_ROLES, DLMS_ROLE_META } from "@/lib/dlms-roles";
 import { AIBOTS_ROLES, AIBOTS_ROLE_META } from "@/lib/aibots-roles";
 import { SMMS_ROLES, SMMS_ROLE_META } from "@/lib/smms-roles";
 import { OTS_ROLES, OTS_ROLE_META } from "@/lib/ots-roles";
+import { CMS_ROLES, CMS_ROLE_META } from "@/lib/cms-roles";
 
 /**
  * Every real role literal that can appear in `admin_users.roles`, grouped by
@@ -62,6 +63,7 @@ export const ROLE_GROUPS: RoleGroup[] = [
   group("AI Bots", AIBOTS_ROLES, AIBOTS_ROLE_META),
   group("Social Media (SMMS)", SMMS_ROLES, SMMS_ROLE_META),
   group("Online Tests (OTS)", OTS_ROLES, OTS_ROLE_META),
+  group("Website CMS", CMS_ROLES, CMS_ROLE_META),
   {
     module: "LMS (CRM & Learning)",
     roles: [

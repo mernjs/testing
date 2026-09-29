@@ -7,6 +7,7 @@ import { useReferralCode } from "@/lib/useReferralCode";
 import { formatCredits } from "@/lib/wallet/constants";
 
 import { brandify } from "@/lib/brand";
+import { useText } from "@/components/cms/TextContext";
 interface Preview {
   valid: boolean;
   referrerFirstName?: string;
@@ -22,6 +23,7 @@ const DISMISS_KEY = "yo_referral_banner_dismissed";
  * once dismissed (per browser session).
  */
 export default function ReferralWelcome() {
+  const tx = useText();
   const code = useReferralCode();
   const [preview, setPreview] = useState<Preview | null>(null);
   const [dismissed, setDismissed] = useState(true);
@@ -68,13 +70,12 @@ export default function ReferralWelcome() {
     <div role="status" className="fixed bottom-4 left-4 right-4 z-[60] mx-auto flex max-w-md items-start gap-3 rounded-2xl border border-primary/30 bg-background/95 p-4 shadow-xl backdrop-blur sm:left-auto sm:right-4 sm:mx-0">
       <Gift className="mt-0.5 size-5 shrink-0 text-primary" />
       <div className="min-w-0 flex-1 text-sm">
-        <p className="font-semibold text-foreground">{preview.referrerFirstName} invited you to {brandify("YashOrbit")}</p>
+        <p className="font-semibold text-foreground">{preview.referrerFirstName}{tx("offers.referralWelcome.invited-you-to")}{brandify("YashOrbit")}</p>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          Create a free account{preview.welcomeBonus > 0 ? ` and earn up to ${formatCredits(preview.welcomeBonus)}` : ""}.
+          {tx("offers.referralWelcome.create-a-free-account")}{preview.welcomeBonus > 0 ? ` and earn up to ${formatCredits(preview.welcomeBonus)}` : ""}.
         </p>
         <Link href={`/register?ref=${encodeURIComponent(code)}`} className="mt-2 inline-block rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">
-          Claim my bonus
-        </Link>
+          {tx("offers.referralWelcome.claim-my-bonus")}</Link>
       </div>
       <button type="button" aria-label="Dismiss" onClick={dismiss} className="text-muted-foreground hover:text-foreground">
         <X className="size-4" />

@@ -10,45 +10,78 @@ import SubscriptionCard from "@/components/sections/SubscriptionCard";
 import CurriculumTimeline from "@/components/sections/CurriculumTimeline";
 import FAQAccordion from "@/components/sections/FAQAccordion";
 import DetailCTA from "@/components/sections/DetailCTA";
-import type { EngagementCategory } from "@/app/(site)/resource-augmentation/resources-data";
-import { hireMailto } from "@/app/(site)/resource-augmentation/resources-data";
+import type { EngagementCategory } from "@/types/content";
+import { useSiteInfo } from "@/components/cms/SiteInfoContext";
 
-const HERO_IMAGE = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1200&auto=format&fit=crop";
+/** Every fixed string on an engagement-model page (CMS engagement-detail section config). `{title}` / `{title_lower}` = the model's title; `{option}` = a plan's title. */
+export interface EngagementDetailCopy {
+  heroImage: string;
+  categoryLabel: string;
+  quoteLabel: string;
+  teamLabel: string;
+  billingLabel: string;
+  durationLabel: string;
+  priceLabel: string;
+  overviewTitle: string;
+  overviewDescription: string;
+  featuresTitle: string;
+  featuresDescription: string;
+  useCaseTitle: string;
+  useCaseDescription: string;
+  optionsEyebrow: string;
+  optionsTitle: string;
+  optionCtaLabel: string;
+  deliverablesTitle: string;
+  deliverablesDescription: string;
+  pricingTitle: string;
+  processTitle: string;
+  processDescription: string;
+  ctaHeading: string;
+  ctaDescription: string;
+  ctaChecklist: string[];
+  mailSubject: string;
+  mailOptionSubject: string;
+  mailBody: string;
+}
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
 };
 
-export default function CategoryDetail({ category }: { category: EngagementCategory }) {
-  const applyHref = hireMailto(`Inquiry: ${category.title}`);
+export default function CategoryDetail({ category, copy }: { category: EngagementCategory; copy: EngagementDetailCopy }) {
+  const { contact } = useSiteInfo();
+  const t = (text: string, option = "") =>
+    text.replaceAll("{title_lower}", category.title.toLowerCase()).replaceAll("{title}", category.title).replaceAll("{option}", option);
+  const mailto = (subject: string) => `mailto:${contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(copy.mailBody)}`;
+  const applyHref = mailto(t(copy.mailSubject));
 
   return (
     <div className="flex flex-col min-h-screen selection:bg-primary/30 overflow-hidden">
       <PageHero
         category="resource-augmentation"
-        categoryLabel="resource augmentation"
+        categoryLabel={copy.categoryLabel}
         title={category.title}
         subtitle={category.tagline}
         description={category.summary}
         icon={category.icon}
-        image={HERO_IMAGE}
-        primaryCta={{ label: "Get a Custom Quote", href: applyHref, external: true }}
+        image={copy.heroImage}
+        primaryCta={{ label: copy.quoteLabel, href: applyHref, external: true }}
       />
 
       <TrainingMeta
         items={[
-          { icon: Users, label: "Team Composition", value: category.cardHighlight.teamComposition },
-          { icon: Wallet, label: "Billing Type", value: category.cardHighlight.billingType },
-          { icon: Clock, label: "Hiring Duration", value: category.cardHighlight.hiringDuration },
-          { icon: category.icon, label: "Starting Price", value: category.cardHighlight.pricing },
+          { icon: Users, label: copy.teamLabel, value: category.cardHighlight.teamComposition },
+          { icon: Wallet, label: copy.billingLabel, value: category.cardHighlight.billingType },
+          { icon: Clock, label: copy.durationLabel, value: category.cardHighlight.hiringDuration },
+          { icon: category.icon, label: copy.priceLabel, value: category.cardHighlight.pricing },
         ]}
       />
 
       <ChecklistGrid
         id="overview"
-        title="Overview"
-        description={`How ${category.title.toLowerCase()} hiring works.`}
+        title={copy.overviewTitle}
+        description={t(copy.overviewDescription)}
         items={category.overview}
         columns={2}
       />
@@ -56,8 +89,8 @@ export default function CategoryDetail({ category }: { category: EngagementCateg
       <ChecklistGrid
         id="features"
         tone="muted"
-        title="Key Features"
-        description={`What makes ${category.title.toLowerCase()} hiring worth choosing.`}
+        title={copy.featuresTitle}
+        description={t(copy.featuresDescription)}
         items={category.features}
         columns={3}
       />
@@ -65,8 +98,8 @@ export default function CategoryDetail({ category }: { category: EngagementCateg
       <section className="py-24 sm:py-32 bg-background relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={fadeIn} className="max-w-2xl mb-10">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">Ideal Use Case</h2>
-            <p className="text-lg leading-8 text-muted-foreground">Signs {category.title.toLowerCase()} hiring is the right fit for your team.</p>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">{copy.useCaseTitle}</h2>
+            <p className="text-lg leading-8 text-muted-foreground">{t(copy.useCaseDescription)}</p>
           </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {category.idealUseCase.map((item, i) => (
@@ -90,8 +123,8 @@ export default function CategoryDetail({ category }: { category: EngagementCateg
         <div className="absolute left-1/2 top-0 -translate-x-1/2 w-[700px] h-[500px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
         <div className="mx-auto max-w-7xl px-6 lg:px-8 relative z-10">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={fadeIn} className="max-w-2xl mb-12">
-            <p className="text-sm font-semibold tracking-widest uppercase text-primary mb-3">Compare Options</p>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">Choose Your Plan</h2>
+            <p className="text-sm font-semibold tracking-widest uppercase text-primary mb-3">{copy.optionsEyebrow}</p>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">{copy.optionsTitle}</h2>
             <p className="text-lg leading-8 text-muted-foreground">{category.subOptionsIntro}</p>
           </motion.div>
           <div
@@ -110,8 +143,8 @@ export default function CategoryDetail({ category }: { category: EngagementCateg
                 price={option.price}
                 features={option.points}
                 featured={option.featured}
-                href={hireMailto(`Inquiry: ${category.title} — ${option.title}`)}
-                ctaLabel="Inquire"
+                href={mailto(t(copy.mailOptionSubject, option.title))}
+                ctaLabel={copy.optionCtaLabel}
               />
             ))}
           </div>
@@ -121,8 +154,8 @@ export default function CategoryDetail({ category }: { category: EngagementCateg
       <section className="py-24 sm:py-32 bg-background relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={fadeIn} className="max-w-2xl mb-10">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">Deliverables</h2>
-            <p className="text-lg leading-8 text-muted-foreground">What you actually receive from this engagement.</p>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">{copy.deliverablesTitle}</h2>
+            <p className="text-lg leading-8 text-muted-foreground">{t(copy.deliverablesDescription)}</p>
           </motion.div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {category.deliverables.map((item, i) => (
@@ -145,7 +178,7 @@ export default function CategoryDetail({ category }: { category: EngagementCateg
       <section className="py-24 sm:py-32 bg-muted/10 relative">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={fadeIn} className="max-w-2xl">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">Pricing</h2>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl mb-4">{copy.pricingTitle}</h2>
             <p className="text-lg leading-8 text-muted-foreground mb-8">{category.pricingIntro}</p>
             <div className="flex flex-wrap items-baseline gap-4 p-8 rounded-2xl bg-muted/20 border border-border/50">
               <span className="text-4xl font-black text-foreground">{category.cardHighlight.pricing}</span>
@@ -157,17 +190,17 @@ export default function CategoryDetail({ category }: { category: EngagementCateg
         </div>
       </section>
 
-      <CurriculumTimeline title="Hiring Process" description="From first call to your first deliverable." modules={category.hiringProcess} />
+      <CurriculumTimeline title={copy.processTitle} description={t(copy.processDescription)} modules={category.hiringProcess} />
 
       <FAQAccordion tone="muted" faqs={category.faqs} />
 
       <DetailCTA
-        heading={`Ready to Get Started With ${category.title}?`}
-        description="Tell us what you're building and we'll confirm fit, timeline, and pricing on a short discovery call."
-        ctaLabel="Get a Custom Quote"
+        heading={t(copy.ctaHeading)}
+        description={t(copy.ctaDescription)}
+        ctaLabel={copy.quoteLabel}
         ctaHref={applyHref}
         external
-        checklist={["Quick response", "Fast onboarding", "Replacement guarantee"]}
+        checklist={copy.ctaChecklist}
       />
     </div>
   );
