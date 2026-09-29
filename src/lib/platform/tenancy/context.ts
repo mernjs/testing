@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { headers } from "next/headers";
-import { unstable_rethrow } from "next/navigation";
+import { notFound, unstable_rethrow } from "next/navigation";
 import { getPlatformOwnerCompanyId, listActiveCompanyIds, resolveCompanyIdByHost } from "@/lib/platform/tenancy/companies";
 
 /**
@@ -40,24 +40,32 @@ async function requestHost(): Promise<string | null | undefined> {
   }
 }
 
-export async function currentCompanyId(): Promise<string> {
+/** The company for this request: an explicit scope, else the Host. `host: undefined` = not in a request. */
+async function resolveCurrent(): Promise<{ id: string | null; host: string | null | undefined }> {
   const store = storage.getStore();
-  if (store) return store.companyId;
+  if (store) return { id: store.companyId, host: null };
   const host = await requestHost();
-  if (host === undefined) throw new TenantResolutionError("No company context: not inside a request or runAsCompany()");
-  const id = await resolveCompanyIdByHost(host);
-  if (!id) throw new TenantResolutionError(`No workspace is configured for "${host ?? "(no host)"}"`, host);
-  return id;
+  if (host === undefined) return { id: null, host };
+  return { id: await resolveCompanyIdByHost(host), host };
 }
 
-/** Like `currentCompanyId()`, but null (instead of throwing) when no company owns this request. */
+/**
+ * The current company. Inside a request whose host no (active) company owns
+ * — an unknown or just-suspended domain — this is a 404 (`notFound()`), not a
+ * server error: the proxy normally shows "No workspace here" first, but its
+ * routing cache is per instance and can lag a status change by a minute.
+ * Outside any request or company scope it throws `TenantResolutionError`.
+ */
+export async function currentCompanyId(): Promise<string> {
+  const { id, host } = await resolveCurrent();
+  if (id) return id;
+  if (host === undefined) throw new TenantResolutionError("No company context: not inside a request or runAsCompany()");
+  notFound();
+}
+
+/** Like `currentCompanyId()`, but null (never throws) when no company owns this request. */
 export async function currentCompanyIdOrNull(): Promise<string | null> {
-  try {
-    return await currentCompanyId();
-  } catch (err) {
-    if (err instanceof TenantResolutionError) return null;
-    throw err;
-  }
+  return (await resolveCurrent()).id;
 }
 
 /**

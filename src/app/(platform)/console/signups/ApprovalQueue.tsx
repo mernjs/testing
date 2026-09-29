@@ -24,6 +24,9 @@ export default function ApprovalQueue({ requests, addressOf }: { requests: Await
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  // Requests decided in this session — hidden at once, before the server refresh lands.
+  const [decided, setDecided] = useState<Set<string>>(() => new Set());
+  const visible = requests.filter((r) => !decided.has(r.id));
 
   function decide(request: AwaitingApproval, approve: boolean) {
     setError(null);
@@ -40,6 +43,7 @@ export default function ApprovalQueue({ requests, addressOf }: { requests: Await
         return;
       }
       setMessage(res.message);
+      setDecided((d) => new Set(d).add(decision.request.id));
       setDecision(null);
       router.refresh();
     });
@@ -48,11 +52,11 @@ export default function ApprovalQueue({ requests, addressOf }: { requests: Await
   return (
     <div className="space-y-3">
       {message && <p className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm text-foreground">{message}</p>}
-      {requests.length === 0 ? (
+      {visible.length === 0 ? (
         <p className="text-sm text-muted-foreground">No sign-ups are waiting for approval.</p>
       ) : (
         <ul className="divide-y divide-border">
-          {requests.map((r) => (
+          {visible.map((r) => (
             <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 py-3" data-signup-email={r.email}>
               <div className="min-w-0">
                 <p className="font-medium text-foreground">{r.companyName}</p>

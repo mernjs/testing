@@ -1,3 +1,5 @@
+"use client";
+
 import { Sparkles, History } from "lucide-react";
 import NotifyMeForm from "@/components/offers/NotifyMeForm";
 import EvergreenSection from "@/components/offers/EvergreenSection";

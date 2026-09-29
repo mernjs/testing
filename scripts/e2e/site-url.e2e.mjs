@@ -46,12 +46,24 @@ async function check(name, fn) {
 const browser = await chromium.launch({ channel: "chrome", headless: true });
 try {
   const context = await browser.newContext({ ignoreHTTPSErrors: true });
+  // Fetch through a real page: the browser resolves *.localhost, Node's request client doesn't.
+  const fetchText = async (url) => {
+    const p = await context.newPage();
+    try {
+      const res = await p.goto(url);
+      const status = res.status();
+      const body = await res.text();
+      return { status: () => status, text: async () => body };
+    } finally {
+      await p.close();
+    }
+  };
   for (const h of hosts) {
     const other = hosts.find((x) => x !== h).site;
     console.log(`${h.label} (${h.base} → ${h.site})`);
 
     await check("sitemap.xml lists only this company's own URLs", async () => {
-      const res = await context.request.get(`${h.base}/sitemap.xml`);
+      const res = await fetchText(`${h.base}/sitemap.xml`);
       assert.equal(res.status(), 200);
       const locs = [...(await res.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
       assert.ok(locs.length > 0, "no <loc> entries");
@@ -61,7 +73,7 @@ try {
     });
 
     await check("robots.txt points at this company's own sitemap", async () => {
-      const res = await context.request.get(`${h.base}/robots.txt`);
+      const res = await fetchText(`${h.base}/robots.txt`);
       assert.equal(res.status(), 200);
       const sitemaps = [...(await res.text()).matchAll(/^Sitemap:\s*(\S+)/gim)].map((m) => m[1]);
       assert.ok(sitemaps.length > 0, "no Sitemap: line");

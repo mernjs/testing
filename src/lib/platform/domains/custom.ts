@@ -57,13 +57,13 @@ export function parseCustomDomain(raw: string): { ok: true; host: string } | { o
   const host = normalizeHost(ascii);
   if (!host || host.length > 253) return { ok: false, error: "That doesn't look like a domain name." };
   if (/^[\d.]+$/.test(host)) return { ok: false, error: "Enter a domain name, not an IP address." };
+  if (host === "localhost" || host.endsWith(".localhost") || host.endsWith(".local") || host.endsWith(".vercel.app")) {
+    return { ok: false, error: "Use a domain you own and can publish DNS records for." };
+  }
   const labels = host.split(".");
   if (labels.length < 2) return { ok: false, error: "Enter a full domain including its ending, like yourcompany.com." };
   if (!labels.every((l) => LABEL_RE.test(l))) return { ok: false, error: "That doesn't look like a domain name." };
   if (!TLD_RE.test(labels[labels.length - 1])) return { ok: false, error: "That domain ending isn't valid." };
-  if (host === "localhost" || host.endsWith(".localhost") || host.endsWith(".local") || host.endsWith(".vercel.app")) {
-    return { ok: false, error: "Use a domain you own and can publish DNS records for." };
-  }
   if (isPlatformHost(host)) return { ok: false, error: "Platform addresses can't be added. Your workspace address is already connected." };
   return { ok: true, host };
 }
