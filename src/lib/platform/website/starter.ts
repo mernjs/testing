@@ -1,0 +1,133 @@
+import "server-only";
+import seedSiteInfo from "../../../../cms-seed/site-info.json";
+import seedContactFields from "../../../../cms-seed/contact-form-fields.json";
+import { getDb } from "@/lib/mongodb";
+import { COLLECTIONS } from "@/lib/cms/db";
+import { createPage, getPageByPath, publishPage } from "@/lib/cms/pages";
+import { createNavItem, listNavItems } from "@/lib/cms/nav";
+import { createFooterColumn, createFooterLink, listFooterColumns } from "@/lib/cms/footer";
+import { getSiteInfoForEdit, saveSiteInfo } from "@/lib/cms/site-info";
+import { parseSiteInfo, type SiteInfo } from "@/lib/cms/site-info-shared";
+import { saveFormFields } from "@/lib/cms/forms";
+import { parsePageSeo } from "@/lib/cms/page-seo";
+import { getCompanyBrand } from "@/lib/platform/branding";
+import { starterFooter, starterNavigation, starterPages } from "@/lib/platform/website/starter-template";
+
+/**
+ * Publishes the neutral starter website into the CURRENT company's CMS —
+ * called when a company is created, so its public site works from minute
+ * one. Idempotent and non-destructive: anything the company already has
+ * (a page at the same path, navigation, footer, site identity) is left alone.
+ */
+
+const ACTOR = "system:starter-website";
+
+/** Replaces the platform owner's name in text VALUES (never in keys — `text` keys are lookup ids). */
+function rebrand<T>(value: T, name: string): T {
+  // A link to the platform owner's own site/assets can't be renamed into this company's — drop it.
+  if (typeof value === "string" && /yashorbit\.com/i.test(value)) return "" as T;
+  if (typeof value === "string") return value.replaceAll("[[YashOrbit]]", "[[brand]]").replaceAll("YashOrbit", name) as T;
+  if (Array.isArray(value)) return value.map((v) => rebrand(v, name)) as T;
+  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, rebrand(v, name)])) as T;
+  return value;
+}
+
+async function starterSiteInfo(name: string, namePrimary: string, nameAccent: string): Promise<SiteInfo> {
+  const base = parseSiteInfo(seedSiteInfo);
+  return rebrand(
+    {
+      ...base,
+      brand: { namePrimary, nameAccent, subtitle: "", logoUrl: "" },
+      header: { ...base.header, askAiLabel: "", askAiHref: "" },
+      floating: { ...base.floating, assistantLabel: "Ask AI" },
+      // Filled in from the company profile (onboarding) — never guessed.
+      contact: { email: "", phoneDisplay: "", phoneHref: "", whatsappHref: "", linkedinHref: "", mapsUrl: "", addressName: "", address: "" },
+      social: [],
+      footer: { ...base.footer, about: `${name} designs, builds and supports software for growing businesses.`, copyright: "All rights reserved.", legalLinks: [{ label: "Privacy Policy", href: "/privacy-policy" }], compactLinks: [{ label: "Privacy Policy", href: "/privacy-policy" }] },
+      shareImage: { alt: name, tag: "", headline: `${name} — Software Development & IT Services`, subline: "Web, mobile, cloud and AI — built around your business.", domain: "", badges: [] },
+    },
+    name,
+  );
+}
+
+export interface StarterResult {
+  pagesCreated: string[];
+  navigation: boolean;
+  footer: boolean;
+  siteInfo: boolean;
+  contactForm: boolean;
+}
+
+export async function publishStarterWebsite(): Promise<StarterResult> {
+  const brand = await getCompanyBrand();
+  const name = brand.name;
+  const result: StarterResult = { pagesCreated: [], navigation: false, footer: false, siteInfo: false, contactForm: false };
+
+  for (const page of starterPages({ name, email: "" })) {
+    if (await getPageByPath(page.path)) continue;
+    const created = await createPage({ path: page.path, title: page.title, templateKey: "starter", sections: page.sections, seo: parsePageSeo(page.seo), frame: "accent" }, ACTOR);
+    if (!created.ok) {
+      console.error(`[starter-website] ${page.path}: ${created.error}`);
+      continue;
+    }
+    const published = await publishPage(created.id, ACTOR, "Starter website");
+    if (published.ok) result.pagesCreated.push(page.path);
+    else console.error(`[starter-website] publish ${page.path}: ${published.error}`);
+  }
+
+  if ((await listNavItems()).length === 0) {
+    for (const top of starterNavigation()) {
+      const parent = await createNavItem({ parentId: null, label: top.name, href: top.href, iconKey: top.iconKey, featuredTitle: top.featured.title, featuredDescription: top.featured.description, featuredImage: top.featured.image }, ACTOR);
+      for (const item of top.items) await createNavItem({ parentId: parent._id, label: item.name, href: item.href, description: item.description, iconKey: item.iconKey }, ACTOR);
+    }
+    result.navigation = true;
+  }
+
+  if ((await listFooterColumns()).length === 0) {
+    for (const col of starterFooter()) {
+      const column = await createFooterColumn({ title: col.title, viewAllHref: col.viewAllHref, viewAllLabel: col.viewAllLabel }, ACTOR);
+      for (const link of col.links) await createFooterLink({ columnId: column._id, label: link.label, href: link.href }, ACTOR);
+    }
+    result.footer = true;
+  }
+
+  const currentInfo = await getSiteInfoForEdit();
+  if (!currentInfo.brand.namePrimary && !currentInfo.brand.nameAccent) {
+    await saveSiteInfo(await starterSiteInfo(name, brand.namePrimary, brand.nameAccent), ACTOR);
+    result.siteInfo = true;
+  }
+
+  const forms = (await getDb()).collection<{ _id: string; fields?: unknown[] }>(COLLECTIONS.forms);
+  if (!(await forms.findOne({ _id: "contact" }))?.fields?.length) {
+    await saveFormFields("contact", seedContactFields as Parameters<typeof saveFormFields>[1], ACTOR);
+    result.contactForm = true;
+  }
+
+  // Site-wide defaults: legal name + maintenance text, only when unset.
+  const settings = (await getDb()).collection<{ _id: string; companyLegalName?: string; maintenanceMode?: unknown }>(COLLECTIONS.settings);
+  await settings.updateOne(
+    { _id: "default" },
+    { $setOnInsert: { companyLegalName: name, maintenanceMode: { title: `Down for maintenance | ${name}`, heading: "We'll be right back", message: "We're making some improvements — check back shortly." }, createdAt: new Date() } },
+    { upsert: true },
+  );
+  return result;
+}
+
+/**
+ * Keeps the public site's contact block in step with the company profile —
+ * only fills fields that are still blank, so edits made in the CMS win.
+ */
+export async function syncSiteContact(contact: { email: string; phone: string }): Promise<void> {
+  const info = await getSiteInfoForEdit();
+  if (!info.brand.namePrimary && !info.brand.nameAccent) return; // no site identity yet
+  const email = contact.email.trim();
+  const phone = contact.phone.trim();
+  const digits = phone.replace(/[^\d+]/g, "");
+  const next = {
+    ...info.contact,
+    email: info.contact.email || email,
+    phoneDisplay: info.contact.phoneDisplay || phone,
+    phoneHref: info.contact.phoneHref || (digits ? `tel:${digits}` : ""),
+  };
+  if (JSON.stringify(next) !== JSON.stringify(info.contact)) await saveSiteInfo({ ...info, contact: next }, ACTOR);
+}

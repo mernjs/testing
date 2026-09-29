@@ -3,6 +3,7 @@ import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import { currentCompanyId } from "@/lib/platform/tenancy/context";
 import { COMPANIES_COLLECTION, forgetCompanyRouting, type Company } from "@/lib/platform/tenancy/companies";
 import { getCompanyDetails, updateCompanyDetails } from "@/lib/hrms/company";
+import { syncSiteContact } from "@/lib/platform/website/starter";
 import { createDepartment, createDesignation, listDepartments, listDesignations } from "@/lib/hrms/departments";
 import { COMPANY_SIZES, CURRENCIES, INDUSTRIES, MODULES, ONBOARDING_STEPS, type DepartmentTemplate, type Industry, type ModuleKey, type OnboardingStep } from "@/lib/platform/onboarding/catalog";
 
@@ -120,6 +121,8 @@ export async function saveProfile(input: ProfileInput, actorId: string): Promise
     },
     actorId,
   );
+  // The public website's contact block starts blank; fill it from the profile (CMS edits win).
+  await syncSiteContact({ email: input.email, phone: input.phone });
   await markOnboardingStep("profile");
   return { ok: true };
 }

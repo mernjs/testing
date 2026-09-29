@@ -13,6 +13,7 @@ unaware of this layer beyond calling `getDb()`, which is company-scoped.
 | Path | What it does |
 |---|---|
 | `tenancy/` | Company registry, host → company routing, the company-scoped DB layer, per-company caching, provisioning a new company |
+| `website/` | Neutral starter website published for every new company (Home, Services, About, Contact, Privacy) |
 | `onboarding/` | Setup wizard catalog (industries, department templates, role presets, panels) and progress |
 | `signup.ts` | Self-serve sign-up: pending sign-ups, email verification, hand-off sign-in |
 | `invitations.ts` | Team invitations and acceptance (creates HRMS employee + login) |

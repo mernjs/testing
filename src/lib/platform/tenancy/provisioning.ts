@@ -6,6 +6,7 @@ import { slugFormatError } from "@/lib/platform/tenancy/slug";
 import { COMPANIES_COLLECTION, COMPANY_DOMAINS_COLLECTION, forgetCompanyRouting, type Company, type CompanyDomain } from "@/lib/platform/tenancy/companies";
 import { activeDomainProvider } from "@/lib/platform/domains";
 import { getDb } from "@/lib/mongodb";
+import { publishStarterWebsite } from "@/lib/platform/website/starter";
 
 /**
  * Creating a company (tenant): the one code path shared by self-serve sign-up
@@ -101,6 +102,9 @@ export async function createCompanyWithOwner(input: NewCompany): Promise<Provisi
   );
   const hostingError = await attachAtProvider(host);
   forgetCompanyRouting();
+
+  // A working public site from minute one (neutral starter pages, editable in the CMS). Non-fatal.
+  await runAsCompany(company._id, () => publishStarterWebsite()).catch((err) => console.error(`[provisioning] starter website for ${company.slug} failed`, err));
 
   return { ok: true, companyId: company._id, adminId, host, hostingError };
 }
