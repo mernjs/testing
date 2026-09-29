@@ -14,7 +14,8 @@ unaware of this layer beyond calling `getDb()`, which is company-scoped.
 |---|---|
 | `tenancy/` | Company registry, host → company routing, the company-scoped DB layer, per-company caching, provisioning a new company |
 | `onboarding/` | Setup wizard catalog (industries, department templates, role presets, panels) and progress |
-| `signup.ts` | Self-serve sign-up: pending sign-ups, email verification, hand-off sign-in |
+| `signup.ts` | Self-serve sign-up: pending sign-ups, email verification, hand-off sign-in, the approval queue (approve/reject) |
+| `console/` | Platform owner console (cross-company, raw DB): company list/detail, suspend/reactivate, platform KPIs, access guard. UI in `src/app/(platform)/console` |
 | `invitations.ts` | Team invitations and acceptance (creates HRMS employee + login) |
 | `settings.ts` | Platform-wide settings (sign-up mode) |
 | `email/` | Outgoing email behind a swappable provider (`EMAIL_PROVIDER`: Resend, console) |
@@ -27,7 +28,6 @@ unaware of this layer beyond calling `getDb()`, which is company-scoped.
 |---|---|
 | Branding & white-label | `branding/` |
 | Custom domains settings | `domains/` (UI in `src/app/(platform)/settings/domains`) |
-| Platform owner console | `console/` (UI in `src/app/(platform)/console`) |
 | Plans, trials, subscriptions, module entitlements | `billing/` |
 | Event bus, Trigger → Condition → Action workflows | `events/`, `workflows/` |
 | Company dashboard, global search, notifications, audit | `search/`, `notifications/`, `audit/` |

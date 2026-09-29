@@ -17,7 +17,8 @@ import { hashPassword } from "@/lib/lms-auth";
  *     its owner and its subdomain, then issues a one-time hand-off token.
  *  3. The hand-off (`consumeHandoff`) runs on the new company's own host —
  *     cookies can't cross domains — and signs the owner in there.
- * In `approval` mode step 2 parks the sign-up for a platform admin instead.
+ * In `approval` mode step 2 parks the sign-up for a platform admin instead,
+ * who approves (`approveSignup`) or rejects it from the platform console.
  */
 
 const PENDING = "pending_signups";
@@ -198,17 +199,96 @@ export async function confirmSignup(token: string, ctx: { hostHint: string | nul
   }
 
   const base = companyBaseUrl(doc.slug, ctx.hostHint);
-  const { html, text } = renderEmail({
-    brand: doc.companyName,
-    heading: "Your workspace is ready",
-    paragraphs: [`Hi ${doc.name},`, `${doc.companyName} is set up. Sign in any time at your workspace address:`, base],
-    action: { label: "Open your workspace", url: `${base}/workspace/login` },
-  });
-  void sendEmail({ to: doc.email, subject: `Welcome — ${doc.companyName} is ready`, html, text });
+  void sendWorkspaceReadyEmail(doc, base);
 
   const handoff = randomBytes(32).toString("hex");
   await handoffs.insertOne({ _id: sha256(handoff), companyId: created.companyId, adminId: created.adminId, next: "/onboarding", expiresAt: new Date(Date.now() + HANDOFF_TTL_MS) });
   return { ok: true, redirectTo: `${base}/workspace/handoff?token=${handoff}` };
+}
+
+function sendWorkspaceReadyEmail(doc: PendingSignup, base: string, approved = false) {
+  const { html, text } = renderEmail({
+    brand: doc.companyName,
+    heading: approved ? "Your workspace has been approved" : "Your workspace is ready",
+    paragraphs: [`Hi ${doc.name},`, `${doc.companyName} is set up. Sign in any time at your workspace address with the password you chose:`, base],
+    action: { label: "Open your workspace", url: `${base}/workspace/login` },
+  });
+  return sendEmail({ to: doc.email, subject: `Welcome — ${doc.companyName} is ready`, html, text });
+}
+
+// ── Approval queue (sign-up mode "approval"; decided in the platform console) ──
+
+export interface AwaitingApproval {
+  id: string;
+  email: string;
+  name: string;
+  companyName: string;
+  slug: string;
+  createdAt: Date;
+  expiresAt: Date;
+}
+
+export async function countAwaitingApproval(): Promise<number> {
+  const { pending } = await collections();
+  return pending.countDocuments({ status: "awaiting_approval", expiresAt: { $gt: new Date() } });
+}
+
+/** Oldest first. Never exposes the password hash or token hash. */
+export async function listAwaitingApproval(): Promise<AwaitingApproval[]> {
+  const { pending } = await collections();
+  const docs = await pending
+    .find({ status: "awaiting_approval", expiresAt: { $gt: new Date() } }, { projection: { email: 1, name: 1, companyName: 1, slug: 1, createdAt: 1, expiresAt: 1 } })
+    .sort({ createdAt: 1 })
+    .toArray();
+  return docs.map((d) => ({ id: d._id, email: d.email, name: d.name, companyName: d.companyName, slug: d.slug, createdAt: d.createdAt, expiresAt: d.expiresAt }));
+}
+
+export type ApprovalResult = { ok: true; companyId: string; host: string; emailed: boolean } | { ok: false; error: string };
+
+/**
+ * Creates the company exactly as a confirmed sign-up in open mode would, then
+ * emails the owner a sign-in link. Claimed atomically, so two admins clicking
+ * Approve at once create one company; on failure the request goes back in the
+ * queue with the reason reported.
+ */
+export async function approveSignup(id: string, ctx: { hostHint: string | null }): Promise<ApprovalResult> {
+  const { pending } = await collections();
+  const doc = await pending.findOneAndDelete({ _id: id, status: "awaiting_approval" });
+  if (!doc) return { ok: false, error: "This request was already decided or has expired." };
+
+  if (await isSlugTaken(doc.slug)) {
+    await pending.insertOne(doc);
+    return { ok: false, error: `The address "${doc.slug}" is now used by another company. Reject this request and ask ${doc.email} to sign up again with a different address.` };
+  }
+  const created = await createCompanyWithOwner({
+    name: doc.companyName,
+    slug: doc.slug,
+    owner: { email: doc.email, name: doc.name, passwordHash: doc.passwordHash, mustChangePassword: false },
+  });
+  if (!created.ok) {
+    await pending.insertOne(doc);
+    return { ok: false, error: created.error };
+  }
+  const sent = await sendWorkspaceReadyEmail(doc, companyBaseUrl(doc.slug, ctx.hostHint), true);
+  return { ok: true, companyId: created.companyId, host: created.host, emailed: sent.ok };
+}
+
+/** Drops the request (and its stored password hash) and lets the person know. */
+export async function rejectSignup(id: string): Promise<{ ok: true; emailed: boolean } | { ok: false; error: string }> {
+  const { pending } = await collections();
+  const doc = await pending.findOneAndDelete({ _id: id, status: "awaiting_approval" });
+  if (!doc) return { ok: false, error: "This request was already decided or has expired." };
+  const { html, text } = renderEmail({
+    brand: "YashOrbit",
+    heading: "About your workspace request",
+    paragraphs: [
+      `Hi ${doc.name},`,
+      `Thank you for your interest in creating ${doc.companyName} on YashOrbit. We're not able to approve this request at the moment, so no workspace has been created and your details have been removed.`,
+      "If you think this is a mistake, simply reply to this email and we'll take another look.",
+    ],
+  });
+  const sent = await sendEmail({ to: doc.email, subject: "About your YashOrbit workspace request", html, text });
+  return { ok: true, emailed: sent.ok };
 }
 
 /** Single-use: returns who to sign in, only for the company the request is on. */

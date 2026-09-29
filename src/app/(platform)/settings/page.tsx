@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowUpRight, Building2, Palette, Users } from "lucide-react";
+import { ArrowUpRight, Building2, Globe2, Palette, Users } from "lucide-react";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { getCompanyBrand } from "@/lib/platform/branding";
+import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 
 export const metadata: Metadata = { title: "Company settings", robots: { index: false, follow: false } };
 
@@ -16,11 +17,15 @@ const SECTIONS = [
   { href: "/admin/users", icon: Users, title: "Users & roles", description: "Who can sign in and which panels each person can use." },
 ];
 
+/** Only on the platform owner's own workspace. */
+const CONSOLE_SECTION = { href: "/console", icon: Globe2, title: "Platform console", description: "Every company on the platform, suspensions and sign-up approvals." };
+
 export default async function CompanySettingsPage() {
   const user = await getCurrentHubUser();
   if (!user) redirect("/workspace/login");
   if (!user.roles.includes("super_admin")) redirect("/workspace");
-  const brand = await getCompanyBrand();
+  const [brand, isOwner] = await Promise.all([getCompanyBrand(), isPlatformOwnerContext()]);
+  const sections = isOwner ? [...SECTIONS, CONSOLE_SECTION] : SECTIONS;
 
   return (
     <div className="min-h-screen bg-background px-4 py-10">
@@ -30,7 +35,7 @@ export default async function CompanySettingsPage() {
           <p className="text-sm text-muted-foreground">Company-wide configuration. Only Super Admins see this.</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
-          {SECTIONS.map(({ href, icon: Icon, title, description }) => (
+          {sections.map(({ href, icon: Icon, title, description }) => (
             <Link key={href} href={href} className="group">
               <GlassCard className="h-full transition-colors group-hover:border-primary/40">
                 <CardHeader>
