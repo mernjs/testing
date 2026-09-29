@@ -7,6 +7,7 @@ import { COMPANIES_COLLECTION, COMPANY_DOMAINS_COLLECTION, forgetCompanyRouting,
 import { activeDomainProvider, type DomainStatus } from "@/lib/platform/domains";
 import { getDb } from "@/lib/mongodb";
 import { publishStarterWebsite } from "@/lib/platform/website/starter";
+import { startTrial } from "@/lib/platform/billing/subscription";
 
 /**
  * Creating a company (tenant): the one code path shared by self-serve sign-up
@@ -102,6 +103,9 @@ export async function createCompanyWithOwner(input: NewCompany): Promise<Provisi
   );
   const hostingError = await attachAtProvider(host);
   forgetCompanyRouting();
+
+  // Every new company starts on a free trial of the default plan. Non-fatal.
+  await startTrial(company._id).catch((err) => console.error(`[provisioning] trial for ${company.slug} failed`, err));
 
   // A working public site from minute one (neutral starter pages, editable in the CMS). Non-fatal.
   await runAsCompany(company._id, () => publishStarterWebsite()).catch((err) => console.error(`[provisioning] starter website for ${company.slug} failed`, err));

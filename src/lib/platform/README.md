@@ -23,13 +23,13 @@ unaware of this layer beyond calling `getDb()`, which is company-scoped.
 | `email/` | Outgoing email behind a swappable provider (`EMAIL_PROVIDER`: Resend, console) |
 | `domains/` | Hostname attach/verify/SSL behind a swappable provider (`DOMAIN_PROVIDER`: Vercel, manual) |
 | `domains/custom.ts` | A company's own domains: add, TXT ownership check, primary, remove, daily re-check (UI in `src/app/(platform)/settings/domains`, cron `/api/platform/domains/cron`) |
+| `billing/` | Plans, subscriptions, entitlements (`getEntitlements()` — what the current company may use), usage metering, SaaS invoices. Contract in `billing/types.ts` |
 | `request.ts` | Request origin / client key helpers |
 
 ## Where future phases go
 
 | Phase | Folder |
 |---|---|
-| Plans, trials, subscriptions, module entitlements | `billing/` |
 | Event bus, Trigger → Condition → Action workflows | `events/`, `workflows/` |
 | Company dashboard, global search, notifications, audit | `search/`, `notifications/`, `audit/` |
 | AI engine, integrations, import/migration | `ai/`, `integrations/`, `import/` |

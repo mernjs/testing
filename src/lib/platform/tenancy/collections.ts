@@ -13,6 +13,10 @@ export const GLOBAL_COLLECTIONS = new Set<string>([
   "pending_signups",
   "signup_attempts",
   "login_handoffs",
+  // Billing (platform-level: the platform bills companies)
+  "billing_plans",
+  "saas_invoices",
+  "billing_webhook_events",
 ]);
 
 /**
@@ -74,6 +78,7 @@ export const KEYED_COLLECTIONS = new Set<string>([
   "aibots_bots", // the built-in "general" bot has a fixed _id
   "wallet_idempotency_locks",
   "fms_idempotency_keys",
+  "billing_usage", // _id = <metric>:<yyyy-mm>
 ]);
 
 export const KEY_SEPARATOR = "::";
