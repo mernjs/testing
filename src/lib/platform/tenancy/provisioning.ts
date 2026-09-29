@@ -4,7 +4,7 @@ import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import { runAsCompany } from "@/lib/platform/tenancy/context";
 import { slugFormatError } from "@/lib/platform/tenancy/slug";
 import { COMPANIES_COLLECTION, COMPANY_DOMAINS_COLLECTION, forgetCompanyRouting, type Company, type CompanyDomain } from "@/lib/platform/tenancy/companies";
-import { activeDomainProvider } from "@/lib/platform/domains";
+import { activeDomainProvider, type DomainStatus } from "@/lib/platform/domains";
 import { getDb } from "@/lib/mongodb";
 import { publishStarterWebsite } from "@/lib/platform/website/starter";
 
@@ -115,21 +115,42 @@ export async function createCompanyWithOwner(input: NewCompany): Promise<Provisi
  * Domains settings page shows the error and retries.
  */
 export async function attachAtProvider(host: string): Promise<string | null> {
+  return (await syncAtProvider(host, "add")).error;
+}
+
+export interface ProviderSync {
+  providerId: string;
+  /** null when the call failed (see `error`) or nothing needed attaching. */
+  status: DomainStatus | null;
+  error: string | null;
+}
+
+/**
+ * One provider call for a host — `add` attaches it, `status` reads it,
+ * `verify` asks the provider to re-check ownership now — with the outcome
+ * stored on the domain record's `provider` field. Never throws.
+ */
+export async function syncAtProvider(host: string, op: "add" | "status" | "verify"): Promise<ProviderSync> {
   const platform = await getPlatformDb();
   const domains = platform.collection<CompanyDomain>(COMPANY_DOMAINS_COLLECTION);
   // A *.localhost address needs nothing attached anywhere.
-  if (host.endsWith(".localhost")) return null;
+  if (host.endsWith(".localhost")) return { providerId: "none", status: null, error: null };
   const provider = activeDomainProvider();
   let error: string | null = null;
-  let state = { attached: false, verified: false, dnsConfigured: false };
+  let status: DomainStatus | null = null;
   try {
-    const res = await provider.add(host);
-    if (res.ok) state = res.value;
+    const res = await provider[op](host);
+    if (res.ok) status = res.value;
     else error = res.error;
   } catch (err) {
     error = err instanceof Error ? err.message : String(err);
   }
-  await domains.updateOne({ _id: host }, { $set: { provider: { id: provider.id, ...state, error, checkedAt: new Date() } } });
-  if (error) console.error(`[domains] attaching ${host} failed`, error);
-  return error;
+  const state = status ?? { attached: false, verified: false, dnsConfigured: false, records: [] };
+  // Once the provider has demanded its own ownership proof (a TXT challenge),
+  // that stays on record: it's what lets custom.ts trust a later "verified".
+  const previous = await domains.findOne({ _id: host }, { projection: { provider: 1 } });
+  const challenged = Boolean(previous?.provider?.challenged) || (!state.verified && state.records.some((r) => r.type === "TXT"));
+  await domains.updateOne({ _id: host }, { $set: { provider: { id: provider.id, ...state, error, checkedAt: new Date(), challenged } } });
+  if (error) console.error(`[domains] ${op} ${host} at ${provider.id} failed`, error);
+  return { providerId: provider.id, status, error };
 }

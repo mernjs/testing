@@ -21,6 +21,7 @@ unaware of this layer beyond calling `getDb()`, which is company-scoped.
 | `settings.ts` | Platform-wide settings (sign-up mode) |
 | `email/` | Outgoing email behind a swappable provider (`EMAIL_PROVIDER`: Resend, console) |
 | `domains/` | Hostname attach/verify/SSL behind a swappable provider (`DOMAIN_PROVIDER`: Vercel, manual) |
+| `domains/custom.ts` | A company's own domains: add, TXT ownership check, primary, remove, daily re-check (UI in `src/app/(platform)/settings/domains`, cron `/api/platform/domains/cron`) |
 | `request.ts` | Request origin / client key helpers |
 
 ## Where future phases go

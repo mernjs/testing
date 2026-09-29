@@ -38,7 +38,7 @@ interface ProjectDomain {
 }
 
 /** DNS the owner must publish so traffic reaches Vercel: apex → A record, subdomain → CNAME. */
-function routingRecord(host: string): DnsRecord {
+export function routingRecord(host: string): DnsRecord {
   const labels = host.split(".");
   return labels.length <= 2
     ? { type: "A", name: "@", value: "76.76.21.21", reason: "Points the domain at the hosting platform" }

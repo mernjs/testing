@@ -32,3 +32,25 @@ export interface DomainProvider {
   verify(host: string): Promise<DomainResult<DomainStatus>>;
   remove(host: string): Promise<DomainResult<null>>;
 }
+
+/** Whether one record the owner must publish is in place, as of the last check. */
+export type RecordState = "ok" | "missing" | "mismatch" | "unknown";
+
+/** A company domain as the Domains settings page shows it (serialisable, safe for the client). */
+export interface CompanyDomainView {
+  host: string;
+  kind: "subdomain" | "custom";
+  status: "pending" | "verified";
+  isPrimary: boolean;
+  /** Added from Settings → Domains (the automatic and operator-attached addresses aren't). */
+  removable: boolean;
+  createdAt: string;
+  verifiedAt: string | null;
+  /** Records the owner must publish, each with whether it's in place. Empty = nothing to do. */
+  records: (DnsRecord & { state: RecordState })[];
+  /** Hosting side (routing + TLS). `ssl: "manual"` = attached by the platform operator, not an API. */
+  hosting: { providerId: string | null; dnsConfigured: boolean; ssl: "active" | "pending" | "manual" | "error"; error: string | null };
+  lastCheckedAt: string | null;
+}
+
+export type DomainActionResult = { ok: true; domains: CompanyDomainView[]; message?: string } | { ok: false; error: string };

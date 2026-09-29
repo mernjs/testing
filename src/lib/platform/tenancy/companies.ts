@@ -1,4 +1,5 @@
 import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
+import type { DnsRecord } from "@/lib/platform/domains/types";
 import { RESERVED_SLUGS } from "@/lib/platform/tenancy/slug";
 
 /**
@@ -43,7 +44,20 @@ export interface CompanyDomain {
   /** `subdomain` = the automatic `<slug>.<root>` address; `custom` = the company's own domain. */
   kind?: "subdomain" | "custom";
   /** Last known state at the hosting provider (routing + TLS), from `activeDomainProvider()`. */
-  provider?: { id: string; attached: boolean; verified: boolean; dnsConfigured: boolean; error: string | null; checkedAt: Date };
+  provider?: {
+    id: string;
+    attached: boolean;
+    verified: boolean;
+    dnsConfigured: boolean;
+    error: string | null;
+    checkedAt: Date;
+    /** Records the provider still wants published (its own ownership challenge, routing). */
+    records?: DnsRecord[];
+    /** The provider demanded its own ownership proof at some point — see `domains/custom.ts`. */
+    challenged?: boolean;
+  };
+  /** Outcome of the last ownership check of a custom domain (`domains/custom.ts`). */
+  lastCheck?: { at: Date; txt: "found" | "missing" | "mismatch" | "error"; detail: string | null };
   createdAt: Date;
   verifiedAt: Date | null;
 }
@@ -70,6 +84,15 @@ function platformHosts(): Set<string> {
 
 function platformRootDomains(): string[] {
   return ["localhost", ...envList("PLATFORM_ROOT_DOMAIN")];
+}
+
+/**
+ * Whether a host belongs to the platform itself — a platform host, a root
+ * domain, or any address under one — and so can never be a company's own domain.
+ */
+export function isPlatformHost(host: string): boolean {
+  if (platformHosts().has(host)) return true;
+  return platformRootDomains().some((root) => host === root || host.endsWith(`.${root}`));
 }
 
 // Host → company id, per server instance. Positive answers are cached longer
