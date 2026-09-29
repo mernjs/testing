@@ -1,5 +1,5 @@
 import "server-only";
-import { unstable_cache } from "next/cache";
+import { companyCache } from "@/lib/platform/tenancy/cache";
 import { getDb } from "@/lib/mongodb";
 import { COLLECTIONS, CMS_SITE_TAG } from "@/lib/cms/db";
 import type { PageSection } from "@/lib/cms/section-registry";
@@ -57,7 +57,7 @@ async function loadPublishedPages(): Promise<Record<string, PublishedPage>> {
   return out;
 }
 
-const cachedPublishedPages = unstable_cache(loadPublishedPages, ["cms-published-pages-v3"], { tags: [CMS_SITE_TAG], revalidate: 3600 });
+const cachedPublishedPages = companyCache(loadPublishedPages, ["cms-published-pages-v3"], { tags: [CMS_SITE_TAG], revalidate: 3600 });
 
 export interface PublicPage {
   path: string;

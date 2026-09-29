@@ -13,6 +13,9 @@ import { recordAudit } from "@/lib/fms/audit";
 import { getInvoice, applyReceiptToInvoice } from "@/lib/fms/invoices";
 import { recordReceipt } from "@/lib/fms/receipts";
 import { PaymentProviderId, getPaymentProvider } from "./provider";
+import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+
+const LIVE_GATEWAYS = new Set<string>(["razorpay", "stripe", "cashfree", "payu"]);
 
 export const PAYMENT_INTENTS_COLLECTION = "fms_payment_intents";
 const INTENT_NUMBER_PREFIX = "PAY";
@@ -248,6 +251,10 @@ export async function createPaymentIntent(
   }
 
   const providerId = data.paymentProvider || "mock";
+  // Real gateways run on the platform owner's env credentials — its own merchant account.
+  if (LIVE_GATEWAYS.has(providerId) && !(await isPlatformOwnerContext())) {
+    return { ok: false, reason: "Online payment collection isn't connected for this workspace yet. Record the payment offline instead." };
+  }
   const provider = getPaymentProvider(providerId);
   const intentId = newId();
   const paymentNumber = await generatePaymentNumber();

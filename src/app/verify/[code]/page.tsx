@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle2, XCircle, ShieldCheck } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
-import { brandify } from "@/lib/brand";
 import { getCertificateByCode, type CertificateView } from "@/lib/tms/certificates";
 import { getDb } from "@/lib/mongodb";
 import { getTmsSettings } from "@/lib/tms/settings";
 import { CERTIFICATE_TYPES } from "@/lib/tms/constants";
 import { certificateState, getCertificateByCode as getOtsCertificateByCode, type OtsCertificate } from "@/lib/ots/certificates";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 export const metadata: Metadata = {
   title: "Certificate Verification",
@@ -52,7 +52,7 @@ function OtsVerification({ cert }: { cert: OtsCertificate }) {
     <div className="lms-shell flex min-h-screen flex-col items-center justify-center gap-6 bg-[#e9ebee] px-4 py-12 dark:bg-background">
       <div className="flex items-center gap-2 text-lg font-bold">
         <BrandMark className="size-7 shrink-0" />
-        {brandify("YashOrbit")} <span className="text-foreground">Assessments</span>
+        <BrandName /> <span className="text-foreground">Assessments</span>
       </div>
       <div className="w-full max-w-md rounded-3xl border border-border/40 bg-background/95 p-6 shadow-none backdrop-blur-md dark:bg-card/85">
         <div className="flex flex-col items-center gap-2 border-b border-border/60 pb-4 text-center">
@@ -93,7 +93,7 @@ export default async function VerifyCertificatePage({ params }: { params: Promis
     <div className="lms-shell flex min-h-screen flex-col items-center justify-center gap-6 bg-[#e9ebee] px-4 py-12 dark:bg-background">
       <div className="flex items-center gap-2 text-lg font-bold">
         <BrandMark className="size-7 shrink-0" />
-        {brandify("YashOrbit")} <span className="text-foreground">Training</span>
+        <BrandName /> <span className="text-foreground">Training</span>
       </div>
 
       <div className="w-full max-w-md rounded-3xl border border-border/40 bg-background/95 p-6 shadow-none backdrop-blur-md dark:bg-card/85">

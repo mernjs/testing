@@ -1,5 +1,6 @@
 import "server-only";
 import ExcelJS from "exceljs";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 export interface SheetColumn {
   header: string;
@@ -19,7 +20,7 @@ export interface SheetSpec {
 /** Builds a formatted .xlsx workbook as a Node Buffer. */
 export async function buildWorkbook(sheets: SheetSpec[]): Promise<Buffer> {
   const wb = new ExcelJS.Workbook();
-  wb.creator = "YashOrbit PMS";
+  wb.creator = `${(await getCompanyBrand()).name} PMS`;
   wb.created = new Date();
 
   for (const spec of sheets) {

@@ -9,9 +9,10 @@ import { PORTAL_ROLE_META } from "@/lib/portal-roles";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import ProfileForm from "@/components/portal/ProfileForm";
 import { portalLogoutAction } from "@/app/portal/(app)/actions";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Profile · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Profile · {brand} Portal");
 
 export default async function ProfilePage() {
   const user = await guardPortalPage();

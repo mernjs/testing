@@ -1,6 +1,6 @@
 import "server-only";
 import type { Metadata } from "next";
-import { unstable_cache } from "next/cache";
+import { companyCache } from "@/lib/platform/tenancy/cache";
 import { getDb } from "@/lib/mongodb";
 import { COLLECTIONS, CMS_SITE_TAG, expireSiteCache, updateStamp } from "@/lib/cms/db";
 
@@ -38,7 +38,7 @@ export async function getSiteSeoForEdit(): Promise<SiteSeo> {
   return doc?.siteSeo ? parseSiteSeo(doc.siteSeo) : EMPTY;
 }
 
-const cached = unstable_cache(getSiteSeoForEdit, ["cms-site-seo-v1"], { tags: [CMS_SITE_TAG], revalidate: 300 });
+const cached = companyCache(getSiteSeoForEdit, ["cms-site-seo-v1"], { tags: [CMS_SITE_TAG], revalidate: 300 });
 
 /** Public read. If the CMS is unreachable this throws, and Next.js keeps serving the last good render. */
 export async function getSiteSeo(): Promise<SiteSeo> {

@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import MessengerSidebar from "@/components/messenger/MessengerSidebar";
 import BrandMark from "@/components/BrandMark";
-import { brandify } from "@/lib/brand";
 import type { ChatRole } from "@/lib/messenger-roles";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 export default function MessengerMobileSidebar({
   roles,
@@ -34,7 +34,7 @@ export default function MessengerMobileSidebar({
           <div className="flex h-14 items-center gap-2 border-b border-border/60 px-4">
             <BrandMark className="size-6 shrink-0" />
             <span className="text-sm font-bold">
-              {brandify("YashOrbit")} <span className="text-foreground">Messenger</span>
+              <BrandName /> <span className="text-foreground">Messenger</span>
             </span>
           </div>
           <MessengerSidebar

@@ -9,9 +9,10 @@ import { offerStatusMeta } from "@/lib/hrms/offers-status";
 import { HiringTimeline, InfoCard, PortalPageHeader } from "@/components/portal/widgets";
 import EmptyPortalState from "@/components/portal/EmptyPortalState";
 import { cn } from "@/lib/utils";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "My Application · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("My Application · {brand} Portal");
 
 export default async function ApplicationPage() {
   const user = await guardPortalPage("job_applicant");

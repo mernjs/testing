@@ -36,6 +36,7 @@ import { seedAibots, AIBOTS_DEMO_ACCOUNTS } from "./demo/aibots.mjs";
 import { seedSmms, SMMS_DEMO_ACCOUNTS } from "./demo/smms.mjs";
 import { seedOts, OTS_DEMO_ACCOUNTS, OTS_PORTAL_ACCOUNTS } from "./demo/ots.mjs";
 import { seedSeo, SEO_DEMO_ACCOUNTS } from "./demo/seo.mjs";
+import { assertSingleCompany } from "./lib/single-company-guard.mjs";
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -47,6 +48,7 @@ const client = new MongoClient(uri);
 try {
   await client.connect();
   const db = client.db(process.env.SEED_DB || undefined);
+  await assertSingleCompany(db);
   console.log("==========================================================================");
   console.log(`🌱 DEMO SEEDER — External Portal + linked panels  (database: ${db.databaseName})`);
   console.log("==========================================================================");

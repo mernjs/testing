@@ -12,8 +12,9 @@ import { EmptyState } from "@/components/dlms/DlmsUi";
 import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const metadata = { title: "YashOrbit Digi Locker", robots: { index: false, follow: false } };
+export const generateMetadata = () => brandedMetadata("{brand} Digi Locker", { robots: { index: false, follow: false } });
 
 export default async function ProtectedDlmsLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentDlmsUser();

@@ -13,6 +13,7 @@ import { EMPLOYEES_COLLECTION, employeeFullName, type Employee } from "@/lib/hrm
 import { DEPARTMENTS_COLLECTION, type Department } from "@/lib/hrms/departments";
 import { ATTENDANCE_COLLECTION, writeLeaveAttendance, clearLeaveAttendance } from "@/lib/hrms/attendance";
 import { notify, notifyEmployee } from "@/lib/hrms/notifications";
+import { currentCompanyId } from "@/lib/platform/tenancy/context";
 
 export const LEAVE_TYPES_COLLECTION = "hrms_leave_types";
 export const LEAVE_BALANCES_COLLECTION = "hrms_leave_balances";
@@ -41,13 +42,14 @@ const DEFAULT_LEAVE_TYPES: Omit<LeaveType, keyof AuditFields | "_id">[] = [
   { code: "unpaid", label: "Unpaid Leave", paid: false, defaultAnnualQuota: 0, allowNegativeBalance: true, colorClass: "bg-muted text-muted-foreground", active: true },
 ];
 
-let leaveTypesSeeded = false;
+const leaveTypesSeeded = new Set<string>(); // company ids
 
 async function getLeaveTypesCollection() {
   const db = await getDb();
   const collection = db.collection<LeaveType>(LEAVE_TYPES_COLLECTION);
-  if (!leaveTypesSeeded) {
-    leaveTypesSeeded = true;
+  const companyId = await currentCompanyId();
+  if (!leaveTypesSeeded.has(companyId)) {
+    leaveTypesSeeded.add(companyId);
     await collection.createIndex({ code: 1 }, { unique: true }).catch(() => {});
     const count = await collection.countDocuments({});
     if (count === 0) {

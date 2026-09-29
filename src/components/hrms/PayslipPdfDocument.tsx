@@ -1,8 +1,9 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import type { PayslipPdfData, PayLine } from "@/lib/hrms/payslip-pdf";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter } from "@/lib/pdf/layout";
+import { renderPdf } from "@/lib/pdf/identity";
 
 /**
  * Server-only. Renders a professional A4 payslip PDF with @react-pdf/renderer.
@@ -209,5 +210,5 @@ function PayslipDocument({ data }: { data: PayslipPdfData }) {
 }
 
 export function renderPayslipPdf(data: PayslipPdfData): Promise<Buffer> {
-  return renderToBuffer(<PayslipDocument data={data} />);
+  return renderPdf(<PayslipDocument data={data} />);
 }

@@ -3,6 +3,7 @@
 // Run: npm run db:seed-wallet-rules
 import { MongoClient } from "mongodb";
 import { randomUUID } from "node:crypto";
+import { assertSingleCompany } from "./lib/single-company-guard.mjs";
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -40,6 +41,7 @@ const USAGE = [
 const client = new MongoClient(uri);
 try {
   await client.connect();
+  await assertSingleCompany(client.db());
   const col = client.db().collection("wallet_reward_rules");
   for (const d of DEFAULTS) {
     const exists = await col.findOne({ type: d.type, appliesToRole: d.appliesToRole, subKey: d.subKey ?? null, deletedAt: null });

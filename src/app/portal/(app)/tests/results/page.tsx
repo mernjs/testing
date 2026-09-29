@@ -7,9 +7,10 @@ import { guardPortalPage } from "@/lib/portal/guard";
 import { TEST_TAKER_ROLES } from "@/lib/portal-roles";
 import { resolveTaker, basePath } from "@/lib/ots/taker";
 import { candidateHistory } from "@/lib/ots/candidate";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Test Results · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Test Results · {brand} Portal");
 
 export default async function PortalResultsPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   await guardPortalPage(...TEST_TAKER_ROLES);

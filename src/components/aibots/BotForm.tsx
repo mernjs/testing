@@ -200,7 +200,7 @@ export default function BotForm({
             value={v.instructions}
             onChange={(e) => set("instructions", e.target.value)}
             className="font-mono text-xs"
-            placeholder={"You are ProposalGPT, YashOrbit's proposal writer.\n\n- Use the company profile, services and case studies in your knowledge base.\n- Structure proposals as: Executive summary, Scope, Approach, Timeline, Commercials.\n- Ask for the client name, industry and goals if they're missing."}
+            placeholder={"You are ProposalGPT, our company's proposal writer.\n\n- Use the company profile, services and case studies in your knowledge base.\n- Structure proposals as: Executive summary, Scope, Approach, Timeline, Commercials.\n- Ask for the client name, industry and goals if they're missing."}
           />
         </Field>
         <Field label="Starter prompts" className="mt-4" hint="Optional one-click questions shown on a new chat.">

@@ -5,8 +5,9 @@ import HubTopbar from "@/components/hub/HubTopbar";
 import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const metadata = { title: "YashOrbit Staff Hub", robots: { index: false, follow: false } };
+export const generateMetadata = () => brandedMetadata("{brand} Staff Hub", { robots: { index: false, follow: false } });
 
 export default async function ProtectedHubLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentHubUser();

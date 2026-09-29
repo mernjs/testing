@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { after } from "next/server";
 import { getCurrentLmsUser } from "@/lib/lms-auth";
 import { deleteConversation, bulkDeleteConversations } from "@/lib/chat-conversations";
 import {
@@ -15,6 +14,7 @@ import { beginWebsiteIndex, runWebsiteIndex, urlsForPageIds } from "@/lib/kb-web
 import { reindexPdf, deletePdf } from "@/lib/kb-pdf";
 import { deleteVoiceConversation, bulkDeleteVoiceConversations } from "@/lib/voice-conversations";
 import { siteUrl } from "@/lib/seo";
+import { afterForCompany } from "@/lib/platform/tenancy/context";
 
 // Every action re-checks the session — render-time gating on the page alone
 // is not a security boundary for the action endpoint.
@@ -66,7 +66,7 @@ export async function triggerWebsiteIndexAction(mode: "full" | "incremental"): P
   if (!isOpenAIConfigured()) return { error: "OPENAI_API_KEY is not configured." };
   const incremental = mode === "incremental";
   const { runId, logger } = await beginWebsiteIndex({ triggeredBy: lmsUser.email, incremental });
-  after(() => runWebsiteIndex(logger, { baseUrl: crawlBaseUrl(), incremental, triggeredBy: lmsUser.email }));
+  await afterForCompany(() => runWebsiteIndex(logger, { baseUrl: crawlBaseUrl(), incremental, triggeredBy: lmsUser.email }));
   revalidatePath("/lms/chatbot/knowledge-base");
   return { runId };
 }
@@ -77,7 +77,7 @@ export async function reindexPagesAction(pageIds: string[]): Promise<{ runId?: s
   const urls = await urlsForPageIds(pageIds);
   if (urls.length === 0) return { error: "No matching pages selected." };
   const { runId, logger } = await beginWebsiteIndex({ triggeredBy: lmsUser.email, onlyUrls: urls });
-  after(() =>
+  await afterForCompany(() =>
     runWebsiteIndex(logger, { baseUrl: crawlBaseUrl(), onlyUrls: urls, triggeredBy: lmsUser.email })
   );
   revalidatePath("/lms/chatbot/knowledge-base");

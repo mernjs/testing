@@ -7,6 +7,7 @@ import { COLLECTIONS, aibotsCollection, createStamp, escapeRegex, newId, notDele
 import { BOT_COLORS, BOT_ICONS, GENERAL_BOT_ID, GENERAL_BOT_NAME, LIMITS, type BotColor, type BotIcon, type BotStatus } from "@/lib/aibots/constants";
 import { AibotsInputError, NotFoundError, can, type AibotsViewer } from "@/lib/aibots/viewer";
 import { getSettings } from "@/lib/aibots/settings";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 /**
  * A bot is pure configuration: instructions + model + an OpenAI vector store
@@ -234,7 +235,7 @@ export async function ensureBotVectorStore(bot: Pick<BotDoc, "_id" | "name" | "v
     }
   }
   const store = await openai.vectorStores.create({
-    name: `YashOrbit AI Bot · ${bot.name}`.slice(0, 120),
+    name: `${(await getCompanyBrand()).name} AI Bot · ${bot.name}`.slice(0, 120),
     metadata: { app: "yashorbit-aibots", bot_id: bot._id },
   });
   const col = await botsCollection();

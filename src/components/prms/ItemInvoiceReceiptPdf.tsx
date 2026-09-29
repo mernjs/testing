@@ -1,8 +1,9 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import type { CompanyIdentity } from "@/lib/prms/settings";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
+import { renderPdf } from "@/lib/pdf/identity";
 
 const C = PDF_COLORS;
 
@@ -70,13 +71,13 @@ function InvoicePdfDocument({ item, company }: { item: PdfItemDetails; company: 
         <View style={s.cols}>
           <View style={{ width: "48%" }}>
             <Text style={s.label}>Billed To</Text>
-            <Text style={s.value}>{company.name || "YashOrbit Technologies"}</Text>
+            <Text style={s.value}>{company.name}</Text>
             <Text style={s.small}>{company.addressLine || "Corporate Office"}</Text>
             {company.email && <Text style={s.small}>Email: {company.email}</Text>}
           </View>
           <View style={{ width: "48%" }}>
             <Text style={s.label}>Vendor / Beneficiary</Text>
-            <Text style={s.value}>{item.vendorName || item.requesterName || "YashOrbit Enterprise"}</Text>
+            <Text style={s.value}>{item.vendorName || item.requesterName || "—"}</Text>
             <Text style={s.small}>Category: {item.category || item.type.toUpperCase()}</Text>
             <Text style={s.small}>Ref Code: {item.code}</Text>
             <Text style={s.small}>Status: {item.status.toUpperCase()}</Text>
@@ -130,7 +131,7 @@ function InvoicePdfDocument({ item, company }: { item: PdfItemDetails; company: 
         <View style={s.sigWrap}>
           <View style={{ width: 180, borderTopWidth: 0.5, borderTopColor: C.ink, paddingTop: 4 }}>
             <Text style={s.small}>{company.signatoryName || "Authorised Signatory"}</Text>
-            <Text style={s.small}>YashOrbit Finance & Accounts</Text>
+            <Text style={s.small}>{company.name} Finance & Accounts</Text>
           </View>
         </View>
 
@@ -161,7 +162,7 @@ function ReceiptPdfDocument({ item, company }: { item: PdfItemDetails; company: 
         </View>
         <View style={s.row}>
           <Text style={s.small}>Paid To / Vendor</Text>
-          <Text>{item.vendorName || item.requesterName || "YashOrbit Enterprise"}</Text>
+          <Text>{item.vendorName || item.requesterName || "—"}</Text>
         </View>
         <View style={s.row}>
           <Text style={s.small}>Category / Module</Text>
@@ -194,20 +195,20 @@ function ReceiptPdfDocument({ item, company }: { item: PdfItemDetails; company: 
         <View style={s.sigWrap}>
           <View style={{ width: 180, borderTopWidth: 0.5, borderTopColor: C.ink, paddingTop: 4 }}>
             <Text style={s.small}>{company.signatoryName || "Authorised Signatory"}</Text>
-            <Text style={s.small}>YashOrbit Treasury & Settlement</Text>
+            <Text style={s.small}>{company.name} Treasury & Settlement</Text>
           </View>
         </View>
 
-        <PdfFooter note="System-generated payment receipt for YashOrbit FMS / PRMS transaction." />
+        <PdfFooter note={`System-generated payment receipt for ${company.name}.`} />
       </Page>
     </Document>
   );
 }
 
 export async function renderItemInvoicePdf(item: PdfItemDetails, company: CompanyIdentity): Promise<Buffer> {
-  return renderToBuffer(<InvoicePdfDocument item={item} company={company} />);
+  return renderPdf(<InvoicePdfDocument item={item} company={company} />);
 }
 
 export async function renderItemReceiptPdf(item: PdfItemDetails, company: CompanyIdentity): Promise<Buffer> {
-  return renderToBuffer(<ReceiptPdfDocument item={item} company={company} />);
+  return renderPdf(<ReceiptPdfDocument item={item} company={company} />);
 }

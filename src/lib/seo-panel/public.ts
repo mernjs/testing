@@ -1,7 +1,8 @@
 import "server-only";
 import type { Metadata } from "next";
-import { unstable_cache } from "next/cache";
+import { companyCache } from "@/lib/platform/tenancy/cache";
 import { getDb } from "@/lib/mongodb";
+import { unstable_rethrow } from "next/navigation";
 
 /**
  * The public website's read path into the SEO panel. Everything the site
@@ -69,12 +70,13 @@ async function loadSiteState(): Promise<SeoSiteState> {
   return state;
 }
 
-const cachedSiteState = unstable_cache(loadSiteState, ["seo-site-state-v1"], { tags: [SEO_SITE_TAG], revalidate: 3600 });
+const cachedSiteState = companyCache(loadSiteState, ["seo-site-state-v1"], { tags: [SEO_SITE_TAG], revalidate: 3600 });
 
 export async function getSeoSiteState(): Promise<SeoSiteState> {
   try {
     return await cachedSiteState();
   } catch (err) {
+    unstable_rethrow(err);
     console.error("[seo] site state unavailable, using code-defined SEO", err);
     return EMPTY;
   }

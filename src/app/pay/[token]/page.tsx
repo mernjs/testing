@@ -1,12 +1,14 @@
 import { notFound } from "next/navigation";
 import { getPaymentLinkByToken, serializePaymentLink } from "@/lib/fms/payments/links";
 import PublicCheckoutClient from "./PublicCheckoutClient";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 export default async function PublicPaymentPage({
   params,
 }: {
   params: Promise<{ token: string }>;
 }) {
+  const brand = await getCompanyBrand();
   const { token } = await params;
   const link = await getPaymentLinkByToken(token);
 
@@ -29,8 +31,8 @@ export default async function PublicPaymentPage({
       </main>
 
       <footer className="mt-8 text-center text-xs text-muted-foreground relative z-10 space-y-1">
-        <p>Protected by YashOrbit Enterprise Central Financial Security</p>
-        <p>© {new Date().getFullYear()} YashOrbit. All rights reserved.</p>
+        <p>Protected by {brand.name} secure payments</p>
+        <p>© {new Date().getFullYear()} {brand.name}. All rights reserved.</p>
       </footer>
     </div>
   );

@@ -1,8 +1,10 @@
 import "server-only";
-import { Document, Page, View, Text, Image, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, Image, StyleSheet } from "@react-pdf/renderer";
 import { qrToSvg } from "@/lib/tms/qrcode";
-import { PDF_COLORS, PDF_ORG } from "@/lib/pdf/brand";
+import { PDF_COLORS } from "@/lib/pdf/brand";
+import { usePdfIdentity } from "@/lib/pdf/identity";
 import { PdfBrandLockup } from "@/lib/pdf/layout";
+import { renderPdf } from "@/lib/pdf/identity";
 
 /** Server-only. A4 landscape training certificate. Never import from a client component. */
 
@@ -64,6 +66,7 @@ const s = StyleSheet.create({
 });
 
 function CertDocument({ data }: { data: CertificatePdfData }) {
+  const org = usePdfIdentity();
   const qr = qrDataUri(data.verifyUrl);
   const outcome = data.title
     ? `for successfully completing ${data.title}`
@@ -75,7 +78,7 @@ function CertDocument({ data }: { data: CertificatePdfData }) {
         <View style={s.frame}>
           <View style={s.inner}>
             <PdfBrandLockup compact />
-            <Text style={s.addr}>{PDF_ORG.cityLine}</Text>
+            <Text style={s.addr}>{org.cityLine}</Text>
 
             <Text style={s.kicker}>{data.typeLabel}</Text>
             <Text style={s.h1}>Certificate of Achievement</Text>
@@ -124,5 +127,5 @@ function CertDocument({ data }: { data: CertificatePdfData }) {
 }
 
 export function renderCertificatePdf(data: CertificatePdfData): Promise<Buffer> {
-  return renderToBuffer(<CertDocument data={data} />) as Promise<Buffer>;
+  return renderPdf(<CertDocument data={data} />) as Promise<Buffer>;
 }

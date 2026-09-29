@@ -1,7 +1,8 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
+import { renderPdf } from "@/lib/pdf/identity";
 
 /**
  * Generic "N labeled rows + a total" report PDF (§30 — Phase 7 fast-follow),
@@ -81,5 +82,5 @@ function FmsReportDocument({ data }: { data: FmsReportPdfData }) {
 }
 
 export async function renderFmsReportPdf(data: FmsReportPdfData): Promise<Buffer> {
-  return renderToBuffer(<FmsReportDocument data={data} />);
+  return renderPdf(<FmsReportDocument data={data} />);
 }

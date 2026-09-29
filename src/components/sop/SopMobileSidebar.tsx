@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import SopSidebar from "@/components/sop/SopSidebar";
 import BrandMark from "@/components/BrandMark";
-import { brandify } from "@/lib/brand";
 import type { SopNavFlags } from "@/components/sop/SopSidebar";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 export default function SopMobileSidebar({ flags }: { flags: SopNavFlags }) {
   const [open, setOpen] = useState(false);
@@ -24,7 +24,7 @@ export default function SopMobileSidebar({ flags }: { flags: SopNavFlags }) {
           <div className="flex h-14 items-center gap-2 border-b border-border/60 px-4">
             <BrandMark className="size-6 shrink-0" />
             <span className="text-sm font-bold">
-              {brandify("YashOrbit")} <span className="text-foreground">SOP</span>
+              <BrandName /> <span className="text-foreground">SOP</span>
             </span>
           </div>
           <SopSidebar flags={flags} onNavigate={() => setOpen(false)} />

@@ -6,9 +6,9 @@ import BrandMark from "@/components/BrandMark";
 import AibotsSidebar from "@/components/aibots/AibotsSidebar";
 import AibotsProfileMenu from "@/components/aibots/AibotsProfileMenu";
 import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
-import { brandify } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import type { AibotsNavFlags, SidebarBot } from "@/components/aibots/AibotsSidebar";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 const EXPANDED_WIDTH = 244;
 const COLLAPSED_WIDTH = 68;
@@ -47,7 +47,7 @@ export default function AibotsSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              {brandify("YashOrbit")} <span className="text-foreground">AI Bots</span>
+              <BrandName /> <span className="text-foreground">AI Bots</span>
             </span>
           )}
         </div>

@@ -7,14 +7,15 @@ import { TEST_TAKER_ROLES } from "@/lib/portal-roles";
 import { resolveTaker, basePath } from "@/lib/ots/taker";
 import { candidateCards } from "@/lib/ots/candidate";
 import { maybeSweep } from "@/lib/ots/sweep";
-import { after } from "next/server";
+import { afterForCompany } from "@/lib/platform/tenancy/context";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Tests · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Tests · {brand} Portal");
 
 export default async function PortalTestsPage() {
   const user = await guardPortalPage(...TEST_TAKER_ROLES);
-  after(() => maybeSweep());
+  await afterForCompany(() => maybeSweep());
   const taker = await resolveTaker("portal");
   const cards = taker ? await candidateCards(taker) : [];
   return (

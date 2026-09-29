@@ -12,6 +12,7 @@
  */
 import { MongoClient } from "mongodb";
 import { seedOts, OTS_DEMO_ACCOUNTS, OTS_PORTAL_ACCOUNTS } from "./demo/ots.mjs";
+import { assertSingleCompany } from "./lib/single-company-guard.mjs";
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -22,6 +23,7 @@ const client = new MongoClient(uri);
 try {
   await client.connect();
   const db = client.db(process.env.SEED_DB || undefined);
+  await assertSingleCompany(db);
   console.log(`🌱 Online Test System demo seeder (database: ${db.databaseName})`);
   const r = await seedOts(db);
   console.log(`   Careers screening: ${r.careers.tests} role tests (${r.careers.questions} questions), ${r.careers.rolesWithApplicants} roles with applicants → ${r.careers.assignments} assignments, ${r.careers.attempts} attempts (${r.careers.pendingEvaluation} awaiting evaluation)`);

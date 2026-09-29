@@ -1,10 +1,11 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import type { Payment } from "@/lib/prms/payments";
 import type { Invoice } from "@/lib/prms/invoices";
 import type { CompanyIdentity } from "@/lib/prms/settings";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
+import { renderPdf } from "@/lib/pdf/identity";
 
 const C = PDF_COLORS;
 
@@ -55,5 +56,5 @@ function ReceiptDoc({ payment, invoice, company }: { payment: Payment; invoice: 
 }
 
 export async function renderPaymentReceiptPdf(payment: Payment, invoice: Invoice, company: CompanyIdentity): Promise<Buffer> {
-  return renderToBuffer(<ReceiptDoc payment={payment} invoice={invoice} company={company} />);
+  return renderPdf(<ReceiptDoc payment={payment} invoice={invoice} company={company} />);
 }

@@ -6,9 +6,10 @@ import { getActivePortalLead } from "@/lib/portal/lead";
 import { HiringTimeline, PortalPageHeader } from "@/components/portal/widgets";
 import LeadJourney from "@/components/portal/LeadJourney";
 import EmptyPortalState from "@/components/portal/EmptyPortalState";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "My Journey · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("My Journey · {brand} Portal");
 
 export default async function JourneyPage() {
   const user = await guardPortalPage();

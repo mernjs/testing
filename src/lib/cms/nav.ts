@@ -1,5 +1,5 @@
 import "server-only";
-import { unstable_cache } from "next/cache";
+import { companyCache } from "@/lib/platform/tenancy/cache";
 import { getDb } from "@/lib/mongodb";
 import { COLLECTIONS, CMS_SITE_TAG, expireSiteCache, newId, createStamp, updateStamp, type Stamps } from "@/lib/cms/db";
 
@@ -113,7 +113,7 @@ async function loadNav(): Promise<PublicNavTop[]> {
   }));
 }
 
-const cachedNav = unstable_cache(loadNav, ["cms-nav-v1"], { tags: [CMS_SITE_TAG], revalidate: 3600 });
+const cachedNav = companyCache(loadNav, ["cms-nav-v1"], { tags: [CMS_SITE_TAG], revalidate: 3600 });
 
 /** The header menu. If the CMS is unreachable this throws, and Next.js keeps serving the last good render. */
 export async function getPublicNav(): Promise<PublicNavTop[]> {

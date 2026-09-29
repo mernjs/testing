@@ -1,10 +1,12 @@
 import { redirect } from "next/navigation";
 import { getCurrentSeoUser } from "@/lib/seo-auth";
 import BrandMark from "@/components/BrandMark";
-import { brandify } from "@/lib/brand";
 import LoginForm from "./LoginForm";
+import { BrandName } from "@/components/platform/BrandProvider";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 export default async function SeoLoginPage() {
+  const brand = await getCompanyBrand();
   const user = await getCurrentSeoUser();
   if (user) redirect("/seo");
 
@@ -20,7 +22,7 @@ export default async function SeoLoginPage() {
 
         <div className="relative z-10 flex items-center gap-2 text-lg font-bold">
           <BrandMark className="size-7 shrink-0" />
-          {brandify("YashOrbit")} <span className="text-foreground">SEO</span>
+          <BrandName /> <span className="text-foreground">SEO</span>
         </div>
 
         <div className="relative z-10 max-w-md">
@@ -30,7 +32,7 @@ export default async function SeoLoginPage() {
           </h1>
           <p className="mt-4 text-muted-foreground">
             Audits, rankings, keywords, backlinks, sitemaps, robots.txt and structured data for
-            the YashOrbit website — measured, prioritised and tracked to done in one place.
+            the {brand.name} website — measured, prioritised and tracked to done in one place.
           </p>
         </div>
 

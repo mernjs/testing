@@ -4,6 +4,7 @@ import * as React from "react";
 import { ArrowUp, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useText } from "@/components/cms/TextContext";
+import { useBrand } from "@/components/platform/BrandProvider";
 
 export function ChatComposer({
   disabled,
@@ -21,6 +22,7 @@ export function ChatComposer({
   /** Optional Text / Voice switch rendered inside the input, below the text row. */
   modeToggle?: React.ReactNode;
 }) {
+  const brand = useBrand();
   const tx = useText();
   const [value, setValue] = React.useState("");
   const ref = React.useRef<HTMLTextAreaElement>(null);
@@ -69,7 +71,7 @@ export function ChatComposer({
             value={value}
             disabled={disabled}
             maxLength={maxChars}
-            aria-label="Type your message to YashOrbit"
+            aria-label={`Type your message to ${brand.name}`}
             placeholder={tx("chat.chatComposer.ask-about-yashorbit")}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => {

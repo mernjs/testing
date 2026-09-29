@@ -2,8 +2,9 @@ import { redirect } from "next/navigation";
 import { getCurrentPortalUser } from "@/lib/portal-auth";
 import PortalAuthShell from "@/components/portal/PortalAuthShell";
 import RegisterForm from "./RegisterForm";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const metadata = { title: "Create account · YashOrbit Portal", robots: { index: false } };
+export const generateMetadata = () => brandedMetadata("Create account · {brand} Portal", { robots: { index: false } });
 
 export default async function PortalRegisterPage() {
   if (await getCurrentPortalUser()) redirect("/portal");

@@ -10,11 +10,14 @@ import { Users, BadgeCheck, Coins, Hourglass, Share2, UserPlus, Gift } from "luc
 import ReferralCodeCard from "@/components/portal/ReferralCodeCard";
 import { EarnNav } from "@/components/portal/rewards/parts";
 import { formatDate } from "@/lib/utils";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Referrals · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Referrals · {brand} Portal");
 
 export default async function PortalReferralsPage() {
+  const brand = await getCompanyBrand();
   const user = await guardPortalPage();
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "yashorbit.com";
@@ -24,7 +27,7 @@ export default async function PortalReferralsPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
       <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Referrals" }]} />
-      <PortalPageHeader title="Refer & earn" subtitle="Share your link. When someone new joins YashOrbit through it, you both earn credits." />
+      <PortalPageHeader title="Refer & earn" subtitle={`Share your link. When someone new joins ${brand.name} through it, you both earn credits.`} />
       <EarnNav current="referrals" />
       <ReferralCodeCard code={overview.code} link={overview.link} />
 

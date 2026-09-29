@@ -7,7 +7,7 @@ import { applyWebhookResult } from "@/lib/hrms/salary-payouts";
  * verification, so it is read as text before parsing.
  */
 export async function POST(req: NextRequest) {
-  const provider = getPayoutProvider();
+  const provider = await getPayoutProvider();
   if (provider.key === "manual") {
     return NextResponse.json({ error: "No payout provider configured." }, { status: 404 });
   }

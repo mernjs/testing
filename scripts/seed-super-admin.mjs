@@ -42,12 +42,25 @@ async function seedSuperAdmin() {
     await client.connect();
     const db = client.db();
 
+    // Multi-tenant: the account belongs to one company — `--company <slug>`,
+    // else the platform owner. (A database that hasn't been through
+    // `npm run db:migrate-tenancy` yet has no companies; the migration then
+    // assigns this account to the platform owner.)
+    const slugArg = args.indexOf("--company") >= 0 ? args[args.indexOf("--company") + 1] : null;
+    const company = await db.collection("companies").findOne(slugArg ? { slug: slugArg } : { isPlatformOwner: true });
+    if (slugArg && !company) {
+      console.error(`❌ No company with slug "${slugArg}".`);
+      process.exit(1);
+    }
+    const scope = company ? { companyId: company._id } : {};
+
     const adminUsersCol = db.collection("admin_users");
-    await adminUsersCol.createIndex({ email: 1 }, { unique: true }).catch(() => {});
+    await adminUsersCol.createIndex(company ? { companyId: 1, email: 1 } : { email: 1 }, { unique: true }).catch(() => {});
 
     const passwordHash = hashPassword(adminPassword);
 
     const superAdminDoc = {
+      ...scope,
       email: adminEmail,
       passwordHash: passwordHash,
       roles: ["super_admin"],
@@ -62,7 +75,7 @@ async function seedSuperAdmin() {
     };
 
     const result = await adminUsersCol.findOneAndUpdate(
-      { email: adminEmail },
+      { ...scope, email: adminEmail },
       {
         $set: superAdminDoc,
         $setOnInsert: {

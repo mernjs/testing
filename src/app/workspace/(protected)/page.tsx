@@ -42,6 +42,7 @@ import {
   FileCheck2,
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
+import { enabledModules, onboardingPending } from "@/lib/platform/onboarding/state";
 import { normalizeRoles } from "@/lib/hrms-roles";
 import { normalizePmsRoles } from "@/lib/pms-roles";
 import { normalizePrmsRoles } from "@/lib/prms-roles";
@@ -389,7 +390,9 @@ export default async function HubDashboardPage({
     },
   ];
 
-  const visibleTiles = tiles.filter((t) => t.visible);
+  // Panels the company switched off during setup are hidden (null = no choice recorded → all on).
+  const [enabled, setupPending] = await Promise.all([enabledModules(), user.roles.includes("super_admin") ? onboardingPending() : Promise.resolve(false)]);
+  const visibleTiles = tiles.filter((t) => t.visible && (!enabled || enabled.has(t.key)));
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const displayName = nameFromEmail(user.email);
@@ -413,6 +416,15 @@ export default async function HubDashboardPage({
 
   return (
     <div className="relative space-y-6">
+      {setupPending && (
+        <Link href="/onboarding" className="flex items-center justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/5 px-5 py-3 text-sm transition-colors hover:bg-primary/10">
+          <span>
+            <span className="font-semibold text-foreground">Finish setting up your workspace</span>
+            <span className="text-muted-foreground"> — company profile, departments, team invites and panels.</span>
+          </span>
+          <ArrowUpRight className="size-4 shrink-0 text-primary" />
+        </Link>
+      )}
       {/* ── Welcome Header ─────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-3 rounded-2xl border border-border/40 bg-gradient-to-r from-primary/10 via-card to-card p-6 shadow-sm">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

@@ -4,6 +4,7 @@ import { resolveActiveRewardRule } from "@/lib/wallet/reward-rules";
 import { notifyPortalUser } from "@/lib/portal/notifications";
 import { formatCredits } from "@/lib/wallet/constants";
 import type { RewardRuleAudience } from "@/lib/wallet/constants";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 /**
  * Called from both real account-creation hook points — `provisionLeadAndAccount()`
@@ -33,7 +34,7 @@ export async function awardSignupBonus(userId: string, role: RewardRuleAudience)
     recipientUserId: userId,
     type: "wallet.credit_earned",
     title: "🎉 Welcome credits added",
-    body: `You earned ${formatCredits(rule.amount)} for joining YashOrbit.`,
+    body: `You earned ${formatCredits(rule.amount)} for joining ${(await getCompanyBrand()).name}.`,
     link: "/portal/wallet",
     dedupeKey: `wallet.signup_bonus:${userId}`,
   });

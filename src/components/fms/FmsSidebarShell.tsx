@@ -6,9 +6,9 @@ import BrandMark from "@/components/BrandMark";
 import FmsSidebar from "@/components/fms/FmsSidebar";
 import FmsProfileMenu from "@/components/fms/FmsProfileMenu";
 import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
-import { brandify } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import type { FmsRole } from "@/lib/fms-roles";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 const EXPANDED_WIDTH = 244;
 const COLLAPSED_WIDTH = 68;
@@ -45,7 +45,7 @@ export default function FmsSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              {brandify("YashOrbit")} <span className="text-foreground">FMS</span>
+              <BrandName /> <span className="text-foreground">FMS</span>
             </span>
           )}
         </div>

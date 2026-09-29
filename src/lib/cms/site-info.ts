@@ -1,5 +1,5 @@
 import "server-only";
-import { unstable_cache } from "next/cache";
+import { companyCache } from "@/lib/platform/tenancy/cache";
 import { getDb } from "@/lib/mongodb";
 import { COLLECTIONS, CMS_SITE_TAG, expireSiteCache, updateStamp } from "@/lib/cms/db";
 import { parseSiteInfo, type SiteInfo } from "@/lib/cms/site-info-shared";
@@ -18,7 +18,7 @@ export async function getSiteInfoForEdit(): Promise<SiteInfo> {
   return parseSiteInfo(doc?.siteInfo);
 }
 
-const cached = unstable_cache(getSiteInfoForEdit, ["cms-site-info-v1"], { tags: [CMS_SITE_TAG], revalidate: 300 });
+const cached = companyCache(getSiteInfoForEdit, ["cms-site-info-v1"], { tags: [CMS_SITE_TAG], revalidate: 300 });
 
 /** Public read. If the CMS is unreachable this throws, and Next.js keeps serving the last good render. */
 export async function getSiteInfo(): Promise<SiteInfo> {

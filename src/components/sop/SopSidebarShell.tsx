@@ -6,9 +6,9 @@ import BrandMark from "@/components/BrandMark";
 import SopSidebar from "@/components/sop/SopSidebar";
 import SopProfileMenu from "@/components/sop/SopProfileMenu";
 import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
-import { brandify } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import type { SopNavFlags } from "@/components/sop/SopSidebar";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 const EXPANDED_WIDTH = 244;
 const COLLAPSED_WIDTH = 68;
@@ -45,7 +45,7 @@ export default function SopSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              {brandify("YashOrbit")} <span className="text-foreground">SOP</span>
+              <BrandName /> <span className="text-foreground">SOP</span>
             </span>
           )}
         </div>

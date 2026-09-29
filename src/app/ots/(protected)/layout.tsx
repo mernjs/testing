@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { after } from "next/server";
 import { getCurrentOtsUser } from "@/lib/ots-auth";
 import { hasOtsAccess } from "@/lib/ots-roles";
 import { getViewer, can } from "@/lib/ots/viewer";
@@ -13,8 +12,10 @@ import type { OtsNavFlags } from "@/components/ots/OtsSidebar";
 import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { afterForCompany } from "@/lib/platform/tenancy/context";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const metadata = { title: "YashOrbit Online Tests", robots: { index: false, follow: false } };
+export const generateMetadata = () => brandedMetadata("{brand} Online Tests", { robots: { index: false, follow: false } });
 
 export default async function ProtectedOtsLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentOtsUser();
@@ -25,7 +26,7 @@ export default async function ProtectedOtsLayout({ children }: { children: React
   if (!viewer) redirect("/ots/login");
 
   // Timeouts, expiry and reminders keep working on a once-a-day cron plan (throttled to every 5 min).
-  after(async () => {
+  await afterForCompany(async () => {
     await ensureOtsIndexes();
     await maybeSweep();
   });

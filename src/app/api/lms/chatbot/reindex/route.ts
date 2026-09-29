@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse, after } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getCurrentLmsUser } from "@/lib/lms-auth";
 import { isOpenAIConfigured } from "@/lib/openai";
 import { beginWebsiteIndex, runWebsiteIndex } from "@/lib/kb-website";
 import { listKbRuns, reapStaleRuns } from "@/lib/kb-runs";
 import { siteUrl } from "@/lib/seo";
+import { afterForCompany } from "@/lib/platform/tenancy/context";
 
 async function authorize(req: NextRequest): Promise<string | null> {
   const secret = process.env.CHATBOT_ADMIN_API_SECRET;
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
   const incremental = body.incremental === true;
 
   const { runId, logger } = await beginWebsiteIndex({ triggeredBy, incremental });
-  after(() => runWebsiteIndex(logger, { baseUrl, incremental, triggeredBy }));
+  await afterForCompany(() => runWebsiteIndex(logger, { baseUrl, incremental, triggeredBy }));
 
   return NextResponse.json({ ok: true, runId });
 }

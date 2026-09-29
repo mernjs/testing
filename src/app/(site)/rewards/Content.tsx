@@ -9,6 +9,7 @@ import type { GuideAudience } from "@/lib/wallet/earn-guide";
 
 import { brandify } from "@/lib/brand";
 import { useText } from "@/components/cms/TextContext";
+import { BrandName } from "@/components/platform/BrandProvider";
 const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } };
 const stagger = { visible: { transition: { staggerChildren: 0.1 } } };
 const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
@@ -239,7 +240,7 @@ export default function RewardsContent({
               <ol className="space-y-1.5 text-sm text-muted-foreground">
                 <li>{tx("rewards.content.1-sign-in-first-credits-are-only-used-by")}</li>
                 <li>{tx("rewards.content.2-use-the")}<em>{tx("rewards.content.same-email")}</em>{tx("rewards.content.as-your-account-in-the-claim-form")}</li>
-                <li>{tx("rewards.content.3-tick")}<em>{tx("rewards.content.use-my")}{brandify("YashOrbit")}{tx("rewards.content.credits-3")}</em>.</li>
+                <li>{tx("rewards.content.3-tick")}<em>{tx("rewards.content.use-my")}<BrandName />{tx("rewards.content.credits-3")}</em>.</li>
                 <li>{tx("rewards.content.4-credits-cover-part-of-what-remains-up-")}</li>
               </ol>
             </div>

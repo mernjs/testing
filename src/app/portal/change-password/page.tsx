@@ -2,8 +2,9 @@ import { redirect } from "next/navigation";
 import { getCurrentPortalUser } from "@/lib/portal-auth";
 import PortalAuthShell from "@/components/portal/PortalAuthShell";
 import ChangePasswordForm from "@/components/portal/ChangePasswordForm";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const metadata = { title: "Change password · YashOrbit Portal", robots: { index: false } };
+export const generateMetadata = () => brandedMetadata("Change password · {brand} Portal", { robots: { index: false } });
 
 export default async function PortalChangePasswordPage() {
   const user = await getCurrentPortalUser();

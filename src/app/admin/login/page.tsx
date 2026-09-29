@@ -1,10 +1,12 @@
 import { redirect } from "next/navigation";
 import { getCurrentAdminUser } from "@/lib/admin-auth";
 import BrandMark from "@/components/BrandMark";
-import { brandify } from "@/lib/brand";
 import LoginForm from "./LoginForm";
+import { BrandName } from "@/components/platform/BrandProvider";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 export default async function AdminLoginPage() {
+  const brand = await getCompanyBrand();
   const user = await getCurrentAdminUser();
   if (user) redirect("/admin");
 
@@ -20,7 +22,7 @@ export default async function AdminLoginPage() {
 
         <div className="relative z-10 flex items-center gap-2 text-lg font-bold">
           <BrandMark className="size-7 shrink-0" />
-          {brandify("YashOrbit")} <span className="text-foreground">Command Center</span>
+          <BrandName /> <span className="text-foreground">Command Center</span>
         </div>
 
         <div className="relative z-10 max-w-md">
@@ -30,7 +32,7 @@ export default async function AdminLoginPage() {
           </h1>
           <p className="mt-4 text-muted-foreground">
             Revenue, projects, procurement, training and every team&apos;s activity — aggregated live from across the
-            entire YashOrbit ERP into a single secure dashboard.
+            entire {brand.name} ERP into a single secure dashboard.
           </p>
         </div>
 

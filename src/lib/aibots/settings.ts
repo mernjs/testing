@@ -23,7 +23,7 @@ export interface AibotsSettings {
 
 const ID = "main";
 export const DEFAULT_GENERAL_INSTRUCTIONS =
-  "You are YashOrbit's general AI assistant for employees. Help with writing, analysis, planning, research and everyday work questions. Be accurate and concise, ask a clarifying question when a request is ambiguous, and say when you don't know something rather than guessing.";
+  "You are the company's general AI assistant for employees. Help with writing, analysis, planning, research and everyday work questions. Be accurate and concise, ask a clarifying question when a request is ambiguous, and say when you don't know something rather than guessing.";
 
 export const DEFAULT_SETTINGS = { models: DEFAULT_MODELS, defaultModel: DEFAULT_MODELS[0].id, maxOutputTokens: 4000, dailyMessageLimit: 200, generalInstructions: DEFAULT_GENERAL_INSTRUCTIONS };
 

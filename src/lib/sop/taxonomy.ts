@@ -4,6 +4,7 @@ import { getDb } from "@/lib/mongodb";
 import { COLLECTIONS, newId, createStamp, updateStamp, notDeleted, type AuditFields } from "@/lib/sop/db";
 import { DEFAULT_CATEGORIES, DEFAULT_DEPARTMENTS } from "@/lib/sop/constants";
 import { listHrmsDepartments } from "@/lib/sop/people";
+import { currentCompanyId } from "@/lib/platform/tenancy/context";
 
 /**
  * SOP structure: Department → Function → Process → Sub-Process. Everything is
@@ -69,8 +70,9 @@ const STARTER_FUNCTIONS: Record<string, { name: string; processes: { name: strin
   SEC: [{ name: "Security Operations", processes: [{ name: "Access Provisioning" }, { name: "Security Incident Handling" }] }],
 };
 
-let seedPromise: Promise<void> | null = null;
-let lastSyncAt = 0;
+// Per company: each company's workspace seeds and syncs independently.
+const seedPromises = new Map<string, Promise<void>>();
+const lastSyncAt = new Map<string, number>();
 
 async function cols() {
   const db = await getDb();
@@ -110,8 +112,10 @@ function slugCode(name: string, taken: Set<string>): string {
  * promise) and cheap on repeat calls (throttled).
  */
 export async function ensureSopSeeded(): Promise<void> {
-  if (seedPromise) return seedPromise;
-  seedPromise = (async () => {
+  const companyId = await currentCompanyId();
+  const inFlight = seedPromises.get(companyId);
+  if (inFlight) return inFlight;
+  const seedPromise = (async () => {
     try {
       await ensureIndexes();
       const c = await cols();
@@ -159,13 +163,14 @@ export async function ensureSopSeeded(): Promise<void> {
       const { seedSystemTemplates } = await import("@/lib/sop/templates");
       await seedSystemTemplates();
     } catch (err) {
-      seedPromise = null; // let the next request retry a failed seed
+      seedPromises.delete(companyId); // let the next request retry a failed seed
       throw err;
     }
   })();
   // On success keep the resolved promise for a minute (cheap repeat calls), then re-check —
   // that also re-seeds if the database was truncated while the server kept running.
-  seedPromise.then(() => setTimeout(() => (seedPromise = null), 60_000).unref?.()).catch(() => {});
+  seedPromises.set(companyId, seedPromise);
+  seedPromise.then(() => setTimeout(() => seedPromises.delete(companyId), 60_000).unref?.()).catch(() => {});
   return seedPromise;
 }
 
@@ -175,8 +180,9 @@ export async function ensureSopSeeded(): Promise<void> {
  * a department added in HRMS tomorrow is SOP-ready with no manual step.
  */
 export async function syncFromHrms(force = false): Promise<void> {
-  if (!force && Date.now() - lastSyncAt < 60_000) return;
-  lastSyncAt = Date.now();
+  const companyId = await currentCompanyId();
+  if (!force && Date.now() - (lastSyncAt.get(companyId) ?? 0) < 60_000) return;
+  lastSyncAt.set(companyId, Date.now());
   const c = await cols();
   const [hrms, all] = await Promise.all([listHrmsDepartments(), c.departments.find(notDeleted).toArray()]);
   const linked = new Set(all.map((d) => d.hrmsDepartmentId).filter(Boolean));

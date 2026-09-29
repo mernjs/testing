@@ -2,8 +2,10 @@ import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import VoiceConfigForm from "@/components/lms/VoiceConfigForm";
 import { getChatbotConfig } from "@/lib/chatbot-config";
 import { isElevenLabsConfigured } from "@/lib/elevenlabs";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 export default async function VoiceConfigPage() {
+  const brand = await getCompanyBrand();
   const config = await getChatbotConfig();
 
   return (
@@ -19,7 +21,7 @@ export default async function VoiceConfigPage() {
       <div>
         <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">ElevenLabs Configuration</h1>
         <p className="text-sm text-muted-foreground">
-          Voice, model and delivery settings for voice mode on the Ask YashOrbit page. The API key is read from
+          Voice, model and delivery settings for voice mode on the Ask {brand.name} page. The API key is read from
           the server environment only.
         </p>
       </div>

@@ -5,6 +5,7 @@ import { Copy, Check, Link2, Mail, MessageSquare, Send, Share2 } from "lucide-re
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { FacebookIcon, LinkedinIcon, WhatsAppIcon, XIcon } from "@/components/icons/SocialIcons";
+import { useBrand } from "@/components/platform/BrandProvider";
 
 // `navigator.share` exists on most phones/tablets and some desktops; the server snapshot is `false` so hydration matches.
 const noop = () => () => {};
@@ -12,6 +13,7 @@ const canNativeShare = () => typeof navigator !== "undefined" && typeof navigato
 
 /** Referral code + link with one-tap sharing to the common platforms. The link always points at the signup page with the code attached. */
 export default function ReferralCodeCard({ code, link }: { code: string; link: string }) {
+  const brand = useBrand();
   const [copied, setCopied] = useState<"code" | "link" | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const nativeShare = useSyncExternalStore(noop, canNativeShare, () => false);
@@ -33,13 +35,13 @@ export default function ReferralCodeCard({ code, link }: { code: string; link: s
 
   async function shareNative() {
     try {
-      await navigator.share({ title: "Join me on YashOrbit", text: message, url: link });
+      await navigator.share({ title: `Join me on ${brand.name}`, text: message, url: link });
     } catch {
       /* dismissed by the user */
     }
   }
 
-  const message = "Join me on YashOrbit — sign up with my link and we both earn credits.";
+  const message = `Join me on ${brand.name} — sign up with my link and we both earn credits.`;
   const text = encodeURIComponent(`${message} ${link}`);
   const url = encodeURIComponent(link);
   const msg = encodeURIComponent(message);
@@ -52,7 +54,7 @@ export default function ReferralCodeCard({ code, link }: { code: string; link: s
     { label: "X", href: `https://twitter.com/intent/tweet?text=${msg}&url=${url}`, icon: <XIcon className="size-3.5" /> },
     { label: "LinkedIn", href: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`, icon: <LinkedinIcon className="size-3.5" /> },
     { label: "SMS", href: `sms:?&body=${text}`, icon: <MessageSquare className="size-3.5" />, sameTab: true },
-    { label: "Email", href: `mailto:?subject=${encodeURIComponent("Join me on YashOrbit")}&body=${text}`, icon: <Mail className="size-3.5" />, sameTab: true },
+    { label: "Email", href: `mailto:?subject=${encodeURIComponent(`Join me on ${brand.name}`)}&body=${text}`, icon: <Mail className="size-3.5" />, sameTab: true },
   ];
 
   return (

@@ -1,9 +1,10 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import type { Invoice } from "@/lib/fms/invoices";
 import { invoiceBalance } from "@/lib/fms/invoices";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
+import { renderPdf } from "@/lib/pdf/identity";
 
 const C = PDF_COLORS;
 
@@ -81,5 +82,5 @@ function InvoiceDocument({ invoice }: { invoice: Invoice }) {
 }
 
 export async function renderInvoicePdf(invoice: Invoice): Promise<Buffer> {
-  return renderToBuffer(<InvoiceDocument invoice={invoice} />);
+  return renderPdf(<InvoiceDocument invoice={invoice} />);
 }

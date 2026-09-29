@@ -119,7 +119,7 @@ export const ACTIVITY_RULE_TYPES = [
 export type ActivityRuleType = (typeof ACTIVITY_RULE_TYPES)[number];
 
 export const EARN_WAY_META: Record<RewardRuleType, { description: string; repeat: "once" | "each" | "daily"; href: string; cta: string; subKeyLabel?: string }> = {
-  signup: { description: "Create your YashOrbit account.", repeat: "once", href: "/portal", cta: "Done" },
+  signup: { description: "Create your account.", repeat: "once", href: "/portal", cta: "Done" },
   referral_referrer: { description: "A friend joins and qualifies through your link.", repeat: "each", href: "/portal/referrals", cta: "Invite friends" },
   referral_referee: { description: "Join through a friend's referral link.", repeat: "once", href: "/portal/referrals", cta: "See referrals" },
   referral_milestone: { description: "Bonus when your rewarded referrals reach a milestone (set the milestone in the rule's key, e.g. 3, 5, 10).", repeat: "each", href: "/portal/referrals", cta: "Invite friends", subKeyLabel: "Milestone (number of rewarded referrals)" },
@@ -128,7 +128,7 @@ export const EARN_WAY_META: Record<RewardRuleType, { description: string; repeat
   streak_7: { description: "Visit 7 days in a row for a bonus.", repeat: "each", href: "/portal", cta: "Keep your streak" },
   profile_complete: { description: "Add your name and a valid phone number to your profile.", repeat: "once", href: "/portal/profile", cta: "Complete profile" },
   first_offer_claim: { description: "Claim your first festival offer.", repeat: "once", href: "/offers", cta: "Browse offers" },
-  first_payment: { description: "Make your first payment with YashOrbit.", repeat: "once", href: "/portal", cta: "View payments" },
+  first_payment: { description: "Make your first payment.", repeat: "once", href: "/portal", cta: "View payments" },
   interview_completed: { description: "Attend an interview round.", repeat: "each", href: "/portal/interviews", cta: "Interview schedule" },
   assignment_submit: { description: "Submit an assignment on time.", repeat: "each", href: "/portal/assignments", cta: "My assignments" },
   assignment_approved: { description: "Get an assignment approved by your mentor.", repeat: "each", href: "/portal/assignments", cta: "My assignments" },

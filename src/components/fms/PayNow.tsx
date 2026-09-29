@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import BrandMark from "@/components/BrandMark";
-import { brandify } from "@/lib/brand";
 import { formatMoney } from "@/lib/fms/constants";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 export interface PayNowProps {
   sourceModule: PaymentSourceModule;
@@ -104,7 +104,7 @@ export default function PayNow({
               <div className="flex items-center gap-2">
                 <BrandMark className="size-5 shrink-0" />
                 <DialogTitle className="text-base font-bold">
-                  {brandify("YashOrbit")} <span className="text-muted-foreground font-normal">Payment</span>
+                  <BrandName /> <span className="text-muted-foreground font-normal">Payment</span>
                 </DialogTitle>
               </div>
               <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 gap-1 text-[11px]">

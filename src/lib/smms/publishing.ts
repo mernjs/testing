@@ -12,6 +12,7 @@ import { recordAudit } from "@/lib/smms/audit";
 import { notifySmmsUsers } from "@/lib/smms/notifications";
 import { PLATFORM_META, type PostPlatform } from "@/lib/smms/constants";
 import { SmmsInputError } from "@/lib/smms/viewer";
+import { currentCompanyId } from "@/lib/platform/tenancy/context";
 
 /**
  * Publishing is kept separate from AI generation. Content reaches a platform
@@ -120,12 +121,13 @@ export async function resetPublish(postId: string, platform: PostPlatform, actor
 
 // ── Due-item sweep (cron + opportunistic) ────────────────────────────────────
 
-let lastSweep = 0;
+const lastSweep = new Map<string, number>();
 
-/** Runs the sweep at most every 5 minutes per server instance — called from page loads so schedules work even on a daily cron. */
+/** Runs the sweep at most every 5 minutes per server instance and company — called from page loads so schedules work even on a daily cron. */
 export async function maybeSweep(): Promise<void> {
-  if (Date.now() - lastSweep < 5 * 60_000) return;
-  lastSweep = Date.now();
+  const companyId = await currentCompanyId();
+  if (Date.now() - (lastSweep.get(companyId) ?? 0) < 5 * 60_000) return;
+  lastSweep.set(companyId, Date.now());
   await runDueSweep().catch((err) => console.error("[smms sweep]", (err as Error).message));
 }
 

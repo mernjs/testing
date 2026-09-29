@@ -7,9 +7,10 @@ import { getApplicantOverview } from "@/lib/portal/applicant";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import EmptyPortalState from "@/components/portal/EmptyPortalState";
 import { cn } from "@/lib/utils";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Interview Schedule · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Interview Schedule · {brand} Portal");
 
 function fmt(iso: string) {
   return new Date(iso).toLocaleString("en-US", {

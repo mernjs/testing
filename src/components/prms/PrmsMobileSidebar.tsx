@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import PrmsSidebar from "@/components/prms/PrmsSidebar";
 import BrandMark from "@/components/BrandMark";
-import { brandify } from "@/lib/brand";
 import type { PrmsRole } from "@/lib/prms-roles";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 export default function PrmsMobileSidebar({
   roles,
@@ -30,7 +30,7 @@ export default function PrmsMobileSidebar({
           <div className="flex h-14 items-center gap-2 border-b border-border/60 px-4">
             <BrandMark className="size-6 shrink-0" />
             <span className="text-sm font-bold">
-              {brandify("YashOrbit")} <span className="text-foreground">PRMS</span>
+              <BrandName /> <span className="text-foreground">PRMS</span>
             </span>
           </div>
           <PrmsSidebar roles={roles} permissionOverrides={permissionOverrides} onNavigate={() => setOpen(false)} />

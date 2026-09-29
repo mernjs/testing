@@ -23,6 +23,7 @@
 import { randomUUID } from "node:crypto";
 import { MongoClient } from "mongodb";
 import { CAREER_TESTS } from "./demo/ots-careers.mjs";
+import { assertSingleCompany } from "./lib/single-company-guard.mjs";
 
 const WRITE = process.argv.includes("--yes");
 const uri = process.env.MONGODB_URI;
@@ -63,6 +64,7 @@ const client = new MongoClient(uri);
 try {
   await client.connect();
   const db = client.db(process.env.SEED_DB || undefined);
+  await assertSingleCompany(db);
   console.log(`🌱 OTS production content seeder — database: ${db.databaseName} — ${WRITE ? "WRITING" : "DRY RUN (add --yes to write)"}`);
   const now = new Date();
   const plan = { categories: 0, questions: 0, tests: 0, updated: 0, skipped: 0 };

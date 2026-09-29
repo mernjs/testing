@@ -10,8 +10,9 @@ import { guardPortalPage } from "@/lib/portal/guard";
 import { getTaskRewards } from "@/lib/portal/rewards";
 
 import { brandify } from "@/lib/brand";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Bonus tasks · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Bonus tasks · {brand} Portal");
 
 export default async function TaskRewardsPage() {
   const user = await guardPortalPage();

@@ -1,7 +1,8 @@
 import "server-only";
-import { unstable_cache } from "next/cache";
+import { companyCache } from "@/lib/platform/tenancy/cache";
 import { getDb } from "@/lib/mongodb";
 import { COLLECTIONS, CMS_SITE_TAG, expireSiteCache, updateStamp } from "@/lib/cms/db";
+import { unstable_rethrow } from "next/navigation";
 
 /**
  * Global CMS settings. Brand, contact details and social links live on the
@@ -48,13 +49,14 @@ export async function saveSettings(settings: CmsSettings, actorId: string): Prom
   expireSiteCache();
 }
 
-const cachedMaintenanceMode = unstable_cache(async () => (await getSettings()).maintenanceMode, ["cms-maintenance-v1"], { tags: [CMS_SITE_TAG], revalidate: 60 });
+const cachedMaintenanceMode = companyCache(async () => (await getSettings()).maintenanceMode, ["cms-maintenance-v1"], { tags: [CMS_SITE_TAG], revalidate: 60 });
 
 /** Fail-soft: if settings are unreachable, the site stays up rather than appearing to be down. */
 export async function getMaintenanceMode(): Promise<CmsSettings["maintenanceMode"]> {
   try {
     return await cachedMaintenanceMode();
-  } catch {
+  } catch (err) {
+    unstable_rethrow(err);
     return DEFAULT_SETTINGS.maintenanceMode;
   }
 }

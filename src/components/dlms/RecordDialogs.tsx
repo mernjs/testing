@@ -22,6 +22,7 @@ import { ACCEPT_ATTR } from "@/lib/dlms/file-types";
 import type { CredentialRow, DocumentRow, LinkRow, NoteRow } from "@/lib/dlms/records";
 import { saveCredentialAction, saveDocumentAction, saveLinkAction, saveNoteAction } from "@/app/dlms/(protected)/actions";
 import type { LockedOwner, VaultUi } from "@/components/dlms/vault-types";
+import { useBrand } from "@/components/platform/BrandProvider";
 
 type Result = { ok: boolean; error?: string };
 
@@ -136,9 +137,10 @@ function initialOwner(ui: VaultUi, locked: LockedOwner | undefined, row?: { scop
 
 /** Company / client picker. Hidden when the page already fixes the owner (a client or the company profile). */
 function OwnerFields({ ui, owner, setOwner, locked }: { ui: VaultUi; owner: Owner; setOwner: (o: Owner) => void; locked?: LockedOwner }) {
+  const brand = useBrand();
   if (locked) return null;
   const scopes = [
-    ...(ui.writeCompany ? [{ value: "company", label: "Company (YashOrbit)" }] : []),
+    ...(ui.writeCompany ? [{ value: "company", label: `Company (${brand.name})` }] : []),
     ...(ui.clients.length > 0 ? [{ value: "client", label: "Client" }] : []),
   ];
   return (

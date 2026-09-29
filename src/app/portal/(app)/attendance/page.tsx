@@ -6,9 +6,10 @@ import { guardPortalPage } from "@/lib/portal/guard";
 import { getLearnerOverview, getLearnerSchedule } from "@/lib/portal/student";
 import { ProgressRing, PortalPageHeader } from "@/components/portal/widgets";
 import EmptyPortalState from "@/components/portal/EmptyPortalState";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Attendance · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Attendance · {brand} Portal");
 
 export default async function AttendancePage() {
   const user = await guardPortalPage("intern", "trainee");

@@ -8,9 +8,10 @@ import { getClientOverview } from "@/lib/portal/client";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import EmptyPortalState from "@/components/portal/EmptyPortalState";
 import { cn } from "@/lib/utils";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Milestones · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Milestones · {brand} Portal");
 
 const STATUS_CLASS: Record<string, string> = {
   completed: "bg-green-500/10 text-green-600 dark:text-green-400",

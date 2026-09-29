@@ -16,6 +16,7 @@
 import { MongoClient } from "mongodb";
 import OpenAI from "openai";
 import { seedAibots, AIBOTS_DEMO_ACCOUNTS } from "./demo/aibots.mjs";
+import { assertSingleCompany } from "./lib/single-company-guard.mjs";
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -28,6 +29,7 @@ const client = new MongoClient(uri);
 try {
   await client.connect();
   const db = client.db(process.env.SEED_DB || undefined);
+  await assertSingleCompany(db);
   console.log(`🌱 AI Bots demo seeder (database: ${db.databaseName}; OpenAI: ${useOpenAI ? "yes" : "no — metadata only"})`);
   const res = await seedAibots(db, { openai: useOpenAI ? new OpenAI() : null, log: console.log });
   console.log(`   ${res.bots} bots (${res.active} active), ${res.files} knowledge files, ${res.chats} chats (${res.transcripts} with OpenAI transcripts), ${res.runs} usage rows, ${res.audit} activity entries`);

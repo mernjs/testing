@@ -96,7 +96,7 @@ export function serializePayout(p: SalaryPayout): SerializedPayout {
 
 export async function createPayoutsForRun(run: PayrollRun, payslips: Payslip[], actorId: string): Promise<void> {
   const collection = await getCollection();
-  const provider = getPayoutProvider();
+  const provider = await getPayoutProvider();
   for (const slip of payslips) {
     const exists = await collection.findOne({ payslipId: slip._id });
     if (exists) continue;
@@ -247,7 +247,7 @@ export async function initiatePayout(
   if (!canPayoutTransition(payout.status, "initiated")) return { ok: false, error: `Can't initiate a payout that is ${payout.status}.` };
   if (!payout.bankAccountId) return { ok: false, error: "No bank account on file for this employee." };
 
-  const provider = getPayoutProvider();
+  const provider = await getPayoutProvider();
   const now = new Date();
 
   if (provider.key === "manual") {

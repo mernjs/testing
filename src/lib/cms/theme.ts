@@ -1,10 +1,11 @@
 import "server-only";
-import { unstable_cache } from "next/cache";
+import { companyCache } from "@/lib/platform/tenancy/cache";
 import { getDb } from "@/lib/mongodb";
 import { COLLECTIONS, CMS_SITE_TAG, expireSiteCache, createStamp, updateStamp } from "@/lib/cms/db";
 import { normalizeSelections, type ThemeComponentSelections } from "@/lib/cms/component-variants";
 import { FALLBACK_THEME, sanitizeTokens, type ThemeTokens } from "@/lib/cms/theme-shared";
 import { getThemePreset } from "@/lib/cms/theme-presets";
+import { unstable_rethrow } from "next/navigation";
 
 export {
   FALLBACK_THEME, themeCssBlock, themeCssVars, sanitizeTokens,
@@ -218,12 +219,13 @@ async function loadActiveThemeKey(): Promise<string> {
   return doc?.activeThemeKey || DEFAULT_THEME_KEY;
 }
 
-const cachedActiveThemeKey = unstable_cache(loadActiveThemeKey, ["cms-active-theme-key-v1"], { tags: [CMS_SITE_TAG], revalidate: 3600 });
+const cachedActiveThemeKey = companyCache(loadActiveThemeKey, ["cms-active-theme-key-v1"], { tags: [CMS_SITE_TAG], revalidate: 3600 });
 
 export async function getActiveThemeKey(): Promise<string> {
   try {
     return await cachedActiveThemeKey();
   } catch (err) {
+    unstable_rethrow(err);
     console.error("[cms] active theme key unavailable, using default", err);
     return DEFAULT_THEME_KEY;
   }
@@ -245,7 +247,7 @@ async function loadActiveTheme(): Promise<{ tokens: ThemeTokens; components: Req
   return { tokens: doc?.tokens ?? FALLBACK_THEME, components: normalizeSelections(doc?.components) };
 }
 
-const cachedTheme = unstable_cache(loadActiveTheme, ["cms-theme-v2"], { tags: [CMS_SITE_TAG], revalidate: 3600 });
+const cachedTheme = companyCache(loadActiveTheme, ["cms-theme-v2"], { tags: [CMS_SITE_TAG], revalidate: 3600 });
 
 /** Tokens of the currently active theme (same external signature `(site)/layout.tsx` already calls). */
 export async function getActiveTheme(): Promise<ThemeTokens> {
@@ -257,6 +259,7 @@ export async function getActiveThemeState(): Promise<{ tokens: ThemeTokens; comp
   try {
     return await cachedTheme();
   } catch (err) {
+    unstable_rethrow(err);
     console.error("[cms] theme unavailable, using code-defined fallback", err);
     return { tokens: FALLBACK_THEME, components: normalizeSelections(null) };
   }

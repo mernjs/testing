@@ -9,8 +9,9 @@ import TempPasswordBanner from "@/components/portal/TempPasswordBanner";
 import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const metadata = { title: "YashOrbit Portal", robots: { index: false, follow: false } };
+export const generateMetadata = () => brandedMetadata("{brand} Portal", { robots: { index: false, follow: false } });
 
 export default async function PortalAppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentPortalUser();

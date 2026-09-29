@@ -8,9 +8,10 @@ import { listPortalNotifications } from "@/lib/portal/notifications";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import MarkAllReadButton from "@/components/portal/MarkAllReadButton";
 import { cn } from "@/lib/utils";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Notifications · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Notifications · {brand} Portal");
 
 function ago(d: Date) {
   const s = Math.floor((Date.now() - d.getTime()) / 1000);

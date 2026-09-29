@@ -6,9 +6,9 @@ import BrandMark from "@/components/BrandMark";
 import PortalSidebar from "@/components/portal/PortalSidebar";
 import PortalProfileMenu from "@/components/portal/PortalProfileMenu";
 import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
-import { brandify } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import type { PortalRole } from "@/lib/portal-roles";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 const EXPANDED = 244;
 const COLLAPSED = 68;
@@ -41,7 +41,7 @@ export default function PortalSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              {brandify("YashOrbit")} <span className="text-foreground">Portal</span>
+              <BrandName /> <span className="text-foreground">Portal</span>
             </span>
           )}
         </div>

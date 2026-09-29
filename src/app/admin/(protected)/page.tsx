@@ -51,6 +51,7 @@ import ExecutiveSection from "@/components/admin/ExecutiveSection";
 import { AnalyticsFilterBar } from "@/components/admin/AnalyticsFilterBar";
 import { getCommandCenterStats } from "@/lib/admin/command-center";
 import { formatCurrency } from "@/lib/utils";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Panel status grid config
@@ -140,6 +141,7 @@ export default async function AdminCommandCenterPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const brand = await getCompanyBrand();
   const sp = await searchParams;
   const dateFrom = typeof sp.dateFrom === "string" ? sp.dateFrom : undefined;
   const dateTo = typeof sp.dateTo === "string" ? sp.dateTo : undefined;
@@ -160,7 +162,7 @@ export default async function AdminCommandCenterPage({
           Company Command Center
         </h1>
         <p className="text-sm text-muted-foreground">
-          Real-time executive overview aggregated live across every YashOrbit system.{" "}
+          Real-time executive overview aggregated live across every {brand.name} system.{" "}
           <span className="text-xs opacity-60">Updated {new Date(stats.generatedAt).toLocaleTimeString("en-IN")}</span>
         </p>
       </div>

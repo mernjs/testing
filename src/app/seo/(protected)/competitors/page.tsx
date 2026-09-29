@@ -13,8 +13,10 @@ import { backlinkOverview } from "@/lib/seo-panel/backlinks";
 import { allActiveKeywords } from "@/lib/seo-panel/keywords";
 import { allPages } from "@/lib/seo-panel/pages";
 import { saveCompetitorAction } from "@/app/seo/(protected)/actions";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 export default async function CompetitorsPage() {
+  const brand = await getCompanyBrand();
   const viewer = await getViewer();
   if (!viewer) redirect("/seo/login");
   const [comps, ourVis, bl, keywords, pages] = await Promise.all([(await competitorsCol()).find({}).sort({ name: 1 }).toArray(), ourVisibility(), backlinkOverview(), allActiveKeywords(), allPages()]);
@@ -27,7 +29,7 @@ export default async function CompetitorsPage() {
       <PageHeader
         title="Competitors"
         crumbs={[{ label: "Competitors" }]}
-        description={<>Compare YashOrbit with competitor sites. Competitor figures are <TrustBadge trust="estimated" /> (entered or imported from SEO tools); our figures are <TrustBadge trust="verified" /> panel data. Visibility is calculated the same way for everyone over our tracked keyword set.</>}
+        description={<>Compare {brand.name} with competitor sites. Competitor figures are <TrustBadge trust="estimated" /> (entered or imported from SEO tools); our figures are <TrustBadge trust="verified" /> panel data. Visibility is calculated the same way for everyone over our tracked keyword set.</>}
         actions={can(viewer, "MANAGE_COMPETITORS") && <EditDialog trigger={<Button size="sm"><Plus className="size-3.5" data-icon="inline-start" />Add competitor</Button>} title="Add a competitor" columns={2} fields={COMPETITOR_FIELDS} initial={competitorInitial(null)} onSubmit={async (v) => { "use server"; return saveCompetitorAction(null, v); }} />}
       />
       {comps.length === 0 ? (
@@ -35,7 +37,7 @@ export default async function CompetitorsPage() {
       ) : (
         <>
           <SectionCard title="SEO visibility" description="Share of the achievable click-through across our tracked keywords (volume-weighted; CTR curve by position)">
-            <BarsChart data={[{ key: "us", label: "YashOrbit", value: ourVis ?? 0, color: "#6366f1" }, ...comparisons.filter((x) => x).map((x) => ({ key: x!.competitor._id, label: x!.competitor.name, value: x!.visibility ?? 0, color: x!.competitor.color, href: `/seo/competitors/${x!.competitor._id}` }))]} suffix="%" max={100} />
+            <BarsChart data={[{ key: "us", label: brand.name, value: ourVis ?? 0, color: "#6366f1" }, ...comparisons.filter((x) => x).map((x) => ({ key: x!.competitor._id, label: x!.competitor.name, value: x!.visibility ?? 0, color: x!.competitor.color, href: `/seo/competitors/${x!.competitor._id}` }))]} suffix="%" max={100} />
             {ourVis === null && <Notice tone="info">Record keyword positions to compute visibility.</Notice>}
           </SectionCard>
           <SectionCard title="Side by side">
@@ -46,7 +48,7 @@ export default async function CompetitorsPage() {
                 </TableHeader>
                 <TableBody>
                   <TableRow className="bg-primary/5">
-                    <TableCell className="font-semibold">YashOrbit (us)</TableCell>
+                    <TableCell className="font-semibold">{brand.name} (us)</TableCell>
                     <TableCell className="text-right tabular-nums">{ourVis !== null ? `${ourVis}%` : "—"}</TableCell>
                     <TableCell className="text-right tabular-nums">{ourRanking} tracked ranking</TableCell>
                     <TableCell className="text-right tabular-nums">{ourTop10}</TableCell>

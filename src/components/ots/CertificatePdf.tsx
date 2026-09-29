@@ -1,8 +1,10 @@
 import "server-only";
-import { Document, Page, View, Text, Image, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, Image, StyleSheet } from "@react-pdf/renderer";
 import { qrToSvg } from "@/lib/tms/qrcode";
-import { PDF_COLORS, PDF_ORG } from "@/lib/pdf/brand";
+import { PDF_COLORS } from "@/lib/pdf/brand";
+import { usePdfIdentity } from "@/lib/pdf/identity";
 import { PdfBrandLockup } from "@/lib/pdf/layout";
+import { renderPdf } from "@/lib/pdf/identity";
 
 /** Server-only. A4 landscape test certificate — same letterhead, QR and frame as the TMS training certificate. */
 
@@ -57,6 +59,7 @@ const s = StyleSheet.create({
 });
 
 function Cert({ d }: { d: OtsCertificatePdfData }) {
+  const org = usePdfIdentity();
   const qr = qrDataUri(d.verifyUrl);
   return (
     <Document title={`${d.certificateNumber} — ${d.title}`}>
@@ -64,7 +67,7 @@ function Cert({ d }: { d: OtsCertificatePdfData }) {
         <View style={s.frame}>
           <View style={s.inner}>
             <PdfBrandLockup compact />
-            <Text style={s.addr}>{PDF_ORG.cityLine}</Text>
+            <Text style={s.addr}>{org.cityLine}</Text>
             <Text style={s.kicker}>Certificate of Achievement</Text>
             <Text style={s.h1}>{d.title}</Text>
             <Text style={s.presented}>This is to certify that</Text>
@@ -106,5 +109,5 @@ function Cert({ d }: { d: OtsCertificatePdfData }) {
 }
 
 export function renderOtsCertificatePdf(d: OtsCertificatePdfData): Promise<Buffer> {
-  return renderToBuffer(<Cert d={d} />) as Promise<Buffer>;
+  return renderPdf(<Cert d={d} />) as Promise<Buffer>;
 }

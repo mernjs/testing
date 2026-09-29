@@ -1,8 +1,10 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import type { Report } from "@/lib/prms/reports";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
+import { getCompanyBrand } from "@/lib/platform/branding";
+import { renderPdf } from "@/lib/pdf/identity";
 
 const C = PDF_COLORS;
 
@@ -18,7 +20,7 @@ const s = StyleSheet.create({
   tRow: { ...pdfSheet.tRow, paddingVertical: 3, paddingHorizontal: 3, borderBottomWidth: 0.4 },
 });
 
-function ReportDocument({ report }: { report: Report }) {
+function ReportDocument({ report, brandName }: { report: Report; brandName: string }) {
   const widths = report.columns.map((c) => c.width ?? 14);
   const totalW = widths.reduce((a, b) => a + b, 0);
   const flex = widths.map((w) => w / totalW);
@@ -43,12 +45,13 @@ function ReportDocument({ report }: { report: Report }) {
         ))}
         {report.rows.length === 0 && <Text style={{ marginTop: 12, color: C.mute }}>No data.</Text>}
 
-        <PdfFooter note={`${report.title} — YashOrbit PRMS`} />
+        <PdfFooter note={`${report.title} — ${brandName} PRMS`} />
       </Page>
     </Document>
   );
 }
 
 export async function renderReportPdf(report: Report): Promise<Buffer> {
-  return renderToBuffer(<ReportDocument report={report} />);
+  const { name } = await getCompanyBrand();
+  return renderPdf(<ReportDocument report={report} brandName={name} />);
 }

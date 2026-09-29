@@ -1,5 +1,5 @@
 import "server-only";
-import { unstable_cache } from "next/cache";
+import { companyCache } from "@/lib/platform/tenancy/cache";
 import { getDb } from "@/lib/mongodb";
 import { CMS_SITE_TAG, expireSiteCache, updateStamp, createStamp, newId } from "@/lib/cms/db";
 import { COLLECTIONS } from "./registry";
@@ -62,7 +62,7 @@ async function loadPublished(key: CollectionKey): Promise<{ slug: string }[]> {
   return docs.map((d) => def.parse(d.live)).filter((r): r is { slug: string } => r !== null);
 }
 
-const cachedPublished = unstable_cache(loadPublished, ["cms-records-v2"], { tags: [CMS_SITE_TAG], revalidate: 3600 });
+const cachedPublished = companyCache(loadPublished, ["cms-records-v2"], { tags: [CMS_SITE_TAG], revalidate: 3600 });
 
 /** JSON-safe published records for one collection, in display order. */
 export async function getRecords(key: CollectionKey): Promise<{ slug: string }[]> {

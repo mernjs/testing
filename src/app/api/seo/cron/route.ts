@@ -4,6 +4,8 @@ import { runCrawl, latestCompletedRun, CrawlBusyError } from "@/lib/seo-panel/cr
 import { syncSearchConsole } from "@/lib/seo-panel/integrations/gsc";
 import { syncAnalytics } from "@/lib/seo-panel/integrations/ga4";
 import { verifyBacklinks } from "@/lib/seo-panel/backlinks";
+import { getPlatformOwnerCompanyId } from "@/lib/platform/tenancy/companies";
+import { runAsCompany } from "@/lib/platform/tenancy/context";
 
 export const maxDuration = 300;
 
@@ -12,10 +14,21 @@ export const maxDuration = 300;
  * Search Console + Analytics sync when enabled, the scheduled website audit
  * (daily or weekly per Settings), and a weekly backlink re-verification on
  * Mondays. Refuses to run without a configured secret.
+ *
+ * Runs for the platform-owner company only: the crawler, backlink check and
+ * PageSpeed still target the platform's own site URL (`siteUrl`), so running
+ * them for another company would audit the wrong site into its workspace.
+ * Fans out per company once site origins are per company.
  */
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET;
   if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const ownerId = await getPlatformOwnerCompanyId();
+  if (!ownerId) return NextResponse.json({ ok: true, skipped: "no platform-owner company" });
+  return NextResponse.json(await runAsCompany(ownerId, runSeoHousekeeping));
+}
+
+async function runSeoHousekeeping(): Promise<Record<string, unknown>> {
   const s = await getSettings();
   const out: Record<string, unknown> = {};
   const attempt = async (key: string, fn: () => Promise<unknown>) => {
@@ -43,5 +56,5 @@ export async function GET(req: NextRequest) {
     });
   }
   if (s.schedule.verifyBacklinks && new Date().getDay() === 1) await attempt("backlinks", () => verifyBacklinks());
-  return NextResponse.json({ ok: true, ...out });
+  return { ok: true, ...out };
 }

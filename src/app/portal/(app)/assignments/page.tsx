@@ -7,9 +7,10 @@ import { getLearnerOverview } from "@/lib/portal/student";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import EmptyPortalState from "@/components/portal/EmptyPortalState";
 import { cn } from "@/lib/utils";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Assignments · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Assignments · {brand} Portal");
 
 const SUB_CLASS: Record<string, string> = {
   reviewed: "bg-green-500/10 text-green-600 dark:text-green-400",

@@ -7,11 +7,13 @@ import { listSubscriptions, countSubscribersByCampaign } from "@/lib/offers/subs
 import { searchCampaigns } from "@/lib/offers/campaigns";
 import { getAudienceLabel } from "@/lib/offers/constants";
 import { formatDateTime } from "@/lib/utils";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Notify-Me Subscribers · Festival Offers" };
 
 export default async function SubscribersPage({ searchParams }: { searchParams: Promise<{ campaign?: string }> }) {
+  const brand = await getCompanyBrand();
   const { campaign } = await searchParams;
   const [subs, counts, { items: campaigns }] = await Promise.all([
     listSubscriptions({ campaignId: campaign || undefined, limit: 500 }),
@@ -35,7 +37,7 @@ export default async function SubscribersPage({ searchParams }: { searchParams: 
         </div>
         <div className="flex items-center gap-2">
           <a href={`/lms/offers/subscribers/export${campaign ? `?campaign=${encodeURIComponent(campaign)}` : ""}`} className={buttonVariants({ variant: "outline", size: "sm" })}>Export CSV</a>
-          {subs.length > 0 && <a href={`mailto:?bcc=${encodeURIComponent(emails)}&subject=${encodeURIComponent("New YashOrbit offers are live")}`} className={buttonVariants({ size: "sm" })}>Email all ({subs.length})</a>}
+          {subs.length > 0 && <a href={`mailto:?bcc=${encodeURIComponent(emails)}&subject=${encodeURIComponent(`New ${brand.name} offers are live`)}`} className={buttonVariants({ size: "sm" })}>Email all ({subs.length})</a>}
         </div>
       </div>
 

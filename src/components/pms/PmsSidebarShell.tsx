@@ -6,9 +6,9 @@ import BrandMark from "@/components/BrandMark";
 import PmsSidebar from "@/components/pms/PmsSidebar";
 import PmsProfileMenu from "@/components/pms/PmsProfileMenu";
 import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
-import { brandify } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import type { PmsRole } from "@/lib/pms-roles";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 const EXPANDED_WIDTH = 240;
 const COLLAPSED_WIDTH = 68;
@@ -47,7 +47,7 @@ export default function PmsSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              {brandify("YashOrbit")} <span className="text-foreground">PMS</span>
+              <BrandName /> <span className="text-foreground">PMS</span>
             </span>
           )}
         </div>

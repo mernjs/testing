@@ -1,8 +1,9 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import type { Receipt } from "@/lib/fms/receipts";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
+import { renderPdf } from "@/lib/pdf/identity";
 
 const C = PDF_COLORS;
 
@@ -59,5 +60,5 @@ function ReceiptDoc({ receipt }: { receipt: Receipt }) {
 }
 
 export async function renderReceiptPdf(receipt: Receipt): Promise<Buffer> {
-  return renderToBuffer(<ReceiptDoc receipt={receipt} />);
+  return renderPdf(<ReceiptDoc receipt={receipt} />);
 }

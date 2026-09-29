@@ -4,8 +4,9 @@ import { getCurrentOtsUser } from "@/lib/ots-auth";
 import { resolveTaker } from "@/lib/ots/taker";
 import { AttemptClosedError, loadExamState } from "@/lib/ots/attempts";
 import { Toaster } from "@/components/ui/sonner";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const metadata = { title: "Test in progress · YashOrbit", robots: { index: false, follow: false } };
+export const generateMetadata = () => brandedMetadata("Test in progress · {brand}", { robots: { index: false, follow: false } });
 export const dynamic = "force-dynamic";
 
 /** Distraction-free exam page (outside the panel shell): no sidebar, no navigation away. */

@@ -8,8 +8,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { sendPortalMessageAction } from "./actions";
-import { brandify } from "@/lib/brand";
 import type { SerializedLeadMessage, LeadMessageAttachment } from "@/lib/lead-management/types";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 function timeLabel(iso: string) {
   return new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
@@ -168,7 +168,7 @@ export default function PortalMessagesThread({ initialMessages }: { initialMessa
           <MessagesSquare className="size-4.5" />
         </span>
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-foreground">{brandify("YashOrbit")} Team</p>
+          <p className="truncate text-sm font-semibold text-foreground"><BrandName /> Team</p>
           <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <span className="size-1.5 rounded-full bg-emerald-500" />
             Usually replies within a day
@@ -219,7 +219,7 @@ export default function PortalMessagesThread({ initialMessages }: { initialMessa
                 <div className={cn("flex max-w-[75%] flex-col", mine && "items-end")}>
                   {item.showMeta && (
                     <span className={cn("mb-1 px-1 text-[11px] font-medium text-muted-foreground", mine && "text-right")}>
-                      {mine ? "You" : brandify("YashOrbit")} · {timeLabel(m.createdAt)}
+                      {mine ? "You" : <BrandName />} · {timeLabel(m.createdAt)}
                     </span>
                   )}
                   <div

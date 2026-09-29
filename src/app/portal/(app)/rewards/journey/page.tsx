@@ -7,9 +7,10 @@ import { PortalPageHeader, PortalStat } from "@/components/portal/widgets";
 import { EarnNav, HowItWorks, RewardHistory } from "@/components/portal/rewards/parts";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getJourneyRewards } from "@/lib/portal/rewards";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Journey rewards · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Journey rewards · {brand} Portal");
 
 export default async function JourneyRewardsPage() {
   const user = await guardPortalPage();

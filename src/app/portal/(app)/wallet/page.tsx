@@ -9,12 +9,15 @@ import GlassCard from "@/components/lms/GlassCard";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { PortalPageHeader, PortalStat } from "@/components/portal/widgets";
 import { formatDateTime } from "@/lib/utils";
+import { BrandName } from "@/components/platform/BrandProvider";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
-import { brandify } from "@/lib/brand";
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Wallet · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Wallet · {brand} Portal");
 
 export default async function PortalWalletPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const brand = await getCompanyBrand();
   const user = await guardPortalPage();
   const { page } = await searchParams;
   const pageNum = Math.max(Number(page) || 1, 1);
@@ -24,7 +27,7 @@ export default async function PortalWalletPage({ searchParams }: { searchParams:
   return (
     <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
       <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Wallet" }]} />
-      <PortalPageHeader title="YashOrbit Wallet" subtitle="Promotional credits you earn and can redeem on eligible offers." />
+      <PortalPageHeader title={`${brand.name} Wallet`} subtitle="Promotional credits you earn and can redeem on eligible offers." />
 
       <GlassCard interactive={false}>
         <CardContent className="py-8 text-center">
@@ -96,7 +99,7 @@ export default async function PortalWalletPage({ searchParams }: { searchParams:
       </GlassCard>
 
       <p className="text-xs text-muted-foreground">
-        {brandify("YashOrbit")} Credits are promotional/reward credits, not cash. They are subject to eligibility, expiry, redemption limits and campaign rules, are not
+        <BrandName /> Credits are promotional/reward credits, not cash. They are subject to eligibility, expiry, redemption limits and campaign rules, are not
         transferable, and may be reversed in case of cancellation or misuse.
       </p>
     </div>

@@ -8,6 +8,7 @@ import { MongoClient } from "mongodb";
 import { randomBytes, scryptSync } from "node:crypto";
 import readline from "node:readline";
 import { stdin, stdout } from "node:process";
+import { assertSingleCompany } from "./lib/single-company-guard.mjs";
 
 const SCRYPT_KEYLEN = 64;
 const MIN_PASSWORD_LENGTH = 10;
@@ -130,6 +131,7 @@ async function main() {
   try {
     await client.connect();
     const db = client.db();
+    await assertSingleCompany(db);
     const users = db.collection("admin_users");
     await users.createIndex({ email: 1 }, { unique: true });
 

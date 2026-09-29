@@ -10,6 +10,7 @@
  */
 import { MongoClient } from "mongodb";
 import { seedSmms, SMMS_DEMO_ACCOUNTS } from "./demo/smms.mjs";
+import { assertSingleCompany } from "./lib/single-company-guard.mjs";
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -20,6 +21,7 @@ const client = new MongoClient(uri);
 try {
   await client.connect();
   const db = client.db(process.env.SEED_DB || undefined);
+  await assertSingleCompany(db);
   console.log(`🌱 Social Media demo seeder (database: ${db.databaseName})`);
   const r = await seedSmms(db);
   console.log(`   ${r.campaigns} campaigns, ${r.ads} ads, ${r.posts} posts, ${r.generations} versions${r.linkedLms ? " · launched campaign linked to LMS ad data" : ""}`);

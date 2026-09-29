@@ -5,6 +5,7 @@
  *
  *   npm run db:migrate-cms-content            # dry run — prints the plan, writes nothing
  *   npm run db:migrate-cms-content -- --apply # writes to the database in MONGODB_URI
+ *   ... -- --company <slug>                   # a company other than the platform owner
  *
  * Source: the `cms-seed/` dataset (the site's content as it was when it moved
  * into the CMS). Nothing under `src/` holds content any more.
@@ -44,6 +45,9 @@ import { parsePageFrame, parsePageJsonLd, parsePageSeo } from "@/lib/cms/page-se
 import type { PageSection } from "@/lib/cms/section-registry";
 import { getDb } from "@/lib/mongodb";
 import { COLLECTIONS } from "@/lib/cms/db";
+import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
+import { runAsCompany } from "@/lib/platform/tenancy/context";
+import { COMPANIES_COLLECTION, type Company } from "@/lib/platform/tenancy/companies";
 
 const APPLY = process.argv.includes("--apply");
 const ACTOR = "system:content-migration";
@@ -287,7 +291,22 @@ async function main() {
   process.exit(c("failed") ? 1 : 0);
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+/** The company whose website this migrates: `--company <slug>`, else the platform owner. */
+async function targetCompany(): Promise<{ _id: string; name: string }> {
+  const i = process.argv.indexOf("--company");
+  const slug = i >= 0 ? process.argv[i + 1] : undefined;
+  const db = await getPlatformDb();
+  const company = await db.collection<Company>(COMPANIES_COLLECTION).findOne(slug ? { slug } : { isPlatformOwner: true });
+  if (!company) throw new Error(slug ? `No company with slug "${slug}"` : "No platform-owner company — run `npm run db:migrate-tenancy -- --apply` first");
+  return company;
+}
+
+targetCompany()
+  .then((company) => {
+    console.log(`Company: ${company.name} (${company._id})`);
+    return runAsCompany(company._id, main);
+  })
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

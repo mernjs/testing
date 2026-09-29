@@ -11,9 +11,10 @@ import { cn } from "@/lib/utils";
 import PayWithCreditsButton from "@/components/portal/PayWithCreditsButton";
 import { quoteTrainingCredits } from "@/lib/wallet/panel-redemption";
 import { payFeeWithCreditsAction } from "../wallet/pay-actions";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Payments · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Payments · {brand} Portal");
 
 function inr(n: number) {
   return `₹${Math.round(n).toLocaleString("en-IN")}`;

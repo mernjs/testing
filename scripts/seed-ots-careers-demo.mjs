@@ -10,6 +10,7 @@
  */
 import { MongoClient } from "mongodb";
 import { seedOtsCareers } from "./demo/ots-careers.mjs";
+import { assertSingleCompany } from "./lib/single-company-guard.mjs";
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -20,6 +21,7 @@ const client = new MongoClient(uri);
 try {
   await client.connect();
   const db = client.db(process.env.SEED_DB || undefined);
+  await assertSingleCompany(db);
   console.log(`🌱 OTS careers screening seeder (database: ${db.databaseName})`);
   const actor = await db.collection("admin_users").findOne({ email: "demo.ots.manager@yashorbit.com" }, { projection: { _id: 1 } });
   const evaluator = await db.collection("admin_users").findOne({ email: "demo.ots.evaluator@yashorbit.com" }, { projection: { _id: 1 } });

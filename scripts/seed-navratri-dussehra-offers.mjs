@@ -14,6 +14,7 @@
 // Run: npm run db:seed-navratri-dussehra-offers
 import { MongoClient } from "mongodb";
 import { ago, fromNow, audit, NOW } from "./demo/lib.mjs";
+import { assertSingleCompany } from "./lib/single-company-guard.mjs";
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -270,6 +271,7 @@ const client = new MongoClient(uri);
 try {
   await client.connect();
   const db = client.db();
+  await assertSingleCompany(db);
 
   const campaignIds = campaigns.map((c) => c._id);
   await db.collection("offers").deleteMany({ campaignId: { $in: campaignIds } });

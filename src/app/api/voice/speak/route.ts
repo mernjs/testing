@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse, after } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getChatbotConfig } from "@/lib/chatbot-config";
 import { isElevenLabsConfigured, streamTts } from "@/lib/elevenlabs";
 import { getSessionFromRequest } from "@/lib/chatbot-sessions";
 import { ensureVoiceConversation, recordVoiceTurn } from "@/lib/voice-conversations";
 import { saveVoiceAudio } from "@/lib/voice-storage";
 import { bumpVoiceRollup } from "@/lib/voice-rollup";
+import { afterForCompany } from "@/lib/platform/tenancy/context";
 
 export const maxDuration = 60;
 
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
   const userAudioDurationMs = num(body.userAudioDurationMs);
 
   // Persist the turn + audio file after the response has been sent.
-  after(async () => {
+  await afterForCompany(async () => {
     try {
       const reader = persistStream.getReader();
       const chunks: Uint8Array[] = [];

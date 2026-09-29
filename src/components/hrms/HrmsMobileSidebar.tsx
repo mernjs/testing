@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import HrmsSidebar from "@/components/hrms/HrmsSidebar";
 import BrandMark from "@/components/BrandMark";
-import { brandify } from "@/lib/brand";
 import type { HrmsRole } from "@/lib/hrms-roles";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 export default function HrmsMobileSidebar({
   roles,
@@ -32,7 +32,7 @@ export default function HrmsMobileSidebar({
           <div className="flex h-14 items-center gap-2 border-b border-border/60 px-4">
             <BrandMark className="size-6 shrink-0" />
             <span className="text-sm font-bold">
-              {brandify("YashOrbit")} <span className="text-foreground">HRMS</span>
+              <BrandName /> <span className="text-foreground">HRMS</span>
             </span>
           </div>
           <HrmsSidebar roles={roles} permissionOverrides={permissionOverrides} employeeId={employeeId} onNavigate={() => setOpen(false)} />

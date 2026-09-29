@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 import { getCurrentChatUser } from "@/lib/messenger-auth";
 import BrandMark from "@/components/BrandMark";
-import { brandify } from "@/lib/brand";
 import LoginForm from "./LoginForm";
+import { BrandName } from "@/components/platform/BrandProvider";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const metadata = { title: "Sign in · YashOrbit Messenger", robots: { index: false, follow: false } };
+export const generateMetadata = () => brandedMetadata("Sign in · {brand} Messenger", { robots: { index: false, follow: false } });
 
 export default async function MessengerLoginPage() {
   const user = await getCurrentChatUser();
@@ -22,7 +23,7 @@ export default async function MessengerLoginPage() {
 
         <div className="relative z-10 flex items-center gap-2 text-lg font-bold">
           <BrandMark className="size-7 shrink-0" />
-          {brandify("YashOrbit")} <span className="text-foreground">Messenger</span>
+          <BrandName /> <span className="text-foreground">Messenger</span>
         </div>
 
         <div className="relative z-10 max-w-md">

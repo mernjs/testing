@@ -2,11 +2,14 @@ import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { getSiteInfo } from "@/lib/cms/site-info";
+import { currentCompanyIdOrNull } from "@/lib/platform/tenancy/context";
 
 export const homeOgImageSize = { width: 1200, height: 630 };
 
 /** The share image's metadata (alt text from CMS → Site Identity → Share image). */
 export async function homeOgImageMetadata() {
+  // The build only asks for the image ids; the alt text is per company, so it's filled in per request.
+  if (!(await currentCompanyIdOrNull())) return [{ id: "default", alt: "", size: homeOgImageSize, contentType: "image/png" }];
   const { shareImage } = await getSiteInfo();
   return [{ id: "default", alt: shareImage.alt, size: homeOgImageSize, contentType: "image/png" }];
 }

@@ -6,9 +6,10 @@ import { guardPortalPage } from "@/lib/portal/guard";
 import { TEST_TAKER_ROLES } from "@/lib/portal-roles";
 import { resolveTaker } from "@/lib/ots/taker";
 import { candidateCertificates } from "@/lib/ots/candidate";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Test Certificates · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Test Certificates · {brand} Portal");
 
 export default async function PortalTestCertificatesPage() {
   await guardPortalPage(...TEST_TAKER_ROLES);

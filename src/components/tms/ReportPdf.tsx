@@ -1,8 +1,10 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import type { ReportData } from "@/lib/tms/reports";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
+import { getCompanyBrand } from "@/lib/platform/branding";
+import { renderPdf } from "@/lib/pdf/identity";
 
 /** Server-only. Generic landscape tabular report PDF. */
 
@@ -15,7 +17,7 @@ const s = StyleSheet.create({
   cell: { paddingRight: 3 },
 });
 
-function ReportDocument({ report }: { report: ReportData }) {
+function ReportDocument({ report, brandName }: { report: ReportData; brandName: string }) {
   const widths = report.columns.map((c) => c.width ?? 14);
   const totalW = widths.reduce((a, b) => a + b, 0);
   const subtitle = report.meta.map(([k, v]) => `${k}: ${v}`).join("    ·    ");
@@ -43,12 +45,13 @@ function ReportDocument({ report }: { report: ReportData }) {
         ))}
         {report.rows.length === 0 && <Text style={{ marginTop: 12, color: C.mute }}>No data.</Text>}
 
-        <PdfFooter note={`${report.title} — YashOrbit Training`} />
+        <PdfFooter note={`${report.title} — ${brandName} Training`} />
       </Page>
     </Document>
   );
 }
 
-export function renderReportPdf(report: ReportData): Promise<Buffer> {
-  return renderToBuffer(<ReportDocument report={report} />) as Promise<Buffer>;
+export async function renderReportPdf(report: ReportData): Promise<Buffer> {
+  const { name } = await getCompanyBrand();
+  return renderPdf(<ReportDocument report={report} brandName={name} />) as Promise<Buffer>;
 }

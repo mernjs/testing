@@ -1,0 +1,37 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { getCurrentHubUser } from "@/lib/hub-auth";
+import { saveBranding, type BrandingInput, type BrandingResult } from "@/lib/platform/branding";
+import { uploadCompanyLogo, type LogoUploadResult } from "@/lib/platform/branding/logo";
+import { markOnboardingStep } from "@/lib/platform/onboarding/state";
+
+async function requireOwner() {
+  const user = await getCurrentHubUser();
+  if (!user) redirect("/workspace/login");
+  if (!user.roles.includes("super_admin")) redirect("/workspace");
+  return user;
+}
+
+export async function saveBrandingAction(input: BrandingInput): Promise<BrandingResult> {
+  await requireOwner();
+  const res = await saveBranding({
+    namePrimary: String(input?.namePrimary ?? ""),
+    nameAccent: String(input?.nameAccent ?? ""),
+    primaryColor: input?.primaryColor ? String(input.primaryColor) : null,
+    logoUrl: input?.logoUrl ? String(input.logoUrl) : null,
+  });
+  if (res.ok) {
+    await markOnboardingStep("branding");
+    // The brand is read by the root layout — refresh every page's cached render.
+    revalidatePath("/", "layout");
+  }
+  return res;
+}
+
+export async function uploadLogoAction(form: FormData): Promise<LogoUploadResult> {
+  await requireOwner();
+  const file = form.get("logo");
+  return file instanceof File ? uploadCompanyLogo(file) : { ok: false, error: "Choose an image file." };
+}

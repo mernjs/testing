@@ -10,8 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { brandify } from "@/lib/brand";
 import { dlmsLoginAction, type DlmsLoginState } from "./actions";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 const initialState: DlmsLoginState = {};
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,7 +32,7 @@ export default function LoginForm() {
         <CardHeader>
           <div className="mb-1 flex items-center gap-1.5 text-xs font-medium text-primary lg:hidden">
             <BrandMark className="size-4 shrink-0" />
-            {brandify("YashOrbit")} <span className="text-foreground">DLMS</span>
+            <BrandName /> <span className="text-foreground">DLMS</span>
           </div>
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>Sign in to the DLMS management panel.</CardDescription>

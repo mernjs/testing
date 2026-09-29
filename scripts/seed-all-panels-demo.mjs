@@ -23,6 +23,7 @@
 
 import { MongoClient, ObjectId } from "mongodb";
 import { randomUUID, randomBytes, scryptSync } from "node:crypto";
+import { assertSingleCompany } from "./lib/single-company-guard.mjs";
 
 const SCRYPT_KEYLEN = 64;
 
@@ -95,6 +96,7 @@ async function runMegaSeeder() {
   try {
     await client.connect();
     const rawDb = client.db();
+    await assertSingleCompany(rawDb);
     // Real databases keep the app's unique indexes after a truncate, and these generic base docs don't carry every
     // module-specific key. Skip duplicate-key rows instead of aborting; seed-demo-portal.mjs supplies the correctly
     // shaped data for those modules.

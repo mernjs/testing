@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import FmsSidebar from "@/components/fms/FmsSidebar";
 import BrandMark from "@/components/BrandMark";
-import { brandify } from "@/lib/brand";
 import type { FmsRole } from "@/lib/fms-roles";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 export default function FmsMobileSidebar({
   roles,
@@ -30,7 +30,7 @@ export default function FmsMobileSidebar({
           <div className="flex h-14 items-center gap-2 border-b border-border/60 px-4">
             <BrandMark className="size-6 shrink-0" />
             <span className="text-sm font-bold">
-              {brandify("YashOrbit")} <span className="text-foreground">FMS</span>
+              <BrandName /> <span className="text-foreground">FMS</span>
             </span>
           </div>
           <FmsSidebar roles={roles} permissionOverrides={permissionOverrides} onNavigate={() => setOpen(false)} />

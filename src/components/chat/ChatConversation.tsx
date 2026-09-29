@@ -8,6 +8,7 @@ import { ChatThread } from "@/components/chat/ChatThread";
 import { WelcomeScreen } from "@/components/chat/WelcomeScreen";
 import { ChatComposer } from "@/components/chat/ChatComposer";
 import { PreChatForm } from "@/components/chat/PreChatForm";
+import { useBrand } from "@/components/platform/BrandProvider";
 
 /** The shared middle of every chat surface: body + error banner + input dock.
  * `dock` (the `/ask` page's Text / Voice switch + input) replaces the default
@@ -19,6 +20,7 @@ export function ChatConversation({
   wide?: boolean;
   dock?: React.ReactNode;
 }) {
+  const brand = useBrand();
   const { messages, status, error, config, ready, send, dismissError, switchingSession, needsIdentification } =
     useChat();
   const streaming = status === "streaming";
@@ -40,7 +42,7 @@ export function ChatConversation({
             welcomeMessage={
               unavailable
                 ? "The assistant is being set up and isn't available just yet. Please check back soon or contact our team."
-                : config?.welcomeMessage ?? "Hi! Ask me anything about YashOrbit."
+                : config?.welcomeMessage ?? `Hi! Ask me anything about ${brand.name}.`
             }
             suggestedQuestions={unavailable ? [] : config?.suggestedQuestions ?? []}
             onPick={send}

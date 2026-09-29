@@ -6,9 +6,9 @@ import BrandMark from "@/components/BrandMark";
 import TmsSidebar from "@/components/tms/TmsSidebar";
 import TmsProfileMenu from "@/components/tms/TmsProfileMenu";
 import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
-import { brandify } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import type { TmsRole } from "@/lib/tms-roles";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 const EXPANDED_WIDTH = 240;
 const COLLAPSED_WIDTH = 68;
@@ -47,7 +47,7 @@ export default function TmsSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              {brandify("YashOrbit")} <span className="text-foreground">TMS</span>
+              <BrandName /> <span className="text-foreground">TMS</span>
             </span>
           )}
         </div>

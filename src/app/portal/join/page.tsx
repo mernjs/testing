@@ -4,11 +4,14 @@ import PortalAuthShell from "@/components/portal/PortalAuthShell";
 import { resolveReferralCode } from "@/lib/wallet/referral-capture";
 import { getReferralPreview } from "@/lib/wallet/referrals";
 import JoinForm from "./JoinForm";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
-export const metadata = { title: "Join · YashOrbit Portal", robots: { index: false } };
+export const generateMetadata = () => brandedMetadata("Join · {brand} Portal", { robots: { index: false } });
 export const dynamic = "force-dynamic";
 
 export default async function PortalJoinPage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {
+  const brand = await getCompanyBrand();
   if (await getCurrentPortalUser()) redirect("/portal");
   const { ref } = await searchParams;
   const code = await resolveReferralCode(ref);
@@ -22,7 +25,7 @@ export default async function PortalJoinPage({ searchParams }: { searchParams: P
           <span className="bg-gradient-to-r from-primary to-yashorbit-coral bg-clip-text text-transparent">earn credits.</span>
         </>
       }
-      sub="Join in under a minute. Get signup credits, share your own referral link and use your credits on YashOrbit offers."
+      sub={`Join in under a minute. Get signup credits, share your own referral link and use your credits on ${brand.name} offers.`}
     >
       <JoinForm
         initialCode={code ?? ""}

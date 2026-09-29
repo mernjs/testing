@@ -12,9 +12,10 @@ import { cn } from "@/lib/utils";
 import PayWithCreditsButton from "@/components/portal/PayWithCreditsButton";
 import { quoteInvoiceCredits } from "@/lib/wallet/panel-redemption";
 import { payInvoiceWithCreditsAction } from "../wallet/pay-actions";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Invoices · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Invoices · {brand} Portal");
 
 const STATUS_BADGE: Record<string, string> = {
   sent: "bg-blue-500/15 text-blue-600 dark:text-blue-400",

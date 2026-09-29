@@ -13,8 +13,9 @@ import { listPages } from "@/lib/cms/pages";
 import { getActiveThemeKey } from "@/lib/cms/theme";
 import { getMaintenanceMode } from "@/lib/cms/settings";
 import CmsNotices from "@/components/cms/CmsNotices";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const metadata = { title: "YashOrbit CMS", robots: { index: false, follow: false } };
+export const generateMetadata = () => brandedMetadata("{brand} CMS", { robots: { index: false, follow: false } });
 
 export default async function ProtectedCmsLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentCmsUser();

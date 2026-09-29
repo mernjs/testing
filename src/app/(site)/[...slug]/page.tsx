@@ -1,6 +1,5 @@
 import CmsPageView from "@/components/cms/CmsPageView";
 import { cmsPageMetadata, requirePublicPage } from "@/lib/cms/page-route";
-import { listPublishedPaths } from "@/lib/cms/public";
 
 /**
  * Every CMS page without a dedicated route — i.e. almost the whole site, and
@@ -14,15 +13,10 @@ type Props = { params: Promise<{ slug: string[] }> };
 
 const pathOf = (slug: string[]) => `/${slug.map(decodeURIComponent).join("/")}`;
 
-/** Pre-render every published page served by this route; pages published later render on first request. */
-export async function generateStaticParams() {
-  const dedicated = /^\/(login|register|contact|careers\/apply|services\/our-saas-product|offers|rewards|ask)$/;
-  try {
-    return (await listPublishedPaths()).filter((p) => p !== "/" && !dedicated.test(p)).map((p) => ({ slug: p.slice(1).split("/") }));
-  } catch {
-    return []; // CMS unreachable at build time — pages render on first request instead
-  }
-}
+// The same path is a different page on every company's domain, so this route
+// can't be pre-rendered per path: it renders per request, reading page content
+// through the per-company cache (see src/lib/platform/tenancy/cache.ts).
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props) {
   return cmsPageMetadata(pathOf((await params).slug));

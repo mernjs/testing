@@ -6,9 +6,10 @@ import { guardPortalPage } from "@/lib/portal/guard";
 import { getClientOverview } from "@/lib/portal/client";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import EmptyPortalState from "@/components/portal/EmptyPortalState";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Meetings · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Meetings · {brand} Portal");
 
 const KIND_ICON = { milestone: Flag, review: CalendarClock, delivery: PackageCheck } as const;
 

@@ -1,8 +1,10 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import type { ProjectReport } from "@/lib/pms/reports";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
+import { getCompanyBrand } from "@/lib/platform/branding";
+import { renderPdf } from "@/lib/pdf/identity";
 
 /** Server-only. A4 project report PDF. Never import from a client component. */
 
@@ -52,7 +54,7 @@ function Kpi({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ReportDocument({ report }: { report: ProjectReport }) {
+function ReportDocument({ report, brandName }: { report: ProjectReport; brandName: string }) {
   const { summary: sm, financials: f } = report;
   const m = (n: number) => money(n, sm.currency);
   const subtitle = [
@@ -135,12 +137,13 @@ function ReportDocument({ report }: { report: ProjectReport }) {
           ))
         )}
 
-        <PdfFooter note={`${sm.name} · ${sm.projectCode} — YashOrbit PMS`} />
+        <PdfFooter note={`${sm.name} · ${sm.projectCode} — ${brandName} PMS`} />
       </Page>
     </Document>
   );
 }
 
-export function renderProjectReportPdf(report: ProjectReport): Promise<Buffer> {
-  return renderToBuffer(<ReportDocument report={report} />);
+export async function renderProjectReportPdf(report: ProjectReport): Promise<Buffer> {
+  const { name } = await getCompanyBrand();
+  return renderPdf(<ReportDocument report={report} brandName={name} />);
 }

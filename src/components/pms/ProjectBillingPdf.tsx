@@ -1,8 +1,9 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import type { CompanyIdentity } from "@/lib/prms/settings";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
+import { renderPdf } from "@/lib/pdf/identity";
 
 const C = PDF_COLORS;
 
@@ -83,7 +84,7 @@ function ProjectInvoiceDocument({ details, company }: { details: ProjectPdfBilli
           </View>
           <View style={{ width: "48%" }}>
             <Text style={s.label}>Service Provider</Text>
-            <Text style={s.value}>{company.name || "YashOrbit Technologies"}</Text>
+            <Text style={s.value}>{company.name}</Text>
             <Text style={s.small}>{company.addressLine || "Software & AI Solutions"}</Text>
             <Text style={s.small}>Billing Model: {details.billingModel.toUpperCase().replace("_", " ")}</Text>
             <Text style={s.small}>Status: {details.status.toUpperCase()}</Text>
@@ -153,7 +154,7 @@ function ProjectInvoiceDocument({ details, company }: { details: ProjectPdfBilli
         <View style={s.sigWrap}>
           <View style={{ width: 180, borderTopWidth: 0.5, borderTopColor: C.ink, paddingTop: 4 }}>
             <Text style={s.small}>{company.signatoryName || "Authorised Signatory"}</Text>
-            <Text style={s.small}>YashOrbit Project Management & Billing</Text>
+            <Text style={s.small}>{company.name} Project Management & Billing</Text>
           </View>
         </View>
 
@@ -230,7 +231,7 @@ function ProjectReceiptDocument({ details, company }: { details: ProjectPdfBilli
         <View style={s.sigWrap}>
           <View style={{ width: 180, borderTopWidth: 0.5, borderTopColor: C.ink, paddingTop: 4 }}>
             <Text style={s.small}>{company.signatoryName || "Authorised Signatory"}</Text>
-            <Text style={s.small}>YashOrbit Treasury & Project Settlement</Text>
+            <Text style={s.small}>{company.name} Treasury & Project Settlement</Text>
           </View>
         </View>
 
@@ -241,9 +242,9 @@ function ProjectReceiptDocument({ details, company }: { details: ProjectPdfBilli
 }
 
 export async function renderProjectInvoicePdf(details: ProjectPdfBillingDetails, company: CompanyIdentity): Promise<Buffer> {
-  return renderToBuffer(<ProjectInvoiceDocument details={details} company={company} />);
+  return renderPdf(<ProjectInvoiceDocument details={details} company={company} />);
 }
 
 export async function renderProjectReceiptPdf(details: ProjectPdfBillingDetails, company: CompanyIdentity): Promise<Buffer> {
-  return renderToBuffer(<ProjectReceiptDocument details={details} company={company} />);
+  return renderPdf(<ProjectReceiptDocument details={details} company={company} />);
 }

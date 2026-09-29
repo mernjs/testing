@@ -1,6 +1,7 @@
 import "server-only";
 import { View, Text, Image, StyleSheet } from "@react-pdf/renderer";
-import { PDF_COLORS, PDF_ORG, PDF_ORG_CONTACT, PDF_TYPO, loadPdfLogo } from "@/lib/pdf/brand";
+import { PDF_COLORS, PDF_TYPO } from "@/lib/pdf/brand";
+import { usePdfIdentity } from "@/lib/pdf/identity";
 
 /**
  * Shared @react-pdf letterhead used by every generated PDF so they read as one
@@ -56,7 +57,7 @@ const st = StyleSheet.create({
  * icon + native text (react-pdf's SVG text / web-font support is unreliable).
  */
 export function PdfBrandLockup({ compact = false }: { compact?: boolean }) {
-  const logo = loadPdfLogo();
+  const { logo, wordPrimary, wordAccent, capsLine } = usePdfIdentity();
   const iconSize = compact ? PDF_TYPO.logoIconCompact : PDF_TYPO.logoIcon;
   const wordSize = compact ? PDF_TYPO.wordmarkCompact : PDF_TYPO.wordmark;
   return (
@@ -65,10 +66,10 @@ export function PdfBrandLockup({ compact = false }: { compact?: boolean }) {
       {logo ? <Image src={logo} style={{ width: iconSize, height: iconSize }} /> : null}
       <View style={st.lockupCol}>
         <Text style={[st.wordmark, { fontSize: wordSize }]}>
-          <Text style={{ color: C.navy }}>Yash</Text>
-          <Text style={{ color: C.coral }}>Orbit</Text>
+          <Text style={{ color: C.navy }}>{wordPrimary}</Text>
+          {wordAccent ? <Text style={{ color: C.coral }}>{wordAccent}</Text> : null}
         </Text>
-        <Text style={[st.lockupCaps, { fontSize: compact ? 5.5 : 6 }]}>TECHNOLOGIES PVT. LTD.</Text>
+        {capsLine ? <Text style={[st.lockupCaps, { fontSize: compact ? 5.5 : 6 }]}>{capsLine}</Text> : null}
       </View>
     </View>
   );
@@ -92,23 +93,24 @@ export function PdfLetterhead({ title, reference, subtitle, registrations, lands
   const titleSize = landscape ? PDF_TYPO.titleLandscape : PDF_TYPO.title;
   const orgLineSize = landscape ? 7.5 : 8;
   const regs = (registrations ?? []).filter(Boolean);
+  const org = usePdfIdentity();
 
   return (
     <View>
       <View style={st.headRow}>
         <View style={{ maxWidth: landscape ? 360 : 330 }}>
-          <Text style={st.orgName}>{PDF_ORG.name}</Text>
+          <Text style={st.orgName}>{org.name}</Text>
           {landscape ? (
             <Text style={[st.orgLine, { fontSize: orgLineSize }]}>
-              {[PDF_ORG.addressLine, PDF_ORG.cityLine].filter(Boolean).join(", ")}
+              {[org.addressLine, org.cityLine].filter(Boolean).join(", ")}
             </Text>
           ) : (
             <>
-              <Text style={[st.orgLine, { fontSize: orgLineSize }]}>{PDF_ORG.addressLine}</Text>
-              <Text style={[st.orgLine, { fontSize: orgLineSize }]}>{PDF_ORG.cityLine}</Text>
+              <Text style={[st.orgLine, { fontSize: orgLineSize }]}>{org.addressLine}</Text>
+              <Text style={[st.orgLine, { fontSize: orgLineSize }]}>{org.cityLine}</Text>
             </>
           )}
-          <Text style={[st.orgLine, { fontSize: orgLineSize }]}>{PDF_ORG_CONTACT}</Text>
+          <Text style={[st.orgLine, { fontSize: orgLineSize }]}>{org.contactLine}</Text>
         </View>
         <PdfBrandLockup compact={landscape} />
       </View>
@@ -141,12 +143,13 @@ export function PdfLetterhead({ title, reference, subtitle, registrations, lands
  */
 export function PdfFooter({ note }: { note?: string }) {
   const disclaimer = note ?? "Computer-generated document — no signature required.";
+  const { legalName } = usePdfIdentity();
   return (
     <Text
       style={st.footer}
       fixed
       render={({ pageNumber, totalPages }) =>
-        `${PDF_ORG.legalName}   ·   ${disclaimer}   ·   Page ${pageNumber} of ${totalPages}`
+        `${legalName}   ·   ${disclaimer}   ·   Page ${pageNumber} of ${totalPages}`
       }
     />
   );

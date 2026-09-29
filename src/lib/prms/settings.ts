@@ -2,6 +2,8 @@ import "server-only";
 import { getDb } from "@/lib/mongodb";
 import { updateStamp } from "@/lib/prms/db";
 import { DEFAULT_CURRENCY, SUPPORTED_CURRENCIES } from "@/lib/prms/constants";
+import { getCompanyBrand } from "@/lib/platform/branding";
+import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 
 /**
  * PRMS-wide configuration (single document). Company identity used on Purchase
@@ -56,6 +58,16 @@ const DEFAULT_COMPANY: CompanyIdentity = {
   signatoryTitle: "Procurement Head",
 };
 
+/**
+ * Defaults for a company that hasn't saved its company identity yet: the
+ * platform owner's own details for the platform owner only — any other
+ * company starts from its own name, never the owner's.
+ */
+async function defaultCompanyIdentity(): Promise<CompanyIdentity> {
+  if (await isPlatformOwnerContext()) return DEFAULT_COMPANY;
+  return { ...DEFAULT_COMPANY, name: (await getCompanyBrand()).name, website: null };
+}
+
 const DEFAULTS: Omit<PrmsSettings, "_id" | "updatedAt" | "updatedBy"> = {
   defaultCurrency: DEFAULT_CURRENCY,
   procurementReviewThreshold: 50000,
@@ -68,9 +80,10 @@ export async function getPrmsSettings(): Promise<PrmsSettings> {
   const db = await getDb();
   const collection = db.collection<PrmsSettings>(PRMS_SETTINGS_COLLECTION);
   const existing = await collection.findOne({ _id: PRMS_SETTINGS_ID });
-  if (existing) return { ...DEFAULTS, ...existing, company: { ...DEFAULT_COMPANY, ...existing.company } };
+  const base = await defaultCompanyIdentity();
+  if (existing) return { ...DEFAULTS, ...existing, company: { ...base, ...existing.company, name: existing.company?.name || base.name } };
 
-  const doc: PrmsSettings = { _id: PRMS_SETTINGS_ID, ...DEFAULTS, updatedAt: new Date(), updatedBy: null };
+  const doc: PrmsSettings = { _id: PRMS_SETTINGS_ID, ...DEFAULTS, company: base, updatedAt: new Date(), updatedBy: null };
   await collection.updateOne({ _id: PRMS_SETTINGS_ID }, { $setOnInsert: doc }, { upsert: true });
   return doc;
 }
@@ -112,7 +125,7 @@ export function normalizeSettingsInput(input: Record<string, unknown>): PrmsSett
     financeNotifyThreshold: num(input.financeNotifyThreshold, DEFAULTS.financeNotifyThreshold),
     itemSuggestions: list(input.itemSuggestions),
     company: {
-      name: optStr(input.companyName, 160) ?? DEFAULT_COMPANY.name,
+      name: optStr(input.companyName, 160) ?? "",
       addressLine: optStr(input.companyAddress),
       city: optStr(input.companyCity, 120),
       gstin: optStr(input.companyGstin, 20)?.toUpperCase() ?? null,

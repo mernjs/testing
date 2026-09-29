@@ -1,5 +1,5 @@
 import "server-only";
-import { unstable_cache } from "next/cache";
+import { companyCache } from "@/lib/platform/tenancy/cache";
 import { getDb } from "@/lib/mongodb";
 import { COLLECTIONS, CMS_SITE_TAG, expireSiteCache, updateStamp } from "@/lib/cms/db";
 import { CONTACT_FORM_FIELD_NAMES, completeFormFields, type CmsFormFieldConfig } from "@/lib/cms/forms-shared";
@@ -49,7 +49,7 @@ async function loadContactFormFields(): Promise<CmsFormFieldConfig[]> {
   return getFormDoc("contact", CONTACT_FORM_FIELD_NAMES);
 }
 
-const cachedContactForm = unstable_cache(loadContactFormFields, ["cms-contact-form-v1"], { tags: [CMS_SITE_TAG], revalidate: 3600 });
+const cachedContactForm = companyCache(loadContactFormFields, ["cms-contact-form-v1"], { tags: [CMS_SITE_TAG], revalidate: 3600 });
 
 export async function getContactFormFields(): Promise<CmsFormFieldConfig[]> {
   return cachedContactForm();

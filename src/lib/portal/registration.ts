@@ -18,7 +18,7 @@ export interface RegisterInput {
 }
 
 const GENERIC_NO_MATCH =
-  "We couldn't match that email and phone to an application, enrolment or client on file. Use the exact email and phone you gave YashOrbit.";
+  "We couldn't match that email and phone to an application, enrolment or client on file. Use the exact email and phone you gave us.";
 
 export async function registerExternalUser(
   input: RegisterInput

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useChat, type AssistantDoneInfo } from "@/components/chat/ChatProvider";
+import { useBrand } from "@/components/platform/BrandProvider";
 
 export type VoiceStatus = "idle" | "listening" | "transcribing" | "thinking" | "speaking";
 
@@ -127,6 +128,7 @@ function stripMarkdown(md: string): string {
 }
 
 export function VoiceProvider({ children }: { children: React.ReactNode }) {
+  const brand = useBrand();
   const { send, config, visitorName, pushAssistantMessage } = useChat();
 
   const pipeline: "browser" | "elevenlabs" =
@@ -737,8 +739,8 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
     const full = visitorNameRef.current?.trim();
     const first = full ? full.split(/\s+/)[0] : "";
     const text = first
-      ? `Hi ${first}, welcome to YashOrbit. How may I help you?`
-      : `Welcome to YashOrbit. How may I help you?`;
+      ? `Hi ${first}, welcome to ${brand.name}. How may I help you?`
+      : `Welcome to ${brand.name}. How may I help you?`;
     lastSpokenRef.current = text;
     setCanReplay(true);
     suppressAutoListenRef.current = false;
@@ -747,7 +749,7 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
     // just start talking — no tap needed.
     if (mutedRef.current) maybeAutoListen();
     else speakTextBrowser(text, () => maybeAutoListen());
-  }, [pushAssistantMessage, speakTextBrowser, maybeAutoListen]);
+  }, [pushAssistantMessage, speakTextBrowser, maybeAutoListen, brand.name]);
 
   const setVoiceMode = React.useCallback(
     (on: boolean) => {

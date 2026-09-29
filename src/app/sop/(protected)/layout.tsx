@@ -11,8 +11,9 @@ import type { SopNavFlags } from "@/components/sop/SopSidebar";
 import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const metadata = { title: "YashOrbit SOP", robots: { index: false, follow: false } };
+export const generateMetadata = () => brandedMetadata("{brand} SOP", { robots: { index: false, follow: false } });
 
 export default async function ProtectedSopLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentSopUser();

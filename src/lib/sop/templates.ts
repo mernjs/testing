@@ -2,6 +2,7 @@ import "server-only";
 import { getDb } from "@/lib/mongodb";
 import { COLLECTIONS, newId, createStamp, updateStamp, notDeleted, type AuditFields } from "@/lib/sop/db";
 import { DEFAULT_SECTIONS, LIMITS, type SopSection } from "@/lib/sop/constants";
+import { currentCompanyId } from "@/lib/platform/tenancy/context";
 
 /**
  * Reusable SOP templates. A template is only a section layout (+ guidance
@@ -62,12 +63,14 @@ async function col() {
   return db.collection<SopTemplate>(COLLECTIONS.templates);
 }
 
-let seeding: Promise<void> | null = null;
+const seeding = new Map<string, Promise<void>>();
 
 /** Inserts the system templates once (when the collection is empty). */
 export async function seedSystemTemplates(): Promise<void> {
-  if (seeding) return seeding;
-  seeding = (async () => {
+  const companyId = await currentCompanyId();
+  const inFlight = seeding.get(companyId);
+  if (inFlight) return inFlight;
+  const run = (async () => {
     const c = await col();
     if ((await c.countDocuments({})) > 0) return;
     const docs: SopTemplate[] = [
@@ -94,9 +97,10 @@ export async function seedSystemTemplates(): Promise<void> {
     ];
     await c.insertMany(docs);
   })().finally(() => {
-    seeding = null;
+    seeding.delete(companyId);
   });
-  return seeding;
+  seeding.set(companyId, run);
+  return run;
 }
 
 export async function listTemplates(opts: { includeInactive?: boolean } = {}): Promise<SopTemplate[]> {

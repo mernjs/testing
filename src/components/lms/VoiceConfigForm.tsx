@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { saveVoiceConfigAction } from "@/app/lms/(protected)/chatbot/actions";
 import type { VoiceConfig } from "@/lib/chatbot-config";
+import { useBrand } from "@/components/platform/BrandProvider";
 
 const MODELS = [
   { id: "eleven_flash_v2_5", label: "Flash v2.5 — lowest latency (recommended)" },
@@ -73,6 +74,7 @@ export default function VoiceConfigForm({
   voice: VoiceConfig;
   elevenLabsConfigured: boolean;
 }) {
+  const brand = useBrand();
   const router = useRouter();
   const [saving, startSaving] = React.useTransition();
   const [form, setForm] = React.useState<VoiceConfig>(voice);
@@ -141,7 +143,7 @@ export default function VoiceConfigForm({
               onChange={(e) => set("enabled", e.target.checked)}
               className="size-4 rounded border-border accent-primary"
             />
-            <span className="font-medium text-foreground">Enable Voice Mode on the Ask YashOrbit page</span>
+            <span className="font-medium text-foreground">Enable Voice Mode on the Ask {brand.name} page</span>
           </label>
         </CardContent>
       </GlassCard>

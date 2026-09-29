@@ -5,10 +5,12 @@ import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { listPortalDocuments } from "@/lib/portal/documents";
 import { PortalPageHeader } from "@/components/portal/widgets";
+import { BrandName } from "@/components/platform/BrandProvider";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
-import { brandify } from "@/lib/brand";
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Documents · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Documents · {brand} Portal");
 
 function size(n: number | null) {
   if (!n) return "";
@@ -18,12 +20,13 @@ function size(n: number | null) {
 }
 
 const SOURCE_LABEL: Record<string, string> = {
-  staff: "Shared by YashOrbit",
+  staff: "Shared by {brand}",
   resume: "Your submission",
   project: "Project document",
 };
 
 export default async function DocumentsPage() {
+  const brand = await getCompanyBrand();
   const user = await guardPortalPage();
   const docs = await listPortalDocuments(user);
 
@@ -39,7 +42,7 @@ export default async function DocumentsPage() {
         <CardContent className="space-y-2">
           {docs.length === 0 && (
             <p className="py-6 text-center text-sm text-muted-foreground">
-              No documents yet. Anything {brandify("YashOrbit")} shares with you appears here.
+              No documents yet. Anything <BrandName /> shares with you appears here.
             </p>
           )}
           {docs.map((d) => (
@@ -56,7 +59,7 @@ export default async function DocumentsPage() {
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-medium text-foreground">{d.name}</span>
                 <span className="block truncate text-xs text-muted-foreground">
-                  {d.category} · {SOURCE_LABEL[d.source] ?? d.source}
+                  {d.category} · {(SOURCE_LABEL[d.source] ?? d.source).replace("{brand}", brand.name)}
                   {d.context ? ` · ${d.context}` : ""}
                   {d.size ? ` · ${size(d.size)}` : ""}
                 </span>

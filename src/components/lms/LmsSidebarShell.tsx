@@ -6,8 +6,8 @@ import BrandMark from "@/components/BrandMark";
 import LmsSidebar from "@/components/lms/LmsSidebar";
 import SidebarProfileMenu from "@/components/lms/SidebarProfileMenu";
 import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
-import { brandify } from "@/lib/brand";
 import { cn } from "@/lib/utils";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 const EXPANDED_WIDTH = 240;
 const COLLAPSED_WIDTH = 68;
@@ -40,7 +40,7 @@ export default function LmsSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              {brandify("YashOrbit")} <span className="text-foreground">LMS</span>
+              <BrandName /> <span className="text-foreground">LMS</span>
             </span>
           )}
         </div>

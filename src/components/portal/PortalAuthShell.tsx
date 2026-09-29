@@ -1,5 +1,6 @@
 import BrandMark from "@/components/BrandMark";
 import { brandify } from "@/lib/brand";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 /** Shared split-hero shell for /portal login / register / forgot-password. */
 export default function PortalAuthShell({
@@ -22,7 +23,7 @@ export default function PortalAuthShell({
         </div>
         <div className="relative z-10 flex items-center gap-2 text-lg font-bold">
           <BrandMark className="size-7 shrink-0" />
-          {brandify("YashOrbit")} <span className="text-foreground">Portal</span>
+          <BrandName /> <span className="text-foreground">Portal</span>
         </div>
         <div className="relative z-10 max-w-md">
           <h1 className="text-4xl font-black tracking-tight text-foreground">{headline}</h1>

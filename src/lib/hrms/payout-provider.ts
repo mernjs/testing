@@ -1,5 +1,6 @@
 import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 
 /**
  * Salary payout disbursement providers. `manual` (HR records the UTR after
@@ -178,8 +179,14 @@ const razorpayProvider: PayoutProvider = {
   },
 };
 
-export function getPayoutProvider(): PayoutProvider {
-  if (process.env.HRMS_PAYOUT_PROVIDER === "razorpay" && process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET) {
+/**
+ * The RazorpayX credentials are platform-wide env vars — the platform
+ * owner's own bank account — so only the platform-owner company may pay out
+ * through them. Every other company gets the manual provider until it can
+ * connect its own payout account.
+ */
+export async function getPayoutProvider(): Promise<PayoutProvider> {
+  if (process.env.HRMS_PAYOUT_PROVIDER === "razorpay" && process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET && (await isPlatformOwnerContext())) {
     return razorpayProvider;
   }
   return manualProvider;

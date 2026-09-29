@@ -21,7 +21,7 @@ export interface ProviderInfo {
 }
 
 export const PROVIDERS: ProviderInfo[] = [
-  { id: "crawler", label: "YashOrbit crawler", trust: "verified", provides: ["Website audit", "Technical & on-page checks", "Internal links", "Sitemap & robots validation"], configuredBy: "Built in" },
+  { id: "crawler", label: "Built-in crawler", trust: "verified", provides: ["Website audit", "Technical & on-page checks", "Internal links", "Sitemap & robots validation"], configuredBy: "Built in" },
   { id: "gsc", label: "Google Search Console", trust: "verified", provides: ["Impressions, clicks, CTR, average position", "Keyword positions", "Index status", "Sitemap status"], configuredBy: "Service account + property" },
   { id: "ga4", label: "Google Analytics 4", trust: "verified", provides: ["Organic search sessions & users"], configuredBy: "Service account + property id" },
   { id: "psi", label: "PageSpeed Insights", trust: "measured", provides: ["Core Web Vitals (lab + CrUX category)", "Performance score"], configuredBy: "Optional PAGESPEED_API_KEY" },

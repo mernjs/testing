@@ -7,8 +7,10 @@ import { searchEmployees, employeeFullName } from "@/lib/hrms/employees";
 import { masterLookups } from "@/lib/hrms/departments";
 import { buildOrgTree } from "@/lib/hrms/hierarchy";
 import { ACTIVE_EMPLOYEE_STATUSES } from "@/lib/hrms/employee-status";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 export default async function DirectoryPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+  const brand = await getCompanyBrand();
   const sp = await searchParams;
   const tab = sp.tab === "org" ? "org" : "people";
 
@@ -34,7 +36,7 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
       <Breadcrumbs items={[{ label: "HRMS", href: "/hrms/me" }, { label: "Directory" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground">Company Directory</h1>
-        <p className="text-sm text-muted-foreground">Everyone at YashOrbit and how the team is organised.</p>
+        <p className="text-sm text-muted-foreground">Everyone at {brand.name} and how the team is organised.</p>
       </div>
 
       <Tabs

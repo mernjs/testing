@@ -6,9 +6,9 @@ import BrandMark from "@/components/BrandMark";
 import OtsSidebar from "@/components/ots/OtsSidebar";
 import OtsProfileMenu from "@/components/ots/OtsProfileMenu";
 import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
-import { brandify } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import type { OtsNavFlags } from "@/components/ots/OtsSidebar";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 const EXPANDED_WIDTH = 244;
 const COLLAPSED_WIDTH = 68;
@@ -45,7 +45,7 @@ export default function OtsSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              {brandify("YashOrbit")} <span className="text-foreground">Online Tests</span>
+              <BrandName /> <span className="text-foreground">Online Tests</span>
             </span>
           )}
         </div>

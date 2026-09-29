@@ -11,12 +11,14 @@ import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 export default async function FmsPaymentsPage({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
+  const brand = await getCompanyBrand();
   const sp = await searchParams;
   await getCurrentFmsUser();
 
@@ -51,7 +53,7 @@ export default async function FmsPaymentsPage({
             Central Payment Engine
           </h1>
           <p className="text-sm text-muted-foreground">
-            Single financial source of truth for all YashOrbit payment operations & collections.
+            Single financial source of truth for all {brand.name} payment operations & collections.
           </p>
         </div>
         <div className="flex items-center gap-2">

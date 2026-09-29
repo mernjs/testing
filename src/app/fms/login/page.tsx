@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { getCurrentFmsUser } from "@/lib/fms-auth";
 import BrandMark from "@/components/BrandMark";
-import { brandify } from "@/lib/brand";
 import LoginForm from "./LoginForm";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 export default async function FmsLoginPage() {
   const user = await getCurrentFmsUser();
@@ -20,7 +20,7 @@ export default async function FmsLoginPage() {
 
         <div className="relative z-10 flex items-center gap-2 text-lg font-bold">
           <BrandMark className="size-7 shrink-0" />
-          {brandify("YashOrbit")} <span className="text-foreground">FMS</span>
+          <BrandName /> <span className="text-foreground">FMS</span>
         </div>
 
         <div className="relative z-10 max-w-md">

@@ -94,7 +94,7 @@ export default function PayslipView({ data, showPrint = true }: { data: PayslipV
           <div className="flex items-start gap-3">
             <BrandMark className="mt-0.5 size-9 shrink-0" />
             <div>
-              <p className="text-base font-black tracking-tight text-foreground">{data.company?.name ?? "YashOrbit"}</p>
+              <p className="text-base font-black tracking-tight text-foreground">{data.company?.name ?? ""}</p>
               {data.company?.legalName && data.company.legalName !== data.company.name && (
                 <p className="text-xs text-muted-foreground">{data.company.legalName}</p>
               )}

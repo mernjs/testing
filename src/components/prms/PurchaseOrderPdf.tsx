@@ -1,9 +1,10 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import type { PurchaseOrder } from "@/lib/prms/purchase-orders";
 import type { CompanyIdentity } from "@/lib/prms/settings";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
+import { renderPdf } from "@/lib/pdf/identity";
 
 const C = PDF_COLORS;
 
@@ -94,5 +95,5 @@ function PoDocument({ po, company }: { po: PurchaseOrder; company: CompanyIdenti
 }
 
 export async function renderPurchaseOrderPdf(po: PurchaseOrder, company: CompanyIdentity): Promise<Buffer> {
-  return renderToBuffer(<PoDocument po={po} company={company} />);
+  return renderPdf(<PoDocument po={po} company={company} />);
 }

@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { after } from "next/server";
 import { getCurrentSmmsUser } from "@/lib/smms-auth";
 import { hasSmmsAccess } from "@/lib/smms-roles";
 import { getViewer, can } from "@/lib/smms/viewer";
@@ -11,8 +10,10 @@ import type { SmmsNavFlags } from "@/components/smms/SmmsSidebar";
 import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { afterForCompany } from "@/lib/platform/tenancy/context";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const metadata = { title: "YashOrbit Social Media", robots: { index: false, follow: false } };
+export const generateMetadata = () => brandedMetadata("{brand} Social Media", { robots: { index: false, follow: false } });
 
 export default async function ProtectedSmmsLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentSmmsUser();
@@ -23,7 +24,7 @@ export default async function ProtectedSmmsLayout({ children }: { children: Reac
   if (!viewer) redirect("/smms/login");
 
   // Approved schedules publish on time even on a once-a-day cron plan (throttled to every 5 min per instance).
-  after(() => maybeSweep());
+  await afterForCompany(() => maybeSweep());
 
   const bell = await listSmmsNotifications(viewer.userId);
   const flags: SmmsNavFlags = {

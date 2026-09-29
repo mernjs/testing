@@ -10,6 +10,7 @@
  */
 import { MongoClient } from "mongodb";
 import { seedDlms, DLMS_DEMO_ACCOUNTS } from "./demo/dlms.mjs";
+import { assertSingleCompany } from "./lib/single-company-guard.mjs";
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -21,6 +22,7 @@ const client = new MongoClient(uri);
 try {
   await client.connect();
   const db = client.db(process.env.SEED_DB || undefined);
+  await assertSingleCompany(db);
   console.log(`🌱 DLMS demo seeder (database: ${db.databaseName})`);
   const res = await seedDlms(db);
   console.log(`   ${res.credentials} credentials, ${res.links} URLs/accounts, ${res.documents} documents, ${res.notes} notes${res.encrypted ? "" : " — DLMS_ENCRYPTION_KEY not set: no passwords stored"}`);

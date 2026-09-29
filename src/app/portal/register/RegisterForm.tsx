@@ -10,9 +10,9 @@ import BrandMark from "@/components/BrandMark";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { brandify } from "@/lib/brand";
 import { useReferralCode } from "@/lib/useReferralCode";
 import { portalRegisterAction, type PortalRegisterState } from "./actions";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 const initial: PortalRegisterState = {};
 
@@ -31,7 +31,7 @@ export default function RegisterForm() {
         <CardHeader>
           <div className="mb-1 flex items-center gap-1.5 text-xs font-medium text-primary lg:hidden">
             <BrandMark className="size-4 shrink-0" />
-            {brandify("YashOrbit")} <span className="text-foreground">Portal</span>
+            <BrandName /> <span className="text-foreground">Portal</span>
           </div>
           <CardTitle className="text-xl">Create your account</CardTitle>
           <CardDescription>We&apos;ll match you to your application, enrolment or company.</CardDescription>
@@ -39,7 +39,7 @@ export default function RegisterForm() {
         <CardContent>
           <div className="mb-4 flex gap-2 rounded-lg bg-secondary/50 px-3 py-2 text-xs text-secondary-foreground">
             <Info className="mt-0.5 size-3.5 shrink-0" />
-            Use the <strong>exact email and phone number</strong> you gave {brandify("YashOrbit")}. Your role is detected automatically.
+            Use the <strong>exact email and phone number</strong> you gave <BrandName />. Your role is detected automatically.
           </div>
           <form action={formAction} className="space-y-4" noValidate>
             {referralCode && <input type="hidden" name="referralCode" value={referralCode} />}
@@ -84,7 +84,7 @@ export default function RegisterForm() {
 
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            New to {brandify("YashOrbit")}?{" "}
+            New to <BrandName />?{" "}
             <Link href="/portal/join" className="font-medium text-primary hover:underline">Join here</Link>
             {" · "}Already registered?{" "}
             <Link href="/login" className="font-medium text-primary hover:underline">

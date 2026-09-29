@@ -7,9 +7,10 @@ import { getLearnerOverview, getLearnerSchedule } from "@/lib/portal/student";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import EmptyPortalState from "@/components/portal/EmptyPortalState";
 import type { ClassView } from "@/lib/tms/classes";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Class Schedule · YashOrbit Portal" };
+export const generateMetadata = () => brandedMetadata("Class Schedule · {brand} Portal");
 
 function ClassRow({ c }: { c: ClassView }) {
   return (

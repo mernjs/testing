@@ -1,5 +1,6 @@
 import "server-only";
 import ExcelJS from "exceljs";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 /** Mirrors `src/lib/pms/xlsx.ts` — the established per-module convention (confirmed via `tms/xlsx.ts`: no module cross-imports another's copy). */
 
@@ -21,7 +22,7 @@ export interface SheetSpec {
 /** Builds a formatted .xlsx workbook as a Node Buffer. */
 export async function buildWorkbook(sheets: SheetSpec[]): Promise<Buffer> {
   const wb = new ExcelJS.Workbook();
-  wb.creator = "YashOrbit FMS";
+  wb.creator = `${(await getCompanyBrand()).name} FMS`;
   wb.created = new Date();
 
   for (const spec of sheets) {

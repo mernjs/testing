@@ -14,8 +14,9 @@ import { CallProvider } from "@/components/messenger/call/CallProvider";
 import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const metadata = { title: "YashOrbit Messenger", robots: { index: false, follow: false } };
+export const generateMetadata = () => brandedMetadata("{brand} Messenger", { robots: { index: false, follow: false } });
 
 export default async function ProtectedMessengerLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentChatUser();

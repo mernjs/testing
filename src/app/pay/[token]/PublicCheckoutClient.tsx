@@ -6,10 +6,12 @@ import { ShieldCheck, CheckCircle2, AlertCircle, Loader2, ArrowRight } from "luc
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import BrandMark from "@/components/BrandMark";
-import { brandify } from "@/lib/brand";
 import { formatMoney } from "@/lib/fms/constants";
+import { BrandName } from "@/components/platform/BrandProvider";
+import { useBrand } from "@/components/platform/BrandProvider";
 
 export default function PublicCheckoutClient({ link }: { link: SerializedPaymentLink }) {
+  const brand = useBrand();
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<"IDLE" | "SUCCESS" | "FAILED">(
     link.status === "PAID" ? "SUCCESS" : "IDLE"
@@ -80,7 +82,7 @@ export default function PublicCheckoutClient({ link }: { link: SerializedPayment
           <BrandMark className="size-7 shrink-0" />
           <div>
             <span className="text-lg font-bold">
-              {brandify("YashOrbit")}
+              <BrandName />
             </span>
             <p className="text-xs text-muted-foreground">Financial Operations</p>
           </div>
@@ -128,7 +130,7 @@ export default function PublicCheckoutClient({ link }: { link: SerializedPayment
           <div>
             <h2 className="text-xl font-bold text-foreground">Payment Link Expired</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              This payment link has expired or been deactivated. Please request a new link from YashOrbit Finance.
+              This payment link has expired or been deactivated. Please request a new link from {brand.name}.
             </p>
           </div>
         </div>

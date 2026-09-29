@@ -134,7 +134,7 @@ export async function verifyPortalCredentials(
   const users = await externalUsers();
   const user = await users.findOne({ email: email.trim().toLowerCase() });
   if (!user) return { ok: false, error: GENERIC };
-  if (user.status === "suspended") return { ok: false, error: "This account has been suspended. Contact YashOrbit." };
+  if (user.status === "suspended") return { ok: false, error: "This account has been suspended. Contact your account manager." };
   if (user.lockedUntil && user.lockedUntil > new Date()) {
     return { ok: false, error: "Too many failed attempts. Try again in a few minutes." };
   }

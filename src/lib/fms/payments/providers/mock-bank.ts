@@ -14,7 +14,7 @@ import { randomUUID } from "node:crypto";
 
 export const MockPaymentProvider: PaymentProvider = {
   id: "mock",
-  name: "YashOrbit Mock & Bank Transfer Provider",
+  name: "Mock & Bank Transfer Provider",
 
   async createPaymentIntent(params: CreateProviderIntentParams): Promise<ProviderIntentResult> {
     const orderId = `mock_order_${randomUUID().slice(0, 8)}`;
@@ -73,7 +73,7 @@ export const MockPaymentProvider: PaymentProvider = {
 
 export const OfflineBankProvider: PaymentProvider = {
   id: "offline",
-  name: "YashOrbit Direct Bank Transfer / Offline Verification",
+  name: "Direct Bank Transfer / Offline Verification",
 
   async createPaymentIntent(params: CreateProviderIntentParams): Promise<ProviderIntentResult> {
     const referenceId = `OFFLINE_${randomUUID().slice(0, 8).toUpperCase()}`;

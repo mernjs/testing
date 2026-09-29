@@ -33,6 +33,7 @@ import { listSopFiles } from "@/lib/sop/files";
 import { onNewVersionPublished, autoAssignMandatory } from "@/lib/sop/assignments";
 import { notifySopUsers } from "@/lib/sop/notifications";
 import type { AssignmentDoc, SopDoc, SopSummary, SopVersionDoc, SopViewer } from "@/lib/sop/types";
+import { currentCompanyId } from "@/lib/platform/tenancy/context";
 
 export type Result<T = object> = ({ ok: true } & T) | { ok: false; error: string };
 
@@ -631,12 +632,13 @@ export async function revertDraftToVersion(v: SopViewer, id: string, version: st
 // Date-driven status transitions
 // ---------------------------------------------------------------------------
 
-let lastSweep = 0;
+const lastSweep = new Map<string, number>();
 
-/** Persists published→active and →expired transitions. Idempotent; throttled so list loads stay cheap. */
+/** Persists published→active and →expired transitions. Idempotent; throttled (per company) so list loads stay cheap. */
 export async function sweepStatuses(force = false): Promise<number> {
-  if (!force && Date.now() - lastSweep < 5 * 60_000) return 0;
-  lastSweep = Date.now();
+  const companyId = await currentCompanyId();
+  if (!force && Date.now() - (lastSweep.get(companyId) ?? 0) < 5 * 60_000) return 0;
+  lastSweep.set(companyId, Date.now());
   const { sops } = await cols();
   const today = todayIso();
   const candidates = await sops

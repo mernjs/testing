@@ -1,7 +1,8 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
+import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
+import { renderPdf } from "@/lib/pdf/identity";
 
 /** Server-only. A4 fee receipt. Never import from a client component. */
 
@@ -112,5 +113,5 @@ function InvoiceDocument({ data }: { data: InvoicePdfData }) {
 }
 
 export function renderInvoicePdf(data: InvoicePdfData): Promise<Buffer> {
-  return renderToBuffer(<InvoiceDocument data={data} />) as Promise<Buffer>;
+  return renderPdf(<InvoiceDocument data={data} />) as Promise<Buffer>;
 }

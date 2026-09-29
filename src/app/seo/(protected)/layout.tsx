@@ -11,8 +11,9 @@ import type { SeoNavFlags } from "@/components/seo/SeoSidebar";
 import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const metadata = { title: "YashOrbit SEO", robots: { index: false, follow: false } };
+export const generateMetadata = () => brandedMetadata("{brand} SEO", { robots: { index: false, follow: false } });
 
 export default async function ProtectedSeoLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentSeoUser();

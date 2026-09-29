@@ -7,6 +7,7 @@ import { getLeadRecord, markLeadPortalReplyReceived, LEAD_RECORDS_COLLECTION } f
 import { emit } from "@/lib/messenger/events";
 import type { LeadMessage, LeadMessageAttachment, LeadMessageChannel, SerializedLeadMessage, LeadRecord, LeadType } from "@/lib/lead-management/types";
 import type { CurrentPortalUser } from "@/lib/portal-auth";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 export const LEAD_MESSAGES_COLLECTION = "lead_messages";
 
@@ -76,7 +77,7 @@ export async function postLeadMessage(input: {
     const lead = await getLeadRecord(input.leadId);
     await recordLeadEvent(input.leadId, {
       kind: channel === "document_request" ? "document_requested" : "message_sent",
-      title: channel === "document_request" ? "Document requested" : input.authorType === "portal" ? "Message from you" : "Message from YashOrbit",
+      title: channel === "document_request" ? "Document requested" : input.authorType === "portal" ? "Message from you" : `Message from ${(await getCompanyBrand()).name}`,
       detail: body.length > 140 ? `${body.slice(0, 140)}…` : body,
       actor: timelineActor,
       actorId: timelineActorId,
@@ -87,7 +88,7 @@ export async function postLeadMessage(input: {
       await notifyPortalUser({
         recipientUserId: lead.externalUserId,
         type: channel === "document_request" ? "document_request" : "message",
-        title: channel === "document_request" ? "A document was requested" : "New message from YashOrbit",
+        title: channel === "document_request" ? "A document was requested" : `New message from ${(await getCompanyBrand()).name}`,
         body: body.length > 160 ? `${body.slice(0, 160)}…` : body,
         link: "/portal/messages",
       });

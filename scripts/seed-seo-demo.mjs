@@ -7,6 +7,7 @@
  */
 import { MongoClient } from "mongodb";
 import { seedSeo, SEO_DEMO_ACCOUNTS } from "./demo/seo.mjs";
+import { assertSingleCompany } from "./lib/single-company-guard.mjs";
 
 const uri = process.env.MONGODB_URI;
 if (!uri) {
@@ -18,6 +19,7 @@ const client = new MongoClient(uri);
 try {
   await client.connect();
   const db = client.db(process.env.SEED_DB || undefined);
+  await assertSingleCompany(db);
   console.log(`🌱 SEO demo seeder (database: ${db.databaseName})`);
   const res = await seedSeo(db);
   console.log(`   ${res.keywords} keywords, ${res.readings} position readings, ${res.backlinks} backlinks, ${res.tasks} tasks`);

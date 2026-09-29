@@ -1,10 +1,12 @@
 import { redirect } from "next/navigation";
 import { getCurrentCmsUser } from "@/lib/cms-auth";
 import BrandMark from "@/components/BrandMark";
-import { brandify } from "@/lib/brand";
 import LoginForm from "./LoginForm";
+import { BrandName } from "@/components/platform/BrandProvider";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 export default async function CmsLoginPage() {
+  const brand = await getCompanyBrand();
   const user = await getCurrentCmsUser();
   if (user) redirect("/cms");
 
@@ -20,7 +22,7 @@ export default async function CmsLoginPage() {
 
         <div className="relative z-10 flex items-center gap-2 text-lg font-bold">
           <BrandMark className="size-7 shrink-0" />
-          {brandify("YashOrbit")} <span className="text-foreground">CMS</span>
+          <BrandName /> <span className="text-foreground">CMS</span>
         </div>
 
         <div className="relative z-10 max-w-md">
@@ -30,7 +32,7 @@ export default async function CmsLoginPage() {
           </h1>
           <p className="mt-4 text-muted-foreground">
             Pages, sections, navigation, footer, media, forms and theme — every editable piece of the
-            YashOrbit website in one place, with drafts, preview and publish.
+            {brand.name} website in one place, with drafts, preview and publish.
           </p>
         </div>
 

@@ -20,6 +20,15 @@ async function truncateAllData() {
     await client.connect();
     const db = client.db();
 
+    // Multi-tenant guard: this wipes EVERY company's data. Refuse once more than
+    // one company exists unless explicitly forced.
+    const companyCount = await db.collection("companies").countDocuments().catch(() => 0);
+    if (companyCount > 1 && !process.argv.includes("--all-companies")) {
+      console.error(`❌ Refusing: this database holds ${companyCount} companies and truncation would wipe all of them.`);
+      console.error("   Re-run with --all-companies if that is really what you want.");
+      process.exit(1);
+    }
+
     const collections = await db.listCollections().toArray();
     console.log(`Found ${collections.length} collection(s) in database "${db.databaseName}".`);
 

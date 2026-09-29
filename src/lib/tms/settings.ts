@@ -7,6 +7,8 @@ import {
   SUPPORTED_CURRENCIES,
   DEFAULT_CERTIFICATE_NUMBER_FORMAT,
 } from "@/lib/tms/constants";
+import { getCompanyBrand } from "@/lib/platform/branding";
+import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 
 /**
  * TMS-wide configuration (single document). Editable program categories,
@@ -54,6 +56,16 @@ const DEFAULT_INSTITUTE: InstituteIdentity = {
   signatoryTitle: "Training Head",
 };
 
+/**
+ * Defaults for a company that hasn't saved its institute identity yet: the
+ * platform owner's own details for the platform owner only — any other
+ * company starts from its own name, never the owner's.
+ */
+async function defaultInstituteIdentity(): Promise<InstituteIdentity> {
+  if (await isPlatformOwnerContext()) return DEFAULT_INSTITUTE;
+  return { ...DEFAULT_INSTITUTE, name: (await getCompanyBrand()).name, website: null };
+}
+
 const DEFAULTS: Omit<TmsSettings, "_id" | "updatedAt" | "updatedBy"> = {
   technologySuggestions: [...DEFAULT_PROGRAM_TECHNOLOGIES],
   defaultCurrency: DEFAULT_CURRENCY,
@@ -66,9 +78,10 @@ export async function getTmsSettings(): Promise<TmsSettings> {
   const db = await getDb();
   const collection = db.collection<TmsSettings>(TMS_SETTINGS_COLLECTION);
   const existing = await collection.findOne({ _id: TMS_SETTINGS_ID });
-  if (existing) return { ...DEFAULTS, ...existing, institute: { ...DEFAULT_INSTITUTE, ...existing.institute } };
+  const base = await defaultInstituteIdentity();
+  if (existing) return { ...DEFAULTS, ...existing, institute: { ...base, ...existing.institute, name: existing.institute?.name || base.name } };
 
-  const doc: TmsSettings = { _id: TMS_SETTINGS_ID, ...DEFAULTS, updatedAt: new Date(), updatedBy: null };
+  const doc: TmsSettings = { _id: TMS_SETTINGS_ID, ...DEFAULTS, institute: base, updatedAt: new Date(), updatedBy: null };
   await collection.updateOne({ _id: TMS_SETTINGS_ID }, { $setOnInsert: doc }, { upsert: true });
   return doc;
 }
@@ -109,7 +122,7 @@ export function normalizeSettingsInput(input: Record<string, unknown>): TmsSetti
     certificateNumberFormat: /\{n\}/.test(format) ? format : DEFAULT_CERTIFICATE_NUMBER_FORMAT,
     defaultClassDurationMinutes: duration,
     institute: {
-      name: optStr(input.instituteName, 160) ?? DEFAULT_INSTITUTE.name,
+      name: optStr(input.instituteName, 160) ?? "",
       addressLine: optStr(input.instituteAddress),
       city: optStr(input.instituteCity, 120),
       email: optStr(input.instituteEmail, 160),

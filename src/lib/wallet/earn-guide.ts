@@ -97,7 +97,7 @@ export const EARN_GUIDE: Record<RewardRuleType, GuideEntry> = {
   },
   first_payment: {
     title: "Make your first payment",
-    when: "When YashOrbit records your first payment (course fee instalment or invoice receipt).",
+    when: "When your first payment is recorded (course fee instalment or invoice receipt).",
     steps: ["Pay a fee or invoice through the usual payment channel.", "Our finance team records it and your credit is added automatically."],
     note: "Paying part of a fee or invoice with credits does not count as a payment.",
     frequency: "One time",

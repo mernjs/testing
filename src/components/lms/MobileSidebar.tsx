@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import LmsSidebar from "@/components/lms/LmsSidebar";
 import BrandMark from "@/components/BrandMark";
-import { brandify } from "@/lib/brand";
+import { BrandName } from "@/components/platform/BrandProvider";
 
 export default function MobileSidebar() {
   const [open, setOpen] = useState(false);
@@ -23,7 +23,7 @@ export default function MobileSidebar() {
           <div className="flex h-14 items-center gap-2 border-b border-border/60 px-4">
             <BrandMark className="size-6 shrink-0" />
             <span className="text-sm font-bold">
-              {brandify("YashOrbit")} <span className="text-foreground"></span>
+              <BrandName /> <span className="text-foreground"></span>
             </span>
           </div>
           <LmsSidebar onNavigate={() => setOpen(false)} />

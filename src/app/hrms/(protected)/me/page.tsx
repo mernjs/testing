@@ -35,6 +35,7 @@ import { masterLookups } from "@/lib/hrms/departments";
 import { getEmployeeDashboard } from "@/lib/hrms/dashboard-me";
 import { payrollRunStatusMeta, monthLabelLong } from "@/lib/hrms/payroll-status";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 const LEAVE_COLORS: Record<string, string> = {
   casual: "#1D428A",
@@ -62,6 +63,7 @@ function toneForRate(rate: number): "green" | "amber" | "red" {
 }
 
 export default async function MeDashboard() {
+  const brand = await getCompanyBrand();
   const user = await getCurrentHrmsUser();
   const employeeId = user!.employeeId!;
 
@@ -117,7 +119,7 @@ export default async function MeDashboard() {
         <div>
           <h1 className="text-2xl font-black tracking-tight text-foreground">Hi, {name.split(" ")[0]}</h1>
           <p className="text-sm text-muted-foreground">
-            {employee.employeeCode} · {designation} · {department} · {tenure.label} at YashOrbit
+            {employee.employeeCode} · {designation} · {department} · {tenure.label} at {brand.name}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -375,7 +377,7 @@ export default async function MeDashboard() {
           </GlassCard>
 
           <GlassCard interactive={false}>
-            <CardHeader><CardTitle>You at YashOrbit</CardTitle></CardHeader>
+            <CardHeader><CardTitle>You at {brand.name}</CardTitle></CardHeader>
             <CardContent className="space-y-2.5 pt-1 text-sm">
               <Row icon={<CalendarCheck className="size-4 text-primary" />} label="Joined" value={employee.professional?.joiningDate ? formatDate(employee.professional.joiningDate) : "—"} />
               <Row icon={<TrendingUp className="size-4 text-green-600 dark:text-green-400" />} label="Tenure" value={`${tenure.label} · ${tenure.totalDays} days`} />

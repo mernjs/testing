@@ -65,6 +65,7 @@ async function collection() {
 // ---------------------------------------------------------------------------
 
 import { sendActivityChatMessage } from "@/lib/lead-management/activity-notifier";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 export async function sharePortalDocument(
   ownerUserId: string,
@@ -156,7 +157,7 @@ export async function listPortalDocuments(user: CurrentPortalUser): Promise<Port
       sharedOn: d.createdAt.toISOString(),
       downloadHref: `/api/portal/download/staff/${d._id}`,
       source: "staff",
-      context: "Shared by YashOrbit",
+      context: `Shared by ${(await getCompanyBrand()).name}`,
     });
   }
 
