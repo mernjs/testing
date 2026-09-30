@@ -56,10 +56,11 @@ async function main() {
   assert.ok(ea.modules?.has("hrms") && ea.modules.has("messenger") && !ea.modules.has("smms"), "growth panels + core, not smms");
   assert.equal(ea.limits.seats, 50);
 
-  // No stored subscription + created 30 days ago → implicit trial already expired → suspended, read-only.
+  // No stored subscription + created 30 days ago → implicit trial just ended → grace (platform
+  // grace days, still usable), then suspended once grace runs out (see test-plans-trials.ts).
   const eb = await runAsCompany(b, () => getEntitlements());
-  assert.equal(eb.status, "suspended");
-  assert.equal(eb.readOnly, true);
+  assert.equal(eb.status, "grace");
+  assert.equal(eb.readOnly, false);
 
   await updateCompanySubscription(a, { planId: "business", status: "active" });
   const ea2 = await runAsCompany(a, () => getEntitlements());

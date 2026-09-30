@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { runTrialSweep } from "@/lib/platform/billing/trials";
 
 /**
- * Daily free-trial sweep across every company — reminders at 7/3/1 days left,
- * expired trials become read-only (Vercel Cron, `Authorization: Bearer $CRON_SECRET`).
+ * Daily free-trial sweep across every company — reminder emails at the
+ * platform's trial-reminder days, ended trials move to grace then read-only
+ * (see `billing/trials.ts`). Vercel Cron, `Authorization: Bearer $CRON_SECRET`.
  * Refuses to run without a configured secret.
  */
 export async function GET(req: NextRequest) {

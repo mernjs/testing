@@ -1,6 +1,7 @@
 import "server-only";
 import { getPlan } from "@/lib/platform/billing/plans";
 import { getBillingSettings } from "@/lib/platform/billing/settings";
+import { planPrice } from "@/lib/platform/billing/pricing";
 import type { BillingInterval } from "@/lib/platform/billing/types";
 
 /**
@@ -50,7 +51,9 @@ export interface QuoteInput {
 export async function quoteCheckout(input: QuoteInput): Promise<Quote | null> {
   const [plan, settings] = await Promise.all([getPlan(input.planId), getBillingSettings()]);
   if (!plan) return null;
-  const price = input.interval === "yearly" ? plan.priceYearly : plan.priceMonthly;
+  // Current catalogue price; null when the plan doesn't offer this billing cycle.
+  const price = planPrice(plan, input.interval);
+  if (price === null) return null;
   const lines: QuoteLine[] = [{ kind: "plan", refId: plan._id, label: `${plan.name} (${input.interval})`, amount: price }];
   const subtotal = lines.reduce((sum, l) => sum + l.amount, 0);
   return {
