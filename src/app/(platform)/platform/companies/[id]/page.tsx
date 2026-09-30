@@ -13,6 +13,8 @@ import { companyBaseUrl } from "@/lib/platform/tenancy/provisioning";
 import { requestOrigin } from "@/lib/platform/request";
 import StatusBadge from "../StatusBadge";
 import StatusControl from "./StatusControl";
+import TrialCard from "./TrialCard";
+import { getTrialOverview } from "@/lib/platform/billing/trials";
 
 export const metadata: Metadata = { title: "Company" };
 
@@ -32,6 +34,7 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
   const { host } = await requestOrigin();
   const base = companyBaseUrl(company.slug, host);
   const { onboarding: ob } = company;
+  const trial = company.isPlatformOwner ? null : await getTrialOverview(company.id);
 
   return (
     <div className="space-y-4 p-1">
@@ -68,6 +71,21 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
             </dl>
           </CardContent>
         </GlassCard>
+
+        {trial && (
+          <TrialCard
+            companyId={company.id}
+            data={{
+              planId: trial.planId,
+              planName: trial.planName,
+              status: trial.status,
+              trialEndsAt: trial.trialEndsAt?.toISOString() ?? null,
+              graceEndsAt: trial.graceEndsAt?.toISOString() ?? null,
+              daysLeft: trial.daysLeft,
+              canExtend: trial.canExtend,
+            }}
+          />
+        )}
 
         <div className="grid gap-4 md:grid-cols-2">
           <GlassCard interactive={false}>

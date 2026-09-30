@@ -24,7 +24,8 @@ unaware of this layer beyond calling `getDb()`, which is company-scoped.
 | `domains/` | Hostname attach/verify/SSL behind a swappable provider (`DOMAIN_PROVIDER`: Vercel, manual) |
 | `domains/custom.ts` | A company's own domains: add, TXT ownership check, primary, remove, daily re-check (UI in `src/app/(platform)/settings/domains`, cron `/api/platform/domains/cron`) |
 | `billing/` | Plans, subscriptions, entitlements (`getEntitlements()` — what the current company may use), usage metering, SaaS invoices. Contract in `billing/types.ts` |
-| `billing/plans.ts`, `billing/trials.ts` | Plans catalogue management (create/edit/archive, one default; UI `src/app/(platform)/console/plans`) and the free-trial lifecycle: 7/3/1-day reminders, expiry → read-only (cron `/api/platform/billing/trials/cron`; banner `src/components/platform/TrialBanner.tsx`) |
+| `billing/plans.ts`, `billing/pricing.ts` | Plans catalogue management (billing cycles, price versions, panels, flags, highlights, limits; one default; reorder/activate/delete) — UI `src/app/(platform)/platform/plans`. `pricing.ts` reads prices (`planPrice`, `planPriceAtVersion`, `resolveTrialDays`) |
+| `billing/trials.ts`, `billing/lifecycle.ts` | Free-trial lifecycle: reminders at the platform's reminder days, expiry → grace (grace days) → read-only, extend trial (company page). Cron `/api/platform/billing/trials/cron`; banner `src/components/platform/TrialBanner.tsx` |
 | `request.ts` | Request origin / client key helpers |
 
 ## Where future phases go

@@ -5,10 +5,13 @@ import { cn } from "@/lib/utils";
 import { getEntitlements } from "@/lib/platform/billing/entitlements";
 import { getCompanySubscription } from "@/lib/platform/billing/subscription";
 import { currentCompanyIdOrNull } from "@/lib/platform/tenancy/context";
+import { getBillingSettings } from "@/lib/platform/billing/settings";
+import { effectiveSubscriptionStatus, neverPaid, trialDaysLeft } from "@/lib/platform/billing/lifecycle";
 
 /**
  * Trial / read-only notice for the current company (server component).
  * - trialing: "X days left in your trial — Choose a plan"
+ * - grace after the trial: "Your trial has ended — N days before read-only"
  * - suspended after the trial: "Your trial has ended — your data is safe…"
  * - suspended/canceled otherwise: the subscription has lapsed
  * Renders nothing for the platform owner, paying companies, or outside a company.
@@ -41,6 +44,26 @@ export default async function TrialBanner({ className }: { className?: string })
         </Link>
       </div>
     );
+  }
+
+  if (e.status === "grace") {
+    const sub = await getCompanySubscription(companyId);
+    if (sub && neverPaid(sub)) {
+      const now = new Date();
+      const { graceEndsAt } = effectiveSubscriptionStatus(sub, (await getBillingSettings()).billing.graceDays, now);
+      const left = graceEndsAt ? trialDaysLeft(graceEndsAt, now) : 0;
+      return (
+        <div role="alert" className={cn("flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-200", className)}>
+          <Clock className="size-4 shrink-0" aria-hidden />
+          <span className="min-w-0 flex-1">
+            Your trial has ended — {left <= 0 ? "the workspace becomes read-only today" : `${left} day${left === 1 ? "" : "s"} before the workspace becomes read-only`}.
+          </span>
+          <Link href="/settings/billing" className="font-semibold text-primary underline-offset-4 hover:underline">
+            Choose a plan
+          </Link>
+        </div>
+      );
+    }
   }
 
   if (e.readOnly) {
