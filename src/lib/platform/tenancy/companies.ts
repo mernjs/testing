@@ -1,6 +1,7 @@
 import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import type { DnsRecord } from "@/lib/platform/domains/types";
 import { RESERVED_SLUGS } from "@/lib/platform/tenancy/slug";
+import { cachedIntegrationsDoc, loadIntegrationsDoc } from "@/lib/platform/integrations/store";
 
 /**
  * The company (tenant) registry and host → company routing. Both
@@ -82,8 +83,10 @@ function platformHosts(): Set<string> {
   return new Set(["localhost", "127.0.0.1", ...envList("PLATFORM_HOSTS", "VERCEL_URL", "VERCEL_BRANCH_URL", "VERCEL_PROJECT_PRODUCTION_URL")]);
 }
 
+/** `localhost`, every `PLATFORM_ROOT_DOMAIN` entry, and the root domain saved in Platform Panel → Integrations. */
 function platformRootDomains(): string[] {
-  return ["localhost", ...envList("PLATFORM_ROOT_DOMAIN")];
+  const saved = normalizeHost(cachedIntegrationsDoc()?.domains?.rootDomain);
+  return ["localhost", ...envList("PLATFORM_ROOT_DOMAIN"), ...(saved ? [saved] : [])];
 }
 
 /**
@@ -174,7 +177,8 @@ async function lookupHost(host: string): Promise<string | null> {
 export async function resolveCompanyIdByHost(rawHost: string | null | undefined): Promise<string | null> {
   const host = normalizeHost(rawHost);
   if (!host) return null;
-  await followRoutingVersion();
+  // Also primes the integrations cache the synchronous root-domain accessors read.
+  await Promise.all([followRoutingVersion(), loadIntegrationsDoc()]);
   const hit = routing.hosts.get(host);
   if (hit && Date.now() - hit.at < (hit.id ? HIT_TTL_MS : MISS_TTL_MS)) return hit.id;
   const id = await lookupHost(host);

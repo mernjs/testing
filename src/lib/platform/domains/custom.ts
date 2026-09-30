@@ -271,7 +271,7 @@ export async function removeCustomDomain(raw: string): Promise<DomainActionResul
   forgetCompanySiteUrls();
 
   try {
-    const detached = await activeDomainProvider().remove(d._id);
+    const detached = await (await activeDomainProvider()).remove(d._id);
     if (!detached.ok) console.error(`[domains] detaching ${d._id} failed`, detached.error);
   } catch (err) {
     console.error(`[domains] detaching ${d._id} failed`, err);

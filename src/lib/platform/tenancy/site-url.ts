@@ -7,6 +7,7 @@ import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import { currentCompanyId } from "@/lib/platform/tenancy/context";
 import { COMPANY_DOMAINS_COLLECTION, getCompany, type CompanyDomain } from "@/lib/platform/tenancy/companies";
 import { companyBaseUrl, companySubdomain, platformRootDomain } from "@/lib/platform/tenancy/provisioning";
+import { loadIntegrationsDoc } from "@/lib/platform/integrations/store";
 
 /**
  * The current company's PUBLIC SITE origin (`https://host`, no trailing
@@ -42,7 +43,8 @@ function originOf(domain: CompanyDomain, slug: string, hostHint: string | null):
 }
 
 async function resolveSiteUrl(companyId: string, hostHint: string | null): Promise<string> {
-  const company = await getCompany(companyId);
+  // The subdomain root may come from Platform Panel → Integrations (crons and scripts have no proxy to load it).
+  const [company] = await Promise.all([getCompany(companyId), loadIntegrationsDoc()]);
   if (!company) throw new Error(`Unknown company ${companyId}`);
   const db = await getPlatformDb();
   const primary = await db
