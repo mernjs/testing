@@ -30,7 +30,7 @@ export default function SignupModeForm({ initial }: { initial: SignupMode }) {
 
   return (
     <div className="space-y-3">
-      <div role="radiogroup" aria-label="Sign-up mode" className="grid gap-2 sm:grid-cols-3">
+      <div id="signup-mode" role="radiogroup" aria-label="Sign-up mode" className="grid gap-2 sm:grid-cols-3">
         {MODES.map((m) => (
           <label
             key={m.value}
@@ -46,7 +46,7 @@ export default function SignupModeForm({ initial }: { initial: SignupMode }) {
         ))}
       </div>
       <div className="flex items-center gap-3">
-        <Button type="button" onClick={save} disabled={pending || mode === initial}>
+        <Button id="signup-mode-save" type="button" onClick={save} disabled={pending || mode === initial}>
           {pending ? "Saving…" : "Save sign-up mode"}
         </Button>
         {message && <p className={cn("text-sm", message.ok ? "text-muted-foreground" : "text-destructive")}>{message.text}</p>}
