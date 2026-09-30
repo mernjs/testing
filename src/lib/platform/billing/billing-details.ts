@@ -1,8 +1,9 @@
 import type { BillingInterval, CompanySubscription } from "@/lib/platform/billing/types";
 
 /**
- * Client-safe helpers for the subscription checkout: GST-inclusive prices and
- * the company's billing (GST invoice) details — used by both the billing page
+ * Client-safe helpers for the subscription checkout: tax totals (rate from the
+ * billing settings, never a constant), the price summary shape, and the
+ * company's billing (GST invoice) details — used by both the billing page
  * and the server-side service, so the browser and the server always agree.
  */
 

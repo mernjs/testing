@@ -23,7 +23,7 @@ unaware of this layer beyond calling `getDb()`, which is company-scoped.
 | `email/` | Outgoing email behind a swappable provider (`EMAIL_PROVIDER`: Resend, console) |
 | `domains/` | Hostname attach/verify/SSL behind a swappable provider (`DOMAIN_PROVIDER`: Vercel, manual) |
 | `domains/custom.ts` | A company's own domains: add, TXT ownership check, primary, remove, daily re-check (UI in `src/app/(platform)/settings/domains`, cron `/api/platform/domains/cron`) |
-| `billing/` | Plans, subscriptions, entitlements (`getEntitlements()` — what the current company may use), usage metering, SaaS invoices. Contract in `billing/types.ts` |
+| `billing/` | Plans, subscriptions, entitlements (`getEntitlements()` — what the current company may use), usage metering, SaaS invoices. Contract in `billing/types.ts`. Razorpay subscriptions: `subscriptions.ts` (checkout, webhook, dunning), `subscriptions-admin.ts` (Platform Panel actions), `razorpay.ts` + `razorpay-config.ts` (keys saved encrypted in the panel); webhook `/api/platform/billing/webhook`, daily cron `/api/platform/billing/subscriptions/cron` |
 | `request.ts` | Request origin / client key helpers |
 
 ## Where future phases go
