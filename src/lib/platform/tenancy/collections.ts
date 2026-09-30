@@ -17,6 +17,13 @@ export const GLOBAL_COLLECTIONS = new Set<string>([
   "billing_plans",
   "saas_invoices",
   "billing_webhook_events",
+  "subscription_events",
+  "billing_coupons",
+  "billing_coupon_redemptions",
+  "billing_addons",
+  // Platform administration
+  "platform_audit_log",
+  "platform_roles",
 ]);
 
 /**
