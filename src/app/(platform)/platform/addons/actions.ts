@@ -1,0 +1,49 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { saveAddon, setAddonActive, setCompanyAddon, type AddonInput, type AddonSaveResult, type CompanyAddonResult } from "@/lib/platform/billing/addons";
+
+const nullableNumber = (v: unknown) => (v === null || v === undefined || v === "" ? null : Number(v));
+
+export async function saveAddonAction(id: string | null, input: AddonInput): Promise<AddonSaveResult> {
+  const user = await requirePlatformAdmin();
+  const res = await saveAddon(
+    id ? String(id) : null,
+    {
+      name: String(input?.name ?? ""),
+      description: String(input?.description ?? ""),
+      priceMonthly: Number(input?.priceMonthly),
+      priceYearly: Number(input?.priceYearly),
+      type: input?.type === "module" ? "module" : "limit",
+      limitKey: input?.limitKey ?? null,
+      amountPerUnit: nullableNumber(input?.amountPerUnit),
+      moduleKey: input?.moduleKey ? String(input.moduleKey) : null,
+      plans: input?.plans === "all" ? "all" : Array.isArray(input?.plans) ? input.plans.map(String) : [],
+      maxQuantity: nullableNumber(input?.maxQuantity),
+      active: Boolean(input?.active),
+      sortOrder: Number(input?.sortOrder) || 0,
+    },
+    user.id,
+  );
+  if (res.ok) revalidatePath("/platform/addons", "layout");
+  return res;
+}
+
+export async function setAddonActiveAction(id: string, active: boolean): Promise<{ ok: boolean }> {
+  const user = await requirePlatformAdmin();
+  const ok = await setAddonActive(String(id), Boolean(active), user.id);
+  if (ok) revalidatePath("/platform/addons", "layout");
+  return { ok };
+}
+
+/** Add, change or remove (quantity 0) an add-on for one company, from its detail page. */
+export async function setCompanyAddonAction(companyId: string, addonId: string, quantity: number, complimentary: boolean): Promise<CompanyAddonResult> {
+  const user = await requirePlatformAdmin();
+  const res = await setCompanyAddon(String(companyId), String(addonId), Number(quantity), { complimentary: Boolean(complimentary), actorId: user.id });
+  if (res.ok) {
+    revalidatePath(`/platform/companies/${companyId}`);
+    revalidatePath("/platform/addons");
+  }
+  return res;
+}

@@ -23,7 +23,7 @@ import { ADDON_LIMIT_KEYS, type Addon, type AddonLimitKey } from "@/lib/platform
 
 export const ADDONS_COLLECTION = "billing_addons";
 
-type CompanyDoc = { _id: string; isPlatformOwner?: boolean; subscription?: CompanySubscription };
+type CompanyDoc = { _id: string; name?: string; isPlatformOwner?: boolean; subscription?: CompanySubscription };
 
 async function addons(): Promise<Collection<Addon>> {
   return (await getPlatformDb()).collection<Addon>(ADDONS_COLLECTION);
@@ -63,6 +63,18 @@ export async function countAddonHolders(): Promise<Map<string, number>> {
     ])
     .toArray();
   return new Map(rows.map((r) => [r._id, r.n]));
+}
+
+/** Companies holding one add-on, with their quantity. */
+export async function listAddonHolders(addonId: string): Promise<{ companyId: string; name: string; quantity: number; complimentary: boolean; addedAt: Date }[]> {
+  const rows = await (await companies())
+    .find({ "subscription.addons": { $elemMatch: { addonId, quantity: { $gt: 0 } } } }, { projection: { name: 1, "subscription.addons": 1 } })
+    .limit(500)
+    .toArray();
+  return rows.flatMap((c) => {
+    const h = c.subscription?.addons?.find((a) => a.addonId === addonId);
+    return h ? [{ companyId: c._id, name: c.name ?? c._id, quantity: h.quantity, complimentary: Boolean(h.complimentary), addedAt: h.addedAt }] : [];
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -258,6 +270,7 @@ export async function saveAddon(id: string | null, input: AddonInput, actorId: s
   if (id) {
     const existing = await col.findOne({ _id: id });
     if (!existing) return { ok: false, errors: { form: "This add-on no longer exists." } };
+    if (existing.type !== type) return { ok: false, errors: { type: "The type can't change after creation; create a new add-on instead." } };
     await col.updateOne({ _id: id }, { $set: { ...doc, updatedAt: now } });
     const changed = (Object.keys(doc) as (keyof typeof doc)[]).filter((k) => JSON.stringify(doc[k]) !== JSON.stringify(existing[k]));
     await recordPlatformAudit({ actorId, action: "addon.update", target: { type: "addon", id }, details: { name, changed } });
