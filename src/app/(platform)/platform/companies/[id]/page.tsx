@@ -11,7 +11,7 @@ import { requirePlatformAdmin } from "@/lib/platform/console/access";
 import { getCompanyDetail } from "@/lib/platform/console/companies";
 import { companyBaseUrl } from "@/lib/platform/tenancy/provisioning";
 import { requestOrigin } from "@/lib/platform/request";
-import StatusBadge from "../../StatusBadge";
+import StatusBadge from "../StatusBadge";
 import StatusControl from "./StatusControl";
 
 export const metadata: Metadata = { title: "Company" };
