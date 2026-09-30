@@ -48,6 +48,7 @@ export const SAAS_INVOICES_COLLECTION = "saas_invoices";
 const COUNTERS_COLLECTION = "platform_settings";
 const IST_OFFSET_MS = 330 * 60_000;
 const CREDIT_LOCK_MS = 30_000;
+const NUMBERING_CLAIM_MS = 30_000;
 
 export type SaasInvoiceKind = "invoice" | "credit_note";
 /** Invoices: unpaid → paid, or unpaid → void. Credit notes are always "issued". */
@@ -126,6 +127,8 @@ export interface SaasInvoice {
   createdBy: string;
   /** Serialises credit notes against one invoice. */
   creditLockUntil?: Date | null;
+  /** Who may draw this invoice's number (see issueSaasInvoice). */
+  numberingUntil?: Date | null;
 }
 
 export interface SaasInvoiceRef {
@@ -419,11 +422,24 @@ export async function issueSaasInvoice(input: IssueSaasInvoiceInput): Promise<Sa
     }
   }
 
-  // Only the insert winner (or a retry finishing its work) gets here; the
-  // conditional update attaches a number at most once.
+  // Exactly one caller draws the number: whoever claims the unnumbered
+  // document. Everyone else (race losers, early retries) waits for it.
+  const claimed = await col.findOneAndUpdate(
+    { _id: inv._id, number: null, $or: [{ numberingUntil: null }, { numberingUntil: { $lt: new Date() } }] },
+    { $set: { numberingUntil: new Date(Date.now() + NUMBERING_CLAIM_MS) } },
+    { returnDocument: "after" },
+  );
+  if (!claimed) {
+    for (let i = 0; i < 50; i++) {
+      const current = await col.findOne({ _id: inv._id });
+      if (current?.number) return ref(current);
+      await new Promise((r) => setTimeout(r, 100));
+    }
+    throw new Error(`issueSaasInvoice: invoice ${inv._id} is still being numbered by another call — retry`);
+  }
   const prefix = (await getBillingSettings()).invoice.prefix;
   const number = await nextNumber("invoice", prefix, inv.financialYear);
-  const numbered = await col.findOneAndUpdate({ _id: inv._id, number: null }, { $set: { number } }, { returnDocument: "after" });
+  const numbered = await col.findOneAndUpdate({ _id: inv._id, number: null }, { $set: { number, numberingUntil: null } }, { returnDocument: "after" });
   if (!numbered) {
     const current = await col.findOne({ _id: inv._id });
     console.error(`[saas-invoices] number ${number} drawn but invoice ${inv._id} was numbered concurrently — sequence has a gap`);
