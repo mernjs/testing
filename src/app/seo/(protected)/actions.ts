@@ -24,6 +24,7 @@ import { publishRobots } from "@/lib/seo-panel/robots-store";
 import { cleanOrigin, getSettings, saveSettings, type SeoSettings } from "@/lib/seo-panel/settings";
 import { testSearchConsole, submitSitemap } from "@/lib/seo-panel/integrations/gsc";
 import { testAnalytics } from "@/lib/seo-panel/integrations/ga4";
+import { isBillingLimitError, writeBlockReason } from "@/lib/platform/billing/enforce";
 
 /**
  * Every SEO mutation. Each action resolves the viewer from the SESSION COOKIE
@@ -45,12 +46,14 @@ async function run<T extends object>(permission: SeoPermission | SeoPermission[]
   }
   const perms = Array.isArray(permission) ? permission : [permission];
   if (!perms.some((p) => can(v, p))) return { ok: false, error: "You don't have permission to do that." };
+  const readOnly = await writeBlockReason();
+  if (readOnly) return { ok: false, error: readOnly };
   try {
     const out = await fn(v);
     revalidatePath("/seo", "layout");
     return { ok: true, ...out };
   } catch (err) {
-    if (err instanceof SeoInputError) return { ok: false, error: err.message };
+    if (err instanceof SeoInputError || isBillingLimitError(err)) return { ok: false, error: err.message };
     if (err instanceof ForbiddenError) return { ok: false, error: "You don't have permission to do that." };
     console.error("[seo action]", err);
     return { ok: false, error: "Something went wrong. Please try again." };

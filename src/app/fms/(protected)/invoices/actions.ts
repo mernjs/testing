@@ -15,6 +15,7 @@ import { getClient } from "@/lib/pms/clients";
 import { isValidInvoiceStatus } from "@/lib/fms/constants";
 import { recordAudit } from "@/lib/fms/audit";
 import type { FmsLineItemInput } from "@/lib/fms/pricing";
+import { writeBlockReason } from "@/lib/platform/billing/enforce";
 
 export interface InvoiceActionResult {
   ok: boolean;
@@ -59,6 +60,8 @@ function parseItems(raw: unknown): FmsLineItemInput[] {
 
 export async function saveInvoiceAction(input: Record<string, unknown>, id?: string): Promise<InvoiceActionResult> {
   const user = await requireFinance();
+  const readOnly = await writeBlockReason();
+  if (readOnly) return { ok: false, error: readOnly };
 
   const customerId = String(input.customerId ?? "");
   const customer = customerId ? await getClient(customerId) : null;

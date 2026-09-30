@@ -18,6 +18,7 @@ import { validateTask } from "@/lib/pms/validation";
 import { isValidTaskStatus, getTaskStatusMeta, isTaskDone } from "@/lib/pms/constants";
 import { recordActivity, diffSummary } from "@/lib/pms/activity";
 import { notifyEmployees } from "@/lib/pms/notifications";
+import { writeBlockReason } from "@/lib/platform/billing/enforce";
 
 export interface TaskActionResult {
   ok: boolean;
@@ -48,6 +49,8 @@ export async function saveTaskAction(
   taskId?: string
 ): Promise<TaskActionResult> {
   const user = await requireManage();
+  const readOnly = await writeBlockReason();
+  if (readOnly) return { ok: false, error: readOnly };
   const project = await getProject(projectId);
   if (!project) return { ok: false, error: "Project not found." };
 

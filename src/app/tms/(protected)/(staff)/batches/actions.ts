@@ -7,6 +7,7 @@ import { createBatch, updateBatch, deleteBatch, getBatch } from "@/lib/tms/batch
 import { getProgram } from "@/lib/tms/programs";
 import { validateBatch } from "@/lib/tms/validation";
 import { recordAudit, diffSummary } from "@/lib/tms/audit";
+import { writeBlockReason } from "@/lib/platform/billing/enforce";
 
 export interface BatchActionResult {
   ok: boolean;
@@ -35,6 +36,8 @@ export async function saveBatchAction(
   id?: string
 ): Promise<BatchActionResult> {
   const user = await requireManage();
+  const readOnly = await writeBlockReason();
+  if (readOnly) return { ok: false, error: readOnly };
   const v = validateBatch(input);
   if (!v.valid) return { ok: false, fieldErrors: v.errors };
 

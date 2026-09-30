@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import type { SmmsPermission } from "@/lib/smms-roles";
 import { requireViewer, can, SmmsInputError, ForbiddenError, NotFoundError, type SmmsViewer } from "@/lib/smms/viewer";
 import { aiErrorMessage } from "@/lib/smms/ai";
+import { isBillingLimitError, writeBlockReason } from "@/lib/platform/billing/enforce";
 
 /**
  * Wrapper every SMMS server action goes through: resolves the viewer from the
@@ -24,12 +25,17 @@ export async function run<T extends object>(permissions: SmmsPermission[], fn: (
     return SESSION_EXPIRED;
   }
   if (!permissions.every((p) => can(v, p))) return DENIED;
+  // Suspended/canceled workspaces are read-only: block anything beyond viewing.
+  if (permissions.some((p) => !p.startsWith("VIEW_"))) {
+    const readOnly = await writeBlockReason();
+    if (readOnly) return { ok: false, error: readOnly };
+  }
   try {
     const out = await fn(v);
     if (opts.revalidate !== false) revalidatePath("/smms", "layout");
     return { ok: true, ...out };
   } catch (err) {
-    if (err instanceof SmmsInputError) return { ok: false, error: err.message };
+    if (err instanceof SmmsInputError || isBillingLimitError(err)) return { ok: false, error: err.message };
     if (err instanceof ForbiddenError) return DENIED;
     if (err instanceof NotFoundError) return { ok: false, error: "That item no longer exists." };
     const status = (err as { status?: number })?.status;

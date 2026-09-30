@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import type { OtsPermission } from "@/lib/ots-roles";
 import { requireViewer, can, OtsInputError, ForbiddenError, NotFoundError, type OtsViewer } from "@/lib/ots/viewer";
 import { QuestionInputError } from "@/lib/ots/question-types";
+import { isBillingLimitError, writeBlockReason } from "@/lib/platform/billing/enforce";
 
 /**
  * Wrapper every staff-side OTS server action goes through: resolves the
@@ -16,6 +17,7 @@ export const SESSION_EXPIRED: Fail = { ok: false, error: "Your session has expir
 export const DENIED: Fail = { ok: false, error: "You don't have permission to do that." };
 
 export function mapError(err: unknown, tag: string): Fail {
+  if (isBillingLimitError(err)) return { ok: false, error: err.message };
   if (err instanceof OtsInputError || err instanceof QuestionInputError) return { ok: false, error: err.message };
   if (err instanceof ForbiddenError) return DENIED;
   if (err instanceof NotFoundError) return { ok: false, error: "That item no longer exists." };
@@ -36,6 +38,11 @@ export async function run<T extends object>(
   }
   const allowed = opts.any ? permissions.some((p) => can(v, p)) : permissions.every((p) => can(v, p));
   if (!allowed) return DENIED;
+  // Suspended/canceled workspaces are read-only: block anything beyond viewing.
+  if (!permissions.every((p) => p.startsWith("VIEW_"))) {
+    const readOnly = await writeBlockReason();
+    if (readOnly) return { ok: false, error: readOnly };
+  }
   try {
     const out = await fn(v);
     if (opts.revalidate !== false) revalidatePath("/ots", "layout");

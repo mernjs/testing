@@ -24,6 +24,7 @@ import {
 } from "@/lib/dlms/records";
 import { setAccess } from "@/lib/dlms/access";
 import { saveSettings } from "@/lib/dlms/settings";
+import { isBillingLimitError, writeBlockReason } from "@/lib/platform/billing/enforce";
 
 /**
  * Every DLMS mutation. Each action resolves the viewer from the SESSION COOKIE
@@ -47,12 +48,16 @@ async function run<T extends object>(permission: DlmsPermission, fn: (v: DlmsVie
     return SESSION_EXPIRED;
   }
   if (!can(v, permission)) return DENIED;
+  if (permission !== "REVEAL") {
+    const readOnly = await writeBlockReason();
+    if (readOnly) return { ok: false, error: readOnly };
+  }
   try {
     const out = await fn(v);
     if (opts.revalidate !== false) revalidatePath("/dlms", "layout");
     return { ok: true, ...out };
   } catch (err) {
-    if (err instanceof DlmsInputError) return { ok: false, error: err.message };
+    if (err instanceof DlmsInputError || isBillingLimitError(err)) return { ok: false, error: err.message };
     if (err instanceof ForbiddenError) return DENIED;
     console.error("[dlms action]", err instanceof Error ? err.message : "unknown error");
     return { ok: false, error: "Something went wrong. Please try again." };
