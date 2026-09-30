@@ -73,7 +73,7 @@ export default function BillingSettingsForm({ initial, states, prefilled, canEdi
         <CardContent className="grid gap-4 sm:grid-cols-2">
           {field("s-legal", "Legal name", <Input id="s-legal" value={v.seller.legalName} onChange={(e) => set("seller", "legalName")(e.target.value)} />, "seller.legalName")}
           {field("s-trade", "Trade name (optional)", <Input id="s-trade" value={v.seller.tradeName} onChange={(e) => set("seller", "tradeName")(e.target.value)} />)}
-          {field("s-gstin", "GSTIN", <Input id="s-gstin" value={v.seller.gstin} onChange={(e) => set("seller", "gstin")(e.target.value.toUpperCase())} placeholder="33ABCDE1234F1Z5" maxLength={15} />, "seller.gstin")}
+          {field("s-gstin", "GSTIN", <Input id="s-gstin" value={v.seller.gstin} onChange={(e) => set("seller", "gstin")(e.target.value.toUpperCase())} placeholder="33ABCDE1234F1Z7" maxLength={15} />, "seller.gstin")}
           {field(
             "s-state",
             "Registered state",

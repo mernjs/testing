@@ -4,6 +4,7 @@ import { getPlatformOwnerCompanyId } from "@/lib/platform/tenancy/companies";
 import { runAsCompany } from "@/lib/platform/tenancy/context";
 import { getCompanyDetails } from "@/lib/hrms/company";
 import { DEFAULT_TRIAL_DAYS, GRACE_DAYS, GST_RATE } from "@/lib/platform/billing/types";
+import { GST_STATE_CODES, SELECTABLE_GST_STATES, gstStateCode, gstinError, normalizeGstin, stateCodeFromGstin } from "@/lib/platform/billing/gst";
 
 /**
  * Platform-wide billing configuration — the seller identity on SaaS invoices,
@@ -15,17 +16,9 @@ import { DEFAULT_TRIAL_DAYS, GRACE_DAYS, GST_RATE } from "@/lib/platform/billing
  */
 
 const DOC_ID = "billing";
-const GSTIN_RE = /^(\d{2})[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
 
-/** GST state codes (first two digits of a GSTIN) → state name, for invoices' place of supply. */
-export const GST_STATES: Record<string, string> = {
-  "01": "Jammu and Kashmir", "02": "Himachal Pradesh", "03": "Punjab", "04": "Chandigarh", "05": "Uttarakhand", "06": "Haryana",
-  "07": "Delhi", "08": "Rajasthan", "09": "Uttar Pradesh", "10": "Bihar", "11": "Sikkim", "12": "Arunachal Pradesh", "13": "Nagaland",
-  "14": "Manipur", "15": "Mizoram", "16": "Tripura", "17": "Meghalaya", "18": "Assam", "19": "West Bengal", "20": "Jharkhand",
-  "21": "Odisha", "22": "Chhattisgarh", "23": "Madhya Pradesh", "24": "Gujarat", "26": "Dadra and Nagar Haveli and Daman and Diu",
-  "27": "Maharashtra", "29": "Karnataka", "30": "Goa", "31": "Lakshadweep", "32": "Kerala", "33": "Tamil Nadu", "34": "Puducherry",
-  "35": "Andaman and Nicobar Islands", "36": "Telangana", "37": "Andhra Pradesh", "38": "Ladakh", "97": "Other Territory",
-};
+/** GST state codes → state name, for choosing the seller's registered state. */
+export const GST_STATES: Record<string, string> = SELECTABLE_GST_STATES;
 
 export interface PlatformBillingSettings {
   seller: {
@@ -81,12 +74,12 @@ async function sellerFromOwner(): Promise<PlatformBillingSettings["seller"]> {
   if (!ownerId) return empty;
   const c = await runAsCompany(ownerId, () => getCompanyDetails()).catch(() => null);
   if (!c) return empty;
-  const gstin = (c.gstin ?? "").toUpperCase();
+  const gstin = normalizeGstin(c.gstin);
   return {
     legalName: c.legalName || c.name,
     tradeName: c.name,
     gstin,
-    stateCode: GSTIN_RE.test(gstin) ? gstin.slice(0, 2) : (Object.entries(GST_STATES).find(([, n]) => n.toLowerCase() === (c.state ?? "").toLowerCase())?.[0] ?? ""),
+    stateCode: stateCodeFromGstin(gstin) ?? gstStateCode(c.state) ?? "",
     address: [c.addressLine1, c.addressLine2, c.city, c.state, c.postalCode, c.country].filter((s) => s?.trim()).join(", "),
     email: c.email,
     phone: c.phone,
@@ -111,11 +104,12 @@ export type SettingsResult = { ok: true } | { ok: false; errors: Record<string, 
 export async function saveBillingSettings(input: Omit<PlatformBillingSettings, "updatedAt" | "updatedBy">, actorId: string): Promise<SettingsResult> {
   const errors: Record<string, string> = {};
   const s = input.seller;
-  const gstin = s.gstin.trim().toUpperCase();
+  const gstin = normalizeGstin(s.gstin);
   if (!s.legalName.trim()) errors["seller.legalName"] = "Enter the legal name printed on invoices.";
-  if (gstin && !GSTIN_RE.test(gstin)) errors["seller.gstin"] = "That isn't a valid GSTIN (15 characters, e.g. 33ABCDE1234F1Z5).";
-  const stateCode = gstin ? gstin.slice(0, 2) : s.stateCode;
-  if (!GST_STATES[stateCode]) errors["seller.stateCode"] = "Choose the registered state.";
+  const gstinProblem = gstin ? gstinError(gstin) : null;
+  if (gstinProblem) errors["seller.gstin"] = `That isn't a valid GSTIN. ${gstinProblem}`;
+  const stateCode = (gstinProblem ? null : stateCodeFromGstin(gstin)) ?? s.stateCode;
+  if (!GST_STATE_CODES[stateCode]) errors["seller.stateCode"] = "Choose the registered state.";
   if (s.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.email.trim())) errors["seller.email"] = "Enter a valid email.";
   const rate = Number(input.tax.gstRatePercent);
   if (!Number.isFinite(rate) || rate < 0 || rate > 40) errors["tax.gstRatePercent"] = "Enter a GST rate between 0 and 40%.";

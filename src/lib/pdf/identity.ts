@@ -80,8 +80,13 @@ export async function resolvePdfIdentity(): Promise<PdfIdentity> {
   };
 }
 
-/** `renderToBuffer`, with the current company's letterhead identity provided. Use for every PDF. */
-export async function renderPdf(document: ReactElement): Promise<Buffer> {
-  const identity = await resolvePdfIdentity();
+/**
+ * `renderToBuffer`, with the current company's letterhead identity provided. Use for every PDF.
+ * `override` replaces parts of that identity for documents whose issuer isn't
+ * the company as set up in HRMS (e.g. SaaS invoices print the platform's
+ * billing-settings seller details).
+ */
+export async function renderPdf(document: ReactElement, override?: Partial<PdfIdentity>): Promise<Buffer> {
+  const identity = { ...(await resolvePdfIdentity()), ...override };
   return pdfIdentityScope.run(identity, () => renderToBuffer(document as Parameters<typeof renderToBuffer>[0]) as Promise<Buffer>);
 }

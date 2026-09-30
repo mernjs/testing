@@ -88,12 +88,12 @@ try {
     await page.fill("#s-gstin", "BADGSTIN");
     await page.getByRole("button", { name: "Save settings" }).click();
     await page.getByText("That isn't a valid GSTIN").waitFor({ timeout: 30_000 });
-    await page.fill("#s-gstin", "33ABCDE1234F1Z5");
+    await page.fill("#s-gstin", "33ABCDE1234F1Z7");
     await page.fill("#b-trial", "30");
     await page.getByRole("button", { name: "Save settings" }).click();
     await page.getByText("Saved.").waitFor({ timeout: 30_000 });
     await page.reload();
-    assert.equal(await page.inputValue("#s-gstin"), "33ABCDE1234F1Z5");
+    assert.equal(await page.inputValue("#s-gstin"), "33ABCDE1234F1Z7");
     assert.equal(await page.inputValue("#s-state"), "33", "state derived from GSTIN");
     assert.equal(await page.inputValue("#b-trial"), "30");
   });
