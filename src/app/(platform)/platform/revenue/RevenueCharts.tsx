@@ -8,12 +8,12 @@ import { formatMoney } from "@/lib/platform/billing/types";
  * Revenue charts. Colours are chart tokens scoped to `.rev-viz` (validated
  * categorical slots, light + dark stepped separately): one series = slot 1;
  * MRR movements = new (blue) / expansion (aqua) / contraction (violet) /
- * churn (red). Every chart has a table view on the page for the exact values.
+ * churn (red); billed (blue) vs collected (orange). Every chart has a table view on the page for the exact values.
  */
 
 const VIZ_STYLE = `
-.rev-viz { --viz-1:#2a78d6; --viz-aqua:#1baf7a; --viz-violet:#4a3aa7; --viz-red:#e34948; --viz-grid:#e1e0d9; --viz-axis:#c3c2b7; --viz-muted:#898781; }
-.dark .rev-viz { --viz-1:#3987e5; --viz-aqua:#199e70; --viz-violet:#9085e9; --viz-red:#e66767; --viz-grid:#2c2c2a; --viz-axis:#383835; --viz-muted:#898781; }
+.rev-viz { --viz-1:#2a78d6; --viz-2:#eb6834; --viz-aqua:#1baf7a; --viz-violet:#4a3aa7; --viz-red:#e34948; --viz-grid:#e1e0d9; --viz-axis:#c3c2b7; --viz-muted:#898781; }
+.dark .rev-viz { --viz-1:#3987e5; --viz-2:#d95926; --viz-aqua:#199e70; --viz-violet:#9085e9; --viz-red:#e66767; --viz-grid:#2c2c2a; --viz-axis:#383835; --viz-muted:#898781; }
 `;
 
 export interface ChartMonth {
@@ -24,8 +24,11 @@ export interface ChartMonth {
   contraction: number;
   churn: number;
   net: number;
+  billed: number;
+  invoicesIssued: number;
   collected: number;
-  invoices: number;
+  collectedTax: number;
+  invoicesPaid: number;
 }
 
 const compact = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", notation: "compact", maximumFractionDigits: 1 });
@@ -156,11 +159,25 @@ export function MovementsChart({ data }: { data: ChartMonth[] }) {
   );
 }
 
-export function CollectedChart({ data }: { data: ChartMonth[] }) {
+const CASH = [
+  { key: "billed", label: "Billed", color: "var(--viz-1)" },
+  { key: "collected", label: "Collected", color: "var(--viz-2)" },
+] as const;
+
+/** Invoices issued vs payments received per month (both tax-inclusive). */
+export function BilledCollectedChart({ data }: { data: ChartMonth[] }) {
   return (
     <Frame>
-      <ResponsiveContainer width="100%" height={260}>
-        <BarChart data={data} margin={{ top: 8, right: 12, left: 4, bottom: 0 }} barCategoryGap="30%">
+      <ul className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground" aria-label="Legend">
+        {CASH.map((m) => (
+          <li key={m.key} className="flex items-center gap-1.5">
+            <span className="inline-block size-2.5 rounded-sm" style={{ background: m.color }} />
+            {m.label}
+          </li>
+        ))}
+      </ul>
+      <ResponsiveContainer width="100%" height={236}>
+        <BarChart data={data} margin={{ top: 8, right: 12, left: 4, bottom: 0 }} barCategoryGap="25%" barGap={2}>
           <CartesianGrid vertical={false} stroke="var(--viz-grid)" />
           <XAxis dataKey="label" tickFormatter={shortLabel} minTickGap={16} {...AXIS} />
           <YAxis tickFormatter={tickMoney} width={56} {...AXIS} />
@@ -172,14 +189,16 @@ export function CollectedChart({ data }: { data: ChartMonth[] }) {
                 <TooltipBox
                   title={d.label}
                   rows={[
-                    { label: "Collected (incl. GST)", value: formatMoney(d.collected), swatch: "var(--viz-1)", strong: true },
-                    { label: "Paid invoices", value: String(d.invoices) },
+                    { label: `Billed (${d.invoicesIssued} invoice${d.invoicesIssued === 1 ? "" : "s"})`, value: formatMoney(d.billed), swatch: "var(--viz-1)" },
+                    { label: `Collected (${d.invoicesPaid} paid)`, value: formatMoney(d.collected), swatch: "var(--viz-2)", strong: true },
+                    { label: "GST collected", value: formatMoney(d.collectedTax) },
                   ]}
                 />
               ) : null;
             }}
           />
-          <Bar dataKey="collected" fill="var(--viz-1)" radius={[4, 4, 0, 0]} maxBarSize={24} isAnimationActive={false} />
+          <Bar dataKey="billed" fill="var(--viz-1)" radius={[4, 4, 0, 0]} maxBarSize={18} isAnimationActive={false} />
+          <Bar dataKey="collected" fill="var(--viz-2)" radius={[4, 4, 0, 0]} maxBarSize={18} isAnimationActive={false} />
         </BarChart>
       </ResponsiveContainer>
     </Frame>

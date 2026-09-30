@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlertTriangle, Building2, CalendarPlus, CircleCheck, CirclePause, Clock, CreditCard, Hourglass, Sparkles, Timer } from "lucide-react";
+import { AlertTriangle, Building2, CalendarClock, CalendarPlus, CircleCheck, CirclePause, Clock, CreditCard, Gauge, Hourglass, IndianRupee, ShieldAlert, Sparkles, Timer, TrendingUp } from "lucide-react";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import KpiCard from "@/components/lms/KpiCard";
@@ -9,6 +9,7 @@ import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
 import { requirePlatformAdmin } from "@/lib/platform/console/access";
 import { getPlatformKpis } from "@/lib/platform/console/companies";
 import { getSubscriptionSnapshot } from "@/lib/platform/console/overview";
+import { formatMoney } from "@/lib/platform/billing/types";
 import { formatDateTime } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Dashboard" };
@@ -37,6 +38,23 @@ export default async function PlatformDashboardPage() {
         <KpiCard label="Payment overdue" value={overdue} icon={<AlertTriangle className="size-4" />} />
         <KpiCard label="Suspended / ended" value={subs.counts.suspended + subs.counts.canceled} icon={<Clock className="size-4" />} />
       </KpiGrid>
+
+      <section aria-label="Revenue" className="space-y-2">
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="text-sm font-semibold text-foreground">Revenue</h2>
+          <Link href="/platform/revenue" className="text-xs font-medium text-primary hover:underline" data-testid="dashboard-revenue-link">
+            Revenue &amp; subscriptions →
+          </Link>
+        </div>
+        <KpiGrid cols={6}>
+          <KpiCard label="MRR" value={formatMoney(subs.mrr, subs.currency)} accent icon={<IndianRupee className="size-4" />} />
+          <KpiCard label="ARR" value={formatMoney(subs.arr, subs.currency)} icon={<TrendingUp className="size-4" />} />
+          <KpiCard label="ARPA (monthly)" value={subs.arpa === null ? "—" : formatMoney(subs.arpa, subs.currency)} icon={<Gauge className="size-4" />} />
+          <KpiCard label="Trials ending (7 days)" value={subs.trialsEndingCount} icon={<CalendarClock className="size-4" />} />
+          <KpiCard label="Past due" value={subs.counts.past_due} icon={<AlertTriangle className="size-4" />} />
+          <KpiCard label="In grace period" value={subs.counts.grace} icon={<ShieldAlert className="size-4" />} />
+        </KpiGrid>
+      </section>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <GlassCard interactive={false}>
