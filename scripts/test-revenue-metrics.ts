@@ -39,7 +39,7 @@ async function main() {
   const db = await getPlatformDb();
   if (!/test/.test(db.databaseName)) throw new Error(`Refusing to run against "${db.databaseName}"`);
   const companies = db.collection("companies");
-  const events = db.collection(SUBSCRIPTION_EVENTS_COLLECTION);
+  const events = db.collection<{ _id: string } & Record<string, unknown>>(SUBSCRIPTION_EVENTS_COLLECTION);
   const invoices = db.collection("saas_invoices");
   const created = at("2025-01-01T00:00:00Z");
 
