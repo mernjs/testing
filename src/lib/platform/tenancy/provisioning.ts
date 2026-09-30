@@ -73,7 +73,18 @@ export async function createCompanyWithOwner(input: NewCompany): Promise<Provisi
   await companies.createIndex({ slug: 1 }, { unique: true });
 
   const now = new Date();
-  const company: Company = { _id: randomUUID(), slug: input.slug, name: input.name.trim(), status: "active", isPlatformOwner: false, createdAt: now, updatedAt: now };
+  // Locale / time zone defaults come from Platform Panel → Platform settings.
+  const defaults = await getPlatformSettings().catch(() => null);
+  const company: Company = {
+    _id: randomUUID(),
+    slug: input.slug,
+    name: input.name.trim(),
+    status: "active",
+    isPlatformOwner: false,
+    ...(defaults ? { locale: defaults.defaultLocale, timezone: defaults.defaultTimezone } : {}),
+    createdAt: now,
+    updatedAt: now,
+  };
   try {
     await companies.insertOne(company);
   } catch (err) {

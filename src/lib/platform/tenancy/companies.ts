@@ -30,6 +30,9 @@ export interface Company {
   status: CompanyStatus;
   /** The company that owns and runs the platform itself (YashOrbit). Exactly one. */
   isPlatformOwner: boolean;
+  /** Defaults from Platform settings at creation (BCP 47 locale, IANA time zone); onboarding can change the time zone. */
+  locale?: string;
+  timezone?: string;
   createdAt: Date;
   updatedAt: Date;
 }

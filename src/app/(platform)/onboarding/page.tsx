@@ -28,7 +28,7 @@ export default async function OnboardingPage() {
         size: company.profile?.size ?? "",
         country: company.profile?.country ?? details.country ?? "",
         currency: company.profile?.currency ?? "INR",
-        timezone: company.profile?.timezone ?? "",
+        timezone: company.profile?.timezone ?? company.timezone ?? "",
         website: details.website,
         email: details.email,
         phone: details.phone,
