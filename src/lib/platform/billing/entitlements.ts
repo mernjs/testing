@@ -4,20 +4,27 @@ import { currentCompanyId } from "@/lib/platform/tenancy/context";
 import { getPlan } from "@/lib/platform/billing/plans";
 import { getCompanySubscription } from "@/lib/platform/billing/subscription";
 import { MODULES } from "@/lib/platform/onboarding/catalog";
-import type { Entitlements, PlanLimits } from "@/lib/platform/billing/types";
+import { UNLIMITED_LIMITS, effectiveLimitsFor } from "@/lib/platform/billing/limits";
+import type { Entitlements } from "@/lib/platform/billing/types";
 
-const UNLIMITED: PlanLimits = { seats: null, aiTokensPerMonth: null, storageMb: null };
+const UNLIMITED = UNLIMITED_LIMITS;
 const CORE = MODULES.filter((m) => m.core).map((m) => m.key);
 
 /**
  * What the current company may use right now — the single question every
- * panel and API asks (enforcement lives with each panel; see `guard.ts`).
+ * panel and API asks (enforcement helpers: `enforce.ts`).
  * Resolved once per request. The platform owner is unlimited.
  */
-export const getEntitlements = cache(async (): Promise<Entitlements> => {
-  const sub = await getCompanySubscription(await currentCompanyId());
+export const getEntitlements = cache(async (): Promise<Entitlements> => entitlementsFor(await currentCompanyId()));
+
+/**
+ * A given company's entitlements (uncached) — for platform-level code that
+ * looks at several companies in one request. Limits include add-on extras.
+ */
+export async function entitlementsFor(companyId: string): Promise<Entitlements> {
+  const sub = await getCompanySubscription(companyId);
   if (!sub || sub.status === "internal") {
-    return { planId: null, planName: null, status: "internal", modules: null, limits: UNLIMITED, readOnly: false, trialDaysLeft: null };
+    return { planId: null, planName: null, status: "internal", modules: null, limits: { ...UNLIMITED }, readOnly: false, trialDaysLeft: null };
   }
   const now = Date.now();
   let status = sub.status;
@@ -33,11 +40,11 @@ export const getEntitlements = cache(async (): Promise<Entitlements> => {
     planName: plan?.name ?? null,
     status,
     modules,
-    limits: plan?.limits ?? UNLIMITED,
+    limits: await effectiveLimitsFor(sub, plan),
     readOnly: status === "suspended" || status === "canceled",
     trialDaysLeft: status === "trialing" && sub.trialEndsAt ? Math.max(0, Math.ceil((sub.trialEndsAt.getTime() - now) / 86_400_000)) : null,
   };
-});
+}
 
 /** Whether the company's plan includes a panel (core panels always). */
 export async function canUseModule(moduleKey: string): Promise<boolean> {
