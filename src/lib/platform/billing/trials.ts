@@ -12,7 +12,8 @@ import { effectiveSubscriptionStatus, neverPaid, trialDaysLeft } from "@/lib/pla
 import { recordPlatformAudit } from "@/lib/platform/audit";
 export { effectiveSubscriptionStatus, trialDaysLeft } from "@/lib/platform/billing/lifecycle";
 import type { CompanySubscription, SubscriptionStatus } from "@/lib/platform/billing/types";
-import { renderEmail, sendEmail } from "@/lib/platform/email";
+import { sendEmail } from "@/lib/platform/email";
+import { renderEmail } from "@/lib/platform/email/template";
 
 /**
  * Free-trial lifecycle, run once a day by `/api/platform/billing/trials/cron`
