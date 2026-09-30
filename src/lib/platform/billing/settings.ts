@@ -107,7 +107,7 @@ export async function saveBillingSettings(input: Omit<PlatformBillingSettings, "
   const gstin = normalizeGstin(s.gstin);
   if (!s.legalName.trim()) errors["seller.legalName"] = "Enter the legal name printed on invoices.";
   const gstinProblem = gstin ? gstinError(gstin) : null;
-  if (gstinProblem) errors["seller.gstin"] = gstinProblem;
+  if (gstinProblem) errors["seller.gstin"] = `That isn't a valid GSTIN. ${gstinProblem}`;
   const stateCode = (gstinProblem ? null : stateCodeFromGstin(gstin)) ?? s.stateCode;
   if (!GST_STATE_CODES[stateCode]) errors["seller.stateCode"] = "Choose the registered state.";
   if (s.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.email.trim())) errors["seller.email"] = "Enter a valid email.";
