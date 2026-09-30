@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformAccess } from "@/lib/platform/console/access";
 import { countAwaitingApproval } from "@/lib/platform/signup";
 import PlatformSidebarShell from "@/components/platform/panel/PlatformSidebarShell";
 import PlatformTopbar from "@/components/platform/panel/PlatformTopbar";
@@ -13,11 +13,11 @@ export const metadata: Metadata = { title: { default: "Platform Panel", template
 /**
  * The Platform Panel — the single control centre for the SaaS platform
  * (tenants, plans, billing, tax, analytics, platform administration). Same
- * shell as every other panel. Platform owner's Super Admins only; on any other
+ * shell as every other panel. Platform owner company accounts with a platform role (or legacy Super Admins) only; on any other
  * company's host it doesn't exist (404). Pages and actions re-check access.
  */
 export default async function PlatformPanelLayout({ children }: { children: React.ReactNode }) {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformAccess();
   const flags: PlatformNavFlags = { pendingApprovals: await countAwaitingApproval() };
 
   return (

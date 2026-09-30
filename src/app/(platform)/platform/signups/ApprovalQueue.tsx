@@ -18,7 +18,7 @@ import { cn, formatDateTime } from "@/lib/utils";
 import type { AwaitingApproval } from "@/lib/platform/signup";
 import { approveSignupAction, rejectSignupAction } from "./actions";
 
-export default function ApprovalQueue({ requests, addressOf }: { requests: AwaitingApproval[]; addressOf: Record<string, string> }) {
+export default function ApprovalQueue({ requests, addressOf, canManage = true }: { requests: AwaitingApproval[]; addressOf: Record<string, string>; canManage?: boolean }) {
   const router = useRouter();
   const [decision, setDecision] = useState<{ request: AwaitingApproval; approve: boolean } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -64,14 +64,14 @@ export default function ApprovalQueue({ requests, addressOf }: { requests: Await
                   {addressOf[r.slug]} · {r.name} &lt;{r.email}&gt; · requested {formatDateTime(r.createdAt)}
                 </p>
               </div>
-              <div className="flex gap-2">
+              {canManage && <div className="flex gap-2">
                 <Button type="button" size="sm" variant="outline" onClick={() => decide(r, false)}>
                   <X className="size-3.5" data-icon="inline-start" /> Reject
                 </Button>
                 <Button type="button" size="sm" onClick={() => decide(r, true)}>
                   <Check className="size-3.5" data-icon="inline-start" /> Approve
                 </Button>
-              </div>
+              </div>}
             </li>
           ))}
         </ul>

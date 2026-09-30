@@ -30,6 +30,8 @@ export interface Invitation {
   roles: string[];
   departmentId: string | null;
   designationId: string | null;
+  /** Platform Panel role granted on acceptance (owner company only; see console/roles.ts). */
+  platformRoleId?: string | null;
   invitedBy: string;
   status: "pending" | "accepted" | "revoked";
   createdAt: Date;
@@ -55,6 +57,8 @@ export interface InviteInput {
   preset: string;
   departmentId?: string | null;
   designationId?: string | null;
+  /** Also grant this Platform Panel role on acceptance (owner company only). */
+  platformRoleId?: string | null;
 }
 
 export type InviteResult = { ok: true; email: string } | { ok: false; error: string };
@@ -84,6 +88,7 @@ export async function inviteTeammate(input: InviteInput, inviter: { id: string; 
     roles,
     departmentId: input.departmentId || null,
     designationId: input.designationId || null,
+    platformRoleId: input.platformRoleId || null,
     invitedBy: inviter.id,
     status: "pending",
     createdAt: now,
@@ -109,9 +114,12 @@ export async function inviteTeammate(input: InviteInput, inviter: { id: string; 
   return { ok: true, email };
 }
 
-export async function listPendingInvitations(): Promise<Pick<Invitation, "_id" | "email" | "name" | "preset" | "createdAt" | "expiresAt">[]> {
+export async function listPendingInvitations(opts: { platformOnly?: boolean } = {}): Promise<Pick<Invitation, "_id" | "email" | "name" | "preset" | "platformRoleId" | "createdAt" | "expiresAt">[]> {
   return (await col())
-    .find({ status: "pending", expiresAt: { $gt: new Date() } }, { projection: { email: 1, name: 1, preset: 1, createdAt: 1, expiresAt: 1 } })
+    .find(
+      { status: "pending", expiresAt: { $gt: new Date() }, ...(opts.platformOnly ? { platformRoleId: { $nin: [null, ""] } } : {}) },
+      { projection: { email: 1, name: 1, preset: 1, platformRoleId: 1, createdAt: 1, expiresAt: 1 } },
+    )
     .sort({ createdAt: -1 })
     .limit(200)
     .toArray();
@@ -177,6 +185,7 @@ export async function acceptInvitation(token: string, input: { name: string; pas
     lockedUntil: null,
     createdAt: new Date(),
     lastLoginAt: null,
+    ...(inv.platformRoleId ? { platformRoleId: inv.platformRoleId, platformGrantedAt: new Date(), platformGrantedBy: inv.invitedBy } : {}),
   });
   if (employee) await db.collection("hrms_employees").updateOne({ _id: employee._id as never }, { $set: { adminUserId: inv.email } });
   return { ok: true, adminId };
