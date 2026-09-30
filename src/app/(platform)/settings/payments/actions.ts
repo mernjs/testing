@@ -27,7 +27,7 @@ export async function savePaymentAccountAction(input: PaymentAccountInput): Prom
       payoutsEnabled: input?.payoutsEnabled === true,
       accountNumber: String(input?.accountNumber ?? ""),
     },
-    user.id,
+    { id: user.id, email: user.email },
   );
 }
 
@@ -37,6 +37,6 @@ export async function testPaymentAccountAction(): Promise<PaymentAccountResult> 
 }
 
 export async function disconnectPaymentAccountAction(): Promise<PaymentAccountResult> {
-  await requireOwner();
-  return disconnectPaymentAccount();
+  const user = await requireOwner();
+  return disconnectPaymentAccount({ id: user.id, email: user.email });
 }

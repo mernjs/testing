@@ -37,7 +37,9 @@ async function getCollection() {
 export async function processPaymentWebhook(
   providerId: PaymentProviderId,
   rawBody: string,
-  signature: string
+  signature: string,
+  /** The gateway's event id header (Razorpay: `x-razorpay-event-id`) — its payload has none, so this is what de-duplicates retries. */
+  headerEventId?: string | null
 ): Promise<{ ok: boolean; status: number; message: string }> {
   if (providerId === "razorpay") {
     // Verified with THIS company's webhook secret (the company comes from the
@@ -59,7 +61,7 @@ export async function processPaymentWebhook(
     return { ok: false, status: 400, message: "Invalid JSON payload" };
   }
 
-  const providerEventId = (body.event_id || body.id || `evt_${Date.now()}_${Math.random().toString(36).slice(2)}`) as string;
+  const providerEventId = (headerEventId || body.event_id || body.id || `evt_${Date.now()}_${Math.random().toString(36).slice(2)}`) as string;
   const eventType = (body.event || body.type || "payment.captured") as string;
 
   const collection = await getCollection();

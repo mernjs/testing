@@ -35,6 +35,14 @@ export interface WebhookResult {
 
 export interface PayoutProvider {
   key: "manual" | "razorpay";
+  /**
+   * Which provider account this instance pays from (Razorpay key id), so
+   * beneficiary ids cached on a bank account are only reused on the account
+   * that created them. null for manual.
+   */
+  accountRef: string | null;
+  /** Running on the platform owner's env credentials (the only account that existed before per-company accounts). */
+  usesPlatformEnv: boolean;
   ensureBeneficiary(input: BeneficiaryInput): Promise<{ providerContactId: string; providerFundAccountId: string }>;
   createPayout(input: CreatePayoutInput): Promise<{ providerPayoutId: string; status: "processing" | "paid" }>;
   verifyWebhook(rawBody: string, signature: string | null): boolean;
@@ -47,6 +55,8 @@ export interface PayoutProvider {
 
 const manualProvider: PayoutProvider = {
   key: "manual",
+  accountRef: null,
+  usesPlatformEnv: false,
   async ensureBeneficiary() {
     return { providerContactId: "", providerFundAccountId: "" };
   },
@@ -92,6 +102,8 @@ export function razorpayPayoutProvider(creds: RazorpayCredentials): PayoutProvid
 
   return {
     key: "razorpay",
+    accountRef: creds.keyId,
+    usesPlatformEnv: creds.source === "platform_env",
 
     async ensureBeneficiary(input) {
       const contact = await rzpFetch("/contacts", {

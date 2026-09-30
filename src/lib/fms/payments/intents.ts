@@ -15,7 +15,7 @@ import { recordReceipt } from "@/lib/fms/receipts";
 import { PaymentProviderId, getPaymentProvider } from "./provider";
 import "./providers";
 import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
-import { NOT_CONNECTED_MESSAGE, resolveRazorpayCredentials } from "@/lib/platform/integrations/payments";
+import { NOT_CONNECTED, NOT_CONNECTED_MESSAGE, resolveRazorpayCredentials } from "@/lib/platform/integrations/payments";
 
 /**
  * Gateways a company can connect its own account for (Settings → Payments &
@@ -236,7 +236,7 @@ export interface CreatePaymentIntentData {
 
 export async function createPaymentIntent(
   data: CreatePaymentIntentData
-): Promise<{ ok: true; intent: PaymentIntent } | { ok: false; reason: string }> {
+): Promise<{ ok: true; intent: PaymentIntent } | { ok: false; reason: string; code?: typeof NOT_CONNECTED }> {
   if (data.idempotencyKey) {
     const existing = await getPaymentIntentByIdempotencyKey(data.idempotencyKey);
     if (existing) {
@@ -262,7 +262,7 @@ export async function createPaymentIntent(
   const providerId = data.paymentProvider || "mock";
   // Live gateways collect into the company's OWN merchant account — never another company's.
   if (CONNECTABLE_GATEWAYS.has(providerId) && !(await resolveRazorpayCredentials("payments"))) {
-    return { ok: false, reason: NOT_CONNECTED_MESSAGE };
+    return { ok: false, reason: NOT_CONNECTED_MESSAGE, code: NOT_CONNECTED };
   }
   if (OWNER_ONLY_GATEWAYS.has(providerId) && !(await isPlatformOwnerContext())) {
     return { ok: false, reason: "Online payment collection isn't connected for this workspace yet. Record the payment offline instead." };

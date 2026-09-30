@@ -26,6 +26,12 @@ export interface BankAccount extends AuditFields {
   verificationNote: string | null;
   providerContactId: string | null;
   providerFundAccountId: string | null;
+  /**
+   * Which payout account (Razorpay key id) the cached contact/fund account
+   * ids belong to. Absent on ids cached before per-company payout accounts —
+   * those were made on the platform owner's env account.
+   */
+  providerAccountRef?: string | null;
 }
 
 /** What crosses to the client — never the ciphertext or the full number. */
@@ -162,9 +168,9 @@ export async function bankAccountForPayout(id: string): Promise<{ accountNumber:
   return { accountNumber, ifsc: account.ifsc, holder: account.accountHolderName, bankName: account.bankName };
 }
 
-export async function cacheProviderIds(id: string, contactId: string, fundAccountId: string): Promise<void> {
+export async function cacheProviderIds(id: string, contactId: string, fundAccountId: string, accountRef: string | null): Promise<void> {
   const collection = await getCollection();
-  await collection.updateOne({ _id: id }, { $set: { providerContactId: contactId, providerFundAccountId: fundAccountId, updatedAt: new Date() } });
+  await collection.updateOne({ _id: id }, { $set: { providerContactId: contactId, providerFundAccountId: fundAccountId, providerAccountRef: accountRef, updatedAt: new Date() } });
 }
 
 // ---------------------------------------------------------------------------

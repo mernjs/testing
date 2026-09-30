@@ -162,12 +162,12 @@ export default function PaymentAccountManager({ initial, actions }: { initial: P
     <div className="space-y-6">
       {!account.encryptionConfigured && (
         <p role="alert" className="flex items-start gap-2 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          <AlertTriangle className="mt-0.5 size-4 shrink-0" /> PLATFORM_ENCRYPTION_KEY isn&apos;t set on the server, so payment credentials can&apos;t be stored safely. Ask your platform administrator to configure it.
+          <AlertTriangle className="mt-0.5 size-4 shrink-0" /> Secure storage for payment keys isn&apos;t set up on this server yet, so keys can&apos;t be saved. Ask your platform administrator to configure it.
         </p>
       )}
 
       {/* Status */}
-      <section aria-label="Connection status" className="space-y-3 rounded-xl border bg-muted/20 p-4">
+      <section id="payment-account-status" aria-label="Connection status" className="space-y-3 rounded-xl border bg-muted/20 p-4">
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-semibold">Razorpay</span>
           {connected && <Pill tone="green"><CheckCircle2 className="size-3" /> Connected</Pill>}
@@ -184,9 +184,9 @@ export default function PaymentAccountManager({ initial, actions }: { initial: P
             <dt className="text-muted-foreground">Key secret</dt>
             <dd className="font-mono text-xs" data-testid="stored-key-secret">{masked(account.keySecretLast4)}</dd>
             <dt className="text-muted-foreground">Webhook secret</dt>
-            <dd className="font-mono text-xs">{masked(account.webhookSecretLast4) ?? <span className="font-sans text-amber-700 dark:text-amber-400">Not set — webhooks will be rejected</span>}</dd>
+            <dd className="font-mono text-xs" data-testid="stored-webhook-secret">{masked(account.webhookSecretLast4) ?? <span className="font-sans text-amber-700 dark:text-amber-400">Not set — webhooks will be rejected</span>}</dd>
             <dt className="text-muted-foreground">RazorpayX account</dt>
-            <dd className="font-mono text-xs">{masked(account.accountNumberLast4) ?? <span className="font-sans text-muted-foreground">—</span>}</dd>
+            <dd className="font-mono text-xs" data-testid="stored-account-number">{masked(account.accountNumberLast4) ?? <span className="font-sans text-muted-foreground">—</span>}</dd>
             {account.lastTest && (
               <>
                 <dt className="text-muted-foreground">Last test</dt>
@@ -204,13 +204,17 @@ export default function PaymentAccountManager({ initial, actions }: { initial: P
           </p>
         )}
 
+        {hasRecord && !account.payoutsEnabled && account.usingPlatformEnv.payouts && (
+          <p className="text-xs text-muted-foreground">Salary payouts still run on the platform&apos;s built-in RazorpayX account until you switch payouts on here.</p>
+        )}
+
         {hasRecord && (
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" size="sm" disabled={busy || !connected} onClick={runTest}>
+            <Button id="pay-test" type="button" variant="outline" size="sm" disabled={busy || !connected} onClick={runTest}>
               {testing ? <Loader2 className="size-3.5 animate-spin" /> : <PlugZap className="size-3.5" />} Test connection
             </Button>
             {!confirmDisconnect && (
-              <Button type="button" variant="ghost" size="sm" disabled={busy} onClick={() => setConfirmDisconnect(true)}>
+              <Button id="pay-disconnect" type="button" variant="ghost" size="sm" disabled={busy} onClick={() => setConfirmDisconnect(true)}>
                 <Trash2 className="size-3.5" /> Disconnect
               </Button>
             )}
@@ -224,7 +228,7 @@ export default function PaymentAccountManager({ initial, actions }: { initial: P
               <Button type="button" variant="ghost" size="sm" disabled={busy} onClick={() => setConfirmDisconnect(false)}>
                 Cancel
               </Button>
-              <Button type="button" variant="destructive" size="sm" disabled={busy} onClick={runDisconnect}>
+              <Button id="pay-disconnect-confirm" type="button" variant="destructive" size="sm" disabled={busy} onClick={runDisconnect}>
                 {disconnecting ? <Loader2 className="size-3.5 animate-spin" /> : <Trash2 className="size-3.5" />} Yes, disconnect
               </Button>
             </div>
@@ -234,14 +238,14 @@ export default function PaymentAccountManager({ initial, actions }: { initial: P
 
       <div aria-live="polite">
         {notice && (
-          <p role={notice.tone === "error" ? "alert" : "status"} className={cn("rounded-lg px-3 py-2 text-sm", notice.tone === "error" ? "bg-destructive/10 text-destructive" : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400")}>
+          <p id="pay-notice" role={notice.tone === "error" ? "alert" : "status"} className={cn("rounded-lg px-3 py-2 text-sm", notice.tone === "error" ? "bg-destructive/10 text-destructive" : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400")}>
             {notice.text}
           </p>
         )}
       </div>
 
       {/* Connect / update form */}
-      <form className="space-y-4" onSubmit={submit} noValidate>
+      <form id="payment-account-form" aria-label="Razorpay keys" className="space-y-4" onSubmit={submit} noValidate>
         <h3 className="font-semibold">{hasRecord ? "Update keys" : "Connect Razorpay"}</h3>
         <p className="text-xs text-muted-foreground">Find these in the Razorpay Dashboard → Account &amp; Settings → API keys. Use test keys first, then switch to live keys.</p>
         <fieldset disabled={formDisabled || busy} className="space-y-4">
@@ -262,7 +266,7 @@ export default function PaymentAccountManager({ initial, actions }: { initial: P
           </div>
           <div className="space-y-3 rounded-lg border p-3">
             <label className="flex items-center gap-2 text-sm font-medium">
-              <input type="checkbox" className="size-4 accent-primary" checked={payoutsEnabled} onChange={(e) => setPayoutsEnabled(e.target.checked)} />
+              <input id="pay-payoutsEnabled" type="checkbox" className="size-4 accent-primary" checked={payoutsEnabled} onChange={(e) => setPayoutsEnabled(e.target.checked)} />
               Pay salaries through RazorpayX
             </label>
             {payoutsEnabled && (
@@ -273,7 +277,7 @@ export default function PaymentAccountManager({ initial, actions }: { initial: P
               </div>
             )}
           </div>
-          <Button type="submit">
+          <Button id="pay-submit" type="submit">
             {saving && <Loader2 className="size-4 animate-spin" />} {hasRecord ? "Save changes" : "Connect Razorpay"}
           </Button>
         </fieldset>
@@ -282,7 +286,7 @@ export default function PaymentAccountManager({ initial, actions }: { initial: P
       {/* Webhooks */}
       <section aria-label="Webhook URLs" className="space-y-3">
         <h3 className="font-semibold">Webhooks</h3>
-        <p className="text-sm text-muted-foreground">In the Razorpay Dashboard → Webhooks, add these URLs with the same webhook secret you entered above, so payments and payouts update here automatically.</p>
+        <p className="text-sm text-muted-foreground">In the Razorpay Dashboard → Webhooks (and RazorpayX → Webhooks for payouts), add these URLs with the same webhook secret you entered above, so payments and payouts update here automatically. They identify your workspace by its id, so they keep working if you change domains.</p>
         <div className="space-y-1">
           <p className="text-sm font-medium">Customer payments</p>
           <CopyValue value={account.webhookUrls.payments} label="payments" />
