@@ -176,6 +176,8 @@ export async function storageUsedBytes(): Promise<number> {
 }
 
 export async function storageBlockReason(addingBytes: number): Promise<string | null> {
+  // Outside any company (scripts, seeders) there is no plan to check against.
+  if (!(await currentCompanyIdOrNull())) return null;
   const e = await getEntitlements();
   const limitMb = e.limits.storageMb;
   if (limitMb === null || addingBytes <= 0) return null;

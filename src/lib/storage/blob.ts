@@ -1,5 +1,6 @@
 import "server-only";
-import { put, get, del } from "@vercel/blob";
+import { put, get, del, head } from "@vercel/blob";
+import { assertStorageAvailable, meterStorage } from "@/lib/platform/billing/enforce";
 
 /**
  * Shared Vercel Blob core — every `*-storage.ts` module in this codebase
@@ -41,11 +42,14 @@ export interface GetResult {
 export async function putObject(folder: string, filename: string, body: Buffer, contentType?: string): Promise<PutResult> {
   const storageKey = `${folder}/${filename}`;
   const resolvedContentType = contentType || "application/octet-stream";
+  // Plan storage limit (throws a friendly BillingLimitError when full); metered once stored.
+  await assertStorageAvailable(body.byteLength);
   await put(storageKey, body, {
     access: "private",
     contentType: resolvedContentType,
     addRandomSuffix: false, // the key is already a random UUID — don't let Blob mangle it further
   });
+  await meterStorage(body.byteLength);
   return { storageKey, contentType: resolvedContentType, size: body.byteLength };
 }
 
@@ -58,5 +62,11 @@ export async function getObject(storageKey: string): Promise<GetResult | null> {
 
 export async function deleteObject(storageKey: string | null | undefined): Promise<void> {
   if (!storageKey) return;
-  await del(storageKey).catch(() => {});
+  // Size first (best effort) so the storage meter can be credited back.
+  const size = await head(storageKey).then((b) => b.size, () => 0);
+  let deleted = true;
+  await del(storageKey).catch(() => {
+    deleted = false;
+  });
+  if (deleted && size > 0) await meterStorage(-size);
 }
