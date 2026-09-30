@@ -61,6 +61,10 @@ export interface CompanySubscription {
   provider: { id: "razorpay"; subscriptionId: string | null; customerId: string | null } | null;
   /** GST / billing details for invoices. */
   billingDetails?: { legalName: string; gstin: string | null; address: string; state: string; email: string } | null;
+  /** A plan change scheduled with the provider for the end of the current period (subscriptions workstream). */
+  pendingChange?: { planId: string; interval: BillingInterval; effectiveAt: Date | null } | null;
+  /** Failed-renewal bookkeeping for dunning (subscriptions workstream); reset on every successful charge. */
+  dunning?: { failedPayments: number; pastDueSince: Date | null } | null;
   updatedAt: Date;
 }
 
