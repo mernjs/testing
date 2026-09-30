@@ -3,7 +3,9 @@ import { getDb } from "@/lib/mongodb";
 import { newId } from "@/lib/fms/db";
 import { recordAudit } from "@/lib/fms/audit";
 import { getPaymentProvider, PaymentProviderId } from "./provider";
-import { getPaymentIntentByGatewayOrder, markPaymentIntentSuccessful, markPaymentIntentFailed } from "./intents";
+import "./providers";
+import { getPaymentIntent, getPaymentIntentByGatewayOrder, markPaymentIntentSuccessful, markPaymentIntentFailed } from "./intents";
+import { resolveRazorpayCredentials } from "@/lib/platform/integrations/payments";
 
 export const WEBHOOK_EVENTS_COLLECTION = "fms_webhook_events";
 
@@ -37,13 +39,17 @@ export async function processPaymentWebhook(
   rawBody: string,
   signature: string
 ): Promise<{ ok: boolean; status: number; message: string }> {
-  const provider = getPaymentProvider(providerId);
-
-  const secret = process.env[`${providerId.toUpperCase()}_WEBHOOK_SECRET`] || process.env.RAZORPAY_KEY_SECRET || "default_secret";
-  const isValid = provider.verifyWebhookSignature(rawBody, signature, secret);
-
-  if (!isValid && providerId !== "mock") {
-    return { ok: false, status: 400, message: "Invalid webhook signature" };
+  if (providerId === "razorpay") {
+    // Verified with THIS company's webhook secret (the company comes from the
+    // request's Host — Razorpay calls the URL shown in its settings). No secret → reject.
+    const secret = (await resolveRazorpayCredentials("payments"))?.webhookSecret;
+    if (!secret) return { ok: false, status: 400, message: "Webhooks aren't configured for this workspace" };
+    if (!getPaymentProvider("razorpay").verifyWebhookSignature(rawBody, signature, secret)) {
+      return { ok: false, status: 400, message: "Invalid webhook signature" };
+    }
+  } else if (providerId !== "mock") {
+    // No other gateway has a real integration (or a secret) yet.
+    return { ok: false, status: 404, message: "Unsupported payment provider" };
   }
 
   let body: Record<string, unknown>;
@@ -102,16 +108,21 @@ export async function processPaymentWebhook(
         }
       }
     } else if (providerId === "mock") {
-      const intentId = body.intentId as string;
-      const orderId = body.orderId as string;
+      // The mock webhook is unsigned, so it may only ever complete MOCK intents —
+      // never one collected through a real gateway.
+      const intentId = typeof body.intentId === "string" ? body.intentId : null;
+      const orderId = typeof body.orderId === "string" ? body.orderId : null;
       if (intentId) {
-        await markPaymentIntentSuccessful(intentId, {
-          gatewayPaymentId: `mock_pay_${Date.now()}`,
-          utr: `UTR_MOCK_${Date.now()}`,
-        });
+        const intent = await getPaymentIntent(intentId);
+        if (intent?.paymentProvider === "mock") {
+          await markPaymentIntentSuccessful(intentId, {
+            gatewayPaymentId: `mock_pay_${Date.now()}`,
+            utr: `UTR_MOCK_${Date.now()}`,
+          });
+        }
       } else if (orderId) {
         const intent = await getPaymentIntentByGatewayOrder(orderId);
-        if (intent) {
+        if (intent?.paymentProvider === "mock") {
           await markPaymentIntentSuccessful(intent._id, {
             gatewayPaymentId: `mock_pay_${Date.now()}`,
             utr: `UTR_MOCK_${Date.now()}`,

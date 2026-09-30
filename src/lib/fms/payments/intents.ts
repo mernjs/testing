@@ -13,9 +13,18 @@ import { recordAudit } from "@/lib/fms/audit";
 import { getInvoice, applyReceiptToInvoice } from "@/lib/fms/invoices";
 import { recordReceipt } from "@/lib/fms/receipts";
 import { PaymentProviderId, getPaymentProvider } from "./provider";
+import "./providers";
 import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { NOT_CONNECTED_MESSAGE, resolveRazorpayCredentials } from "@/lib/platform/integrations/payments";
 
-const LIVE_GATEWAYS = new Set<string>(["razorpay", "stripe", "cashfree", "payu"]);
+/**
+ * Gateways a company can connect its own account for (Settings → Payments &
+ * payouts). The others have no per-company credentials and no real
+ * integration yet (they resolve to the mock provider), so they stay limited
+ * to the platform owner, exactly as before.
+ */
+const CONNECTABLE_GATEWAYS = new Set<string>(["razorpay"]);
+const OWNER_ONLY_GATEWAYS = new Set<string>(["stripe", "cashfree", "payu"]);
 
 export const PAYMENT_INTENTS_COLLECTION = "fms_payment_intents";
 const INTENT_NUMBER_PREFIX = "PAY";
@@ -251,8 +260,11 @@ export async function createPaymentIntent(
   }
 
   const providerId = data.paymentProvider || "mock";
-  // Real gateways run on the platform owner's env credentials — its own merchant account.
-  if (LIVE_GATEWAYS.has(providerId) && !(await isPlatformOwnerContext())) {
+  // Live gateways collect into the company's OWN merchant account — never another company's.
+  if (CONNECTABLE_GATEWAYS.has(providerId) && !(await resolveRazorpayCredentials("payments"))) {
+    return { ok: false, reason: NOT_CONNECTED_MESSAGE };
+  }
+  if (OWNER_ONLY_GATEWAYS.has(providerId) && !(await isPlatformOwnerContext())) {
     return { ok: false, reason: "Online payment collection isn't connected for this workspace yet. Record the payment offline instead." };
   }
   const provider = getPaymentProvider(providerId);

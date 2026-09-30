@@ -3,8 +3,12 @@ import { getPayoutProvider } from "@/lib/hrms/payout-provider";
 import { applyWebhookResult } from "@/lib/hrms/salary-payouts";
 
 /**
- * Payout-provider webhook (RazorpayX). The raw body is needed for signature
- * verification, so it is read as text before parsing.
+ * Payout-provider webhook (RazorpayX). Each company registers this URL on its
+ * OWN host (Settings → Payments & payouts), so the company comes from the Host
+ * header and the signature is checked with that company's webhook secret; a
+ * company without payouts connected gets 404, one without a webhook secret 400.
+ * The raw body is needed for signature verification, so it is read as text
+ * before parsing.
  */
 export async function POST(req: NextRequest) {
   const provider = await getPayoutProvider();
