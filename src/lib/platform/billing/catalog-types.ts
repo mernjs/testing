@@ -111,3 +111,13 @@ export function describeAddonEffect(a: Pick<Addon, "type" | "limitKey" | "amount
   const meta = ADDON_LIMIT_KEYS.find((k) => k.key === a.limitKey);
   return `+${(a.amountPerUnit ?? 0).toLocaleString("en-IN")} ${meta?.unit ?? a.limitKey} per unit`;
 }
+
+export type CouponStatus = "active" | "inactive" | "scheduled" | "expired" | "used_up";
+
+export function couponStatus(c: Pick<Coupon, "active" | "validFrom" | "validUntil" | "maxRedemptions" | "redeemedCount">, now = Date.now()): CouponStatus {
+  if (!c.active) return "inactive";
+  if (c.validUntil && new Date(c.validUntil).getTime() <= now) return "expired";
+  if (c.validFrom && new Date(c.validFrom).getTime() > now) return "scheduled";
+  if (c.maxRedemptions !== null && c.redeemedCount >= c.maxRedemptions) return "used_up";
+  return "active";
+}
