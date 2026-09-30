@@ -142,7 +142,7 @@ async function run(db: import("mongodb").Db) {
   const hrmsRoute = await import("@/app/api/hrms/payroll/webhook/[companyId]/route");
 
   const as = <T>(id: string, fn: () => Promise<T>) => runAsCompany(id, fn);
-  const raw = db.collection<Record<string, unknown>>(pay.PAYMENT_ACCOUNTS_COLLECTION);
+  const raw = db.collection<{ _id: string; companyId?: string } & Record<string, unknown>>(pay.PAYMENT_ACCOUNTS_COLLECTION);
   const save = (id: string, input: Partial<import("@/lib/platform/integrations/payments").PaymentAccountInput>) =>
     as(id, () => pay.savePaymentAccount({ keyId: "", keySecret: "", webhookSecret: "", payoutsEnabled: false, accountNumber: "", ...input }, { id: `admin-${id}`, email: `admin@${id}.test` }));
 
@@ -299,7 +299,7 @@ async function run(db: import("mongodb").Db) {
   });
 
   console.log("FMS payment intents");
-  const intentInput = { sourceModule: "fms", sourceType: "manual", sourceId: "src-1", customerName: "Cust", customerEmail: "c@example.test", amount: 1500, paymentProvider: "razorpay" } as Parameters<typeof createPaymentIntent>[0];
+  const intentInput = { sourceModule: "FMS", sourceType: "manual", sourceId: "src-1", customerName: "Cust", customerEmail: "c@example.test", amount: 1500, paymentProvider: "razorpay" } as Parameters<typeof createPaymentIntent>[0];
   let intentA = "";
   let orderA = "";
   await check("company without an account: NOT_CONNECTED, no call to Razorpay", async () => {
