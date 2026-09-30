@@ -85,15 +85,16 @@ async function main() {
       await page.goto(`${COMPANY_URL}/platform/signups`).then((r) => assert.equal(r?.status(), 404));
     });
 
-    await step("owner signs in and opens the console", async () => {
+    await step("owner signs in and opens the Platform Panel", async () => {
       await page.goto(`${BASE}/workspace/login`);
       await page.getByLabel("Email").fill(OWNER_EMAIL);
       await page.locator('input[name="password"]').fill(OWNER_PASSWORD);
       await page.getByRole("button", { name: "Sign in" }).click();
       await page.waitForURL((u) => !u.pathname.startsWith("/workspace/login"), { timeout: 30_000 });
-      await page.goto(`${BASE}/platform/companies`);
-      await page.getByRole("heading", { name: "Companies" }).waitFor();
+      await page.goto(`${BASE}/platform`);
       await page.getByText("Awaiting approval").first().waitFor();
+      await page.goto(`${BASE}/platform/companies`);
+      await page.getByRole("heading", { name: "Companies", level: 1 }).waitFor();
     });
 
     await step("companies table lists and filters companies", async () => {
@@ -133,7 +134,7 @@ async function main() {
     const seeded = await seedApprovalRequest();
     await step("approval queue: approve a request", async () => {
       await page.goto(`${BASE}/platform/signups`);
-      await page.getByText("Who can create a company").waitFor();
+      await page.getByText("Who can create a company", { exact: true }).waitFor();
       const row = seeded ? page.locator(`li[data-signup-email="${seeded.email}"]`) : page.locator("li[data-signup-email]").first();
       if (!seeded && (await row.count()) === 0) {
         console.log("      (skipped: queue empty and no E2E_MONGODB_URI to seed one)");

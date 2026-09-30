@@ -30,6 +30,9 @@ export default function FloatingContactButtons() {
   // full experience inline — no need for the floating duplicate there).
   // Never on an exam page: tests are distraction-free and a chat widget would be an aid.
   if (pathname?.startsWith("/ots/take") || pathname?.startsWith("/portal/exam")) return null;
+  // SaaS administration screens (Platform Panel, company settings, setup, sign-up) aren't the public
+  // site — the visitor chat/WhatsApp buttons don't belong there and sat on top of their controls.
+  if (/^\/(platform|console|settings|onboarding|signup)(\/|$)/.test(pathname ?? "") || pathname?.startsWith("/workspace/invite")) return null;
   // The CMS is an admin panel too (its draft preview, /cms/preview, shows the site exactly as visitors see it).
   const inCms = pathname?.startsWith("/cms") && !pathname.startsWith("/cms/preview");
   if (pathname?.startsWith("/lms") || pathname?.startsWith("/aibots") || pathname?.startsWith("/smms") || inCms || pathname === "/ask") {

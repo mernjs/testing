@@ -19,7 +19,7 @@ export default async function ConsoleSignupsPage() {
 
   return (
     <div className="space-y-6 p-1">
-        <PlatformPageHeader title="Sign-ups & approvals" description="Who can create a company, and requests waiting for a decision." />
+        <PlatformPageHeader title="Sign-ups & approvals" description="Control who can sign up, and decide on requests waiting for approval." />
         <GlassCard interactive={false}>
           <CardHeader>
             <CardTitle className="text-base">Who can create a company</CardTitle>

@@ -69,9 +69,9 @@ try {
 
   await step("companies and sign-ups pages render in the panel", async () => {
     await page.goto(`${BASE}/platform/companies`);
-    await page.getByRole("heading", { name: "Companies" }).waitFor();
+    await page.getByRole("heading", { name: "Companies", level: 1 }).waitFor();
     await page.goto(`${BASE}/platform/signups`);
-    await page.getByRole("heading", { name: "Sign-ups & approvals" }).waitFor();
+    await page.getByRole("heading", { name: "Sign-ups & approvals", level: 1 }).waitFor();
   });
 
   await step("old /console links redirect into the panel", async () => {
