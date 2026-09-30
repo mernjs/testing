@@ -1,27 +1,32 @@
 import type { ModuleKey } from "@/lib/platform/onboarding/catalog";
-import type { Plan } from "@/lib/platform/billing/types";
+import { BILLING_INTERVALS, PLAN_LIMIT_DEFS, type BillingInterval, type Plan, type PlanLimits } from "@/lib/platform/billing/types";
+import { planIntervals, planPrice } from "@/lib/platform/billing/pricing";
 
 /**
  * The plan form's raw values (what the browser submits) and their conversion
- * to/from a plan. Client-safe and data-free: prices are typed in rupees and
- * stored in paise; a blank limit means unlimited.
+ * to/from a plan. Client-safe and data-free: prices are typed in major units
+ * (rupees) and stored in minor units (paise); a blank limit means unlimited;
+ * blank trial days means the platform default.
  */
 
 export interface PlanFormValues {
   id: string;
   name: string;
   description: string;
-  /** Rupees, up to 2 decimals. */
-  priceMonthly: string;
-  priceYearly: string;
+  currency: string;
+  /** One row per known billing cycle. Price in major units, up to 2 decimals. */
+  cycles: { id: BillingInterval; enabled: boolean; price: string }[];
   allModules: boolean;
   modules: string[];
-  /** Blank = unlimited. */
-  seats: string;
-  aiTokensPerMonth: string;
-  storageMb: string;
+  /** One highlight per line. */
+  highlights: string;
+  flags: string[];
+  /** Known limits by key; blank = unlimited. */
+  limits: Record<string, string>;
+  /** Further numeric limits; blank value = unlimited. */
+  customLimits: { key: string; value: string }[];
+  /** Blank = platform default. */
   trialDays: string;
-  sortOrder: string;
   active: boolean;
   isDefault: boolean;
 }
@@ -30,68 +35,80 @@ export interface ParsedPlanForm {
   _id: string;
   name: string;
   description: string;
-  priceMonthly: number;
-  priceYearly: number;
+  currency: string;
+  intervals: BillingInterval[];
+  prices: Partial<Record<BillingInterval, number>>;
   modules: ModuleKey[] | "all";
-  limits: { seats: number | null; aiTokensPerMonth: number | null; storageMb: number | null };
-  trialDays: number;
+  highlights: string[];
+  flags: string[];
+  limits: PlanLimits;
+  trialDays: number | null;
   active: boolean;
   isDefault: boolean;
-  sortOrder: number;
 }
 
-export type PlanFormErrors = Partial<Record<"id" | "name" | "description" | "priceMonthly" | "priceYearly" | "modules" | "seats" | "aiTokensPerMonth" | "storageMb" | "trialDays" | "sortOrder" | "isDefault", string>>;
+/** Same keys as the server's `PlanFieldErrors` (id, price.<cycle>, limit.<key>, customLimits …). */
+export type PlanFormErrors = Record<string, string>;
 
-export const EMPTY_PLAN_FORM: PlanFormValues = {
-  id: "",
-  name: "",
-  description: "",
-  priceMonthly: "",
-  priceYearly: "",
-  allModules: false,
-  modules: [],
-  seats: "",
-  aiTokensPerMonth: "",
-  storageMb: "",
-  trialDays: "14",
-  sortOrder: "100",
-  active: true,
-  isDefault: false,
-};
+export function emptyPlanForm(currency: string): PlanFormValues {
+  return {
+    id: "",
+    name: "",
+    description: "",
+    currency,
+    cycles: BILLING_INTERVALS.map((i) => ({ id: i.id, enabled: true, price: "" })),
+    allModules: false,
+    modules: [],
+    highlights: "",
+    flags: [],
+    limits: Object.fromEntries(PLAN_LIMIT_DEFS.map((d) => [d.key, ""])),
+    customLimits: [],
+    trialDays: "",
+    active: true,
+    isDefault: false,
+  };
+}
 
-/** Paise → "1999" / "1999.50" for an input. */
-export function paiseToRupees(paise: number): string {
-  const whole = Math.trunc(paise / 100);
-  const rest = Math.abs(paise % 100);
+/** Minor units → "1999" / "1999.50" for an input. */
+export function minorToMajor(amount: number): string {
+  const whole = Math.trunc(amount / 100);
+  const rest = Math.abs(amount % 100);
   return rest === 0 ? String(whole) : `${whole}.${String(rest).padStart(2, "0")}`;
 }
 
 /** "1,999.5" → 199950; NaN when it isn't a non-negative amount with at most 2 decimals. */
-export function rupeesToPaise(value: string): number {
-  const v = value.replace(/[,\s₹]/g, "");
+export function majorToMinor(value: string): number {
+  const v = value.replace(/[,\s₹$€£]/g, "");
   const m = /^(\d{1,9})(?:\.(\d{1,2}))?$/.exec(v);
   if (!m) return Number.NaN;
   return Number(m[1]) * 100 + Number((m[2] ?? "").padEnd(2, "0"));
 }
 
-const toInt = (value: string): number => (/^-?\d{1,12}$/.test(value.trim()) ? Number(value.trim()) : Number.NaN);
+const toInt = (value: string): number => (/^-?\d{1,15}$/.test(value.trim()) ? Number(value.trim()) : Number.NaN);
 const toLimit = (value: string): number | null => (value.replace(/[,\s]/g, "") === "" ? null : toInt(value.replace(/[,\s]/g, "")));
+const KNOWN = new Set<string>(PLAN_LIMIT_DEFS.map((d) => d.key));
 
 export function planToFormValues(plan: Plan): PlanFormValues {
-  const limit = (v: number | null) => (v === null ? "" : String(v));
+  const limit = (v: number | null | undefined) => (v === null || v === undefined ? "" : String(v));
+  const offered = planIntervals(plan);
   return {
     id: plan._id,
     name: plan.name,
     description: plan.description,
-    priceMonthly: paiseToRupees(plan.priceMonthly),
-    priceYearly: paiseToRupees(plan.priceYearly),
+    currency: plan.currency,
+    cycles: BILLING_INTERVALS.map((i) => {
+      const price = offered.includes(i.id) ? planPrice(plan, i.id) : (plan.prices?.[i.id] ?? null);
+      return { id: i.id, enabled: offered.includes(i.id), price: price === null ? "" : minorToMajor(price) };
+    }),
     allModules: plan.modules === "all",
     modules: plan.modules === "all" ? [] : [...plan.modules],
-    seats: limit(plan.limits.seats),
-    aiTokensPerMonth: limit(plan.limits.aiTokensPerMonth),
-    storageMb: limit(plan.limits.storageMb),
-    trialDays: String(plan.trialDays),
-    sortOrder: String(plan.sortOrder),
+    highlights: (plan.highlights ?? []).join("\n"),
+    flags: [...(plan.flags ?? [])],
+    limits: Object.fromEntries(PLAN_LIMIT_DEFS.map((d) => [d.key, limit(plan.limits[d.key])])),
+    customLimits: Object.entries(plan.limits)
+      .filter(([k]) => !KNOWN.has(k))
+      .map(([key, v]) => ({ key, value: limit(v) })),
+    trialDays: plan.trialDays === null || plan.trialDays === undefined ? "" : String(plan.trialDays),
     active: plan.active,
     isDefault: plan.isDefault,
   };
@@ -100,26 +117,58 @@ export function planToFormValues(plan: Plan): PlanFormValues {
 /**
  * Converts submitted values to a plan input. Values that can't be read as
  * numbers become NaN, which the plan validator reports on the right field;
- * only the rupee format gets its own, more specific message here.
+ * the money format and duplicate custom limit keys get their own messages here.
  */
 export function parsePlanForm(v: PlanFormValues): { input: ParsedPlanForm; errors: PlanFormErrors } {
   const errors: PlanFormErrors = {};
-  const priceMonthly = rupeesToPaise(String(v.priceMonthly ?? ""));
-  const priceYearly = rupeesToPaise(String(v.priceYearly ?? ""));
-  if (Number.isNaN(priceMonthly)) errors.priceMonthly = "Enter an amount in rupees, e.g. 999 or 999.50.";
-  if (Number.isNaN(priceYearly)) errors.priceYearly = "Enter an amount in rupees, e.g. 9990 or 9990.50.";
+  const cycles = Array.isArray(v.cycles) ? v.cycles : [];
+  const intervals: BillingInterval[] = [];
+  const prices: Partial<Record<BillingInterval, number>> = {};
+  for (const c of cycles) {
+    if (!c || c.enabled !== true) continue;
+    const id = String(c.id) as BillingInterval;
+    intervals.push(id);
+    const amount = majorToMinor(String(c.price ?? ""));
+    if (Number.isNaN(amount)) errors[`price.${id}`] = "Enter an amount, e.g. 999 or 999.50.";
+    prices[id] = amount;
+  }
+
+  const limits: PlanLimits = { seats: null, aiTokensPerMonth: null, storageMb: null };
+  for (const d of PLAN_LIMIT_DEFS) limits[d.key] = toLimit(String(v.limits?.[d.key] ?? ""));
+  const seen = new Set<string>();
+  for (const [index, row] of (Array.isArray(v.customLimits) ? v.customLimits : []).entries()) {
+    const key = String(row?.key ?? "").trim();
+    if (!key && String(row?.value ?? "").trim() === "") continue; // an untouched empty row
+    if (!key) {
+      errors[`customLimits.${index}`] = "Give the limit a key, e.g. projects.";
+      continue;
+    }
+    if (KNOWN.has(key) || seen.has(key)) {
+      errors[`customLimits.${index}`] = `"${key}" is already a limit on this plan.`;
+      continue;
+    }
+    seen.add(key);
+    limits[key] = toLimit(String(row?.value ?? ""));
+  }
+
+  const trial = String(v.trialDays ?? "").trim();
   return {
     errors,
     input: {
       _id: String(v.id ?? ""),
       name: String(v.name ?? ""),
       description: String(v.description ?? ""),
-      priceMonthly,
-      priceYearly,
-      modules: v.allModules ? "all" : (Array.isArray(v.modules) ? v.modules.map(String) : []) as ModuleKey[],
-      limits: { seats: toLimit(String(v.seats ?? "")), aiTokensPerMonth: toLimit(String(v.aiTokensPerMonth ?? "")), storageMb: toLimit(String(v.storageMb ?? "")) },
-      trialDays: toInt(String(v.trialDays ?? "")),
-      sortOrder: toInt(String(v.sortOrder ?? "")),
+      currency: String(v.currency ?? ""),
+      intervals,
+      prices,
+      modules: v.allModules ? "all" : ((Array.isArray(v.modules) ? v.modules.map(String) : []) as ModuleKey[]),
+      highlights: String(v.highlights ?? "")
+        .split("\n")
+        .map((h) => h.trim())
+        .filter(Boolean),
+      flags: Array.isArray(v.flags) ? v.flags.map(String) : [],
+      limits,
+      trialDays: trial === "" ? null : toInt(trial),
       active: v.active === true,
       isDefault: v.isDefault === true,
     },
