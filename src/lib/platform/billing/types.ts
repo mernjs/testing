@@ -69,6 +69,8 @@ export interface CompanySubscription {
   pricing?: SubscriptionPricing | null;
   /** The last successful charge (for invoices and pro-rata refunds on an immediate upgrade). */
   lastPayment?: { id: string; amount: number; currency: string; at: Date; periodStart: Date | null; periodEnd: Date | null } | null;
+  /** A checkout started but not yet confirmed by Razorpay: the quote it was created with. */
+  checkout?: { subscriptionId: string; pricing: SubscriptionPricing } | null;
   /** Set by the Platform Panel: never billed (status "internal") although not the platform owner. */
   complimentary?: boolean;
   updatedAt: Date;

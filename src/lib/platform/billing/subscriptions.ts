@@ -417,9 +417,9 @@ async function adoptSubscription(companyId: string, entity: RazorpaySubscription
   if (!current || current.status === "internal") return null;
   const resolved = await resolvePlan(entity);
   const previous = current.provider?.subscriptionId ?? null;
-  const checkoutPricing = (current as CompanySubscription & { checkout?: { subscriptionId: string; pricing: SubscriptionPricing } | null }).checkout;
+  const checkoutPricing = current.checkout;
   const pricing = checkoutPricing?.subscriptionId === entity.id ? checkoutPricing.pricing : current.pricing;
-  const patch: Partial<CompanySubscription> & { checkout?: null } = {
+  const patch: Partial<CompanySubscription> = {
     provider: { id: "razorpay", subscriptionId: entity.id, customerId: entity.customer_id ?? current.provider?.customerId ?? null },
     cancelAtPeriodEnd: false,
     pendingChange: null,
@@ -497,7 +497,7 @@ export async function startCheckout(companyId: string, input: { planId: string; 
       notes: { companyId, planId: plan._id, interval: pricing.interval, purpose: "platform_subscription", ...(pricing.couponId ? { couponId: pricing.couponId } : {}) },
     });
     // Remembered until Razorpay confirms this subscription, so the confirmed one carries its quote.
-    await updateCompanySubscription(companyId, { checkout: { subscriptionId: created.id, pricing } } as Partial<CompanySubscription>);
+    await updateCompanySubscription(companyId, { checkout: { subscriptionId: created.id, pricing } });
     await recordPlatformAudit({
       actorId,
       action: "subscription.checkout.start",
