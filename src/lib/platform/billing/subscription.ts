@@ -1,8 +1,9 @@
 import "server-only";
 import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import { COMPANIES_COLLECTION, type Company } from "@/lib/platform/tenancy/companies";
-import { getDefaultPlan } from "@/lib/platform/billing/plans";
-import { DEFAULT_TRIAL_DAYS, type CompanySubscription } from "@/lib/platform/billing/types";
+import { getDefaultPlan, getPlan } from "@/lib/platform/billing/plans";
+import { type CompanySubscription } from "@/lib/platform/billing/types";
+import { getBillingSettings } from "@/lib/platform/billing/settings";
 
 /**
  * A company's subscription lives on its registry document
@@ -41,7 +42,7 @@ export async function getCompanySubscription(companyId: string): Promise<Company
   if (company.isPlatformOwner) return INTERNAL;
   if (company.subscription) return company.subscription;
   const plan = await getDefaultPlan();
-  const trialDays = plan?.trialDays ?? DEFAULT_TRIAL_DAYS;
+  const trialDays = plan?.trialDays ?? (await getBillingSettings()).billing.defaultTrialDays;
   return {
     ...INTERNAL,
     planId: plan?._id ?? "trial",
@@ -53,13 +54,14 @@ export async function getCompanySubscription(companyId: string): Promise<Company
 
 /** Starts a trial of the default (or given) plan — called when a company is created. */
 export async function startTrial(companyId: string, planId?: string): Promise<CompanySubscription> {
-  const plan = planId ? { _id: planId, trialDays: DEFAULT_TRIAL_DAYS } : await getDefaultPlan();
+  const plan = planId ? await getPlan(planId) : await getDefaultPlan();
+  const trialDays = plan?.trialDays ?? (await getBillingSettings()).billing.defaultTrialDays;
   const now = new Date();
   const sub: CompanySubscription = {
     ...INTERNAL,
     planId: plan?._id ?? "trial",
     status: "trialing",
-    trialEndsAt: new Date(now.getTime() + (plan?.trialDays ?? DEFAULT_TRIAL_DAYS) * 86_400_000),
+    trialEndsAt: new Date(now.getTime() + trialDays * 86_400_000),
     updatedAt: now,
   };
   await (await companies()).updateOne({ _id: companyId, isPlatformOwner: { $ne: true } }, { $set: { subscription: sub } });

@@ -3,9 +3,10 @@ import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import { DEFAULT_TRIAL_DAYS, type Plan } from "@/lib/platform/billing/types";
 
 /**
- * The plans catalogue (platform-level `billing_plans`). Seeded with editable
- * defaults on first use; the platform owner manages it in the console.
- * Prices are placeholders until the owner sets real ones.
+ * The plans catalogue (platform-level `billing_plans`), managed in the
+ * Platform Panel. The list below only seeds an empty catalogue on first use
+ * (Starter ₹999, Growth ₹1,999, Business ₹4,999 per month; yearly = 10×
+ * monthly; 30-day trial) — after that, the database is the only source.
  */
 
 export const PLANS_COLLECTION = "billing_plans";
@@ -32,8 +33,8 @@ export const DEFAULT_PLANS: PlanSeed[] = [
     name: "Growth",
     description: "Run delivery, sales and finance in one place.",
     currency: "INR",
-    priceMonthly: 299_900,
-    priceYearly: 2_999_000,
+    priceMonthly: 199_900,
+    priceYearly: 1_999_000,
     modules: ["hrms", "pms", "lms", "fms", "prms", "sop", "dlms", "cms", "seo", "portal", "ots"],
     limits: { seats: 50, aiTokensPerMonth: 1_000_000, storageMb: 25_000 },
     trialDays: DEFAULT_TRIAL_DAYS,
@@ -46,8 +47,8 @@ export const DEFAULT_PLANS: PlanSeed[] = [
     name: "Business",
     description: "Every panel, AI and automation for growing companies.",
     currency: "INR",
-    priceMonthly: 799_900,
-    priceYearly: 7_999_000,
+    priceMonthly: 499_900,
+    priceYearly: 4_999_000,
     modules: "all",
     limits: { seats: 200, aiTokensPerMonth: 5_000_000, storageMb: 100_000 },
     trialDays: DEFAULT_TRIAL_DAYS,

@@ -13,6 +13,7 @@ import { listPlans, getDefaultPlan } from "@/lib/platform/billing/plans";
 import { startTrial, updateCompanySubscription, getCompanySubscription } from "@/lib/platform/billing/subscription";
 import { getEntitlements } from "@/lib/platform/billing/entitlements";
 import { recordUsage, getUsage } from "@/lib/platform/billing/usage";
+import { getBillingSettings, saveBillingSettings } from "@/lib/platform/billing/settings";
 
 async function main() {
   const db = await getPlatformDb();
@@ -30,6 +31,18 @@ async function main() {
   const plans = await listPlans();
   assert.deepEqual(plans.map((p) => p._id), ["starter", "growth", "business"], "default plans seeded in order");
   assert.equal((await getDefaultPlan())?._id, "growth");
+  assert.deepEqual(plans.map((p) => p.priceMonthly), [99_900, 199_900, 499_900], "decided monthly prices (paise)");
+  assert.ok(plans.every((p) => p.trialDays === 30), "30-day trial");
+  const settings = await getBillingSettings();
+  assert.equal(settings.billing.defaultTrialDays, 30);
+  assert.equal(settings.tax.gstRatePercent, 18);
+  const bad = await saveBillingSettings({ ...settings, seller: { ...settings.seller, legalName: "Owner Pvt Ltd", gstin: "NOT-A-GSTIN" } }, "test");
+  assert.ok(!bad.ok && "seller.gstin" in bad.errors, "invalid GSTIN rejected");
+  const good = await saveBillingSettings({ ...settings, seller: { ...settings.seller, legalName: "Owner Pvt Ltd", gstin: "33ABCDE1234F1Z5" }, billing: { ...settings.billing, defaultTrialDays: 45 } }, "test");
+  assert.ok(good.ok);
+  const saved = await getBillingSettings();
+  assert.equal(saved.seller.stateCode, "33", "state derived from GSTIN");
+  assert.equal(saved.billing.defaultTrialDays, 45);
 
   const e0 = await runAsCompany(owner, () => getEntitlements());
   assert.equal(e0.status, "internal");
@@ -39,7 +52,7 @@ async function main() {
   await startTrial(a);
   const ea = await runAsCompany(a, () => getEntitlements());
   assert.equal(ea.status, "trialing");
-  assert.equal(ea.trialDaysLeft, 14);
+  assert.equal(ea.trialDaysLeft, 30);
   assert.ok(ea.modules?.has("hrms") && ea.modules.has("messenger") && !ea.modules.has("smms"), "growth panels + core, not smms");
   assert.equal(ea.limits.seats, 50);
 

@@ -81,8 +81,12 @@ export interface Entitlements {
   trialDaysLeft: number | null;
 }
 
+/**
+ * First-run fallbacks only. The live values are platform settings
+ * (`getBillingSettings()` in `settings.ts`), edited in the Platform Panel.
+ */
 export const GRACE_DAYS = 7;
-export const DEFAULT_TRIAL_DAYS = 14;
+export const DEFAULT_TRIAL_DAYS = 30;
 export const GST_RATE = 0.18;
 
 export function formatMoney(amount: number, currency = "INR"): string {
