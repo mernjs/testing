@@ -1,0 +1,43 @@
+"use client";
+
+import { useState } from "react";
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import ThemeToggle from "@/components/lms/ThemeToggle";
+import BrandMark from "@/components/BrandMark";
+import { BrandName } from "@/components/platform/BrandProvider";
+import PlatformSidebar, { type PlatformNavFlags } from "@/components/platform/panel/PlatformSidebar";
+
+export default function PlatformTopbar({ flags }: { flags: PlatformNavFlags }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
+      <Button type="button" variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen(true)} aria-label="Open navigation menu">
+        <Menu className="size-5" />
+      </Button>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetContent side="left" className="w-72 p-0 sm:max-w-72">
+          <SheetTitle className="sr-only">Navigation</SheetTitle>
+          <SheetDescription className="sr-only">Platform Panel navigation menu</SheetDescription>
+          <div className="flex h-14 items-center gap-2 border-b border-border/60 px-4">
+            <BrandMark className="size-6 shrink-0" />
+            <span className="text-sm font-bold">
+              <BrandName /> <span className="text-foreground">Platform</span>
+            </span>
+          </div>
+          <div className="overflow-y-auto">
+            <PlatformSidebar flags={flags} onNavigate={() => setOpen(false)} />
+          </div>
+        </SheetContent>
+      </Sheet>
+      <div className="min-w-0">
+        <p className="truncate text-sm font-semibold text-foreground">Platform Panel</p>
+        <p className="truncate text-[11px] text-muted-foreground">Every company, plan and setting of the SaaS platform</p>
+      </div>
+      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <ThemeToggle />
+      </div>
+    </header>
+  );
+}

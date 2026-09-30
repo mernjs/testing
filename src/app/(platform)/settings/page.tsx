@@ -19,7 +19,7 @@ const SECTIONS = [
 ];
 
 /** Only on the platform owner's own workspace. */
-const CONSOLE_SECTION = { href: "/console", icon: Globe2, title: "Platform console", description: "Every company on the platform, suspensions and sign-up approvals." };
+const CONSOLE_SECTION = { href: "/platform", icon: Globe2, title: "Platform Panel", description: "The SaaS control centre: companies, sign-ups, plans, billing, tax and platform settings." };
 
 export default async function CompanySettingsPage() {
   const user = await getCurrentHubUser();

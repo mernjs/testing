@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
+import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import GlassCard from "@/components/lms/GlassCard";
@@ -14,7 +14,7 @@ import { requestOrigin } from "@/lib/platform/request";
 import StatusBadge from "../../StatusBadge";
 import StatusControl from "./StatusControl";
 
-export const metadata: Metadata = { title: "Company · Platform console", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Company" };
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -34,11 +34,8 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
   const { onboarding: ob } = company;
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10">
-      <div className="mx-auto max-w-4xl space-y-4">
-        <Link href="/console" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4" /> All companies
-        </Link>
+    <div className="space-y-4 p-1">
+        <Breadcrumbs items={[{ label: "Platform", href: "/platform" }, { label: "Companies", href: "/platform/companies" }, { label: company.name }]} />
 
         <GlassCard interactive={false}>
           <CardHeader>
@@ -53,7 +50,7 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
                 <StatusBadge status={company.status} isPlatformOwner={company.isPlatformOwner} />
               </div>
               {company.isPlatformOwner ? (
-                <p className="max-w-56 text-xs text-muted-foreground">The platform owner company runs this console and can&apos;t be suspended.</p>
+                <p className="max-w-56 text-xs text-muted-foreground">The platform owner company runs the platform and can&apos;t be suspended.</p>
               ) : (
                 <StatusControl companyId={company.id} companyName={company.name} status={company.status} />
               )}
@@ -166,7 +163,6 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
             </CardContent>
           )}
         </GlassCard>
-      </div>
     </div>
   );
 }

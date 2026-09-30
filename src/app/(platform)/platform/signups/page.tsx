@@ -6,11 +6,11 @@ import { getSignupMode } from "@/lib/platform/settings";
 import { listAwaitingApproval } from "@/lib/platform/signup";
 import { companyBaseUrl } from "@/lib/platform/tenancy/provisioning";
 import { requestOrigin } from "@/lib/platform/request";
-import ConsoleNav from "../ConsoleNav";
+import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
 import SignupModeForm from "./SignupModeForm";
 import ApprovalQueue from "./ApprovalQueue";
 
-export const metadata: Metadata = { title: "Sign-ups · Platform console", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Sign-ups & approvals" };
 
 export default async function ConsoleSignupsPage() {
   await requirePlatformAdmin();
@@ -18,9 +18,8 @@ export default async function ConsoleSignupsPage() {
   const addressOf = Object.fromEntries(requests.map((r) => [r.slug, companyBaseUrl(r.slug, host).replace(/^https?:\/\//, "")]));
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10">
-      <div className="mx-auto max-w-4xl space-y-6">
-        <ConsoleNav active="signups" pendingApprovals={requests.length} />
+    <div className="space-y-6 p-1">
+        <PlatformPageHeader title="Sign-ups & approvals" description="Who can create a company, and requests waiting for a decision." />
         <GlassCard interactive={false}>
           <CardHeader>
             <CardTitle className="text-base">Who can create a company</CardTitle>
@@ -42,7 +41,6 @@ export default async function ConsoleSignupsPage() {
             <ApprovalQueue requests={requests} addressOf={addressOf} />
           </CardContent>
         </GlassCard>
-      </div>
     </div>
   );
 }

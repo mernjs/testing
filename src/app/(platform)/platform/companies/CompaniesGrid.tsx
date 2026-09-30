@@ -13,7 +13,7 @@ const columns: AdminDataGridColumn<CompanyRow>[] = [
     key: "name",
     label: "Company",
     render: (row) => (
-      <Link href={`/console/companies/${row.id}`} className="block hover:underline">
+      <Link href={`/platform/companies/${row.id}`} className="block hover:underline">
         <span className="font-medium text-foreground">{row.name}</span>
         <span className="block text-xs">{row.slug}</span>
       </Link>
@@ -81,7 +81,7 @@ export default function CompaniesGrid({
       filterIcon={Building2}
       hasActiveFilters={hasActiveFilters}
       rowActions={(row) => (
-        <Link href={`/console/companies/${row.id}`} aria-label={`Open ${row.name}`} className="text-muted-foreground hover:text-foreground">
+        <Link href={`/platform/companies/${row.id}`} aria-label={`Open ${row.name}`} className="text-muted-foreground hover:text-foreground">
           <ChevronRight className="size-4" />
         </Link>
       )}

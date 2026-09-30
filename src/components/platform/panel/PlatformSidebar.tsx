@@ -1,0 +1,158 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
+import {
+  LayoutDashboard,
+  Building2,
+  UserPlus,
+  Globe,
+  Package,
+  Repeat,
+  FileText,
+  TicketPercent,
+  Puzzle,
+  CreditCard,
+  Receipt,
+  LineChart,
+  Gauge,
+  ShieldCheck,
+  Plug,
+  ScrollText,
+  Settings2,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+
+/** Live counts shown as badges — computed on the server. */
+export interface PlatformNavFlags {
+  pendingApprovals: number;
+}
+
+type Icon = React.ComponentType<{ className?: string }>;
+
+/**
+ * The Platform Panel's map of every SaaS area. `planned` entries are part of
+ * the panel's scope but not built yet — they render greyed out (no dead
+ * links), and become links as each one ships.
+ */
+const SECTIONS: { label: string; items: { href: string; label: string; icon: Icon; exact?: boolean; planned?: boolean; badge?: keyof PlatformNavFlags }[] }[] = [
+  { label: "", items: [{ href: "/platform", label: "Dashboard", icon: LayoutDashboard, exact: true }] },
+  {
+    label: "Tenants",
+    items: [
+      { href: "/platform/companies", label: "Companies", icon: Building2 },
+      { href: "/platform/signups", label: "Sign-ups & approvals", icon: UserPlus, badge: "pendingApprovals" },
+      { href: "/platform/domains", label: "Domains & SSL", icon: Globe, planned: true },
+    ],
+  },
+  {
+    label: "Billing",
+    items: [
+      { href: "/platform/plans", label: "Plans & pricing", icon: Package, planned: true },
+      { href: "/platform/subscriptions", label: "Subscriptions", icon: Repeat, planned: true },
+      { href: "/platform/invoices", label: "SaaS invoices", icon: FileText, planned: true },
+      { href: "/platform/coupons", label: "Coupons & discounts", icon: TicketPercent, planned: true },
+      { href: "/platform/add-ons", label: "Add-ons", icon: Puzzle, planned: true },
+      { href: "/platform/payments", label: "Payments & Razorpay", icon: CreditCard, planned: true },
+      { href: "/platform/settings/billing", label: "Tax & invoicing", icon: Receipt },
+    ],
+  },
+  {
+    label: "Analytics",
+    items: [
+      { href: "/platform/revenue", label: "Revenue & subscriptions", icon: LineChart, planned: true },
+      { href: "/platform/usage", label: "Usage & limits", icon: Gauge, planned: true },
+    ],
+  },
+  {
+    label: "Administration",
+    items: [
+      { href: "/platform/users", label: "Platform users & roles", icon: ShieldCheck, planned: true },
+      { href: "/platform/integrations", label: "Integrations", icon: Plug, planned: true },
+      { href: "/platform/audit", label: "Audit log", icon: ScrollText, planned: true },
+      { href: "/platform/settings", label: "Platform settings", icon: Settings2, exact: true, planned: true },
+    ],
+  },
+];
+
+function NavItem({
+  href,
+  label,
+  icon: Icon,
+  exact,
+  planned,
+  badge,
+  collapsed,
+  onNavigate,
+}: {
+  href: string;
+  label: string;
+  icon: Icon;
+  exact?: boolean;
+  planned?: boolean;
+  badge?: number;
+  collapsed: boolean;
+  onNavigate?: () => void;
+}) {
+  const pathname = usePathname();
+  const active = !planned && (exact ? pathname === href : pathname === href || pathname?.startsWith(`${href}/`));
+  const base = cn("group relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors", collapsed && "justify-center px-0");
+
+  const body = (
+    <>
+      {active && (
+        <motion.span layoutId="platform-nav-active" className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/15 to-secondary/10" transition={{ type: "spring", stiffness: 400, damping: 32 }} />
+      )}
+      <Icon className="relative size-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
+      {!collapsed && <span className="relative truncate">{label}</span>}
+      {!collapsed && planned && <span className="relative ml-auto rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground">Soon</span>}
+      {!collapsed && !planned && badge ? <span className="relative ml-auto rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">{badge}</span> : null}
+    </>
+  );
+
+  const element = planned ? (
+    <span aria-disabled="true" aria-label={collapsed ? `${label} (coming soon)` : undefined} className={cn(base, "cursor-default text-muted-foreground/60")}>
+      {body}
+    </span>
+  ) : (
+    <Link
+      href={href}
+      onClick={onNavigate}
+      aria-label={collapsed ? label : undefined}
+      aria-current={active ? "page" : undefined}
+      className={cn(base, active ? "text-primary" : "text-muted-foreground hover:bg-primary/5 hover:text-primary")}
+    >
+      {body}
+    </Link>
+  );
+
+  if (!collapsed) return element;
+  return (
+    <Tooltip>
+      <TooltipTrigger render={element} />
+      <TooltipContent side="right">{planned ? `${label} — coming soon` : label}</TooltipContent>
+    </Tooltip>
+  );
+}
+
+export default function PlatformSidebar({ flags, onNavigate, collapsed = false }: { flags: PlatformNavFlags; onNavigate?: () => void; collapsed?: boolean }) {
+  return (
+    <nav className="flex h-full flex-col gap-1 p-3" aria-label="Platform Panel">
+      {SECTIONS.map((section) => (
+        <div key={section.label || "top"} className="flex flex-col gap-1">
+          {section.label &&
+            (collapsed ? (
+              <div className="mt-4 mb-1 border-t border-border/50" />
+            ) : (
+              <div className="mt-4 mb-1 px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{section.label}</div>
+            ))}
+          {section.items.map((item) => (
+            <NavItem key={item.href} {...item} badge={item.badge ? flags[item.badge] : undefined} collapsed={collapsed} onNavigate={onNavigate} />
+          ))}
+        </div>
+      ))}
+    </nav>
+  );
+}

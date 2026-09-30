@@ -8,6 +8,6 @@ export async function setCompanyStatusAction(companyId: string, status: string):
   const user = await requirePlatformAdmin();
   if (status !== "active" && status !== "suspended") return { ok: false, error: "Unknown status." };
   const res = await setCompanyStatus(String(companyId), status, user.id);
-  if (res.ok) revalidatePath("/console", "layout");
+  if (res.ok) revalidatePath("/platform", "layout");
   return res;
 }
