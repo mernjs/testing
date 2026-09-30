@@ -6,8 +6,11 @@ import FmsTopbar from "@/components/fms/FmsTopbar";
 import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { requireModule } from "@/lib/platform/billing/enforce";
+import BillingNotice from "@/components/platform/BillingNotice";
 
 export default async function ProtectedFmsLayout({ children }: { children: React.ReactNode }) {
+  await requireModule("fms");
   const user = await getCurrentFmsUser();
   if (!user) redirect("/fms/login");
   if (user.mustChangePassword) redirect("/fms/change-password");
@@ -34,6 +37,7 @@ export default async function ProtectedFmsLayout({ children }: { children: React
             <div className="lms-surface relative z-30 shrink-0 rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md dark:bg-card/85">
               <FmsTopbar roles={user.roles} permissionOverrides={user.permissionOverrides} />
             </div>
+            <BillingNotice />
             <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">{children}</main>
           </div>
         </div>

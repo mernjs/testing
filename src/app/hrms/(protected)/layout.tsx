@@ -6,8 +6,11 @@ import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { listNotifications, unreadCount, runNotificationSweep } from "@/lib/hrms/notifications";
+import { requireModule } from "@/lib/platform/billing/enforce";
+import BillingNotice from "@/components/platform/BillingNotice";
 
 export default async function ProtectedHrmsLayout({ children }: { children: React.ReactNode }) {
+  await requireModule("hrms");
   const user = await getCurrentHrmsUser();
   if (!user) redirect("/hrms/login");
   if (user.mustChangePassword) redirect("/hrms/change-password");
@@ -57,6 +60,7 @@ export default async function ProtectedHrmsLayout({ children }: { children: Reac
                 unread={unread}
               />
             </div>
+            <BillingNotice />
             <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">{children}</main>
           </div>
         </div>
