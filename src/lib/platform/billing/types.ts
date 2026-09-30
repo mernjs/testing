@@ -61,6 +61,8 @@ export interface CompanySubscription {
   provider: { id: "razorpay"; subscriptionId: string | null; customerId: string | null } | null;
   /** GST / billing details for invoices. */
   billingDetails?: { legalName: string; gstin: string | null; address: string; state: string; email: string } | null;
+  /** Trial reminder thresholds (days left, e.g. 7/3/1) already emailed — see `billing/trials.ts`. */
+  trialRemindersSent?: number[];
   updatedAt: Date;
 }
 
