@@ -1,17 +1,21 @@
 import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/lib/platform/billing/razorpay";
+import { billingWebhookSecret } from "@/lib/platform/billing/razorpay-config";
 import { handleWebhook, type RazorpayWebhookPayload } from "@/lib/platform/billing/subscriptions";
 
 /**
  * Razorpay webhook for PLATFORM subscription billing. Register
  * `https://<platform host>/api/platform/billing/webhook` in the platform
- * owner's Razorpay dashboard with secret `RAZORPAY_BILLING_WEBHOOK_SECRET`.
+ * owner's Razorpay dashboard (the URL is shown in Platform Panel → Payments &
+ * Razorpay) with secret `RAZORPAY_BILLING_WEBHOOK_SECRET` (env-only). Events:
+ * subscription.authenticated/activated/charged/pending/halted/cancelled/
+ * completed/updated and payment.failed.
  * The raw body is verified before anything is parsed; events are idempotent
  * on `x-razorpay-event-id`. A processing failure answers 500 so Razorpay retries.
  */
 export async function POST(req: NextRequest) {
-  const secret = process.env.RAZORPAY_BILLING_WEBHOOK_SECRET?.trim();
+  const secret = billingWebhookSecret();
   if (!secret) return NextResponse.json({ error: "Billing webhook not configured" }, { status: 503 });
 
   const raw = await req.text();
