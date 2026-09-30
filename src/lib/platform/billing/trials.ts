@@ -306,7 +306,8 @@ export async function extendTrial(companyId: string, days: number, actorId: stri
   if (sub.status === "internal") return { ok: false, error: "The platform owner is never on a trial." };
   if (!canExtendTrial(sub)) return { ok: false, error: "Only a company on trial, or whose trial ended without paying, can have its trial extended." };
 
-  const from = sub.trialEndsAt && sub.trialEndsAt.getTime() > now.getTime() ? sub.trialEndsAt : now;
+  // A live trial is lengthened from its end; an ended one restarts from now.
+  const from = sub.status === "trialing" && sub.trialEndsAt && sub.trialEndsAt.getTime() > now.getTime() ? sub.trialEndsAt : now;
   const trialEndsAt = new Date(from.getTime() + days * DAY_MS);
   const next: CompanySubscription = { ...sub, status: "trialing", trialEndsAt, graceEndsAt: null, trialRemindersSent: [], updatedAt: now };
   const col = (await getPlatformDb()).collection<CompanyDoc>(COMPANIES_COLLECTION);
