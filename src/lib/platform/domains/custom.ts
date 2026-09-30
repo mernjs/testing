@@ -85,7 +85,8 @@ function sameRecord(a: DnsRecord, b: DnsRecord): boolean {
   return a.type === b.type && a.name === b.name && a.value === b.value;
 }
 
-function toView(d: CompanyDomain): CompanyDomainView {
+/** The client-safe view of one domain record (also used by the Platform Panel overview). */
+export function toView(d: CompanyDomain): CompanyDomainView {
   const kind = d.kind ?? "custom";
   const p = d.provider;
   const localOnly = d._id.endsWith(".localhost");
