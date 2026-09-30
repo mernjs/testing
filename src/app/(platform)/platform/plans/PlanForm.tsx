@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { MODULES } from "@/lib/platform/onboarding/catalog";
 import { BILLING_INTERVALS, PLAN_FLAGS, PLAN_LIMIT_DEFS } from "@/lib/platform/billing/types";
 import { savePlanAction } from "./actions";
-import type { PlanFormErrors, PlanFormValues } from "./planForm";
+import type { PlanFormErrors, PlanFormValues } from "./planFormValues";
 
 const SELECTABLE = MODULES.filter((m) => !m.core);
 const CORE_LABELS = MODULES.filter((m) => m.core).map((m) => m.label).join(", ");

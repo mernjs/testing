@@ -11,7 +11,7 @@ import { getBillingSettings } from "@/lib/platform/billing/settings";
 import { currentPriceVersion } from "@/lib/platform/billing/pricing";
 import { BILLING_INTERVALS, formatMoney } from "@/lib/platform/billing/types";
 import PlanForm from "../PlanForm";
-import { planToFormValues } from "../planForm";
+import { planToFormValues } from "../planFormValues";
 
 export const metadata: Metadata = { title: "Edit plan" };
 

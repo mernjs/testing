@@ -3,7 +3,7 @@ import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
 import { requirePlatformAdmin } from "@/lib/platform/console/access";
 import { getBillingSettings } from "@/lib/platform/billing/settings";
 import PlanForm from "../PlanForm";
-import { emptyPlanForm } from "../planForm";
+import { emptyPlanForm } from "../planFormValues";
 
 export const metadata: Metadata = { title: "New plan" };
 

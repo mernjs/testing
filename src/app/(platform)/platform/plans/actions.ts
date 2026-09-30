@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requirePlatformAdmin } from "@/lib/platform/console/access";
 import { deletePlan, movePlan, savePlan, setDefaultPlan, setPlanActive, validatePlanInput, type PlanMutationResult } from "@/lib/platform/billing/plans";
-import { parsePlanForm, type PlanFormErrors, type PlanFormValues } from "./planForm";
+import { parsePlanForm, type PlanFormErrors, type PlanFormValues } from "./planFormValues";
 
 export type SavePlanActionResult = { ok: true; id: string; message: string } | { ok: false; error: string; fieldErrors?: PlanFormErrors };
 
