@@ -6,22 +6,30 @@ import { CardHeader, CardTitle, CardDescription, CardContent } from "@/component
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import GlassCard from "@/components/lms/GlassCard";
+import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
 import { cn } from "@/lib/utils";
 import { requirePlatformAdmin } from "@/lib/platform/console/access";
 import { countCompaniesByPlan, listPlans } from "@/lib/platform/billing/plans";
-import { formatMoney, type Plan } from "@/lib/platform/billing/types";
+import { getBillingSettings } from "@/lib/platform/billing/settings";
+import { currentPriceVersion, planIntervals, planPrice } from "@/lib/platform/billing/pricing";
+import { BILLING_INTERVALS, PLAN_FLAGS, PLAN_LIMIT_DEFS, formatMoney, type Plan } from "@/lib/platform/billing/types";
 import { MODULES } from "@/lib/platform/onboarding/catalog";
-import { countAwaitingApproval } from "@/lib/platform/signup";
-import ConsoleNav from "../ConsoleNav";
-import PlanActiveControl from "./PlanActiveControl";
+import PlanActions from "./PlanActions";
 
-export const metadata: Metadata = { title: "Plans · Platform console", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Plans & pricing" };
 
 const LABELS = new Map<string, string>(MODULES.map((m) => [m.key, m.label]));
+const FLAG_LABELS = new Map<string, string>(PLAN_FLAGS.map((f) => [f.key, f.label]));
+const LIMIT_DEFS = new Map<string, { label: string; unit: string }>(PLAN_LIMIT_DEFS.map((d) => [d.key, d]));
 const nf = new Intl.NumberFormat("en-IN");
 
-function limit(value: number | null, unit: string): string {
-  return value === null ? "Unlimited" : `${nf.format(value)} ${unit}`;
+function Field({ label, children, wide }: { label: string; children: ReactNode; wide?: boolean }) {
+  return (
+    <div className={cn("min-w-0", wide && "col-span-2")}>
+      <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
+      <dd className="mt-0.5 text-sm break-words text-foreground">{children}</dd>
+    </div>
+  );
 }
 
 function panels(plan: Plan): string {
@@ -29,88 +37,108 @@ function panels(plan: Plan): string {
   return plan.modules.map((m) => LABELS.get(m) ?? m).join(", ");
 }
 
-function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="min-w-0">
-      <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
-      <dd className="mt-0.5 text-sm break-words text-foreground">{children}</dd>
-    </div>
-  );
-}
-
-export default async function ConsolePlansPage() {
+export default async function PlansPage() {
   await requirePlatformAdmin();
-  const [plans, counts, pendingApprovals] = await Promise.all([listPlans(), countCompaniesByPlan(), countAwaitingApproval()]);
+  const [plans, counts, settings] = await Promise.all([listPlans(), countCompaniesByPlan(), getBillingSettings()]);
+  const defaultTrial = settings.billing.defaultTrialDays;
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10">
-      <div className="mx-auto max-w-5xl space-y-6">
-        <ConsoleNav active="plans" pendingApprovals={pendingApprovals} />
-
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="max-w-2xl space-y-1">
-            <h2 className="text-lg font-semibold">Plans</h2>
-            <p className="text-sm text-muted-foreground">
-              What companies can subscribe to. Price and trial changes apply to new subscriptions only — companies already subscribed keep what they bought. Prices exclude GST.
-            </p>
-          </div>
-          <Link href="/console/plans/new" className={cn(buttonVariants())}>
+    <div className="space-y-6 p-1">
+      <PlatformPageHeader
+        title="Plans & pricing"
+        description="What companies can subscribe to. Prices exclude GST. A price change creates a new price version for new subscriptions; companies already subscribed keep what they bought."
+        actions={
+          <Link href="/platform/plans/new" id="plan-new" className={cn(buttonVariants())}>
             <Plus className="size-4" data-icon="inline-start" /> New plan
           </Link>
-        </div>
+        }
+      />
 
-        {plans.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No plans yet.</p>
-        ) : (
-          <ul className="grid gap-4 md:grid-cols-2" aria-label="Plans">
-            {plans.map((plan) => {
-              const companies = counts.get(plan._id) ?? 0;
-              return (
-                <li key={plan._id} data-plan-id={plan._id}>
-                  <GlassCard interactive={false} className={cn("h-full", !plan.active && "opacity-80")}>
-                    <CardHeader>
-                      <div className="flex flex-wrap items-start justify-between gap-2">
-                        <div className="min-w-0 space-y-1">
-                          <CardTitle className="text-base">{plan.name}</CardTitle>
-                          <CardDescription className="break-words">
-                            <code className="text-xs">{plan._id}</code>
-                            {plan.description && <> · {plan.description}</>}
-                          </CardDescription>
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {plan.isDefault && <Badge>Default</Badge>}
-                          {plan.active ? <Badge variant="secondary">Active</Badge> : <Badge variant="outline">Archived</Badge>}
-                        </div>
+      {plans.length === 0 ? (
+        <GlassCard interactive={false}>
+          <CardContent className="py-8 text-center text-sm text-muted-foreground">No plans yet. Create one to start selling.</CardContent>
+        </GlassCard>
+      ) : (
+        <ul className="grid gap-4 lg:grid-cols-2" aria-label="Plans">
+          {plans.map((plan, index) => {
+            const companies = counts.get(plan._id) ?? 0;
+            const custom = Object.entries(plan.limits).filter(([k]) => !LIMIT_DEFS.has(k));
+            return (
+              <li key={plan._id} data-plan-id={plan._id}>
+                <GlassCard interactive={false} className={cn("h-full", !plan.active && "opacity-80")}>
+                  <CardHeader>
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div className="min-w-0 space-y-1">
+                        <CardTitle className="text-base">{plan.name}</CardTitle>
+                        <CardDescription className="break-words">
+                          <code className="text-xs">{plan._id}</code>
+                          {plan.description && <> · {plan.description}</>}
+                        </CardDescription>
                       </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
-                        <Field label="Monthly">{formatMoney(plan.priceMonthly, plan.currency)}</Field>
-                        <Field label="Yearly">{formatMoney(plan.priceYearly, plan.currency)}</Field>
-                        <Field label="Seats">{limit(plan.limits.seats, "users")}</Field>
-                        <Field label="AI tokens / month">{limit(plan.limits.aiTokensPerMonth, "tokens")}</Field>
-                        <Field label="Storage">{limit(plan.limits.storageMb, "MB")}</Field>
-                        <Field label="Free trial">{plan.trialDays === 0 ? "No trial" : `${plan.trialDays} days`}</Field>
-                        <div className="col-span-2">
-                          <Field label="Panels (plus the core panels)">{panels(plan)}</Field>
-                        </div>
-                        <Field label="Companies on it">{companies}</Field>
-                        <Field label="Sort order">{plan.sortOrder}</Field>
-                      </dl>
-                      <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
-                        <Link href={`/console/plans/${encodeURIComponent(plan._id)}`} className={cn(buttonVariants({ variant: "outline", size: "sm" }))} aria-label={`Edit ${plan.name}`}>
-                          <Pencil className="size-3.5" data-icon="inline-start" /> Edit
-                        </Link>
-                        <PlanActiveControl planId={plan._id} planName={plan.name} active={plan.active} isDefault={plan.isDefault} companies={companies} />
+                      <div className="flex flex-wrap gap-1">
+                        {plan.isDefault && <Badge>Default</Badge>}
+                        {plan.active ? <Badge variant="secondary">Active</Badge> : <Badge variant="outline">Inactive</Badge>}
+                        <Badge variant="outline" title="Price version">
+                          v{currentPriceVersion(plan)}
+                        </Badge>
                       </div>
-                    </CardContent>
-                  </GlassCard>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
+                      {BILLING_INTERVALS.map((i) => {
+                        const price = planIntervals(plan).includes(i.id) ? planPrice(plan, i.id) : null;
+                        return (
+                          <Field key={i.id} label={i.label}>
+                            {price === null ? <span className="text-muted-foreground">Not offered</span> : formatMoney(price, plan.currency)}
+                          </Field>
+                        );
+                      })}
+                      {PLAN_LIMIT_DEFS.map((d) => (
+                        <Field key={d.key} label={d.label}>
+                          {plan.limits[d.key] === null || plan.limits[d.key] === undefined ? "Unlimited" : `${nf.format(plan.limits[d.key]!)} ${d.unit}`}
+                        </Field>
+                      ))}
+                      {custom.map(([k, v]) => (
+                        <Field key={k} label={k}>
+                          {v === null ? "Unlimited" : nf.format(v)}
+                        </Field>
+                      ))}
+                      <Field label="Free trial">
+                        {plan.trialDays === null || plan.trialDays === undefined ? `${defaultTrial} days (platform default)` : plan.trialDays === 0 ? "No trial" : `${plan.trialDays} days`}
+                      </Field>
+                      <Field label="Companies on it">{companies}</Field>
+                      <Field label="Panels (plus the core panels)" wide>
+                        {panels(plan)}
+                      </Field>
+                      {(plan.flags?.length ?? 0) > 0 && (
+                        <Field label="Feature flags" wide>
+                          {plan.flags!.map((f) => FLAG_LABELS.get(f) ?? f).join(", ")}
+                        </Field>
+                      )}
+                      {(plan.highlights?.length ?? 0) > 0 && (
+                        <Field label="Highlights" wide>
+                          <ul className="list-inside list-disc space-y-0.5">
+                            {plan.highlights!.map((h, i) => (
+                              <li key={i}>{h}</li>
+                            ))}
+                          </ul>
+                        </Field>
+                      )}
+                    </dl>
+                    <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
+                      <Link href={`/platform/plans/${encodeURIComponent(plan._id)}`} className={cn(buttonVariants({ variant: "outline", size: "sm" }))} aria-label={`Edit ${plan.name}`}>
+                        <Pencil className="size-3.5" data-icon="inline-start" /> Edit
+                      </Link>
+                      <PlanActions planId={plan._id} planName={plan.name} active={plan.active} isDefault={plan.isDefault} companies={companies} first={index === 0} last={index === plans.length - 1} />
+                    </div>
+                  </CardContent>
+                </GlassCard>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }

@@ -1,38 +1,63 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import GlassCard from "@/components/lms/GlassCard";
+import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
+import { formatDate } from "@/lib/utils";
 import { requirePlatformAdmin } from "@/lib/platform/console/access";
-import { countCompaniesByPlan, getPlan } from "@/lib/platform/billing/plans";
+import { countCompaniesOnPlan, getPlan } from "@/lib/platform/billing/plans";
+import { getBillingSettings } from "@/lib/platform/billing/settings";
+import { currentPriceVersion } from "@/lib/platform/billing/pricing";
+import { BILLING_INTERVALS, formatMoney } from "@/lib/platform/billing/types";
 import PlanForm from "../PlanForm";
 import { planToFormValues } from "../planForm";
 
-export const metadata: Metadata = { title: "Edit plan · Platform console", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Edit plan" };
 
 export default async function EditPlanPage({ params }: { params: Promise<{ id: string }> }) {
   await requirePlatformAdmin();
   const { id } = await params;
-  const [plan, counts] = await Promise.all([getPlan(id), countCompaniesByPlan()]);
+  const [plan, companies, settings] = await Promise.all([getPlan(id), countCompaniesOnPlan(id), getBillingSettings()]);
   if (!plan) notFound();
-  const companies = counts.get(plan._id) ?? 0;
+  const history = [...(plan.priceHistory ?? [])].reverse();
+  const current = currentPriceVersion(plan);
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10">
-      <div className="mx-auto max-w-3xl space-y-4">
-        <Link href="/console/plans" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4" /> All plans
-        </Link>
-        <GlassCard interactive={false}>
+    <div className="space-y-6 p-1">
+      <PlatformPageHeader
+        title={`Edit ${plan.name}`}
+        description={`${companies === 0 ? "No company is on this plan yet." : `${companies} ${companies === 1 ? "company is" : "companies are"} on this plan.`} Panel, feature and limit changes apply to them right away; price changes apply to new subscriptions only.`}
+        crumbs={[{ label: "Plans & pricing", href: "/platform/plans" }]}
+      />
+      <div className="grid max-w-6xl gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
+        <PlanForm mode="update" initial={planToFormValues(plan)} lockedDefault={plan.isDefault && plan.active} platformTrialDays={settings.billing.defaultTrialDays} companies={companies} />
+        <GlassCard interactive={false} className="h-fit">
           <CardHeader>
-            <CardTitle className="text-xl">Edit {plan.name}</CardTitle>
-            <CardDescription>
-              {companies === 0 ? "No company is on this plan yet." : `${companies} ${companies === 1 ? "company is" : "companies are"} on this plan.`} Panel and limit changes apply to them right away; price and trial changes apply to new subscriptions only.
-            </CardDescription>
+            <CardTitle className="text-base">Price history</CardTitle>
+            <CardDescription>Each price change is a new version. A subscription keeps the version it bought.</CardDescription>
           </CardHeader>
           <CardContent>
-            <PlanForm mode="update" initial={planToFormValues(plan)} lockedDefault={plan.isDefault && plan.active} />
+            {history.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Version {current} (from before price versions were recorded).</p>
+            ) : (
+              <ol className="divide-y divide-border text-sm" aria-label="Price versions">
+                {history.map((v) => (
+                  <li key={v.version} className="space-y-1 py-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-medium">v{v.version}</span>
+                      {v.version === current && <Badge variant="secondary">Current</Badge>}
+                      <span className="text-xs text-muted-foreground">from {formatDate(v.effectiveFrom)}</span>
+                    </div>
+                    <p className="text-muted-foreground">
+                      {BILLING_INTERVALS.filter((i) => v.intervals.includes(i.id))
+                        .map((i) => `${formatMoney(v.prices[i.id] ?? 0, v.currency)} ${i.adjective}`)
+                        .join(" · ") || "No cycles"}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            )}
           </CardContent>
         </GlassCard>
       </div>

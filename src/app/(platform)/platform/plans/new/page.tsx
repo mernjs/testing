@@ -1,32 +1,20 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/lms/GlassCard";
+import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
 import { requirePlatformAdmin } from "@/lib/platform/console/access";
-import { DEFAULT_TRIAL_DAYS } from "@/lib/platform/billing/types";
+import { getBillingSettings } from "@/lib/platform/billing/settings";
 import PlanForm from "../PlanForm";
-import { EMPTY_PLAN_FORM } from "../planForm";
+import { emptyPlanForm } from "../planForm";
 
-export const metadata: Metadata = { title: "New plan · Platform console", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "New plan" };
 
 export default async function NewPlanPage() {
   await requirePlatformAdmin();
+  const { billing } = await getBillingSettings();
   return (
-    <div className="min-h-screen bg-background px-4 py-10">
-      <div className="mx-auto max-w-3xl space-y-4">
-        <Link href="/console/plans" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4" /> All plans
-        </Link>
-        <GlassCard interactive={false}>
-          <CardHeader>
-            <CardTitle className="text-xl">New plan</CardTitle>
-            <CardDescription>Plans are never deleted — archive one to stop offering it.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <PlanForm mode="create" initial={{ ...EMPTY_PLAN_FORM, trialDays: String(DEFAULT_TRIAL_DAYS) }} />
-          </CardContent>
-        </GlassCard>
+    <div className="space-y-6 p-1">
+      <PlatformPageHeader title="New plan" description="Add a plan companies can subscribe to." crumbs={[{ label: "Plans & pricing", href: "/platform/plans" }]} />
+      <div className="max-w-4xl">
+        <PlanForm mode="create" initial={emptyPlanForm(billing.currency)} platformTrialDays={billing.defaultTrialDays} />
       </div>
     </div>
   );
