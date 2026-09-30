@@ -9,6 +9,7 @@ import { hashPassword } from "@/lib/lms-auth";
 import { sendEmail } from "@/lib/platform/email";
 import { renderEmail } from "@/lib/platform/email/template";
 import { ROLE_PRESETS, rolesForPreset } from "@/lib/platform/onboarding/catalog";
+import { rolesUseSeat, seatBlockReason } from "@/lib/platform/billing/enforce";
 
 /**
  * Team invitations. Company-scoped (`company_invitations` goes through the
@@ -69,6 +70,13 @@ export async function inviteTeammate(input: InviteInput, inviter: { id: string; 
 
   const db = await getDb();
   if (await db.collection("admin_users").findOne({ email }, { projection: { _id: 1 } })) return { ok: false, error: `${email} already has an account in this workspace.` };
+
+  // Outstanding invitations count as promised seats (a re-invite replaces its own earlier one).
+  if (rolesUseSeat(roles)) {
+    const reinvite = (await (await col()).countDocuments({ email, status: "pending", expiresAt: { $gt: new Date() } })) > 0;
+    const seatBlock = await seatBlockReason(reinvite ? 0 : 1, { countPendingInvites: true });
+    if (seatBlock) return { ok: false, error: seatBlock };
+  }
 
   const c = await col();
   const token = randomBytes(32).toString("hex");
@@ -140,6 +148,11 @@ export async function acceptInvitation(token: string, input: { name: string; pas
   const users = db.collection("admin_users");
   const pending = await c.findOne({ tokenHash: sha256(token), status: "pending", expiresAt: { $gt: new Date() } }, { projection: { email: 1 } });
   if (pending && (await users.findOne({ email: pending.email }, { projection: { _id: 1 } }))) return { ok: false, error: "An account with this email already exists — sign in instead." };
+
+  const invRoles = pending ? ((await c.findOne({ tokenHash: sha256(token) }, { projection: { roles: 1 } }))?.roles ?? []) : [];
+  if (pending && rolesUseSeat(invRoles) && (await seatBlockReason(1))) {
+    return { ok: false, error: "This workspace has no free user seats right now. Ask your admin to free a seat or add seats, then try the link again." };
+  }
 
   // Claim atomically so a double submit can't create two accounts.
   const inv = await c.findOneAndUpdate({ tokenHash: sha256(token), status: "pending", expiresAt: { $gt: new Date() } }, { $set: { status: "accepted", acceptedAt: new Date() } });

@@ -3,6 +3,7 @@ import { randomBytes, scryptSync } from "node:crypto";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import { getEmployee } from "@/lib/hrms/employees";
+import { seatBlockReason } from "@/lib/platform/billing/enforce";
 
 /**
  * Employee self-service login provisioning. An employee login is an
@@ -99,6 +100,8 @@ export async function createEmployeeLogin(
   if (existingForEmployee) return { ok: false, error: "This employee already has a login." };
   const existingEmail = await col.findOne({ email });
   if (existingEmail) return { ok: false, error: "That email is already in use by another account." };
+  const seatBlock = await seatBlockReason(1);
+  if (seatBlock) return { ok: false, error: seatBlock };
 
   await col.insertOne({
     _id: new ObjectId(),

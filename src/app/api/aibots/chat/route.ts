@@ -10,6 +10,7 @@ import { botHasKnowledge, buildUserContent, citationTitles, collectCitedFileIds,
 import { countUserRunsToday, recordRun } from "@/lib/aibots/runs";
 import { estimateCost, getSettings } from "@/lib/aibots/settings";
 import { LIMITS } from "@/lib/aibots/constants";
+import { aiBlockReason } from "@/lib/platform/billing/enforce";
 
 // Long-running streamed completion.
 export const maxDuration = 60;
@@ -58,6 +59,9 @@ export async function POST(req: NextRequest) {
   } catch {
     return fail("That bot or chat isn't available to you.", 404);
   }
+
+  const planBlock = await aiBlockReason();
+  if (planBlock) return fail(planBlock, 402);
 
   if (settings.dailyMessageLimit > 0 && (await countUserRunsToday(viewer.userId)) >= settings.dailyMessageLimit) {
     return fail(`You've reached today's limit of ${settings.dailyMessageLimit} messages. It resets at midnight.`, 429);
