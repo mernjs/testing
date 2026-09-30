@@ -10,9 +10,9 @@ import { runAsCompany } from "@/lib/platform/tenancy/context";
 import { getPlatformOwnerCompanyId } from "@/lib/platform/tenancy/companies";
 
 /**
- * GST tax invoice-cum-receipt for a SaaS subscription payment. Always printed
- * on the PLATFORM OWNER's letterhead (the seller), whichever company's host
- * the download came through.
+ * GST tax invoice / credit note for a SaaS subscription. The seller block is
+ * the PLATFORM's billing settings as snapshotted on the document (never the
+ * downloading tenant's brand); the logo is the platform owner's.
  */
 
 const C = PDF_COLORS;
@@ -24,6 +24,12 @@ function money(paise: number, currency: string): string {
 function fmtDate(d: Date): string {
   return new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "Asia/Kolkata" });
 }
+
+const STAMP: Record<string, { text: string; color: string }> = {
+  paid: { text: "PAID", color: "#15803d" },
+  void: { text: "VOID", color: "#b91c1c" },
+  unpaid: { text: "UNPAID", color: "#b45309" },
+};
 
 const s = StyleSheet.create({
   page: pdfSheet.pagePortrait,
@@ -39,7 +45,6 @@ const s = StyleSheet.create({
     top: 190,
     right: 60,
     borderWidth: 2.5,
-    borderColor: "#15803d",
     borderStyle: "solid",
     borderRadius: 6,
     paddingVertical: 4,
@@ -47,8 +52,8 @@ const s = StyleSheet.create({
     transform: "rotate(-12deg)",
     alignItems: "center",
   },
-  stampText: { fontSize: 22, fontFamily: "Helvetica-Bold", color: "#15803d", letterSpacing: 3 },
-  stampSub: { fontSize: 7, color: "#15803d" },
+  stampText: { fontSize: 22, fontFamily: "Helvetica-Bold", letterSpacing: 3 },
+  stampSub: { fontSize: 7 },
   words: { marginTop: 10, fontSize: 8.5 },
   note: { marginTop: 14, padding: 8, backgroundColor: C.soft, fontSize: 8, color: C.mute },
 });
@@ -68,39 +73,61 @@ function Party({ title, party }: { title: string; party: SaasInvoiceParty }) {
 
 function SaasInvoiceDocument({ invoice }: { invoice: SaasInvoice }) {
   const cur = invoice.currency;
-  const half = gstPercentLabel(invoice.taxRate / 2);
+  const isCredit = invoice.kind === "credit_note";
+  const half = gstPercentLabel(invoice.taxRatePercent / 2);
   const seller = invoice.seller;
-  const registrations = [seller.gstin ? `GSTIN: ${seller.gstin}` : "", seller.pan ? `PAN: ${seller.pan}` : ""];
+  const registrations = [seller.gstin ? `GSTIN: ${seller.gstin}` : "", seller.pan ? `PAN: ${seller.pan}` : "", seller.state ? `State: ${seller.state} (${seller.stateCode})` : ""];
+  const stamp = isCredit ? null : STAMP[invoice.status];
+  const paid = invoice.status === "paid";
   return (
-    <Document title={`Tax Invoice ${invoice.number}`}>
+    <Document title={`${isCredit ? "Credit Note" : "Tax Invoice"} ${invoice.number}`}>
       <Page size="A4" style={s.page}>
         <PdfLetterhead
-          title="TAX INVOICE"
-          subtitle="Invoice-cum-receipt · Original for recipient"
+          title={isCredit ? "CREDIT NOTE" : "TAX INVOICE"}
+          subtitle={isCredit ? `Against tax invoice ${invoice.original?.number} dated ${invoice.original ? fmtDate(invoice.original.issuedAt) : ""}` : paid ? "Invoice-cum-receipt · Original for recipient" : "Original for recipient"}
           reference={`${invoice.number}\n${fmtDate(invoice.issuedAt)}`}
           registrations={registrations}
         />
 
-        <View style={s.stamp}>
-          <Text style={s.stampText}>PAID</Text>
-          <Text style={s.stampSub}>{fmtDate(invoice.paidAt)}</Text>
-        </View>
+        {stamp ? (
+          <View style={[s.stamp, { borderColor: stamp.color }]}>
+            <Text style={[s.stampText, { color: stamp.color }]}>{stamp.text}</Text>
+            {paid && invoice.paidAt ? <Text style={[s.stampSub, { color: stamp.color }]}>{fmtDate(invoice.paidAt)}</Text> : null}
+          </View>
+        ) : null}
 
         <View style={s.cols}>
-          <Party title="Billed to" party={invoice.buyer} />
+          <Party title={isCredit ? "Issued to" : "Billed to"} party={invoice.buyer} />
           <View style={{ width: "48%" }}>
             <Text style={s.label}>Place of supply</Text>
             <Text style={s.value}>{invoice.placeOfSupply ? `${invoice.placeOfSupply.name} (${invoice.placeOfSupply.code})` : "—"}</Text>
-            <Text style={[s.label, { marginTop: 6 }]}>Subscription</Text>
-            <Text style={s.line}>
-              {invoice.planName} · {invoice.interval === "yearly" ? "Yearly" : "Monthly"}
-            </Text>
-            <Text style={s.line}>
-              {fmtDate(invoice.periodStart)} to {fmtDate(invoice.periodEnd)}
-            </Text>
-            <Text style={[s.label, { marginTop: 6 }]}>Payment</Text>
-            <Text style={s.line}>Received {fmtDate(invoice.paidAt)}</Text>
-            <Text style={s.small}>Ref: {invoice.paymentRef}</Text>
+            {invoice.planName ? (
+              <>
+                <Text style={[s.label, { marginTop: 6 }]}>Subscription</Text>
+                <Text style={s.line}>
+                  {invoice.planName}
+                  {invoice.interval ? ` · ${invoice.interval === "yearly" ? "Yearly" : "Monthly"}` : ""}
+                </Text>
+                {invoice.periodStart && invoice.periodEnd ? (
+                  <Text style={s.line}>
+                    {fmtDate(invoice.periodStart)} to {fmtDate(invoice.periodEnd)}
+                  </Text>
+                ) : null}
+              </>
+            ) : null}
+            {isCredit ? (
+              <>
+                <Text style={[s.label, { marginTop: 6 }]}>Reason</Text>
+                <Text style={s.line}>{invoice.reason}</Text>
+                {invoice.refundRef ? <Text style={s.small}>Refund ref: {invoice.refundRef}</Text> : null}
+              </>
+            ) : paid ? (
+              <>
+                <Text style={[s.label, { marginTop: 6 }]}>Payment</Text>
+                <Text style={s.line}>Received {invoice.paidAt ? fmtDate(invoice.paidAt) : ""}</Text>
+                {invoice.paymentRef ? <Text style={s.small}>Ref: {invoice.paymentRef}</Text> : null}
+              </>
+            ) : null}
           </View>
         </View>
 
@@ -129,29 +156,50 @@ function SaasInvoiceDocument({ invoice }: { invoice: SaasInvoice }) {
               <View style={pdfSheet.totalsRow}><Text style={s.small}>SGST @ {half}</Text><Text>{money(invoice.sgst, cur)}</Text></View>
             </>
           ) : (
-            <View style={pdfSheet.totalsRow}><Text style={s.small}>IGST @ {gstPercentLabel(invoice.taxRate)}</Text><Text>{money(invoice.igst, cur)}</Text></View>
+            <View style={pdfSheet.totalsRow}><Text style={s.small}>IGST @ {gstPercentLabel(invoice.taxRatePercent)}</Text><Text>{money(invoice.igst, cur)}</Text></View>
           )}
-          <View style={pdfSheet.grandRow}><Text>Total</Text><Text>{money(invoice.total, cur)}</Text></View>
-          <View style={pdfSheet.totalsRow}><Text style={s.small}>Amount paid</Text><Text>{money(invoice.total, cur)}</Text></View>
-          <View style={pdfSheet.totalsRow}><Text style={s.small}>Balance due</Text><Text>{money(0, cur)}</Text></View>
+          <View style={pdfSheet.grandRow}><Text>{isCredit ? "Total credited" : "Total"}</Text><Text>{money(invoice.total, cur)}</Text></View>
+          {!isCredit && invoice.status !== "void" ? (
+            <>
+              <View style={pdfSheet.totalsRow}><Text style={s.small}>Amount paid</Text><Text>{money(paid ? invoice.total : 0, cur)}</Text></View>
+              <View style={pdfSheet.totalsRow}><Text style={s.small}>Balance due</Text><Text>{money(paid ? 0 : invoice.total, cur)}</Text></View>
+            </>
+          ) : null}
         </View>
 
         {cur === "INR" ? <Text style={s.words}>Amount in words: {rupeesInWords(invoice.total / 100)}</Text> : null}
 
         <Text style={s.note}>
-          This tax invoice also serves as the receipt for the payment above, received in full. Supply of services under SAC {invoice.items[0]?.sac}
+          {isCredit
+            ? `This credit note reduces the value of tax invoice ${invoice.original?.number} by the amount above, including the tax on it.`
+            : paid
+              ? "This tax invoice also serves as the receipt for the payment above, received in full."
+              : invoice.status === "void"
+                ? `This invoice has been voided${invoice.reason ? `: ${invoice.reason}` : ""}. Nothing is payable on it.`
+                : "Payment is due on this invoice."}{" "}
+          Supply of services under SAC {invoice.sac}
           {invoice.supplyType === "intra" ? " (intra-state: CGST + SGST)" : " (inter-state: IGST)"}. Tax is not payable on reverse charge basis.
+          {invoice.terms ? `\n\n${invoice.terms}` : ""}
         </Text>
 
-        <PdfFooter note="Computer-generated tax invoice-cum-receipt — no signature required." />
+        <PdfFooter note={invoice.footerNote || undefined} />
       </Page>
     </Document>
   );
 }
 
-/** Renders on the platform owner's letterhead, regardless of the requesting host. */
+/** Renders with the platform owner's logo and the seller details snapshotted on the invoice, whichever host it's downloaded from. */
 export async function renderSaasInvoicePdf(invoice: SaasInvoice): Promise<Buffer> {
   const ownerId = await getPlatformOwnerCompanyId();
   if (!ownerId) throw new Error("No platform owner company");
-  return runAsCompany(ownerId, () => renderPdf(<SaasInvoiceDocument invoice={invoice} />));
+  const seller = invoice.seller;
+  return runAsCompany(ownerId, () =>
+    renderPdf(<SaasInvoiceDocument invoice={invoice} />, {
+      name: seller.name || seller.legalName,
+      legalName: seller.legalName,
+      addressLine: seller.address,
+      cityLine: "",
+      contactLine: [seller.email, seller.phone].filter(Boolean).join("  ·  "),
+    }),
+  );
 }

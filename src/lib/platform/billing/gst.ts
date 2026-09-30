@@ -1,19 +1,13 @@
-import { GST_RATE } from "@/lib/platform/billing/types";
-
 /**
  * Indian GST for the platform's SaaS invoices. Client-safe, pure functions —
- * no data access. Money is integer paise throughout.
+ * no data access, no configuration: the rate, SAC and whether prices include
+ * tax come from the Platform Panel (`getBillingSettings()`) and are passed in.
+ * Money is integer paise throughout, and every split adds up exactly.
  *
- * Catalogue prices are exclusive of tax, but what a customer is charged (and
- * what an invoice is issued for) is the tax-inclusive amount, so the taxable
- * value is back-calculated from it and the parts always add up to exactly
- * the amount charged.
+ * This is the ONE GSTIN validator for the platform layer (`settings.ts` uses it).
  */
 
-/** SAC 998314 — IT design and development services (SaaS subscriptions are billed under it). */
-export const SAAS_SAC_CODE = "998314";
-
-/** GST state / union-territory codes (the first two digits of a GSTIN). */
+/** GST state / union-territory codes (the first two digits of a GSTIN), including legacy codes still valid on old GSTINs. */
 export const GST_STATE_CODES: Record<string, string> = {
   "01": "Jammu and Kashmir",
   "02": "Himachal Pradesh",
@@ -136,38 +130,152 @@ export function resolveGstState(gstin: string | null | undefined, state: string 
 
 export type SupplyType = "intra" | "inter";
 
-export interface GstBreakdown {
-  /** intra-state → CGST + SGST; inter-state (or unknown state) → IGST. */
-  supplyType: SupplyType;
-  /** Combined rate, e.g. 0.18. */
-  rate: number;
-  taxable: number;
+/** Codes offered when choosing a state today (legacy 25/28 and the Centre code 99 are valid on GSTINs but not choosable). */
+export const SELECTABLE_GST_STATES: Record<string, string> = Object.fromEntries(Object.entries(GST_STATE_CODES).filter(([code]) => !["25", "28", "99"].includes(code)));
+
+/** Intra-state (CGST + SGST) only when both states are known and equal; otherwise IGST. */
+export function supplyTypeFor(sellerStateCode: string | null | undefined, buyerStateCode: string | null | undefined): SupplyType {
+  return sellerStateCode && buyerStateCode && sellerStateCode === buyerStateCode ? "intra" : "inter";
+}
+
+export interface TaxSplit {
   cgst: number;
   sgst: number;
   igst: number;
+}
+
+/** Splits a tax amount: intra → CGST/SGST halves (SGST takes an odd paisa), inter → all IGST. */
+export function splitTax(tax: number, supplyType: SupplyType): TaxSplit {
+  if (supplyType === "inter") return { cgst: 0, sgst: 0, igst: tax };
+  const cgst = Math.floor(tax / 2);
+  return { cgst, sgst: tax - cgst, igst: 0 };
+}
+
+function assertPaise(n: number, what: string): void {
+  if (!Number.isInteger(n)) throw new Error(`${what} must be an integer number of paise (got ${n})`);
+}
+
+function assertRate(ratePercent: number): void {
+  if (!Number.isFinite(ratePercent) || ratePercent < 0 || ratePercent > 100) throw new Error(`GST rate must be 0–100% (got ${ratePercent})`);
+}
+
+/** GST on a taxable value, rounded half-up to the paisa. */
+export function taxOn(taxable: number, ratePercent: number): number {
+  assertPaise(taxable, "Taxable value");
+  assertRate(ratePercent);
+  return Math.round((taxable * ratePercent) / 100);
+}
+
+/** Taxable value inside a tax-inclusive amount; the tax is the remainder, so the two always add back up exactly. */
+export function taxableInside(gross: number, ratePercent: number): number {
+  assertPaise(gross, "Amount");
+  assertRate(ratePercent);
+  return Math.round((gross * 100) / (100 + ratePercent));
+}
+
+/**
+ * Spreads `target` over `weights` in proportion, largest remainder first, so
+ * the parts are integers summing to exactly `target`. Weights may be negative
+ * (discount lines); their sum must not be 0 unless target is 0.
+ */
+export function allocate(target: number, weights: number[]): number[] {
+  const sum = weights.reduce((a, b) => a + b, 0);
+  if (sum === 0) {
+    if (target !== 0) throw new Error("Can't allocate a non-zero amount over weights summing to 0");
+    return weights.map(() => 0);
+  }
+  const exact = weights.map((w) => (w * target) / sum);
+  const parts = exact.map(Math.floor);
+  let left = target - parts.reduce((a, b) => a + b, 0);
+  const order = exact.map((e, i) => ({ i, frac: e - Math.floor(e) })).sort((a, b) => b.frac - a.frac || a.i - b.i);
+  for (let k = 0; left > 0 && k < order.length; k++, left--) parts[order[k].i] += 1;
+  return parts;
+}
+
+export interface GstComputation extends TaxSplit {
+  supplyType: SupplyType;
+  ratePercent: number;
+  /** Taxable value of each input line, same order; sums to `taxable`. */
+  lineTaxable: number[];
+  taxable: number;
   tax: number;
   total: number;
 }
 
-/**
- * Splits a tax-inclusive amount (paise) into taxable value and GST.
- * Intra-state = both states known and equal. taxable + cgst + sgst + igst is
- * always exactly `total`: the taxable value is rounded to the paisa, tax is
- * the remainder, and SGST takes any odd paisa of the CGST/SGST split.
- */
-export function splitGstInclusive(total: number, sellerStateCode: string | null, buyerStateCode: string | null, rate = GST_RATE): GstBreakdown {
-  if (!Number.isInteger(total) || total < 0) throw new Error(`GST amount must be a non-negative integer in paise (got ${total})`);
-  const supplyType: SupplyType = sellerStateCode && buyerStateCode && sellerStateCode === buyerStateCode ? "intra" : "inter";
-  const taxable = Math.round(total / (1 + rate));
-  const tax = total - taxable;
-  const cgst = supplyType === "intra" ? Math.round(tax / 2) : 0;
-  const sgst = supplyType === "intra" ? tax - cgst : 0;
-  const igst = supplyType === "inter" ? tax : 0;
-  return { supplyType, rate, taxable, cgst, sgst, igst, tax, total };
+export interface GstInput {
+  /** Line amounts in paise (discount lines negative). Pre-tax, or tax-inclusive when `pricesIncludeTax`. */
+  amounts: number[];
+  ratePercent: number;
+  pricesIncludeTax: boolean;
+  sellerStateCode: string | null;
+  buyerStateCode: string | null;
 }
 
-/** "18%" / "9%" labels from a rate. */
-export function gstPercentLabel(rate: number): string {
-  const pct = Math.round(rate * 10_000) / 100;
-  return `${pct}%`;
+/**
+ * GST for an invoice's lines.
+ *  - Prices exclude tax: taxable = sum of lines; tax = taxable × rate, rounded once
+ *    on the invoice (not per line), so it never drifts by line count.
+ *  - Prices include tax: gross = sum of lines; taxable is back-calculated and
+ *    spread over the lines by largest remainder.
+ * The total never depends on intra/inter — only the split does — so what a
+ * customer is charged is known before their state is.
+ */
+export function computeGst(input: GstInput): GstComputation {
+  input.amounts.forEach((a) => assertPaise(a, "Line amount"));
+  const sum = input.amounts.reduce((a, b) => a + b, 0);
+  if (sum < 0) throw new Error("Invoice lines add up to less than zero");
+  const supplyType = supplyTypeFor(input.sellerStateCode, input.buyerStateCode);
+  let taxable: number;
+  let lineTaxable: number[];
+  let tax: number;
+  if (input.pricesIncludeTax) {
+    taxable = taxableInside(sum, input.ratePercent);
+    tax = sum - taxable;
+    lineTaxable = allocate(taxable, input.amounts);
+  } else {
+    taxable = sum;
+    tax = taxOn(taxable, input.ratePercent);
+    lineTaxable = [...input.amounts];
+  }
+  return { supplyType, ratePercent: input.ratePercent, lineTaxable, taxable, tax, total: taxable + tax, ...splitTax(tax, supplyType) };
+}
+
+/** What a customer is charged (tax-inclusive, paise) for a pre-discount-netted quote amount. */
+export function chargeTotal(netAmount: number, ratePercent: number, pricesIncludeTax: boolean): number {
+  return pricesIncludeTax ? netAmount : netAmount + taxOn(netAmount, ratePercent);
+}
+
+export interface TaxAmounts extends TaxSplit {
+  taxable: number;
+  total: number;
+}
+
+/**
+ * The part of an invoice a credit note of `amount` (tax-inclusive) reverses,
+ * given what is still un-credited (`remaining`). Crediting the whole remainder
+ * reverses it exactly; a partial credit is split in the invoice's own
+ * taxable : tax proportion. Never exceeds the remainder in any component.
+ */
+export function creditNoteAmounts(remaining: TaxAmounts, amount: number, supplyType: SupplyType): TaxAmounts {
+  assertPaise(amount, "Credit amount");
+  if (amount <= 0) throw new Error("Credit amount must be more than zero");
+  if (amount > remaining.total) throw new Error("Credit amount is more than what's left to credit on this invoice");
+  if (amount === remaining.total) return { ...remaining };
+  // taxable = round(remaining.taxable × share) keeps the tax part ≤ what's left of the tax.
+  const taxable = Math.min(remaining.taxable, Math.round((remaining.taxable * amount) / remaining.total));
+  const tax = amount - taxable;
+  if (supplyType === "inter") return { taxable, cgst: 0, sgst: 0, igst: tax, total: amount };
+  // Halve, then keep each head within what's left of it (odd paise on earlier partial credits).
+  let cgst = Math.min(Math.floor(tax / 2), remaining.cgst);
+  let sgst = tax - cgst;
+  if (sgst > remaining.sgst) {
+    sgst = remaining.sgst;
+    cgst = tax - sgst;
+  }
+  return { taxable, cgst, sgst, igst: 0, total: amount };
+}
+
+/** "18%" / "9%" labels from a percent. */
+export function gstPercentLabel(ratePercent: number): string {
+  return `${Math.round(ratePercent * 100) / 100}%`;
 }
