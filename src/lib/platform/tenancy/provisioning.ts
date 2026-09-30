@@ -5,6 +5,8 @@ import { runAsCompany } from "@/lib/platform/tenancy/context";
 import { slugFormatError } from "@/lib/platform/tenancy/slug";
 import { COMPANIES_COLLECTION, COMPANY_DOMAINS_COLLECTION, forgetCompanyRouting, type Company, type CompanyDomain } from "@/lib/platform/tenancy/companies";
 import { activeDomainProvider, type DomainStatus } from "@/lib/platform/domains";
+import { loadIntegrationsDoc, resolvedRootDomain } from "@/lib/platform/integrations/store";
+import { getPlatformSettings, reservedSlugError } from "@/lib/platform/settings";
 import { getDb } from "@/lib/mongodb";
 import { publishStarterWebsite } from "@/lib/platform/website/starter";
 import { startTrial } from "@/lib/platform/billing/subscription";
@@ -21,9 +23,14 @@ export async function isSlugTaken(slug: string): Promise<boolean> {
   return (await db.collection<Company>(COMPANIES_COLLECTION).countDocuments({ slug }, { limit: 1 })) > 0;
 }
 
-/** The root domain company subdomains live under (`PLATFORM_ROOT_DOMAIN`, first entry), or `localhost` in development. */
+/**
+ * The root domain company subdomains live under: Platform Panel →
+ * Integrations, else `PLATFORM_ROOT_DOMAIN` (first entry), else `localhost`
+ * in development. Synchronous — reads the integrations cache that the proxy
+ * loads on every page request (async entry points call `loadIntegrationsDoc()` first).
+ */
 export function platformRootDomain(): string {
-  return (process.env.PLATFORM_ROOT_DOMAIN ?? "").split(",")[0].trim().toLowerCase() || "localhost";
+  return resolvedRootDomain();
 }
 
 /** `<slug>.<root>` — every company's automatic address. */
@@ -54,8 +61,10 @@ export interface NewCompany {
 export type ProvisionResult = { ok: true; companyId: string; adminId: string; host: string; hostingError: string | null } | { ok: false; error: string };
 
 export async function createCompanyWithOwner(input: NewCompany): Promise<ProvisionResult> {
-  const slugError = slugFormatError(input.slug);
+  const slugError = slugFormatError(input.slug) ?? (await reservedSlugError(input.slug));
   if (slugError) return { ok: false, error: slugError };
+  // The root domain may be set in the Platform Panel; make sure it's loaded (scripts have no proxy).
+  await loadIntegrationsDoc();
   const host = companySubdomain(input.slug);
 
   const platform = await getPlatformDb();
@@ -64,7 +73,18 @@ export async function createCompanyWithOwner(input: NewCompany): Promise<Provisi
   await companies.createIndex({ slug: 1 }, { unique: true });
 
   const now = new Date();
-  const company: Company = { _id: randomUUID(), slug: input.slug, name: input.name.trim(), status: "active", isPlatformOwner: false, createdAt: now, updatedAt: now };
+  // Locale / time zone defaults come from Platform Panel → Platform settings.
+  const defaults = await getPlatformSettings().catch(() => null);
+  const company: Company = {
+    _id: randomUUID(),
+    slug: input.slug,
+    name: input.name.trim(),
+    status: "active",
+    isPlatformOwner: false,
+    ...(defaults ? { locale: defaults.defaultLocale, timezone: defaults.defaultTimezone } : {}),
+    createdAt: now,
+    updatedAt: now,
+  };
   try {
     await companies.insertOne(company);
   } catch (err) {
@@ -139,7 +159,7 @@ export async function syncAtProvider(host: string, op: "add" | "status" | "verif
   const domains = platform.collection<CompanyDomain>(COMPANY_DOMAINS_COLLECTION);
   // A *.localhost address needs nothing attached anywhere.
   if (host.endsWith(".localhost")) return { providerId: "none", status: null, error: null };
-  const provider = activeDomainProvider();
+  const provider = await activeDomainProvider();
   let error: string | null = null;
   let status: DomainStatus | null = null;
   try {

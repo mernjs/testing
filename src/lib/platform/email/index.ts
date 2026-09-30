@@ -1,37 +1,32 @@
 import "server-only";
-import { consoleEmailProvider } from "@/lib/platform/email/console";
-import { resendEmailProvider } from "@/lib/platform/email/resend";
+import { createConsoleEmailProvider } from "@/lib/platform/email/console";
+import { createResendEmailProvider } from "@/lib/platform/email/resend";
 import type { EmailMessage, EmailProvider, EmailResult } from "@/lib/platform/email/types";
+import { resolveEmailConfig, type ResolvedEmailConfig } from "@/lib/platform/integrations/resolve";
 
 export type { EmailMessage, EmailResult } from "@/lib/platform/email/types";
 
 /**
  * Outgoing email, behind a provider chosen at the platform level — never by
- * application code. `EMAIL_PROVIDER` picks the adapter (`resend` | `console`);
- * unset, it's Resend when `RESEND_API_KEY` exists, else the console adapter
- * (development: the message is printed, nothing is sent). Adding SES,
- * SendGrid or SMTP means adding one adapter file and one entry below.
+ * application code. Configured in Platform Panel → Integrations, falling back
+ * to `EMAIL_PROVIDER` (`resend` | `console`) / `RESEND_API_KEY` /
+ * `EMAIL_FROM`; with nothing set it's Resend when an API key exists, else the
+ * console adapter (development: the message is printed, nothing is sent).
+ * Adding SES, SendGrid or SMTP means one adapter file and one case below.
  *
  * Server-only: provider credentials never reach the browser.
  */
-const PROVIDERS: Record<string, EmailProvider> = {
-  resend: resendEmailProvider,
-  console: consoleEmailProvider,
-};
+export async function activeEmailProvider(): Promise<EmailProvider> {
+  return providerFor(await resolveEmailConfig());
+}
 
-export function activeEmailProvider(): EmailProvider {
-  const configured = process.env.EMAIL_PROVIDER?.trim().toLowerCase();
-  if (configured) {
-    const provider = PROVIDERS[configured];
-    if (!provider) throw new Error(`Unknown EMAIL_PROVIDER "${configured}" (expected one of: ${Object.keys(PROVIDERS).join(", ")})`);
-    return provider;
-  }
-  return process.env.RESEND_API_KEY ? resendEmailProvider : consoleEmailProvider;
+function providerFor(cfg: ResolvedEmailConfig): EmailProvider {
+  return cfg.provider === "resend" ? createResendEmailProvider(cfg.resendApiKey) : createConsoleEmailProvider(cfg.explicit);
 }
 
 /** The platform's default sender, e.g. `YashOrbit <no-reply@yashorbit.com>`. */
-export function defaultFrom(): string {
-  return process.env.EMAIL_FROM?.trim() || "YashOrbit <no-reply@yashorbit.com>";
+export async function defaultFrom(): Promise<string> {
+  return (await resolveEmailConfig()).from;
 }
 
 /**
@@ -41,8 +36,9 @@ export function defaultFrom(): string {
  */
 export async function sendEmail(message: Omit<EmailMessage, "from"> & { from?: string }): Promise<EmailResult> {
   try {
-    const provider = activeEmailProvider();
-    const result = await provider.send({ ...message, from: message.from ?? defaultFrom() });
+    const cfg = await resolveEmailConfig();
+    const provider = providerFor(cfg);
+    const result = await provider.send({ ...message, from: message.from ?? cfg.from });
     if (!result.ok) console.error(`[email:${provider.id}] send failed`, result.error);
     return result;
   } catch (err) {

@@ -1,6 +1,7 @@
 import "server-only";
 import type { DomainProvider, DomainStatus } from "@/lib/platform/domains/types";
-import { vercelConfigured, vercelDomainProvider } from "@/lib/platform/domains/vercel";
+import { createVercelDomainProvider } from "@/lib/platform/domains/vercel";
+import { resolveDomainConfig } from "@/lib/platform/integrations/resolve";
 
 export type { DnsRecord, DomainStatus, DomainResult } from "@/lib/platform/domains/types";
 
@@ -19,15 +20,12 @@ const manualDomainProvider: DomainProvider = {
 };
 const manualStatus: DomainStatus = { attached: true, verified: true, dnsConfigured: true, records: [] };
 
-const PROVIDERS: Record<string, DomainProvider> = { vercel: vercelDomainProvider, manual: manualDomainProvider };
-
-/** `DOMAIN_PROVIDER` (`vercel` | `manual`); unset → Vercel when its credentials exist, else manual. */
-export function activeDomainProvider(): DomainProvider {
-  const configured = process.env.DOMAIN_PROVIDER?.trim().toLowerCase();
-  if (configured) {
-    const provider = PROVIDERS[configured];
-    if (!provider) throw new Error(`Unknown DOMAIN_PROVIDER "${configured}" (expected one of: ${Object.keys(PROVIDERS).join(", ")})`);
-    return provider;
-  }
-  return vercelConfigured() ? vercelDomainProvider : manualDomainProvider;
+/**
+ * Platform Panel → Integrations, falling back to `DOMAIN_PROVIDER` (`vercel` |
+ * `manual`) and the `VERCEL_*` env vars; with nothing set it's Vercel when its
+ * credentials exist, else manual.
+ */
+export async function activeDomainProvider(): Promise<DomainProvider> {
+  const cfg = await resolveDomainConfig();
+  return cfg.provider === "vercel" ? createVercelDomainProvider(cfg.vercel) : manualDomainProvider;
 }

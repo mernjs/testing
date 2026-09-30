@@ -9,6 +9,7 @@ import { requestOrigin } from "@/lib/platform/request";
 
 export type ActionResult = { ok: true; message: string } | { ok: false; error: string };
 
+/** Kept for callers of the old location; the control now lives in Platform settings. */
 export async function setSignupModeAction(mode: string): Promise<ActionResult> {
   const auth = await checkPlatformPermission("signups.manage");
   if (!auth.ok) return auth;

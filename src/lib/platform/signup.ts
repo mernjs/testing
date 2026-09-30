@@ -2,7 +2,7 @@ import "server-only";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import { companyBaseUrl, createCompanyWithOwner, isSlugTaken, slugFormatError } from "@/lib/platform/tenancy/provisioning";
-import { getSignupMode } from "@/lib/platform/settings";
+import { getSignupMode, platformEmailIdentity, reservedSlugError } from "@/lib/platform/settings";
 import { sendEmail } from "@/lib/platform/email";
 import { renderEmail } from "@/lib/platform/email/template";
 import { hashPassword } from "@/lib/lms-auth";
@@ -101,7 +101,7 @@ export function validateSignup(input: SignupInput): SignupFieldErrors {
 
 /** Taken by a live company, or held by someone else's unexpired sign-up. */
 export async function isSlugAvailable(slug: string, forEmail?: string): Promise<boolean> {
-  if (slugFormatError(slug)) return false;
+  if (slugFormatError(slug) || (await reservedSlugError(slug))) return false;
   if (await isSlugTaken(slug)) return false;
   const { pending } = await collections();
   const held = await pending.findOne({ slug, expiresAt: { $gt: new Date() } }, { projection: { email: 1 } });
@@ -126,6 +126,11 @@ export async function startSignup(input: SignupInput, ctx: { origin: string; cli
   if (mode === "closed") return { ok: false, errors: { form: "New sign-ups are paused right now. Please try again later." } };
 
   const errors = validateSignup(input);
+  // Subdomains reserved in Platform Panel → Platform settings, on top of the built-in list.
+  if (!errors.slug) {
+    const reserved = await reservedSlugError(input.slug);
+    if (reserved) errors.slug = reserved;
+  }
   if (Object.keys(errors).length) return { ok: false, errors };
   const email = input.email.trim().toLowerCase();
 
@@ -153,12 +158,13 @@ export async function startSignup(input: SignupInput, ctx: { origin: string; cli
   });
 
   const link = `${ctx.origin}/signup/verify?token=${token}`;
+  const platform = await platformEmailIdentity();
   const { html, text } = renderEmail({
-    brand: "YashOrbit",
+    brand: platform.name,
     heading: `Confirm your email to create ${input.companyName.trim()}`,
     paragraphs: [`Hi ${input.name.trim()},`, "Confirm your email address and your workspace will be ready in seconds."],
     action: { label: "Confirm email & create workspace", url: link },
-    footnote: "This link expires in 24 hours. If you didn't sign up, ignore this email — nothing will be created.",
+    footnote: ["This link expires in 24 hours. If you didn't sign up, ignore this email — nothing will be created.", platform.supportLine].filter(Boolean).join(" "),
   });
   const sent = await sendEmail({ to: email, subject: "Confirm your email to create your workspace", html, text });
   if (!sent.ok) {
@@ -206,12 +212,14 @@ export async function confirmSignup(token: string, ctx: { hostHint: string | nul
   return { ok: true, redirectTo: `${base}/workspace/handoff?token=${handoff}` };
 }
 
-function sendWorkspaceReadyEmail(doc: PendingSignup, base: string, approved = false) {
+async function sendWorkspaceReadyEmail(doc: PendingSignup, base: string, approved = false) {
+  const platform = await platformEmailIdentity();
   const { html, text } = renderEmail({
     brand: doc.companyName,
     heading: approved ? "Your workspace has been approved" : "Your workspace is ready",
     paragraphs: [`Hi ${doc.name},`, `${doc.companyName} is set up. Sign in any time at your workspace address with the password you chose:`, base],
     action: { label: "Open your workspace", url: `${base}/workspace/login` },
+    ...(platform.supportLine ? { footnote: platform.supportLine } : {}),
   });
   return sendEmail({ to: doc.email, subject: `Welcome — ${doc.companyName} is ready`, html, text });
 }
@@ -278,16 +286,18 @@ export async function rejectSignup(id: string): Promise<{ ok: true; emailed: boo
   const { pending } = await collections();
   const doc = await pending.findOneAndDelete({ _id: id, status: "awaiting_approval" });
   if (!doc) return { ok: false, error: "This request was already decided or has expired." };
+  const platform = await platformEmailIdentity();
   const { html, text } = renderEmail({
-    brand: "YashOrbit",
+    brand: platform.name,
     heading: "About your workspace request",
+    ...(platform.supportLine ? { footnote: platform.supportLine } : {}),
     paragraphs: [
       `Hi ${doc.name},`,
-      `Thank you for your interest in creating ${doc.companyName} on YashOrbit. We're not able to approve this request at the moment, so no workspace has been created and your details have been removed.`,
+      `Thank you for your interest in creating ${doc.companyName} on ${platform.name}. We're not able to approve this request at the moment, so no workspace has been created and your details have been removed.`,
       "If you think this is a mistake, simply reply to this email and we'll take another look.",
     ],
   });
-  const sent = await sendEmail({ to: doc.email, subject: "About your YashOrbit workspace request", html, text });
+  const sent = await sendEmail({ to: doc.email, subject: `About your ${platform.name} workspace request`, html, text });
   return { ok: true, emailed: sent.ok };
 }
 

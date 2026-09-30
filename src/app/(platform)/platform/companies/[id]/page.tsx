@@ -16,6 +16,10 @@ import StatusControl from "./StatusControl";
 import CompanyAddonsCard from "./CompanyAddonsCard";
 import { getCompanyAddons, listAddons } from "@/lib/platform/billing/addons";
 import { describeAddonEffect } from "@/lib/platform/billing/catalog-types";
+import Link from "next/link";
+import { listDomainsForCompany } from "@/lib/platform/domains/overview";
+import DomainActions from "../../domains/DomainActions";
+import { DnsBadge, SslBadge } from "../../domains/DomainBadges";
 
 export const metadata: Metadata = { title: "Company" };
 
@@ -32,6 +36,7 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
   const user = await requirePlatformPermission("companies.read");
   const company = await getCompanyDetail((await params).id);
   if (!company) notFound();
+  const domains = await listDomainsForCompany(company.id);
   const { host } = await requestOrigin();
   const base = companyBaseUrl(company.slug, host);
   const { onboarding: ob } = company;
@@ -139,27 +144,32 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
         <GlassCard interactive={false}>
           <CardHeader>
             <CardTitle className="text-base">Domains</CardTitle>
-            <CardDescription>{company.domainRecords.length ? "Addresses this workspace answers on (when active)." : "No domain records — it answers on its subdomain only."}</CardDescription>
+            <CardDescription>
+              {domains.length ? "Addresses this workspace answers on (when active)." : "No domain records — it answers on its subdomain only."}{" "}
+              <Link href={`/platform/domains?q=${encodeURIComponent(company.slug)}`} className="underline-offset-2 hover:underline">
+                All domains
+              </Link>
+            </CardDescription>
           </CardHeader>
-          {company.domainRecords.length > 0 && (
+          {domains.length > 0 && (
             <CardContent>
-              <ul className="divide-y divide-border text-sm">
-                {company.domainRecords.map((d) => (
+              <ul className="divide-y divide-border text-sm" id="company-domains">
+                {domains.map((d) => (
                   <li key={d.host} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                    <span className="font-medium">{d.host}</span>
+                    <span className="min-w-0 font-medium break-all">{d.host}</span>
                     <span className="flex flex-wrap items-center gap-1.5">
                       <Badge variant="outline">{d.kind === "subdomain" ? "Subdomain" : "Custom"}</Badge>
                       {d.isPrimary && <Badge variant="outline">Primary</Badge>}
-                      {d.status === "verified" ? (
-                        <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-400">Verified</Badge>
-                      ) : (
-                        <Badge variant="secondary">Pending</Badge>
-                      )}
-                      {d.providerError && (
-                        <Badge variant="destructive" title={d.providerError}>
+                      <DnsBadge status={d.status} />
+                      <SslBadge ssl={d.hosting.ssl} error={d.hosting.error} />
+                      {d.hosting.error && (
+                        <Badge variant="destructive" title={d.hosting.error}>
                           Hosting error
                         </Badge>
                       )}
+                      <DomainActions
+                        domain={{ host: d.host, companyName: company.name, kind: d.kind, status: d.status, isPrimary: d.isPrimary, removable: d.removable, localOnly: d.hosting.providerId === null }}
+                      />
                     </span>
                   </li>
                 ))}

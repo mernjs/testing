@@ -15,6 +15,8 @@ import { getCompanyBrand } from "@/lib/platform/branding";
 import { NEUTRAL_BRAND } from "@/lib/platform/branding/types";
 import { brandColorCss } from "@/lib/platform/branding/theme";
 import { BrandProvider } from "@/components/platform/BrandProvider";
+import PlatformNoticeBanner from "@/components/platform/PlatformNoticeBanner";
+import { getPlatformSettings } from "@/lib/platform/settings";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,6 +51,8 @@ export default async function RootLayout({
     ? await Promise.all([getSiteInfo(), getSiteSeo(), isPlatformOwnerContext(), getCompanyBrand()])
     : [parseSiteInfo(null), parseSiteSeo(null), false, NEUTRAL_BRAND];
   const brandCss = brandColorCss(brand.primaryColor);
+  // Platform Panel → Platform settings: a maintenance message for every company's panels (cached; never fails the page).
+  const notice = hasCompany ? ((await getPlatformSettings().catch(() => null))?.maintenanceBanner ?? "") : "";
 
   return (
     <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
@@ -116,6 +120,7 @@ export default async function RootLayout({
             <SiteInfoProvider value={siteInfo}>
               {children}
               <FloatingContactButtons />
+              {notice && <PlatformNoticeBanner message={notice} />}
             </SiteInfoProvider>
           </BrandProvider>
         </ThemeProvider>

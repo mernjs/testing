@@ -85,7 +85,8 @@ function sameRecord(a: DnsRecord, b: DnsRecord): boolean {
   return a.type === b.type && a.name === b.name && a.value === b.value;
 }
 
-function toView(d: CompanyDomain): CompanyDomainView {
+/** The client-safe view of one domain record (also used by the Platform Panel overview). */
+export function toView(d: CompanyDomain): CompanyDomainView {
   const kind = d.kind ?? "custom";
   const p = d.provider;
   const localOnly = d._id.endsWith(".localhost");
@@ -271,7 +272,7 @@ export async function removeCustomDomain(raw: string): Promise<DomainActionResul
   forgetCompanySiteUrls();
 
   try {
-    const detached = await activeDomainProvider().remove(d._id);
+    const detached = await (await activeDomainProvider()).remove(d._id);
     if (!detached.ok) console.error(`[domains] detaching ${d._id} failed`, detached.error);
   } catch (err) {
     console.error(`[domains] detaching ${d._id} failed`, err);

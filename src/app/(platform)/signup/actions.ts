@@ -3,6 +3,7 @@
 import { notFound, redirect } from "next/navigation";
 import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 import { slugFormatError } from "@/lib/platform/tenancy/provisioning";
+import { reservedSlugError } from "@/lib/platform/settings";
 import { confirmSignup, isSlugAvailable, startSignup, type SignupFieldErrors } from "@/lib/platform/signup";
 import { clientKey, requestOrigin } from "@/lib/platform/request";
 
@@ -14,7 +15,7 @@ async function requirePlatformSite() {
 export async function checkSlugAction(slug: string): Promise<{ available: boolean; message: string | null }> {
   await requirePlatformSite();
   const s = slug.trim().toLowerCase();
-  const formatError = slugFormatError(s);
+  const formatError = slugFormatError(s) ?? (await reservedSlugError(s));
   if (formatError) return { available: false, message: formatError };
   return (await isSlugAvailable(s)) ? { available: true, message: null } : { available: false, message: "That address is taken." };
 }

@@ -7,10 +7,14 @@ import { listAwaitingApproval } from "@/lib/platform/signup";
 import { companyBaseUrl } from "@/lib/platform/tenancy/provisioning";
 import { requestOrigin } from "@/lib/platform/request";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
-import SignupModeForm from "./SignupModeForm";
+import Link from "next/link";
+import { Settings2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import ApprovalQueue from "./ApprovalQueue";
 
 export const metadata: Metadata = { title: "Sign-ups & approvals" };
+
+const MODE_LABEL = { open: "Open", approval: "Approval required", closed: "Closed" } as const;
 
 export default async function ConsoleSignupsPage() {
   const user = await requirePlatformPermission("signups.read");
@@ -24,11 +28,15 @@ export default async function ConsoleSignupsPage() {
         <GlassCard interactive={false}>
           <CardHeader>
             <CardTitle className="text-base">Who can create a company</CardTitle>
-            <CardDescription>Applies to the public sign-up page. Changing it never affects companies that already exist.</CardDescription>
+            <CardDescription>
+              <Badge variant="outline" className="mr-1.5">{MODE_LABEL[mode]}</Badge>
+              The sign-up mode is now set in{" "}
+              <Link href="/platform/settings#signup-mode" className="inline-flex items-center gap-1 font-medium text-foreground underline-offset-2 hover:underline">
+                <Settings2 className="size-3.5" /> Platform settings
+              </Link>
+              .
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <SignupModeForm key={mode} initial={mode} canManage={canManage} />
-          </CardContent>
         </GlassCard>
         <GlassCard interactive={false}>
           <CardHeader>
