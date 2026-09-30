@@ -6,21 +6,27 @@ import GlassCard from "@/components/lms/GlassCard";
 import KpiCard from "@/components/lms/KpiCard";
 import KpiGrid from "@/components/lms/KpiGrid";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformAccess } from "@/lib/platform/console/access";
 import { getPlatformKpis } from "@/lib/platform/console/companies";
 import { getSubscriptionSnapshot } from "@/lib/platform/console/overview";
 import { formatDateTime } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
-export default async function PlatformDashboardPage() {
-  await requirePlatformAdmin();
+export default async function PlatformDashboardPage({ searchParams }: { searchParams: Promise<{ denied?: string }> }) {
+  await requirePlatformAccess();
+  const { denied } = await searchParams;
   const [kpis, subs] = await Promise.all([getPlatformKpis(), getSubscriptionSnapshot()]);
   const overdue = subs.counts.past_due + subs.counts.grace;
 
   return (
     <div className="space-y-6 p-1">
       <PlatformPageHeader title="Dashboard" description="The whole SaaS platform at a glance — tenants, subscriptions and what needs attention." />
+      {denied && (
+        <p role="alert" className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-300">
+          Your platform role doesn&apos;t include access to that page. Ask a Platform Owner if you need it.
+        </p>
+      )}
 
       <KpiGrid cols={6}>
         <KpiCard label="Companies" value={kpis.total} icon={<Building2 className="size-4" />} />

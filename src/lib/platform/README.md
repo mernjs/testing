@@ -17,7 +17,7 @@ unaware of this layer beyond calling `getDb()`, which is company-scoped.
 | `branding/` | Company logo, wordmark and colour (`getCompanyBrand`, `BrandProvider`, branded titles, logo uploads). UI in `src/app/(platform)/settings/branding` |
 | `onboarding/` | Setup wizard catalog (industries, department templates, role presets, panels) and progress |
 | `signup.ts` | Self-serve sign-up: pending sign-ups, email verification, hand-off sign-in, the approval queue (approve/reject) |
-| `console/` | Platform owner console (cross-company, raw DB): company list/detail, suspend/reactivate, platform KPIs, access guard. UI in `src/app/(platform)/console` |
+| `console/` | Platform Panel back end (cross-company, raw DB): company list/detail, suspend/reactivate, platform KPIs. `access.ts` = guards (`requirePlatformPermission`, `checkPlatformPermission`, `can`); `permissions.ts` = permission catalogue + route→permission map (client-safe); `roles.ts` = platform roles (`platform_roles`) and platform users (`platformRoleId` on the owner company's `admin_users`); `audit-log.ts` = audit log queries/CSV. UI in `src/app/(platform)/platform` |
 | `invitations.ts` | Team invitations and acceptance (creates HRMS employee + login) |
 | `settings.ts` | Platform-wide settings (sign-up mode) |
 | `email/` | Outgoing email behind a swappable provider (`EMAIL_PROVIDER`: Resend, console) |

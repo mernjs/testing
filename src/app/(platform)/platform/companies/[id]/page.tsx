@@ -7,7 +7,7 @@ import { CardHeader, CardTitle, CardDescription, CardContent } from "@/component
 import { Badge } from "@/components/ui/badge";
 import GlassCard from "@/components/lms/GlassCard";
 import { formatDate, formatDateTime } from "@/lib/utils";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { can, requirePlatformPermission } from "@/lib/platform/console/access";
 import { getCompanyDetail } from "@/lib/platform/console/companies";
 import { companyBaseUrl } from "@/lib/platform/tenancy/provisioning";
 import { requestOrigin } from "@/lib/platform/request";
@@ -26,7 +26,7 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 }
 
 export default async function ConsoleCompanyPage({ params }: { params: Promise<{ id: string }> }) {
-  await requirePlatformAdmin();
+  const user = await requirePlatformPermission("companies.read");
   const company = await getCompanyDetail((await params).id);
   if (!company) notFound();
   const { host } = await requestOrigin();
@@ -51,7 +51,7 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
               </div>
               {company.isPlatformOwner ? (
                 <p className="max-w-56 text-xs text-muted-foreground">The platform owner company runs the platform and can&apos;t be suspended.</p>
-              ) : (
+              ) : !can(user, "companies.status") ? null : (
                 <StatusControl companyId={company.id} companyName={company.name} status={company.status} />
               )}
             </div>

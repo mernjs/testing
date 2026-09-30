@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { can, requirePlatformPermission } from "@/lib/platform/console/access";
 import { getSignupMode } from "@/lib/platform/settings";
 import { listAwaitingApproval } from "@/lib/platform/signup";
 import { companyBaseUrl } from "@/lib/platform/tenancy/provisioning";
@@ -13,7 +13,8 @@ import ApprovalQueue from "./ApprovalQueue";
 export const metadata: Metadata = { title: "Sign-ups & approvals" };
 
 export default async function ConsoleSignupsPage() {
-  await requirePlatformAdmin();
+  const user = await requirePlatformPermission("signups.read");
+  const canManage = can(user, "signups.manage");
   const [mode, requests, { host }] = await Promise.all([getSignupMode(), listAwaitingApproval(), requestOrigin()]);
   const addressOf = Object.fromEntries(requests.map((r) => [r.slug, companyBaseUrl(r.slug, host).replace(/^https?:\/\//, "")]));
 
@@ -26,7 +27,7 @@ export default async function ConsoleSignupsPage() {
             <CardDescription>Applies to the public sign-up page. Changing it never affects companies that already exist.</CardDescription>
           </CardHeader>
           <CardContent>
-            <SignupModeForm key={mode} initial={mode} />
+            <SignupModeForm key={mode} initial={mode} canManage={canManage} />
           </CardContent>
         </GlassCard>
         <GlassCard interactive={false}>
@@ -38,7 +39,7 @@ export default async function ConsoleSignupsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ApprovalQueue requests={requests} addressOf={addressOf} />
+            <ApprovalQueue requests={requests} addressOf={addressOf} canManage={canManage} />
           </CardContent>
         </GlassCard>
     </div>

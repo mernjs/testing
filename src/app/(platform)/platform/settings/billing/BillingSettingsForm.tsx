@@ -17,7 +17,7 @@ const selectClass =
 const areaClass =
   "min-h-20 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30";
 
-export default function BillingSettingsForm({ initial, states, prefilled }: { initial: Editable; states: { code: string; name: string }[]; prefilled: boolean }) {
+export default function BillingSettingsForm({ initial, states, prefilled, canEdit = true }: { initial: Editable; states: { code: string; name: string }[]; prefilled: boolean; canEdit?: boolean }) {
   const [v, setV] = useState<Editable>(initial);
   const [reminders, setReminders] = useState(initial.billing.trialReminderDays.join(", "));
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -57,6 +57,7 @@ export default function BillingSettingsForm({ initial, states, prefilled }: { in
         });
       }}
     >
+      <fieldset disabled={!canEdit} className="min-w-0 space-y-4">
       {prefilled && (
         <p className="flex items-start gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
           <Info className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -133,14 +134,19 @@ export default function BillingSettingsForm({ initial, states, prefilled }: { in
           {field("b-rem", "Trial reminders (days before end)", <Input id="b-rem" value={reminders} onChange={(e) => { setSaved(false); setReminders(e.target.value); }} placeholder="7, 3, 1" />)}
         </CardContent>
       </GlassCard>
+      </fieldset>
 
+      {canEdit ? (
       <div className="flex items-center gap-3">
         <Button type="submit" disabled={pending}>
           {pending ? <Loader2 className="size-4 animate-spin" /> : "Save settings"}
         </Button>
         {saved && <span className="text-sm text-emerald-600" aria-live="polite">Saved.</span>}
-        {Object.keys(errors).length > 0 && <span className="text-sm text-destructive" aria-live="polite">Fix the highlighted fields.</span>}
+        {Object.keys(errors).length > 0 && <span className="text-sm text-destructive" aria-live="polite">{errors.form ?? "Fix the highlighted fields."}</span>}
       </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">Your platform role can view these settings but not change them.</p>
+      )}
     </form>
   );
 }
