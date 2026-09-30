@@ -12,6 +12,8 @@ import { formatMoney } from "@/lib/platform/billing/types";
 
 export const metadata: Metadata = { title: "Invoices", robots: { index: false, follow: false } };
 
+const STATUS: Record<string, string> = { paid: "Paid", unpaid: "Unpaid", void: "Void" };
+
 export default async function BillingInvoicesPage() {
   const user = await getCurrentHubUser();
   if (!user) redirect("/workspace/login");
@@ -21,13 +23,13 @@ export default async function BillingInvoicesPage() {
   return (
     <div className="min-h-screen bg-background px-4 py-10">
       <div className="mx-auto max-w-4xl space-y-4">
-        <Link href="/settings/billing" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4" /> Billing
+        <Link href="/settings" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft className="size-4" /> Settings
         </Link>
         <GlassCard>
           <CardHeader>
             <CardTitle className="text-xl">Invoices</CardTitle>
-            <CardDescription>GST tax invoices for your subscription payments. Each one is also your payment receipt.</CardDescription>
+            <CardDescription>GST tax invoices for your subscription (a paid invoice is also your receipt), and any credit notes against them.</CardDescription>
           </CardHeader>
           <CardContent>
             {invoices.length === 0 ? (
@@ -36,6 +38,7 @@ export default async function BillingInvoicesPage() {
                 No invoices yet — one is issued automatically after every subscription payment.
               </div>
             ) : (
+              <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -48,18 +51,19 @@ export default async function BillingInvoicesPage() {
                 </TableHeader>
                 <TableBody>
                   {invoices.map((inv) => (
-                    <TableRow key={inv._id} data-invoice-id={inv._id}>
+                    <TableRow key={inv._id} data-invoice-id={inv._id} data-invoice-number={inv.number}>
                       <TableCell>
                         <span className="font-medium">{inv.number}</span>
                         <span className="block text-xs text-muted-foreground">
-                          {inv.planName} · {inv.interval === "yearly" ? "Yearly" : "Monthly"} · Paid
+                          {inv.kind === "credit_note"
+                            ? `Credit note against ${inv.original?.number ?? ""}`
+                            : [inv.planName, inv.interval === "yearly" ? "Yearly" : inv.interval === "monthly" ? "Monthly" : null, STATUS[inv.status]].filter(Boolean).join(" · ")}
                         </span>
                       </TableCell>
                       <TableCell>{formatInvoiceDate(inv.issuedAt)}</TableCell>
-                      <TableCell className="text-xs">
-                        {formatInvoiceDate(inv.periodStart)} – {formatInvoiceDate(inv.periodEnd)}
-                      </TableCell>
+                      <TableCell className="text-xs">{inv.periodStart && inv.periodEnd ? `${formatInvoiceDate(inv.periodStart)} – ${formatInvoiceDate(inv.periodEnd)}` : "—"}</TableCell>
                       <TableCell className="text-right tabular-nums">
+                        {inv.kind === "credit_note" ? "− " : ""}
                         {formatMoney(inv.total, inv.currency)}
                         <span className="block text-xs text-muted-foreground">incl. GST {formatMoney(inv.taxTotal, inv.currency)}</span>
                       </TableCell>
@@ -76,6 +80,7 @@ export default async function BillingInvoicesPage() {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             )}
           </CardContent>
         </GlassCard>

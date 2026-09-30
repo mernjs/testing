@@ -24,7 +24,7 @@ unaware of this layer beyond calling `getDb()`, which is company-scoped.
 | `domains/` | Hostname attach/verify/SSL behind a swappable provider (`DOMAIN_PROVIDER`: Vercel, manual) |
 | `domains/custom.ts` | A company's own domains: add, TXT ownership check, primary, remove, daily re-check (UI in `src/app/(platform)/settings/domains`, cron `/api/platform/domains/cron`) |
 | `billing/` | Plans, subscriptions, entitlements (`getEntitlements()` — what the current company may use), usage metering, SaaS invoices. Contract in `billing/types.ts` |
-| `billing/invoices.ts`, `billing/gst.ts` | SaaS tax invoices-cum-receipts (`issueSaasInvoice`, idempotent on `paymentRef`; `SAAS/<FY>/<seq>` numbering), GST split (CGST+SGST / IGST, SAC 998314), GSTIN validation. PDF `src/components/platform/billing/SaasInvoicePdf.tsx`; UI `settings/billing/invoices`, `console/invoices` |
+| `billing/invoices.ts`, `billing/gst.ts` | SaaS GST tax invoices + credit notes. `issueSaasInvoice({companyId, quote|lines, period, paymentRef, paidAt})` (idempotent on `paymentRef`), `issueSaasCreditNote` (idempotent on `refundRef`), mark paid / void. `{prefix}/{FY}/{seq}` and `{prefix}-CN/{FY}/{seq}` numbering; seller, GST rate, SAC, prefix, texts all from `getBillingSettings()`. `gst.ts`: pure tax maths (CGST+SGST / IGST, rounding) and the one GSTIN validator. PDF `src/components/platform/billing/SaasInvoicePdf.tsx` via `/api/platform/billing/invoices/[id]/pdf` (tenant-isolated); UI `/platform/invoices`, company-side `/settings/billing/invoices` |
 | `request.ts` | Request origin / client key helpers |
 
 ## Where future phases go
