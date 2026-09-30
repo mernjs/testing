@@ -24,7 +24,7 @@ unaware of this layer beyond calling `getDb()`, which is company-scoped.
 | `domains/` | Hostname attach/verify/SSL behind a swappable provider (`DOMAIN_PROVIDER`: Vercel, manual) |
 | `domains/custom.ts` | A company's own domains: add, TXT ownership check, primary, remove, daily re-check (UI in `src/app/(platform)/settings/domains`, cron `/api/platform/domains/cron`) |
 | `billing/` | Plans, subscriptions, entitlements (`getEntitlements()` — what the current company may use), usage metering, SaaS invoices. Contract in `billing/types.ts` |
-| `billing/metrics.ts`, `billing/events.ts` | Platform revenue metrics (MRR, ARR, churn, trial conversion, collections) for `/console/revenue`; append-only `subscription_events` history — subscription/trial code calls `recordSubscriptionEvent()` after every status or plan change |
+| `billing/metrics.ts`, `billing/events.ts`, `billing/backfill.ts` | Platform revenue & subscription analytics (MRR, ARR, ARPA, net new MRR, churn, trial conversion, plan/cycle mix, billed vs collected, GST) for `/platform/revenue` and the `/platform` dashboard cards; `backfill.ts` + `scripts/backfill-subscription-events.ts` seed history for companies that predate events; append-only `subscription_events` history — subscription/trial code calls `recordSubscriptionEvent()` after every status or plan change |
 | `request.ts` | Request origin / client key helpers |
 
 ## Where future phases go

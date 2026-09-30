@@ -14,6 +14,7 @@ import type { BillingInterval, CompanySubscription } from "@/lib/platform/billin
  *   trialing ................. trial_started (at createdAt)
  *   active/past_due/grace .... trial_started (createdAt) + activated (currentPeriodStart,
  *                              else subscription.updatedAt, never before createdAt)
+ *   grace already expired .... as above + suspended (at graceEndsAt)
  *   canceled/suspended ....... trial_started; if it was ever paid (has a
  *                              currentPeriodStart): activated + canceled/suspended
  *                              (at subscription.updatedAt), so its MRR ends at 0
@@ -94,6 +95,8 @@ export async function backfillSubscriptionEvents(opts: { apply?: boolean; now?: 
       const activatedAt = after(s.currentPeriodStart ?? s.updatedAt, createdAt);
       events.push({ ...base, type: "activated", mrr: paidMrr, at: activatedAt });
       if (!paying) events.push({ ...base, type: s.status === "canceled" ? "canceled" : "suspended", mrr: 0, at: after(s.updatedAt, activatedAt) });
+      // Grace already over: effectively suspended (same on-read rule as entitlements), so history ends at 0 too.
+      else if (s.status === "grace" && s.graceEndsAt && s.graceEndsAt <= now) events.push({ ...base, type: "suspended", mrr: 0, at: after(s.graceEndsAt, activatedAt) });
     }
     result.companies++;
     result.planned.push(...events);
