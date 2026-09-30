@@ -42,8 +42,9 @@ export async function processPaymentWebhook(
   headerEventId?: string | null
 ): Promise<{ ok: boolean; status: number; message: string }> {
   if (providerId === "razorpay") {
-    // Verified with THIS company's webhook secret (the company comes from the
-    // request's Host — Razorpay calls the URL shown in its settings). No secret → reject.
+    // Verified with THIS company's webhook secret. The company is the current
+    // scope: the id in the per-company webhook URL (runAsCompany), or the Host
+    // for the legacy URL. No secret → reject.
     const secret = (await resolveRazorpayCredentials("payments"))?.webhookSecret;
     if (!secret) return { ok: false, status: 400, message: "Webhooks aren't configured for this workspace" };
     if (!getPaymentProvider("razorpay").verifyWebhookSignature(rawBody, signature, secret)) {
