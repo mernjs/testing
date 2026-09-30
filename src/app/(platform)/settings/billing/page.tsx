@@ -11,12 +11,13 @@ import { getEntitlements } from "@/lib/platform/billing/entitlements";
 import { getPlan, listPlans } from "@/lib/platform/billing/plans";
 import { razorpayConfigured } from "@/lib/platform/billing/razorpay";
 import { hasLiveSubscription } from "@/lib/platform/billing/subscriptions";
-import { priceWithGst, type PlanOption } from "@/lib/platform/billing/billing-details";
+import type { PlanOption } from "@/lib/platform/billing/billing-details";
 import BillingManager, { type BillingView } from "@/components/platform/billing/BillingManager";
 import {
   cancelSubscriptionAction,
   changePlanAction,
   confirmCheckoutAction,
+  quoteAction,
   resumeSubscriptionAction,
   saveBillingDetailsAction,
   startCheckoutAction,
@@ -44,7 +45,7 @@ export default async function BillingSettingsPage() {
   const companyId = await currentCompanyId();
   const sub = await getCompanySubscription(companyId);
 
-  if (!sub || sub.status === "internal") {
+  if (!sub || (sub.status === "internal" && !sub.complimentary)) {
     return (
       <Shell>
         <GlassCard>
@@ -63,28 +64,30 @@ export default async function BillingSettingsPage() {
     );
   }
 
-  const [entitlements, plans, currentPlan, pendingPlan] = await Promise.all([
+  const [entitlements, plans, currentPlan, pendingPlan, configured] = await Promise.all([
     getEntitlements(),
     listPlans({ activeOnly: true }),
     getPlan(sub.planId),
     sub.pendingChange ? getPlan(sub.pendingChange.planId) : Promise.resolve(null),
+    razorpayConfigured(),
   ]);
+  const pricing = sub.pricing && sub.pricing.planId === sub.planId && sub.pricing.interval === sub.interval ? sub.pricing : null;
 
   const options: PlanOption[] = plans.map((p) => ({
     id: p._id,
     name: p.name,
     description: p.description,
     currency: p.currency,
-    monthly: priceWithGst(p.priceMonthly),
-    yearly: priceWithGst(p.priceYearly),
+    priceMonthly: p.priceMonthly,
+    priceYearly: p.priceYearly,
   }));
 
   const view: BillingView = {
-    configured: razorpayConfigured(),
+    configured,
     // Entitlements apply time-based transitions (expired trial/grace) before the daily sweep persists them.
     status: entitlements.status,
     planId: sub.planId,
-    planName: currentPlan?.name ?? sub.planId,
+    planName: sub.status === "internal" ? "Complimentary" : (currentPlan?.name ?? sub.planId),
     interval: sub.interval,
     trialDaysLeft: entitlements.trialDaysLeft,
     trialEndsAt: sub.trialEndsAt?.toISOString() ?? null,
@@ -92,7 +95,7 @@ export default async function BillingSettingsPage() {
     graceEndsAt: sub.graceEndsAt?.toISOString() ?? null,
     cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
     hasLive: hasLiveSubscription(sub),
-    hasPaymentMethod: Boolean(sub.provider?.subscriptionId),
+    chargedPerCycle: pricing ? { total: pricing.total, currency: pricing.currency, couponCode: pricing.couponCode } : null,
     pendingChange: sub.pendingChange
       ? { planId: sub.pendingChange.planId, planName: pendingPlan?.name ?? sub.pendingChange.planId, interval: sub.pendingChange.interval, effectiveAt: sub.pendingChange.effectiveAt?.toISOString() ?? null }
       : null,
@@ -111,6 +114,7 @@ export default async function BillingSettingsPage() {
             view={view}
             plans={options}
             actions={{
+              quote: quoteAction,
               saveDetails: saveBillingDetailsAction,
               startCheckout: startCheckoutAction,
               confirmCheckout: confirmCheckoutAction,
