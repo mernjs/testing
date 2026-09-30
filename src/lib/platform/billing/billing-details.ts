@@ -1,4 +1,4 @@
-import { GST_RATE, type BillingInterval, type CompanySubscription, type Plan } from "@/lib/platform/billing/types";
+import type { BillingInterval, CompanySubscription } from "@/lib/platform/billing/types";
 
 /**
  * Client-safe helpers for the subscription checkout: GST-inclusive prices and
@@ -98,29 +98,42 @@ export function validateBillingDetails(input: Partial<Record<keyof BillingDetail
   return { ok: true, value: { legalName, gstin: gstinRaw || null, address, state, email } };
 }
 
-export interface PlanPriceView {
-  net: number;
-  gst: number;
-  total: number;
+/** Tax on a pre-tax (or, when prices include tax, tax-inclusive) amount — settings-driven, never a constant. */
+export function taxTotals(taxable: number, gstRatePercent: number, pricesIncludeTax: boolean): { net: number; gst: number; total: number } {
+  const rate = Math.max(0, gstRatePercent);
+  if (pricesIncludeTax) {
+    const net = Math.round((taxable * 100) / (100 + rate));
+    return { net, gst: taxable - net, total: taxable };
+  }
+  const gst = Math.round((taxable * rate) / 100);
+  return { net: taxable, gst, total: taxable + gst };
 }
 
-/** What the plan picker shows for one plan (serializable). */
+/** A priced checkout, serializable for the billing page (built from `quoteCheckout`). */
+export interface PriceSummary {
+  planId: string;
+  planName: string;
+  interval: BillingInterval;
+  currency: string;
+  lines: { kind: "plan" | "addon" | "discount"; label: string; amount: number }[];
+  subtotal: number;
+  discount: number;
+  net: number;
+  gst: number;
+  gstRatePercent: number;
+  pricesIncludeTax: boolean;
+  total: number;
+  couponCode: string | null;
+  couponApplied: boolean;
+  couponError: string | null;
+}
+
+/** What the plan picker shows for one plan (serializable). Prices are catalogue list prices, pre-tax. */
 export interface PlanOption {
   id: string;
   name: string;
   description: string;
   currency: string;
-  monthly: PlanPriceView;
-  yearly: PlanPriceView;
-}
-
-/** Pre-tax price of a plan for an interval (smallest currency unit). */
-export function planPrice(plan: Pick<Plan, "priceMonthly" | "priceYearly">, interval: BillingInterval): number {
-  return interval === "yearly" ? plan.priceYearly : plan.priceMonthly;
-}
-
-/** Price, GST and total charged (smallest currency unit). The total is what Razorpay charges. */
-export function priceWithGst(net: number): { net: number; gst: number; total: number } {
-  const gst = Math.round(net * GST_RATE);
-  return { net, gst, total: net + gst };
+  priceMonthly: number;
+  priceYearly: number;
 }

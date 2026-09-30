@@ -68,9 +68,13 @@ export async function startTrial(companyId: string, planId?: string): Promise<Co
   return sub;
 }
 
-/** Partial update of a company's subscription (never the platform owner's). */
+/**
+ * Partial update of a company's subscription (never the platform owner's — the
+ * filter below excludes it). A non-owner company marked complimentary in the
+ * Platform Panel is stored as "internal" and can still be changed back.
+ */
 export async function updateCompanySubscription(companyId: string, patch: Partial<CompanySubscription>): Promise<void> {
   const current = await getCompanySubscription(companyId);
-  if (!current || current.status === "internal") return;
+  if (!current) return;
   await (await companies()).updateOne({ _id: companyId, isPlatformOwner: { $ne: true } }, { $set: { subscription: { ...current, ...patch, updatedAt: new Date() } } });
 }

@@ -2,14 +2,15 @@ import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import { PLANS_COLLECTION } from "@/lib/platform/billing/plans";
-import { planPrice, priceWithGst } from "@/lib/platform/billing/billing-details";
+import { getRazorpayCredentials, type RazorpayCredentials } from "@/lib/platform/billing/razorpay-config";
 import type { BillingInterval, Plan } from "@/lib/platform/billing/types";
 
 /**
  * Razorpay REST client for PLATFORM subscription billing — the platform
- * owner's own Razorpay account (`RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET`)
- * collecting from customer companies. Plain `fetch`, no SDK, so tests can
- * mock the network. Every call throws `RazorpayError` on a non-2xx answer.
+ * owner's own Razorpay account collecting from customer companies. The
+ * credentials come from the Platform Panel (`razorpay-config.ts`; env only as
+ * a fallback while nothing is saved). Plain `fetch`, no SDK, so tests can mock
+ * the network. Every call throws `RazorpayError` on a non-2xx answer.
  *
  * Separate from the FMS/HRMS Razorpay code, which acts for a company's own
  * customers and payees.
@@ -28,28 +29,27 @@ export class RazorpayError extends Error {
   }
 }
 
-export function razorpayConfigured(): boolean {
-  return Boolean(process.env.RAZORPAY_KEY_ID?.trim() && process.env.RAZORPAY_KEY_SECRET?.trim());
+export async function razorpayConfigured(): Promise<boolean> {
+  return (await getRazorpayCredentials()) !== null;
 }
 
 /** Public key id for Razorpay Checkout in the browser (safe to expose). */
-export function razorpayKeyId(): string {
-  return process.env.RAZORPAY_KEY_ID?.trim() ?? "";
+export async function razorpayKeyId(): Promise<string> {
+  return (await getRazorpayCredentials())?.keyId ?? "";
 }
 
-function credentials() {
-  const keyId = process.env.RAZORPAY_KEY_ID?.trim();
-  const secret = process.env.RAZORPAY_KEY_SECRET?.trim();
-  if (!keyId || !secret) throw new RazorpayError("Razorpay is not configured.", 0, "NOT_CONFIGURED");
-  return { keyId, secret };
+async function credentials(): Promise<RazorpayCredentials> {
+  const creds = await getRazorpayCredentials();
+  if (!creds) throw new RazorpayError("Razorpay is not configured.", 0, "NOT_CONFIGURED");
+  return creds;
 }
 
-async function call<T>(method: "GET" | "POST" | "PATCH", path: string, body?: unknown): Promise<T> {
-  const { keyId, secret } = credentials();
+async function call<T>(method: "GET" | "POST" | "PATCH", path: string, body?: unknown, creds?: RazorpayCredentials): Promise<T> {
+  const { keyId, keySecret } = creds ?? (await credentials());
   const res = await fetch(`${API}${path}`, {
     method,
     headers: {
-      Authorization: `Basic ${Buffer.from(`${keyId}:${secret}`).toString("base64")}`,
+      Authorization: `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString("base64")}`,
       ...(body === undefined ? {} : { "Content-Type": "application/json" }),
     },
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -58,6 +58,22 @@ async function call<T>(method: "GET" | "POST" | "PATCH", path: string, body?: un
   const data = (await res.json().catch(() => ({}))) as { error?: { description?: string; code?: string } };
   if (!res.ok) throw new RazorpayError(data.error?.description || `Razorpay request failed (${res.status})`, res.status, data.error?.code ?? null);
   return data as T;
+}
+
+/**
+ * Checks the saved keys against Razorpay with a harmless read (one plan).
+ * Never returns or logs the secret.
+ */
+export async function testRazorpayConnection(): Promise<{ ok: boolean; message: string }> {
+  const creds = await getRazorpayCredentials();
+  if (!creds) return { ok: false, message: "No keys saved yet (or the saved secret can't be decrypted — check PLATFORM_ENCRYPTION_KEY)." };
+  try {
+    await call<{ count?: number }>("GET", "/plans?count=1", undefined, creds);
+    return { ok: true, message: `Connected to Razorpay in ${creds.mode} mode with ${creds.keyId}.` };
+  } catch (err) {
+    if (err instanceof RazorpayError) return { ok: false, message: err.status === 401 ? "Razorpay rejected these keys (401). Check the key id and secret." : `Razorpay answered: ${err.message}` };
+    return { ok: false, message: "Couldn't reach Razorpay. Check the server's network access and try again." };
+  }
 }
 
 // ── Entities (only the fields we use) ────────────────────────────────────────
@@ -98,8 +114,8 @@ function safeEqualHex(expected: string, given: string): boolean {
 }
 
 /** Checkout handler signature: HMAC-SHA256(`payment_id|subscription_id`, key secret). */
-export function verifyCheckoutSignature(paymentId: string, subscriptionId: string, signature: string): boolean {
-  const secret = process.env.RAZORPAY_KEY_SECRET?.trim();
+export async function verifyCheckoutSignature(paymentId: string, subscriptionId: string, signature: string): Promise<boolean> {
+  const secret = (await getRazorpayCredentials())?.keySecret;
   if (!secret || !paymentId || !subscriptionId || !signature) return false;
   return safeEqualHex(createHmac("sha256", secret).update(`${paymentId}|${subscriptionId}`).digest("hex"), signature);
 }
@@ -125,41 +141,47 @@ export async function createCustomer(input: { name: string; email: string; gstin
 
 // ── Plans ────────────────────────────────────────────────────────────────────
 
-const knownPlanAmounts = new Map<string, number>();
+/** A Razorpay plan we created for one exact charge amount (stored on the catalogue plan). */
+export interface RazorpayPlanRef {
+  id: string;
+  interval: BillingInterval;
+  /** Tax-inclusive amount per cycle, smallest currency unit. */
+  amount: number;
+  currency: string;
+  /** The Razorpay key the plan lives under (test and live accounts don't share plans). */
+  keyId: string;
+  createdAt: Date;
+}
+
+type PlanWithRazorpayPlans = Plan & { razorpayPlans?: RazorpayPlanRef[] };
 
 /**
- * The Razorpay plan for one of our plans + interval, created lazily and
- * remembered in `billing_plans.provider.razorpay.<interval>`. Razorpay plans
- * are immutable, so when the catalogue price changes a new Razorpay plan is
- * created (existing subscribers keep theirs until they change plan).
- * The Razorpay amount is the GST-inclusive total.
+ * The Razorpay plan that charges exactly `amount` (tax-inclusive, from the
+ * checkout quote) every `interval` for our plan — created lazily and
+ * remembered in `billing_plans.razorpayPlans`. Razorpay plans are immutable,
+ * so a new price, coupon discount or add-on mix gets its own Razorpay plan;
+ * existing subscribers keep theirs until they change plan.
  */
-export async function ensureRazorpayPlan(plan: Plan, interval: BillingInterval): Promise<string> {
-  const amount = priceWithGst(planPrice(plan, interval)).total;
-  const existing = plan.provider?.razorpay?.[interval];
-  if (existing) {
-    let known = knownPlanAmounts.get(existing);
-    if (known === undefined) {
-      try {
-        const remote = await call<{ id: string; item?: { amount?: number } }>("GET", `/plans/${encodeURIComponent(existing)}`);
-        known = remote.item?.amount ?? -1;
-        knownPlanAmounts.set(existing, known);
-      } catch (err) {
-        if (!(err instanceof RazorpayError) || err.status !== 404) throw err;
-        known = -1;
-      }
-    }
-    if (known === amount) return existing;
-  }
-  const created = await call<{ id: string }>("POST", "/plans", {
-    period: interval === "yearly" ? "yearly" : "monthly",
-    interval: 1,
-    item: { name: `${plan.name} (${interval})`, amount, currency: plan.currency, description: `${plan.description} Includes 18% GST.`.slice(0, 250) },
-    notes: { planId: plan._id, interval },
-  });
-  knownPlanAmounts.set(created.id, amount);
-  // Narrow update: only this interval's provider id (the catalogue itself is owned by plans.ts).
-  await (await getPlatformDb()).collection<Plan>(PLANS_COLLECTION).updateOne({ _id: plan._id }, { $set: { [`provider.razorpay.${interval}`]: created.id, updatedAt: new Date() } });
+export async function ensureRazorpayPlan(plan: Plan, interval: BillingInterval, amount: number, currency: string): Promise<string> {
+  if (!Number.isInteger(amount) || amount <= 0) throw new RazorpayError("Invalid plan amount.", 0, "BAD_AMOUNT");
+  const creds = await credentials();
+  const col = (await getPlatformDb()).collection<PlanWithRazorpayPlans>(PLANS_COLLECTION);
+  const fresh = await col.findOne({ _id: plan._id }, { projection: { razorpayPlans: 1 } });
+  const hit = fresh?.razorpayPlans?.find((r) => r.keyId === creds.keyId && r.interval === interval && r.amount === amount && r.currency === currency);
+  if (hit) return hit.id;
+  const created = await call<{ id: string }>(
+    "POST",
+    "/plans",
+    {
+      period: interval === "yearly" ? "yearly" : "monthly",
+      interval: 1,
+      item: { name: `${plan.name} (${interval})`.slice(0, 100), amount, currency, description: (plan.description || plan.name).slice(0, 250) },
+      notes: { planId: plan._id, interval, purpose: "platform_subscription" },
+    },
+    creds,
+  );
+  const ref: RazorpayPlanRef = { id: created.id, interval, amount, currency, keyId: creds.keyId, createdAt: new Date() };
+  await col.updateOne({ _id: plan._id }, { $push: { razorpayPlans: ref } });
   return created.id;
 }
 
@@ -167,10 +189,11 @@ export async function ensureRazorpayPlan(plan: Plan, interval: BillingInterval):
 export async function findPlanByRazorpayId(razorpayPlanId: string): Promise<{ plan: Plan; interval: BillingInterval } | null> {
   if (!razorpayPlanId) return null;
   const plan = await (await getPlatformDb())
-    .collection<Plan>(PLANS_COLLECTION)
-    .findOne({ $or: [{ "provider.razorpay.monthly": razorpayPlanId }, { "provider.razorpay.yearly": razorpayPlanId }] });
+    .collection<PlanWithRazorpayPlans>(PLANS_COLLECTION)
+    .findOne({ $or: [{ "razorpayPlans.id": razorpayPlanId }, { "provider.razorpay.monthly": razorpayPlanId }, { "provider.razorpay.yearly": razorpayPlanId }] });
   if (!plan) return null;
-  return { plan, interval: plan.provider?.razorpay?.yearly === razorpayPlanId ? "yearly" : "monthly" };
+  const ref = plan.razorpayPlans?.find((r) => r.id === razorpayPlanId);
+  return { plan, interval: ref?.interval ?? (plan.provider?.razorpay?.yearly === razorpayPlanId ? "yearly" : "monthly") };
 }
 
 // ── Subscriptions ────────────────────────────────────────────────────────────
@@ -226,4 +249,9 @@ export async function cancelScheduledChanges(id: string): Promise<RazorpaySubscr
 export async function fetchInvoiceSubscriptionId(invoiceId: string): Promise<string | null> {
   const inv = await call<{ subscription_id?: string | null }>("GET", `/invoices/${encodeURIComponent(invoiceId)}`);
   return inv.subscription_id ?? null;
+}
+
+/** Refunds part of a captured payment (used for the unused part of a period on an immediate upgrade). */
+export async function refundPayment(paymentId: string, amount: number, notes: Record<string, string>): Promise<{ id: string; amount: number }> {
+  return call<{ id: string; amount: number }>("POST", `/payments/${encodeURIComponent(paymentId)}/refund`, { amount, notes });
 }
