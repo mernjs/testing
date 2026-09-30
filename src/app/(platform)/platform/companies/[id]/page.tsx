@@ -13,6 +13,9 @@ import { companyBaseUrl } from "@/lib/platform/tenancy/provisioning";
 import { requestOrigin } from "@/lib/platform/request";
 import StatusBadge from "../StatusBadge";
 import StatusControl from "./StatusControl";
+import CompanyAddonsCard from "./CompanyAddonsCard";
+import { getCompanyAddons, listAddons } from "@/lib/platform/billing/addons";
+import { describeAddonEffect } from "@/lib/platform/billing/catalog-types";
 
 export const metadata: Metadata = { title: "Company" };
 
@@ -32,6 +35,7 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
   const { host } = await requestOrigin();
   const base = companyBaseUrl(company.slug, host);
   const { onboarding: ob } = company;
+  const [allAddons, heldAddons] = company.isPlatformOwner ? [[], []] : await Promise.all([listAddons(), getCompanyAddons(company.id)]);
 
   return (
     <div className="space-y-4 p-1">
@@ -163,6 +167,17 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
             </CardContent>
           )}
         </GlassCard>
+
+        {!company.isPlatformOwner && (
+          <CompanyAddonsCard
+            companyId={company.id}
+            held={heldAddons.flatMap((h) => {
+              const a = allAddons.find((x) => x._id === h.addonId);
+              return [{ addonId: h.addonId, name: a?.name ?? h.addonId, effect: a ? describeAddonEffect(a) : "", quantity: h.quantity, complimentary: Boolean(h.complimentary) }];
+            })}
+            available={allAddons.filter((a) => a.active).map((a) => ({ id: a._id, name: a.name, maxQuantity: a.type === "module" ? 1 : a.maxQuantity }))}
+          />
+        )}
     </div>
   );
 }

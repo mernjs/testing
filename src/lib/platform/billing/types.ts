@@ -61,7 +61,18 @@ export interface CompanySubscription {
   provider: { id: "razorpay"; subscriptionId: string | null; customerId: string | null } | null;
   /** GST / billing details for invoices. */
   billingDetails?: { legalName: string; gstin: string | null; address: string; state: string; email: string } | null;
+  /** Purchased (or complimentary) add-ons — see `addons.ts`. Missing = none. */
+  addons?: CompanyAddon[];
   updatedAt: Date;
+}
+
+/** One add-on held by a company (`companies.subscription.addons[]`). */
+export interface CompanyAddon {
+  addonId: string;
+  quantity: number;
+  addedAt: Date;
+  /** Granted free by the platform: priced at 0 for this company. */
+  complimentary?: boolean;
 }
 
 /** Usage metrics metered per company per calendar month. */
