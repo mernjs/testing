@@ -160,7 +160,11 @@ async function main() {
   await check("Super Admin sees every entity", () => assert.deepEqual(keysOf(vAdmin), ENTITIES.map((e) => e.key).sort()));
   await check("finance-only, PMS manager, HR, sales, procurement roles each get exactly their entities", async () => {
     assert.deepEqual(keysOf(await view(A, user(["finance_manager"]))), FIN);
-    assert.deepEqual(keysOf(await view(A, user(["pms_manager"]))), PMS);
+    assert.deepEqual(keysOf(await view(A, user(["pms_admin"]))), PMS);
+    assert.deepEqual(keysOf(await view(A, user(["pms_manager"]))), ["clients", "employees", "timesheets"], "a project manager sees only their own projects in PMS, so no company-wide project/task/team data; clients and the timesheet review page (which shows everyone's) are panel-wide");
+    assert.equal((await view(A, user(["pms_manager"]))).restricted.some((r) => r.key === "projects"), true, "projects are listed as restricted by label");
+    assert.deepEqual(keysOf(await view(A, user(["pms_manager"], { "pms.canViewAllProjects": true }))), PMS, "the override that widens the PMS panel widens this too");
+    assert.deepEqual(keysOf(await view(A, user(["pms_admin"], { "pms.canViewAllProjects": false }))), ["clients", "employees", "timesheets"], "and the one that narrows it narrows this (timesheet review is a separate capability in PMS)");
     assert.deepEqual(keysOf(await view(A, user(["hr"]))), HR);
     assert.deepEqual(keysOf(await view(A, user(["lms_manager"]))), ["leads"]);
     assert.deepEqual(keysOf(await view(A, user(["procurement_manager"]))), ["expenses", "purchase_orders", "vendors"]);
@@ -175,8 +179,8 @@ async function main() {
       await rejected(A, v, { entity: "invoices", aggregates: [{ op: "count" }] }, "denied");
     }
   });
-  await check("PMS staff see employees as a name directory only; HR sees the full non-sensitive record", async () => {
-    const pm = await view(A, user(["pms_manager"]));
+  await check("People who see all projects in PMS see employees as a name directory only; HR sees the full non-sensitive record", async () => {
+    const pm = await view(A, user(["pms_admin"]));
     assert.deepEqual([...pm.entities.get("employees")!.fields.keys()].sort(), ["employeeCode", "firstName", "lastName"]);
     const hr = await view(A, user(["hr"]));
     assert.ok(hr.entities.get("employees")!.fields.has("joiningDate"));
@@ -185,7 +189,7 @@ async function main() {
   await check("relations exist only when the target entity is also permitted", async () => {
     const fin = await view(A, user(["finance_manager"]));
     assert.equal(fin.entities.get("invoices")!.relations.size, 0, "no client/project join for finance-only");
-    assert.deepEqual([...(await view(A, user(["pms_manager"]))).entities.get("projects")!.relations.keys()].sort(), ["client", "manager"]);
+    assert.deepEqual([...(await view(A, user(["pms_admin"]))).entities.get("projects")!.relations.keys()].sort(), ["client", "manager"]);
     assert.equal((await view(A, user(["hr"]))).entities.get("leave_requests")!.relations.size, 1, "leave -> employee for HR");
   });
   await check("restricted entities are listed by label only (to explain 'not available'), never with data", async () => {
@@ -274,8 +278,8 @@ async function main() {
   await check("employees assigned to a project (two joins, active assignments only)", async () => {
     const r = await ok(A, vAdmin, { entity: "project_members", select: [{ field: "employee.firstName", as: "first" }, { field: "employee.lastName", as: "last" }, { field: "role" }], filters: [{ field: "project.name", op: "eq", value: "Website Redesign" }, { field: "active", op: "eq", value: true }], sort: [{ by: "first" }] });
     assert.deepEqual(rows(r), [{ first: "Asha", last: "Menon", role: "developer" }, { first: "Ravi", last: "Rao", role: "qa" }]);
-    // PMS staff (directory view of employees) can answer it too.
-    const pm = await view(A, user(["pms_manager"]));
+    // A PMS admin (directory view of employees) can answer it too.
+    const pm = await view(A, user(["pms_admin"]));
     const r2 = await ok(A, pm, { entity: "project_members", select: [{ field: "employee.firstName", as: "first" }], filters: [{ field: "project.name", op: "contains", value: "website" }, { field: "active", op: "eq", value: true }], sort: [{ by: "first" }] });
     assert.deepEqual(rows(r2).map((x) => x.first), ["Asha", "Ravi"]);
   });
@@ -316,7 +320,7 @@ async function main() {
 
   console.log("security");
   const vFin = await view(A, user(["finance_manager"]));
-  const vPms = await view(A, user(["pms_manager"]));
+  const vPms = await view(A, user(["pms_admin"]));
   await check("a hidden entity is rejected and never run", async () => {
     const msg = await rejected(A, vFin, { entity: "clients", aggregates: [{ op: "count" }] }, "denied");
     assert.match(msg, /not available/);

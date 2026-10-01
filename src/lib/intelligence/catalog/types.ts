@@ -14,7 +14,7 @@ export interface EnumValue {
 }
 
 /** The access areas a grant can name: the cross-panel areas of `platform/access.ts` plus two Procurement areas. */
-export type IntelArea = "leads" | "clients" | "projects" | "tasks" | "invoices" | "employees" | "leave" | "procurement" | "expenses";
+export type IntelArea = "leads" | "clients" | "projects" | "tasks" | "invoices" | "employees" | "leave" | "procurement" | "expenses" | "timesheets";
 
 export interface FieldDef {
   key: string;

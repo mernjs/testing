@@ -211,7 +211,7 @@ export const ENTITIES: readonly EntityDef[] = [
     collection: TIMESHEETS_COLLECTION,
     module: "pms",
     dateField: "date",
-    access: [{ area: "projects" }],
+    access: [{ area: "timesheets" }],
     relations: [
       { key: "project", to: "projects", localField: "projectId", foreignField: "_id", label: "Project" },
       { key: "employee", to: "employees", localField: "employeeId", foreignField: "_id", label: "Employee" },
@@ -237,8 +237,8 @@ export const ENTITIES: readonly EntityDef[] = [
     collection: EMPLOYEES_COLLECTION,
     module: "hrms",
     dateField: "createdAt",
-    // HR (everything non-sensitive) — or PMS staff, who already see names on teams, tasks and timesheets (directory fields only).
-    access: [{ area: "employees" }, { area: "projects", fields: EMPLOYEE_DIRECTORY }, { area: "tasks", fields: EMPLOYEE_DIRECTORY }],
+    // HR (everything non-sensitive) — or people who see all projects / tasks / timesheets in PMS, who already see names on teams (directory fields only).
+    access: [{ area: "employees" }, { area: "projects", fields: EMPLOYEE_DIRECTORY }, { area: "tasks", fields: EMPLOYEE_DIRECTORY }, { area: "timesheets", fields: EMPLOYEE_DIRECTORY }],
     relations: [{ key: "department", to: "departments", localField: "professional.departmentId", foreignField: "_id", label: "Department" }],
     fields: [
       str("employeeCode", "Employee code"),

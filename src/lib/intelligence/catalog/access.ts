@@ -3,6 +3,7 @@ import { accessibleAreas } from "@/lib/platform/access";
 import { getEntitlements } from "@/lib/platform/billing/entitlements";
 import { enabledModules } from "@/lib/platform/onboarding/state";
 import { canManageExpenses, canManageFinance, canManageProcurement } from "@/lib/prms-roles";
+import { canReviewTimesheets, canViewAllProjects, hasPmsStaffRole, normalizePmsRoles } from "@/lib/pms-roles";
 import type { AccessGrant, EntityDef, IntelArea } from "@/lib/intelligence/catalog/types";
 
 /**
@@ -12,6 +13,10 @@ import type { AccessGrant, EntityDef, IntelArea } from "@/lib/intelligence/catal
  *    (platform/access.ts) — plan + enabled panel + role tier; the same rule behind the
  *    Staff Hub KPIs, global search and the "Ask about your business" box. People whose
  *    panel role is the self-service tier (employee portals) get nothing company-wide.
+ *  - PMS is tighter than the Ask box: the PMS panel scopes its project list to the projects a person manages or is a
+ *    member of unless they hold `canViewAllProjects` (pms_admin, Super Admin, or an override), so projects, project
+ *    members and tasks need that same tier. Timesheets need `canReviewTimesheets` (the panel's review page shows all).
+ *    Clients stay at the staff tier: the PMS client list shows every client to every staff role.
  *  - procurement (vendors, purchase orders): PRMS `canManageProcurement` or `canManageFinance`.
  *  - expenses: PRMS `canManageExpenses` (admin, procurement manager, finance). Department
  *    managers only see their own department's expenses in PRMS, so they get none here.
@@ -24,7 +29,19 @@ export interface IntelAccessUser {
 }
 
 export async function intelAreas(user: IntelAccessUser): Promise<Set<IntelArea>> {
-  const out = new Set<IntelArea>(await accessibleAreas(user));
+  const base = await accessibleAreas(user);
+  const out = new Set<IntelArea>(base);
+  // Re-derive the PMS areas from the PMS panel's own "see everything" rules (accessibleAreas only knows the staff tier).
+  const ctx0 = { roles: user.roles, permissionOverrides: user.permissionOverrides ?? null };
+  out.delete("projects");
+  out.delete("tasks");
+  if (base.has("projects") && hasPmsStaffRole(normalizePmsRoles([...user.roles]))) {
+    if (canViewAllProjects(ctx0)) {
+      out.add("projects");
+      out.add("tasks");
+    }
+    if (canReviewTimesheets(ctx0)) out.add("timesheets");
+  }
   const [entitlements, enabled] = await Promise.all([getEntitlements(), enabledModules()]);
   const prmsOn = (entitlements.modules === null || entitlements.modules.has("prms")) && (!enabled || enabled.has("prms"));
   if (prmsOn) {
