@@ -152,7 +152,7 @@ try {
     await page.getByRole("heading", { name: "Audit log", level: 1 }).waitFor();
     await page.selectOption("#audit-action", "platform_role");
     await page.waitForURL((u) => u.searchParams.get("action") === "platform_role", { timeout: 30_000 });
-    for (const a of ["platform_role.create", "platform_role.update", "platform_role.delete"]) await page.getByText(a, { exact: true }).first().waitFor();
+    for (const a of ["platform_role.create", "platform_role.update", "platform_role.delete"]) await page.locator("table").getByText(a, { exact: true }).first().waitFor();
   });
 
   await step("detail drawer shows the details JSON", async () => {
@@ -165,7 +165,7 @@ try {
   await step("text search narrows the log", async () => {
     await page.fill("#audit-q", roleName);
     await page.waitForURL((u) => u.searchParams.get("q") === roleName, { timeout: 30_000 });
-    await page.getByText("platform_role.create", { exact: true }).first().waitFor();
+    await page.locator("table").getByText("platform_role.create", { exact: true }).first().waitFor();
   });
 
   await step("CSV export downloads", async () => {

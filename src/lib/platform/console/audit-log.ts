@@ -95,6 +95,10 @@ export async function buildAuditQuery(f: AuditFilters): Promise<Filter<PlatformA
         { "target.id": re },
         { actorId: re },
         { companyId: re },
+        // The human names of what changed (role, plan, coupon, add-on, domain) live in the details.
+        { "details.name": re },
+        { "details.code": re },
+        { "details.domain": re },
         ...(actorIds.length ? [{ actorId: { $in: actorIds } }] : []),
         ...(companyIds.length ? [{ companyId: { $in: companyIds } }] : []),
       ],
