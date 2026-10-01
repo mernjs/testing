@@ -106,6 +106,11 @@ try {
   await step("sign-in of an owner whose setup is not complete lands on onboarding; the Dashboard link stays on the dashboard, with the setup strip", async () => {
     await signIn(page, COMPANY_URL, COMPANY_EMAIL, COMPANY_PASSWORD);
     if (pathOf(page) !== "/workspace/onboarding") return console.log("      (setup already complete for this company: landing/strip checks skipped)");
+    // The landing must STAY on the wizard: right after sign-in the login page refreshes in the background
+    // and used to bounce the owner on to /workspace, so settle before asserting.
+    await page.waitForLoadState("networkidle");
+    await page.waitForTimeout(3000);
+    assert.equal(pathOf(page), "/workspace/onboarding", "sign-in lands on the onboarding wizard and stays there");
     assert.equal(await page.locator("#setup-banner").count(), 0, "no strip on the wizard itself");
     await sidebar(page).getByRole("link", { name: "Dashboard", exact: true }).click();
     await page.waitForURL((u) => u.pathname === "/workspace", { timeout: 30_000 });

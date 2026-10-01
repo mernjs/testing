@@ -67,7 +67,8 @@ try {
   await step("the public sign-up form is one simple step: company, address, name, e-mail, password, terms", async () => {
     await page.goto(`${BASE}/signup`);
     await page.getByLabel("Company name").waitFor();
-    const names = await page.locator("form [name]").evaluateAll((els) => els.map((e) => e.getAttribute("name")).filter(Boolean).sort());
+    // React's server-action plumbing adds hidden "$ACTION_*" inputs; they aren't form fields.
+    const names = await page.locator("form [name]").evaluateAll((els) => els.map((e) => e.getAttribute("name")).filter((n) => n && !n.startsWith("$")).sort());
     assert.deepEqual(names, ["acceptTerms", "companyName", "email", "name", "password", "slug"]);
     assert.equal(await page.getByRole("button", { name: /next|continue|step/i }).count(), 0, "no multi-step wizard on the form");
   });

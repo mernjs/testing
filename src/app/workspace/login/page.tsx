@@ -3,13 +3,17 @@ import { getCurrentHubUser } from "@/lib/hub-auth";
 import BrandMark from "@/components/BrandMark";
 import LoginForm from "./LoginForm";
 import { safeNextPath } from "@/lib/workspace-session";
+import { loginLanding } from "@/lib/platform/onboarding/state";
 import { BrandName } from "@/components/platform/BrandProvider";
 
 export default async function HubLoginPage({ searchParams }: { searchParams: Promise<{ next?: string | string[] }> }) {
   // Where to go after sign-in: only a same-origin path survives `safeNextPath` (no open redirect).
   const next = safeNextPath((await searchParams).next);
   const user = await getCurrentHubUser();
-  if (user) redirect(user.mustChangePassword ? "/workspace/change-password" : (next ?? "/workspace"));
+  // Already signed in (including the moment right after the login action sets the cookie and this page
+  // refreshes): the same landing rule as the login action, so an owner with open setup is never sent past
+  // the onboarding wizard by this redirect.
+  if (user) redirect(user.mustChangePassword ? "/workspace/change-password" : await loginLanding(user.roles, next));
 
   return (
     <div className="flex min-h-screen">
