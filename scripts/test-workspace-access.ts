@@ -19,8 +19,29 @@ import { recordUsage } from "@/lib/platform/billing/usage";
 import { meterStorage } from "@/lib/platform/billing/enforce";
 import { rolesForPreset } from "@/lib/platform/onboarding/catalog";
 import { createHubSession, getSessionHubUser } from "@/lib/hub-auth";
-import { createAdminSession, resolveAdminUser } from "@/lib/admin-auth";
-import { NAV_KEYS, NAV_SECTIONS } from "@/lib/workspace/nav";
+import fs from "node:fs";
+import path from "node:path";
+import { createHash, randomBytes } from "node:crypto";
+import { safeNextPath, workspaceLoginUrl, workspaceSessionAccountId } from "@/lib/workspace-session";
+import { getHrmsUserForAccount } from "@/lib/hrms-auth";
+import { getPmsUserForAccount } from "@/lib/pms-auth";
+import { getFmsUserForAccount } from "@/lib/fms-auth";
+import { getLmsUserForAccount } from "@/lib/lms-auth";
+import { getPrmsUserForAccount } from "@/lib/prms-auth";
+import { getTmsUserForAccount } from "@/lib/tms-auth";
+import { getOtsUserForAccount } from "@/lib/ots-auth";
+import { getSopUserForAccount } from "@/lib/sop-auth";
+import { getDlmsUserForAccount } from "@/lib/dlms-auth";
+import { getCmsUserForAccount } from "@/lib/cms-auth";
+import { getSeoUserForAccount } from "@/lib/seo-auth";
+import { getSmmsUserForAccount } from "@/lib/smms-auth";
+import { getAibotsUserForAccount } from "@/lib/aibots-auth";
+import { getChatUserForAccount } from "@/lib/messenger-auth";
+import { delegatedManagerBlock } from "@/lib/workspace/admin-users";
+import { notify as notifyWorkspace } from "@/lib/platform/notifications";
+import { notify as notifyPms } from "@/lib/pms/notifications";
+import { listWorkspaceNotifications, markAllWorkspaceNotificationsRead, markWorkspaceNotificationRead, seesPanelNotifications, workspaceUnreadCount } from "@/lib/workspace/notifications";
+import { MANAGE_PERMISSIONS, NAV_KEYS, NAV_SECTIONS } from "@/lib/workspace/nav";
 import { checkWorkspaceAccess, resolveWorkspaceNav, type WorkspaceUser } from "@/lib/workspace/access";
 import { getCompanyBillingHistory, getCompanySecurity, getCompanyUsage, listCompanyIntegrations, paymentsFromInvoices } from "@/lib/workspace/company";
 import { ALL_KNOWN_ROLES } from "@/lib/workspace/role-catalog";
@@ -33,7 +54,9 @@ async function check(name: string, fn: () => Promise<void> | void) {
   console.log(`  ✓ ${name}`);
 }
 
-const ADMIN_KEYS = NAV_KEYS.filter((k) => k.startsWith("admin."));
+const MANAGE_KEYS = NAV_KEYS.filter((k) => k.startsWith("manage."));
+/** Growth has no Training panel, so its registers are not offered either. */
+const GROWTH_MANAGE_KEYS = MANAGE_KEYS.filter((k) => !k.startsWith("manage.tms."));
 const COMPANY_KEYS = NAV_KEYS.filter((k) => k.startsWith("company."));
 
 async function main() {
@@ -70,7 +93,7 @@ async function main() {
   const finance = await account(acme, "fin@acme.test", preset("finance"));
   const sales = await account(acme, "sales@acme.test", preset("sales"));
   // A developer the Super Admin gave two single capabilities, and took one away.
-  const tuned = await account(acme, "tuned@acme.test", preset("developer"), { permissionOverrides: { "lms.canViewAnalytics": true, "portal.isPortalAdmin": true, "workspace.canViewAnalytics": false } });
+  const tuned = await account(acme, "tuned@acme.test", preset("developer"), { permissionOverrides: { "lms.canViewAnalytics": true, "portal.isPortalAdmin": true, "workspace.canViewAnalytics": false, "workspace.manageProjects": true } });
   const noRoles = await account(acme, "nobody@acme.test", []);
   const smallAdmin = await account(small, "admin@small.test", ["super_admin"]);
   const smallFinance = await account(small, "fin@small.test", preset("finance"));
@@ -100,7 +123,7 @@ async function main() {
   console.log("catalogs");
   await check("the nav uses only roles and permissions that exist in the catalogs", () => {
     for (const p of ["hr", "developer", "finance", "sales"]) for (const r of preset(p)) assert.ok(ALL_KNOWN_ROLES.includes(r), `role ${r}`);
-    for (const k of ["lms.canViewAnalytics", "portal.isPortalAdmin", "workspace.canViewAnalytics"]) assert.ok(ALL_PERMISSION_KEYS.includes(k), `permission ${k}`);
+    for (const k of ["lms.canViewAnalytics", "portal.isPortalAdmin", "workspace.canViewAnalytics", ...Object.values(MANAGE_PERMISSIONS)]) assert.ok(ALL_PERMISSION_KEYS.includes(k), `permission ${k}`);
     assert.equal(new Set(NAV_KEYS).size, NAV_KEYS.length, "nav keys are unique");
   });
 
@@ -122,13 +145,16 @@ async function main() {
   }
 
   console.log("who sees what");
-  await check("company super admin: every company and admin item, the plan's panels, no Platform link", async () => {
+  const ownerKeys = await allowed(owner, ownerAdmin);
+  await check("company super admin: every company and management item of the plan's panels, no Platform link", async () => {
     const a = await allowed(acme, admin);
-    for (const k of [...COMPANY_KEYS, ...ADMIN_KEYS, "dashboard", "account.notifications", "account.password"]) assert.ok(a.has(k), k);
+    for (const k of [...COMPANY_KEYS, ...GROWTH_MANAGE_KEYS, "dashboard", "account.notifications", "account.password"]) assert.ok(a.has(k), k);
+    for (const k of MANAGE_KEYS.filter((x) => x.startsWith("manage.tms."))) assert.ok(!a.has(k), `${k}: Training is not in the plan`);
+    assert.ok(MANAGE_KEYS.every((k) => ownerKeys.has(k)), "the unlimited owner company gets every register");
     for (const k of ["panel.hrms", "panel.pms", "panel.fms", "panel.lms", "panel.messenger", "analytics.fms", "analytics.portal", "analytics.workspace"]) assert.ok(a.has(k), k);
     assert.ok(!a.has("platform.panel"), "tenant never sees the Platform link");
     const nav = await navOf(acme, admin);
-    assert.deepEqual(nav.sections.map((s) => s.key), ["dashboard", "panels", "analytics", "admin", "company", "account"]);
+    assert.deepEqual(nav.sections.map((s) => s.key), ["dashboard", "panels", "analytics", "manage", "company", "account"]);
     // Growth has no Training / Social / AI Bots: locked on the hub, absent from the nav.
     assert.ok(!a.has("panel.tms") && nav.lockedPanels.includes("tms"));
     assert.ok(!a.has("analytics.tms"));
@@ -136,18 +162,18 @@ async function main() {
   await check("HR manager: HR panel and analytics, nothing of company admin or company settings", async () => {
     const a = await allowed(acme, hr);
     for (const k of ["panel.hrms", "panel.lms", "panel.messenger", "panel.sop", "panel.ots", "analytics.hrms", "analytics.messenger", "analytics.workspace"]) assert.ok(a.has(k), k);
-    for (const k of [...COMPANY_KEYS, ...ADMIN_KEYS, "panel.pms", "panel.fms", "analytics.fms", "analytics.pms", "analytics.lms", "analytics.portal", "platform.panel"]) assert.ok(!a.has(k), k);
+    for (const k of [...COMPANY_KEYS, ...MANAGE_KEYS, "panel.pms", "panel.fms", "analytics.fms", "analytics.pms", "analytics.lms", "analytics.portal", "platform.panel"]) assert.ok(!a.has(k), k);
     assert.deepEqual((await navOf(acme, hr)).sections.map((s) => s.key), ["dashboard", "panels", "analytics", "account"]);
   });
   await check("PMS employee: own panels only; lead and portal analytics are not theirs", async () => {
     const a = await allowed(acme, dev);
     for (const k of ["panel.pms", "panel.hrms", "panel.prms", "panel.dlms", "analytics.pms", "analytics.hrms", "analytics.prms"]) assert.ok(a.has(k), k);
-    for (const k of ["panel.fms", "analytics.fms", "analytics.lms", "analytics.portal", "admin.dashboard", "company.billing", "company.users"]) assert.ok(!a.has(k), k);
+    for (const k of ["panel.fms", "analytics.fms", "analytics.lms", "analytics.portal", "manage.command-center", "company.billing", "company.users"]) assert.ok(!a.has(k), k);
   });
   await check("finance user: Finance panel and analytics", async () => {
     const a = await allowed(acme, finance);
     assert.ok(a.has("panel.fms") && a.has("analytics.fms"));
-    assert.ok(!a.has("panel.pms") && !a.has("company.invoices") && !a.has("admin.prms.payments"));
+    assert.ok(!a.has("panel.pms") && !a.has("company.invoices") && !a.has("manage.prms.payments"));
   });
   await check("sales manager: lead analytics through the LMS role", async () => {
     assert.ok((await allowed(acme, sales)).has("analytics.lms"));
@@ -158,7 +184,8 @@ async function main() {
     assert.ok(a.has("analytics.lms") && !base.has("analytics.lms"), "granted lms.canViewAnalytics");
     assert.ok(a.has("analytics.portal") && !base.has("analytics.portal"), "granted portal.isPortalAdmin");
     assert.ok(!a.has("analytics.workspace") && base.has("analytics.workspace"), "denied workspace.canViewAnalytics");
-    assert.ok(!a.has("admin.dashboard") && !a.has("company.billing"), "overrides never open company admin");
+    assert.ok(a.has("manage.pms.projects") && a.has("manage.pms.timesheets") && !base.has("manage.pms.projects"), "granted workspace.manageProjects");
+    assert.ok(!a.has("manage.command-center") && !a.has("company.users") && !a.has("manage.prms.vendors") && !a.has("company.billing"), "one grant opens only its own pages");
   });
   await check("an account without roles gets the dashboard, the open CRM and its own account pages", async () => {
     const a = await allowed(acme, noRoles);
@@ -194,9 +221,9 @@ async function main() {
     await runAsCompany(owner, async () => (await getDb()).collection("admin_users").updateOne({ _id: ownerHr._id }, { $set: { platformRoleId: "owner" } }));
     const a = await allowed(owner, ownerHr);
     assert.ok(a.has("platform.panel"));
-    assert.ok(!a.has("company.billing") && !a.has("admin.dashboard"), "platform access is not company admin");
+    assert.ok(!a.has("company.billing") && !a.has("manage.command-center"), "platform access is not company management");
     await runAsCompany(owner, async () => (await getDb()).collection("admin_users").updateOne({ _id: ownerHr._id }, { $unset: { platformRoleId: "" } }));
-    assert.ok((await allowed(owner, ownerRevoked)).has("company.billing"), "revoked platform access keeps company admin");
+    assert.ok((await allowed(owner, ownerRevoked)).has("company.billing"), "revoked platform access keeps company management");
   });
   await check("the nav never contains a Platform Panel page other than the single link", async () => {
     const nav = await navOf(owner, ownerAdmin);
@@ -204,31 +231,184 @@ async function main() {
     assert.deepEqual(platformLinks.map((i) => i.href), ["/platform"]);
   });
 
-  console.log("Command Center with the Workspace session");
-  await check("super admin: the hub session opens /admin; other roles are refused", async () => {
-    const a = await runAsCompany(acme, () => resolveAdminUser(null, admin.hubToken));
-    assert.equal(a?.email, "admin@acme.test");
-    assert.deepEqual(a?.roles, ["super_admin"]);
-    for (const u of [hr, dev, finance, tuned, noRoles]) assert.equal(await runAsCompany(acme, () => resolveAdminUser(null, u.hubToken)), null);
-    assert.equal(await runAsCompany(acme, () => resolveAdminUser(null, null)), null);
-    assert.equal(await runAsCompany(acme, () => resolveAdminUser("bogus", "bogus")), null);
+  console.log("moved pages, actions and APIs are guarded with their own nav key");
+  const ROOT = path.join(process.cwd(), "src/app");
+  const walk = (dir: string): string[] => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(dir, e.name)) : [path.join(dir, e.name)]));
+  const MOVED = ["command-center", "users", "activity-log", "documents", "crm", "pms", "prms", "tms", "yashchat", "portal", "careers", "chatbot"];
+  const keyOf = (rel: string) => {
+    const [a, b] = rel.split(path.sep);
+    if (a === "users") return "company.users";
+    return ["command-center", "activity-log", "documents"].includes(a) ? `manage.${a}` : `manage.${a}.${b}`;
+  };
+  await check("every moved page calls requireWorkspaceAccess with the key of its own path", () => {
+    let pages = 0;
+    for (const d of MOVED) {
+      for (const file of walk(path.join(ROOT, "workspace/(protected)", d)).filter((f) => f.endsWith("page.tsx"))) {
+        const key = keyOf(path.relative(path.join(ROOT, "workspace/(protected)"), file));
+        assert.ok(NAV_KEYS.includes(key), `${file}: ${key} is not a nav key`);
+        assert.ok(fs.readFileSync(file, "utf8").includes(`requireWorkspaceAccess("${key}")`), `${file} must guard with ${key}`);
+        pages++;
+      }
+    }
+    assert.equal(pages, 33);
   });
-  await check("the admin session still works on its own", async () => {
-    const token = await runAsCompany(acme, () => createAdminSession(admin._id));
-    assert.equal((await runAsCompany(acme, () => resolveAdminUser(token, null)))?.email, "admin@acme.test");
+  await check("every server action of a moved page calls requireWorkspaceAction with that key", () => {
+    let actions = 0;
+    for (const d of MOVED) {
+      for (const file of walk(path.join(ROOT, "workspace/(protected)", d)).filter((f) => f.endsWith("actions.ts"))) {
+        const key = keyOf(path.relative(path.join(ROOT, "workspace/(protected)"), file));
+        const src = fs.readFileSync(file, "utf8");
+        const exported = (src.match(/^export async function /gm) ?? []).length;
+        const guarded = src.split(`requireWorkspaceAction("${key}")`).length - 1;
+        assert.ok(exported > 0 && guarded === exported, `${file}: ${exported} actions, ${guarded} guards`);
+        actions += exported;
+      }
+    }
+    assert.ok(actions >= 80, `${actions} actions`);
   });
-  await check("a session of one company opens nothing in another", async () => {
-    assert.equal(await runAsCompany(beta, () => resolveAdminUser(null, admin.hubToken)), null);
-    assert.equal(await runAsCompany(beta, () => getSessionHubUser(admin.hubToken)), null);
+  await check("every /api/workspace route authorizes with the key of its page; no /api/admin left", () => {
+    const routes = walk(path.join(ROOT, "api/workspace")).filter((f) => f.endsWith("route.ts"));
+    assert.equal(routes.length, 33);
+    for (const file of routes) {
+      const key = keyOf(path.relative(path.join(ROOT, "api/workspace"), file));
+      assert.ok(NAV_KEYS.includes(key), `${file}: ${key}`);
+      const src = fs.readFileSync(file, "utf8");
+      assert.ok(src.includes(`authorizeWorkspaceApi("${key}")`) && src.includes("if (!auth.ok) return auth.response;"), `${file} must authorize with ${key}`);
+    }
+    assert.ok(!fs.existsSync(path.join(ROOT, "admin")) && !fs.existsSync(path.join(ROOT, "api/admin")), "the admin routes are gone");
   });
-  await check("losing super_admin closes /admin for the existing session at once", async () => {
+  await check("each moved page key per role: super admin yes, every other role no, single grants only their own", async () => {
+    for (const key of GROWTH_MANAGE_KEYS.concat("company.users")) {
+      assert.equal(await runAsCompany(acme, () => checkWorkspaceAccess(admin.user, key)), true, key);
+      for (const u of [hr, dev, finance, sales, noRoles]) assert.equal(await runAsCompany(acme, () => checkWorkspaceAccess(u.user, key)), false, key);
+      assert.equal(await runAsCompany(acme, () => checkWorkspaceAccess(tuned.user, key)), key.startsWith("manage.pms."), key);
+      assert.equal(await runAsCompany(beta, () => checkWorkspaceAccess(hr.user, key)), false, "roles of another company's user change nothing here");
+    }
+  });
+  await check("registers of a panel outside the plan or switched off are closed even to the super admin (F12)", async () => {
+    for (const k of ["manage.pms.projects", "manage.crm.clients", "manage.crm.leads", "manage.command-center", "company.users"]) assert.ok((await allowed(small, smallAdmin)).has(k), k);
+    for (const k of ["manage.prms.vendors", "manage.tms.students", "manage.portal.users"]) assert.equal(await runAsCompany(small, () => checkWorkspaceAccess(smallAdmin.user, k)), false, k);
+    await db.collection("companies").updateOne({ _id: beta as never }, { $set: { enabledModules: ["workspace", "admin", "messenger", "hrms"] } });
+    assert.equal(await runAsCompany(beta, () => checkWorkspaceAccess(betaAdmin.user, "manage.pms.projects")), false);
+    assert.equal(await runAsCompany(beta, () => checkWorkspaceAccess(betaAdmin.user, "manage.yashchat.channels")), true, "core panel");
+    await db.collection("companies").updateOne({ _id: beta as never }, { $unset: { enabledModules: "" } });
+  });
+  await check("the Command Center permission opens the full analytics of every panel in the plan", async () => {
+    const exec = await account(acme, "exec@acme.test", preset("developer"), { permissionOverrides: { "workspace.viewCommandCenter": true } });
+    const a = await allowed(acme, exec);
+    for (const k of ["manage.command-center", "analytics.fms", "analytics.lms", "analytics.portal"]) assert.ok(a.has(k), k);
+    assert.ok(!a.has("analytics.tms") && !a.has("company.users") && !a.has("manage.activity-log"));
+    assert.equal(await runAsCompany(acme, () => seesPanelNotifications(exec.user)), true);
+    await runAsCompany(acme, async () => (await getDb()).collection("admin_users").deleteOne({ _id: exec._id }));
+  });
+  await check("a delegated user manager can't grant Super Admin, touch a Super Admin or edit overrides", async () => {
+    await runAsCompany(acme, async () => {
+      const delegate = { roles: preset("hr") };
+      assert.equal(await delegatedManagerBlock(admin.user, { targetId: admin.user.id, roles: ["super_admin"], overrides: true }), null, "Super Admins are not limited");
+      assert.match((await delegatedManagerBlock(delegate, { roles: ["employee", "super_admin"] })) ?? "", /grant the Super Admin role/);
+      assert.match((await delegatedManagerBlock(delegate, { targetId: admin.user.id })) ?? "", /Super Admin's account/);
+      assert.match((await delegatedManagerBlock(delegate, { targetId: dev.user.id, overrides: true })) ?? "", /permission overrides/);
+      assert.equal(await delegatedManagerBlock(delegate, { targetId: dev.user.id, roles: ["pms_employee"] }), null);
+    });
+  });
+
+  console.log("one company sign-in");
+  const PANELS: [string, (id: ObjectId) => Promise<unknown>][] = [
+    ["hrms", getHrmsUserForAccount], ["pms", getPmsUserForAccount], ["fms", getFmsUserForAccount], ["lms", getLmsUserForAccount], ["prms", getPrmsUserForAccount],
+    ["tms", getTmsUserForAccount], ["ots", getOtsUserForAccount], ["sop", getSopUserForAccount], ["dlms", getDlmsUserForAccount], ["cms", getCmsUserForAccount],
+    ["seo", getSeoUserForAccount], ["smms", getSmmsUserForAccount], ["aibots", getAibotsUserForAccount], ["messenger", getChatUserForAccount],
+  ];
+  /** What a panel's auth resolves for a request that carries only the Workspace session cookie. */
+  const panelUser = (companyId: string, hubToken: string | null, load: (id: ObjectId) => Promise<unknown>) =>
+    runAsCompany(companyId, async () => {
+      const id = await workspaceSessionAccountId(hubToken);
+      return id ? load(id) : null;
+    });
+  await check("the Workspace session opens all 14 panels for a super admin", async () => {
+    for (const [name, load] of PANELS) assert.ok(await panelUser(acme, admin.hubToken, load), name);
+  });
+  await check("for other roles it opens exactly the panels their roles allow", async () => {
+    const opens = async (u: { hubToken: string }) => (await Promise.all(PANELS.map(async ([name, load]) => ((await panelUser(acme, u.hubToken, load)) ? name : null)))).filter(Boolean);
+    assert.deepEqual(await opens(hr), ["hrms", "lms", "ots", "sop", "messenger"]);
+    assert.deepEqual(await opens(dev), ["hrms", "pms", "lms", "prms", "ots", "sop", "dlms", "messenger"]);
+    assert.deepEqual(await opens(noRoles), ["lms"], "the CRM has no role gate; nothing else opens");
+    for (const u of [hr, dev, noRoles]) {
+      const nav = await allowed(acme, u);
+      // The sidebar offers a panel only when the panel's own auth would let the account in (the plan can hide more).
+      for (const [name, load] of PANELS) if (nav.has(`panel.${name}`)) assert.ok(await panelUser(acme, u.hubToken, load), `${name} is listed but would refuse`);
+    }
+  });
+  await check("another company's session, no session and a made-up token open no panel", async () => {
+    for (const [name, load] of PANELS) {
+      assert.equal(await panelUser(beta, admin.hubToken, load), null, `${name}: other company's session`);
+      assert.equal(await panelUser(acme, null, load), null, name);
+      assert.equal(await panelUser(acme, "bogus", load), null, name);
+    }
+  });
+  await check("an old admin-panel session grants nothing", async () => {
+    const token = randomBytes(32).toString("hex");
+    await runAsCompany(acme, async () =>
+      (await getDb()).collection("admin_sessions").insertOne({ tokenHash: createHash("sha256").update(token).digest("hex"), adminId: admin._id, createdAt: now, expiresAt: new Date(now.getTime() + 86_400_000) }),
+    );
+    assert.equal(await runAsCompany(acme, () => workspaceSessionAccountId(token)), null);
+    assert.equal(await runAsCompany(acme, () => getSessionHubUser(token)), null);
+    for (const [name, load] of PANELS) assert.equal(await panelUser(acme, token, load), null, name);
+    const reads = walk(path.join(process.cwd(), "src")).filter((f) => /\.tsx?$/.test(f) && fs.readFileSync(f, "utf8").includes('"admin_session"'));
+    assert.deepEqual(reads.map((f) => path.basename(f)), ["cross-module-sso.ts"], "the cookie is only ever deleted");
+    assert.ok(!fs.existsSync(path.join(process.cwd(), "src/lib/admin-auth.ts")));
+  });
+  await check("losing a role closes the panel and the pages for the existing session at once", async () => {
     const temp = await account(acme, "temp@acme.test", ["super_admin"]);
-    assert.ok(await runAsCompany(acme, () => resolveAdminUser(null, temp.hubToken)));
+    assert.ok(await panelUser(acme, temp.hubToken, getFmsUserForAccount));
     await runAsCompany(acme, async () => (await getDb()).collection("admin_users").updateOne({ _id: temp._id }, { $set: { roles: preset("hr") } }));
-    assert.equal(await runAsCompany(acme, () => resolveAdminUser(null, temp.hubToken)), null);
+    assert.equal(await panelUser(acme, temp.hubToken, getFmsUserForAccount), null);
     const fresh = await runAsCompany(acme, () => getSessionHubUser(temp.hubToken));
-    assert.equal(await runAsCompany(acme, () => checkWorkspaceAccess(fresh!, "company.billing")), false);
+    for (const k of ["company.billing", "company.users", "manage.command-center"]) assert.equal(await runAsCompany(acme, () => checkWorkspaceAccess(fresh!, k)), false, k);
     await runAsCompany(acme, async () => (await getDb()).collection("admin_users").deleteOne({ _id: temp._id }));
+  });
+  await check("every panel's /login is a redirect to the Workspace sign-in; no panel keeps its own form", () => {
+    for (const [name] of PANELS) {
+      const dir = path.join(ROOT, name, "login");
+      assert.deepEqual(fs.readdirSync(dir), ["page.tsx"], name);
+      assert.ok(fs.readFileSync(path.join(dir, "page.tsx"), "utf8").includes(`redirect(workspaceLoginUrl("/${name}"))`), name);
+    }
+  });
+  await check("return path after sign-in: same-origin paths only", () => {
+    for (const ok of ["/hrms", "/pms/projects?tab=1", "/workspace/users"]) assert.equal(safeNextPath(ok), ok);
+    for (const bad of ["//evil.example", "https://evil.example", "/\\evil.example", "hrms", "", "/workspace/login", "/workspace/login?next=/x", "/a\nb", "/x?u=http://evil.example", ["/hrms"], null, undefined, "/" + "a".repeat(600)]) assert.equal(safeNextPath(bad), null, String(bad));
+    assert.equal(workspaceLoginUrl("/hrms"), "/workspace/login?next=%2Fhrms");
+    assert.equal(workspaceLoginUrl("//evil.example"), "/workspace/login");
+  });
+
+  console.log("one notification feed");
+  await check("workspace and panel notifications in one list; mark-read goes to the right store", async () => {
+    await runAsCompany(acme, async () => {
+      await notifyWorkspace({ to: { userId: admin.user.id }, title: "From an automation", url: "/workspace" });
+      await notifyWorkspace({ to: { userId: hr.user.id }, title: "For HR", url: "/hrms" });
+      await notifyPms({ recipientUserId: admin.user.id, type: "task_assigned", title: "From Projects", body: null, link: "/pms" } as never);
+      await notifyPms({ recipientUserId: hr.user.id, type: "task_assigned", title: "HR's own PMS item", body: null, link: "/pms" } as never);
+
+      const adminUser = (await getSessionHubUser(admin.hubToken))!;
+      const hrUser = (await getSessionHubUser(hr.hubToken))!;
+      assert.equal(await seesPanelNotifications(hrUser), false);
+      const list = await listWorkspaceNotifications(adminUser);
+      assert.deepEqual(list.map((n) => [n.source, n.title]).sort(), [["pms", "From Projects"], ["workspace", "From an automation"]]);
+      assert.equal(await workspaceUnreadCount(adminUser), 2);
+      // Without the Command Center permission: the Workspace's own notifications only.
+      assert.deepEqual((await listWorkspaceNotifications(hrUser)).map((n) => n.title), ["For HR"]);
+      assert.equal(await workspaceUnreadCount(hrUser), 1);
+
+      const pmsItem = list.find((n) => n.source === "pms")!;
+      await markWorkspaceNotificationRead(hrUser, "pms", pmsItem.id); // someone else's: no effect
+      assert.equal(await workspaceUnreadCount(adminUser), 2);
+      await markWorkspaceNotificationRead(adminUser, "pms", pmsItem.id);
+      assert.equal(await workspaceUnreadCount(adminUser), 1);
+      assert.equal((await listWorkspaceNotifications(adminUser)).find((n) => n.source === "pms")!.read, true);
+      await markAllWorkspaceNotificationsRead(adminUser);
+      assert.equal(await workspaceUnreadCount(adminUser), 0);
+      assert.equal(await workspaceUnreadCount(hrUser), 1, "other people's notifications are untouched");
+    });
+    assert.deepEqual(await runAsCompany(beta, async () => (await listWorkspaceNotifications((await getSessionHubUser(betaAdmin.hubToken))!)).length), 0);
   });
 
   console.log("tenant isolation of the company pages");

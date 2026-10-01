@@ -1,8 +1,8 @@
 /**
- * Browser test for the Workspace as the company-level root: one sign-in, a
- * permission-driven sidebar, the company pages inside the Workspace frame,
- * the Command Center (/admin) without a second login and a way back, and no
- * Platform Panel for a tenant company. Against a RUNNING server (production
+ * Browser test for the Workspace as the company's single place: one sign-in, a
+ * permission-driven sidebar, the company pages and the former admin pages
+ * inside the Workspace, panels without a second login, old /admin links
+ * redirected, sign-out everywhere, and no Platform Panel for a tenant company. Against a RUNNING server (production
  * build recommended).
  *
  *   TEST_COMPANY_URL=http://acme.localhost:3006 TEST_COMPANY_EMAIL=... TEST_COMPANY_PASSWORD=... \
@@ -95,24 +95,54 @@ try {
     await sidebar(page).waitFor();
   });
 
-  await step("sidebar: Dashboard, Panels, Analytics, Company admin, Company, Account — and no Platform section", async () => {
+  await step("sidebar: Dashboard, Panels, Analytics, Management, Company, Account — and no Platform section", async () => {
     await sidebar(page).getByRole("link", { name: "Dashboard", exact: true }).waitFor();
-    for (const key of ["panels", "analytics", "admin", "company", "account"]) await section(page, key).first().waitFor({ state: "attached" });
+    for (const key of ["panels", "analytics", "manage", "company", "account"]) await section(page, key).first().waitFor({ state: "attached" });
     assert.equal(await section(page, "platform").count(), 0, "tenant has no Platform section");
     assert.equal(await page.locator('a[href^="/platform"]').count(), 0, "no Platform link anywhere on the Workspace");
     assert.ok((await section(page, "panels").getByRole("link").count()) >= 1, "at least one panel");
     await section(page, "account").getByRole("link", { name: "Change Password" }).waitFor();
   });
 
-  await step("Company and Company admin open on demand and list their pages", async () => {
+  await step("Company and Management open on demand and list their pages", async () => {
     assert.equal(await section(page, "company").locator('a[href="/settings/billing"]').count(), 0, "Company starts closed");
     await sidebar(page).getByRole("button", { name: "Show Company menu" }).click();
     for (const [path] of COMPANY_PAGES.slice(1)) await section(page, "company").locator(`a[href="${path}"]`).waitFor();
-    await section(page, "company").locator('a[href="/admin/users"]').waitFor();
-    await sidebar(page).getByRole("button", { name: "Show Company admin menu" }).click();
-    for (const path of ["/admin", "/admin/activity-log", "/admin/crm/leads", "/admin/pms/projects", "/admin/prms/vendors", "/admin/tms/students", "/admin/portal/users"]) await section(page, "admin").locator(`a[href="${path}"]`).waitFor();
-    await sidebar(page).getByRole("button", { name: "Hide Company admin menu" }).click();
-    assert.equal(await section(page, "admin").locator('a[href="/admin"]').count(), 0, "closes again");
+    await section(page, "company").locator('a[href="/workspace/users"]').waitFor();
+    await sidebar(page).getByRole("button", { name: "Show Management menu" }).click();
+    for (const path of ["/workspace/command-center", "/workspace/activity-log", "/workspace/documents", "/workspace/crm/leads"]) await section(page, "manage").locator(`a[href="${path}"]`).waitFor();
+    assert.equal(await sidebar(page).locator('a[href^="/admin"]').count(), 0, "nothing points at the old admin panel");
+    await sidebar(page).getByRole("button", { name: "Hide Management menu" }).click();
+    assert.equal(await section(page, "manage").locator('a[href="/workspace/command-center"]').count(), 0, "closes again");
+  });
+
+  await step("every Management page listed in the sidebar opens, and its export API answers", async () => {
+    await page.goto(`${COMPANY_URL}/workspace/command-center`);
+    const hrefs = await section(page, "manage").getByRole("link").evaluateAll((els) => els.map((e) => e.getAttribute("href")));
+    for (const must of ["/workspace/command-center", "/workspace/activity-log", "/workspace/crm/leads"]) assert.ok(hrefs.includes(must), must);
+    for (const href of hrefs) {
+      const res = await page.goto(`${COMPANY_URL}${href}`);
+      assert.equal(res?.status(), 200, href);
+      assert.equal(pathOf(page), href, `${href} → ${pathOf(page)}`);
+      await page.getByRole("heading", { level: 1 }).first().waitFor({ timeout: 30_000 });
+      if (href !== "/workspace/command-center") assert.equal(await fetchStatus(page, `${href.replace("/workspace/", "/api/workspace/")}/export`), 200, `export of ${href}`);
+    }
+    console.log(`      (${hrefs.length} management pages)`);
+  });
+
+  await step("users page: seats badge; export uses the Workspace API", async () => {
+    await page.goto(`${COMPANY_URL}/workspace/users`);
+    await page.getByRole("heading", { name: /User/, level: 1 }).waitFor();
+    await page.locator("#users-seats").getByText("seats").waitFor();
+    assert.equal(await fetchStatus(page, "/api/workspace/users/export"), 200);
+    assert.equal(await fetchStatus(page, "/api/admin/users/export"), 404, "the old API is gone");
+  });
+
+  await step("one notifications page and one bell", async () => {
+    await page.goto(`${COMPANY_URL}/workspace/notifications`);
+    await page.locator("#notifications-unread").waitFor();
+    assert.equal(await page.locator("#hub-bell").count(), 1);
+    assert.match((await page.locator("#hub-bell").getAttribute("data-unread")) ?? "", /^\d+$/);
   });
 
   await step("every sidebar link of the Workspace itself opens (no redirect to sign-in or back to the hub)", async () => {
@@ -181,30 +211,39 @@ try {
     await page.locator('#workspace-content a[href="/workspace/change-password"]').waitFor();
   });
 
-  await step("Command Center opens with the Workspace session alone (no second login)", async () => {
-    await ctx.clearCookies({ name: "admin_session" });
-    const res = await page.goto(`${COMPANY_URL}/admin`);
-    assert.equal(res?.status(), 200);
-    assert.equal(pathOf(page), "/admin", `sent to ${pathOf(page)}`);
-    await page.goto(`${COMPANY_URL}/admin/users`);
-    assert.equal(pathOf(page), "/admin/users");
-    await page.locator("#users-seats").getByText("seats").waitFor();
-    await page.goto(`${COMPANY_URL}/admin/pms/projects`);
-    assert.equal(pathOf(page), "/admin/pms/projects");
-    assert.equal(await fetchStatus(page, "/api/admin/users/export"), 200, "admin API accepts the Workspace session");
-    await page.goto(`${COMPANY_URL}/admin/login`);
-    assert.equal(pathOf(page), "/admin", "already signed in: the admin sign-in forwards to /admin");
+  await step("old admin links land in the Workspace", async () => {
+    for (const [from, to] of [
+      ["/admin", "/workspace"],
+      ["/admin/users", "/workspace/users"],
+      ["/admin/activity-log", "/workspace/activity-log"],
+      ["/admin/crm/leads", "/workspace/crm/leads"],
+      ["/admin/analytics/workspace", "/workspace/analytics/workspace"],
+      ["/admin/notifications", "/workspace/notifications"],
+      ["/admin/login", "/workspace"], // → /workspace/login, which forwards a signed-in user
+    ]) {
+      await page.goto(`${COMPANY_URL}${from}`);
+      assert.equal(pathOf(page), to, `${from} → ${pathOf(page)}`);
+    }
   });
 
-  await step("the Command Center has a way back to the Workspace", async () => {
-    await page.goto(`${COMPANY_URL}/admin`);
-    await page.locator('aside a[href="/workspace"]').getByText("Back to Workspace").click();
-    await page.waitForURL((u) => u.pathname === "/workspace", { timeout: 30_000 });
-    await page.getByText("My Operational Panels").waitFor();
+  await step("two panels open with no second sign-in, even without their own session cookies", async () => {
+    for (const name of ["hrms_session", "pms_session", "lms_session", "admin_session"]) await ctx.clearCookies({ name });
+    const opened = [];
+    await page.goto(`${COMPANY_URL}/workspace`);
+    for (const panel of ["hrms", "pms", "lms"]) {
+      if ((await section(page, "panels").locator(`a[href="/${panel}"]`).count()) === 0) continue; // not in this company's plan / roles
+      await page.goto(`${COMPANY_URL}/${panel}`);
+      assert.ok(pathOf(page).startsWith(`/${panel}`) && !pathOf(page).endsWith("/login"), `/${panel} → ${pathOf(page)}`);
+      opened.push(panel);
+      await page.goto(`${COMPANY_URL}/${panel}/login`);
+      assert.ok(pathOf(page).startsWith(`/${panel}`) && !pathOf(page).endsWith("/login"), `/${panel}/login forwards a signed-in user`);
+      await page.goto(`${COMPANY_URL}/workspace`);
+    }
+    assert.ok(opened.length >= 2, `only ${opened.join(", ")} available`);
   });
 
   await step("a tenant company has no Platform Panel: no link, and /platform is a 404", async () => {
-    for (const path of ["/workspace", "/settings", "/admin"]) {
+    for (const path of ["/workspace", "/settings", "/workspace/command-center"]) {
       await page.goto(`${COMPANY_URL}${path}`);
       assert.equal(await page.locator('a[href^="/platform"]').count(), 0, `Platform link on ${path}`);
     }
@@ -218,28 +257,52 @@ try {
     await page.getByRole("button", { name: "Open navigation menu" }).click();
     const mobile = page.getByRole("dialog").locator('nav[aria-label="Workspace"]');
     await mobile.waitFor();
-    for (const key of ["panels", "analytics", "admin", "company", "account"]) await mobile.locator(`[data-nav-section="${key}"]`).first().waitFor({ state: "attached" });
+    for (const key of ["panels", "analytics", "manage", "company", "account"]) await mobile.locator(`[data-nav-section="${key}"]`).first().waitFor({ state: "attached" });
     await mobile.locator('a[href="/settings/usage"]').waitFor(); // Company opens by itself on one of its pages
     await mobile.locator('a[href="/settings/security"]').click();
     await page.waitForURL((u) => u.pathname === "/settings/security", { timeout: 30_000 });
     await page.setViewportSize({ width: 1280, height: 800 });
   });
 
-  await step("signed out: company pages and the Command Center send to sign-in", async () => {
+  await step("signed out: every page, old admin link and panel sends to the one sign-in", async () => {
     const anon = await browser.newContext();
     const ap = await anon.newPage();
-    // Company-host requests must come from a page of that host.
-    await ap.goto(`${COMPANY_URL}/workspace/login`);
-    for (const path of ["/settings", "/settings/profile", "/settings/usage", "/settings/integrations", "/settings/security", "/onboarding"]) {
+    for (const path of ["/settings", "/settings/profile", "/settings/usage", "/onboarding", "/workspace/users", "/workspace/command-center", "/workspace/crm/leads", "/admin", "/admin/users"]) {
       await ap.goto(`${COMPANY_URL}${path}`);
       assert.equal(pathOf(ap), "/workspace/login", `${path} → ${pathOf(ap)}`);
     }
-    for (const path of ["/admin", "/admin/users", "/admin/pms/projects"]) {
-      await ap.goto(`${COMPANY_URL}${path}`);
-      assert.equal(pathOf(ap), "/admin/login", `${path} → ${pathOf(ap)}`);
+    for (const panel of ["hrms", "pms", "fms", "lms", "prms", "tms", "ots", "sop", "dlms", "cms", "seo", "smms", "aibots", "messenger"]) {
+      await ap.goto(`${COMPANY_URL}/${panel}/login`);
+      assert.equal(pathOf(ap), "/workspace/login", `/${panel}/login → ${pathOf(ap)}`);
+      assert.equal(new URL(ap.url()).searchParams.get("next"), `/${panel}`);
     }
-    assert.equal(await fetchStatus(ap, "/api/admin/users/export"), 401);
+    await ap.goto(`${COMPANY_URL}/hrms`);
+    assert.equal(pathOf(ap), "/workspace/login", `/hrms → ${pathOf(ap)}`);
+    assert.equal(await fetchStatus(ap, "/api/workspace/users/export"), 401);
+    // An outside address in `next` is ignored.
+    await ap.goto(`${COMPANY_URL}/workspace/login?next=${encodeURIComponent("//example.com/x")}`);
+    assert.equal(await ap.locator('input[name="next"]').count(), 0);
     await anon.close();
+  });
+
+  await step("signing in from a panel's address returns to that panel", async () => {
+    const c2 = await browser.newContext();
+    const p2 = await c2.newPage();
+    await p2.goto(`${COMPANY_URL}/lms/login`);
+    await p2.fill('input[name="email"]', COMPANY_EMAIL);
+    await p2.fill('input[name="password"]', COMPANY_PASSWORD);
+    await Promise.all([p2.waitForURL((u) => u.pathname.startsWith("/lms") && !u.pathname.endsWith("/login"), { timeout: 60_000 }), p2.press('input[name="password"]', "Enter")]);
+    await c2.close();
+  });
+
+  await step("sign out everywhere: the Workspace and the panels are closed", async () => {
+    await page.goto(`${COMPANY_URL}/settings/security`);
+    await Promise.all([page.waitForURL((u) => u.pathname === "/workspace/login", { timeout: 60_000 }), page.locator("#security-signout-all").click()]);
+    for (const path of ["/workspace", "/hrms", "/pms", "/lms", "/workspace/users"]) {
+      await page.goto(`${COMPANY_URL}${path}`);
+      assert.equal(pathOf(page), "/workspace/login", `${path} → ${pathOf(page)}`);
+    }
+    assert.equal(await fetchStatus(page, "/api/workspace/users/export"), 401);
   });
   await ctx.close();
 

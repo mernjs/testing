@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 import { WORKSPACE_SESSION_COOKIE, workspaceSessionAccountId } from "@/lib/workspace-session";
 import { getDb } from "@/lib/mongodb";
 
-// NOTE: was literally "admin_session" — an accidental exact collision with
+// NOTE: was literally `admin_session` — an accidental exact collision with
 // the separate Super Admin Command Center's own cookie of the same name
 // (the former admin panel, since removed). Both use `path: "/"`,
 // so whichever was set last silently overwrote the other for any browser with
