@@ -43,10 +43,17 @@ import {
   Timer,
   UserPlus,
   Lock,
+  Bot,
+  BookText,
+  Vault,
+  FileCheck2,
+  Megaphone,
+  SearchCheck,
+  PanelsTopLeft,
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { checkWorkspaceAccess } from "@/lib/workspace/access";
-import ExecutiveViews from "./ExecutiveViews";
+import ExecutiveViews, { hasExecutiveView } from "./ExecutiveViews";
 import { CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import KpiCard from "@/components/lms/KpiCard";
@@ -68,16 +75,45 @@ import {
   getPrmsAnalytics,
   getTmsAnalytics,
   getWorkspaceAnalytics,
+  getSopAnalytics,
+  getDlmsAnalytics,
+  getOtsAnalytics,
+  getAibotsAnalytics,
+  getSmmsAnalytics,
+  getSeoAnalytics,
+  getCmsAnalytics,
   type PanelKey,
   type PanelAnalyticsFilters,
 } from "@/lib/workspace/panel-analytics";
 import { getCareerDashboardStats } from "@/lib/career-applications";
 import { getChatbotDashboardStats } from "@/lib/chatbot-analytics";
 import { getPortfolioCosting } from "@/lib/pms/costing";
-import { formatCurrency } from "@/lib/utils";
+import { formatCompact, formatCurrency } from "@/lib/utils";
 
 /* ─── Panel Filter Field Configurations ───────────────── */
 const PANEL_FILTER_FIELDS: Record<PanelKey, FilterField[]> = {
+  // These panels' analytics have no extra filter: the date range applies where their data is dated.
+  aibots: [],
+  cms: [],
+  dlms: [],
+  seo: [],
+  smms: [],
+  sop: [],
+  ots: [
+    {
+      key: "status",
+      label: "Assignment Status",
+      options: [
+        { label: "Assigned", value: "assigned" },
+        { label: "In Progress", value: "in_progress" },
+        { label: "Awaiting Evaluation", value: "submitted" },
+        { label: "Evaluated", value: "evaluated" },
+        { label: "Completed", value: "completed" },
+        { label: "Expired", value: "expired" },
+        { label: "Cancelled", value: "cancelled" },
+      ],
+    },
+  ],
   fms: [
     {
       key: "status",
@@ -268,6 +304,13 @@ const PANEL_FILTER_FIELDS: Record<PanelKey, FilterField[]> = {
 
 /* ─── Icon map ─────────────────────────────────────────── */
 const PANEL_ICONS: Record<PanelKey, React.ReactNode> = {
+  aibots: <Bot className="size-5" />,
+  cms: <PanelsTopLeft className="size-5" />,
+  dlms: <Vault className="size-5" />,
+  ots: <FileCheck2 className="size-5" />,
+  seo: <SearchCheck className="size-5" />,
+  smms: <Megaphone className="size-5" />,
+  sop: <BookText className="size-5" />,
   fms: <Landmark className="size-5" />,
   hrms: <Users className="size-5" />,
   lms: <LayoutGrid className="size-5" />,
@@ -710,6 +753,272 @@ async function WorkspaceView({ filters }: { filters?: PanelAnalyticsFilters }) {
 }
 
 /* ─────────────────────────────────────────────────────────
+   SOP View
+──────────────────────────────────────────────────────── */
+async function SopView({ filters }: { filters?: PanelAnalyticsFilters }) {
+  const d = await getSopAnalytics(filters);
+  return (
+    <>
+      <AlertBanner alerts={d.alerts} />
+      <ExecutiveSection title="SOP KPIs">
+        <KpiGrid>
+          <KpiCard label="Total SOPs" value={d.kpis.total} accent icon={<BookText className="size-4" />} />
+          <KpiCard label="Published" value={d.kpis.published} tone="up" icon={<CheckCircle2 className="size-4" />} />
+          <KpiCard label="Drafts" value={d.kpis.draft} icon={<Clock className="size-4" />} />
+          <KpiCard label="Created in Period" value={d.kpis.createdInPeriod} icon={<TrendingUp className="size-4" />} />
+          <KpiCard label="Acknowledgement Rate" value={d.kpis.acknowledgementRate} suffix="%" icon={<Percent className="size-4" />} />
+          <KpiCard label="Overdue Acknowledgements" value={d.kpis.overdueAcknowledgements} tone={d.kpis.overdueAcknowledgements > 0 ? "down" : undefined} icon={<AlertTriangle className="size-4" />} />
+          <KpiCard label="Reviews Overdue" value={d.kpis.overdueReviews} icon={<CalendarClock className="size-4" />} />
+          <KpiCard label="Department Coverage" value={d.kpis.departmentCoverage} suffix="%" icon={<Building2 className="size-4" />} />
+        </KpiGrid>
+      </ExecutiveSection>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <GlassCard>
+          <CardHeader><CardTitle>SOPs by Department</CardTitle></CardHeader>
+          <CardContent><BarList data={d.charts.byDepartment} /></CardContent>
+        </GlassCard>
+        <GlassCard>
+          <CardHeader><CardTitle>SOPs by Status</CardTitle></CardHeader>
+          <CardContent><BarList data={d.charts.byStatus} /></CardContent>
+        </GlassCard>
+      </div>
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   DLMS (Digi Locker) View
+──────────────────────────────────────────────────────── */
+async function DlmsView({ filters }: { filters?: PanelAnalyticsFilters }) {
+  const d = await getDlmsAnalytics(filters);
+  return (
+    <>
+      <AlertBanner alerts={d.alerts} />
+      <ExecutiveSection title="Digi Locker KPIs">
+        <KpiGrid>
+          <KpiCard label="Vault Records" value={d.kpis.totalRecords} accent icon={<Vault className="size-4" />} />
+          <KpiCard label="Credentials" value={d.kpis.credentials} icon={<Lock className="size-4" />} />
+          <KpiCard label="Documents" value={d.kpis.documents} icon={<ReceiptText className="size-4" />} />
+          <KpiCard label="Added in Period" value={d.kpis.addedInPeriod} icon={<TrendingUp className="size-4" />} />
+          <KpiCard label="Company Vault" value={d.kpis.companyRecords} icon={<Building2 className="size-4" />} />
+          <KpiCard label="Client Records" value={d.kpis.clientRecords} icon={<Briefcase className="size-4" />} />
+          <KpiCard label="Expiring Soon" value={d.kpis.expiringSoon} icon={<CalendarClock className="size-4" />} />
+          <KpiCard label="Expired" value={d.kpis.expired} tone={d.kpis.expired > 0 ? "down" : undefined} icon={<AlertTriangle className="size-4" />} />
+        </KpiGrid>
+      </ExecutiveSection>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <GlassCard>
+          <CardHeader><CardTitle>Records by Type</CardTitle></CardHeader>
+          <CardContent><BarList data={d.charts.byType} /></CardContent>
+        </GlassCard>
+        <GlassCard>
+          <CardHeader><CardTitle>Expiry by Type</CardTitle></CardHeader>
+          <CardContent>
+            <DataTable
+              columns={[{ label: "Record type" }, { label: "Expiring soon", align: "right" }, { label: "Expired", align: "right" }]}
+              rows={d.charts.expiryByType.map((r) => [r.label, r.expiring, r.expired])}
+            />
+          </CardContent>
+        </GlassCard>
+      </div>
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   OTS (Online Tests) View
+──────────────────────────────────────────────────────── */
+async function OtsView({ filters }: { filters?: PanelAnalyticsFilters }) {
+  const d = await getOtsAnalytics(filters);
+  return (
+    <>
+      <AlertBanner alerts={d.alerts} />
+      <ExecutiveSection title="Online Tests KPIs">
+        <KpiGrid>
+          <KpiCard label="Total Tests" value={d.kpis.totalTests} accent icon={<FileCheck2 className="size-4" />} />
+          <KpiCard label="Active Tests" value={d.kpis.activeTests} tone="up" icon={<Activity className="size-4" />} />
+          <KpiCard label="Assignments" value={d.kpis.assignments} icon={<Target className="size-4" />} />
+          <KpiCard label="Completed" value={d.kpis.completed} icon={<CheckCircle2 className="size-4" />} />
+          <KpiCard label="Awaiting Evaluation" value={d.kpis.awaitingEvaluation} icon={<Clock className="size-4" />} />
+          <KpiCard label="Pass Rate" value={d.kpis.passRate} suffix="%" icon={<Percent className="size-4" />} />
+          <KpiCard label="Average Score" value={d.kpis.averageScore} suffix="%" icon={<Gauge className="size-4" />} />
+          <KpiCard label="Certificates Issued" value={d.kpis.certificatesIssued} icon={<Award className="size-4" />} />
+        </KpiGrid>
+      </ExecutiveSection>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <GlassCard>
+          <CardHeader><CardTitle>Assignments by Status</CardTitle></CardHeader>
+          <CardContent><BarList data={d.charts.assignmentStatus} /></CardContent>
+        </GlassCard>
+        <GlassCard>
+          <CardHeader><CardTitle>Pass / Fail by Test</CardTitle></CardHeader>
+          <CardContent>
+            <DataTable
+              columns={[{ label: "Test" }, { label: "Passed", align: "right" }, { label: "Failed", align: "right" }]}
+              rows={d.charts.passFailByTest.map((r) => [r.label, r.passed, r.failed])}
+              emptyMsg="No evaluated results yet."
+            />
+          </CardContent>
+        </GlassCard>
+      </div>
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   AI Bots View
+──────────────────────────────────────────────────────── */
+const usd = (n: number) => (n > 0 && n < 0.01 ? "< $0.01" : `$${n.toFixed(2)}`);
+
+async function AibotsView({ filters }: { filters?: PanelAnalyticsFilters }) {
+  const d = await getAibotsAnalytics(filters);
+  return (
+    <>
+      <AlertBanner alerts={d.alerts} />
+      <ExecutiveSection title="AI Bots KPIs" description="Usage figures cover the last 30 days. Cost is an estimate from the per-model prices in AI Bots settings, not an invoice.">
+        <KpiGrid>
+          <KpiCard label="Total Bots" value={d.kpis.totalBots} accent icon={<Bot className="size-4" />} />
+          <KpiCard label="Active Bots" value={d.kpis.activeBots} tone="up" icon={<Zap className="size-4" />} />
+          <KpiCard label="Total Chats" value={d.kpis.totalChats} icon={<MessagesSquare className="size-4" />} />
+          <KpiCard label="Chats Today" value={d.kpis.chatsToday} icon={<MessageSquare className="size-4" />} />
+          <KpiCard label="AI Executions (30d)" value={d.kpis.executions30d} icon={<Activity className="size-4" />} />
+          <KpiCard label="Tokens (30d)" value={formatCompact(d.kpis.tokens30d)} icon={<Hash className="size-4" />} />
+          <KpiCard label="Est. AI Cost (30d)" value={usd(d.kpis.estimatedCostUsd30d)} icon={<DollarSign className="size-4" />} />
+          <KpiCard label="Failed Executions (30d)" value={d.kpis.failedExecutions30d} tone={d.kpis.failedExecutions30d > 0 ? "down" : undefined} icon={<AlertTriangle className="size-4" />} />
+        </KpiGrid>
+      </ExecutiveSection>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <GlassCard>
+          <CardHeader><CardTitle>AI Executions per Day</CardTitle></CardHeader>
+          <CardContent><TimeSeriesChart data={d.charts.dailyExecutions} /></CardContent>
+        </GlassCard>
+        <GlassCard>
+          <CardHeader><CardTitle>Most Used Bots</CardTitle></CardHeader>
+          <CardContent>
+            <DataTable
+              columns={[{ label: "Bot" }, { label: "Executions", align: "right" }, { label: "Tokens", align: "right" }, { label: "Est. cost", align: "right" }]}
+              rows={d.charts.topBots.map((b) => [b.label, b.value, formatCompact(b.tokens), usd(b.costUsd)])}
+              emptyMsg="No bot has been used yet."
+            />
+          </CardContent>
+        </GlassCard>
+      </div>
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   SMMS (Social Media) View
+──────────────────────────────────────────────────────── */
+async function SmmsView({ filters }: { filters?: PanelAnalyticsFilters }) {
+  const d = await getSmmsAnalytics(filters);
+  return (
+    <>
+      <AlertBanner alerts={d.alerts} />
+      <ExecutiveSection title="Social Media KPIs">
+        <KpiGrid>
+          <KpiCard label="Campaigns" value={d.kpis.campaigns} accent icon={<Megaphone className="size-4" />} />
+          <KpiCard label="Posts" value={d.kpis.posts} icon={<MessageSquare className="size-4" />} />
+          <KpiCard label="Published Posts" value={d.kpis.publishedPosts} tone="up" icon={<CheckCircle2 className="size-4" />} />
+          <KpiCard label="Scheduled Posts" value={d.kpis.scheduledPosts} icon={<CalendarClock className="size-4" />} />
+          <KpiCard label="Ads" value={d.kpis.ads} icon={<Target className="size-4" />} />
+          <KpiCard label="Impressions" value={d.kpis.impressions} icon={<Eye className="size-4" />} />
+          <KpiCard label="Reach" value={d.kpis.reach} icon={<Users className="size-4" />} />
+          <KpiCard label="Engagements" value={d.kpis.engagements} icon={<Star className="size-4" />} />
+        </KpiGrid>
+      </ExecutiveSection>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <GlassCard>
+          <CardHeader><CardTitle>Posts by Status</CardTitle></CardHeader>
+          <CardContent><BarList data={d.charts.postsByStatus} /></CardContent>
+        </GlassCard>
+        <GlassCard>
+          <CardHeader><CardTitle>Post Results by Platform</CardTitle></CardHeader>
+          <CardContent>
+            <DataTable
+              columns={[{ label: "Platform" }, { label: "Published", align: "right" }, { label: "Reach", align: "right" }, { label: "Engagements", align: "right" }, { label: "Clicks", align: "right" }]}
+              rows={d.charts.platformResults.map((p) => [p.label, p.published, p.reach.toLocaleString("en-IN"), p.engagements.toLocaleString("en-IN"), p.clicks.toLocaleString("en-IN")])}
+            />
+          </CardContent>
+        </GlassCard>
+      </div>
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   SEO View
+──────────────────────────────────────────────────────── */
+async function SeoView({ filters }: { filters?: PanelAnalyticsFilters }) {
+  const d = await getSeoAnalytics(filters);
+  return (
+    <>
+      <AlertBanner alerts={d.alerts} />
+      <ExecutiveSection title="SEO KPIs">
+        <KpiGrid>
+          <KpiCard label="Site Audit Score" value={d.kpis.overallScore ?? "—"} accent icon={<Gauge className="size-4" />} />
+          <KpiCard label="Pages Crawled" value={d.kpis.pagesCrawled} icon={<SearchCheck className="size-4" />} />
+          <KpiCard label="Open Issues" value={d.kpis.openIssues} icon={<AlertCircle className="size-4" />} />
+          <KpiCard label="Critical Issues" value={d.kpis.criticalIssues} tone={d.kpis.criticalIssues > 0 ? "down" : undefined} icon={<AlertTriangle className="size-4" />} />
+          <KpiCard label="Keywords Tracked" value={d.kpis.keywordsTracked} icon={<Hash className="size-4" />} />
+          <KpiCard label="Keywords in Top 10" value={d.kpis.keywordsTop10} tone="up" icon={<TrendingUp className="size-4" />} />
+          <KpiCard label="Backlinks" value={d.kpis.backlinks} icon={<Globe className="size-4" />} />
+          <KpiCard label="Open Tasks" value={d.kpis.openTasks} icon={<CheckCircle2 className="size-4" />} />
+        </KpiGrid>
+      </ExecutiveSection>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <GlassCard>
+          <CardHeader><CardTitle>Open Issues by Severity</CardTitle></CardHeader>
+          <CardContent><BarList data={d.charts.issuesBySeverity} /></CardContent>
+        </GlassCard>
+        <GlassCard>
+          <CardHeader><CardTitle>Keyword Positions</CardTitle></CardHeader>
+          <CardContent><BarList data={d.charts.keywordPositions} /></CardContent>
+        </GlassCard>
+      </div>
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   CMS (Website) View
+──────────────────────────────────────────────────────── */
+async function CmsView({ filters }: { filters?: PanelAnalyticsFilters }) {
+  const d = await getCmsAnalytics(filters);
+  return (
+    <>
+      <AlertBanner alerts={d.alerts} />
+      <ExecutiveSection title="Website KPIs">
+        <KpiGrid>
+          <KpiCard label="Total Pages" value={d.kpis.totalPages} accent icon={<PanelsTopLeft className="size-4" />} />
+          <KpiCard label="Published Pages" value={d.kpis.publishedPages} tone="up" icon={<CheckCircle2 className="size-4" />} />
+          <KpiCard label="Draft Pages" value={d.kpis.draftPages} icon={<Clock className="size-4" />} />
+          <KpiCard label="Awaiting Publish" value={d.kpis.pagesAwaitingPublish} icon={<CalendarClock className="size-4" />} />
+          <KpiCard label="Live Records" value={d.kpis.liveRecords} icon={<LayoutGrid className="size-4" />} />
+          <KpiCard label="Media Files" value={d.kpis.mediaFiles} icon={<Eye className="size-4" />} />
+          <KpiCard label="Pages Needing SEO" value={d.kpis.pagesNeedingSeo} tone={d.kpis.pagesNeedingSeo > 0 ? "down" : undefined} icon={<SearchCheck className="size-4" />} />
+        </KpiGrid>
+      </ExecutiveSection>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <GlassCard>
+          <CardHeader><CardTitle>Pages by Site Area</CardTitle></CardHeader>
+          <CardContent><BarList data={d.charts.pagesByArea} /></CardContent>
+        </GlassCard>
+        <GlassCard>
+          <CardHeader><CardTitle>Records by Collection</CardTitle></CardHeader>
+          <CardContent>
+            <DataTable
+              columns={[{ label: "Collection" }, { label: "Total", align: "right" }, { label: "Live", align: "right" }, { label: "Drafts", align: "right" }]}
+              rows={d.charts.recordsByCollection.map((c) => [c.label, c.total, c.live, c.drafts])}
+            />
+          </CardContent>
+        </GlassCard>
+      </div>
+    </>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
    Page Root
 ──────────────────────────────────────────────────────── */
 export default async function WorkspacePanelAnalyticsPage({
@@ -791,7 +1100,7 @@ export default async function WorkspacePanelAnalyticsPage({
       {/* Access Gate & View Renderer */}
       {!isAuthorized ? (
         <AccessDeniedView panelName={config.label} userRoles={roles} />
-      ) : executive ? (
+      ) : executive && hasExecutiveView(panel) ? (
         <ExecutiveViews panel={panel} filters={filters} />
       ) : (
         <>
@@ -804,6 +1113,14 @@ export default async function WorkspacePanelAnalyticsPage({
           {panel === "prms"      && <PrmsView filters={filters} />}
           {panel === "tms"       && <TmsView filters={filters} />}
           {panel === "workspace" && <WorkspaceView filters={filters} />}
+          {/* These views are company-wide already, so Command Center holders get the same one. */}
+          {panel === "sop"       && <SopView filters={filters} />}
+          {panel === "dlms"      && <DlmsView filters={filters} />}
+          {panel === "ots"       && <OtsView filters={filters} />}
+          {panel === "aibots"    && <AibotsView filters={filters} />}
+          {panel === "smms"      && <SmmsView filters={filters} />}
+          {panel === "seo"       && <SeoView filters={filters} />}
+          {panel === "cms"       && <CmsView filters={filters} />}
         </>
       )}
     </div>

@@ -60,6 +60,19 @@ const fetchStatus = (page, path) => page.evaluate(async (p) => (await fetch(p, {
 /** The desktop sidebar (the mobile one lives in a dialog that is only mounted while open). */
 const sidebar = (page) => page.locator('aside nav[aria-label="Workspace"]');
 const section = (page, key) => sidebar(page).locator(`[data-nav-section="${key}"]`);
+/** An open (not locked) panel tile on the Staff Hub dashboard: the way into a panel now that the sidebar no longer lists them. */
+const panelTile = (page, panel) => page.locator(`[data-module="${panel}"]:not([data-locked])`);
+const ALL_PANELS = ["hrms", "pms", "lms", "fms", "prms", "tms", "messenger", "sop", "dlms", "ots", "aibots", "smms", "seo", "cms"];
+/** The analytics added for the panels that had none: page heading and one KPI card of each. */
+const NEW_ANALYTICS = {
+  sop: ["SOP – SOP Analytics", "Total SOPs"],
+  dlms: ["DLMS – Digi Locker Analytics", "Vault Records"],
+  ots: ["OTS – Online Tests Analytics", "Total Tests"],
+  aibots: ["AI Bots – AI Bots Analytics", "Total Bots"],
+  smms: ["SMMS – Social Media Analytics", "Campaigns"],
+  seo: ["SEO – SEO Analytics", "Site Audit Score"],
+  cms: ["CMS – Website Analytics", "Total Pages"],
+};
 const pathOf = (page) => new URL(page.url()).pathname;
 
 /** The Company pages: path → something only that page renders. */
@@ -95,12 +108,15 @@ try {
     await sidebar(page).waitFor();
   });
 
-  await step("sidebar: Dashboard, Panels, Analytics, Management, Company, Account — and no Platform section", async () => {
+  await step("sidebar: Dashboard, Analytics, Management, Company, Account — no Panels and no Platform section", async () => {
     await sidebar(page).getByRole("link", { name: "Dashboard", exact: true }).waitFor();
-    for (const key of ["panels", "analytics", "manage", "company", "account"]) await section(page, key).first().waitFor({ state: "attached" });
+    for (const key of ["analytics", "manage", "company", "account"]) await section(page, key).first().waitFor({ state: "attached" });
     assert.equal(await section(page, "platform").count(), 0, "tenant has no Platform section");
     assert.equal(await page.locator('a[href^="/platform"]').count(), 0, "no Platform link anywhere on the Workspace");
-    assert.ok((await section(page, "panels").getByRole("link").count()) >= 1, "at least one panel");
+    assert.equal(await section(page, "panels").count(), 0, "the sidebar has no Panels section");
+    assert.equal(await sidebar(page).getByText("Panels", { exact: true }).count(), 0, "no Panels heading");
+    for (const panel of ALL_PANELS) assert.equal(await sidebar(page).locator(`a[href="/${panel}"]`).count(), 0, `the sidebar links to /${panel}`);
+    assert.ok((await page.locator("[data-module]:not([data-locked])").count()) >= 1, "the panels are on the Staff Hub tiles");
     await section(page, "account").getByRole("link", { name: "Change Password" }).waitFor();
   });
 
@@ -156,9 +172,33 @@ try {
     }
   });
 
+  await step("Analytics lists every panel of the company's plan, the new ones included; two of the new pages show their heading and a KPI card", async () => {
+    await page.goto(`${COMPANY_URL}/workspace`);
+    await page.getByText("My Operational Panels").waitFor();
+    const listed = await section(page, "analytics").getByRole("link").evaluateAll((els) => els.map((e) => e.getAttribute("href")));
+    // A Super Admin's open tiles are exactly the panels in the plan that are switched on.
+    const inPlan = [];
+    for (const panel of ALL_PANELS) if ((await panelTile(page, panel).count()) > 0) inPlan.push(panel);
+    assert.ok(inPlan.length >= 2, `open panel tiles: ${inPlan.join(", ")}`);
+    for (const panel of ALL_PANELS) assert.equal(listed.includes(`/workspace/analytics/${panel}`), inPlan.includes(panel), `analytics.${panel} listed=${listed.includes(`/workspace/analytics/${panel}`)} but panel in plan=${inPlan.includes(panel)}`);
+    assert.deepEqual(listed, [...listed].sort(), "Analytics keeps its alphabetical order");
+    const fresh = Object.keys(NEW_ANALYTICS).filter((p) => inPlan.includes(p));
+    assert.ok(fresh.length >= 2, `the plan has ${fresh.length} of the new analytics (${fresh.join(", ")}); two are needed`);
+    for (const panel of fresh.slice(0, 2)) {
+      const [heading, kpi] = NEW_ANALYTICS[panel];
+      await section(page, "analytics").locator(`a[href="/workspace/analytics/${panel}"]`).click();
+      await page.waitForURL((u) => u.pathname === `/workspace/analytics/${panel}`, { timeout: 30_000 });
+      await page.getByRole("heading", { level: 1, name: heading }).waitFor();
+      await page.locator("#workspace-content").getByText(kpi, { exact: true }).first().waitFor();
+      assert.equal(await page.getByText("Workspace Access Control Notice").count(), 0, `${panel} analytics is listed but denied`);
+      assert.equal(await sidebar(page).locator(`a[href="/workspace/analytics/${panel}"]`).count(), 1, "still in the sidebar on its own page");
+    }
+    console.log(`      (panels in plan: ${inPlan.join(", ")}; opened: ${fresh.slice(0, 2).join(", ")})`);
+  });
+
   await step("analytics of a panel that isn't listed is refused on the server", async () => {
     const listed = new Set(await section(page, "analytics").getByRole("link").evaluateAll((els) => els.map((e) => e.getAttribute("href"))));
-    const hidden = ["fms", "hrms", "lms", "messenger", "pms", "portal", "prms", "tms", "workspace"].map((p) => `/workspace/analytics/${p}`).filter((h) => !listed.has(h));
+    const hidden = [...ALL_PANELS, "portal", "workspace"].map((p) => `/workspace/analytics/${p}`).filter((h) => !listed.has(h));
     for (const href of hidden) {
       await page.goto(`${COMPANY_URL}${href}`);
       await page.getByText("Workspace Access Control Notice").first().waitFor();
@@ -231,7 +271,7 @@ try {
     const opened = [];
     await page.goto(`${COMPANY_URL}/workspace`);
     for (const panel of ["hrms", "pms", "lms"]) {
-      if ((await section(page, "panels").locator(`a[href="/${panel}"]`).count()) === 0) continue; // not in this company's plan / roles
+      if ((await panelTile(page, panel).count()) === 0) continue; // no open Staff Hub tile: not in this company's plan / roles
       await page.goto(`${COMPANY_URL}/${panel}`);
       assert.ok(pathOf(page).startsWith(`/${panel}`) && !pathOf(page).endsWith("/login"), `/${panel} → ${pathOf(page)}`);
       opened.push(panel);
@@ -257,7 +297,9 @@ try {
     await page.getByRole("button", { name: "Open navigation menu" }).click();
     const mobile = page.getByRole("dialog").locator('nav[aria-label="Workspace"]');
     await mobile.waitFor();
-    for (const key of ["panels", "analytics", "manage", "company", "account"]) await mobile.locator(`[data-nav-section="${key}"]`).first().waitFor({ state: "attached" });
+    for (const key of ["analytics", "manage", "company", "account"]) await mobile.locator(`[data-nav-section="${key}"]`).first().waitFor({ state: "attached" });
+    assert.equal(await mobile.locator('[data-nav-section="panels"]').count(), 0, "the mobile menu has no Panels section either");
+    assert.equal(await mobile.locator('a[href="/hrms"], a[href="/pms"], a[href="/lms"]').count(), 0, "no panel links in the mobile menu");
     await mobile.locator('a[href="/settings/usage"]').waitFor(); // Company opens by itself on one of its pages
     await mobile.locator('a[href="/settings/security"]').click();
     await page.waitForURL((u) => u.pathname === "/settings/security", { timeout: 30_000 });

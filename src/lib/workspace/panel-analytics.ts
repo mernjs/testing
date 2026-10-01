@@ -12,6 +12,31 @@ import { PORTAL_ROLES, type PortalRole } from "@/lib/portal-roles";
 import { round2 } from "@/lib/fms/constants";
 import { normalizeAdminRoles } from "@/lib/admin-roles";
 import { type DashboardGranularity } from "@/lib/granularity";
+import { getDashboard as getSopDashboard } from "@/lib/sop/analytics";
+import { COLLECTIONS as SOP_COLLECTIONS } from "@/lib/sop/db";
+import type { SopViewer } from "@/lib/sop/types";
+import { countRecords as countDlmsRecords, type RecordQuery as DlmsRecordQuery } from "@/lib/dlms/records";
+import { COLLECTIONS as DLMS_COLLECTIONS } from "@/lib/dlms/db";
+import { RECORD_TYPES as DLMS_RECORD_TYPES, RECORD_TYPE_LABEL as DLMS_RECORD_TYPE_LABEL, type RecordType as DlmsRecordType } from "@/lib/dlms/constants";
+import type { DlmsViewer } from "@/lib/dlms/viewer";
+import { getDashboard as getOtsDashboard } from "@/lib/ots/analytics";
+import { COLLECTIONS as OTS_COLLECTIONS } from "@/lib/ots/db";
+import { getDashboard as getAibotsDashboard } from "@/lib/aibots/runs";
+import type { AibotsViewer } from "@/lib/aibots/viewer";
+import { getDashboard as getSmmsDashboard, postMetricsByPlatform } from "@/lib/smms/analytics";
+import { PLATFORM_META as SMMS_PLATFORM_META } from "@/lib/smms/constants";
+import { getDashboard as getSeoDashboard } from "@/lib/seo-panel/analytics";
+import { SEVERITIES as SEO_SEVERITIES, SEVERITY_META as SEO_SEVERITY_META, CATEGORIES as SEO_CATEGORIES, CATEGORY_LABEL as SEO_CATEGORY_LABEL } from "@/lib/seo-panel/checks";
+import { BUCKETS as SEO_RANK_BUCKETS } from "@/lib/seo-panel/rankings";
+import { listPages as listCmsPages } from "@/lib/cms/pages";
+import { listMedia as listCmsMedia } from "@/lib/cms/media";
+import { getSettings as getCmsSettings } from "@/lib/cms/settings";
+import { listAdminRecords as listCmsRecords } from "@/lib/cms/collections/store";
+import { COLLECTIONS as CMS_RECORD_COLLECTIONS } from "@/lib/cms/collections/registry";
+import type { CollectionKey as CmsCollectionKey } from "@/lib/cms/collections/types";
+import { COLLECTIONS as CMS_COLLECTIONS } from "@/lib/cms/db";
+import { SITE_AREAS as CMS_SITE_AREAS, areaOf as cmsAreaOf } from "@/lib/cms/site-areas";
+import { seoIssues as cmsSeoIssues } from "@/lib/cms/seo-checks";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared helpers
@@ -526,10 +551,424 @@ export async function getWorkspaceAnalytics(filters?: PanelAnalyticsFilters) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Panels whose own dashboards are viewer-scoped (SOP, Digi Locker, AI Bots)
+// ─────────────────────────────────────────────────────────────────────────────
+
+type PanelAlert = { type: "warning" | "danger"; message: string };
+
+/** A panel helper that fails (collection not there yet, bad data) gives `null`, and the view shows zeros. */
+async function soft<T>(load: () => Promise<T>): Promise<T | null> {
+  try {
+    return await load();
+  } catch (err) {
+    console.error("[panel-analytics] a panel helper failed; showing zeros:", err);
+    return null;
+  }
+}
+
+/** The selected period, or the last 30 days. */
+function periodOf(filters?: PanelAnalyticsFilters): { $gte: Date; $lte: Date } {
+  const now = new Date();
+  const from = filters?.dateFrom ? new Date(filters.dateFrom) : new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  const to = filters?.dateTo ? new Date(`${filters.dateTo.slice(0, 10)}T23:59:59.999`) : now;
+  return { $gte: Number.isNaN(from.getTime()) ? new Date(0) : from, $lte: Number.isNaN(to.getTime()) ? now : to };
+}
+
+const isoDay = (v?: string) => (v && /^\d{4}-\d{2}-\d{2}/.test(v) ? v.slice(0, 10) : undefined);
+const titleCase = (s: string) => s.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase());
+
+/**
+ * These analytics are company-wide and open only to people who see the whole
+ * panel (see the access rules in `nav.ts`), so the panels' own viewer-scoped
+ * helpers are asked as a company-wide viewer, never as the person on the page.
+ */
+const COMPANY_VIEWER_ID = "command-center";
+const COMPANY_ROLES = ["super_admin"];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SOP Analytics
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type SopAnalytics = Awaited<ReturnType<typeof getSopAnalytics>>;
+
+export async function getSopAnalytics(filters?: PanelAnalyticsFilters) {
+  const viewer: SopViewer = {
+    userId: COMPANY_VIEWER_ID,
+    email: "",
+    name: "",
+    roles: COMPANY_ROLES,
+    overrides: {},
+    employeeId: null,
+    hrmsDepartmentId: null,
+    teamId: null,
+    designationId: null,
+    memberDepartmentIds: [],
+    headedDepartmentIds: [],
+    manageDepartmentIds: [],
+    isAdmin: true,
+    isManagerTier: true,
+  };
+  const [d, createdInPeriod] = await Promise.all([soft(() => getSopDashboard(viewer)), safeCount(SOP_COLLECTIONS.sops, { createdAt: periodOf(filters) })]);
+  const k = d?.kpis;
+  const ack = k?.ack ?? { assigned: 0, acknowledged: 0, pending: 0, overdue: 0, rate: null };
+
+  const alerts: PanelAlert[] = [];
+  if (ack.overdue > 0) alerts.push({ type: "danger", message: `${ack.overdue} SOP acknowledgement(s) are overdue` });
+  if ((k?.overdueReviews ?? 0) > 0) alerts.push({ type: "warning", message: `${k?.overdueReviews} SOP(s) are past their review date` });
+  if ((k?.expiring ?? 0) > 0) alerts.push({ type: "warning", message: `${k?.expiring} SOP(s) expire within ${d?.expiringSoonDays ?? 30} days` });
+
+  return {
+    kpis: {
+      total: k?.total ?? 0,
+      published: k?.published ?? 0,
+      draft: k?.draft ?? 0,
+      mandatory: k?.mandatory ?? 0,
+      expiring: k?.expiring ?? 0,
+      overdueReviews: k?.overdueReviews ?? 0,
+      createdInPeriod,
+      assigned: ack.assigned,
+      acknowledged: ack.acknowledged,
+      pendingAcknowledgements: ack.pending,
+      overdueAcknowledgements: ack.overdue,
+      acknowledgementRate: ack.rate ?? 0,
+      departmentCoverage: k?.coverage.pct ?? 0,
+    },
+    charts: {
+      byDepartment: (d?.byDepartment ?? []).map((x) => ({ label: x.label, value: x.value })),
+      byStatus: (d?.byStatus ?? []).map((x) => ({ label: x.label, value: x.value })),
+      byCategory: (d?.byCategory ?? []).map((x) => ({ label: x.label, value: x.value })),
+      complianceByDepartment: (d?.compliance ?? []).map((x) => ({ label: x.label, value: x.value })),
+      creationTrend: d?.creationTrend ?? [],
+    },
+    alerts,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DLMS (Digi Locker) Analytics — counts only, never a record's name or secret
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type DlmsAnalytics = Awaited<ReturnType<typeof getDlmsAnalytics>>;
+
+const DLMS_COLLECTION_OF: Record<DlmsRecordType, string> = {
+  credential: DLMS_COLLECTIONS.credentials,
+  document: DLMS_COLLECTIONS.documents,
+  link: DLMS_COLLECTIONS.links,
+  note: DLMS_COLLECTIONS.notes,
+};
+
+export async function getDlmsAnalytics(filters?: PanelAnalyticsFilters) {
+  const ctx = { roles: COMPANY_ROLES, permissionOverrides: null };
+  const viewer: DlmsViewer = { userId: COMPANY_VIEWER_ID, email: "", roles: COMPANY_ROLES, overrides: {}, ctx, seesAll: true, companyAccess: true, clientIds: [] };
+  const count = async (type: DlmsRecordType, q: DlmsRecordQuery) => (await soft(() => countDlmsRecords(viewer, type, q))) ?? 0;
+  const period = periodOf(filters);
+  const dated = DLMS_RECORD_TYPES.filter((t) => t !== "note"); // notes have no expiry date
+
+  const [byType, company, client, archived, expired, expiring, added] = await Promise.all([
+    Promise.all(DLMS_RECORD_TYPES.map((t) => count(t, {}))),
+    Promise.all(DLMS_RECORD_TYPES.map((t) => count(t, { scope: "company" }))),
+    Promise.all(DLMS_RECORD_TYPES.map((t) => count(t, { scope: "client" }))),
+    Promise.all(DLMS_RECORD_TYPES.map((t) => count(t, { status: "archived" }))),
+    Promise.all(dated.map((t) => count(t, { expiry: "expired" }))),
+    Promise.all(dated.map((t) => count(t, { expiry: "expiring" }))),
+    Promise.all(DLMS_RECORD_TYPES.map((t) => safeCount(DLMS_COLLECTION_OF[t], { createdAt: period }))),
+  ]);
+  const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
+  const of = (t: DlmsRecordType) => byType[DLMS_RECORD_TYPES.indexOf(t)];
+
+  const alerts: PanelAlert[] = [];
+  if (sum(expired) > 0) alerts.push({ type: "danger", message: `${sum(expired)} vault record(s) have expired` });
+  if (sum(expiring) > 0) alerts.push({ type: "warning", message: `${sum(expiring)} vault record(s) are about to expire` });
+
+  return {
+    kpis: {
+      totalRecords: sum(byType),
+      credentials: of("credential"),
+      documents: of("document"),
+      links: of("link"),
+      notes: of("note"),
+      companyRecords: sum(company),
+      clientRecords: sum(client),
+      archivedRecords: sum(archived),
+      expired: sum(expired),
+      expiringSoon: sum(expiring),
+      addedInPeriod: sum(added),
+    },
+    charts: {
+      byType: DLMS_RECORD_TYPES.map((t, i) => ({ label: `${DLMS_RECORD_TYPE_LABEL[t]}s`, value: byType[i] })),
+      byOwnership: [
+        { label: "Company vault", value: sum(company) },
+        { label: "Client records", value: sum(client) },
+      ],
+      expiryByType: dated.map((t, i) => ({ label: `${DLMS_RECORD_TYPE_LABEL[t]}s`, expired: expired[i], expiring: expiring[i] })),
+    },
+    alerts,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// OTS (Online Tests) Analytics
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type OtsAnalytics = Awaited<ReturnType<typeof getOtsAnalytics>>;
+
+export async function getOtsAnalytics(filters?: PanelAnalyticsFilters) {
+  const from = isoDay(filters?.dateFrom);
+  const to = isoDay(filters?.dateTo);
+  const issued = from || to ? { issuedOn: periodOf(filters) } : {};
+  const [d, certificatesIssued] = await Promise.all([
+    soft(() => getOtsDashboard({ from, to, status: filters?.status && filters.status !== "all" ? filters.status : undefined })),
+    safeCount(OTS_COLLECTIONS.certificates, issued),
+  ]);
+  const a = d?.assignments;
+
+  const alerts: PanelAlert[] = [];
+  if ((a?.awaitingEvaluation ?? 0) > 0) alerts.push({ type: "warning", message: `${a?.awaitingEvaluation} submitted test(s) are waiting for evaluation` });
+  if ((a?.expired ?? 0) > 0) alerts.push({ type: "warning", message: `${a?.expired} test assignment(s) expired without being taken` });
+
+  return {
+    kpis: {
+      totalTests: d?.tests.total ?? 0,
+      activeTests: d?.tests.active ?? 0,
+      assignments: a?.total ?? 0,
+      pending: a?.pending ?? 0,
+      inProgress: a?.inProgress ?? 0,
+      completed: a?.completed ?? 0,
+      awaitingEvaluation: a?.awaitingEvaluation ?? 0,
+      expired: a?.expired ?? 0,
+      passed: a?.passed ?? 0,
+      failed: a?.failed ?? 0,
+      evaluatedAttempts: d?.performance.attempts ?? 0,
+      passRate: d?.performance.passRate ?? 0,
+      averageScore: d?.performance.avgPercentage ?? 0,
+      candidates: d ? d.users.employees + d.users.applicants + d.users.students : 0,
+      certificatesIssued,
+    },
+    charts: {
+      assignmentStatus: (d?.charts.assignmentStatus ?? []).map((x) => ({ label: x.label, value: x.value })),
+      testStatus: (d?.charts.testStatus ?? []).map((x) => ({ label: x.label, value: x.value })),
+      candidateTypes: (d?.charts.byKind ?? []).map((x) => ({ label: x.label, value: x.value })),
+      averageByTest: (d?.charts.byTest ?? []).map((x) => ({ label: x.label, value: x.value })),
+      averageByDepartment: (d?.charts.byDepartment ?? []).map((x) => ({ label: x.label, value: x.value })),
+      passFailByTest: (d?.charts.passFailByTest ?? []).map((x) => ({ label: x.label, passed: x.passed, failed: x.failed })),
+    },
+    alerts,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AI Bots Analytics — the panel's own usage window (last 30 days)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type AibotsAnalytics = Awaited<ReturnType<typeof getAibotsAnalytics>>;
+
+export async function getAibotsAnalytics(_filters?: PanelAnalyticsFilters) {
+  const viewer: AibotsViewer = { userId: COMPANY_VIEWER_ID, email: "", roles: COMPANY_ROLES, ctx: { roles: COMPANY_ROLES, permissionOverrides: null }, seesAll: true };
+  const d = await soft(() => getAibotsDashboard(viewer));
+  const runs = d?.runs30 ?? 0;
+  const failed = d?.failed30 ?? 0;
+
+  const alerts: PanelAlert[] = [];
+  if (failed > 0) alerts.push({ type: "warning", message: `${failed} AI execution(s) failed in the last 30 days` });
+
+  return {
+    kpis: {
+      totalBots: d?.totalBots ?? 0,
+      activeBots: d?.activeBots ?? 0,
+      totalChats: d?.totalChats ?? 0,
+      chatsToday: d?.chatsToday ?? 0,
+      executions30d: runs,
+      failedExecutions30d: failed,
+      failureRate30d: runs > 0 ? round2((failed / runs) * 100) : 0,
+      inputTokens30d: d?.inputTokens30 ?? 0,
+      outputTokens30d: d?.outputTokens30 ?? 0,
+      tokens30d: (d?.inputTokens30 ?? 0) + (d?.outputTokens30 ?? 0),
+      /** Estimate in USD from the per-model prices in AI Bots settings — not an invoice. */
+      estimatedCostUsd30d: round2(d?.cost30 ?? 0),
+    },
+    charts: {
+      dailyExecutions: (d?.daily ?? []).map((x) => ({ date: x.date.slice(5), count: x.runs })),
+      topBots: (d?.topBots ?? []).map((b) => ({ label: b.name, value: b.runs, tokens: b.tokens, costUsd: round2(b.cost) })),
+    },
+    alerts,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SMMS (Social Media) Analytics
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type SmmsAnalytics = Awaited<ReturnType<typeof getSmmsAnalytics>>;
+
+export async function getSmmsAnalytics(filters?: PanelAnalyticsFilters) {
+  const ranged = Boolean(filters?.dateFrom || filters?.dateTo);
+  const period = periodOf(filters);
+  // Content counts are the current state; post results cover the selected period (all time when none is picked).
+  const [d, platforms] = await Promise.all([soft(() => getSmmsDashboard()), soft(() => (ranged ? postMetricsByPlatform(period.$gte, period.$lte) : postMetricsByPlatform()))]);
+  const live = (counts?: Record<string, number>) => Object.entries(counts ?? {}).reduce((s, [status, n]) => (status === "archived" ? s : s + n), 0);
+  const metric = (key: "impressions" | "reach" | "engagements" | "clicks") => (platforms ?? []).reduce((s, p) => s + p.metrics[key], 0);
+  const failedPosts = d?.posts.failed ?? 0;
+
+  const alerts: PanelAlert[] = [];
+  if (failedPosts > 0) alerts.push({ type: "danger", message: `${failedPosts} post(s) failed to publish` });
+  const unapproved = (d?.upcoming ?? []).filter((u) => !u.approved).length;
+  if (unapproved > 0) alerts.push({ type: "warning", message: `${unapproved} upcoming scheduled post(s) still need approval` });
+
+  return {
+    kpis: {
+      campaigns: live(d?.campaigns),
+      posts: live(d?.posts),
+      publishedPosts: d?.posts.published ?? 0,
+      scheduledPosts: d?.posts.scheduled ?? 0,
+      failedPosts,
+      ads: d?.totalAds ?? 0,
+      publishedVersions: (platforms ?? []).reduce((s, p) => s + p.published, 0),
+      impressions: metric("impressions"),
+      reach: metric("reach"),
+      engagements: metric("engagements"),
+      clicks: metric("clicks"),
+      aiGenerations30d: d?.ai30.runs ?? 0,
+      linkedAdCampaigns: d?.paid.linkedCampaigns ?? 0,
+    },
+    charts: {
+      postsByStatus: Object.entries(d?.posts ?? {}).filter(([, n]) => n > 0).map(([status, n]) => ({ label: titleCase(status), value: n })),
+      contentByPlatform: (d?.platformContent ?? []).map((p) => ({ label: SMMS_PLATFORM_META[p.platform].label, posts: p.posts, ads: p.ads })),
+      engagementByPlatform: (platforms ?? []).map((p) => ({ label: SMMS_PLATFORM_META[p.platform].label, value: p.metrics.engagements })),
+      platformResults: (platforms ?? []).map((p) => ({ label: SMMS_PLATFORM_META[p.platform].label, published: p.published, impressions: p.metrics.impressions, reach: p.metrics.reach, engagements: p.metrics.engagements, clicks: p.metrics.clicks })),
+    },
+    alerts,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SEO Analytics — from the panel's stored crawl, keyword and Search Console data
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type SeoAnalytics = Awaited<ReturnType<typeof getSeoAnalytics>>;
+
+export async function getSeoAnalytics(_filters?: PanelAnalyticsFilters) {
+  const d = await soft(() => getSeoDashboard(COMPANY_VIEWER_ID));
+  const critical = d?.issues.bySeverity.critical ?? 0;
+
+  const alerts: PanelAlert[] = [];
+  if (critical > 0) alerts.push({ type: "danger", message: `${critical} critical SEO issue(s) are open` });
+  if ((d?.tasks.overdue ?? 0) > 0) alerts.push({ type: "warning", message: `${d?.tasks.overdue} SEO task(s) are overdue` });
+  if (d && !d.run) alerts.push({ type: "warning", message: "No site audit has completed yet — scores and page counts appear after the first crawl" });
+
+  return {
+    kpis: {
+      /** `null` until a crawl has completed (there is no score to show, not a score of zero). */
+      overallScore: d?.scores?.overall ?? null,
+      pagesCrawled: d?.run?.pagesCrawled ?? 0,
+      indexedPages: d?.indexed.value ?? 0,
+      pagesNeedingOptimization: d?.needsOptimization ?? 0,
+      openIssues: d?.issues.active ?? 0,
+      criticalIssues: critical,
+      keywordsTracked: d?.keywords.tracked ?? 0,
+      keywordsRanking: d?.keywords.ranking ?? 0,
+      keywordsTop10: d?.keywords.top10 ?? 0,
+      backlinks: d?.backlinks.total ?? 0,
+      referringDomains: d?.backlinks.referringDomains ?? 0,
+      openTasks: d?.tasks.open ?? 0,
+      overdueTasks: d?.tasks.overdue ?? 0,
+      /** Search Console, last 28 days of stored data; `null` when Search Console isn't connected. */
+      searchClicks28d: d?.search.connected ? d.search.clicks : null,
+      searchImpressions28d: d?.search.connected ? d.search.impressions : null,
+    },
+    charts: {
+      issuesBySeverity: SEO_SEVERITIES.map((s) => ({ label: SEO_SEVERITY_META[s].label, value: d?.issues.bySeverity[s] ?? 0 })),
+      issuesByCategory: SEO_CATEGORIES.map((c) => ({ label: SEO_CATEGORY_LABEL[c], value: d?.issues.byCategory[c] ?? 0 })).filter((x) => x.value > 0),
+      keywordPositions: SEO_RANK_BUCKETS.map((b) => ({ label: b.label, value: d?.keywords.dist[b.key] ?? 0 })),
+    },
+    alerts,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CMS (Website) Analytics — content inventory and publishing state
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type CmsAnalytics = Awaited<ReturnType<typeof getCmsAnalytics>>;
+
+export async function getCmsAnalytics(_filters?: PanelAnalyticsFilters) {
+  const keys = Object.keys(CMS_RECORD_COLLECTIONS) as CmsCollectionKey[];
+  const [pages, media, mediaFiles, settings, collections] = await Promise.all([
+    soft(() => listCmsPages()),
+    soft(() => listCmsMedia()),
+    safeCount(CMS_COLLECTIONS.media),
+    soft(() => getCmsSettings()),
+    Promise.all(keys.map(async (key) => ({ key, rows: (await soft(() => listCmsRecords(key))) ?? [] }))),
+  ]);
+  const all = pages ?? [];
+  const status = (s: string) => all.filter((p) => p.status === s).length;
+  const pendingPages = all.filter((p) => p.hasUnpublishedChanges).length;
+  const records = collections.flatMap((c) => c.rows);
+  const pendingRecords = records.filter((r) => r.hasUnpublishedChanges && r.state !== "archived").length;
+  // The same checks as the CMS dashboard's Site Health.
+  const seoProblems = all.filter((p) => {
+    if (p.status !== "published") return false;
+    const seo = p.live?.seo ?? p.draft.seo ?? null;
+    return cmsSeoIssues({ title: seo?.title ?? "", description: seo?.description ?? "", canonical: seo?.canonical ?? null, noindex: seo?.robots?.index === false }).length > 0;
+  }).length;
+  const imagesWithoutAlt = (media ?? []).filter((m) => !m.altText?.trim()).length;
+
+  const alerts: PanelAlert[] = [];
+  if (settings?.maintenanceMode.enabled) alerts.push({ type: "danger", message: "Maintenance mode is on — visitors can't see the website" });
+  if (pendingPages > 0) alerts.push({ type: "warning", message: `${pendingPages} page(s) have unpublished changes` });
+  if (seoProblems > 0) alerts.push({ type: "warning", message: `${seoProblems} published page(s) need SEO attention` });
+
+  return {
+    kpis: {
+      totalPages: all.length,
+      publishedPages: status("published"),
+      draftPages: status("draft"),
+      archivedPages: status("archived"),
+      pagesAwaitingPublish: pendingPages,
+      records: records.length,
+      liveRecords: records.filter((r) => r.state === "published").length,
+      recordsAwaitingPublish: pendingRecords,
+      mediaFiles,
+      /** Counted over the most recent 200 media files, as the CMS dashboard does. */
+      imagesWithoutAlt,
+      pagesNeedingSeo: seoProblems,
+    },
+    charts: {
+      pagesByStatus: (["published", "draft", "archived"] as const).map((s) => ({ label: titleCase(s), value: status(s) })),
+      pagesByArea: CMS_SITE_AREAS.map((a) => ({ label: a.label, value: all.filter((p) => cmsAreaOf(p.path) === a.key).length })).filter((a) => a.value > 0),
+      recordsByCollection: collections.map((c) => ({
+        label: CMS_RECORD_COLLECTIONS[c.key].label as string,
+        total: c.rows.length,
+        live: c.rows.filter((r) => r.state === "published").length,
+        drafts: c.rows.filter((r) => r.state === "draft").length,
+      })),
+    },
+    alerts,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Panel-key → aggregator mapping
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const PANEL_CONFIGS = {
+  aibots: {
+    label: "AI Bots – AI Bots Analytics",
+    description: "Bots, chats, AI executions, token usage, estimated cost and failures across the AI Bots panel (last 30 days).",
+    href: "/aibots",
+    ctaLabel: "Open AI Bots",
+  },
+  cms: {
+    label: "CMS – Website Analytics",
+    description: "Website content inventory: pages, records and media, what is published, and what is waiting to be published or needs attention.",
+    href: "/cms",
+    ctaLabel: "Open Website Panel",
+  },
+  dlms: {
+    label: "DLMS – Digi Locker Analytics",
+    description: "Vault size by record type and ownership, records added, and what has expired or is about to. Counts only — never a record or a secret.",
+    href: "/dlms",
+    ctaLabel: "Open Digi Locker",
+  },
   fms: {
     label: "FMS – Finance Analytics",
     description: "Ledger-backed revenue, expenses, profit, cash position, and receivables/payables across the Finance Management System.",
@@ -554,6 +993,12 @@ export const PANEL_CONFIGS = {
     href: "/messenger",
     ctaLabel: "Open Messenger",
   },
+  ots: {
+    label: "OTS – Online Tests Analytics",
+    description: "Tests, assignments, completion, pass rate, average scores and certificates across the Online Test System.",
+    href: "/ots",
+    ctaLabel: "Open Online Tests",
+  },
   pms: {
     label: "PMS – Project Analytics",
     description: "Project health, delivery status, team utilization, client portfolio, and deadline risk.",
@@ -572,6 +1017,24 @@ export const PANEL_CONFIGS = {
     href: "/prms",
     ctaLabel: "Open Procurement Panel",
   },
+  seo: {
+    label: "SEO – SEO Analytics",
+    description: "Site audit score, open issues, tracked keywords and their positions, backlinks, and SEO tasks.",
+    href: "/seo",
+    ctaLabel: "Open SEO Panel",
+  },
+  smms: {
+    label: "SMMS – Social Media Analytics",
+    description: "Campaigns, posts and ads by status and platform, and the reach and engagement recorded for published posts.",
+    href: "/smms",
+    ctaLabel: "Open Social Media Panel",
+  },
+  sop: {
+    label: "SOP – SOP Analytics",
+    description: "SOP library size and status, acknowledgement compliance, department coverage, and SOPs due for review or expiring.",
+    href: "/sop",
+    ctaLabel: "Open SOP Library",
+  },
   tms: {
     label: "TMS – Training Analytics",
     description: "Student enrollment, batch occupancy, placement rate, revenue, and certificate issuance.",
@@ -589,5 +1052,6 @@ export const PANEL_CONFIGS = {
 export type PanelKey = keyof typeof PANEL_CONFIGS;
 
 export function isPanelKey(val: unknown): val is PanelKey {
-  return typeof val === "string" && val in PANEL_CONFIGS;
+  // Own keys only: "toString" and friends are `in` every object.
+  return typeof val === "string" && Object.prototype.hasOwnProperty.call(PANEL_CONFIGS, val);
 }

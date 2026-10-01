@@ -152,6 +152,8 @@ function isActive(pathname: string | null, href: string): boolean {
 /**
  * The Workspace sidebar. It renders exactly the sections and items the server
  * resolved for this user (`resolveWorkspaceNav`) — no access rule lives here.
+ * Sections marked `sidebar: false` (the panels: they are opened from the
+ * Staff Hub tiles) are left out of the desktop, collapsed and mobile sidebars.
  */
 export default function HubSidebar({
   nav,
@@ -167,7 +169,7 @@ export default function HubSidebar({
 
   return (
     <nav aria-label="Workspace" className="flex h-full flex-col gap-1 p-3 overflow-y-auto">
-      {nav.map((section) => {
+      {nav.filter((section) => section.sidebar).map((section) => {
         const links = (
           <>
             {section.items.map((item, i) => (

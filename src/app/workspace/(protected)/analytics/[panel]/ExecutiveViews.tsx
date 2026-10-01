@@ -1148,6 +1148,13 @@ function Bot(props: React.SVGProps<SVGSVGElement> & { className?: string }) {
   );
 }
 
+/** Panels with a dedicated executive view. Every other panel's standard view is company-wide already, so the page uses that one. */
+const EXECUTIVE_PANELS: ReadonlySet<PanelKey> = new Set<PanelKey>(["fms", "hrms", "lms", "messenger", "pms", "portal", "prms", "tms", "workspace"]);
+
+export function hasExecutiveView(panel: PanelKey): boolean {
+  return EXECUTIVE_PANELS.has(panel);
+}
+
 /* ─────────────────────────────────────────────────────────
    The full, company-wide analytics of one panel (what the Command Center
    showed). Rendered by the analytics page — same URL, header and filters —

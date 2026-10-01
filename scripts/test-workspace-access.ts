@@ -146,6 +146,7 @@ async function main() {
 
   console.log("who sees what");
   const ownerKeys = await allowed(owner, ownerAdmin);
+  const noRolesNav = await allowed(acme, noRoles);
   await check("company super admin: every company and management item of the plan's panels, no Platform link", async () => {
     const a = await allowed(acme, admin);
     for (const k of [...COMPANY_KEYS, ...GROWTH_MANAGE_KEYS, "dashboard", "account.notifications", "account.password"]) assert.ok(a.has(k), k);
@@ -155,6 +156,7 @@ async function main() {
     assert.ok(!a.has("platform.panel"), "tenant never sees the Platform link");
     const nav = await navOf(acme, admin);
     assert.deepEqual(nav.sections.map((s) => s.key), ["dashboard", "panels", "analytics", "manage", "company", "account"]);
+    assert.deepEqual(nav.sections.filter((s) => s.sidebar).map((s) => s.key), ["dashboard", "analytics", "manage", "company", "account"], "the sidebar lists everything but the panels");
     // Growth has no Training / Social / AI Bots: locked on the hub, absent from the nav.
     assert.ok(!a.has("panel.tms") && nav.lockedPanels.includes("tms"));
     assert.ok(!a.has("analytics.tms"));
@@ -164,6 +166,7 @@ async function main() {
     for (const k of ["panel.hrms", "panel.lms", "panel.messenger", "panel.sop", "panel.ots", "analytics.hrms", "analytics.messenger", "analytics.workspace"]) assert.ok(a.has(k), k);
     for (const k of [...COMPANY_KEYS, ...MANAGE_KEYS, "panel.pms", "panel.fms", "analytics.fms", "analytics.pms", "analytics.lms", "analytics.portal", "platform.panel"]) assert.ok(!a.has(k), k);
     assert.deepEqual((await navOf(acme, hr)).sections.map((s) => s.key), ["dashboard", "panels", "analytics", "account"]);
+    assert.deepEqual((await navOf(acme, hr)).sections.filter((s) => s.sidebar).map((s) => s.key), ["dashboard", "analytics", "account"]);
   });
   await check("PMS employee: own panels only; lead and portal analytics are not theirs", async () => {
     const a = await allowed(acme, dev);
@@ -208,6 +211,97 @@ async function main() {
     assert.ok(nav.allowed.includes("panel.hrms") && !nav.allowed.includes("panel.pms") && !nav.allowed.includes("analytics.pms"));
     assert.ok(!nav.lockedPanels.includes("pms"));
     await db.collection("companies").updateOne({ _id: beta as never }, { $unset: { enabledModules: "" } });
+  });
+
+  console.log("sidebar without the panels; analytics for every panel");
+  const NEW_ANALYTICS = ["sop", "dlms", "ots", "aibots", "smms", "seo", "cms"];
+  await check("the Panels section is never in the sidebar, yet every panel.* key still resolves and guards", async () => {
+    assert.equal(NAV_SECTIONS.find((s) => s.key === "panels")?.sidebar, false);
+    assert.deepEqual(NAV_SECTIONS.filter((s) => s.sidebar === false).map((s) => s.key), ["panels"], "only the panels are left out");
+    for (const [name, companyId, u] of everyone) {
+      const nav = await navOf(companyId, u);
+      const sidebar = nav.sections.filter((s) => s.sidebar);
+      assert.ok(!sidebar.some((s) => s.key === "panels"), `${name}: Panels in the sidebar`);
+      assert.ok(!sidebar.flatMap((s) => s.items).some((i) => i.key.startsWith("panel.")), `${name}: a panel link in the sidebar`);
+      const panels = nav.sections.find((s) => s.key === "panels");
+      assert.deepEqual((panels?.items ?? []).map((i) => i.key).sort(), nav.allowed.filter((k) => k.startsWith("panel.")).sort(), `${name}: the panels still resolve for the Staff Hub tiles`);
+      assert.ok(panels && panels.items.length > 0 && panels.sidebar === false, `${name}: panels section is resolved but not for the sidebar`);
+    }
+    const a = await navOf(acme, admin);
+    for (const k of ["panel.hrms", "panel.pms", "panel.sop", "panel.dlms", "panel.ots", "panel.seo", "panel.cms"]) assert.equal(await runAsCompany(acme, () => checkWorkspaceAccess(admin.user, k)), true, k);
+    assert.ok(a.lockedPanels.includes("smms") && a.lockedPanels.includes("aibots") && a.lockedPanels.includes("tms"), "locked panels are still reported for the upgrade tiles");
+    assert.equal(await runAsCompany(acme, () => checkWorkspaceAccess(noRoles.user, "panel.hrms")), false);
+  });
+  await check("every panel has an analytics item, in the section's alphabetical order", async () => {
+    const keys = NAV_KEYS.filter((k) => k.startsWith("analytics."));
+    assert.deepEqual(keys, [...keys].sort(), "ordered by panel key");
+    for (const p of NAV_KEYS.filter((k) => k.startsWith("panel."))) assert.ok(keys.includes(p.replace("panel.", "analytics.")), `${p} has no analytics`);
+    const labels = Object.fromEntries((await navOf(owner, ownerAdmin)).sections.find((s) => s.key === "analytics")!.items.map((i) => [i.key, [i.label, i.href]]));
+    assert.deepEqual(
+      NEW_ANALYTICS.map((p) => labels[`analytics.${p}`]),
+      [["SOP Analytics", "/workspace/analytics/sop"], ["Digi Locker Analytics", "/workspace/analytics/dlms"], ["Online Tests Analytics", "/workspace/analytics/ots"], ["AI Bots Analytics", "/workspace/analytics/aibots"], ["Social Media Analytics", "/workspace/analytics/smms"], ["SEO Analytics", "/workspace/analytics/seo"], ["Website Analytics", "/workspace/analytics/cms"]],
+    );
+  });
+  await check("new analytics: open to the panel's own role, closed to every other role and to the panel's per-person tier", async () => {
+    // In the owner company (every panel in the plan), one account per panel role.
+    const HOLDERS: [panel: string, role: string][] = [["sop", "sop_manager"], ["dlms", "dlms_manager"], ["ots", "ots_manager"], ["aibots", "aibots_manager"], ["smms", "smms_specialist"], ["seo", "seo_employee"], ["cms", "cms_viewer"]];
+    const made: ObjectId[] = [];
+    for (const [panel, role] of HOLDERS) {
+      const u = await account(owner, `${role}@owner.test`, [role]);
+      made.push(u._id);
+      const a = await allowed(owner, u);
+      assert.ok(a.has(`panel.${panel}`), `${role} opens the ${panel} panel`);
+      for (const other of NEW_ANALYTICS) assert.equal(a.has(`analytics.${other}`), other === panel, `${role} → analytics.${other}`);
+      for (const other of NEW_ANALYTICS) assert.equal(await runAsCompany(owner, () => checkWorkspaceAccess(u.user, `analytics.${other}`)), other === panel, `guard: ${role} → analytics.${other}`);
+    }
+    // People who only see their own slice of a panel don't get its company-wide numbers.
+    const SCOPED: [panel: string, role: string][] = [["sop", "sop_employee"], ["sop", "sop_author"], ["dlms", "dlms_employee"], ["ots", "ots_candidate"], ["aibots", "aibots_user"], ["smms", "smms_employee"]];
+    for (const [panel, role] of SCOPED) {
+      const u = await account(owner, `${role}@owner.test`, [role]);
+      made.push(u._id);
+      const a = await allowed(owner, u);
+      assert.ok(a.has(`panel.${panel}`), `${role} still opens the ${panel} panel`);
+      for (const other of NEW_ANALYTICS) assert.ok(!a.has(`analytics.${other}`), `${role} must not get analytics.${other}`);
+    }
+    // A single permission grant opens the analytics, exactly like inside the panel.
+    const granted = await account(owner, "smms-granted@owner.test", ["smms_employee"], { permissionOverrides: { "smms.canViewAnalytics": true } });
+    const denied = await account(owner, "smms-denied@owner.test", ["smms_manager"], { permissionOverrides: { "smms.canViewAnalytics": false } });
+    made.push(granted._id, denied._id);
+    assert.ok((await allowed(owner, granted)).has("analytics.smms") && !(await allowed(owner, denied)).has("analytics.smms"));
+    for (const u of [ownerHr, noRoles]) for (const p of ["dlms", "aibots", "smms", "seo", "cms"]) assert.equal(await runAsCompany(owner, () => checkWorkspaceAccess(u.user, `analytics.${p}`)), false, p);
+    // The HR preset carries sop_manager + ots_manager: those two, nothing else.
+    const h = await allowed(acme, hr);
+    assert.deepEqual(NEW_ANALYTICS.filter((p) => h.has(`analytics.${p}`)), ["sop", "ots"]);
+    // The developer preset is a SOP reader and a Digi Locker employee: none.
+    const d = await allowed(acme, dev);
+    assert.deepEqual(NEW_ANALYTICS.filter((p) => d.has(`analytics.${p}`)), []);
+    assert.deepEqual(NEW_ANALYTICS.filter((p) => (noRolesNav.has(`analytics.${p}`))), []);
+    await runAsCompany(owner, async () => (await getDb()).collection("admin_users").deleteMany({ _id: { $in: made } }));
+  });
+  await check("new analytics: the Command Center holder and the super admin get all seven; the plan and the panel switch hide them", async () => {
+    assert.ok(NEW_ANALYTICS.every((p) => ownerKeys.has(`analytics.${p}`)), "super admin of a company with every panel");
+    const exec = await account(owner, "exec@owner.test", preset("developer"), { permissionOverrides: { "workspace.viewCommandCenter": true } });
+    const e = await allowed(owner, exec);
+    assert.deepEqual(NEW_ANALYTICS.filter((p) => e.has(`analytics.${p}`)), NEW_ANALYTICS);
+    assert.ok(!e.has("panel.smms") && !e.has("panel.aibots") && !e.has("panel.seo") && !e.has("panel.cms"), "analytics without the panel itself");
+    await runAsCompany(owner, async () => (await getDb()).collection("admin_users").deleteOne({ _id: exec._id }));
+
+    // Growth has no Social Media / AI Bots; Starter has only SOP and Website of the seven.
+    const growth = await allowed(acme, admin);
+    assert.deepEqual(NEW_ANALYTICS.filter((p) => growth.has(`analytics.${p}`)), ["sop", "dlms", "ots", "seo", "cms"]);
+    const starter = await allowed(small, smallAdmin);
+    assert.deepEqual(NEW_ANALYTICS.filter((p) => starter.has(`analytics.${p}`)), ["sop", "cms"]);
+    for (const p of ["smms", "aibots"]) assert.equal(await runAsCompany(acme, () => checkWorkspaceAccess(admin.user, `analytics.${p}`)), false, `Growth: analytics.${p}`);
+    for (const p of ["dlms", "ots", "seo", "smms", "aibots"]) assert.equal(await runAsCompany(small, () => checkWorkspaceAccess(smallAdmin.user, `analytics.${p}`)), false, `Starter: analytics.${p}`);
+    // Analytics of a panel outside the plan is hidden, not a locked tile of its own.
+    assert.ok((await navOf(acme, admin)).lockedPanels.every((p) => !growth.has(`analytics.${p}`)));
+
+    await db.collection("companies").updateOne({ _id: beta as never }, { $set: { enabledModules: ["workspace", "admin", "messenger", "hrms", "sop"] } });
+    const off = await allowed(beta, betaAdmin);
+    assert.deepEqual(NEW_ANALYTICS.filter((p) => off.has(`analytics.${p}`)), ["sop"], "switched-off panels lose their analytics");
+    assert.equal(await runAsCompany(beta, () => checkWorkspaceAccess(betaAdmin.user, "analytics.cms")), false);
+    await db.collection("companies").updateOne({ _id: beta as never }, { $unset: { enabledModules: "" } });
+    assert.equal(await runAsCompany(beta, () => checkWorkspaceAccess(betaAdmin.user, "analytics.cms")), true);
   });
 
   console.log("platform boundary");

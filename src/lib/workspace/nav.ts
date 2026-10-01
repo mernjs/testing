@@ -21,13 +21,13 @@ import { normalizeTmsRoles } from "@/lib/tms-roles";
 import { normalizeFmsRoles } from "@/lib/fms-roles";
 import { normalizeChatRoles } from "@/lib/messenger-roles";
 import { hasAdminAccess } from "@/lib/admin-roles";
-import { hasSopAccess } from "@/lib/sop-roles";
-import { hasSeoAccess } from "@/lib/seo-roles";
-import { hasDlmsAccess } from "@/lib/dlms-roles";
-import { hasAibotsAccess } from "@/lib/aibots-roles";
-import { hasSmmsAccess } from "@/lib/smms-roles";
-import { hasOtsAccess } from "@/lib/ots-roles";
-import { hasCmsAccess } from "@/lib/cms-roles";
+import { hasSopAccess, sopCan } from "@/lib/sop-roles";
+import { hasSeoAccess, seoCan } from "@/lib/seo-roles";
+import { hasDlmsAccess, isDlmsManagerTier } from "@/lib/dlms-roles";
+import { hasAibotsAccess, isAibotsManagerTier } from "@/lib/aibots-roles";
+import { hasSmmsAccess, smmsCan } from "@/lib/smms-roles";
+import { hasOtsAccess, otsCan } from "@/lib/ots-roles";
+import { cmsCan, hasCmsAccess } from "@/lib/cms-roles";
 import { canViewLmsAnalytics } from "@/lib/lms-roles";
 import { canViewWorkspaceAnalytics } from "@/lib/workspace-roles";
 import { resolvePermission, type RoleContext } from "@/lib/permission-overrides";
@@ -117,15 +117,26 @@ const PANELS: NavItemDef[] = (
 ).map(([key, label, icon, allow]) => ({ key: `panel.${key}`, section: "panels", label, href: `/${key}`, icon, module: key, external: true, allow }));
 
 // ── Analytics: /workspace/analytics/[panel] ─────────────────────────────────
+// Each page shows COMPANY-WIDE numbers, so a panel whose own screens are scoped
+// per person (SOP readers, Digi Locker and AI Bots users, test takers) opens its
+// analytics only to the people who already see the whole panel: its report /
+// analytics permission where it has one, otherwise its see-everything tier.
 const ANALYTICS: NavItemDef[] = (
   [
+    ["aibots", "AI Bots Analytics", "bot", (u) => hasAibotsAccess(u.roles) && isAibotsManagerTier(u)],
+    ["cms", "Website Analytics", "website", (u) => hasCmsAccess(u.roles) && cmsCan(u, "VIEW")],
+    ["dlms", "Digi Locker Analytics", "vault", (u) => hasDlmsAccess(u.roles) && isDlmsManagerTier(u)],
     ["fms", "Finance Analytics", "finance", orAdmin(has(normalizeFmsRoles))],
     ["hrms", "HR Analytics", "users", orAdmin(has(normalizeRoles))],
     ["lms", "Lead Analytics", "grid", canViewLmsAnalytics],
     ["messenger", "Messenger Analytics", "chat", orAdmin(has(normalizeChatRoles))],
+    ["ots", "Online Tests Analytics", "test", (u) => hasOtsAccess(u.roles) && otsCan(u, "VIEW_REPORTS")],
     ["pms", "Project Analytics", "projects", orAdmin(has(normalizePmsRoles))],
     ["portal", "Portal Analytics", "globe", (u) => resolvePermission(u, "portal.isPortalAdmin", () => u.roles.includes("portal_admin"))],
     ["prms", "Procurement Analytics", "cart", orAdmin(has(normalizePrmsRoles))],
+    ["seo", "SEO Analytics", "search", (u) => hasSeoAccess(u.roles) && seoCan(u, "VIEW")],
+    ["smms", "Social Media Analytics", "megaphone", (u) => hasSmmsAccess(u.roles) && smmsCan(u, "VIEW_ANALYTICS")],
+    ["sop", "SOP Analytics", "book", (u) => hasSopAccess(u.roles) && sopCan(u, "EXPORT")],
     ["tms", "Training Analytics", "training", orAdmin(has(normalizeTmsRoles))],
     ["workspace", "Workspace Analytics", "chart", canViewWorkspaceAnalytics],
   ] as [string, string, NavIcon, NavItemDef["allow"]][]
@@ -248,9 +259,10 @@ const NAV_ITEMS: NavItemDef[] = [
   },
 ];
 
-export const NAV_SECTIONS: { key: NavSectionKey; label: string; href?: string }[] = [
+export const NAV_SECTIONS: { key: NavSectionKey; label: string; href?: string; /** `false`: resolved and guarded like any section, but not listed in the sidebar. */ sidebar?: boolean }[] = [
   { key: "dashboard", label: "" },
-  { key: "panels", label: "Panels" },
+  // The panels are opened from the Staff Hub tiles (which also show the locked ones), not from the sidebar.
+  { key: "panels", label: "Panels", sidebar: false },
   { key: "analytics", label: "Analytics" },
   { key: "manage", label: "Management" },
   { key: "company", label: "Company", href: "/settings" },
@@ -299,6 +311,8 @@ export interface NavSection {
   key: NavSectionKey;
   label: string;
   href: string | null;
+  /** Whether the sidebar lists this section (the Panels section is reached from the Staff Hub tiles instead). */
+  sidebar: boolean;
   items: NavItem[];
 }
 
@@ -324,6 +338,7 @@ export function resolveNav(ctx: NavContext): ResolvedNav {
     key: s.key,
     label: s.label,
     href: s.href ?? null,
+    sidebar: s.sidebar !== false,
     items: open
       .filter((i) => i.section === s.key)
       .map((i) => ({ key: i.key, label: i.label, title: i.title ?? i.label, description: i.description ?? null, href: i.href, icon: i.icon, group: i.group ?? null, external: i.external === true })),
