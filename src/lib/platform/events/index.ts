@@ -125,6 +125,9 @@ export async function emitEvent(type: EventType, input: EmitInput): Promise<Plat
     };
     await (await eventsCollection()).insertOne(event);
     if (store?.inWorkflow) return event; // loop guard
+    // Bulk imports are recorded in the activity log but never run automations —
+    // a 1,000-row file must not send 1,000 emails, notifications or webhooks.
+    if (event.source === "import") return event;
 
     const run = async () => {
       const { runWorkflowsForEvent } = await import("@/lib/platform/workflows/run");
