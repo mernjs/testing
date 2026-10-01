@@ -1,6 +1,6 @@
 import "server-only";
-import { getDb } from "@/lib/mongodb";
-import { SETTINGS_COLLECTION } from "@/lib/hrms/settings";
+import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
+import { currentCompanyId } from "@/lib/platform/tenancy/context";
 
 /** Company-timezone date helpers shared by the catalog and the query translator. */
 
@@ -17,11 +17,12 @@ export function isValidTimezone(tz: unknown): tz is string {
   }
 }
 
-/** The company's time zone (the HR working-hours setting; default Asia/Kolkata). Read-only — never creates the settings row. */
+/** The company's time zone: the one chosen in setup (profile), else the platform default it was created with, else Asia/Kolkata. Reads the company's own registry row only. */
 export async function companyTimezone(): Promise<string> {
   try {
-    const doc = await (await getDb()).collection<{ _id: string; timezone?: string }>(SETTINGS_COLLECTION).findOne({ _id: "org" }, { projection: { timezone: 1 } });
-    return isValidTimezone(doc?.timezone) ? doc.timezone : DEFAULT_TIMEZONE;
+    const doc = await (await getPlatformDb()).collection<{ _id: string; timezone?: string; profile?: { timezone?: string } }>("companies").findOne({ _id: await currentCompanyId() }, { projection: { timezone: 1, "profile.timezone": 1 } });
+    const tz = doc?.profile?.timezone || doc?.timezone;
+    return isValidTimezone(tz) ? tz : DEFAULT_TIMEZONE;
   } catch {
     return DEFAULT_TIMEZONE;
   }
