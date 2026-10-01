@@ -363,7 +363,7 @@ async function notify(companyId: string, kind: NoticeKind): Promise<void> {
     if (!to) return;
     const plan = sub ? await getPlan(sub.planId) : null;
     const planName = plan?.name ?? "your plan";
-    const url = `${companyBaseUrl(company.slug)}/settings/billing`;
+    const url = `${companyBaseUrl(company.slug)}/workspace/settings/billing`;
     const copy: Record<NoticeKind, { subject: string; heading: string; paragraphs: string[]; label: string }> = {
       payment_failed: {
         subject: `Payment failed for ${company.name}`,

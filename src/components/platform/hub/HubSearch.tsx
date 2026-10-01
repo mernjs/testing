@@ -6,7 +6,7 @@ import { Briefcase, FileText, FolderKanban, ListTodo, Loader2, Search, Target, U
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import type { SearchHit, SearchType } from "@/lib/platform/search";
-import { hubSearchAction } from "@/app/(platform)/workspace/hub-actions";
+import { hubSearchAction } from "@/app/workspace/hub-actions";
 
 const TYPE_META: Record<SearchType, { label: string; icon: typeof Search }> = {
   lead: { label: "Lead", icon: Target },

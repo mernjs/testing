@@ -91,7 +91,7 @@ interface NavItemDef {
 }
 
 const anyone = () => true;
-/** `super_admin` only (`admin-roles.ts`) — what every `/settings` page checks. */
+/** `super_admin` only (`admin-roles.ts`) — what every company-settings page (`/workspace/settings/*`) checks. */
 const superAdmin = (u: RoleContext) => hasAdminAccess(u.roles);
 const has = (normalize: (roles: unknown) => unknown[]) => (u: RoleContext) => normalize([...u.roles]).length > 0;
 const orAdmin = (rule: (u: RoleContext) => boolean) => (u: RoleContext) => superAdmin(u) || rule(u);
@@ -148,7 +148,7 @@ const ANALYTICS: NavItemDef[] = (
   icon,
   module: key,
   // The Command Center permission includes every panel's (full) analytics.
-  allow: (u: RoleContext) => may(MANAGE_PERMISSIONS.commandCenter)(u) || allow(u),
+  allow: (u: RoleContext) => canViewCommandCenter(u) || allow(u),
 }));
 
 // ── Management: the company-wide registers (formerly the separate admin panel) ──
@@ -174,11 +174,21 @@ export const MANAGE_PERMISSIONS = {
 } as const;
 const may = (permission: string) => (u: RoleContext) => resolvePermission(u, permission, () => false);
 
+/**
+ * The executive sections of the dashboard (`/workspace`: financial position,
+ * KPIs by area, panel performance) — the former Command Center. Not a nav item
+ * any more (the dashboard is one page for everybody), so this is the one rule
+ * every caller asks: the dashboard loader, the analytics pages, the bell.
+ */
+export const canViewCommandCenter = (u: RoleContext): boolean => may(MANAGE_PERMISSIONS.commandCenter)(u);
+
+/** Who may open the Audit log page, and which of its two sources each reader gets. */
+export const canViewAuditLog = (u: RoleContext): boolean => may(MANAGE_PERMISSIONS.auditLog)(u);
+/** Workspace events (`platform_events`, the event bus) — company Super Admin only, as `/settings/activity` always was. */
+export const canViewWorkspaceEvents = (u: RoleContext): boolean => superAdmin(u);
+
 const P = MANAGE_PERMISSIONS;
 const MANAGE_PAGES: [group: string, path: string, label: string, icon: NavIcon, permission: string, module?: string][] = [
-  ["Overview", "command-center", "Command Center", "shield", P.commandCenter],
-  ["Overview", "activity-log", "Audit log", "history", P.auditLog],
-  ["Overview", "documents", "Documents", "file", P.documents],
   ["CRM", "crm/leads", "Leads", "grid", P.crm, "lms"],
   ["CRM", "crm/clients", "Clients", "grid", P.crm, "pms"],
   ["Projects", "pms/projects", "Projects", "projects", P.projects, "pms"],
@@ -223,20 +233,24 @@ const MANAGE: NavItemDef[] = MANAGE_PAGES.map(([group, path, label, icon, permis
 // ── Company: the company managing itself ────────────────────────────────────
 const company = (key: string, href: string, icon: NavIcon, label: string, description: string, title?: string): NavItemDef => ({ key: `company.${key}`, section: "company", label, title, description, href, icon, allow: superAdmin });
 const COMPANY: NavItemDef[] = [
-  company("setup", "/onboarding", "building", "Company setup", "Profile, departments, invitations and which panels your team uses."),
-  company("profile", "/settings/profile", "building", "Organization profile", "Company name, legal name, industry, country, currency, time zone and contact details."),
+  company("setup", "/workspace/onboarding", "building", "Company setup", "Profile, departments, invitations and which panels your team uses."),
+  company("profile", "/workspace/settings/profile", "building", "Organization profile", "Company name, legal name, industry, country, currency, time zone and contact details."),
   { ...company("users", "/workspace/users", "users", "Users, roles & seats", "Who can sign in, which panels and permissions each person has, and seats used.", "Users & roles"), allow: may(P.users) },
-  company("billing", "/settings/billing", "card", "Plan & billing", "Your plan, payments, coupon codes and GST billing details."),
-  company("invoices", "/settings/billing/invoices", "receipt", "Invoices & payments", "Tax invoices, credit notes and every payment made for your subscription."),
-  company("usage", "/settings/usage", "gauge", "Usage", "Seats, AI tokens and file storage used against your plan's limits."),
-  company("domains", "/settings/domains", "globe", "Custom domains", "Your workspace address and your own custom domains, with automatic SSL.", "Domains"),
-  company("branding", "/settings/branding", "palette", "Branding", "Logo, name and colour across panels, emails and PDFs."),
-  company("payments", "/settings/payments", "bank", "Payment account", "Connect your own Razorpay account to collect invoice payments and pay salaries.", "Payments & payouts"),
-  company("integrations", "/settings/integrations", "plug", "Integrations", "What your workspace is connected to: payment gateway, webhooks and your own domain."),
-  company("automations", "/settings/automations", "zap", "Automations", "When something happens, notify people, send an email or call a webhook."),
-  company("import", "/settings/import", "upload", "Import data", "Bring leads, clients and employees in from CSV files."),
-  company("activity", "/settings/activity", "history", "Activity log", "Who did what across your workspace, and when."),
-  company("security", "/settings/security", "lock", "Security", "Your sign-in, password, active sessions and accounts that need attention."),
+  company("billing", "/workspace/settings/billing", "card", "Plan & billing", "Your plan, payments, coupon codes and GST billing details."),
+  company("invoices", "/workspace/settings/billing/invoices", "receipt", "Invoices & payments", "Tax invoices, credit notes and every payment made for your subscription."),
+  company("usage", "/workspace/settings/usage", "gauge", "Usage", "Seats, AI tokens and file storage used against your plan's limits."),
+  company("domains", "/workspace/settings/domains", "globe", "Custom domains", "Your workspace address and your own custom domains, with automatic SSL.", "Domains"),
+  company("branding", "/workspace/settings/branding", "palette", "Branding", "Logo, name and colour across panels, emails and PDFs."),
+  company("payments", "/workspace/settings/payments", "bank", "Payment account", "Connect your own Razorpay account to collect invoice payments and pay salaries.", "Payments & payouts"),
+  company("integrations", "/workspace/settings/integrations", "plug", "Integrations", "What your workspace is connected to: payment gateway, webhooks and your own domain."),
+  company("automations", "/workspace/settings/automations", "zap", "Automations", "When something happens, notify people, send an email or call a webhook."),
+  company("import", "/workspace/settings/import", "upload", "Import data", "Bring leads, clients and employees in from CSV files."),
+  {
+    ...company("audit", "/workspace/settings/audit-log", "history", "Audit log", "Who did what across your workspace and its panels, and when: workspace events and panel activity in one place."),
+    // Same rule as the old Management → Activity log; the Super Admin's workspace events source is checked on the page itself.
+    allow: canViewAuditLog,
+  },
+  company("security", "/workspace/settings/security", "lock", "Security", "Your sign-in, password, active sessions and accounts that need attention."),
 ];
 
 const NAV_ITEMS: NavItemDef[] = [
@@ -245,6 +259,7 @@ const NAV_ITEMS: NavItemDef[] = [
   ...ANALYTICS,
   ...MANAGE,
   ...COMPANY,
+  { key: "account.documents", section: "account", label: "Documents", description: "Documents uploaded across Projects, HR and the External Portal.", href: "/workspace/account/documents", icon: "file", allow: may(P.documents) },
   { key: "account.notifications", section: "account", label: "Notifications", href: "/workspace/notifications", icon: "bell", allow: anyone },
   { key: "account.password", section: "account", label: "Change Password", href: "/workspace/change-password", icon: "key", allow: anyone },
   {
@@ -265,7 +280,7 @@ export const NAV_SECTIONS: { key: NavSectionKey; label: string; href?: string; /
   { key: "panels", label: "Panels", sidebar: false },
   { key: "analytics", label: "Analytics" },
   { key: "manage", label: "Management" },
-  { key: "company", label: "Company", href: "/settings" },
+  { key: "company", label: "Company", href: "/workspace/settings" },
   { key: "account", label: "Account" },
   { key: "platform", label: "Platform" },
 ];

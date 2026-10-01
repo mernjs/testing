@@ -15,7 +15,7 @@ import { effectiveSubscriptionStatus, neverPaid, trialDaysLeft } from "@/lib/pla
  * - suspended after the trial: "Your trial has ended — your data is safe…"
  * - suspended/canceled otherwise: the subscription has lapsed
  * Renders nothing for the platform owner, paying companies, or outside a company.
- * Links go to `/settings/billing` on the current host.
+ * Links go to `/workspace/settings/billing` on the current host.
  */
 export default async function TrialBanner({ className }: { className?: string }) {
   const companyId = await currentCompanyIdOrNull();
@@ -39,7 +39,7 @@ export default async function TrialBanner({ className }: { className?: string })
           {days <= 0 ? "Your trial ends today" : `${days} day${days === 1 ? "" : "s"} left in your trial`}
           {e.planName && <span className="text-muted-foreground"> of {e.planName}</span>}
         </span>
-        <Link href="/settings/billing" className="font-semibold text-primary underline-offset-4 hover:underline">
+        <Link href="/workspace/settings/billing" className="font-semibold text-primary underline-offset-4 hover:underline">
           Choose a plan
         </Link>
       </div>
@@ -58,7 +58,7 @@ export default async function TrialBanner({ className }: { className?: string })
           <span className="min-w-0 flex-1">
             Your trial has ended — {left <= 0 ? "the workspace becomes read-only today" : `${left} day${left === 1 ? "" : "s"} before the workspace becomes read-only`}.
           </span>
-          <Link href="/settings/billing" className="font-semibold text-primary underline-offset-4 hover:underline">
+          <Link href="/workspace/settings/billing" className="font-semibold text-primary underline-offset-4 hover:underline">
             Choose a plan
           </Link>
         </div>
@@ -76,7 +76,7 @@ export default async function TrialBanner({ className }: { className?: string })
         <span className="min-w-0 flex-1">
           {trialEnded ? "Your trial has ended" : "Your subscription has lapsed"} — your data is safe; choose a plan to continue.
         </span>
-        <Link href="/settings/billing" className="font-semibold text-primary underline-offset-4 hover:underline">
+        <Link href="/workspace/settings/billing" className="font-semibold text-primary underline-offset-4 hover:underline">
           Choose a plan
         </Link>
       </div>

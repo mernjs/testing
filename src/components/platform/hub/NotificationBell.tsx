@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Bell } from "lucide-react";
-import { hubUnreadCountAction } from "@/app/(platform)/workspace/hub-actions";
+import { hubUnreadCountAction } from "@/app/workspace/hub-actions";
 
 /** Tells the bell the unread count changed (fired by the notifications page after marking read). */
 export const UNREAD_EVENT = "hub:unread";

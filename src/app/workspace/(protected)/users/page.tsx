@@ -66,7 +66,7 @@ export default async function AdminUsersPage({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Link href="/settings/usage" id="users-seats" title="Seats used against your plan">
+          <Link href="/workspace/settings/usage" id="users-seats" title="Seats used against your plan">
             <Badge variant="outline" className="px-3 py-1 text-xs gap-1.5 bg-primary/10 text-primary border-primary/20">
               <span className="font-semibold">
                 {seatsUsed} / {seatLimit === null ? "Unlimited" : seatLimit}

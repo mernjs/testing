@@ -265,7 +265,7 @@ function describeLine(line: QuoteLine, period: { start: Date; end: Date } | null
 
 async function emailInvoice(inv: SaasInvoice, slug: string): Promise<void> {
   if (!inv.buyer.email || !inv.number || inv.status !== "paid") return;
-  const url = `${companyBaseUrl(slug)}/settings/billing/invoices`;
+  const url = `${companyBaseUrl(slug)}/workspace/settings/billing/invoices`;
   const period = inv.periodStart && inv.periodEnd ? ` (${formatInvoiceDate(inv.periodStart)} to ${formatInvoiceDate(inv.periodEnd)})` : "";
   const { html, text } = renderEmail({
     brand: inv.seller.name,

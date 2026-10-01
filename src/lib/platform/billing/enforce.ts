@@ -19,7 +19,7 @@ import type { SubscriptionStatus } from "@/lib/platform/billing/types";
  * `BillingLimitError` carrying the same message (HTTP 402 for API routes).
  */
 
-export const BILLING_SETTINGS_PATH = "/settings/billing";
+export const BILLING_SETTINGS_PATH = "/workspace/settings/billing";
 
 export type BillingBlockCode = "read_only" | "seats" | "ai_tokens" | "storage" | "module";
 
@@ -64,7 +64,7 @@ export async function requireModule(moduleKey: ModuleKey): Promise<void> {
     unstable_rethrow(err);
     console.error(`[billing] module check failed for ${moduleKey}`, err);
   }
-  if (locked) redirect(`/upgrade?module=${encodeURIComponent(moduleKey)}`);
+  if (locked) redirect(`/workspace/upgrade?module=${encodeURIComponent(moduleKey)}`);
 }
 
 // ---------------------------------------------------------------------------

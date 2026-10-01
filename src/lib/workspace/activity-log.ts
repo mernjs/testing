@@ -95,7 +95,7 @@ const PROJECT_STAGE = {
 export async function searchActivityLog(opts: SearchActivityLogOptions = {}): Promise<SearchActivityLogResult> {
   const db = await getDb();
   const page = Math.max(opts.page ?? 1, 1);
-  const pageSize = Math.min(Math.max(opts.pageSize ?? 25, 1), 100);
+  const pageSize = Math.min(Math.max(opts.pageSize ?? 25, 1), 500);
   const match = buildMatch(opts);
 
   const sources = opts.module ? SOURCES.filter((s) => s.module === opts.module) : SOURCES;

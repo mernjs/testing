@@ -9,7 +9,8 @@ import {
   type NotificationModule,
   type NotificationPriority,
 } from "@/lib/workspace/module-notifications";
-import { checkWorkspaceAccess, type WorkspaceUser } from "@/lib/workspace/access";
+import type { WorkspaceUser } from "@/lib/workspace/access";
+import { canViewCommandCenter } from "@/lib/workspace/nav";
 
 /**
  * The Workspace's one notification feed. Two sources, one list and one bell:
@@ -37,7 +38,7 @@ export function isNotificationSource(value: unknown): value is NotificationSourc
 
 /** Whether this person's feed includes the panels' stores. */
 export async function seesPanelNotifications(user: WorkspaceUser): Promise<boolean> {
-  return checkWorkspaceAccess(user, "manage.command-center");
+  return canViewCommandCenter({ roles: user.roles, permissionOverrides: user.permissionOverrides ?? null });
 }
 
 export async function workspaceUnreadCount(user: FeedUser): Promise<number> {

@@ -181,7 +181,7 @@ export default function HubSidebar({
                   href={item.href}
                   label={item.label}
                   icon={ICONS[item.icon]}
-                  exact={item.href === "/workspace" || item.href === "/settings/billing"}
+                  exact={item.href === "/workspace" || item.href === "/workspace/settings/billing"}
                   external={item.external}
                   collapsed={collapsed}
                   onNavigate={onNavigate}

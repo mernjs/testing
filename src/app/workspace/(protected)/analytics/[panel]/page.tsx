@@ -53,6 +53,7 @@ import {
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { checkWorkspaceAccess } from "@/lib/workspace/access";
+import { canViewCommandCenter } from "@/lib/workspace/nav";
 import ExecutiveViews, { hasExecutiveView } from "./ExecutiveViews";
 import { CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -1042,7 +1043,7 @@ export default async function WorkspacePanelAnalyticsPage({
   // The same rule that lists this page in the Workspace navigation: role / permission override, plan and switched-on panels.
   const isAuthorized = await checkWorkspaceAccess(user, `analytics.${panel}`);
   // People with the Command Center permission get the full company-wide view; others the role-scoped one.
-  const executive = isAuthorized && (await checkWorkspaceAccess(user, "manage.command-center"));
+  const executive = isAuthorized && canViewCommandCenter({ roles: user.roles, permissionOverrides: user.permissionOverrides ?? null });
 
   const filters: PanelAnalyticsFilters = {
     dateFrom: typeof sp.dateFrom === "string" ? sp.dateFrom : undefined,

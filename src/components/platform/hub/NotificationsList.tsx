@@ -6,7 +6,7 @@ import { BellOff, CheckCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn, formatDateTime } from "@/lib/utils";
 import type { WorkspaceNotification } from "@/lib/workspace/notifications";
-import { hubMarkAllReadAction, hubMarkReadAction } from "@/app/(platform)/workspace/hub-actions";
+import { hubMarkAllReadAction, hubMarkReadAction } from "@/app/workspace/hub-actions";
 import { UNREAD_EVENT } from "@/components/platform/hub/NotificationBell";
 
 /** One id per store: the same id can exist in two panels. */

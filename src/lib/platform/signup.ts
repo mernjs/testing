@@ -208,7 +208,7 @@ export async function confirmSignup(token: string, ctx: { hostHint: string | nul
   void sendWorkspaceReadyEmail(doc, base);
 
   const handoff = randomBytes(32).toString("hex");
-  await handoffs.insertOne({ _id: sha256(handoff), companyId: created.companyId, adminId: created.adminId, next: "/onboarding", expiresAt: new Date(Date.now() + HANDOFF_TTL_MS) });
+  await handoffs.insertOne({ _id: sha256(handoff), companyId: created.companyId, adminId: created.adminId, next: "/workspace", expiresAt: new Date(Date.now() + HANDOFF_TTL_MS) });
   return { ok: true, redirectTo: `${base}/workspace/handoff?token=${handoff}` };
 }
 

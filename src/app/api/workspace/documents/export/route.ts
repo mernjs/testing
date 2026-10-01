@@ -4,7 +4,7 @@ import { searchDocuments, documentModuleLabel, DOCUMENT_MODULES, type DocumentMo
 import { toCsv } from "@/lib/csv";
 
 export async function GET(req: NextRequest) {
-  const auth = await authorizeWorkspaceApi("manage.documents");
+  const auth = await authorizeWorkspaceApi("account.documents");
   if (!auth.ok) return auth.response;
 
   const sp = req.nextUrl.searchParams;

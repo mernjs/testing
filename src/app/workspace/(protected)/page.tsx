@@ -43,7 +43,6 @@ import {
   FileCheck2,
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
-import { onboardingPending } from "@/lib/platform/onboarding/state";
 import { getWorkspaceNav } from "@/lib/workspace/access";
 import { normalizeRoles } from "@/lib/hrms-roles";
 import { normalizePmsRoles } from "@/lib/pms-roles";
@@ -77,6 +76,11 @@ import { getDb } from "@/lib/mongodb";
 import { getEmployeeDashboard as getPmsDashboard } from "@/lib/pms/employee-dashboard";
 import { todayDateString, shiftMonth } from "@/lib/hrms/time";
 import CompanyToday from "@/components/platform/hub/CompanyToday";
+import CommandCenterSections from "@/components/workspace/CommandCenterSections";
+import { loadExecutiveOverview } from "@/lib/workspace/executive-overview";
+import { isOnboardingOwner, onboardingGateTarget } from "@/lib/platform/onboarding/gate";
+import { getOnboarding } from "@/lib/platform/onboarding/state";
+import { getCompanyBrand } from "@/lib/platform/branding";
 
 interface ModuleTile {
   key: string;
@@ -127,8 +131,26 @@ export default async function HubDashboardPage({
 }) {
   const user = await getCurrentHubUser();
   if (!user) redirect("/workspace/login");
+  if (user.mustChangePassword) redirect("/workspace/change-password");
 
-  await searchParams;
+  // First Workspace experience: a company owner whose setup isn't finished (or skipped) starts in the onboarding wizard.
+  // Only this page redirects — deep links are never intercepted (the shell's setup banner reminds instead).
+  if (isOnboardingOwner(user.roles)) {
+    const { company, state } = await getOnboarding();
+    const target = onboardingGateTarget({ pathname: "/workspace", isOwner: true, isPlatformOwnerCompany: company.isPlatformOwner === true, state });
+    if (target) redirect(target);
+  }
+
+  const sp = await searchParams;
+  const executive = await loadExecutiveOverview(
+    { roles: user.roles, permissionOverrides: user.permissionOverrides ?? null },
+    {
+      dateFrom: typeof sp.dateFrom === "string" ? sp.dateFrom : undefined,
+      dateTo: typeof sp.dateTo === "string" ? sp.dateTo : undefined,
+      granularity: typeof sp.granularity === "string" ? sp.granularity : undefined,
+    },
+  );
+  const brand = await getCompanyBrand();
 
   const roles = user.roles;
   const hrmsRoles = normalizeRoles(roles);
@@ -378,23 +400,15 @@ export default async function HubDashboardPage({
       icon: <LayoutGrid className="size-5" />,
       roleBadge: "All Staff",
     },
-    {
-      key: "admin",
-      label: "Command Center",
-      description: "Company-wide KPIs & financial intelligence.",
-      href: "/workspace/command-center",
-      icon: <ShieldCheck className="size-5" />,
-      roleBadge: adminRoles.join(", ").replace(/_/g, " "),
-    },
   ];
 
   // Which tiles this person gets comes from the Workspace navigation (roles, permission overrides, plan, switched-on
   // panels) — the same answer the sidebar shows. Panels outside the plan stay visible but locked, pointing at the upgrade page.
-  const [session, setupPending] = await Promise.all([getWorkspaceNav(), user.roles.includes("super_admin") ? onboardingPending() : Promise.resolve(false)]);
+  const session = await getWorkspaceNav();
   const allowed = new Set(session?.nav.allowed ?? []);
   const locked = new Set(session?.nav.lockedPanels ?? []);
   const isLocked = (key: string) => locked.has(key);
-  const visibleTiles = tiles.filter((t) => (t.key === "admin" ? allowed.has("manage.command-center") : allowed.has(`panel.${t.key}`) || locked.has(t.key)));
+  const visibleTiles = tiles.filter((t) => allowed.has(`panel.${t.key}`) || locked.has(t.key));
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const displayName = nameFromEmail(user.email);
@@ -418,15 +432,6 @@ export default async function HubDashboardPage({
 
   return (
     <div className="relative space-y-6">
-      {setupPending && (
-        <Link href="/onboarding" className="flex items-center justify-between gap-3 rounded-2xl border border-primary/30 bg-primary/5 px-5 py-3 text-sm transition-colors hover:bg-primary/10">
-          <span>
-            <span className="font-semibold text-foreground">Finish setting up your workspace</span>
-            <span className="text-muted-foreground"> — company profile, departments, team invites and panels.</span>
-          </span>
-          <ArrowUpRight className="size-4 shrink-0 text-primary" />
-        </Link>
-      )}
       {/* ── Welcome Header ─────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-3 rounded-2xl border border-border/40 bg-gradient-to-r from-primary/10 via-card to-card p-6 shadow-sm">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -474,8 +479,45 @@ export default async function HubDashboardPage({
         </div>
       </div>
 
+      {/* ── Executive overview: only for people with the Command Center permission (the loader returns null for everyone else) ── */}
+      {executive && <CommandCenterSections stats={executive} companyName={brand.name} />}
+
       {/* ── Company overview: ask, company KPIs, recent activity (platform layer) ── */}
       <CompanyToday user={user} />
+
+      {/* ── Operational Panels (SSO Launcher) ─────────────────────────────── */}
+      <ExecutiveSection
+        title="My Operational Panels"
+        description="Single sign-on access to your authorized panels. Opens in new tab."
+      >
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {visibleTiles.map((tile, i) => (
+            <div key={tile.key} className="relative group" data-module={tile.key} data-locked={isLocked(tile.key) ? "true" : undefined}>
+              <HubModuleTile
+                href={isLocked(tile.key) ? `/workspace/upgrade?module=${tile.key}` : tile.href}
+                label={tile.label}
+                description={tile.description}
+                icon={tile.icon}
+                index={i}
+                kpi={tile.kpi}
+              />
+              <div className="absolute top-3 right-3 pointer-events-none">
+                {isLocked(tile.key) ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                    <Lock className="size-2.5" />
+                    Upgrade to unlock
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <Activity className="size-2.5" />
+                    Active
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </ExecutiveSection>
 
       {/* ── My Access KPIs ─────────────────────────────────────────────────── */}
       <ExecutiveSection title="My Workspace Status">
@@ -973,40 +1015,6 @@ export default async function HubDashboardPage({
           )}
         </div>
       )}
-
-      {/* ── Operational Panels (SSO Launcher) ─────────────────────────────── */}
-      <ExecutiveSection
-        title="My Operational Panels"
-        description="Single sign-on access to your authorized panels. Opens in new tab."
-      >
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {visibleTiles.map((tile, i) => (
-            <div key={tile.key} className="relative group" data-module={tile.key} data-locked={isLocked(tile.key) ? "true" : undefined}>
-              <HubModuleTile
-                href={isLocked(tile.key) ? `/upgrade?module=${tile.key}` : tile.href}
-                label={tile.label}
-                description={tile.description}
-                icon={tile.icon}
-                index={i}
-                kpi={tile.kpi}
-              />
-              <div className="absolute top-3 right-3 pointer-events-none">
-                {isLocked(tile.key) ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                    <Lock className="size-2.5" />
-                    Upgrade to unlock
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                    <Activity className="size-2.5" />
-                    Active
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </ExecutiveSection>
 
       {/* ── Module Privileges ──────────────────────────────────────────────── */}
       <ExecutiveSection title="My Privileges & Role Breakdown" description="Permissions granted to your employee account">

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { hubAskAction } from "@/app/(platform)/workspace/hub-actions";
+import { hubAskAction } from "@/app/workspace/hub-actions";
 
 const LINK = /\[([^\]\n]{1,120})\]\(([^)\s]{1,300})\)/g;
 

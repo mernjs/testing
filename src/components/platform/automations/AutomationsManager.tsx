@@ -18,7 +18,7 @@ import {
   testAutomationAction,
   toggleAutomationAction,
   type AutomationResult,
-} from "@/app/(platform)/settings/automations/actions";
+} from "@/app/workspace/(protected)/settings/automations/actions";
 
 const selectClass =
   "h-9 w-full min-w-0 rounded-xl border border-border/50 bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30";

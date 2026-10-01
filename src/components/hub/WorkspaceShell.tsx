@@ -7,19 +7,21 @@ import BillingNotice from "@/components/platform/BillingNotice";
 import { workspaceUnreadCount } from "@/lib/workspace/notifications";
 import type { CurrentHubUser } from "@/lib/hub-auth";
 import type { ResolvedNav } from "@/lib/workspace/nav";
-import { cn } from "@/lib/utils";
+import SetupBanner from "@/components/workspace/SetupBanner";
+import { isOnboardingOwner } from "@/lib/platform/onboarding/gate";
+import { onboardingPending } from "@/lib/platform/onboarding/state";
 
 /**
- * The Workspace frame: sidebar, top bar, billing notice. Shared by the Staff
- * Hub (`/workspace`) and the company pages (`/settings/*`, `/onboarding`,
- * `/upgrade`), so the whole company-level area is one application.
+ * The Workspace frame: sidebar, top bar, billing notice. One layout
+ * (`src/app/workspace/(protected)/layout.tsx`) wraps every Workspace page —
+ * the dashboard, the registers, company settings (`/workspace/settings/*`),
+ * onboarding and upgrade — so the whole company-level area is one application.
  *
- * `embedded` pages were written as full-screen pages; inside the frame their
- * outer wrapper only needs to fill the content area.
+ * A company owner whose setup is still open also gets a reminder banner
+ * (`SetupBanner`, hidden on the home page and the wizard themselves).
  */
-export default async function WorkspaceShell({ user, nav, embedded = false, children }: { user: CurrentHubUser; nav: ResolvedNav; embedded?: boolean; children: React.ReactNode }) {
-  const unread = await workspaceUnreadCount(user).catch(() => 0);
-  const Content = embedded ? "div" : "main";
+export default async function WorkspaceShell({ user, nav, children }: { user: CurrentHubUser; nav: ResolvedNav; children: React.ReactNode }) {
+  const [unread, setupOpen] = await Promise.all([workspaceUnreadCount(user).catch(() => 0), isOnboardingOwner(user.roles) ? onboardingPending().catch(() => false) : Promise.resolve(false)]);
 
   return (
     <TooltipProvider delay={200}>
@@ -37,9 +39,10 @@ export default async function WorkspaceShell({ user, nav, embedded = false, chil
               <HubTopbar email={user.email} nav={nav.sections} unread={unread} />
             </div>
             <BillingNotice />
-            <Content id="workspace-content" className={cn("min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl", embedded && "[&>*]:min-h-full")}>
+            {setupOpen && <SetupBanner />}
+            <main id="workspace-content" className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">
               {children}
-            </Content>
+            </main>
           </div>
         </div>
       </SidebarCollapseProvider>

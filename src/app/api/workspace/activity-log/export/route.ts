@@ -10,7 +10,7 @@ function parseDateParam(value: string | null, endOfDay = false): Date | undefine
 }
 
 export async function GET(req: NextRequest) {
-  const auth = await authorizeWorkspaceApi("manage.activity-log");
+  const auth = await authorizeWorkspaceApi("company.audit");
   if (!auth.ok) return auth.response;
 
   const sp = req.nextUrl.searchParams;

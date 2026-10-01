@@ -49,9 +49,9 @@ export default function PlatformSidebarShell({ email, flags }: { email: string; 
       <div className={cn("shrink-0 border-t border-border/60 p-3", collapsed && "px-2")}>
         {!collapsed && <p className="mb-2 truncate px-1 text-xs text-muted-foreground" title={email}>{email}</p>}
         <div className={cn("flex gap-1", collapsed ? "flex-col items-center" : "items-center")}>
-          <Link href="/workspace" aria-label="Staff Hub" className="flex flex-1 items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-primary/5 hover:text-primary">
+          <Link href="/workspace" aria-label="Workspace" className="flex flex-1 items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-primary/5 hover:text-primary">
             <LayoutGrid className="size-4 shrink-0" />
-            {!collapsed && "Staff Hub"}
+            {!collapsed && "Workspace"}
           </Link>
           <form action={hubLogoutAction}>
             <button type="submit" aria-label="Sign out" className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive">

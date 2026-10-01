@@ -95,7 +95,7 @@ export async function listCompanyIntegrations(): Promise<CompanyIntegration[]> {
       description: "Collect invoice payments from your clients and pay salaries from your own Razorpay account.",
       connected: account.status === "connected",
       status: account.status === "connected" ? `Connected · ${account.mode === "live" ? "Live" : "Test"} mode${account.payoutsEnabled ? " · payouts on" : ""}` : account.status === "unreadable" ? "Saved keys can't be read — reconnect" : "Not connected",
-      href: "/settings/payments",
+      href: "/workspace/settings/payments",
     },
     {
       key: "webhooks",
@@ -103,7 +103,7 @@ export async function listCompanyIntegrations(): Promise<CompanyIntegration[]> {
       description: "Signed HTTPS calls to your own systems when something happens, set up as an automation action.",
       connected: hooksOn.length > 0,
       status: hooks.length === 0 ? "No webhook automations" : `${hooksOn.length} active${hooks.length > hooksOn.length ? ` · ${hooks.length - hooksOn.length} paused` : ""}`,
-      href: "/settings/automations",
+      href: "/workspace/settings/automations",
     },
     {
       key: "domain",
@@ -111,7 +111,7 @@ export async function listCompanyIntegrations(): Promise<CompanyIntegration[]> {
       description: "Serve your workspace and website from a domain you own, with automatic SSL.",
       connected: verified.length > 0,
       status: custom.length === 0 ? "Using the workspace address" : `${verified.length} verified${custom.length > verified.length ? ` · ${custom.length - verified.length} pending` : ""}`,
-      href: "/settings/domains",
+      href: "/workspace/settings/domains",
     },
   ];
 }
