@@ -101,13 +101,15 @@ export default function ChatWorkspace({ conversationId, title, initialMessages, 
   // Abort an in-flight answer if the user navigates away.
   useEffect(() => () => abortRef.current?.abort(), []);
 
-  // An example clicked in the sidebar lands in the composer.
+  // An example clicked in the sidebar lands in the composer (state adjusted during render, focus in an effect).
+  const [seenDraft, setSeenDraft] = useState(draft.nonce);
+  if (draft.nonce !== seenDraft) {
+    setSeenDraft(draft.nonce);
+    setInput(draft.text);
+  }
   useEffect(() => {
-    if (draft.nonce > 0) {
-      setInput(draft.text);
-      textRef.current?.focus();
-    }
-  }, [draft]);
+    if (draft.nonce > 0) textRef.current?.focus();
+  }, [draft.nonce]);
 
   // "New conversation" while this page holds a client-created conversation (its URL was replaced in place).
   useEffect(() => {

@@ -5,7 +5,7 @@ import { getEntitlements } from "@/lib/platform/billing/entitlements";
 import { enabledModules } from "@/lib/platform/onboarding/state";
 import { ENTITIES } from "@/lib/intelligence/catalog/registry";
 import { grantedFields, intelAreas, type IntelAccessUser } from "@/lib/intelligence/catalog/access";
-import { companyTimezone, isoDay } from "@/lib/intelligence/dates";
+import { ISO_DAY, companyTimezone, isoDay } from "@/lib/intelligence/dates";
 import type { CatalogView, EntityDef, FieldDef, LiveStats, RelationDef, ViewEntity } from "@/lib/intelligence/catalog/types";
 
 /**
@@ -39,7 +39,7 @@ async function liveStats(def: EntityDef, fields: ReadonlyMap<string, FieldDef>, 
       const [row] = await col
         .aggregate<{ lo: unknown; hi: unknown }>([{ $match: { ...def.baseFilter, [dateField.path]: { $ne: null } } }, { $group: { _id: null, lo: { $min: `$${dateField.path}` }, hi: { $max: `$${dateField.path}` } } }], { maxTimeMS: 5000 })
         .toArray();
-      const fmt = (v: unknown) => (v instanceof Date ? isoDay(v, tz) : typeof v === "string" ? v.slice(0, 10) : null);
+      const fmt = (v: unknown) => (v instanceof Date ? isoDay(v, tz) : typeof v === "string" && ISO_DAY.test(v.slice(0, 10)) ? v.slice(0, 10) : null);
       stats.from = fmt(row?.lo);
       stats.to = fmt(row?.hi);
     }

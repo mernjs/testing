@@ -450,7 +450,12 @@ async function main() {
   await check("the query module has no write path at all (no write call exists in its source)", () => {
     const dir = path.join(process.cwd(), "src/lib/intelligence");
     const files: string[] = [];
-    const walk = (p: string) => { for (const f of fs.readdirSync(p, { withFileTypes: true })) f.isDirectory() ? walk(path.join(p, f.name)) : f.name.endsWith(".ts") && files.push(path.join(p, f.name)); };
+    const walk = (p: string) => {
+      for (const f of fs.readdirSync(p, { withFileTypes: true })) {
+        if (f.isDirectory()) walk(path.join(p, f.name));
+        else if (f.name.endsWith(".ts")) files.push(path.join(p, f.name));
+      }
+    };
     walk(path.join(dir, "query"));
     walk(path.join(dir, "catalog"));
     files.push(path.join(dir, "answer.ts"), path.join(dir, "prompt.ts"));

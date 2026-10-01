@@ -27,6 +27,12 @@ const MAX_QUERIES = 6;
 const MAX_ROUNDS = 10;
 const MAX_REJECTIONS = 2; // the first rejection may be repaired once; a second ends the planning
 const MAX_OUTPUT_TOKENS = 3000;
+/** One model call may take this long; the whole turn is bounded by `maxDuration` on the route. */
+const MODEL_CALL_TIMEOUT_MS = 40_000;
+const TURN_DEADLINE_MS = 52_000;
+
+/** An expected failure whose message is safe to show as-is (stored on the answer as its error). */
+export class TurnError extends Error {}
 export const INTELLIGENCE_MODEL = ASSISTANT_MODEL;
 
 export interface TurnInput {
@@ -85,7 +91,8 @@ function parseArgs(raw: string | undefined): { ok: true; value: unknown } | { ok
   }
 }
 
-async function callModel(openai: OpenAI, params: OpenAI.Responses.ResponseCreateParamsNonStreaming, signal?: AbortSignal) {
+async function callModel(openai: OpenAI, params: OpenAI.Responses.ResponseCreateParamsNonStreaming, userSignal?: AbortSignal) {
+  const signal = AbortSignal.any([...(userSignal ? [userSignal] : []), AbortSignal.timeout(MODEL_CALL_TIMEOUT_MS)]);
   try {
     return await openai.responses.create({ ...params, temperature: 0.1 }, { signal });
   } catch (err) {
@@ -120,6 +127,7 @@ export async function answerQuestion(input: TurnInput): Promise<TurnOutput> {
   let rejections = 0;
   let accessRefused = false;
 
+  const deadline = Date.now() + TURN_DEADLINE_MS;
   const modelInput: unknown[] = [...input.history.map((h) => ({ role: h.role, content: h.text })), { role: "user", content: input.question }];
   const instructions = systemPrompt(view);
 
@@ -140,6 +148,7 @@ export async function answerQuestion(input: TurnInput): Promise<TurnOutput> {
 
   for (let round = 0; round < MAX_ROUNDS; round++) {
     if (input.signal?.aborted) throw new Error("stopped");
+    if (Date.now() > deadline) throw new TurnError(TOO_SLOW);
     const forceFinal = round === MAX_ROUNDS - 1 || rejections >= MAX_REJECTIONS || queryCount >= MAX_QUERIES + 1;
     if (round > 0) status(forceFinal ? "Writing the answer…" : "Analysing the results…");
     const res = await callModel(
@@ -211,6 +220,8 @@ export async function answerQuestion(input: TurnInput): Promise<TurnOutput> {
           continue;
         }
         const out = await runPlan(view, parsed.value, queryId);
+        // A query that hits the 10 s limit ends the question with a friendly stored error (retrying the same scan would only time out again).
+        if (!out.ok && out.code === "timeout") throw new TurnError(out.error);
         if (out.ok) {
           results.set(queryId, out.result);
           queries.push(stored(out.result));
@@ -235,9 +246,14 @@ export async function answerQuestion(input: TurnInput): Promise<TurnOutput> {
   return finish([{ type: "text", markdown: "I couldn't complete that analysis. Please try a simpler question." }], ["round limit"]);
 }
 
+const TOO_SLOW = "This question is taking too long to answer. Try a narrower question, for example a shorter date range.";
+
 /** A short, safe message for an error thrown while answering (billing limits keep their own friendly text). */
 export function friendlyTurnError(err: unknown): string {
   if (isBillingLimitError(err)) return err.message;
+  if (err instanceof TurnError) return err.message;
+  const name = (err as { name?: string } | null)?.name ?? "";
+  if (name === "TimeoutError" || name === "APIConnectionTimeoutError" || name === "APIUserAbortError") return TOO_SLOW;
   const msg = err instanceof Error ? err.message : "";
   if (/OPENAI_API_KEY/i.test(msg)) return "The AI assistant isn't set up for this workspace yet. Ask your platform administrator to add an OpenAI key.";
   return "The analyst is unavailable right now. Please try again in a moment.";

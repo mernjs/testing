@@ -75,7 +75,7 @@ export async function runSpec(spec: ExecSpec): Promise<Record<string, unknown>[]
   return col.aggregate(spec.pipeline, spec.options).toArray();
 }
 
-function isTimeout(err: unknown): boolean {
+export function isTimeout(err: unknown): boolean {
   const e = err as { code?: number; codeName?: string; message?: string };
   return e?.code === 50 || e?.codeName === "MaxTimeMSExpired" || /operation exceeded time limit/i.test(e?.message ?? "");
 }

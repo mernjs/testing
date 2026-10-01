@@ -42,13 +42,20 @@ function typeText(f: FieldDef): string {
   }
 }
 
+const CODE_TOKEN = /^[A-Za-z0-9_.-]{1,32}$/;
+
 function entityText(e: ViewEntity): string {
   const stats: string[] = [];
   if (e.stats.count !== null) stats.push(`${e.stats.count} records`);
   if (e.stats.from && e.stats.to) stats.push(`${e.def.dateField ?? "date"} ${e.stats.from} to ${e.stats.to}`);
   const lines = [`- ${e.def.key} — ${e.def.label}${stats.length ? ` [${stats.join("; ")}]` : ""}: ${e.def.description}`];
   lines.push(`  fields: ${[...e.fields.values()].map((f) => `${f.key}${f.expr ? `(${f.label})` : ""}:${typeText(f)}`).join(", ")}`);
-  const live = Object.entries(e.stats.values).map(([k, v]) => `${k}=[${v.join("|")}]`);
+  // Live values come from company records, so they are DATA, not instructions: only short code-like tokens are shown here
+  // (stages, currencies, leave codes); free-form values (names, industries …) reach the model only through the describe_entity tool result.
+  const live = Object.entries(e.stats.values).flatMap(([k, v]) => {
+    const tokens = v.filter((x) => CODE_TOKEN.test(x));
+    return tokens.length === 0 ? [] : [`${k}=[${tokens.join("|")}]${tokens.length < v.length ? " (more: describe_entity)" : ""}`];
+  });
   if (live.length) lines.push(`  values: ${live.join("; ")}`);
   if (e.relations.size) lines.push(`  joins (parent records): ${[...e.relations.values()].map((r) => `${r.key}->${r.to}`).join(", ")} — use "${[...e.relations.keys()][0]}.<field>" in select/filters`);
   return lines.join("\n");
