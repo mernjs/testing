@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentHubUser } from "@/lib/hub-auth";
+import { checkPlatformPermission } from "@/lib/platform/console/access";
 import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 import { formatInvoiceDate, listSaasInvoices, type SaasInvoiceRow } from "@/lib/platform/billing/invoices";
 import { recordPlatformAudit } from "@/lib/platform/audit";
@@ -43,12 +43,13 @@ const COLUMNS: CsvColumn<SaasInvoiceRow>[] = [
   { header: "Refund ref", value: (r) => text(r.refundRef) },
 ];
 
-/** CSV of every SaaS invoice / credit note matching the Platform Panel filters. Platform owner's Super Admins only. */
+/** CSV of every SaaS invoice / credit note matching the Platform Panel filters. Needs the platform `invoices.read` permission. */
 export async function GET(req: NextRequest) {
   if (!(await isPlatformOwnerContext())) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  const user = await getCurrentHubUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!user.roles.includes("super_admin")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  // The same permission as the invoices page itself — a revoked or limited platform role can't export.
+  const auth = await checkPlatformPermission("invoices.read");
+  if (!auth.ok) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const user = auth.user;
 
   const { filter, values } = parseInvoiceFilters(req.nextUrl.searchParams);
   const { rows } = await listSaasInvoices(filter, { pageSize: 50_000 });
