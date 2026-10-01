@@ -58,13 +58,23 @@ try {
     await page.getByText("Trials ending in 7 days").waitFor();
   });
 
-  await step("sidebar lists every SaaS area; planned ones aren't links", async () => {
+  await step("sidebar links to every SaaS area", async () => {
     const nav = page.getByRole("navigation", { name: "Platform Panel" }).first();
-    for (const label of ["Companies", "Sign-ups & approvals", "Tax & invoicing"]) await nav.getByRole("link", { name: label }).waitFor();
-    for (const label of ["Plans & pricing", "SaaS invoices", "Audit log"]) {
-      assert.equal(await nav.getByRole("link", { name: label }).count(), 0, `${label} should not be a link yet`);
-      await nav.getByText(label).first().waitFor();
+    const labels = ["Companies", "Sign-ups & approvals", "Domains & SSL", "Plans & pricing", "Subscriptions", "SaaS invoices", "Coupons & discounts", "Add-ons", "Payments & Razorpay", "Tax & invoicing", "Revenue & subscriptions", "Usage & limits", "Platform users & roles", "Integrations", "Audit log", "Platform settings"];
+    for (const label of labels) await nav.getByRole("link", { name: label, exact: true }).waitFor();
+    assert.equal(await nav.getByText("Soon", { exact: true }).count(), 0, "nothing is marked Soon");
+  });
+
+  await step("every sidebar page opens without an error", async () => {
+    const nav = page.getByRole("navigation", { name: "Platform Panel" }).first();
+    const hrefs = await nav.getByRole("link").evaluateAll((els) => els.map((e) => e.getAttribute("href")));
+    for (const href of hrefs) {
+      const res = await page.goto(`${BASE}${href}`);
+      assert.equal(res?.status(), 200, `${href} returned ${res?.status()}`);
+      assert.equal(new URL(page.url()).pathname, href, `${href} redirected to ${page.url()}`);
+      await page.getByRole("heading", { level: 1 }).first().waitFor({ timeout: 30_000 });
     }
+    await page.goto(`${BASE}/platform`);
   });
 
   await step("companies and sign-ups pages render in the panel", async () => {
