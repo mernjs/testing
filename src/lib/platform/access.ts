@@ -20,13 +20,17 @@ export interface AccessUser {
   id: string;
   email: string;
   roles: readonly string[];
+  /** The Super Admin's per-user capability overrides, where a panel's "see everything" rule honours them. */
+  permissionOverrides?: Record<string, boolean> | null;
 }
 
-export type Area = EventArea;
+/** The cross-panel data areas (the `intelligence` event area is an audit trail, not data). */
+export type Area = Exclude<EventArea, "intelligence">;
 
 const AREA_MODULE: Record<Area, string> = { leads: "lms", clients: "pms", projects: "pms", tasks: "pms", invoices: "fms", employees: "hrms", leave: "hrms" };
 
-function roleAllows(area: Area, roles: readonly string[]): boolean {
+function roleAllows(area: Area, user: Pick<AccessUser, "roles" | "permissionOverrides">): boolean {
+  const roles = user.roles;
   if (roles.includes("super_admin")) return true;
   switch (area) {
     case "leads":
@@ -39,18 +43,18 @@ function roleAllows(area: Area, roles: readonly string[]): boolean {
       return hasFmsAccess(roles);
     case "employees":
     case "leave":
-      return canViewAllEmployees({ roles });
+      return canViewAllEmployees({ roles, permissionOverrides: user.permissionOverrides });
   }
 }
 
-export async function accessibleAreas(user: Pick<AccessUser, "roles">): Promise<Set<Area>> {
+export async function accessibleAreas(user: Pick<AccessUser, "roles" | "permissionOverrides">): Promise<Set<Area>> {
   const [entitlements, enabled] = await Promise.all([getEntitlements(), enabledModules()]);
   const out = new Set<Area>();
   for (const area of Object.keys(AREA_MODULE) as Area[]) {
     const moduleKey = AREA_MODULE[area];
     if (entitlements.modules !== null && !entitlements.modules.has(moduleKey)) continue;
     if (enabled && !enabled.has(moduleKey)) continue;
-    if (roleAllows(area, user.roles)) out.add(area);
+    if (roleAllows(area, user)) out.add(area);
   }
   return out;
 }

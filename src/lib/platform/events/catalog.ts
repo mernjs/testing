@@ -13,7 +13,7 @@ export interface EventTypeDef {
   type: string;
   label: string;
   /** Which area of the product it belongs to — decides who may see it (see `access.ts`). */
-  area: "leads" | "clients" | "projects" | "tasks" | "invoices" | "employees" | "leave";
+  area: "leads" | "clients" | "projects" | "tasks" | "invoices" | "employees" | "leave" | "intelligence";
   fields: EventFieldDef[];
   /** Used by "Send test" and as placeholder help in the workflow form. */
   sample: Record<string, string | number | boolean>;
@@ -152,6 +152,20 @@ export const EVENT_TYPES = [
       { key: "reason", label: "Reason" },
     ],
     sample: { leaveType: "CL", days: 2, startDate: "2026-01-12", endDate: "2026-01-13", reason: "Family function" },
+  },
+  {
+    // Audit trail of AI Intelligence questions. Never carries answer data or rows — only the question (capped) and what was touched.
+    type: "intelligence.question",
+    label: "AI question asked",
+    area: "intelligence",
+    fields: [
+      { key: "question", label: "Question" },
+      { key: "entities", label: "Data areas queried" },
+      { key: "queries", label: "Queries run" },
+      { key: "rows", label: "Rows returned" },
+      { key: "outcome", label: "Outcome (answered, refused or failed)" },
+    ],
+    sample: { question: "How many active clients do we have?", entities: "clients", queries: 1, rows: 1, outcome: "answered" },
   },
 ] as const satisfies readonly EventTypeDef[];
 
