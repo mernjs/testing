@@ -107,48 +107,48 @@ Permission shorthand: **SA** = `super_admin`; **role(x)** = any role of panel x;
 
 | Existing feature | Workspace location (section → item) | Permission | API authorization | UI access | Verified |
 |---|---|---|---|---|---|
-| Command Center dashboard `/admin` | Company admin → Command Center | SA | `requireAdminPage()` in page + layout | nav key `admin.dashboard` | pending |
-| Admin audit log `/admin/activity-log` | Company admin → Audit log | SA | page guard; export route 401/403 | `admin.activity-log` | pending |
-| Admin notifications `/admin/notifications` | Company admin → Admin notifications | SA | page guard; actions `requireAdminUser` | `admin.notifications` | pending |
-| Documents `/admin/documents` | Company admin → Documents | SA | page guard; actions; export route | `admin.documents` | pending |
-| CRM leads / clients | Company admin → CRM | SA | page guard; actions; export routes | `admin.crm.*` | pending |
-| PMS projects / tasks / milestones / timesheets | Company admin → Projects | SA | same | `admin.pms.*` | pending |
-| PRMS (11 grids) | Company admin → Procurement | SA | same | `admin.prms.*` | pending |
-| TMS (5 grids) | Company admin → Training | SA | same | `admin.tms.*` | pending |
-| Chat channels / DMs / meetings | Company admin → Team chat | SA | same | `admin.yashchat.*` | pending |
-| Portal users | Company admin → People → Portal users | SA | same | `admin.portal.users` | pending |
-| Careers applicants | Company admin → People → Job applicants | SA | same | `admin.careers.applicants` | pending |
-| Chatbot conversations / voice | Company admin → Website chatbot | SA | same | `admin.chatbot.*` | pending |
-| Admin analytics `/admin/analytics/*` | not listed (duplicate of Analytics, F7) | SA | page guard | reachable from the `/admin` sidebar only | pending |
-| Users, roles, permission overrides `/admin/users` | Company → Users, roles & seats | SA | `requireAdminUser()` in page and every action | `company.users` | pending |
-| Panel analytics `/workspace/analytics/*` | Analytics → one item per panel | fms/hrms/pms/prms/tms/messenger: SA or role(x); lms: `lms.canViewAnalytics`; workspace: `workspace.canViewAnalytics`; portal: SA or `portal_admin`; all + plan(x) | `checkWorkspaceAccess` in the page | `analytics.<panel>` | pending |
-| Panels (HRMS, PMS, …) | Panels → one item per panel | role(x) + plan(x); CRM: every account | each panel's own layout (`requireModule`, role) | `panel.<key>`; outside the plan = locked tile on the Staff Hub, hidden in the sidebar | pending |
+| Command Center dashboard `/admin` | Company admin → Command Center | SA | `requireAdminPage()` in page + layout | nav key `admin.dashboard` | test: "navigation = guard" (13 users × 74 keys); test: "hub session opens /admin; other roles are refused"; page guard `requireAdminPage()`: code read; e2e |
+| Admin audit log `/admin/activity-log` | Company admin → Audit log | SA | page guard; export route 401/403 | `admin.activity-log` | test: "navigation = guard" (13 users × 74 keys); test: "hub session opens /admin; other roles are refused"; page guard `requireAdminPage()`: code read; e2e |
+| Admin notifications `/admin/notifications` | Company admin → Admin notifications | SA | page guard; actions `requireAdminUser` | `admin.notifications` | test: "navigation = guard" (13 users × 74 keys); test: "hub session opens /admin; other roles are refused"; page guard `requireAdminPage()`: code read; e2e |
+| Documents `/admin/documents` | Company admin → Documents | SA | page guard; actions; export route | `admin.documents` | test: "navigation = guard" (13 users × 74 keys); test: "hub session opens /admin; other roles are refused"; page guard `requireAdminPage()`: code read; e2e |
+| CRM leads / clients | Company admin → CRM | SA | page guard; actions; export routes | `admin.crm.*` | test: "navigation = guard" (13 users × 74 keys); test: "hub session opens /admin; other roles are refused"; page guard `requireAdminPage()`: code read; e2e |
+| PMS projects / tasks / milestones / timesheets | Company admin → Projects | SA | same | `admin.pms.*` | test: "navigation = guard" (13 users × 74 keys); test: "hub session opens /admin; other roles are refused"; page guard `requireAdminPage()`: code read; e2e |
+| PRMS (11 grids) | Company admin → Procurement | SA | same | `admin.prms.*` | test: "navigation = guard" (13 users × 74 keys); test: "hub session opens /admin; other roles are refused"; page guard `requireAdminPage()`: code read; e2e |
+| TMS (5 grids) | Company admin → Training | SA | same | `admin.tms.*` | test: "navigation = guard" (13 users × 74 keys); test: "hub session opens /admin; other roles are refused"; page guard `requireAdminPage()`: code read; e2e |
+| Chat channels / DMs / meetings | Company admin → Team chat | SA | same | `admin.yashchat.*` | test: "navigation = guard" (13 users × 74 keys); test: "hub session opens /admin; other roles are refused"; page guard `requireAdminPage()`: code read; e2e |
+| Portal users | Company admin → People → Portal users | SA | same | `admin.portal.users` | test: "navigation = guard" (13 users × 74 keys); test: "hub session opens /admin; other roles are refused"; page guard `requireAdminPage()`: code read; e2e |
+| Careers applicants | Company admin → People → Job applicants | SA | same | `admin.careers.applicants` | test: "navigation = guard" (13 users × 74 keys); test: "hub session opens /admin; other roles are refused"; page guard `requireAdminPage()`: code read; e2e |
+| Chatbot conversations / voice | Company admin → Website chatbot | SA | same | `admin.chatbot.*` | test: "navigation = guard" (13 users × 74 keys); test: "hub session opens /admin; other roles are refused"; page guard `requireAdminPage()`: code read; e2e |
+| Admin analytics `/admin/analytics/*` | not listed (duplicate of Analytics, F7) | SA | page guard | reachable from the `/admin` sidebar only | code read |
+| Users, roles, permission overrides `/admin/users` | Company → Users, roles & seats | SA | `requireAdminUser()` in page and every action | `company.users` | test: "navigation = guard" (13 users × 74 keys); code read; e2e (seats badge) |
+| Panel analytics `/workspace/analytics/*` | Analytics → one item per panel | fms/hrms/pms/prms/tms/messenger: SA or role(x); lms: `lms.canViewAnalytics`; workspace: `workspace.canViewAnalytics`; portal: SA or `portal_admin`; all + plan(x) | `checkWorkspaceAccess` in the page | `analytics.<panel>` | test: "navigation = guard" (13 users × 74 keys); tests: "who sees what" (HR, PMS, finance, sales), "permission overrides add and remove single items", "plan without Finance", "a panel the company switched off disappears"; e2e |
+| Panels (HRMS, PMS, …) | Panels → one item per panel | role(x) + plan(x); CRM: every account | each panel's own layout (`requireModule`, role) | `panel.<key>`; outside the plan = locked tile on the Staff Hub, hidden in the sidebar | test: "navigation = guard" (13 users × 74 keys); tests: "who sees what", "plan without Finance" (locked), "switched off"; panel layouts: code read |
 
 ### 2.2 Company SaaS management
 
 | Existing feature | Workspace location | Permission | API authorization | UI access | Verified |
 |---|---|---|---|---|---|
-| Onboarding `/onboarding` | Company → Company setup | SA | page + `requireOwner()` in actions | `company.setup` | pending |
-| Organization profile | Company → Organization profile `/settings/profile` (**new page**, reuses the onboarding profile form and `saveProfileAction`) | SA | `requireWorkspaceAccess`; action `requireOwner()` | `company.profile` | pending |
-| Workspace settings / company settings | Company (section header) → `/settings` | SA | page | section link | pending |
-| Plan, subscription, upgrade, downgrade, renewal (cancel / resume) | Company → Plan & billing `/settings/billing` | SA | `billing/actions.ts` `requireOwner()` | `company.billing` | pending |
-| Upgrade prompt `/upgrade` | reached from locked tiles | any (F8) | none | not a nav item | pending |
-| Billing details (GST) | Company → Plan & billing | SA | same | `company.billing` | pending |
-| Invoices | Company → Invoices & payments `/settings/billing/invoices` | SA | page; PDF route (F5) | `company.invoices` | pending |
-| Payments / transactions | same page, "Payments & refunds" card (**added**, from paid invoices and credit notes) | SA | same loader | `company.invoices` | pending |
-| Usage | Company → Usage `/settings/usage` (**new page**, read-only) | SA | `requireWorkspaceAccess` | `company.usage` | pending |
-| Users / seats | Company → Users, roles & seats `/admin/users` (seats badge **added**) | SA | `requireAdminUser()` | `company.users` | pending |
-| Roles & permissions | same page (role editor, permission overrides) | SA | same | `company.users` | pending |
-| Domains | Company → Custom domains `/settings/domains` | SA | page + actions | `company.domains` | pending |
-| Branding | Company → Branding `/settings/branding` | SA | page + actions | `company.branding` | pending |
-| Own payment gateway | Company → Payment account `/settings/payments` | SA | page + actions | `company.payments` | pending |
-| Integrations | Company → Integrations `/settings/integrations` (**new page**, a list with status and links) | SA | `requireWorkspaceAccess` | `company.integrations` | pending |
-| Automations (incl. webhooks) | Company → Automations | SA | page + actions | `company.automations` | pending |
-| Import | Company → Import data | SA | page + route handlers | `company.import` | pending |
-| Activity log | Company → Activity log | SA | page | `company.activity` | pending |
-| Security | Company → Security `/settings/security` (**new page**: last sign-in, change password, sign out everywhere, account lock / forced-change counts) | SA | `requireWorkspaceAccess`; existing `hubLogoutAction` | `company.security` | pending |
-| Notifications, change password | Account | any signed-in account | `getCurrentHubUser()` | `account.*` | pending |
-| Platform Panel | single link, bottom of the sidebar and on `/settings` | owner company **and** platform access (`getPlatformAccessForUser`) | `/platform` layout `requirePlatformAccess()` (unchanged) | `platform.panel` | pending |
+| Onboarding `/onboarding` | Company → Company setup | SA | page + `requireOwner()` in actions | `company.setup` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
+| Organization profile | Company → Organization profile `/settings/profile` (**new page**, reuses the onboarding profile form and `saveProfileAction`) | SA | `requireWorkspaceAccess`; action `requireOwner()` | `company.profile` | test: "navigation = guard" (13 users × 74 keys); page guard `requireWorkspaceAccess`: code read; save: e2e only |
+| Workspace settings / company settings | Company (section header) → `/settings` | SA | page | section link | code read; e2e |
+| Plan, subscription, upgrade, downgrade, renewal (cancel / resume) | Company → Plan & billing `/settings/billing` | SA | `billing/actions.ts` `requireOwner()` | `company.billing` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e (existing `scripts/e2e/subscriptions.e2e.mjs` covers the flows; not re-run) |
+| Upgrade prompt `/upgrade` | reached from locked tiles | any (F8) | none | not a nav item | code read; e2e (frame, phone width) |
+| Billing details (GST) | Company → Plan & billing | SA | same | `company.billing` | code read |
+| Invoices | Company → Invoices & payments `/settings/billing/invoices` | SA | page; PDF route (F5) | `company.invoices` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
+| Payments / transactions | same page, "Payments & refunds" card (**added**, from paid invoices and credit notes) | SA | same loader | `company.invoices` | test: "payments: paid invoices and credit notes of this company only"; e2e |
+| Usage | Company → Usage `/settings/usage` (**new page**, read-only) | SA | `requireWorkspaceAccess` | `company.usage` | tests: "usage: own seats, AI tokens and storage against the plan's limits", "usage levels"; e2e |
+| Users / seats | Company → Users, roles & seats `/admin/users` (seats badge **added**) | SA | `requireAdminUser()` | `company.users` | code read; e2e |
+| Roles & permissions | same page (role editor, permission overrides) | SA | same | `company.users` | code read |
+| Domains | Company → Custom domains `/settings/domains` | SA | page + actions | `company.domains` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
+| Branding | Company → Branding `/settings/branding` | SA | page + actions | `company.branding` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
+| Own payment gateway | Company → Payment account `/settings/payments` | SA | page + actions | `company.payments` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
+| Integrations | Company → Integrations `/settings/integrations` (**new page**, a list with status and links) | SA | `requireWorkspaceAccess` | `company.integrations` | test: "integrations: status from the company's own gateway, webhooks and domains"; e2e |
+| Automations (incl. webhooks) | Company → Automations | SA | page + actions | `company.automations` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
+| Import | Company → Import data | SA | page + route handlers | `company.import` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
+| Activity log | Company → Activity log | SA | page | `company.activity` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
+| Security | Company → Security `/settings/security` (**new page**: last sign-in, change password, sign out everywhere, account lock / forced-change counts) | SA | `requireWorkspaceAccess`; existing `hubLogoutAction` | `company.security` | test: "security: own accounts and own sessions only"; e2e |
+| Notifications, change password | Account | any signed-in account | `getCurrentHubUser()` | `account.*` | test: "navigation = guard" (13 users × 74 keys); test: "an account without roles…"; e2e |
+| Platform Panel | single link, bottom of the sidebar and on `/settings` | owner company **and** platform access (`getPlatformAccessForUser`) | `/platform` layout `requirePlatformAccess()` (unchanged) | `platform.panel` | tests: "Platform link: only owner company + platform access", "a platform role gives the link without any Workspace permission…", "the nav never contains a Platform Panel page other than the single link"; e2e |
 
 Not built, because the data does not exist: two-factor sign-in, password policy,
 "sign out other sessions only" (sessions carry no per-login id that links the
@@ -161,16 +161,36 @@ scoping of Workspace or `/admin`.
 
 | # | Finding | Severity | Status |
 |---|---|---|---|
-| F1 | 33 of 35 `/admin` pages had no check of their own; only `admin/(protected)/layout.tsx` checked the session. Layouts are not re-rendered on navigation, so a page's loader could run without the check. | high | pending |
-| F2 | `/workspace/analytics/portal`, `/lms`, `/workspace`: the page authorized **every** signed-in account, while the sidebar hid Portal analytics from non-admins. Company-wide lead and account numbers were readable by any employee. | medium | pending |
-| F3 | Workspace analytics ignored the plan and the switched-on panels (a company without Finance in its plan could still open Finance analytics). | medium | pending |
-| F4 | Staff Hub sidebar: hardcoded role checks duplicated the page's checks; "Lead Analytics" and "Workspace Analytics" were shown unconditionally; Staff Hub quick links pointed at `/hrms/me`, `/messenger`, `/pms` for people without those roles. | low | pending |
-| F5 | `/api/platform/billing/invoices/[id]/pdf` treated **any** `super_admin` of the platform-owner company as a platform admin, even when their Platform Panel access was revoked or their platform role lacks `invoices.read`; they could download any company's invoice. | medium | pending |
-| F6 | `/settings` showed the "Platform Panel" card to every `super_admin` of the owner company without checking platform access. | low | pending |
-| F7 | Duplication: `/admin/analytics/[panel]` and `/workspace/analytics/[panel]` render the same analytics; `/admin/login` and `/workspace/login` are two sign-ins for one identity; the `/admin` sidebar links `/admin/users` twice ("User Management", "Access & Roles"). | low | pending |
+| F1 | 33 of 35 `/admin` pages had no check of their own; only `admin/(protected)/layout.tsx` checked the session. Layouts are not re-rendered on navigation, so a page's loader could run without the check. | high | **fixed**: `requireAdminPage()` (`src/lib/admin-auth.ts`) is now the first statement of all 34 pages and of the layout. Code read + tsc; redirect behaviour in e2e |
+| F2 | `/workspace/analytics/portal`, `/lms`, `/workspace`: the page authorized **every** signed-in account, while the sidebar hid Portal analytics from non-admins. Company-wide lead and account numbers were readable by any employee. | medium | **fixed**: the page calls `checkWorkspaceAccess(user, "analytics.<panel>")`. Lead analytics now needs `lms.canViewAnalytics` (LMS admin/manager, or an override), Workspace analytics `workspace.canViewAnalytics` (every invitation preset includes `workspace_member`), Portal analytics `super_admin` / `portal_admin`. **Behaviour change** for accounts without those roles. Tests: "who sees what" |
+| F3 | Workspace analytics ignored the plan and the switched-on panels (a company without Finance in its plan could still open Finance analytics). | medium | **fixed**: analytics items need the panel in the plan and switched on. Tests: "plan without Finance…", "a panel the company switched off disappears" |
+| F4 | Staff Hub sidebar: hardcoded role checks duplicated the page's checks; "Lead Analytics" and "Workspace Analytics" were shown unconditionally; Staff Hub quick links pointed at `/hrms/me`, `/messenger`, `/pms` for people without those roles. | low | **fixed**: sidebar, mobile sidebar, Staff Hub tiles, quick links and settings cards render from `resolveWorkspaceNav` |
+| F5 | `/api/platform/billing/invoices/[id]/pdf` treated **any** `super_admin` of the platform-owner company as a platform admin, even when their Platform Panel access was revoked or their platform role lacks `invoices.read`; they could download any company's invoice. | medium | **fixed**: "any company" now needs the owner company **and** platform access with `invoices.read`; everyone else gets only their own company's document. Code read (not exercised by a test here; `scripts/e2e/invoices.e2e.mjs` covers the route) |
+| F6 | `/settings` showed the "Platform Panel" card to every `super_admin` of the owner company without checking platform access. | low | **fixed**: the card is the nav item `platform.panel`. Tests: "Platform link…" |
+| F7 | Duplication: `/admin/analytics/[panel]` and `/workspace/analytics/[panel]` render the same analytics; `/admin/login` and `/workspace/login` are two sign-ins for one identity; the `/admin` sidebar links `/admin/users` twice ("User Management", "Access & Roles"). | low | **partly fixed**: `/admin` accepts the Workspace session (`resolveAdminUser`), so one sign-in is enough; `/admin/login` still works. The duplicate analytics pages and the double `/admin/users` link in the `/admin` sidebar are left as they are (open) |
 | F8 | `/upgrade` has no session check; an anonymous visitor on a company's host can read that company's plan name. | low | open |
 | F9 | `getPlatformDb()` in company-side code: `domains/custom.ts`, `branding`, `onboarding/state.ts`, `billing/{subscription,addons,coupons,invoices,limits}` — every query read is keyed by the current `companyId` (or is a platform catalogue: plans, add-ons). No unfiltered company-side use found. | info | no change needed |
-| F10 | `/settings/*` and `/onboarding` did not enforce a pending forced password change (the Workspace layout does). | low | pending |
+| F10 | `/settings/*` and `/onboarding` did not enforce a pending forced password change (the Workspace layout does). | low | **fixed** in the shared layout (`CompanyPagesLayout`): redirects to `/workspace/change-password` first. Code read |
 | F11 | `/platform/invoices/export` checks owner company + `super_admin` rather than the platform permission `invoices.read`. Platform Panel code, out of scope here. | medium | open |
 | F12 | `/admin` grids for a panel outside the company's plan (e.g. `/admin/tms/*` on a plan without Training) stay reachable for the `super_admin`. They read the company's own data only. | low | open |
 | F13 | Panel analytics for fms / prms / tms / messenger are company-wide and open to **any** role of that panel (HR and Projects are restricted to the viewer's own records). No finer rule exists in the page today. | low | open |
+
+---
+
+## 4. What was run
+
+| Check | Result |
+|---|---|
+| `scripts/test-workspace-access.ts` (local mongod, throwaway `ws_test_*` database, dropped) | 35 checks passed |
+| `scripts/test-platform-roles.ts`, `scripts/test-enforcement.ts` (regression) | 99 and 25 checks passed |
+| `npx next typegen` + `npx tsc --noEmit -p .` | clean |
+| `scripts/e2e/workspace.e2e.mjs` | written, **not run** (needs a running production build) |
+| Existing `scripts/e2e/*.e2e.mjs` | **not run**. Read for selectors that the new sidebar could collide with: on `/settings` the Company section of the sidebar stays closed, so `a[href="/settings/automations"]`, the `/Domains/` and `/Payments & payouts/` links stay unique; the sidebar labels for those two are "Custom domains" and "Payment account" |
+
+What "navigation = guard" proves: for 13 representative users (company super admin, HR manager, PMS employee,
+finance, sales, a developer with permission overrides, an account without roles, super admin and finance user of
+a plan without Finance, a second tenant, the platform owner, an owner-company super admin whose platform access
+was revoked, owner-company HR) and each of the 74 nav keys, `resolveWorkspaceNav` lists the item exactly when
+`checkWorkspaceAccess` allows it. Both call one rule, so this guards against the two drifting apart; the pages
+that still use their own older check (`roles.includes("super_admin")` on the existing `/settings/*` pages,
+`requireAdminUser` on `/admin`) were compared with the rule by reading the code.
