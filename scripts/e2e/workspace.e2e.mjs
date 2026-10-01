@@ -397,7 +397,7 @@ try {
       await ap.goto(`${COMPANY_URL}${path}`);
       assert.equal(pathOf(ap), "/workspace/login", `${path} → ${pathOf(ap)}`);
     }
-    for (const panel of ["hrms", "pms", "fms", "lms", "prms", "tms", "ots", "sop", "dlms", "cms", "seo", "smms", "aibots", "messenger"]) {
+    for (const panel of ["hrms", "pms", "fms", "lms", "prms", "tms", "ots", "sop", "dlms", "cms", "seo", "smms", "aibots", "intelligence", "messenger"]) {
       await ap.goto(`${COMPANY_URL}/${panel}/login`);
       assert.equal(pathOf(ap), "/workspace/login", `/${panel}/login → ${pathOf(ap)}`);
       assert.equal(new URL(ap.url()).searchParams.get("next"), `/${panel}`);

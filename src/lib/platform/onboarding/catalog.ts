@@ -104,6 +104,7 @@ export const MODULES = [
   { key: "seo", label: "SEO", description: "Search visibility and audits", core: false },
   { key: "smms", label: "Social Media", description: "Posts, campaigns and approvals", core: false },
   { key: "aibots", label: "AI Assistants", description: "AI bots for your team", core: false },
+  { key: "intelligence", label: "AI Intelligence", description: "Ask questions about your business data", core: false },
   { key: "portal", label: "Client & Student Portal", description: "External portal for clients, students, applicants", core: false },
 ] as const;
 export type ModuleKey = (typeof MODULES)[number]["key"];

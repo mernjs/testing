@@ -7,6 +7,7 @@ import { effectiveSopRoles, hasSopAccess } from "@/lib/sop-roles";
 import { normalizeSeoRoles } from "@/lib/seo-roles";
 import { normalizeDlmsRoles } from "@/lib/dlms-roles";
 import { normalizeAibotsRoles } from "@/lib/aibots-roles";
+import { normalizeIntelligenceRoles } from "@/lib/intelligence-roles";
 import { normalizeSmmsRoles } from "@/lib/smms-roles";
 import { effectiveOtsRoles, hasOtsAccess } from "@/lib/ots-roles";
 import { normalizeTmsRoles } from "@/lib/tms-roles";
@@ -112,6 +113,13 @@ export function getPanelAccessSummary(user: AdminUserRow): PanelAccessSummaryIte
       name: "AI Bots",
       hasAccess: isSuperAdmin || normalizeAibotsRoles(roles).length > 0,
       roles: normalizeAibotsRoles(roles),
+      isSuperAdmin,
+    },
+    {
+      key: "intelligence",
+      name: "AI Intelligence",
+      hasAccess: isSuperAdmin || normalizeIntelligenceRoles(roles).length > 0,
+      roles: normalizeIntelligenceRoles(roles),
       isSuperAdmin,
     },
     {

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Megaphone, X } from "lucide-react";
 
 /** Company panels (signed-in workspace areas) — never the public site or the client portal. */
-const PANEL_PREFIXES = ["/workspace", "/hrms", "/pms", "/prms", "/tms", "/fms", "/lms", "/cms", "/dlms", "/sop", "/ots", "/seo", "/smms", "/aibots", "/messenger"];
+const PANEL_PREFIXES = ["/workspace", "/hrms", "/pms", "/prms", "/tms", "/fms", "/lms", "/cms", "/dlms", "/sop", "/ots", "/seo", "/smms", "/aibots", "/intelligence", "/messenger"];
 
 function isPanelPath(path: string | null): boolean {
   if (!path) return false;

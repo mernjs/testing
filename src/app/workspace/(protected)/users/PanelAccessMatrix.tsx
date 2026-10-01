@@ -23,6 +23,7 @@ import {
   Vault,
   Bot,
   Megaphone,
+  Sparkles,
   FileCheck2,
 } from "lucide-react";
 
@@ -37,6 +38,7 @@ const MODULE_ICONS: Record<string, React.ReactNode> = {
   seo: <SearchCheck className="size-5 text-yashorbit-blue" />,
   dlms: <Vault className="size-5 text-primary" />,
   aibots: <Bot className="size-5 text-yashorbit-blue" />,
+  intelligence: <Sparkles className="size-5 text-primary" />,
   smms: <Megaphone className="size-5 text-primary" />,
   ots: <FileCheck2 className="size-5 text-yashorbit-blue" />,
   messenger: <MessageSquare className="size-5 text-primary" />,

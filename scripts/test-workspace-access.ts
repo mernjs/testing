@@ -36,6 +36,7 @@ import { getCmsUserForAccount } from "@/lib/cms-auth";
 import { getSeoUserForAccount } from "@/lib/seo-auth";
 import { getSmmsUserForAccount } from "@/lib/smms-auth";
 import { getAibotsUserForAccount } from "@/lib/aibots-auth";
+import { getIntelligenceUserForAccount } from "@/lib/intelligence-auth";
 import { getChatUserForAccount } from "@/lib/messenger-auth";
 import { delegatedManagerBlock } from "@/lib/workspace/admin-users";
 import { notify as notifyWorkspace } from "@/lib/platform/notifications";
@@ -237,12 +238,38 @@ async function main() {
   await check("every panel has an analytics item, in the section's alphabetical order", async () => {
     const keys = NAV_KEYS.filter((k) => k.startsWith("analytics."));
     assert.deepEqual(keys, [...keys].sort(), "ordered by panel key");
-    for (const p of NAV_KEYS.filter((k) => k.startsWith("panel."))) assert.ok(keys.includes(p.replace("panel.", "analytics.")), `${p} has no analytics`);
+    // AI Intelligence is a conversation, not a register: it deliberately has no company-wide analytics page.
+    const NO_ANALYTICS = ["panel.intelligence"];
+    for (const p of NAV_KEYS.filter((k) => k.startsWith("panel.") && !NO_ANALYTICS.includes(k))) assert.ok(keys.includes(p.replace("panel.", "analytics.")), `${p} has no analytics`);
+    assert.ok(!keys.includes("analytics.intelligence"));
     const labels = Object.fromEntries((await navOf(owner, ownerAdmin)).sections.find((s) => s.key === "analytics")!.items.map((i) => [i.key, [i.label, i.href]]));
     assert.deepEqual(
       NEW_ANALYTICS.map((p) => labels[`analytics.${p}`]),
       [["SOP Analytics", "/workspace/analytics/sop"], ["Digi Locker Analytics", "/workspace/analytics/dlms"], ["Online Tests Analytics", "/workspace/analytics/ots"], ["AI Bots Analytics", "/workspace/analytics/aibots"], ["Social Media Analytics", "/workspace/analytics/smms"], ["SEO Analytics", "/workspace/analytics/seo"], ["Website Analytics", "/workspace/analytics/cms"]],
     );
+  });
+  await check("AI Intelligence: a panel tile for its own roles only, gated by plan, no analytics, and it grants no data by itself", async () => {
+    const analyst = await account(acme, "analyst@acme.test", ["intelligence_user"]);
+    const intelAdmin = await account(acme, "intel-admin@acme.test", ["intelligence_admin"]);
+    assert.ok((await allowed(acme, analyst)).has("panel.intelligence"));
+    assert.ok((await allowed(acme, intelAdmin)).has("panel.intelligence"));
+    assert.ok((await allowed(acme, admin)).has("panel.intelligence"), "Super Admin");
+    for (const u of [hr, dev, finance, sales, noRoles]) assert.ok(!(await allowed(acme, u)).has("panel.intelligence"), "other roles don't get the panel");
+    assert.ok(![...(await allowed(acme, admin))].some((k) => k === "analytics.intelligence"));
+    // Starter's plan does not include it: locked (upgrade tile), not accessible; the owner company has every panel.
+    assert.equal(await runAsCompany(small, () => checkWorkspaceAccess(smallAdmin.user, "panel.intelligence")), false);
+    assert.ok((await navOf(small, smallAdmin)).lockedPanels.includes("intelligence"));
+    assert.ok((await allowed(owner, ownerAdmin)).has("panel.intelligence"));
+    // The panel role opens the panel only — the panel's own auth accepts the Workspace session and re-checks the roles.
+    const intelUser = (token: string) => runAsCompany(acme, async () => { const id = await workspaceSessionAccountId(token); return id ? getIntelligenceUserForAccount(id) : null; });
+    assert.ok(await intelUser(analyst.hubToken));
+    assert.equal(await intelUser(hr.hubToken), null);
+    // The role is a Super-Admin-assignable role with a permission-catalogue entry.
+    const { ROLE_GROUPS } = await import("@/lib/workspace/role-catalog");
+    assert.ok(ROLE_GROUPS.some((g) => g.module === "AI Intelligence" && g.roles.map((r) => r.value).join() === "intelligence_admin,intelligence_user"));
+    const { PERMISSION_GROUPS } = await import("@/lib/workspace/permission-catalog");
+    assert.ok(PERMISSION_GROUPS.some((g) => g.module === "AI Intelligence" && g.permissions.some((p) => p.key === "intelligence.canUse")));
+    await runAsCompany(acme, async () => (await getDb()).collection("admin_users").deleteMany({ _id: { $in: [analyst._id, intelAdmin._id] } }));
   });
   await check("new analytics: open to the panel's own role, closed to every other role and to the panel's per-person tier", async () => {
     // In the owner company (every panel in the plan), one account per panel role.
@@ -415,7 +442,7 @@ async function main() {
   const PANELS: [string, (id: ObjectId) => Promise<unknown>][] = [
     ["hrms", getHrmsUserForAccount], ["pms", getPmsUserForAccount], ["fms", getFmsUserForAccount], ["lms", getLmsUserForAccount], ["prms", getPrmsUserForAccount],
     ["tms", getTmsUserForAccount], ["ots", getOtsUserForAccount], ["sop", getSopUserForAccount], ["dlms", getDlmsUserForAccount], ["cms", getCmsUserForAccount],
-    ["seo", getSeoUserForAccount], ["smms", getSmmsUserForAccount], ["aibots", getAibotsUserForAccount], ["messenger", getChatUserForAccount],
+    ["seo", getSeoUserForAccount], ["smms", getSmmsUserForAccount], ["aibots", getAibotsUserForAccount], ["intelligence", getIntelligenceUserForAccount], ["messenger", getChatUserForAccount],
   ];
   /** What a panel's auth resolves for a request that carries only the Workspace session cookie. */
   const panelUser = (companyId: string, hubToken: string | null, load: (id: ObjectId) => Promise<unknown>) =>
@@ -423,7 +450,7 @@ async function main() {
       const id = await workspaceSessionAccountId(hubToken);
       return id ? load(id) : null;
     });
-  await check("the Workspace session opens all 14 panels for a super admin", async () => {
+  await check("the Workspace session opens all 15 panels for a super admin", async () => {
     for (const [name, load] of PANELS) assert.ok(await panelUser(acme, admin.hubToken, load), name);
   });
   await check("for other roles it opens exactly the panels their roles allow", async () => {

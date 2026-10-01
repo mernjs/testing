@@ -25,6 +25,7 @@ import { hasSopAccess, sopCan } from "@/lib/sop-roles";
 import { hasSeoAccess, seoCan } from "@/lib/seo-roles";
 import { hasDlmsAccess, isDlmsManagerTier } from "@/lib/dlms-roles";
 import { hasAibotsAccess, isAibotsManagerTier } from "@/lib/aibots-roles";
+import { hasIntelligenceAccess } from "@/lib/intelligence-roles";
 import { hasSmmsAccess, smmsCan } from "@/lib/smms-roles";
 import { hasOtsAccess, otsCan } from "@/lib/ots-roles";
 import { cmsCan, hasCmsAccess } from "@/lib/cms-roles";
@@ -110,6 +111,7 @@ const PANELS: NavItemDef[] = (
     ["dlms", "Digi Locker", "vault", (u) => hasDlmsAccess(u.roles)],
     ["ots", "Online Tests", "test", (u) => hasOtsAccess(u.roles)],
     ["aibots", "AI Bots", "bot", (u) => hasAibotsAccess(u.roles)],
+    ["intelligence", "AI Intelligence", "chart", (u) => hasIntelligenceAccess(u.roles)],
     ["smms", "Social Media", "megaphone", (u) => hasSmmsAccess(u.roles)],
     ["seo", "SEO", "search", (u) => hasSeoAccess(u.roles)],
     ["cms", "Website", "website", (u) => hasCmsAccess(u.roles)],

@@ -56,6 +56,7 @@ import { hasSeoAccess, normalizeSeoRoles } from "@/lib/seo-roles";
 import { normalizeCmsRoles } from "@/lib/cms-roles";
 import { hasDlmsAccess, normalizeDlmsRoles, isDlmsManagerTier } from "@/lib/dlms-roles";
 import { hasAibotsAccess, normalizeAibotsRoles } from "@/lib/aibots-roles";
+import { normalizeIntelligenceRoles } from "@/lib/intelligence-roles";
 import { hasSmmsAccess, normalizeSmmsRoles } from "@/lib/smms-roles";
 import { hasOtsAccess, effectiveOtsRoles, otsCan } from "@/lib/ots-roles";
 import { staffCandidateRefs } from "@/lib/ots/people";
@@ -349,6 +350,14 @@ export default async function HubDashboardPage({
         { label: "My chats", value: String(aibotsChats) },
         { label: "Active today", value: String(aibotsToday) },
       ],
+    },
+    {
+      key: "intelligence",
+      label: "AI Intelligence",
+      description: "Ask questions about your business in plain language — answers, tables and charts from your own data, within your access.",
+      href: "/intelligence",
+      icon: <Sparkles className="size-5" />,
+      roleBadge: (roles.includes("super_admin") ? ["super_admin"] : normalizeIntelligenceRoles(roles)).join(", ").replace(/_/g, " "),
     },
     {
       key: "smms",

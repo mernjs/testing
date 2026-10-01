@@ -8,6 +8,7 @@ import { SOP_ROLES, SOP_ROLE_META } from "@/lib/sop-roles";
 import { SEO_ROLES, SEO_ROLE_META } from "@/lib/seo-roles";
 import { DLMS_ROLES, DLMS_ROLE_META } from "@/lib/dlms-roles";
 import { AIBOTS_ROLES, AIBOTS_ROLE_META } from "@/lib/aibots-roles";
+import { INTELLIGENCE_ROLES, INTELLIGENCE_ROLE_META } from "@/lib/intelligence-roles";
 import { SMMS_ROLES, SMMS_ROLE_META } from "@/lib/smms-roles";
 import { OTS_ROLES, OTS_ROLE_META } from "@/lib/ots-roles";
 import { CMS_ROLES, CMS_ROLE_META } from "@/lib/cms-roles";
@@ -61,6 +62,7 @@ export const ROLE_GROUPS: RoleGroup[] = [
   group("SEO Panel", SEO_ROLES, SEO_ROLE_META),
   group("Digi Locker (DLMS)", DLMS_ROLES, DLMS_ROLE_META),
   group("AI Bots", AIBOTS_ROLES, AIBOTS_ROLE_META),
+  group("AI Intelligence", INTELLIGENCE_ROLES, INTELLIGENCE_ROLE_META),
   group("Social Media (SMMS)", SMMS_ROLES, SMMS_ROLE_META),
   group("Online Tests (OTS)", OTS_ROLES, OTS_ROLE_META),
   group("Website CMS", CMS_ROLES, CMS_ROLE_META),

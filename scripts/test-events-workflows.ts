@@ -101,10 +101,10 @@ async function main() {
   const lead = (name = "Asha Verma", extra: Record<string, string | number | boolean> = {}) => ({ entity: { type: "lead", id: randomUUID(), label: name, url: "/lms/leads/x" }, actorId: String(userA), data: { name, email: "asha@example.com", phone: "+91 98765 43210", ...extra } });
 
   console.log("catalogue");
-  await check("the ten event types, each with a label, fields and a sample", () => {
+  await check("the eleven event types, each with a label, fields and a sample", () => {
     assert.deepEqual(
       EVENT_TYPES.map((e) => e.type).sort(),
-      ["client.created", "employee.created", "invoice.created", "invoice.paid", "lead.created", "lead.status_changed", "leave.requested", "project.created", "task.completed", "task.created"],
+      ["client.created", "employee.created", "intelligence.question", "invoice.created", "invoice.paid", "lead.created", "lead.status_changed", "leave.requested", "project.created", "task.completed", "task.created"],
     );
     for (const e of EVENT_TYPES) {
       assert.ok(e.label && e.fields.length > 0);
