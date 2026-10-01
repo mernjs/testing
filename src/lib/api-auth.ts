@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { SESSION_COOKIE, getSessionLmsUser } from "@/lib/lms-auth";
+import { getCurrentLmsUser } from "@/lib/lms-auth";
 
 /**
  * Guards LMS-only endpoints (reading/editing/deleting stored lead PII) with
@@ -13,7 +13,6 @@ export async function isAuthorizedLmsRequest(req: NextRequest): Promise<boolean>
   const authHeader = req.headers.get("authorization");
   if (secret && authHeader === `Bearer ${secret}`) return true;
 
-  const sessionToken = req.cookies.get(SESSION_COOKIE)?.value;
-  const lmsUser = await getSessionLmsUser(sessionToken);
-  return lmsUser !== null;
+  // The panel session, or the Workspace session of an account with this panel's role.
+  return (await getCurrentLmsUser()) !== null;
 }

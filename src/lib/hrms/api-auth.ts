@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { HRMS_SESSION_COOKIE, getSessionHrmsUser } from "@/lib/hrms-auth";
+import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 
 /**
  * Guards HRMS-only API routes (e.g. the employee CSV export). Accepts either a
@@ -11,7 +11,6 @@ export async function isAuthorizedHrmsRequest(req: NextRequest): Promise<boolean
   const authHeader = req.headers.get("authorization");
   if (secret && authHeader === `Bearer ${secret}`) return true;
 
-  const sessionToken = req.cookies.get(HRMS_SESSION_COOKIE)?.value;
-  const user = await getSessionHrmsUser(sessionToken);
-  return user !== null;
+  // The panel session, or the Workspace session of an account with this panel's role.
+  return (await getCurrentHrmsUser()) !== null;
 }

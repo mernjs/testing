@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { PMS_SESSION_COOKIE, getSessionPmsUser } from "@/lib/pms-auth";
+import { getCurrentPmsUser } from "@/lib/pms-auth";
 
 /**
  * Guards PMS-only API routes (CSV exports). Accepts either a logged-in PMS
@@ -11,7 +11,6 @@ export async function isAuthorizedPmsRequest(req: NextRequest): Promise<boolean>
   const authHeader = req.headers.get("authorization");
   if (secret && authHeader === `Bearer ${secret}`) return true;
 
-  const sessionToken = req.cookies.get(PMS_SESSION_COOKIE)?.value;
-  const user = await getSessionPmsUser(sessionToken);
-  return user !== null;
+  // The panel session, or the Workspace session of an account with this panel's role.
+  return (await getCurrentPmsUser()) !== null;
 }
