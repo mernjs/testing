@@ -6,7 +6,10 @@ import { sendEmail } from "@/lib/platform/email";
 import { renderEmail } from "@/lib/platform/email/template";
 import { recordPlatformAudit } from "@/lib/platform/audit";
 import { getPlan } from "@/lib/platform/billing/plans";
-import { quoteCheckout } from "@/lib/platform/billing/quote";
+import { randomUUID } from "node:crypto";
+import { quoteCheckout, type QuoteLine } from "@/lib/platform/billing/quote";
+import { COUPON_REDEMPTIONS_COLLECTION, computeCouponDiscount, getCoupon, getRenewalRedemption, markRedemptionCycleBilled, redeemCoupon, releaseRedemption } from "@/lib/platform/billing/coupons";
+import { currentPriceVersion, planPriceAtVersion } from "@/lib/platform/billing/pricing";
 import { getBillingSettings } from "@/lib/platform/billing/settings";
 import { recordSubscriptionEvent, type SubscriptionEventType } from "@/lib/platform/billing/events";
 import { getCompanySubscription, updateCompanySubscription } from "@/lib/platform/billing/subscription";
@@ -24,6 +27,7 @@ import {
   findPlanByRazorpayId,
   razorpayConfigured,
   razorpayKeyId,
+  razorpayPlanAmount,
   refundPayment,
   updateSubscriptionPlan,
   verifyCheckoutSignature,
@@ -40,7 +44,12 @@ import { formatMoney, type BillingInterval, type CompanySubscription, type Subsc
  *             add-ons) plus GST from the billing settings. The quote is stored
  *             on the subscription (`pricing`) and a Razorpay plan is created
  *             for that exact tax-inclusive amount (`ensureRazorpayPlan`), so
- *             a recurring coupon discount is charged every cycle.
+ *             a coupon discount is charged every cycle it applies to. A
+ *             limited coupon (once / N cycles) is ended by `repriceSubscription`
+ *             after its last discounted charge: the subscription is scheduled
+ *             onto the full-price Razorpay plan at cycle end. The same function
+ *             re-prices after an add-on change. A plan price edit never changes
+ *             what an existing subscriber pays (`priceVersion`).
  *  checkout   startCheckout → Razorpay Checkout in the browser → confirmCheckout
  *             (signature-verified; the subscription is re-fetched from Razorpay,
  *             never taken from the browser). A company still in its trial is
@@ -132,7 +141,7 @@ function fromUnix(s: number | null | undefined): Date | null {
   return typeof s === "number" && s > 0 ? new Date(s * 1000) : null;
 }
 
-function noteOf(entity: RazorpaySubscription, key: string): string | null {
+function noteOf(entity: Pick<RazorpaySubscription, "notes">, key: string): string | null {
   const notes = entity.notes;
   if (!notes || Array.isArray(notes)) return null;
   const v = notes[key];
@@ -166,7 +175,7 @@ async function graceDays(): Promise<number> {
 }
 
 /** Which of our plans a Razorpay subscription is for: its Razorpay plan id first, else our own notes. */
-async function resolvePlan(entity: RazorpaySubscription): Promise<{ planId: string; interval: BillingInterval } | null> {
+async function resolvePlan(entity: Pick<RazorpaySubscription, "plan_id" | "notes">): Promise<{ planId: string; interval: BillingInterval } | null> {
   const byPlanId = await findPlanByRazorpayId(entity.plan_id);
   if (byPlanId) return { planId: byPlanId.plan._id, interval: byPlanId.interval };
   const planId = noteOf(entity, "planId");
@@ -182,7 +191,14 @@ export type PricingResult = { ok: true; pricing: SubscriptionPricing; summary: P
  * Prices a plan for a company through `quoteCheckout` and adds GST from the
  * billing settings. The only way this module turns a plan into an amount.
  */
-export async function priceSubscription(input: { companyId: string; planId: string; interval: BillingInterval; couponCode?: string | null }): Promise<PricingResult> {
+export async function priceSubscription(input: {
+  companyId: string;
+  planId: string;
+  interval: BillingInterval;
+  couponCode?: string | null;
+  /** Keep the plan line at this price version (an existing subscriber being re-priced); omitted = current catalogue price. */
+  priceVersion?: number | null;
+}): Promise<PricingResult> {
   if (!isInterval(input.interval)) return { ok: false, error: "Choose monthly or yearly billing." };
   const couponCode = input.couponCode?.trim().toUpperCase() || null;
   const [quote, plan, settings] = await Promise.all([
@@ -190,7 +206,23 @@ export async function priceSubscription(input: { companyId: string; planId: stri
     getPlan(String(input.planId ?? "")),
     getBillingSettings(),
   ]);
-  if (!quote || !plan || !plan.active) return { ok: false, error: "That plan isn't available." };
+  if (!quote || !plan || (!plan.active && !input.priceVersion)) return { ok: false, error: "That plan isn't available." };
+  let priceVersion = currentPriceVersion(plan);
+  if (input.priceVersion && input.priceVersion !== priceVersion) {
+    // Grandfathered subscriber: the plan line stays at the version they bought; the discount is re-worked on the new subtotal.
+    const planLine = quote.lines.find((l) => l.kind === "plan");
+    const old = planPriceAtVersion(plan, quote.interval, input.priceVersion);
+    if (planLine && old !== null) {
+      planLine.amount = old;
+      priceVersion = input.priceVersion;
+      quote.subtotal = quote.lines.filter((l) => l.kind !== "discount").reduce((sum, l) => sum + l.amount, 0);
+      const discountLine = quote.lines.find((l) => l.kind === "discount");
+      const coupon = quote.couponId ? await getCoupon(quote.couponId) : null;
+      quote.discount = coupon ? computeCouponDiscount(coupon, quote.subtotal) : 0;
+      if (discountLine) discountLine.amount = -quote.discount;
+      quote.taxable = quote.subtotal - quote.discount;
+    }
+  }
   const { net, gst, total } = taxTotals(quote.taxable, quote.gstRatePercent, settings.tax.pricesIncludeTax);
   if (!Number.isInteger(total) || total <= 0) return { ok: false, error: "That plan has no price for this billing period yet." };
   const pricing: SubscriptionPricing = {
@@ -206,6 +238,9 @@ export async function priceSubscription(input: { companyId: string; planId: stri
     gstRatePercent: quote.gstRatePercent,
     total,
     quotedAt: new Date(),
+    lines: quote.lines.map((l) => ({ kind: l.kind, refId: l.refId, label: l.label, amount: l.amount })),
+    redemptionId: null,
+    priceVersion,
   };
   const summary: PriceSummary = {
     planId: plan._id,
@@ -240,7 +275,7 @@ export async function subscriptionMrr(sub: CompanySubscription): Promise<number>
   if (pricing) return monthlyOf(pricing.net, sub.interval);
   const plan = await getPlan(sub.planId);
   if (!plan) return 0;
-  return monthlyOf(sub.interval === "yearly" ? plan.priceYearly : plan.priceMonthly, sub.interval);
+  return monthlyOf(planPriceAtVersion(plan, sub.interval, sub.priceVersion) ?? 0, sub.interval);
 }
 
 // ── Transitions (history + audit) ──────────────────────────────────────────────
@@ -372,17 +407,41 @@ async function notify(companyId: string, kind: NoticeKind): Promise<void> {
 // ── Invoices & adoption ──────────────────────────────────────────────────────
 
 /**
- * Issues the SaaS invoice for one successful charge via the invoices
- * workstream's `issueSaasInvoice` (idempotent on `paymentRef`). The amount is
- * what Razorpay actually captured (tax-inclusive) — which equals the stored
- * quote total, since the Razorpay plan is created for exactly that amount.
+ * Issues the SaaS invoice for one successful charge via `issueSaasInvoice`
+ * (idempotent on the payment id). Lines are the stored quote's lines (plan,
+ * add-ons, discount) when the captured amount is that quote's total; otherwise
+ * one plan line worked back from the captured amount (GST backed out when
+ * prices exclude tax).
+ *
+ * Never throws: a failed invoice must not make Razorpay redeliver the charge
+ * forever. The failure is audited ("invoice.issue_failed") for the owner to
+ * issue it by hand; a total that differs from the payment is audited too.
  */
 async function issueInvoice(companyId: string, entity: RazorpaySubscription, payment: { id: string; amount: number; currency: string }, sub: CompanySubscription): Promise<void> {
-  const resolved = await resolvePlan(entity);
-  const interval = resolved?.interval ?? sub.interval;
-  const periodStart = fromUnix(entity.current_start) ?? new Date();
-  const periodEnd = fromUnix(entity.current_end) ?? new Date(periodStart.getTime() + (interval === "yearly" ? 365 : 30) * DAY_MS);
-  await invoiceIssuer({ companyId, planId: resolved?.planId ?? sub.planId, interval, periodStart, periodEnd, amount: payment.amount, currency: payment.currency.toUpperCase(), paymentRef: payment.id });
+  try {
+    const resolved = await resolvePlan(entity);
+    const planId = resolved?.planId ?? sub.planId;
+    const interval = resolved?.interval ?? sub.interval;
+    const start = fromUnix(entity.current_start) ?? new Date();
+    const end = fromUnix(entity.current_end) ?? new Date(start.getTime() + (interval === "yearly" ? 365 : 30) * DAY_MS);
+    const pricing = sub.pricing && sub.pricing.total === payment.amount && sub.pricing.lines?.length ? sub.pricing : null;
+    let lines: QuoteLine[];
+    if (pricing) lines = pricing.lines!.map((l) => ({ ...l }));
+    else {
+      const [plan, settings] = await Promise.all([getPlan(planId), getBillingSettings()]);
+      const rate = sub.pricing?.gstRatePercent ?? settings.tax.gstRatePercent;
+      const amount = settings.tax.pricesIncludeTax ? payment.amount : Math.round((payment.amount * 100) / (100 + rate));
+      lines = [{ kind: "plan", refId: planId, label: `${plan?.name ?? planId} (${interval})`, amount }];
+    }
+    const invoice = await invoiceIssuer({ companyId, lines, planId, interval, period: { start, end }, paymentRef: payment.id, paidAt: new Date(), actorId: "system" });
+    if (invoice && invoice.total !== payment.amount) {
+      await recordPlatformAudit({ actorId: "system", action: "invoice.total_mismatch", target: { type: "saas_invoice", id: invoice.id }, companyId, details: { paymentId: payment.id, charged: payment.amount, invoiceTotal: invoice.total, number: invoice.number } });
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`[billing] invoice for ${payment.id} failed`, err);
+    await recordPlatformAudit({ actorId: "system", action: "invoice.issue_failed", target: { type: "subscription", id: companyId }, companyId, details: { paymentId: payment.id, amount: payment.amount, message: message.slice(0, 500) } });
+  }
 }
 
 /** Status/period patch for a Razorpay subscription state. */
@@ -424,6 +483,7 @@ async function adoptSubscription(companyId: string, entity: RazorpaySubscription
     cancelAtPeriodEnd: false,
     pendingChange: null,
     pricing: pricing ?? null,
+    ...(pricing?.priceVersion ? { priceVersion: pricing.priceVersion } : {}),
     ...(resolved ?? {}),
     ...(await patchFromEntity(current, entity)),
   };
@@ -448,6 +508,46 @@ function notBilled(sub: CompanySubscription | null): string | null {
   if (!sub) return "Unknown workspace.";
   if (sub.status === "internal") return sub.complimentary ? "This workspace is complimentary — there's nothing to pay." : "The platform owner's workspace isn't billed.";
   return null;
+}
+
+// ── Coupons (contract in coupons.ts) ───────────────────────────────────────────
+
+/**
+ * Claims the quote's coupon for the company BEFORE anything is created at
+ * Razorpay, and writes the redemption id into the pricing snapshot. A live
+ * redemption of the same coupon (a discount still running, or a checkout being
+ * retried) is reused rather than redeemed twice. `fresh` = this call created
+ * it, so a failure right after must release it.
+ */
+async function attachCoupon(companyId: string, pricing: SubscriptionPricing, actorId: string): Promise<{ ok: true; fresh: boolean } | { ok: false; error: string }> {
+  if (!pricing.couponId) return { ok: true, fresh: false };
+  const live = await getRenewalRedemption(companyId);
+  if (live && live.couponId === pricing.couponId) {
+    pricing.redemptionId = live._id;
+    return { ok: true, fresh: false };
+  }
+  const r = await redeemCoupon({ couponId: pricing.couponId, companyId, planId: pricing.planId, interval: pricing.interval, discount: pricing.discount, reference: `checkout_${randomUUID()}`, actorId });
+  if (!r.ok) return r;
+  pricing.redemptionId = r.redemptionId;
+  return { ok: true, fresh: !r.alreadyRedeemed };
+}
+
+/**
+ * Gives back a redemption that was never billed (abandoned / replaced
+ * checkout, first payment failed). One that has been charged at least once
+ * has been used and stays.
+ */
+async function releaseUnused(companyId: string, redemptionId: string | null | undefined, reason: string, keepRedemptionId: string | null = null): Promise<boolean> {
+  if (!redemptionId || redemptionId === keepRedemptionId) return false;
+  try {
+    // Read-only peek at the redemption (owned by coupons.ts) to see whether it was ever billed.
+    const doc = await (await getPlatformDb()).collection<{ _id: string; companyId: string; status: string; cyclesBilled: number }>(COUPON_REDEMPTIONS_COLLECTION).findOne({ _id: redemptionId, companyId });
+    if (!doc || doc.status !== "redeemed" || doc.cyclesBilled > 0) return false;
+    return await releaseRedemption({ redemptionId, reason });
+  } catch (err) {
+    console.error("[billing] releaseRedemption failed", err);
+    return false;
+  }
 }
 
 // ── Billing details ──────────────────────────────────────────────────────────
@@ -480,6 +580,12 @@ export async function startCheckout(companyId: string, input: { planId: string; 
   if (!details) return { ok: false, error: "Add your billing details before subscribing — they go on your GST invoices." };
   const plan = (await getPlan(pricing.planId))!;
 
+  // A previous checkout that was never paid is replaced: give its coupon back (the same coupon is reused below instead).
+  if (sub.checkout && sub.checkout.pricing.couponId !== pricing.couponId) await releaseUnused(companyId, sub.checkout.pricing.redemptionId, "checkout_replaced");
+  // Coupon: claimed before anything exists at Razorpay; released again if the subscription can't be created.
+  const coupon = await attachCoupon(companyId, pricing, actorId);
+  if (!coupon.ok) return coupon;
+
   try {
     let customerId = sub.provider?.customerId ?? null;
     if (!customerId) {
@@ -494,7 +600,7 @@ export async function startCheckout(companyId: string, input: { planId: string; 
       interval: pricing.interval,
       startAt: startsAt ? Math.floor(startsAt.getTime() / 1000) : null,
       // Set by us and read back from Razorpay on confirm/webhook — never from the browser.
-      notes: { companyId, planId: plan._id, interval: pricing.interval, purpose: "platform_subscription", ...(pricing.couponId ? { couponId: pricing.couponId } : {}) },
+      notes: { companyId, planId: plan._id, interval: pricing.interval, purpose: "platform_subscription", ...(pricing.couponId ? { couponId: pricing.couponId } : {}), ...(pricing.redemptionId ? { redemptionId: pricing.redemptionId } : {}) },
     });
     // Remembered until Razorpay confirms this subscription, so the confirmed one carries its quote.
     await updateCompanySubscription(companyId, { checkout: { subscriptionId: created.id, pricing } });
@@ -519,6 +625,7 @@ export async function startCheckout(companyId: string, input: { planId: string; 
       },
     };
   } catch (err) {
+    if (coupon.fresh && pricing.redemptionId) await releaseRedemption({ redemptionId: pricing.redemptionId, reason: "checkout_failed", actorId }).catch(() => {});
     return { ok: false, error: friendly(err, "We couldn't start the checkout. Please try again.") };
   }
 }
@@ -555,7 +662,8 @@ export async function resumeSubscription(companyId: string, actorId = "system"):
   const blocked = notBilled(sub);
   if (blocked || !sub) return { ok: false, error: blocked ?? "Unknown workspace." };
   if (!sub.cancelAtPeriodEnd) return { ok: false, error: "Your subscription isn't scheduled to end." };
-  return startCheckout(companyId, { planId: sub.planId, interval: sub.interval, couponCode: currentPricing(sub)?.couponCode ?? null }, actorId);
+  const live = await getRenewalRedemption(companyId);
+  return startCheckout(companyId, { planId: sub.planId, interval: sub.interval, couponCode: live && live.couponId === currentPricing(sub)?.couponId ? live.code : null }, actorId);
 }
 
 // ── Plan changes & cancellation ──────────────────────────────────────────────
@@ -576,16 +684,23 @@ export async function changePlan(
   if (blocked || !sub) return { ok: false, error: blocked ?? "Unknown workspace." };
   if (!hasLiveSubscription(sub)) return { ok: false, error: "You don't have an active subscription to change — choose a plan to subscribe." };
   if (!(await razorpayConfigured())) return { ok: false, error: "Online billing isn't configured yet." };
-  const couponCode = input.couponCode === undefined ? (currentPricing(sub)?.couponCode ?? null) : input.couponCode;
-  const priced = await priceSubscription({ companyId, planId: input.planId, interval: input.interval, couponCode });
+  // Unless a code is given, a discount that is still running carries over to the new plan.
+  const running = await getRenewalRedemption(companyId);
+  const couponCode = input.couponCode === undefined ? (running && running.couponId === currentPricing(sub)?.couponId ? running.code : null) : input.couponCode;
+  // Staying on the same plan (interval switch): the plan line keeps the price version the company bought.
+  const priced = await priceSubscription({ companyId, planId: input.planId, interval: input.interval, couponCode, priceVersion: input.planId === sub.planId ? sub.priceVersion : null });
   if (!priced.ok) return priced;
   if (input.couponCode?.trim() && priced.summary.couponError) return { ok: false, error: priced.summary.couponError };
   const { pricing } = priced;
   const plan = (await getPlan(pricing.planId))!;
   const subscriptionId = sub.provider!.subscriptionId!;
+  const unchanged = plan._id === sub.planId && pricing.interval === sub.interval && currentPricing(sub)?.total === pricing.total;
+  const coupon: { ok: true; fresh: boolean } | { ok: false; error: string } = unchanged ? { ok: true, fresh: false } : await attachCoupon(companyId, pricing, actorId);
+  if (!coupon.ok) return coupon;
+  const versionPatch = pricing.priceVersion ? { priceVersion: pricing.priceVersion } : {};
 
   try {
-    if (plan._id === sub.planId && pricing.interval === sub.interval && currentPricing(sub)?.total === pricing.total) {
+    if (unchanged) {
       if (!sub.pendingChange) return { ok: false, error: `You're already on ${plan.name} (${pricing.interval}).` };
       await cancelScheduledChanges(subscriptionId);
       await applyChange(companyId, sub, { pendingChange: null }, { actorId, action: `${action}.undo_scheduled` });
@@ -597,7 +712,8 @@ export async function changePlan(
     if (remote.status === "authenticated" || remote.status === "created") {
       // Nothing charged yet (still in the trial): switch outright.
       await updateSubscriptionPlan(subscriptionId, razorpayPlanId, "now", pricing.interval);
-      await applyChange(companyId, sub, { planId: plan._id, interval: pricing.interval, pricing, pendingChange: null }, { actorId, action, details: { when: "now", reason: "not charged yet" } });
+      await applyChange(companyId, sub, { planId: plan._id, interval: pricing.interval, pricing, pendingChange: null, ...versionPatch }, { actorId, action, details: { when: "now", reason: "not charged yet" } });
+      if (sub.pricing?.couponId !== pricing.couponId) await releaseUnused(companyId, sub.pricing?.redemptionId, "plan_changed_before_first_charge");
       return { ok: true, message: `You're now on ${plan.name}. Your first charge of ${formatMoney(pricing.total, pricing.currency)} is when your trial ends.` };
     }
 
@@ -608,7 +724,7 @@ export async function changePlan(
     if (when === "now") {
       await updateSubscriptionPlan(subscriptionId, razorpayPlanId, "now", pricing.interval);
       const refund = await refundUnused(companyId, sub, actorId);
-      await applyChange(companyId, sub, { planId: plan._id, interval: pricing.interval, pricing, pendingChange: null }, { actorId, action, details: { when: "now", upgrade: isUpgrade, refund: refund ?? null } });
+      await applyChange(companyId, sub, { planId: plan._id, interval: pricing.interval, pricing, pendingChange: null, ...versionPatch }, { actorId, action, details: { when: "now", upgrade: isUpgrade, refund: refund ?? null } });
       return {
         ok: true,
         message: `You're now on ${plan.name} (${pricing.interval}). A new billing period starts today at ${formatMoney(pricing.total, pricing.currency)}${refund?.amount ? `; ${formatMoney(refund.amount, pricing.currency)} for the unused part of your last period is being refunded` : ""}.`,
@@ -619,6 +735,7 @@ export async function changePlan(
     await applyChange(companyId, sub, { pendingChange: { planId: plan._id, interval: pricing.interval, effectiveAt, pricing } }, { actorId, action: `${action}.scheduled`, details: { to: `${plan._id}/${pricing.interval}`, effectiveAt } });
     return { ok: true, message: `You'll move to ${plan.name} (${pricing.interval}) on ${fmtDate(effectiveAt)}, when your current period ends.` };
   } catch (err) {
+    if (coupon.fresh && pricing.redemptionId) await releaseRedemption({ redemptionId: pricing.redemptionId, reason: "plan_change_failed", actorId }).catch(() => {});
     return { ok: false, error: friendly(err, "We couldn't change your plan. Please try again.") };
   }
 }
@@ -663,6 +780,7 @@ export async function cancelSubscription(companyId: string, input: { when: "peri
       // Nothing has been charged yet: drop the scheduled subscription; the trial runs out on its own.
       await cancelRazorpaySubscription(subscriptionId, false);
       await applyChange(companyId, sub, { provider: { ...sub.provider!, subscriptionId: null }, cancelAtPeriodEnd: true, pendingChange: null }, { actorId, action, details: { when: "trial_end" } });
+      await releaseUnused(companyId, sub.pricing?.redemptionId, "canceled_before_first_charge");
       return { ok: true, message: `Canceled. You won't be charged; your trial ends on ${fmtDate(sub.trialEndsAt)}.` };
     }
     if (sub.cancelAtPeriodEnd && !now) return { ok: false, error: "Your subscription is already set to end with this period." };
@@ -673,9 +791,72 @@ export async function cancelSubscription(companyId: string, input: { when: "peri
     }
     await cancelRazorpaySubscription(subscriptionId, false);
     await applyChange(companyId, sub, { status: "canceled", cancelAtPeriodEnd: false, pendingChange: null, graceEndsAt: null }, { actorId, action, details: { when: "now" } });
+    await releaseUnused(companyId, sub.pricing?.redemptionId, "canceled_before_first_charge");
     return { ok: true, message: "The subscription has been canceled. The workspace is now read-only." };
   } catch (err) {
     return { ok: false, error: friendly(err, "We couldn't cancel the subscription. Please try again.") };
+  }
+}
+
+// ── Re-pricing (coupon ended, add-ons changed) ───────────────────────────────
+
+/**
+ * Re-quotes a live subscription and, when the per-cycle total has changed,
+ * moves it onto the Razorpay plan for the new amount at the END of the
+ * current cycle (immediately if nothing has been charged yet). Called
+ *  - after every successful charge: a "once" / N-cycle coupon whose discounted
+ *    cycles are all billed (`getRenewalRedemption` no longer returns it) is
+ *    dropped, so the next cycle is charged at full price; a "forever" coupon
+ *    keeps re-quoting to the same total and is left alone;
+ *  - by the Platform Panel after a company's add-ons change;
+ *  - by the daily cron, as a retry.
+ * The plan line stays at the price version the company bought. No-op when the
+ * total is unchanged or there is no live Razorpay subscription (the next
+ * checkout is quoted fresh anyway).
+ */
+export async function repriceSubscription(companyId: string, actorId = "system"): Promise<BillingActionResult> {
+  const sub = await getCompanySubscription(companyId);
+  const blocked = notBilled(sub);
+  if (blocked || !sub) return { ok: false, error: blocked ?? "Unknown workspace." };
+  if (!hasLiveSubscription(sub)) return { ok: true, message: "No live Razorpay subscription — the next checkout is priced fresh." };
+  if (!(await razorpayConfigured())) return { ok: false, error: "Online billing isn't configured yet." };
+
+  const target = sub.pendingChange ?? { planId: sub.planId, interval: sub.interval };
+  const base = sub.pendingChange ? (sub.pendingChange.pricing ?? null) : currentPricing(sub);
+  const running = await getRenewalRedemption(companyId);
+  const keepCoupon = Boolean(base?.couponId && running && running.couponId === base.couponId);
+  const priced = await priceSubscription({
+    companyId,
+    planId: target.planId,
+    interval: target.interval,
+    couponCode: keepCoupon ? running!.code : null,
+    priceVersion: target.planId === sub.planId ? sub.priceVersion : (base?.priceVersion ?? null),
+  });
+  if (!priced.ok) return priced;
+  const { pricing } = priced;
+  pricing.redemptionId = keepCoupon && pricing.couponId ? running!._id : null;
+  if (base && base.total === pricing.total) return { ok: true, message: "Price unchanged." };
+
+  const couponEnded = Boolean(base?.couponId && !pricing.couponId);
+  const action = couponEnded ? "subscription.coupon_ended" : "subscription.reprice";
+  const details = { from: base?.total ?? null, to: pricing.total, ...(couponEnded ? { couponId: base!.couponId, couponCode: base!.couponCode } : {}) };
+  const subscriptionId = sub.provider!.subscriptionId!;
+  try {
+    const plan = (await getPlan(pricing.planId))!;
+    const razorpayPlanId = await ensureRazorpayPlan(plan, pricing.interval, pricing.total, pricing.currency);
+    const remote = await fetchSubscription(subscriptionId);
+    if (remote.status === "authenticated" || remote.status === "created") {
+      await updateSubscriptionPlan(subscriptionId, razorpayPlanId, "now", pricing.interval);
+      await applyChange(companyId, sub, { pricing, pendingChange: null }, { actorId, action, details: { ...details, when: "now" } });
+      return { ok: true, message: `Re-priced to ${formatMoney(pricing.total, pricing.currency)} per cycle from the first charge.` };
+    }
+    await updateSubscriptionPlan(subscriptionId, razorpayPlanId, "cycle_end", pricing.interval);
+    const effectiveAt = fromUnix(remote.current_end) ?? sub.currentPeriodEnd;
+    await applyChange(companyId, sub, { pendingChange: { planId: pricing.planId, interval: pricing.interval, effectiveAt, pricing } }, { actorId, action, details: { ...details, when: "cycle_end", effectiveAt } });
+    return { ok: true, message: `Re-priced to ${formatMoney(pricing.total, pricing.currency)} per cycle from ${fmtDate(effectiveAt)}.` };
+  } catch (err) {
+    await recordPlatformAudit({ actorId, action: `${action}.failed`, target: { type: "subscription", id: companyId }, companyId, details: { ...details, error: err instanceof Error ? err.message.slice(0, 300) : String(err) } });
+    return { ok: false, error: friendly(err, "We couldn't re-price the subscription.") };
   }
 }
 
@@ -824,9 +1005,15 @@ async function processEvent(eventId: string, payload: RazorpayWebhookPayload): P
         planPatch.interval = resolved.interval;
       }
       const pending = current.pendingChange;
-      if (resolved && pending && pending.planId === resolved.planId && pending.interval === resolved.interval) {
+      // A scheduled change has taken effect once Razorpay reports the plan it was scheduled onto (matched by amount:
+      // a coupon ending or an add-on change keeps the same plan + interval).
+      const rzpAmount = pending?.pricing ? await razorpayPlanAmount(entity.plan_id) : null;
+      if (resolved && pending && pending.planId === resolved.planId && pending.interval === resolved.interval && (!pending.pricing || rzpAmount === null || rzpAmount === pending.pricing.total)) {
         planPatch.pendingChange = null;
-        if (pending.pricing) planPatch.pricing = pending.pricing;
+        if (pending.pricing) {
+          planPatch.pricing = pending.pricing;
+          if (pending.pricing.priceVersion) planPatch.priceVersion = pending.pricing.priceVersion;
+        }
       }
       // A charge proves the subscription is active even if its entity snapshot lags.
       const statusPatch = await patchFromEntity(current, event === "subscription.charged" ? { ...entity, status: "active" } : entity);
@@ -835,7 +1022,13 @@ async function processEvent(eventId: string, payload: RazorpayWebhookPayload): P
         ? { lastPayment: { id: payment.id, amount: payment.amount, currency: payment.currency.toUpperCase(), at: new Date(), periodStart: fromUnix(entity.current_start), periodEnd: fromUnix(entity.current_end) } }
         : {};
       const after = await applyChange(companyId, current, { ...planPatch, ...statusPatch, ...paymentPatch }, { ...opts(charged ? "charged" : event.split(".")[1]), details: { razorpayEvent: event, eventId, ...(charged ? { paymentId: payment.id, amount: payment.amount } : {}) } });
-      if (charged) await issueInvoice(companyId, entity, { id: payment.id, amount: payment.amount, currency: payment.currency }, after);
+      if (charged) {
+        // This charge carried the coupon discount → one more discounted cycle billed.
+        if (after.pricing?.redemptionId && after.pricing.discount > 0) await markRedemptionCycleBilled(after.pricing.redemptionId);
+        await issueInvoice(companyId, entity, { id: payment.id, amount: payment.amount, currency: payment.currency }, after);
+        // A limited coupon that has now run out (or an add-on change) → next cycle at the new price. The daily cron retries a failure.
+        await repriceSubscription(companyId, "system").catch((err) => console.error(`[billing] reprice after charge failed for ${companyId}`, err));
+      }
       return done(charged ? "charged" : "synced");
     }
 
@@ -852,6 +1045,7 @@ async function processEvent(eventId: string, payload: RazorpayWebhookPayload): P
     case "subscription.halted": {
       if (current.status === "grace" || current.status === "suspended" || current.status === "canceled") return done(`no change from ${current.status}`);
       await applyChange(companyId, current, { status: "grace", graceEndsAt: new Date(Date.now() + (await graceDays()) * DAY_MS) }, opts("halted"));
+      await releaseUnused(companyId, current.pricing?.redemptionId, "payment_halted");
       await notify(companyId, "grace");
       return done("grace");
     }
@@ -860,6 +1054,7 @@ async function processEvent(eventId: string, payload: RazorpayWebhookPayload): P
     case "subscription.completed": {
       if (current.status === "canceled") return done("already canceled");
       await applyChange(companyId, current, { status: "canceled", cancelAtPeriodEnd: false, pendingChange: null, graceEndsAt: null }, opts(event.split(".")[1]));
+      await releaseUnused(companyId, current.pricing?.redemptionId, "subscription_cancelled");
       await notify(companyId, "canceled");
       return done("canceled");
     }
@@ -889,7 +1084,7 @@ export interface DunningSummary {
 export async function runDunningSweep(now: Date = new Date()): Promise<DunningSummary> {
   const summary: DunningSummary = { checked: 0, toPastDue: 0, toGrace: 0, suspended: 0, canceled: 0, reconciled: 0, errors: 0 };
   const rows = await (await companies())
-    .find({ isPlatformOwner: { $ne: true }, $or: [{ subscription: { $exists: false } }, { "subscription.status": { $in: ["trialing", "active", "past_due", "grace"] } }] }, { projection: { _id: 1 } })
+    .find({ isPlatformOwner: { $ne: true }, $or: [{ subscription: { $exists: false } }, { "subscription.status": { $in: ["trialing", "active", "past_due", "grace"] } }, { "subscription.checkout.subscriptionId": { $exists: true } }] }, { projection: { _id: 1 } })
     .toArray();
   const t = now.getTime();
   const grace = await graceDays();
@@ -900,6 +1095,16 @@ export async function runDunningSweep(now: Date = new Date()): Promise<DunningSu
     try {
       const sub = await getCompanySubscription(companyId);
       if (!sub || sub.status === "internal") continue;
+
+      // A checkout nobody paid within a day is abandoned: free its coupon (unless the live subscription uses it).
+      if (sub.checkout && t - new Date(sub.checkout.pricing.quotedAt).getTime() > DAY_MS) {
+        await releaseUnused(companyId, sub.checkout.pricing.redemptionId, "checkout_abandoned", sub.provider?.subscriptionId ? (sub.pricing?.redemptionId ?? null) : null);
+        await updateCompanySubscription(companyId, { checkout: null });
+      }
+      // Retry of the after-charge re-price (coupon ran out / add-ons changed) if it failed then.
+      if (sub.status === "active" && hasLiveSubscription(sub) && sub.pricing?.couponId && !sub.pendingChange) {
+        await repriceSubscription(companyId, "system");
+      }
 
       if (sub.status === "past_due") {
         const since = sub.dunning?.pastDueSince ?? sub.updatedAt;

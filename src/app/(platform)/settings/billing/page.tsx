@@ -12,6 +12,7 @@ import { getPlan, listPlans } from "@/lib/platform/billing/plans";
 import { razorpayConfigured } from "@/lib/platform/billing/razorpay";
 import { hasLiveSubscription } from "@/lib/platform/billing/subscriptions";
 import type { PlanOption } from "@/lib/platform/billing/billing-details";
+import { planPrice } from "@/lib/platform/billing/pricing";
 import BillingManager, { type BillingView } from "@/components/platform/billing/BillingManager";
 import {
   cancelSubscriptionAction,
@@ -78,8 +79,8 @@ export default async function BillingSettingsPage() {
     name: p.name,
     description: p.description,
     currency: p.currency,
-    priceMonthly: p.priceMonthly,
-    priceYearly: p.priceYearly,
+    priceMonthly: planPrice(p, "monthly"),
+    priceYearly: planPrice(p, "yearly"),
   }));
 
   const view: BillingView = {

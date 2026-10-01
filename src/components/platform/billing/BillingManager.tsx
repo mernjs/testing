@@ -244,16 +244,23 @@ export default function BillingManager({ view, plans, actions }: { view: Billing
                   role="radio"
                   aria-checked={selected}
                   data-plan={p.id}
+                  disabled={price === null}
                   onClick={() => setPlanId(p.id)}
-                  className={`min-w-0 rounded-xl border p-4 text-left transition-colors ${selected ? "border-primary bg-primary/5 ring-2 ring-primary/30" : "border-border hover:border-primary/40"}`}
+                  className={`min-w-0 rounded-xl border p-4 text-left transition-colors disabled:opacity-50 ${selected ? "border-primary bg-primary/5 ring-2 ring-primary/30" : "border-border hover:border-primary/40"}`}
                 >
                   <span className="flex items-center justify-between gap-2">
                     <span className="font-semibold">{p.name}</span>
                     {p.id === view.planId && view.status !== "trialing" && <span className="text-xs text-muted-foreground">Current</span>}
                   </span>
                   <span className="mt-1 block text-lg font-bold tabular-nums">
-                    {formatMoney(price, p.currency)}
-                    <span className="text-xs font-normal text-muted-foreground">/{interval === "yearly" ? "year" : "month"} + GST</span>
+                    {price === null ? (
+                      <span className="text-sm font-normal text-muted-foreground">Not offered {interval}</span>
+                    ) : (
+                      <>
+                        {formatMoney(price, p.currency)}
+                        <span className="text-xs font-normal text-muted-foreground">/{interval === "yearly" ? "year" : "month"} + GST</span>
+                      </>
+                    )}
                   </span>
                   <span className="mt-1 block text-xs text-muted-foreground">{p.description}</span>
                 </button>

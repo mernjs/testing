@@ -135,6 +135,7 @@ export interface PlanOption {
   name: string;
   description: string;
   currency: string;
-  priceMonthly: number;
-  priceYearly: number;
+  /** Null when the plan doesn't offer that billing cycle. */
+  priceMonthly: number | null;
+  priceYearly: number | null;
 }

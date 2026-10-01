@@ -172,6 +172,12 @@ export interface SubscriptionPricing {
   /** Charged per cycle, tax-inclusive — the Razorpay plan amount. */
   total: number;
   quotedAt: Date;
+  /** The quote's lines (plan, add-ons, discount; pre-tax/catalogue basis, discounts negative) — printed on invoices. */
+  lines?: { kind: "plan" | "addon" | "discount"; refId: string; label: string; amount: number }[];
+  /** The coupon redemption (`billing_coupon_redemptions`) this discount is billed against. */
+  redemptionId?: string | null;
+  /** Plan price version the plan line was priced at (becomes `CompanySubscription.priceVersion`). */
+  priceVersion?: number | null;
 }
 
 /** Usage metrics metered per company per calendar month. */

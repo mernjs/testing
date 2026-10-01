@@ -179,7 +179,7 @@ export async function adminChangePlan(companyId: string, input: { planId: string
   const priced = await priceSubscription({ companyId, planId: input.planId, interval: input.interval, couponCode: null });
   if (!priced.ok) return priced;
   if (priced.pricing.planId === e.sub.planId && priced.pricing.interval === e.sub.interval) return { ok: false, error: "That's the current plan." };
-  await applyChange(companyId, e.sub, { planId: priced.pricing.planId, interval: priced.pricing.interval, pricing: priced.pricing, pendingChange: null }, { actorId, action: "subscription.admin.change_plan", details: { manual: true } });
+  await applyChange(companyId, e.sub, { planId: priced.pricing.planId, interval: priced.pricing.interval, pricing: priced.pricing, pendingChange: null, ...(priced.pricing.priceVersion ? { priceVersion: priced.pricing.priceVersion } : {}) }, { actorId, action: "subscription.admin.change_plan", details: { manual: true } });
   return { ok: true, message: `Plan changed to ${priced.summary.planName} (${priced.pricing.interval}).` };
 }
 

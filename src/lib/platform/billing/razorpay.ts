@@ -196,6 +196,13 @@ export async function findPlanByRazorpayId(razorpayPlanId: string): Promise<{ pl
   return { plan, interval: ref?.interval ?? (plan.provider?.razorpay?.yearly === razorpayPlanId ? "yearly" : "monthly") };
 }
 
+/** The amount (tax-inclusive, per cycle) a Razorpay plan we created charges, when we know it. */
+export async function razorpayPlanAmount(razorpayPlanId: string): Promise<number | null> {
+  if (!razorpayPlanId) return null;
+  const plan = await (await getPlatformDb()).collection<PlanWithRazorpayPlans>(PLANS_COLLECTION).findOne({ "razorpayPlans.id": razorpayPlanId }, { projection: { razorpayPlans: 1 } });
+  return plan?.razorpayPlans?.find((r) => r.id === razorpayPlanId)?.amount ?? null;
+}
+
 // ── Subscriptions ────────────────────────────────────────────────────────────
 
 /** Billing cycles Razorpay should run before the subscription completes (~10 years). */
