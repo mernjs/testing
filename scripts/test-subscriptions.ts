@@ -423,12 +423,12 @@ async function main() {
   const ca = await newCompany("addon-co");
   const sa2 = await subscribe(ca, null);
   await chargeCycle(sa2.id);
-  eq((await repriceSubscription(ca, "admin1")).message, "Price unchanged.", "reprice is a no-op when nothing changed");
+  eq(((await repriceSubscription(ca, "admin1")) as { message?: string }).message, "Price unchanged.", "reprice is a no-op when nothing changed");
   const growth = (await getPlan("growth"))!;
   const saved = await savePlan({ _id: "growth", name: growth.name, description: growth.description, currency: growth.currency, intervals: ["monthly", "yearly"], prices: { monthly: 299_900, yearly: 2_999_000 }, modules: growth.modules, highlights: growth.highlights ?? [], flags: growth.flags ?? [], limits: growth.limits, trialDays: growth.trialDays ?? null, active: true, isDefault: growth.isDefault }, "update", "admin1");
   ok(saved.ok && saved.priceChanged, "plan price edited");
   ok(((await db.collection("billing_plans").findOne({ _id: "growth" as never }))!.razorpayPlans ?? []).length > 0, "razorpayPlans survive a plan save");
-  eq((await repriceSubscription(ca, "admin1")).message, "Price unchanged.", "existing subscriber keeps the price version it bought");
+  eq(((await repriceSubscription(ca, "admin1")) as { message?: string }).message, "Price unchanged.", "existing subscriber keeps the price version it bought");
   const addon = await saveAddon(null, { name: "Extra seats", description: "5 seats", priceMonthly: 50_000, priceYearly: 500_000, type: "limit", limitKey: "seats", amountPerUnit: 5, moduleKey: null, plans: "all", maxQuantity: null, active: true, sortOrder: 10 }, "admin1");
   assert.ok(addon.ok, JSON.stringify(addon));
   if (addon.ok) assert.ok((await setCompanyAddon(ca, addon.id, 2, { actorId: "admin1" })).ok);
