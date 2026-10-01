@@ -270,7 +270,10 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                       <div className="relative w-full flex-auto">
                         <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-primary/20 via-primary/0 to-secondary/20 blur-2xl pointer-events-none" />
 
-                        <div className="relative w-full flex-auto overflow-hidden rounded-3xl bg-background/95 dark:bg-muted/20 backdrop-blur-2xl shadow-2xl ring-1 ring-border border border-border/50">
+                        <div className={`relative w-full flex-auto overflow-hidden rounded-3xl backdrop-blur-2xl shadow-2xl ring-1 ring-border border border-border/50 ${
+                          // The large grouped menu (Products) sits over big hero text: keep it solid so the page behind never shows through.
+                          item.items.some((x) => x.group) ? "bg-background dark:bg-card" : "bg-background/95 dark:bg-muted/20"
+                        }`}>
                           <div className="h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
                           {item.items.some((x) => x.group) ? (
                             <div className="p-5">
