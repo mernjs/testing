@@ -115,7 +115,172 @@
     "badge": "AI Analytics",
     "mockupType": "admin-ai-ledger"
    }
-  ]
+  ],
+  "shortName": "Command Center",
+  "valueLine": "Company dashboard, users, roles and audit in one place",
+  "pitch": "The control room for your business software: see how the company is doing, decide who can open what, and keep an auditable record of it all.",
+  "overview": "The Command Center is where owners and administrators run the platform itself. The dashboard shows live company figures drawn from the products you use. Beside it sit the tools that decide who gets in and what they can do: user accounts, roles, a panel-by-panel access matrix and per-person permission overrides.\n\nBecause it reads from the same company record as every other product, there is nothing to export or reconcile. Changes to access, settings and company events are written to an audit log you can review.",
+  "outcome": "Leadership sees one live picture of the business, and administrators control access from one screen instead of one tool at a time.",
+  "facts": [
+   {
+    "label": "Platform products",
+    "value": "18"
+   },
+   {
+    "label": "Access control",
+    "value": "Role + per-person"
+   },
+   {
+    "label": "Change history",
+    "value": "Audit log"
+   }
+  ],
+  "features": [
+   {
+    "title": "Company today",
+    "description": "Open leads, active projects, tasks due this week, unpaid invoices, employees and pending leave on one dashboard, each drawn from the product that owns it.",
+    "icon": "LayoutDashboard"
+   },
+   {
+    "title": "Users and roles",
+    "description": "Create accounts, assign roles, deactivate access and reset temporary passwords from one screen.",
+    "icon": "Users"
+   },
+   {
+    "title": "Panel access matrix",
+    "description": "See at a glance which person has access to which product, and change it without opening each product.",
+    "icon": "Layers"
+   },
+   {
+    "title": "Permission overrides",
+    "description": "Grant or withdraw an individual capability for one person without inventing a new role.",
+    "icon": "KeyRound"
+   },
+   {
+    "title": "Analytics per product",
+    "description": "Open a per-product analytics view for the products your plan includes.",
+    "icon": "BarChart3"
+   },
+   {
+    "title": "Audit log",
+    "description": "Review who changed what across the workspace, including settings and automation runs.",
+    "icon": "FileSearch"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "Ask about your business",
+    "description": "A built-in assistant answers questions about your company in plain language. It can look up headline numbers, search your records and read recent activity, and it only ever sees what the person asking is allowed to see.",
+    "icon": "Sparkles"
+   },
+   {
+    "title": "AI Intelligence, one click away",
+    "description": "For deeper questions with tables and charts, the Command Center links to AI Intelligence, the AI data analyst.",
+    "icon": "BrainCircuit"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "One picture of the business",
+    "description": "Key figures from sales, delivery, finance and people appear together, so reviews do not start with a spreadsheet merge."
+   },
+   {
+    "title": "Access you can explain",
+    "description": "Every product's access is decided in one place, so you can answer who can see what without checking each tool."
+   },
+   {
+    "title": "Least privilege by default",
+    "description": "Per-person overrides let you give someone one extra capability without promoting them to a broader role."
+   },
+   {
+    "title": "A record of changes",
+    "description": "Sensitive changes are logged, which makes reviews and clean-ups straightforward."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Monday leadership review",
+    "description": "A founder opens the dashboard to see open leads, active projects, tasks due and unpaid invoices before the weekly meeting.",
+    "icon": "LayoutDashboard"
+   },
+   {
+    "title": "Onboarding a new hire",
+    "description": "An administrator creates the account, picks a role preset and checks the access matrix so the person lands in exactly the products they need.",
+    "icon": "UserPlus"
+   },
+   {
+    "title": "Offboarding",
+    "description": "When someone leaves, their access is switched off in one place and the change is recorded.",
+    "icon": "UserCheck"
+   },
+   {
+    "title": "Temporary elevated access",
+    "description": "A finance lead needs read access to one more area for a month; an override grants it without changing their role.",
+    "icon": "KeyRound"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "New team member to working access",
+    "description": "Account, role and product access are set up together.",
+    "steps": [
+     "Create the user and choose a role preset",
+     "Review the panel access matrix for that person",
+     "Share the temporary password; the person must change it at first sign-in",
+     "The change appears in the audit log"
+    ]
+   },
+   {
+    "title": "Company events trigger automations",
+    "description": "The workspace records events and runs the rules you define.",
+    "steps": [
+     "A lead, task, invoice, employee or leave event occurs in a product",
+     "The automation engine checks your conditions",
+     "It emails, notifies a role or person, or calls a signed webhook",
+     "The run is logged so you can review or test it"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "Workspace automations",
+    "description": "Rules that react to events from CRM, Projects, Finance and HR.",
+    "href": "/products/staff-hub"
+   },
+   {
+    "name": "AI Intelligence",
+    "description": "Ask deeper questions of the same company data.",
+    "href": "/products/ai-intelligence"
+   },
+   {
+    "name": "Every business product",
+    "description": "The dashboard and the access matrix cover each product your plan includes."
+   }
+  ],
+  "scenarios": [
+   "A founder-led company that needs one view of sales, delivery and cash",
+   "An operations head who manages roles for dozens of staff",
+   "A growing team that wants least-privilege access without constant admin tickets"
+  ],
+  "faq": [
+   {
+    "q": "Who can use the Command Center?",
+    "a": "Super Admins and the people they trust. What each person can do inside it follows their role and any individual overrides."
+   },
+   {
+    "q": "Where do the dashboard numbers come from?",
+    "a": "From the products themselves, using the same record each product keeps. A figure only appears for a product your plan includes and the viewer is allowed to see."
+   },
+   {
+    "q": "Can I see who changed a setting?",
+    "a": "Yes. Company settings, access changes and automation activity are written to the audit log."
+   },
+   {
+    "q": "Do we have to buy every product?",
+    "a": "No. During setup you choose which products your company uses, and your plan decides what is unlocked. You can start with the products you need today and switch on more as you grow."
+   }
+  ],
+  "audience": "Owners, CEOs, heads of operations and IT or security administrators who need one place to see the business and manage access."
  },
  {
   "id": "staff-hub",
@@ -202,7 +367,202 @@
     "badge": "Role Security",
     "mockupType": "workspace-roles"
    }
-  ]
+  ],
+  "shortName": "Workspace",
+  "valueLine": "One sign-in and one home for every product and every person",
+  "pitch": "The Business OS your team starts the day in: one sign-in, a personal dashboard, search across your records, an AI assistant that knows your business, and automations that connect the products.",
+  "overview": "The Workspace is the front door to everything your company runs on the platform. People sign in once and see only the products their role gives them, alongside company figures, notifications and recent activity.\n\nIt is also where the company is configured: branding, custom domains, billing, imports, integrations and automations. Press Ctrl or Cmd+K to search clients, leads, projects, tasks, employees and invoices in one box, or ask a plain-language question and get an answer drawn from your own data.",
+  "outcome": "Staff stop hunting for the right login, and the company gains a single place to configure, search, ask and automate.",
+  "facts": [
+   {
+    "label": "Sign-ins per person",
+    "value": "1"
+   },
+   {
+    "label": "Quick search",
+    "value": "6 record types"
+   },
+   {
+    "label": "Automation actions",
+    "value": "Email · Notify · Webhook"
+   }
+  ],
+  "features": [
+   {
+    "title": "One sign-in",
+    "description": "A single login opens every product the person has a role in, with sessions provided automatically.",
+    "icon": "KeyRound"
+   },
+   {
+    "title": "Role-aware dashboard",
+    "description": "Each person sees their products and, with the right access, company-wide figures such as open leads and unpaid invoices.",
+    "icon": "LayoutDashboard"
+   },
+   {
+    "title": "Search everything",
+    "description": "Ctrl or Cmd+K finds clients, leads, projects, tasks, employees and invoices, limited to what the person may open.",
+    "icon": "Search"
+   },
+   {
+    "title": "Automations",
+    "description": "Build rules on company events with conditions and up to five actions each: send an email, notify a person or role, or call a webhook.",
+    "icon": "Workflow"
+   },
+   {
+    "title": "Bulk import",
+    "description": "Bring leads, clients and employees in from CSV with a preview, duplicate checks and row-level errors before anything is written.",
+    "icon": "FileText"
+   },
+   {
+    "title": "Setup wizard",
+    "description": "A guided first-run choice of industry, departments, role presets and products, so a new company is working quickly.",
+    "icon": "Rocket"
+   },
+   {
+    "title": "Company settings",
+    "description": "Branding, custom domains, plan and billing invoices, usage, payments and integrations, all in one place.",
+    "icon": "Settings"
+   },
+   {
+    "title": "Notifications",
+    "description": "One bell collects alerts from across the products.",
+    "icon": "Bell"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "Ask about your business",
+    "description": "Ask a question in plain language. The assistant uses read-only tools to fetch headline numbers, search records and read recent activity, all with the permissions of the person asking. It has no tools that change data.",
+    "icon": "Sparkles"
+   },
+   {
+    "title": "Automations as the AI's hands",
+    "description": "Where you want action rather than answers, automations turn events into emails, notifications and webhooks on your rules.",
+    "icon": "Workflow"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "Faster onboarding",
+    "description": "New people get one login and a dashboard that shows only what applies to them."
+   },
+   {
+    "title": "Less switching",
+    "description": "Search and ask from anywhere instead of opening each product to look something up."
+   },
+   {
+    "title": "Work that moves by itself",
+    "description": "Automations remove routine hand-offs such as telling sales about a new lead or finance about a paid invoice."
+   },
+   {
+    "title": "Safe by design",
+    "description": "Search, KPIs and the assistant all respect each person's access."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "A manager's morning",
+    "description": "Check tasks due this week and pending leave, then jump into the right product from the same dashboard.",
+    "icon": "LayoutDashboard"
+   },
+   {
+    "title": "Finding a record fast",
+    "description": "A support lead presses Ctrl+K, types a client name and lands on the client, their projects and their invoices.",
+    "icon": "Search"
+   },
+   {
+    "title": "Moving to the platform",
+    "description": "An operations team imports leads, clients and employees from spreadsheets with a dry run before committing.",
+    "icon": "FileText"
+   },
+   {
+    "title": "Branded company presence",
+    "description": "An administrator sets the company logo and colours and attaches the company's own domain.",
+    "icon": "Palette"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Notify sales about a new lead",
+    "description": "A ready-made template.",
+    "steps": [
+     "A visitor submits a form and a lead is created",
+     "The rule matches the lead.created event",
+     "A notification goes to the sales role",
+     "The run is recorded and can be tested with Send test"
+    ]
+   },
+   {
+    "title": "Tell finance an invoice was paid",
+    "description": "A ready-made template.",
+    "steps": [
+     "A customer pays and the invoice is marked paid",
+     "The invoice.paid event fires",
+     "Finance receives an email with the invoice details",
+     "The delivery result is kept in the run log"
+    ]
+   },
+   {
+    "title": "Outbound webhook to your own system",
+    "description": "Connect any tool that accepts a webhook.",
+    "steps": [
+     "Choose the event, such as task.completed",
+     "Add conditions and a webhook action",
+     "Each request is signed with HMAC-SHA256 so your system can verify it",
+     "Delivery is limited to public https endpoints"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "CRM & Sales",
+    "description": "Lead events feed notifications and webhooks.",
+    "href": "/products/lms-sales-crm"
+   },
+   {
+    "name": "Projects",
+    "description": "Client, project and task events can start automations.",
+    "href": "/products/pms-project-command"
+   },
+   {
+    "name": "Finance",
+    "description": "Invoice created and paid events can start automations.",
+    "href": "/products/fms-finance"
+   },
+   {
+    "name": "HR & Payroll",
+    "description": "Employee created and leave requested events can start automations.",
+    "href": "/products/hrms-suite"
+   },
+   {
+    "name": "Outbound webhooks",
+    "description": "Signed https webhooks are the integration point for your own systems."
+   }
+  ],
+  "scenarios": [
+   "A new company setting itself up for the first time",
+   "A team that lives in two or three products and wants one home",
+   "An operations lead who wants routine hand-offs automated"
+  ],
+  "faq": [
+   {
+    "q": "Does the assistant change anything in our data?",
+    "a": "No. It uses read-only tools and runs with the permissions of the person asking. Anything it finds is treated as data, not as instructions."
+   },
+   {
+    "q": "What can automations do?",
+    "a": "React to company events such as a new lead, a completed task, a paid invoice or a leave request. Rules can have conditions and up to five actions: send an email, send an in-app notification or call a signed webhook."
+   },
+   {
+    "q": "Can we use our own domain and branding?",
+    "a": "Yes. The Workspace lets you set your logo and colour and attach your own domain once ownership is verified."
+   },
+   {
+    "q": "Is our data kept separate from other companies?",
+    "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
+   }
+  ],
+  "audience": "Every employee, plus owners and administrators who set the company up. People see the products and figures their role allows."
  },
  {
   "id": "hrms-suite",
@@ -311,7 +671,202 @@
     "badge": "Payroll System",
     "mockupType": "hrms-payroll"
    }
-  ]
+  ],
+  "shortName": "HR & Payroll",
+  "valueLine": "Employees, attendance, leave, payroll and recruitment",
+  "pitch": "One system of record for your people: from a shortlisted applicant to a payslip, with self-service for employees and an audit trail on every sensitive change.",
+  "overview": "HR & Payroll replaces spreadsheet-driven HR. It keeps employee profiles, departments and reporting lines, tracks attendance and leave, runs monthly payroll with payslips and payouts, and manages recruitment through to a new employee record.\n\nEmployees handle routine requests themselves, and managers approve from the same system. Payroll is computed from the attendance and leave already recorded rather than from a re-typed summary.",
+  "outcome": "HR spends less time on routine requests and re-keying, payroll runs from real attendance and leave, and every sensitive change leaves a trail.",
+  "facts": [
+   {
+    "label": "Payroll run states",
+    "value": "Draft → Approved → Paid"
+   },
+   {
+    "label": "Payslips",
+    "value": "PDF per employee"
+   },
+   {
+    "label": "Payout options",
+    "value": "Manual UTR or RazorpayX"
+   }
+  ],
+  "features": [
+   {
+    "title": "Employee records",
+    "description": "Profiles, documents, departments, reporting lines and employment history in one place.",
+    "icon": "Users"
+   },
+   {
+    "title": "Attendance",
+    "description": "Daily attendance with manual and bulk entry, self-service marking and automatic entries from approved leave.",
+    "icon": "Clock"
+   },
+   {
+    "title": "Leave management",
+    "description": "Leave types, balances, requests and approvals, plus a company holiday calendar.",
+    "icon": "Calendar"
+   },
+   {
+    "title": "Payroll runs",
+    "description": "Monthly runs move from draft to approved to paid, with salary structures, revisions and monthly tax deduction calculated.",
+    "icon": "Wallet"
+   },
+   {
+    "title": "Payslips and payouts",
+    "description": "Generate payslip PDFs and track salary payouts, recording the bank reference or disbursing through your own RazorpayX account.",
+    "icon": "FileText"
+   },
+   {
+    "title": "Recruitment and offers",
+    "description": "Careers applicants are shortlisted and selected, offers are tracked, and a selected applicant converts into an employee record.",
+    "icon": "UserPlus"
+   },
+   {
+    "title": "Employee self-service",
+    "description": "Employees see their own attendance, leave, salary slips, documents, profile and the company directory.",
+    "icon": "UserCheck"
+   },
+   {
+    "title": "Audit trail",
+    "description": "Changes to status, salary and roles are logged.",
+    "icon": "FileSearch"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "Ask about your people",
+    "description": "Using AI Intelligence, HR leads can ask about employees, departments and leave requests in plain language and get a table or chart, limited to what their role may see.",
+    "icon": "BrainCircuit"
+   },
+   {
+    "title": "Automations on HR events",
+    "description": "When an employee is created or a leave request is raised, a workspace automation can notify HR, email someone or call a webhook.",
+    "icon": "Workflow"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "Fewer routine requests",
+    "description": "Leave and attendance are self-service, so HR is not the middleman."
+   },
+   {
+    "title": "Payroll you can trace",
+    "description": "Payslips come from the attendance and leave already on file."
+   },
+   {
+    "title": "Hiring with no re-typing",
+    "description": "Selected applicants convert into employee records, with the application kept as history."
+   },
+   {
+    "title": "Accountability",
+    "description": "Salary, status and role changes are audit-logged."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Month-end payroll",
+    "description": "HR creates the run, reviews payslips, gets approval and records payouts against each employee.",
+    "icon": "Wallet"
+   },
+   {
+    "title": "Leave approval",
+    "description": "An employee requests leave; their manager approves; attendance reflects it automatically.",
+    "icon": "Calendar"
+   },
+   {
+    "title": "Hire to onboard",
+    "description": "A recruiter shortlists a careers applicant, records the offer and converts the selected person into an employee.",
+    "icon": "UserPlus"
+   },
+   {
+    "title": "Org change",
+    "description": "A promotion or transfer is recorded with a salary revision and a visible history.",
+    "icon": "Users"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Applicant to employee",
+    "description": "Recruitment into the people record.",
+    "steps": [
+     "A candidate applies through the careers page",
+     "Recruiters move the application to selected or hired",
+     "The applicant converts into an employee, linked back to the application",
+     "An employee.created event can trigger a welcome automation"
+    ]
+   },
+   {
+    "title": "Leave request to attendance",
+    "description": "Approvals update the record.",
+    "steps": [
+     "The employee submits leave; a leave.requested event fires",
+     "An automation can notify the HR role",
+     "The manager approves",
+     "Attendance entries for those days are created from the leave"
+    ]
+   },
+   {
+    "title": "Payroll to payout",
+    "description": "From run to payment.",
+    "steps": [
+     "Create the monthly run from attendance and salary structures",
+     "Approve it",
+     "Record payouts with a bank reference or disburse via RazorpayX",
+     "Employees see their payslip in self-service"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "Finance",
+    "description": "Payroll runs and salary payouts are visible in Finance.",
+    "href": "/products/fms-finance"
+   },
+   {
+    "name": "CRM & Sales",
+    "description": "The careers pipeline feeds recruitment.",
+    "href": "/products/lms-sales-crm"
+   },
+   {
+    "name": "Online Tests",
+    "description": "Assign screening tests to applicants and tests to employees by department or role.",
+    "href": "/products/ots-exam-engine"
+   },
+   {
+    "name": "AI Intelligence",
+    "description": "Ask about employees, departments and leave.",
+    "href": "/products/ai-intelligence"
+   },
+   {
+    "name": "RazorpayX",
+    "description": "Optional salary disbursement on your company's own account."
+   }
+  ],
+  "scenarios": [
+   "A growing company moving payroll off spreadsheets",
+   "A recruiter converting hires without re-typing",
+   "A manager approving leave and tracking attendance for a team"
+  ],
+  "faq": [
+   {
+    "q": "Who can see salary information?",
+    "a": "Self-service shows each employee their own salary slips. Company-wide payroll views are limited to HR and payroll roles."
+   },
+   {
+    "q": "How are payouts made?",
+    "a": "HR can record the bank reference after paying through their own bank, or disburse through RazorpayX using the company's own account."
+   },
+   {
+    "q": "Does it handle tax deduction?",
+    "a": "Payroll calculates monthly tax deduction from your payroll configuration."
+   },
+   {
+    "q": "Is our data kept separate from other companies?",
+    "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
+   }
+  ],
+  "audience": "HR managers, recruiters, payroll specialists, department heads and every employee for self-service."
  },
  {
   "id": "pms-project-command",
@@ -408,7 +963,188 @@
     "badge": "Financial Control",
     "mockupType": "pms-analytics"
    }
-  ]
+  ],
+  "shortName": "Projects",
+  "valueLine": "Clients, projects, tasks and timesheets with real project costing",
+  "pitch": "Project management built around what projects cost and what they bill. Plan work, log time and see profitability while there is still time to act.",
+  "overview": "Projects keeps your client records, projects, milestones, tasks and timesheets in one place and ties logged hours to cost. Delivery managers can compare estimated and actual hours and cost for each project while it is running, not after the invoice goes out.\n\nStatus changes follow guarded workflows, so a project cannot jump from planning straight to completed, and the pipeline data stays trustworthy.",
+  "outcome": "Managers see cost against plan while work is in progress, and the client records created here are the same ones Finance bills.",
+  "facts": [
+   {
+    "label": "Work views",
+    "value": "List · Board · Timeline"
+   },
+   {
+    "label": "Time tracking",
+    "value": "Timesheets"
+   },
+   {
+    "label": "Costing",
+    "value": "Estimated vs actual"
+   }
+  ],
+  "features": [
+   {
+    "title": "Client master",
+    "description": "The company's client records live here and are shared with Finance and the Client Portal.",
+    "icon": "Building2"
+   },
+   {
+    "title": "Projects and milestones",
+    "description": "Plan projects with owners, team members, milestones and documents.",
+    "icon": "Layers"
+   },
+   {
+    "title": "Tasks",
+    "description": "Task lists, a board and a timeline per project, with comments and attachments.",
+    "icon": "Kanban"
+   },
+   {
+    "title": "Timesheets",
+    "description": "People log hours against tasks and projects; managers review them.",
+    "icon": "Clock"
+   },
+   {
+    "title": "Costing and profitability",
+    "description": "Compare estimated and actual hours and cost for each project from logged timesheets.",
+    "icon": "TrendingUp"
+   },
+   {
+    "title": "Calendar and activity",
+    "description": "A calendar of deadlines and a feed of recent project activity.",
+    "icon": "Calendar"
+   },
+   {
+    "title": "Guarded status workflows",
+    "description": "Projects and tasks move only through allowed transitions.",
+    "icon": "ShieldCheck"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "Ask about delivery",
+    "description": "With AI Intelligence, ask about projects, tasks, timesheets and clients, for example which projects are over their planned hours, and get a table or chart.",
+    "icon": "BrainCircuit"
+   },
+   {
+    "title": "Automations on delivery events",
+    "description": "When a client or project is created, or a task is created or completed, an automation can notify the right people or call your system.",
+    "icon": "Workflow"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "Margin visibility",
+    "description": "Cost against plan is visible during delivery."
+   },
+   {
+    "title": "Trustworthy pipeline",
+    "description": "Guarded transitions keep statuses honest."
+   },
+   {
+    "title": "Less end-of-month guesswork",
+    "description": "Billing starts from logged hours rather than recollection."
+   },
+   {
+    "title": "One client record",
+    "description": "Delivery, finance and portal share the same clients."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Weekly delivery review",
+    "description": "A delivery lead checks which projects are over their planned hours and why.",
+    "icon": "Gauge"
+   },
+   {
+    "title": "Sprint-style task tracking",
+    "description": "A team works from the project board and moves tasks through stages.",
+    "icon": "Kanban"
+   },
+   {
+    "title": "Timesheet approval",
+    "description": "Managers review submitted timesheets before the hours count toward cost.",
+    "icon": "ClipboardCheck"
+   },
+   {
+    "title": "Client onboarding",
+    "description": "A new client is created once and then used by projects, invoices and the portal.",
+    "icon": "Handshake"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Task completed to notified",
+    "description": "Keep the right people informed.",
+    "steps": [
+     "A team member marks a task complete",
+     "A task.completed event fires",
+     "An automation notifies the project manager",
+     "The activity feed records the change"
+    ]
+   },
+   {
+    "title": "Hours to cost",
+    "description": "How logged time becomes costing.",
+    "steps": [
+     "Staff log hours against project tasks",
+     "Managers review the timesheets",
+     "Costing compares actual hours and cost with the estimate",
+     "Finance bills against the same client and project"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "Finance",
+    "description": "Invoices reference the same clients and projects; project financial reports read from Projects.",
+    "href": "/products/fms-finance"
+   },
+   {
+    "name": "Client Portal",
+    "description": "Clients see their projects and invoices.",
+    "href": "/products/external-portal"
+   },
+   {
+    "name": "Team Chat",
+    "description": "Project-linked channels keep conversation with the work.",
+    "href": "/products/messenger-yashchat"
+   },
+   {
+    "name": "AI Intelligence",
+    "description": "Ask about projects, tasks, timesheets and clients.",
+    "href": "/products/ai-intelligence"
+   },
+   {
+    "name": "Digi Locker",
+    "description": "Client credentials and documents sit on the same client record.",
+    "href": "/products/dlms-digilocker"
+   }
+  ],
+  "scenarios": [
+   "A services firm that bills by project and needs margin visibility",
+   "A product team that tracks tasks on a board",
+   "An agency that reports project status to clients"
+  ],
+  "faq": [
+   {
+    "q": "How is project cost calculated?",
+    "a": "From the hours people log against the project and the cost data kept for them, compared with the project's estimates."
+   },
+   {
+    "q": "Can clients see their project?",
+    "a": "Yes, through the Client Portal, which is a separate sign-in from the staff one."
+   },
+   {
+    "q": "Can we import existing clients?",
+    "a": "Yes. The Workspace import tool brings clients in from CSV with a preview and duplicate checks."
+   },
+   {
+    "q": "Do we have to buy every product?",
+    "a": "No. During setup you choose which products your company uses, and your plan decides what is unlocked. You can start with the products you need today and switch on more as you grow."
+   }
+  ],
+  "audience": "Project managers, delivery leads, developers and designers who log time, and finance teams who bill from delivery data."
  },
  {
   "id": "prms-procurement",
@@ -501,7 +1237,177 @@
     "badge": "Asset Manager",
     "mockupType": "prms-assets"
    }
-  ]
+  ],
+  "shortName": "Procurement & Assets",
+  "valueLine": "Requisitions, purchase orders, vendors, budgets and assets",
+  "pitch": "Put an approval trail behind every purchase, see spend against budget, and know who holds which asset.",
+  "overview": "Procurement & Assets replaces email approvals and the shared spreadsheet. A purchase starts as a requisition, moves through a department manager and, above a cost threshold, a procurement review, and then flows through RFQs, purchase orders, goods receipt, vendor invoices and payments.\n\nBudgets, assets, inventory, contracts, software subscriptions, infrastructure and employee expense claims sit alongside, so spend and ownership are visible in one place.",
+  "outcome": "Every purchase has an approver and a record, spend is compared with budget, and assets and renewals stop falling through the cracks.",
+  "facts": [
+   {
+    "label": "Requisition approval",
+    "value": "Manager + procurement review"
+   },
+   {
+    "label": "Budget levels",
+    "value": "4"
+   },
+   {
+    "label": "Purchase flow",
+    "value": "Requisition → PO → GRN → Payment"
+   }
+  ],
+  "features": [
+   {
+    "title": "Requisitions and approvals",
+    "description": "Staff raise requisitions; a department manager approves, and a procurement review is added above a cost threshold.",
+    "icon": "ClipboardCheck"
+   },
+   {
+    "title": "Vendors, RFQs and purchase orders",
+    "description": "Maintain vendors, request quotes and issue purchase orders.",
+    "icon": "ShoppingCart"
+   },
+   {
+    "title": "Goods receipt and vendor invoices",
+    "description": "Record deliveries, match vendor invoices and track vendor payments.",
+    "icon": "PackageSearch"
+   },
+   {
+    "title": "Budgets",
+    "description": "Set budgets at company, department, project or category level and see spend against them.",
+    "icon": "PieChart"
+   },
+   {
+    "title": "Assets and inventory",
+    "description": "Track assets, assignments and status over their lifecycle, plus stock items.",
+    "icon": "Package"
+   },
+   {
+    "title": "Contracts and subscriptions",
+    "description": "Keep contracts, software subscriptions with renewal dates, third-party services and infrastructure in one register.",
+    "icon": "FileText"
+   },
+   {
+    "title": "Employee expenses",
+    "description": "Employees submit expense claims; approvers review them, and Finance reimburses them.",
+    "icon": "Coins"
+   },
+   {
+    "title": "Reports and analytics",
+    "description": "Spend and procurement reports with Excel export.",
+    "icon": "BarChart3"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "Ask about spend",
+    "description": "With AI Intelligence, ask about expenses, vendors and purchase orders, for example spend by vendor this month, and get a table or chart.",
+    "icon": "BrainCircuit"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "Accountable spending",
+    "description": "Purchases move through recorded approval levels before money is committed."
+   },
+   {
+    "title": "Budget awareness",
+    "description": "Spend and commitments can be compared with budgets while there is still time to act."
+   },
+   {
+    "title": "Asset clarity",
+    "description": "Know what you own, who has it and what state it is in."
+   },
+   {
+    "title": "Renewals under control",
+    "description": "Subscription and contract renewal dates are tracked rather than remembered."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Buy equipment",
+    "description": "A manager raises a requisition, it is approved, a PO goes to the vendor and the delivery is received against it.",
+    "icon": "Package"
+   },
+   {
+    "title": "Compare quotes",
+    "description": "Request quotations from several vendors and issue the PO to the chosen one.",
+    "icon": "Scale"
+   },
+   {
+    "title": "Track software subscriptions",
+    "description": "Keep each subscription, owner and renewal date in one register.",
+    "icon": "RefreshCw"
+   },
+   {
+    "title": "Handle claims",
+    "description": "An employee claims travel expenses; the approver reviews; Finance reimburses.",
+    "icon": "Coins"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Requisition to purchase order",
+    "description": "A governed purchase.",
+    "steps": [
+     "An employee submits a requisition",
+     "The department manager approves; above the cost threshold a procurement review is added",
+     "Procurement raises a purchase order or RFQ",
+     "Goods are received and the vendor invoice is matched"
+    ]
+   },
+   {
+    "title": "Vendor invoice to payment",
+    "description": "From bill to paid.",
+    "steps": [
+     "The vendor invoice is recorded against the PO",
+     "It appears as a bill in Finance",
+     "The payment is recorded and the vendor ledger updates"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "Finance",
+    "description": "Vendors, bills, vendor payments, asset expenses and expense reimbursements flow into Finance.",
+    "href": "/products/fms-finance"
+   },
+   {
+    "name": "HR & Payroll",
+    "description": "Employees and departments drive approvals and asset assignment.",
+    "href": "/products/hrms-suite"
+   },
+   {
+    "name": "AI Intelligence",
+    "description": "Ask about expenses, vendors and purchase orders.",
+    "href": "/products/ai-intelligence"
+   }
+  ],
+  "scenarios": [
+   "A company moving purchase approvals out of email",
+   "An IT team tracking laptops, licences and renewals",
+   "A finance team that wants vendor bills and payments in the books"
+  ],
+  "faq": [
+   {
+    "q": "Is there an approval chain?",
+    "a": "Yes. Requisitions go to the department manager and, above a cost threshold, to a procurement review before they proceed."
+   },
+   {
+    "q": "Does it track software subscriptions?",
+    "a": "Yes, with vendor and renewal dates. It records them; it does not measure seat usage."
+   },
+   {
+    "q": "Can employees claim expenses?",
+    "a": "Yes. Claims are reviewed by approvers and visible to Finance for reimbursement."
+   },
+   {
+    "q": "Do we have to buy every product?",
+    "a": "No. During setup you choose which products your company uses, and your plan decides what is unlocked. You can start with the products you need today and switch on more as you grow."
+   }
+  ],
+  "audience": "Procurement and finance officers, IT and asset administrators, department heads who request purchases, and employees who file expense claims."
  },
  {
   "id": "tms-academy",
@@ -589,7 +1495,183 @@
     "badge": "Placements",
     "mockupType": "tms-placement"
    }
-  ]
+  ],
+  "shortName": "Training",
+  "valueLine": "Programs, batches, students, certificates and placements",
+  "pitch": "Run a training or internship business from application to certificate, with payments, mentors and placement records in one system.",
+  "overview": "Training manages the whole student journey. Applications arrive and are reviewed, students enrol in programs and batches, classes and assignments are scheduled, mentors guide live projects, and certificates are issued at the end.\n\nCertificates carry a verification code that anyone can check on a public page, placements are recorded with the company, role and package, and fees are tracked per student.",
+  "outcome": "One record per student from enquiry to certificate, with honest placement and revenue numbers behind your training pitch.",
+  "facts": [
+   {
+    "label": "Certificates",
+    "value": "Publicly verifiable"
+   },
+   {
+    "label": "Student self-service",
+    "value": "Schedule · Assignments · Certificates"
+   },
+   {
+    "label": "Placements",
+    "value": "Company, role, package"
+   }
+  ],
+  "features": [
+   {
+    "title": "Programs and batches",
+    "description": "Define programs, create batches and view a batch calendar.",
+    "icon": "GraduationCap"
+   },
+   {
+    "title": "Applications board",
+    "description": "Review applications on a board and convert approved applicants into students.",
+    "icon": "Kanban"
+   },
+   {
+    "title": "Students",
+    "description": "A profile for each student with program, batch, payments and progress.",
+    "icon": "Users"
+   },
+   {
+    "title": "Classes and assignments",
+    "description": "Schedule classes, set assignments and track submissions.",
+    "icon": "Calendar"
+   },
+   {
+    "title": "Live projects and mentors",
+    "description": "Assign mentors and review student projects.",
+    "icon": "Code"
+   },
+   {
+    "title": "Placements",
+    "description": "Record where students are placed, with company, role and package.",
+    "icon": "Briefcase"
+   },
+   {
+    "title": "Certificates",
+    "description": "Issue certificates with a verification code and revoke them if needed.",
+    "icon": "Award"
+   },
+   {
+    "title": "Payments and reports",
+    "description": "Track fees per student and review reports.",
+    "icon": "Wallet"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "No AI of its own",
+    "description": "Training has no built-in AI features today. Around it, automations and AI Intelligence work on company data, and the Online Tests product assesses students.",
+    "icon": "Sparkles"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "One journey, one record",
+    "description": "From application to certificate, nothing is rebuilt per batch."
+   },
+   {
+    "title": "Verifiable credentials",
+    "description": "Employers can check a certificate on a public page."
+   },
+   {
+    "title": "Honest placement numbers",
+    "description": "Placements are recorded individually, so reports reflect what happened."
+   },
+   {
+    "title": "Revenue clarity",
+    "description": "Fees tracked per student feed Finance as training revenue."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Open a new batch",
+    "description": "Create the batch, schedule classes and enrol approved students.",
+    "icon": "Calendar"
+   },
+   {
+    "title": "Mentor a live project",
+    "description": "Assign a mentor, set the project and review the work.",
+    "icon": "Code"
+   },
+   {
+    "title": "Issue certificates",
+    "description": "Issue certificates at the end of a program, each with its own verification link.",
+    "icon": "Award"
+   },
+   {
+    "title": "Report on placements",
+    "description": "Review how many students were placed, where and at what package.",
+    "icon": "TrendingUp"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Application to student",
+    "description": "Intake without re-typing.",
+    "steps": [
+     "An applicant submits an application",
+     "Staff review it on the applications board",
+     "An approved applicant becomes a student in a batch",
+     "The person follows their progress in the portal"
+    ]
+   },
+   {
+    "title": "Completion to verified certificate",
+    "description": "Credentials you can check.",
+    "steps": [
+     "Training completes",
+     "A certificate is issued with a verification code",
+     "Anyone can verify it on the public verification page",
+     "A certificate can be revoked with a reason"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "Client Portal",
+    "description": "Students see their program, batch, schedule, assignments, certificates and payments.",
+    "href": "/products/external-portal"
+   },
+   {
+    "name": "Online Tests",
+    "description": "Assign course, chapter, mock and final exams to students and batches.",
+    "href": "/products/ots-exam-engine"
+   },
+   {
+    "name": "Finance",
+    "description": "Training payments appear as training revenue.",
+    "href": "/products/fms-finance"
+   },
+   {
+    "name": "CRM & Sales",
+    "description": "Trainee and intern leads follow the training journey.",
+    "href": "/products/lms-sales-crm"
+   }
+  ],
+  "scenarios": [
+   "A company running paid training programs",
+   "An internship program with live projects",
+   "A placement cell reporting outcomes"
+  ],
+  "faq": [
+   {
+    "q": "Can employers verify a certificate?",
+    "a": "Yes. Each certificate has a verification code that can be checked on a public page."
+   },
+   {
+    "q": "Can students see their own progress?",
+    "a": "Yes, through their own sign-in, separate from staff accounts."
+   },
+   {
+    "q": "Does it take payments?",
+    "a": "It tracks payments and fees for each student, and they flow into Finance as training revenue."
+   },
+   {
+    "q": "Do we have to buy every product?",
+    "a": "No. During setup you choose which products your company uses, and your plan decides what is unlocked. You can start with the products you need today and switch on more as you grow."
+   }
+  ],
+  "audience": "Training directors, mentors, counsellors, placement cells and the students and interns themselves."
  },
  {
   "id": "messenger-yashchat",
@@ -677,7 +1759,176 @@
     "badge": "AI Helper",
     "mockupType": "chat-ai-summary"
    }
-  ]
+  ],
+  "shortName": "Team Chat",
+  "valueLine": "Team messaging tied to your projects and people",
+  "pitch": "Direct messages, channels, groups, announcements and meetings, connected to the same people and projects as the rest of your company software.",
+  "overview": "Team Chat keeps conversation next to the work. People message each other directly or in groups, join channels, follow project channels that reflect the real project team, and read announcements aimed at the audience you choose.\n\nMeetings and calls, file sharing, search and presence are built in, and notifications from the rest of the platform use the same notification feed.",
+  "outcome": "Conversation stays attached to your real people and projects, with no separate chat subscription to run and no separate directory to maintain.",
+  "facts": [
+   {
+    "label": "Conversation types",
+    "value": "DM · Group · Channel · Project"
+   },
+   {
+    "label": "Meetings",
+    "value": "In-app rooms and calls"
+   },
+   {
+    "label": "Announcements",
+    "value": "Targeted audiences"
+   }
+  ],
+  "features": [
+   {
+    "title": "Direct messages and groups",
+    "description": "One-to-one and group conversations with files and search.",
+    "icon": "MessageSquare"
+   },
+   {
+    "title": "Channels",
+    "description": "Open and private channels for teams and topics.",
+    "icon": "Users"
+   },
+   {
+    "title": "Project channels",
+    "description": "Channels linked to projects, with membership that can mirror the real project team.",
+    "icon": "Kanban"
+   },
+   {
+    "title": "Announcements",
+    "description": "Publish announcements to a chosen audience, with edit and reach controls.",
+    "icon": "Megaphone"
+   },
+   {
+    "title": "Meetings and calls",
+    "description": "Start a meeting room or a call from the app.",
+    "icon": "Video"
+   },
+   {
+    "title": "Files and search",
+    "description": "Share files and search across messages and files you can access.",
+    "icon": "Search"
+   },
+   {
+    "title": "Presence and notifications",
+    "description": "See who is around and receive alerts in the shared notification feed.",
+    "icon": "Bell"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "No AI of its own",
+    "description": "Team Chat has no built-in AI features today. The Workspace assistant and AI Intelligence are one click away for questions about company data.",
+    "icon": "Sparkles"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "Conversation in context",
+    "description": "Project channels and real identities keep discussion tied to the work."
+   },
+   {
+    "title": "No second directory",
+    "description": "People come from the company's user list, so there is nothing to sync."
+   },
+   {
+    "title": "Targeted announcements",
+    "description": "Reach the right audience rather than everyone."
+   },
+   {
+    "title": "One notification feed",
+    "description": "Alerts from the products sit in one place."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Project room",
+    "description": "A project team talks, shares files and keeps decisions together in the project's channel.",
+    "icon": "Kanban"
+   },
+   {
+    "title": "Company announcement",
+    "description": "HR announces a policy update to the right department.",
+    "icon": "Megaphone"
+   },
+   {
+    "title": "Quick huddle",
+    "description": "Two colleagues start a call without leaving the platform.",
+    "icon": "Video"
+   },
+   {
+    "title": "Find that file",
+    "description": "Search for a document someone shared weeks ago.",
+    "icon": "Search"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Announcement to the right people",
+    "description": "Targeted communication.",
+    "steps": [
+     "Compose the announcement and choose the audience",
+     "Publish it",
+     "Recipients get a notification and can read it in the Announcements page"
+    ]
+   },
+   {
+    "title": "Project to channel",
+    "description": "Context for every project.",
+    "steps": [
+     "A project exists in Projects",
+     "A project channel is linked to it",
+     "Members see messages and files in one place"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "Projects",
+    "description": "Project-linked channels.",
+    "href": "/products/pms-project-command"
+   },
+   {
+    "name": "HR & Payroll",
+    "description": "People and departments come from the company's user list.",
+    "href": "/products/hrms-suite"
+   },
+   {
+    "name": "Workspace",
+    "description": "Notifications share one feed with the other products.",
+    "href": "/products/staff-hub"
+   },
+   {
+    "name": "SOPs & Policies",
+    "description": "SOP notifications reuse the same notification system.",
+    "href": "/products/sop-policies"
+   }
+  ],
+  "scenarios": [
+   "A delivery team that wants chat beside the project",
+   "A company that wants announcements targeted by audience",
+   "Teams that want meetings inside their own software"
+  ],
+  "faq": [
+   {
+    "q": "Can we message across departments?",
+    "a": "Yes. People can message each other directly, in groups and in channels they can access."
+   },
+   {
+    "q": "Can we run meetings?",
+    "a": "Yes. Meeting rooms and calls are built in."
+   },
+   {
+    "q": "Is there AI in chat?",
+    "a": "Not today. AI is provided by the Workspace assistant and AI Intelligence."
+   },
+   {
+    "q": "Is our data kept separate from other companies?",
+    "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
+   }
+  ],
+  "audience": "Every employee, project leads and managers, and anyone who needs to reach the whole company or one audience quickly."
  },
  {
   "id": "lms-sales-crm",
@@ -765,7 +2016,196 @@
     "badge": "AI Agent",
     "mockupType": "lms-ai-agent"
    }
-  ]
+  ],
+  "shortName": "CRM & Sales",
+  "valueLine": "Capture every enquiry and move it from first contact to won",
+  "pitch": "A CRM that captures every enquiry from your website and campaigns, follows each person through the right journey, and gives you a website assistant that answers visitors around the clock.",
+  "overview": "CRM & Sales turns every form, chat and campaign click into a tracked record. Leads follow a lifecycle that matches who they are, whether a client, a job applicant, an intern or a trainee, and each stage can be shown back to the person in their portal.\n\nCampaign analytics connect your marketing to the leads it produces, festival offers and a referral wallet help you run promotions, and an AI website assistant answers visitors from the knowledge base you control, by text or voice.",
+  "outcome": "No enquiry sits in an inbox, sales can see where every lead stands, and marketing can see which campaigns produce leads.",
+  "facts": [
+   {
+    "label": "Lead journeys",
+    "value": "Client · Applicant · Intern · Trainee"
+   },
+   {
+    "label": "Website assistant",
+    "value": "Text and voice"
+   },
+   {
+    "label": "Lead sources",
+    "value": "Forms · Chat · Campaigns · Offers"
+   }
+  ],
+  "features": [
+   {
+    "title": "Lead capture",
+    "description": "Website forms, chat, careers applications and offers feed one lead inbox with the source and campaign recorded.",
+    "icon": "Filter"
+   },
+   {
+    "title": "Journeys by lead type",
+    "description": "Clients, job applicants, interns and trainees each follow their own stages, from first enquiry to a closed or won outcome.",
+    "icon": "Route"
+   },
+   {
+    "title": "Dashboards",
+    "description": "Status and category charts, a conversion funnel, saved filters, global search and exports.",
+    "icon": "BarChart3"
+   },
+   {
+    "title": "Campaigns",
+    "description": "Import ad-platform data and see which campaigns produce which leads.",
+    "icon": "Megaphone"
+   },
+   {
+    "title": "Offers and coupons",
+    "description": "Run festival offers and coupons, track subscribers and claims and read offer analytics.",
+    "icon": "Gift"
+   },
+   {
+    "title": "Wallet and referrals",
+    "description": "A credits wallet with referral rules and campaigns that customers can spend on offers and other services.",
+    "icon": "Coins"
+   },
+   {
+    "title": "Careers pipeline",
+    "description": "Job applicants arrive here and flow on to recruitment in HR.",
+    "icon": "UserPlus"
+   },
+   {
+    "title": "Website assistant console",
+    "description": "Configure the assistant, manage its knowledge base and review text and voice conversations.",
+    "icon": "Bot"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "Website AI assistant",
+    "description": "Visitors ask questions and get answers drawn from the knowledge base you manage, including your website content. Conversations are logged for your team.",
+    "icon": "Bot"
+   },
+   {
+    "title": "Voice mode",
+    "description": "Where voice is enabled and configured, visitors can speak to the assistant, with transcription and spoken replies.",
+    "icon": "Mic"
+   },
+   {
+    "title": "Ask about leads",
+    "description": "With AI Intelligence, ask about leads by status, source or period and get a table or chart.",
+    "icon": "BrainCircuit"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "No lead left behind",
+    "description": "Every inquiry becomes a record with an owner and a stage."
+   },
+   {
+    "title": "Right journey for each person",
+    "description": "A client, an applicant and a trainee are not forced through the same pipeline."
+   },
+   {
+    "title": "Marketing you can measure",
+    "description": "Campaign data and lead sources sit in the same place."
+   },
+   {
+    "title": "Always-on first response",
+    "description": "The website assistant answers common questions when no one is available."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Inbound enquiry to proposal",
+    "description": "A website form creates a client lead; sales moves it from requirement discussion to proposal and negotiation.",
+    "icon": "Handshake"
+   },
+   {
+    "title": "Campaign review",
+    "description": "Marketing compares ad data with the leads each campaign produced.",
+    "icon": "TrendingUp"
+   },
+   {
+    "title": "Seasonal offers",
+    "description": "Run a festival offer with coupons and watch claims and subscribers.",
+    "icon": "Gift"
+   },
+   {
+    "title": "Keep the assistant current",
+    "description": "Update the assistant's knowledge base when services or pricing change.",
+    "icon": "Database"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "New lead to notified sales",
+    "description": "Speed to first contact.",
+    "steps": [
+     "A visitor submits a form; a lead is created",
+     "A lead.created event fires",
+     "An automation notifies the sales role, or emails a named person",
+     "The lead appears in the inbox with its source and campaign"
+    ]
+   },
+   {
+    "title": "Won lead to client",
+    "description": "Hand-off to delivery.",
+    "steps": [
+     "The lead reaches a won stage",
+     "Staff link the lead to the client and project it becomes in Projects",
+     "The person sees their stage in the Client Portal"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "Projects",
+    "description": "A lead links to the client and project it becomes.",
+    "href": "/products/pms-project-command"
+   },
+   {
+    "name": "Client Portal",
+    "description": "Each stage can be shown to the person in their portal.",
+    "href": "/products/external-portal"
+   },
+   {
+    "name": "HR & Payroll",
+    "description": "Careers applicants flow into recruitment.",
+    "href": "/products/hrms-suite"
+   },
+   {
+    "name": "Workspace automations",
+    "description": "Lead events trigger notifications, emails and webhooks.",
+    "href": "/products/staff-hub"
+   },
+   {
+    "name": "ElevenLabs",
+    "description": "Powers voice transcription and spoken replies when voice mode is enabled."
+   }
+  ],
+  "scenarios": [
+   "A services company handling website enquiries",
+   "A training business tracking applicants and trainees",
+   "A marketing team tying campaigns to leads"
+  ],
+  "faq": [
+   {
+    "q": "Does the assistant make things up?",
+    "a": "It answers from the knowledge base and website content you manage, with source references where available. You control that content and can review every conversation."
+   },
+   {
+    "q": "Is voice always on?",
+    "a": "No. Voice mode must be enabled in the assistant's settings and configured before visitors see it."
+   },
+   {
+    "q": "Is this a full sales pipeline board?",
+    "a": "Leads move through stages that suit their type, with dashboards and a conversion funnel. Deal values can be recorded to measure return on campaigns."
+   },
+   {
+    "q": "Is our data kept separate from other companies?",
+    "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
+   }
+  ],
+  "audience": "Business development and sales teams, marketing teams, recruiters and training counsellors who need every enquiry tracked."
  },
  {
   "id": "external-portal",
@@ -850,7 +2290,182 @@
     "badge": "Self-Service",
     "mockupType": "portal-applicant"
    }
-  ]
+  ],
+  "shortName": "Client Portal",
+  "valueLine": "A separate, secure portal for clients, applicants and students",
+  "pitch": "Give clients, job applicants, interns and trainees a self-service window into their own progress without giving them access to your internal systems.",
+  "overview": "The Client Portal is a separate sign-in for the people outside your company. Clients see their projects, milestones, documents, meetings and invoices. Applicants follow their application and interviews. Students see their program, schedule, assignments, tests and certificates.\n\nIt uses its own identity store, structurally separate from staff accounts, so an external account cannot reach internal tools.",
+  "outcome": "Fewer status emails and calls, and a clean security boundary between your team and everyone else.",
+  "facts": [
+   {
+    "label": "Identity store",
+    "value": "Separate from staff"
+   },
+   {
+    "label": "Audiences",
+    "value": "Clients · Applicants · Students"
+   },
+   {
+    "label": "Sign-up",
+    "value": "Self-registration or invite"
+   }
+  ],
+  "features": [
+   {
+    "title": "Client view",
+    "description": "Projects, milestones, documents, meetings, invoices and messages.",
+    "icon": "Building2"
+   },
+   {
+    "title": "Applicant view",
+    "description": "Application status, interviews and the application journey.",
+    "icon": "UserCheck"
+   },
+   {
+    "title": "Student view",
+    "description": "Program, schedule, assignments, attendance, tests and results, and certificates.",
+    "icon": "GraduationCap"
+   },
+   {
+    "title": "Invoices and payments",
+    "description": "Clients view and download invoices and see payment status.",
+    "icon": "ReceiptText"
+   },
+   {
+    "title": "Tests and exams",
+    "description": "Applicants and students take their assigned tests inside the portal.",
+    "icon": "ClipboardList"
+   },
+   {
+    "title": "Rewards and referrals",
+    "description": "Credits wallet, referral code and rewards tasks where the company has them enabled.",
+    "icon": "Gift"
+   },
+   {
+    "title": "Journey timeline",
+    "description": "Shows the stage the person has reached, in friendly wording.",
+    "icon": "Route"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "No AI of its own",
+    "description": "The portal has no built-in AI features. The website assistant and automations of the wider suite apply before and around it.",
+    "icon": "Sparkles"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "Fewer 'what's my status?' messages",
+    "description": "People can see where things stand themselves."
+   },
+   {
+    "title": "A real security boundary",
+    "description": "External accounts live in a separate store, so they cannot reach internal tools."
+   },
+   {
+    "title": "A professional experience",
+    "description": "Clients and candidates get a branded, consistent view."
+   },
+   {
+    "title": "One source of truth",
+    "description": "The portal reads the same projects, invoices and training records your team uses."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Client project updates",
+    "description": "A client checks milestones and documents without emailing the project manager.",
+    "icon": "Layers"
+   },
+   {
+    "title": "Invoice self-service",
+    "description": "A client downloads an invoice and checks whether it is paid.",
+    "icon": "ReceiptText"
+   },
+   {
+    "title": "Applicant tracking",
+    "description": "A candidate sees that their application moved to interview.",
+    "icon": "UserCheck"
+   },
+   {
+    "title": "Student learning space",
+    "description": "A student checks tomorrow's schedule and submits an assignment.",
+    "icon": "Calendar"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Lead to portal account",
+    "description": "People get access when they become part of your pipeline.",
+    "steps": [
+     "A visitor submits a lead form",
+     "The person is signed in to their own portal",
+     "A first-time user is given a temporary password to change",
+     "Their stage updates as staff move the lead forward"
+    ]
+   },
+   {
+    "title": "Invoice to client view",
+    "description": "Billing transparency.",
+    "steps": [
+     "Finance issues an invoice for the client",
+     "The client sees it in the portal",
+     "They download the PDF and see when it is paid"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "Projects",
+    "description": "Clients see their projects and milestones.",
+    "href": "/products/pms-project-command"
+   },
+   {
+    "name": "Finance",
+    "description": "Clients see and download their invoices.",
+    "href": "/products/fms-finance"
+   },
+   {
+    "name": "Training",
+    "description": "Students see programs, schedules and certificates.",
+    "href": "/products/tms-academy"
+   },
+   {
+    "name": "Online Tests",
+    "description": "Assigned tests are taken in the portal.",
+    "href": "/products/ots-exam-engine"
+   },
+   {
+    "name": "CRM & Sales",
+    "description": "The lead journey is shown to the person.",
+    "href": "/products/lms-sales-crm"
+   }
+  ],
+  "scenarios": [
+   "A services firm that wants clients to self-serve status",
+   "A recruiter that wants applicants to track their own progress",
+   "A training business that gives students a learning space"
+  ],
+  "faq": [
+   {
+    "q": "Can a client reach our internal tools?",
+    "a": "No. The portal's identity store is separate from the internal one by design."
+   },
+   {
+    "q": "How do people get an account?",
+    "a": "They can register, or be signed in when they submit a form, with a temporary password for first-time accounts."
+   },
+   {
+    "q": "Who sees what?",
+    "a": "Each person sees only records linked to them: a client's projects and invoices, an applicant's application, a student's program."
+   },
+   {
+    "q": "Is our data kept separate from other companies?",
+    "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
+   }
+  ],
+  "audience": "Your clients, job applicants, interns and students, and the client services, recruitment and training teams that serve them."
  },
  {
   "id": "seo-panel",
@@ -942,7 +2557,171 @@
     "badge": "Meta Editor",
     "mockupType": "seo-editor"
    }
-  ]
+  ],
+  "shortName": "SEO",
+  "valueLine": "Audit your site, fix issues and publish metadata without a deploy",
+  "pitch": "One place to manage search visibility: automated audits, rankings, keywords, structured data and instant, no-deploy updates to what search engines see.",
+  "overview": "SEO audits your website against more than 50 technical, on-page, content, link, mobile, performance and structured-data checks, explains each finding and verifies fixes on the next audit.\n\nIt also controls what the site publishes. Page titles, descriptions, canonicals, robots directives, social tags, the sitemap, robots.txt and JSON-LD edited here go live without a code deploy, and risky changes are validated first.",
+  "outcome": "Search problems are found and fixed in one tool, and marketers can publish metadata themselves.",
+  "facts": [
+   {
+    "label": "Automated checks",
+    "value": "50+"
+   },
+   {
+    "label": "Metadata changes",
+    "value": "Live, no deploy"
+   },
+   {
+    "label": "Data trust labels",
+    "value": "Verified vs estimated"
+   }
+  ],
+  "features": [
+   {
+    "title": "Site audits",
+    "description": "Crawl the site and score it against 50+ checks, with a recommendation for each finding.",
+    "icon": "Search"
+   },
+   {
+    "title": "Issues and tasks",
+    "description": "Turn findings into tasks, assign them and watch the next audit confirm the fix.",
+    "icon": "ClipboardList"
+   },
+   {
+    "title": "Page-level control",
+    "description": "Edit titles, descriptions, canonicals, robots and social tags per page.",
+    "icon": "FileText"
+   },
+   {
+    "title": "Sitemap and robots.txt",
+    "description": "Manage sitemap inclusion and robots directives, validated before publishing.",
+    "icon": "Map"
+   },
+   {
+    "title": "Structured data",
+    "description": "Create and validate JSON-LD for your pages.",
+    "icon": "Braces"
+   },
+   {
+    "title": "Keywords, rankings and competitors",
+    "description": "Track keywords, rankings, backlinks and competitors.",
+    "icon": "TrendingUp"
+   },
+   {
+    "title": "Honest data labels",
+    "description": "Search Console, Analytics and our own crawl are verified; keyword-tool and competitor figures are labelled estimated.",
+    "icon": "BadgeCheck"
+   },
+   {
+    "title": "Audit-logged changes",
+    "description": "Each change keeps a before and after diff.",
+    "icon": "FileSearch"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "No AI of its own",
+    "description": "SEO has no built-in AI features. Its checks and recommendations are rule-based, and you can use AI Assistants or Social Media for drafting.",
+    "icon": "Sparkles"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "No waiting for a developer",
+    "description": "Metadata, sitemap and robots changes go live without a release."
+   },
+   {
+    "title": "Guard-railed",
+    "description": "robots.txt and schema are validated before they can be published."
+   },
+   {
+    "title": "Trustworthy numbers",
+    "description": "Every figure carries a trust label, so nothing looks more certain than it is."
+   },
+   {
+    "title": "Closed loop",
+    "description": "Fixes are verified by the next audit."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Fix a technical issue",
+    "description": "An SEO specialist sees a missing canonical, assigns the task and verifies it on the next audit.",
+    "icon": "Wrench"
+   },
+   {
+    "title": "Update a title",
+    "description": "A marketer changes a page title and description and publishes it immediately.",
+    "icon": "FileText"
+   },
+   {
+    "title": "Control the sitemap",
+    "description": "Exclude a page from the sitemap with a recorded change.",
+    "icon": "Map"
+   },
+   {
+    "title": "Add structured data",
+    "description": "Create and validate JSON-LD for a service page.",
+    "icon": "Braces"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Audit to fix",
+    "description": "A repeatable loop.",
+    "steps": [
+     "Run an audit; findings appear with recommendations",
+     "Turn a finding into a task",
+     "Apply the fix on the page or setting",
+     "The next audit verifies it automatically"
+    ]
+   },
+   {
+    "title": "Edit to live",
+    "description": "Metadata without a deploy.",
+    "steps": [
+     "Edit a page's SEO fields",
+     "Validation checks robots and schema changes",
+     "The change goes live on the site and is logged with a diff"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "Website & CMS",
+    "description": "The public site reads page metadata, sitemap, robots.txt and JSON-LD from here.",
+    "href": "/products/cms-website"
+   },
+   {
+    "name": "Google Search Console and Analytics",
+    "description": "Verified data sources when connected."
+   }
+  ],
+  "scenarios": [
+   "A marketing team that wants to ship metadata changes itself",
+   "A site with technical SEO issues to track to closure",
+   "An SEO lead reporting with clearly labelled data"
+  ],
+  "faq": [
+   {
+    "q": "Do changes need a developer?",
+    "a": "No. Page metadata, sitemap inclusion, robots.txt and structured data edited here are published without a code deploy."
+   },
+   {
+    "q": "Are keyword numbers exact?",
+    "a": "No. Search Console, Analytics and our crawl are verified. Keyword-tool and competitor figures are labelled estimated."
+   },
+   {
+    "q": "Does this manage campaigns?",
+    "a": "No. It is SEO only; campaigns and leads stay in CRM & Sales."
+   },
+   {
+    "q": "Do we have to buy every product?",
+    "a": "No. During setup you choose which products your company uses, and your plan decides what is unlocked. You can start with the products you need today and switch on more as you grow."
+   }
+  ],
+  "audience": "SEO specialists, content strategists, growth leads and web teams."
  },
  {
   "id": "dlms-digilocker",
@@ -1028,7 +2807,166 @@
     "badge": "Expiry Alerts",
     "mockupType": "dlms-expiry"
    }
-  ]
+  ],
+  "shortName": "Digi Locker",
+  "valueLine": "A secure vault for credentials, documents and expiries",
+  "pitch": "Stop sharing logins in chat. Keep company and client credentials, documents and renewal dates in one encrypted vault with a record of every reveal.",
+  "overview": "Digi Locker holds the logins, documents, URLs, accounts and notes that belong either to your company (the Company Vault) or to one specific client. Passwords are encrypted at rest, masked by default and shown or copied only by people with the reveal permission, and each reveal is logged.\n\nA daily expiry sweep flags expired and soon-to-expire credentials, domains, hosting, certificates and licences to the managers who need to renew them. Employees see only the clients, and optionally the company vault, they are assigned to.",
+  "outcome": "Secrets are shared deliberately rather than pasted into chats, and nothing expires unnoticed.",
+  "facts": [
+   {
+    "label": "Passwords",
+    "value": "Encrypted at rest"
+   },
+   {
+    "label": "Reveals",
+    "value": "Permissioned and logged"
+   },
+   {
+    "label": "Expiry checks",
+    "value": "Daily sweep"
+   }
+  ],
+  "features": [
+   {
+    "title": "Company vault and client vaults",
+    "description": "Every record belongs to the company or to exactly one client.",
+    "icon": "Archive"
+   },
+   {
+    "title": "Credentials",
+    "description": "Store logins with masked passwords, revealed or copied only by people with permission.",
+    "icon": "KeyRound"
+   },
+   {
+    "title": "Documents",
+    "description": "Private, versioned documents served only after a permission check.",
+    "icon": "FileText"
+   },
+   {
+    "title": "URLs, accounts and notes",
+    "description": "Keep related links, accounts and notes with the client or company profile.",
+    "icon": "Link2"
+   },
+   {
+    "title": "Expiry tracking",
+    "description": "Track expiry for domains, hosting, certificates and licences, with alerts.",
+    "icon": "CalendarClock"
+   },
+   {
+    "title": "Assignment-based access",
+    "description": "Employees see only the clients, and optionally the company vault, they are assigned to.",
+    "icon": "Users"
+   },
+   {
+    "title": "Audit log",
+    "description": "Records who revealed, created, changed or opened what.",
+    "icon": "FileSearch"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "No AI of its own",
+    "description": "Digi Locker has no built-in AI features. Secrets never appear in logs, notifications or list views.",
+    "icon": "Sparkles"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "Secrets handled deliberately",
+    "description": "Reveals need a permission and leave a log entry."
+   },
+   {
+    "title": "No surprise expiries",
+    "description": "A daily sweep flags what is about to expire."
+   },
+   {
+    "title": "One profile per client",
+    "description": "Credentials, URLs, documents and notes sit on the existing client record."
+   },
+   {
+    "title": "Least privilege",
+    "description": "People see only their assigned clients."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Hand over a project",
+    "description": "Give the delivery team the client's credentials through assignment instead of a chat message.",
+    "icon": "Handshake"
+   },
+   {
+    "title": "Renewal calendar",
+    "description": "A manager reviews domains and certificates expiring this month.",
+    "icon": "CalendarClock"
+   },
+   {
+    "title": "Agreements and KYC",
+    "description": "Store agreements and identity documents privately with permission checks.",
+    "icon": "FileCheck"
+   },
+   {
+    "title": "Access review",
+    "description": "Check who revealed a production credential and when.",
+    "icon": "FileSearch"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Expiry sweep",
+    "description": "Renewals without reminders in a calendar.",
+    "steps": [
+     "Each day a job checks expiry dates across records",
+     "Expired and soon-to-expire items are flagged",
+     "Managers are notified so they can renew"
+    ]
+   },
+   {
+    "title": "Controlled reveal",
+    "description": "Secrets stay masked.",
+    "steps": [
+     "A person opens a credential, which shows masked",
+     "With the reveal permission they reveal or copy it",
+     "The reveal is written to the audit log"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "Projects",
+    "description": "Client profiles are built on the Projects client master, so nothing is duplicated.",
+    "href": "/products/pms-project-command"
+   },
+   {
+    "name": "Workspace",
+    "description": "Notifications and roles follow the platform's single sign-in.",
+    "href": "/products/staff-hub"
+   }
+  ],
+  "scenarios": [
+   "An agency that holds client logins and hosting accounts",
+   "An IT team tracking certificates and domains",
+   "A company that wants audited access to shared credentials"
+  ],
+  "faq": [
+   {
+    "q": "Who can see a password?",
+    "a": "Only people with the reveal permission, and each reveal is logged. Secrets never appear in logs, notifications or list views."
+   },
+   {
+    "q": "Can staff see every client's vault?",
+    "a": "No. Employees see only the clients they are assigned to; managers and administrators see everything."
+   },
+   {
+    "q": "Are documents public?",
+    "a": "No. Documents are private and are served only after a permission check."
+   },
+   {
+    "q": "Is our data kept separate from other companies?",
+    "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
+   }
+  ],
+  "audience": "IT administrators, account managers and security officers who hold credentials and documents on behalf of the company and its clients."
  },
  {
   "id": "aibots-studio",
@@ -1138,7 +3076,176 @@
     "badge": "AI Analytics",
     "mockupType": "aibots-analytics"
    }
-  ]
+  ],
+  "shortName": "AI Assistants",
+  "valueLine": "Build assistants that answer from your own documents",
+  "pitch": "Create purpose-built AI assistants for your team, give each its own private knowledge base, and control exactly who can use them.",
+  "overview": "AI Assistants captures a prompt setup once so everyone gets consistent, grounded answers. A bot is configuration, not code: write its instructions, choose its model, upload its knowledge files, decide who can use it, and it appears in their sidebar.\n\nEach bot's knowledge lives in its own private vector store that only that bot searches. Chats keep their own conversation context, and a usage ledger records executions, tokens, estimated cost and failures.",
+  "outcome": "Staff stop re-pasting company context into a general chatbot, and managers can see what the assistants are used for and what they cost.",
+  "facts": [
+   {
+    "label": "Knowledge base",
+    "value": "Private per bot"
+   },
+   {
+    "label": "Access control",
+    "value": "Role + person"
+   },
+   {
+    "label": "Usage ledger",
+    "value": "Tokens & cost"
+   }
+  ],
+  "features": [
+   {
+    "title": "No-code bot factory",
+    "description": "Name a bot, write its instructions, pick a model and publish it to the people who need it.",
+    "icon": "Bot"
+   },
+   {
+    "title": "Private knowledge bases",
+    "description": "Upload PDF, Word, text, CSV and Excel files. Spreadsheets are converted so they can be searched, and each bot's files are indexed separately.",
+    "icon": "Database"
+   },
+   {
+    "title": "Role and person access",
+    "description": "Limit a sensitive assistant to specific people or roles, with manager oversight of all chats.",
+    "icon": "Lock"
+   },
+   {
+    "title": "Chat workspace",
+    "description": "Every bot has its own chat page and chat history.",
+    "icon": "MessageSquare"
+   },
+   {
+    "title": "Usage dashboard",
+    "description": "Chats, executions, token usage, estimated cost and failures at a glance.",
+    "icon": "BarChart3"
+   },
+   {
+    "title": "Audit log",
+    "description": "Every bot, file and chat change is recorded.",
+    "icon": "FileSearch"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "Retrieval from your files",
+    "description": "Answers draw on the passages found in the bot's own vector store, so replies are grounded in your documents.",
+    "icon": "BrainCircuit"
+   },
+   {
+    "title": "Instructions and model per bot",
+    "description": "Each bot has its own system instructions and OpenAI model, so a proposal writer and a policy assistant behave differently.",
+    "icon": "Sparkles"
+   },
+   {
+    "title": "Spend visibility",
+    "description": "Every execution is written to a usage ledger with tokens and an estimated cost, and AI usage counts toward the company's plan limit.",
+    "icon": "Gauge"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "Consistency",
+    "description": "Everyone gets the same grounded answer instead of their own prompt experiment."
+   },
+   {
+    "title": "Privacy by structure",
+    "description": "A bot searches only its own knowledge base, and the API key never leaves the server."
+   },
+   {
+    "title": "Cost control",
+    "description": "A ledger shows who used what, so spend is not a surprise."
+   },
+   {
+    "title": "Speed to launch",
+    "description": "A new assistant is configuration, so teams build their own without engineering work."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Proposal drafting",
+    "description": "Sales uploads past proposals and the service catalogue, then asks the bot for a first draft for a new client.",
+    "icon": "FileText"
+   },
+   {
+    "title": "Policy answers",
+    "description": "HR uploads handbook files so staff can ask about leave or conduct and get answers from the real policy.",
+    "icon": "BookOpen"
+   },
+   {
+    "title": "Requirement analysis",
+    "description": "A business analyst feeds in specification files and asks for gaps and questions to raise with the client.",
+    "icon": "ClipboardList"
+   },
+   {
+    "title": "Meeting follow-ups",
+    "description": "A team uses a bot configured to turn rough meeting notes into action lists.",
+    "icon": "Calendar"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Launch an assistant",
+    "description": "From idea to available in the sidebar.",
+    "steps": [
+     "Create the bot with instructions and a model",
+     "Upload knowledge files; each is processed into the bot's vector store",
+     "Choose which roles and people can use it",
+     "It appears in their sidebar and chats can start"
+    ]
+   },
+   {
+    "title": "Keep the knowledge current",
+    "description": "Replace documents without rebuilding the bot.",
+    "steps": [
+     "Upload the new version of a file",
+     "Processing status updates until it is ready",
+     "Disable or remove outdated files so they are no longer searched"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "Workspace",
+    "description": "AI usage is metered per company and can be capped by plan.",
+    "href": "/products/staff-hub"
+   },
+   {
+    "name": "AI Intelligence",
+    "description": "For questions about live records such as projects and invoices, use AI Intelligence; assistants answer from documents.",
+    "href": "/products/ai-intelligence"
+   },
+   {
+    "name": "OpenAI",
+    "description": "Responses, Conversations and vector stores power the assistants."
+   }
+  ],
+  "scenarios": [
+   "A sales team that writes proposals from past wins",
+   "An HR team answering repeated policy questions",
+   "A delivery team that wants a specification reviewer"
+  ],
+  "faq": [
+   {
+    "q": "Where do our documents go?",
+    "a": "Each file is stored in a vector store that belongs to one bot and is searched only by that bot. The application keeps metadata, such as file records and chat pointers."
+   },
+   {
+    "q": "Can we limit who uses a bot?",
+    "a": "Yes, by role or by person, and managers can review chats."
+   },
+   {
+    "q": "Which models can a bot use?",
+    "a": "A bot is configured with an OpenAI model chosen when you create or edit it."
+   },
+   {
+    "q": "Does it answer questions about live business data?",
+    "a": "AI Assistants answer from the documents you upload. For live records, use AI Intelligence."
+   }
+  ],
+  "audience": "AI-minded teams in sales, support, HR, business analysis and engineering who want assistants grounded in their own documents."
  },
  {
   "id": "smms-social-engine",
@@ -1233,7 +3340,195 @@
     "badge": "Reels Studio",
     "mockupType": "smms-reels"
    }
-  ]
+  ],
+  "shortName": "Social Media",
+  "valueLine": "AI-assisted campaigns, posts and ads with human approval",
+  "pitch": "Turn a campaign brief into strategy, platform-specific posts, ad copy and video scripts with AI, then approve, schedule and publish with a person always in control.",
+  "overview": "Social Media is a workspace for campaigns, ads and posts across Instagram, Facebook, YouTube, LinkedIn, Google Ads and Google Business Profile. The work follows one flow: create, generate with AI, edit, preview, schedule, publish, and review analytics.\n\nThe AI writes from one central brand context, using company details, the service catalogue, live offers and clients read from the products that own them. Every AI output and every edit is saved as a version you can restore, and nothing is published without a person.",
+  "outcome": "Content that took hours per platform is drafted in minutes, and nothing goes live without sign-off.",
+  "facts": [
+   {
+    "label": "Platforms",
+    "value": "6"
+   },
+   {
+    "label": "Publishing",
+    "value": "Human-approved"
+   },
+   {
+    "label": "AI outputs",
+    "value": "Versioned and restorable"
+   }
+  ],
+  "features": [
+   {
+    "title": "Campaigns",
+    "description": "A brief becomes a strategy with audiences, keywords, hashtags and ad concepts per platform.",
+    "icon": "Megaphone"
+   },
+   {
+    "title": "Posts per platform",
+    "description": "One idea becomes a separate, within-limits version for each selected platform.",
+    "icon": "Share2"
+   },
+   {
+    "title": "Ads and creatives",
+    "description": "Ad copy variations, image concepts and video scripts with hooks, scenes and thumbnails.",
+    "icon": "ImageIcon"
+   },
+   {
+    "title": "Media library",
+    "description": "A private library of images and videos, with uploads straight from the browser.",
+    "icon": "Camera"
+   },
+   {
+    "title": "Scheduling and approval",
+    "description": "Schedules need an approval from someone with publish permission, and editing withdraws it.",
+    "icon": "CalendarClock"
+   },
+   {
+    "title": "Publishing",
+    "description": "Publish through a connected Meta, Google or LinkedIn account, or mark as published after posting natively.",
+    "icon": "Send"
+   },
+   {
+    "title": "Analytics",
+    "description": "Organic post performance per platform, with campaigns linked to your imported ad data in CRM & Sales.",
+    "icon": "BarChart3"
+   },
+   {
+    "title": "Versions and activity",
+    "description": "Every AI output and edit is versioned; an append-only activity log records the work.",
+    "icon": "GitBranch"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "Brief to campaign strategy",
+    "description": "OpenAI turns a campaign brief into positioning, key messages, a channel plan, audiences, keywords, hashtags and ad concepts.",
+    "icon": "BrainCircuit"
+   },
+   {
+    "title": "Platform-specific posts and ads",
+    "description": "One idea becomes a version for each platform within its limits, and ads can be adapted to another platform.",
+    "icon": "Share2"
+   },
+   {
+    "title": "Image and video creatives",
+    "description": "It writes image prompts, video hooks, scene-by-scene scripts and thumbnail concepts, and can generate the images themselves.",
+    "icon": "ImageIcon"
+   },
+   {
+    "title": "Refine and regenerate",
+    "description": "Ask for shorter, or lead with the offer, and keep or restore any earlier version.",
+    "icon": "RefreshCw"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "Speed",
+    "description": "Drafting for several platforms starts from one brief."
+   },
+   {
+    "title": "Brand consistency",
+    "description": "The AI writes from one central brand context read live from the owning products."
+   },
+   {
+    "title": "Control",
+    "description": "Nothing is published without a person, and paid ads are never launched or funded from the panel."
+   },
+   {
+    "title": "Reversible",
+    "description": "Every AI output and edit is a version you can restore."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Launch campaign",
+    "description": "A marketer enters a brief and gets a strategy, audiences and ad concepts to refine.",
+    "icon": "Rocket"
+   },
+   {
+    "title": "Offer announcement",
+    "description": "Turn a live festival offer into posts for each platform.",
+    "icon": "Megaphone"
+   },
+   {
+    "title": "Reel script",
+    "description": "Generate a scene-by-scene script and thumbnail concept for a short video.",
+    "icon": "Video"
+   },
+   {
+    "title": "Approval before going live",
+    "description": "A manager approves a scheduled post before it publishes.",
+    "icon": "ClipboardCheck"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Brief to published",
+    "description": "The whole flow.",
+    "steps": [
+     "Create a campaign or post from a brief",
+     "Generate with AI and edit the versions",
+     "Preview and schedule; someone with publish permission approves",
+     "Publish through a connected account or mark as published; track results"
+    ]
+   },
+   {
+    "title": "Edit withdraws approval",
+    "description": "A safety rule.",
+    "steps": [
+     "An approved post is edited",
+     "Its approval is withdrawn",
+     "It must be approved again before it can go out"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "CRM & Sales",
+    "description": "Campaigns link to imported ad-platform data; live offers feed the AI's brand context.",
+    "href": "/products/lms-sales-crm"
+   },
+   {
+    "name": "Projects",
+    "description": "Clients are read live as brand context.",
+    "href": "/products/pms-project-command"
+   },
+   {
+    "name": "Meta, Google and LinkedIn",
+    "description": "Connect accounts to publish from the panel."
+   },
+   {
+    "name": "OpenAI",
+    "description": "Text and image generation."
+   }
+  ],
+  "scenarios": [
+   "A marketing team producing content for several platforms",
+   "An agency drafting campaigns for clients",
+   "A brand that needs approval before anything goes live"
+  ],
+  "faq": [
+   {
+    "q": "Does the AI post by itself?",
+    "a": "No. A post goes out only through an explicit Publish or a schedule that someone with publish permission approved."
+   },
+   {
+    "q": "Does it run my ads?",
+    "a": "No. Paid ads are never launched or funded from the panel; ad spend and results come from the data you import in CRM & Sales."
+   },
+   {
+    "q": "Can I undo an AI draft?",
+    "a": "Yes. Every output and edit is a version you can view and restore."
+   },
+   {
+    "q": "Is AI usage limited?",
+    "a": "AI usage is metered against your company's plan."
+   }
+  ],
+  "audience": "Social media managers, growth marketers, content specialists and brand leads."
  },
  {
   "id": "ots-exam-engine",
@@ -1326,7 +3621,183 @@
     "badge": "Exam Sandbox",
     "mockupType": "ots-exam"
    }
-  ]
+  ],
+  "shortName": "Online Tests",
+  "valueLine": "One test engine for hiring, training and compliance exams",
+  "pitch": "Build, assign, take and mark tests for employees, applicants and students on one engine, with server-enforced timing and configurable exam security.",
+  "overview": "Online Tests replaces scattered quiz forms and spreadsheets. One reusable question bank supports 17 question types; tests are built step by step with sections, timers, scoring rules and certificates; and people are resolved live from HR, Careers and Training when you assign.\n\nTiming is enforced on the server, objective answers are marked automatically, and subjective answers go to an evaluation queue. Employees take tests in the Workspace, and applicants and students take theirs in the Client Portal, all on the same engine.",
+  "outcome": "Hiring screens, course exams and compliance checks share one question bank and one marking process, with results you can compare.",
+  "facts": [
+   {
+    "label": "Question types",
+    "value": "17"
+   },
+   {
+    "label": "Timing",
+    "value": "Server-enforced"
+   },
+   {
+    "label": "Certificates",
+    "value": "Publicly verifiable"
+   }
+  ],
+  "features": [
+   {
+    "title": "17 question types",
+    "description": "Choice, true or false, short and long answer, fill in the blank, code output, coding, SQL, debugging, matching, ordering, and image, audio or video questions.",
+    "icon": "ClipboardList"
+   },
+   {
+    "title": "Question bank",
+    "description": "Import and export CSV or Excel, create in bulk and see which tests use each question.",
+    "icon": "Database"
+   },
+   {
+    "title": "Test builder",
+    "description": "Sections, section timers, rules such as 10 beginner plus 10 intermediate, random order, negative marking and attempt limits.",
+    "icon": "Wrench"
+   },
+   {
+    "title": "Flexible assignment",
+    "description": "Assign by department, role, team, person, applicant, position, student, batch or course, resolved live.",
+    "icon": "Users"
+   },
+   {
+    "title": "Exam security options",
+    "description": "Full screen, tab-switch detection, copy and paste blocking, one window, IP and device capture and auto-submit after violations.",
+    "icon": "ShieldCheck"
+   },
+   {
+    "title": "Evaluation and results",
+    "description": "Automatic marking of objective answers, an evaluation queue for the rest, mark overrides and held results.",
+    "icon": "ClipboardCheck"
+   },
+   {
+    "title": "Certificates",
+    "description": "Issue certificates that can be verified on the public verification page.",
+    "icon": "Award"
+   },
+   {
+    "title": "Reports",
+    "description": "Performance by test, person, department, question and more, with CSV and Excel export.",
+    "icon": "BarChart3"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "No AI of its own",
+    "description": "Marking is rule-based and evaluator-led. Objective answers are auto-marked; coding, SQL, debugging and long answers are marked by evaluators against rubrics.",
+    "icon": "ClipboardCheck"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "One engine",
+    "description": "Employees, applicants and students all use the same exam screen and rules."
+   },
+   {
+    "title": "Fair timing",
+    "description": "A reload or a closed tab never adds time, and a second submit has no effect."
+   },
+   {
+    "title": "Consistent marking",
+    "description": "Objective answers are marked instantly and evaluators work from a queue."
+   },
+   {
+    "title": "Evidence",
+    "description": "Security events go to an audit log, which makes cheating harder and visible."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Screen applicants",
+    "description": "Assign a screening test to everyone who applied for a position and review ranked results.",
+    "icon": "UserPlus"
+   },
+   {
+    "title": "Compliance quiz",
+    "description": "Assign a mandatory test to a department and track who has passed.",
+    "icon": "ShieldCheck"
+   },
+   {
+    "title": "Course exams",
+    "description": "Run chapter, mock and final exams for a batch and issue certificates.",
+    "icon": "GraduationCap"
+   },
+   {
+    "title": "Technical interview prep",
+    "description": "Give candidates SQL or debugging questions that evaluators mark against a rubric.",
+    "icon": "Code"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Build to result",
+    "description": "The full flow.",
+    "steps": [
+     "Create the test and add questions or rules",
+     "Assign it to people, who are resolved live from HR, Careers or Training",
+     "People take the test with server-side timing",
+     "Objective answers are marked; evaluators mark the rest; results and certificates follow"
+    ]
+   },
+   {
+    "title": "Timeout and violations",
+    "description": "Rules enforced for you.",
+    "steps": [
+     "A timer expires or violations pass the limit",
+     "The attempt is submitted automatically",
+     "Events are recorded in the audit log",
+     "Submitting twice has no effect"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "HR & Payroll",
+    "description": "Assign tests to employees by department, role or team.",
+    "href": "/products/hrms-suite"
+   },
+   {
+    "name": "Training",
+    "description": "Assign exams to students, batches and courses.",
+    "href": "/products/tms-academy"
+   },
+   {
+    "name": "Client Portal",
+    "description": "Applicants and students take their tests there.",
+    "href": "/products/external-portal"
+   },
+   {
+    "name": "CRM & Sales",
+    "description": "Careers applicants are assigned screening tests.",
+    "href": "/products/lms-sales-crm"
+   }
+  ],
+  "scenarios": [
+   "Pre-employment screening for a position",
+   "Annual compliance certification",
+   "Course and final exams for training batches"
+  ],
+  "faq": [
+   {
+    "q": "Is an online exam cheat-proof?",
+    "a": "No. The security options make cheating harder and visible, and every event is logged, but they do not make an online exam cheat-proof."
+   },
+   {
+    "q": "Is code run automatically?",
+    "a": "Output-style code questions can be auto-marked against accepted answers. Coding, SQL and debugging questions are marked by evaluators against the rubric and stored test cases."
+   },
+   {
+    "q": "Does it become another people database?",
+    "a": "No. It uses people from HR, Careers and Training and does not duplicate them."
+   },
+   {
+    "q": "Do we have to buy every product?",
+    "a": "No. During setup you choose which products your company uses, and your plan decides what is unlocked. You can start with the products you need today and switch on more as you grow."
+   }
+  ],
+  "audience": "Recruiters, HR and compliance teams, trainers and instructors, and the candidates, employees and students who sit the tests."
  },
  {
   "id": "web-portal",
@@ -1404,6 +3875,1177 @@
     "badge": "Marketing Site",
     "mockupType": "web-home"
    }
-  ]
+  ],
+  "shortName": "Public Website",
+  "valueLine": "A brand site that feeds enquiries straight into your CRM",
+  "pitch": "The public face of the company, designed to turn visitors into tracked leads and applicants without anyone re-typing a form.",
+  "overview": "The public website presents the company, its services, content and careers, and connects directly to the products behind it. Enquiry forms create leads in CRM & Sales, job applications arrive in the careers pipeline, and an AI assistant on the site answers visitor questions.\n\nSearch metadata, the sitemap and structured data come from the SEO product, and every page is edited in Website & CMS.",
+  "outcome": "Visitors become tracked leads and applicants automatically, and the site stays current because your team edits it directly.",
+  "facts": [
+   {
+    "label": "Enquiry forms",
+    "value": "Feed CRM leads"
+   },
+   {
+    "label": "Job applications",
+    "value": "Feed careers pipeline"
+   },
+   {
+    "label": "Themes",
+    "value": "Light and dark"
+   }
+  ],
+  "features": [
+   {
+    "title": "Lead capture",
+    "description": "Enquiry forms create leads with source and campaign recorded.",
+    "icon": "Filter"
+   },
+   {
+    "title": "Careers",
+    "description": "Open roles and applications that flow into the careers pipeline.",
+    "icon": "Briefcase"
+   },
+   {
+    "title": "Services and content",
+    "description": "Service pages, a blog and case content, all editable.",
+    "icon": "Layers"
+   },
+   {
+    "title": "Offers",
+    "description": "A public offers page for festival campaigns and coupons.",
+    "icon": "Megaphone"
+   },
+   {
+    "title": "Ask assistant",
+    "description": "A page where visitors can chat with the AI website assistant.",
+    "icon": "Bot"
+   },
+   {
+    "title": "Search metadata",
+    "description": "Titles, canonicals, sitemap and JSON-LD managed from the SEO product.",
+    "icon": "Search"
+   },
+   {
+    "title": "Light and dark themes",
+    "description": "A responsive design with a light and dark mode.",
+    "icon": "Palette"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "Website AI assistant",
+    "description": "Visitors ask questions and get answers from the knowledge base and website content you manage, by text and, where enabled, voice.",
+    "icon": "Bot"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "No lost enquiries",
+    "description": "Forms feed the CRM, so no one has to re-type them."
+   },
+   {
+    "title": "Talent pipeline",
+    "description": "Job applications arrive where recruiters work."
+   },
+   {
+    "title": "Always current",
+    "description": "Your team edits pages directly."
+   },
+   {
+    "title": "Discoverable",
+    "description": "Search metadata and sitemap are managed in one place."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Capture an enquiry",
+    "description": "A visitor fills in a form and sales sees a new lead.",
+    "icon": "Filter"
+   },
+   {
+    "title": "Recruit",
+    "description": "A candidate applies to an open role and the application lands with the recruiter.",
+    "icon": "UserPlus"
+   },
+   {
+    "title": "Answer visitor questions",
+    "description": "The assistant handles common questions, day or night.",
+    "icon": "MessageSquare"
+   },
+   {
+    "title": "Promote an offer",
+    "description": "Publish a festival offer page and track claims.",
+    "icon": "Megaphone"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Enquiry to lead",
+    "description": "No manual entry.",
+    "steps": [
+     "A visitor submits a form",
+     "A lead is created in CRM & Sales with its source",
+     "An automation can notify sales",
+     "The person sees their progress in the Client Portal"
+    ]
+   },
+   {
+    "title": "Application to recruiter",
+    "description": "Hiring intake.",
+    "steps": [
+     "A candidate applies",
+     "The application appears in the careers pipeline",
+     "Recruiters shortlist and convert hires into employees in HR"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "CRM & Sales",
+    "description": "Leads and the website assistant's console.",
+    "href": "/products/lms-sales-crm"
+   },
+   {
+    "name": "HR & Payroll",
+    "description": "Applicants flow into recruitment.",
+    "href": "/products/hrms-suite"
+   },
+   {
+    "name": "SEO",
+    "description": "Metadata, sitemap and structured data.",
+    "href": "/products/seo-panel"
+   },
+   {
+    "name": "Website & CMS",
+    "description": "Where the pages are edited.",
+    "href": "/products/cms-website"
+   }
+  ],
+  "scenarios": [
+   "A services company generating leads online",
+   "A business recruiting through its own site",
+   "A brand running seasonal offers"
+  ],
+  "faq": [
+   {
+    "q": "Does it connect to our CRM?",
+    "a": "Yes. Enquiry forms create leads in CRM & Sales and job applications arrive in the careers pipeline."
+   },
+   {
+    "q": "Who edits the site?",
+    "a": "Your team, in Website & CMS."
+   },
+   {
+    "q": "Is the AI assistant on by default?",
+    "a": "The assistant is configured in CRM & Sales, including whether voice mode is on."
+   },
+   {
+    "q": "Is our data kept separate from other companies?",
+    "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
+   }
+  ],
+  "audience": "Prospective clients and candidates on the outside; marketing, sales and recruitment teams on the inside."
+ },
+ {
+  "id": "fms-finance",
+  "slug": "fms-finance",
+  "name": "Finance, Billing & Accounting (FMS)",
+  "badge": "Finance & Accounting",
+  "tagline": "Invoices, collections, payables and books in one connected ledger.",
+  "category": "Procurement & Finance",
+  "panelPath": "/fms",
+  "iconName": "Wallet",
+  "accentColor": "from-emerald-600 to-teal-600",
+  "isFeatured": true,
+  "shortDescription": "Billing, collections, payables, bank reconciliation and financial reports, connected to your clients, projects, payroll and purchasing.",
+  "fullDescription": "Finance raises invoices against client and project records, collects payments, tracks what you owe vendors, reconciles bank and cash, and reports through a general ledger, trial balance and financial statements.",
+  "primaryPurpose": "Record money once, reconcile it against the books and trace every figure back to its source.",
+  "problemSolved": "Invoices, payments, bills and payroll live in different files, and month-end means re-typing them into the books.",
+  "businessOutcome": "Billing, collections and bookkeeping run from the same records as the rest of the business.",
+  "targetDepartments": [
+   "Finance & Accounts",
+   "Operations",
+   "Management"
+  ],
+  "targetUsers": [
+   "Finance Manager",
+   "Accountant",
+   "Founder",
+   "Approver"
+  ],
+  "aiCapabilities": [],
+  "keyFeatures": [
+   {
+    "title": "Invoices and payments",
+    "description": "Invoices, credit and debit notes, payment links and receipts."
+   },
+   {
+    "title": "Ledger and reports",
+    "description": "Automatic double-entry journal, trial balance and financial reports."
+   },
+   {
+    "title": "Connected to operations",
+    "description": "Uses clients from Projects, vendors from Procurement and payroll from HR."
+   }
+  ],
+  "metrics": [],
+  "screens": [
+   {
+    "id": "fms-invoices",
+    "title": "Invoices and collections",
+    "description": "Customer invoices, payment status and receivables.",
+    "badge": "Billing",
+    "mockupType": "fms-invoices"
+   },
+   {
+    "id": "fms-reports",
+    "title": "Financial reports",
+    "description": "Receivables, payables and the main financial statements.",
+    "badge": "Reports",
+    "mockupType": "fms-reports"
+   }
+  ],
+  "hotspots": [
+   {
+    "id": "h-fms-1",
+    "x": 50,
+    "y": 60,
+    "title": "Invoices linked to projects",
+    "description": "Each invoice points at a client and a project from Projects.",
+    "badge": "Connected"
+   }
+  ],
+  "shortName": "Finance",
+  "valueLine": "Invoices, payments, bills and books that match your operations",
+  "pitch": "Billing, collections, payables and accounting in one place, connected to the clients, projects, payroll and purchasing that create the money.",
+  "overview": "Finance covers the whole money cycle. Raise invoices, credit and debit notes against your clients and projects, collect payments through payment links, track receivables and payables, reconcile bank and cash accounts, and review the books through a general ledger, trial balance and financial reports.\n\nIt does not keep a second copy of your business. Customers are the client records from Projects, vendors and bills come from Procurement, payroll runs come from HR and training fees come from Training, so finance reads the same facts the rest of the company works from.",
+  "outcome": "Money in and out is recorded once, reconciled against the books, and traceable back to the client, project, vendor or employee behind it.",
+  "facts": [
+   {
+    "label": "Bookkeeping",
+    "value": "Auto double-entry journal"
+   },
+   {
+    "label": "Payment reminders",
+    "value": "7d · 3d · due · overdue"
+   },
+   {
+    "label": "Financial reports",
+    "value": "P&L · Balance sheet · Cash flow"
+   }
+  ],
+  "features": [
+   {
+    "title": "Invoices, credit and debit notes",
+    "description": "Raise invoices against client records and projects, with numbering and tax configuration you control.",
+    "icon": "ReceiptText"
+   },
+   {
+    "title": "Payment links and collections",
+    "description": "Send payment links and track partial and full payments, with online payments through Razorpay.",
+    "icon": "CreditCard"
+   },
+   {
+    "title": "Receivables and payables",
+    "description": "See what customers owe and what you owe vendors, with bills and vendor payments from Procurement.",
+    "icon": "Wallet"
+   },
+   {
+    "title": "Banks, cash and transfers",
+    "description": "Bank and cash accounts, fund transfers, and bank and cash reconciliation.",
+    "icon": "Landmark"
+   },
+   {
+    "title": "Ledger and trial balance",
+    "description": "Settled transactions post to a double-entry journal automatically, feeding a general ledger and trial balance.",
+    "icon": "BookOpen"
+   },
+   {
+    "title": "Financial reports",
+    "description": "Profit and loss, balance sheet, cash flow, tax, revenue, expense, budget versus actual and project profitability.",
+    "icon": "BarChart3"
+   },
+   {
+    "title": "Approvals inbox",
+    "description": "One list of pending transactions, refunds and employee expense claims, each linking to its own detail page.",
+    "icon": "ClipboardCheck"
+   },
+   {
+    "title": "Fiscal periods and settings",
+    "description": "Fiscal periods with closing, exchange rates, tax configuration, numbering and payment methods.",
+    "icon": "Settings"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "Ask about invoices and receipts",
+    "description": "With AI Intelligence, ask which invoices are unpaid, which customers owe the most or what was received this month, and get a table or chart from your real records.",
+    "icon": "BrainCircuit"
+   },
+   {
+    "title": "Automations on invoice events",
+    "description": "When an invoice is created or paid, a workspace automation can email finance, notify a role or call your own system.",
+    "icon": "Workflow"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "Books that follow operations",
+    "description": "Entries post from settled transactions rather than being re-typed at month-end."
+   },
+   {
+    "title": "Faster collections",
+    "description": "Payment links and scheduled reminders keep unpaid invoices from going quiet."
+   },
+   {
+    "title": "One customer, one vendor",
+    "description": "Finance reuses the client and vendor records the rest of the platform maintains."
+   },
+   {
+    "title": "Reviewable by design",
+    "description": "Corrections reverse a transaction instead of editing history, and changes are audit-logged."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Invoice a project",
+    "description": "Raise an invoice against the client and project, send a payment link, and watch it move to paid.",
+    "icon": "ReceiptText"
+   },
+   {
+    "title": "Month-end close",
+    "description": "Reconcile bank and cash, review the trial balance and financial reports, then close the fiscal period.",
+    "icon": "CalendarClock"
+   },
+   {
+    "title": "Pay vendors",
+    "description": "Review bills from Procurement and record vendor payments against them.",
+    "icon": "ShoppingCart"
+   },
+   {
+    "title": "Reimburse staff",
+    "description": "Approve employee expense claims from the approvals inbox and pay them.",
+    "icon": "Coins"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Invoice to cash",
+    "description": "From billing to a recorded payment.",
+    "steps": [
+     "Create the invoice for a client and project",
+     "Send it with a payment link",
+     "Reminders go out before the due date, on the day and when overdue",
+     "A payment settles it, a receipt is issued and an invoice.paid event fires"
+    ]
+   },
+   {
+    "title": "Transaction to ledger",
+    "description": "Bookkeeping without a second entry.",
+    "steps": [
+     "A transaction is approved and settled",
+     "A balanced two-line journal entry is created automatically",
+     "The general ledger, trial balance and reports update",
+     "A mistake is corrected by reversing the transaction, which reverses its entry"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "Projects",
+    "description": "Customers are Projects clients, and invoices point at projects.",
+    "href": "/products/pms-project-command"
+   },
+   {
+    "name": "Procurement & Assets",
+    "description": "Vendors, bills, vendor payments, asset expenses and employee expense claims.",
+    "href": "/products/prms-procurement"
+   },
+   {
+    "name": "HR & Payroll",
+    "description": "Payroll runs and salary payouts are visible in Finance.",
+    "href": "/products/hrms-suite"
+   },
+   {
+    "name": "Training",
+    "description": "Training fee payments appear as training revenue.",
+    "href": "/products/tms-academy"
+   },
+   {
+    "name": "Client Portal",
+    "description": "Clients see their invoices and can download them.",
+    "href": "/products/external-portal"
+   },
+   {
+    "name": "Razorpay",
+    "description": "Online payment collection for invoices and payment links."
+   }
+  ],
+  "scenarios": [
+   "A services company billing clients by project",
+   "A business that wants bank reconciliation and clean books each month",
+   "A company that wants payroll, purchasing and training revenue visible in one finance view"
+  ],
+  "faq": [
+   {
+    "q": "Is this a full accounting system?",
+    "a": "It covers invoicing, payments, bills, bank and cash reconciliation, a double-entry ledger, trial balance and core financial reports. Some areas in the navigation are marked as coming soon."
+   },
+   {
+    "q": "How are payments collected?",
+    "a": "Through payment links and invoice payments using Razorpay, with receipts issued when a payment settles."
+   },
+   {
+    "q": "Can corrections be made?",
+    "a": "Posted entries are not edited. A correction reverses the transaction, which reverses its journal entry."
+   },
+   {
+    "q": "Do we have to re-enter clients?",
+    "a": "No. Customers are the client records already kept in Projects."
+   }
+  ],
+  "audience": "Finance leads and accountants, founders who bill clients, and operations teams who approve expenses and pay vendors."
+ },
+ {
+  "id": "ai-intelligence",
+  "slug": "ai-intelligence",
+  "name": "AI Intelligence — Your AI Data Analyst",
+  "badge": "AI Data Analyst",
+  "tagline": "Ask your business data a question and get a table or chart back.",
+  "category": "AI & Intelligence",
+  "panelPath": "/intelligence",
+  "iconName": "BrainCircuit",
+  "accentColor": "from-violet-600 to-indigo-600",
+  "isFeatured": true,
+  "shortDescription": "Natural-language analytics over your company data: ask a question, get a table, chart or figure built from real records, limited to what you may see.",
+  "fullDescription": "AI Intelligence lets anyone with access ask questions about the business without a report request. The AI plans a read-only query, the system validates and runs it, and the answer is built from the real results.",
+  "primaryPurpose": "Give every manager an AI analyst that answers from live company data and respects access rules.",
+  "problemSolved": "Simple questions about the business wait in a queue for someone to build a report.",
+  "businessOutcome": "Answers in seconds, from your own records, within each person's access.",
+  "targetDepartments": [
+   "Management",
+   "Finance",
+   "Human Resources",
+   "Delivery",
+   "Sales"
+  ],
+  "targetUsers": [
+   "Founder",
+   "Department Head",
+   "Finance Lead",
+   "Project Manager"
+  ],
+  "aiCapabilities": [],
+  "keyFeatures": [
+   {
+    "title": "Plain-language questions",
+    "description": "Ask in your own words and follow up in the same conversation."
+   },
+   {
+    "title": "Answers from real data",
+    "description": "Tables, charts and figures built from query results."
+   },
+   {
+    "title": "Access-aware",
+    "description": "Never looser than the product that owns the data."
+   }
+  ],
+  "metrics": [],
+  "screens": [
+   {
+    "id": "intelligence-chat",
+    "title": "Ask a question",
+    "description": "A plain-language question and a grounded answer.",
+    "badge": "AI Analyst",
+    "mockupType": "intelligence-chat"
+   },
+   {
+    "id": "intelligence-table",
+    "title": "Answer as a table",
+    "description": "Tables, charts and figures built from real results.",
+    "badge": "Answers",
+    "mockupType": "intelligence-table"
+   }
+  ],
+  "hotspots": [
+   {
+    "id": "h-ai-1",
+    "x": 50,
+    "y": 55,
+    "title": "Read-only and access-aware",
+    "description": "Queries are validated, read-only, and limited to what you may see.",
+    "badge": "Safe by design"
+   }
+  ],
+  "shortName": "AI Intelligence",
+  "valueLine": "Ask your business data a question and get a table or chart back",
+  "pitch": "Your AI data analyst. Ask in plain language, and get answers built from your real records, shown as tables, charts and figures you can copy or download.",
+  "overview": "AI Intelligence lets anyone with access ask questions about the business without writing a report request. The AI turns the question into a structured, read-only query against your data, the system validates and runs it, and the answer is assembled from the real results. The model never invents the figures: it chooses what to ask for and how to present it.\n\nIt covers 14 kinds of business data across delivery, HR, sales, finance and procurement, and it is never looser than the product that owns the data. A person only gets answers about what they could already open.",
+  "outcome": "Decisions that used to wait for an analyst take a question. Everyone sees only their own slice of the data.",
+  "facts": [
+   {
+    "label": "Business data types",
+    "value": "14"
+   },
+   {
+    "label": "Query access",
+    "value": "Read-only"
+   },
+   {
+    "label": "Answer formats",
+    "value": "Text · KPI · Table · Chart"
+   }
+  ],
+  "features": [
+   {
+    "title": "Plain-language questions",
+    "description": "Ask follow-ups in the same conversation, and reopen past conversations from the sidebar.",
+    "icon": "MessageSquare"
+   },
+   {
+    "title": "Answers from real data",
+    "description": "Tables, charts (bar, line, pie, area), headline figures and lists are built from query results, not generated text.",
+    "icon": "BarChart3"
+   },
+   {
+    "title": "14 business data types",
+    "description": "Clients, projects, project team members, tasks, timesheets, employees, departments, leave requests, leads, invoices, payment receipts, expenses, vendors and purchase orders.",
+    "icon": "Database"
+   },
+   {
+    "title": "Copy and download",
+    "description": "Copy a table or download it as CSV, with spreadsheet formula injection guarded.",
+    "icon": "Download"
+   },
+   {
+    "title": "Example questions",
+    "description": "The sidebar suggests questions based on what you can actually query.",
+    "icon": "Lightbulb"
+   },
+   {
+    "title": "Your access applies",
+    "description": "Each question is checked against the products in your plan and your own permissions before it runs.",
+    "icon": "ShieldCheck"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "Natural-language analytics",
+    "description": "The AI plans one or more structured queries with a fixed shape. Each plan is validated against what you are allowed to read, then run read-only with a time limit and a row cap.",
+    "icon": "BrainCircuit"
+   },
+   {
+    "title": "Answers grounded in results",
+    "description": "The model names the query and the columns to show. The values in tables, charts and figures come from the results themselves.",
+    "icon": "Sparkles"
+   },
+   {
+    "title": "Sensitive fields stay out",
+    "description": "Fields marked sensitive are never offered to the AI or shown in answers.",
+    "icon": "Lock"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "No report queue",
+    "description": "Managers get numbers when they ask, without raising a ticket."
+   },
+   {
+    "title": "Trustworthy figures",
+    "description": "Answers come from your records, and the query behind each one can be checked."
+   },
+   {
+    "title": "Safe to roll out",
+    "description": "Access follows the owning product's rules, so it does not widen who can see what."
+   },
+   {
+    "title": "One place for every area",
+    "description": "Sales, delivery, HR, finance and procurement are queried the same way."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Delivery health",
+    "description": "Which projects have logged more hours than planned this quarter, and who logged them?",
+    "icon": "Kanban"
+   },
+   {
+    "title": "Sales follow-up",
+    "description": "How many leads came in this month, by status? Show the trend as a chart.",
+    "icon": "TrendingUp"
+   },
+   {
+    "title": "Finance check",
+    "description": "Which invoices are unpaid, grouped by customer, largest first?",
+    "icon": "Wallet"
+   },
+   {
+    "title": "People planning",
+    "description": "Who has pending leave next week, by department?",
+    "icon": "Users"
+   },
+   {
+    "title": "Spend review",
+    "description": "Show purchase orders and expenses by vendor for this month.",
+    "icon": "ShoppingCart"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "From question to answer",
+    "description": "What happens when you press Send.",
+    "steps": [
+     "Your question and the data you may read are checked",
+     "The AI plans a structured read-only query",
+     "The plan is validated and run with a 10 second limit and a 500 row cap",
+     "The answer is built from the real results and saved to your conversation"
+    ]
+   },
+   {
+    "title": "Activity you can audit",
+    "description": "Questions are recorded as workspace events.",
+    "steps": [
+     "Each question emits an intelligence.question event",
+     "The event appears in the company audit log",
+     "An automation can react to it like any other event"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "Projects",
+    "description": "Clients, projects, team members, tasks and timesheets.",
+    "href": "/products/pms-project-command"
+   },
+   {
+    "name": "HR & Payroll",
+    "description": "Employees, departments and leave requests.",
+    "href": "/products/hrms-suite"
+   },
+   {
+    "name": "CRM & Sales",
+    "description": "Leads.",
+    "href": "/products/lms-sales-crm"
+   },
+   {
+    "name": "Finance",
+    "description": "Invoices and payment receipts.",
+    "href": "/products/fms-finance"
+   },
+   {
+    "name": "Procurement & Assets",
+    "description": "Expenses, vendors and purchase orders.",
+    "href": "/products/prms-procurement"
+   }
+  ],
+  "scenarios": [
+   "A manager who wants a number without waiting for a report",
+   "A finance lead reviewing unpaid invoices by customer",
+   "A delivery head checking hours against plan",
+   "An HR lead checking leave and headcount by department"
+  ],
+  "faq": [
+   {
+    "q": "Can the AI see everything in our data?",
+    "a": "No. It sees only the data types included in your plan and permitted for the person asking, and sensitive fields are never offered. Access to the AI Intelligence product itself decides who can open it, but never what data a question may touch."
+   },
+   {
+    "q": "Can it change or delete records?",
+    "a": "No. Every query is read-only."
+   },
+   {
+    "q": "How do I know the numbers are right?",
+    "a": "The figures in tables, charts and KPIs come from the query results rather than from the model's writing. The structured query behind each answer is validated before it runs."
+   },
+   {
+    "q": "Is there a limit on questions?",
+    "a": "Yes, each person has an hourly question limit, and AI usage is metered against your company's plan."
+   }
+  ],
+  "audience": "Managers, finance and HR leads, project heads and founders who want answers from company data in plain language, without learning a reporting tool."
+ },
+ {
+  "id": "sop-policies",
+  "slug": "sop-policies",
+  "name": "SOPs & Policy Management",
+  "badge": "Process & Compliance",
+  "tagline": "Controlled procedures with versions, assignments and acknowledgements.",
+  "category": "Executive & Operations",
+  "panelPath": "/sop",
+  "iconName": "ClipboardCheck",
+  "accentColor": "from-sky-600 to-blue-600",
+  "isFeatured": false,
+  "shortDescription": "A library of procedures and policies with version history, confidentiality levels, assignment and acknowledgement tracking.",
+  "fullDescription": "SOPs & Policies keeps procedures in one controlled library. Each has an owner, a confidentiality level and a version history, and can be assigned to people who must acknowledge it.",
+  "primaryPurpose": "Make sure the right people read the current procedure and keep a record that they did.",
+  "problemSolved": "Procedures live in shared drives and chats, nobody knows which version is current, and there is no record of who has read what.",
+  "businessOutcome": "People work from current procedures, and acknowledgements are recorded.",
+  "targetDepartments": [
+   "Operations",
+   "Human Resources",
+   "Compliance & Quality"
+  ],
+  "targetUsers": [
+   "Process Owner",
+   "HR Manager",
+   "Department Head",
+   "Employees"
+  ],
+  "aiCapabilities": [],
+  "keyFeatures": [
+   {
+    "title": "Versioned library",
+    "description": "Publish new versions and compare any two."
+   },
+   {
+    "title": "Acknowledgement tracking",
+    "description": "Assign procedures and track who has acknowledged each version."
+   },
+   {
+    "title": "Confidentiality levels",
+    "description": "Six levels decide who may read each procedure."
+   }
+  ],
+  "metrics": [],
+  "screens": [
+   {
+    "id": "sop-library",
+    "title": "Policy library",
+    "description": "Procedures with owner, version and status.",
+    "badge": "Library",
+    "mockupType": "sop-library"
+   },
+   {
+    "id": "sop-acknowledge",
+    "title": "Acknowledgements",
+    "description": "Assignments, reads and acknowledgements per person.",
+    "badge": "Compliance",
+    "mockupType": "sop-acknowledge"
+   }
+  ],
+  "hotspots": [
+   {
+    "id": "h-sop-1",
+    "x": 50,
+    "y": 62,
+    "title": "Version and acknowledge",
+    "description": "A new version prompts earlier readers to acknowledge again.",
+    "badge": "Versions"
+   }
+  ],
+  "shortName": "SOPs & Policies",
+  "valueLine": "Write, version, assign and track acknowledgement of procedures",
+  "pitch": "Keep your processes and policies in one controlled library, make sure the right people read the current version, and prove they did.",
+  "overview": "SOPs & Policies gives every procedure a lifecycle (draft, published, active, archived) and an owner, with version history you can compare side by side. Each SOP has a confidentiality level, a priority and an optional expiry date, and can be assigned to people who must acknowledge it.\n\nWhen a new version is published, the people who acknowledged the old one are asked again. Reminders go out before things expire, and reports show who has read what.",
+  "outcome": "People work from the current procedure, and you have a record of who was told and who acknowledged it.",
+  "facts": [
+   {
+    "label": "Confidentiality levels",
+    "value": "6"
+   },
+   {
+    "label": "Lifecycle states",
+    "value": "Draft · Published · Active · Expired · Archived"
+   },
+   {
+    "label": "Reads and sign-offs",
+    "value": "Per person, per version"
+   }
+  ],
+  "features": [
+   {
+    "title": "Policy library",
+    "description": "Write SOPs with rich content and attachments, organised by category and department.",
+    "icon": "BookOpen"
+   },
+   {
+    "title": "Versions and compare",
+    "description": "Publish new versions and compare any two side by side.",
+    "icon": "GitBranch"
+   },
+   {
+    "title": "Six confidentiality levels",
+    "description": "From internal to restricted, with each level deciding who may read it.",
+    "icon": "Lock"
+   },
+   {
+    "title": "Assignments and acknowledgement",
+    "description": "Assign SOPs to people, track reads and acknowledgements, and ask again on new versions.",
+    "icon": "ClipboardCheck"
+   },
+   {
+    "title": "Checklists",
+    "description": "Add checklist items people tick off as they work through a procedure.",
+    "icon": "ClipboardList"
+   },
+   {
+    "title": "Templates",
+    "description": "Start from a template for a consistent structure.",
+    "icon": "LayoutTemplate"
+   },
+   {
+    "title": "Compliance and reports",
+    "description": "See compliance status and export reports to CSV or Excel.",
+    "icon": "BarChart3"
+   },
+   {
+    "title": "Feedback",
+    "description": "Staff can send feedback on a procedure to its owner.",
+    "icon": "MessageSquare"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "No AI of its own",
+    "description": "SOPs & Policies has no built-in AI features. You can load policy documents into an AI Assistant so staff can ask questions about them.",
+    "icon": "Sparkles"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "The current version, always",
+    "description": "Readers open the active version; new versions trigger fresh acknowledgement."
+   },
+   {
+    "title": "Proof of communication",
+    "description": "Acknowledgements are recorded per person and version."
+   },
+   {
+    "title": "Right audience only",
+    "description": "Confidentiality levels keep sensitive procedures to the right people."
+   },
+   {
+    "title": "Nothing quietly expires",
+    "description": "Expiry dates and reminders surface procedures that need review."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Roll out a policy",
+    "description": "Publish a new leave policy and assign it to every employee with a mandatory acknowledgement.",
+    "icon": "Megaphone"
+   },
+   {
+    "title": "Controlled procedures",
+    "description": "Keep a confidential finance procedure visible only to its owner and named people.",
+    "icon": "Lock"
+   },
+   {
+    "title": "Review cycle",
+    "description": "An owner receives a reminder as a procedure approaches its expiry.",
+    "icon": "CalendarClock"
+   },
+   {
+    "title": "Audit evidence",
+    "description": "Export who acknowledged which version.",
+    "icon": "FileCheck"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Publish and acknowledge",
+    "description": "A new version reaches the right people.",
+    "steps": [
+     "The author publishes a new version",
+     "People who acknowledged the old version are asked to acknowledge the new one",
+     "Pending people are reminded",
+     "Compliance reports update"
+    ]
+   },
+   {
+    "title": "Expiry and reminders",
+    "description": "Scheduled upkeep.",
+    "steps": [
+     "A daily job checks expiry dates",
+     "A past-date SOP is marked expired",
+     "Owners and assignees receive reminders"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "HR & Payroll",
+    "description": "Employees and departments decide who reads what.",
+    "href": "/products/hrms-suite"
+   },
+   {
+    "name": "Team Chat",
+    "description": "SOP notifications use the shared notification feed.",
+    "href": "/products/messenger-yashchat"
+   },
+   {
+    "name": "AI Assistants",
+    "description": "Load policy files into a bot so staff can ask questions.",
+    "href": "/products/aibots-studio"
+   }
+  ],
+  "scenarios": [
+   "A company that needs staff to acknowledge policies",
+   "A team that wants versioned operating procedures",
+   "A regulated function that must limit who sees what"
+  ],
+  "faq": [
+   {
+    "q": "Is there an approval workflow?",
+    "a": "SOPs move from draft to published to active without a separate approval step. Authors and managers publish directly, within their permissions."
+   },
+   {
+    "q": "Can sensitive SOPs be restricted?",
+    "a": "Yes. Confidentiality levels range from internal to restricted, and downloads are off by default for the most sensitive levels."
+   },
+   {
+    "q": "Can we see who has read it?",
+    "a": "Yes. Views, assignments and acknowledgements are tracked per person and version."
+   },
+   {
+    "q": "Do we have to buy every product?",
+    "a": "No. During setup you choose which products your company uses, and your plan decides what is unlocked. You can start with the products you need today and switch on more as you grow."
+   }
+  ],
+  "audience": "Operations, HR, compliance and quality leads who own procedures, and every employee who must follow them."
+ },
+ {
+  "id": "cms-website",
+  "slug": "cms-website",
+  "name": "Website Builder & CMS",
+  "badge": "Website & Content",
+  "tagline": "Edit and publish your company website yourself.",
+  "category": "Sales & Marketing",
+  "panelPath": "/cms",
+  "iconName": "LayoutTemplate",
+  "accentColor": "from-fuchsia-600 to-purple-600",
+  "isFeatured": false,
+  "shortDescription": "A page builder and content manager for your public website: pages, navigation, theme, forms and collections with drafts, previews and version history.",
+  "fullDescription": "Website & CMS gives your company its own public website that your team edits and publishes. Pages are built from sections, with drafts, previews and version history.",
+  "primaryPurpose": "Let the business run its website without waiting for a developer.",
+  "problemSolved": "Website changes wait in a developer queue, so content goes stale.",
+  "businessOutcome": "Your team edits and publishes pages, menus and content directly.",
+  "targetDepartments": [
+   "Marketing",
+   "Management",
+   "Content"
+  ],
+  "targetUsers": [
+   "Marketing Manager",
+   "Content Editor",
+   "Founder"
+  ],
+  "aiCapabilities": [],
+  "keyFeatures": [
+   {
+    "title": "Page builder",
+    "description": "Compose pages from sections with drafts and previews."
+   },
+   {
+    "title": "Theme and identity",
+    "description": "Brand, logo, colours and navigation in one place."
+   },
+   {
+    "title": "Collections",
+    "description": "Blog posts, jobs and other lists edited as records."
+   }
+  ],
+  "metrics": [],
+  "screens": [
+   {
+    "id": "cms-pages",
+    "title": "Pages",
+    "description": "Pages with versions and publish status.",
+    "badge": "Pages",
+    "mockupType": "cms-pages"
+   },
+   {
+    "id": "cms-theme",
+    "title": "Site and theme",
+    "description": "Brand, collections and theme controls.",
+    "badge": "Site",
+    "mockupType": "cms-theme"
+   }
+  ],
+  "hotspots": [
+   {
+    "id": "h-cms-1",
+    "x": 50,
+    "y": 62,
+    "title": "Draft, preview, publish",
+    "description": "Changes are previewed and versioned before they go live.",
+    "badge": "Publishing"
+   }
+  ],
+  "shortName": "Website & CMS",
+  "valueLine": "Build and edit your public website without a developer",
+  "pitch": "Your company's public website, managed in the same platform: pages, navigation, theme, forms and content that you edit and publish yourself.",
+  "overview": "Website & CMS gives every company its own public website. New companies start from a ready-made starter site. Pages are built from sections, saved as drafts, previewed, published with version history and audit logged.\n\nNavigation, footer, site identity, forms, media and a theme customiser are all editable, and collections such as blog posts and job openings are managed in one place. You can attach your own domain.",
+  "outcome": "Your website is something your team edits and publishes, not a ticket in a developer's queue.",
+  "facts": [
+   {
+    "label": "Publishing",
+    "value": "Draft → Preview → Publish"
+   },
+   {
+    "label": "Starter website",
+    "value": "For every new company"
+   },
+   {
+    "label": "Own domain",
+    "value": "Supported"
+   }
+  ],
+  "features": [
+   {
+    "title": "Page builder",
+    "description": "Compose pages from sections, with drafts, preview and version history.",
+    "icon": "LayoutTemplate"
+   },
+   {
+    "title": "Site identity",
+    "description": "Brand name, logo, contact details and social links in one place.",
+    "icon": "Palette"
+   },
+   {
+    "title": "Navigation and footer",
+    "description": "Edit the header menu and footer links yourself.",
+    "icon": "Compass"
+   },
+   {
+    "title": "Theme customiser",
+    "description": "Colours and component styles with a preview before you publish.",
+    "icon": "Palette"
+   },
+   {
+    "title": "Collections",
+    "description": "Blog posts, job openings and other lists edited as records.",
+    "icon": "Database"
+   },
+   {
+    "title": "Forms",
+    "description": "Contact form fields you control, feeding the CRM.",
+    "icon": "FileText"
+   },
+   {
+    "title": "Media library",
+    "description": "Upload and reuse images.",
+    "icon": "ImageIcon"
+   },
+   {
+    "title": "SEO fields",
+    "description": "Per-page title, description, social image and structured data.",
+    "icon": "Search"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "Website assistant",
+    "description": "A website assistant can answer visitor questions from your site content and knowledge base; it is configured in CRM & Sales.",
+    "icon": "Bot"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "Edit without a developer",
+    "description": "Marketers update pages, menus and content directly."
+   },
+   {
+    "title": "Safe changes",
+    "description": "Drafts, previews and version history protect the live site."
+   },
+   {
+    "title": "On brand",
+    "description": "Identity and theme apply across the site."
+   },
+   {
+    "title": "Connected",
+    "description": "Forms feed the CRM; metadata is managed with SEO."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Launch a new page",
+    "description": "Build a page from sections, preview it and publish it.",
+    "icon": "Rocket"
+   },
+   {
+    "title": "Update the menu",
+    "description": "Add a new item to the header without a release.",
+    "icon": "Compass"
+   },
+   {
+    "title": "Publish a blog post",
+    "description": "Write and publish a post from a collection record.",
+    "icon": "BookOpen"
+   },
+   {
+    "title": "Rebrand",
+    "description": "Change the logo and colours and preview before going live.",
+    "icon": "Palette"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "Draft to live",
+    "description": "Controlled publishing.",
+    "steps": [
+     "Edit a page as a draft",
+     "Preview it",
+     "Publish; the new version goes live and the previous one stays in history",
+     "The change is recorded in the audit log"
+    ]
+   },
+   {
+    "title": "Form to CRM",
+    "description": "No re-typing.",
+    "steps": [
+     "A visitor submits a form on the site",
+     "A lead is created in CRM & Sales",
+     "An automation can notify the sales team"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "SEO",
+    "description": "Page metadata, sitemap and robots.txt.",
+    "href": "/products/seo-panel"
+   },
+   {
+    "name": "CRM & Sales",
+    "description": "Forms feed leads.",
+    "href": "/products/lms-sales-crm"
+   },
+   {
+    "name": "Workspace",
+    "description": "Branding and domains are set in company settings.",
+    "href": "/products/staff-hub"
+   },
+   {
+    "name": "Custom domains",
+    "description": "Attach your own domain once ownership is verified."
+   }
+  ],
+  "scenarios": [
+   "A new company that needs a website quickly",
+   "A marketing team that publishes content weekly",
+   "A business that wants its own domain and branding"
+  ],
+  "faq": [
+   {
+    "q": "Do we start from scratch?",
+    "a": "No. Every new company gets a starter website that you can edit."
+   },
+   {
+    "q": "Can we use our own domain?",
+    "a": "Yes, once you verify ownership with a DNS record."
+   },
+   {
+    "q": "Can we preview before publishing?",
+    "a": "Yes. Pages and the theme can be previewed before they go live."
+   },
+   {
+    "q": "Is our data kept separate from other companies?",
+    "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
+   }
+  ],
+  "audience": "Marketing teams, founders and administrators who manage a company website."
  }
 ]

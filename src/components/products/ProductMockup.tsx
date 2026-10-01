@@ -391,6 +391,82 @@ function MockupContent({ type }: { type: string }) {
         </div>
       );
 
+    // ── Sample-data previews for products added after the original catalogue (plain text: no catalogue dictionary keys). ──
+    case "fms-invoices":
+    case "fms-reports":
+      return (
+        <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-3">
+            <MetricWidget label="Receivables" value="Aged by bucket" change="Customer-wise" icon={DollarSign} color="blue" />
+            <MetricWidget label="Payables" value="Bills due" change="Vendor-wise" icon={Clock} color="amber" />
+            <MetricWidget label="Reports" value="P&L · Balance sheet" change="Cash flow · Tax" icon={TrendingUp} color="emerald" />
+          </div>
+          <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
+            <div className="flex items-center justify-between font-semibold text-foreground">
+              <span>Invoices</span>
+              <span className="text-muted-foreground text-[11px]">Sample data</span>
+            </div>
+            <CandidateRow name="INV-0001 · Acme Retail" role="Project: Website revamp" score="Sent" status="Awaiting payment" />
+            <CandidateRow name="INV-0002 · Northwind Foods" role="Project: Mobile app" score="Paid" status="Receipt issued" />
+            <CandidateRow name="INV-0003 · Globex Logistics" role="Project: Portal" score="Draft" status="Needs review" />
+          </div>
+        </div>
+      );
+
+    case "intelligence-chat":
+    case "intelligence-table":
+      return (
+        <div className="space-y-3">
+          <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-3">
+            <ChatBubble sender="You" text="Which projects have logged more hours than planned this quarter?" align="right" />
+            <ChatBubble sender="AI Intelligence" text="3 projects are over their planned hours. The table below comes straight from your timesheets and projects." align="left" ai />
+          </div>
+          <div className="rounded-xl border border-border/60 bg-muted/20 p-3 space-y-1.5 text-[11px]">
+            <div className="flex items-center justify-between font-semibold text-foreground"><span>Project</span><span>Planned h</span><span>Logged h</span></div>
+            <div className="flex items-center justify-between text-muted-foreground"><span>Website revamp</span><span>120</span><span>141</span></div>
+            <div className="flex items-center justify-between text-muted-foreground"><span>Mobile app</span><span>300</span><span>322</span></div>
+            <div className="flex items-center justify-between text-muted-foreground"><span>Client portal</span><span>80</span><span>93</span></div>
+            <p className="pt-1 text-[10px] text-muted-foreground">Sample data. Real answers show only what you are allowed to see.</p>
+          </div>
+        </div>
+      );
+
+    case "sop-library":
+    case "sop-acknowledge":
+      return (
+        <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-3">
+            <MetricWidget label="Active SOPs" value="Versioned" change="Compare any two" icon={FileQuestion} color="blue" />
+            <MetricWidget label="Acknowledgements" value="Per person" change="Re-ask on new version" icon={CheckCircle2} color="emerald" />
+            <MetricWidget label="Expiry" value="Review dates" change="Reminders sent" icon={Clock} color="amber" />
+          </div>
+          <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
+            <div className="flex items-center justify-between font-semibold text-foreground"><span>Policy library</span><span className="text-muted-foreground text-[11px]">Sample data</span></div>
+            <CandidateRow name="Leave policy" role="HR · Internal" score="v3" status="Active" />
+            <CandidateRow name="Vendor onboarding" role="Procurement · Management only" score="v1" status="Published" />
+            <CandidateRow name="Data handling" role="IT · Confidential" score="v2" status="Active" />
+          </div>
+        </div>
+      );
+
+    case "cms-pages":
+    case "cms-theme":
+      return (
+        <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-3">
+            <MetricWidget label="Pages" value="Draft → Publish" change="Version history" icon={Globe} color="blue" />
+            <MetricWidget label="Collections" value="Blog · Jobs · More" change="Edited in one place" icon={Database} color="indigo" />
+            <MetricWidget label="Theme" value="Colours & fonts" change="Preview before publish" icon={Sparkles} color="emerald" />
+          </div>
+          <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
+            <div className="flex items-center justify-between font-semibold text-foreground"><span>Pages</span><span className="text-muted-foreground text-[11px]">Sample data</span></div>
+            <CandidateRow name="Home" role="/" score="v5" status="Published" />
+            <CandidateRow name="Services" role="/services" score="v2" status="Published" />
+            <CandidateRow name="Pricing" role="/pricing" score="v1" status="Draft" />
+          </div>
+        </div>
+      );
+
     default:
       return (
         <div className="space-y-4">

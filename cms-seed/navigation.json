@@ -114,6 +114,151 @@
   ]
  },
  {
+  "name": "Products",
+  "href": "/products",
+  "iconKey": "Boxes",
+  "featured": {
+   "title": "AI-powered business software",
+   "description": "One connected platform for HR, projects, finance, sales, AI and more.",
+   "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop"
+  },
+  "items": [
+   {
+    "name": "Command Center",
+    "href": "/products/admin-command-center",
+    "description": "Company dashboard, users, roles and audit in one place",
+    "iconKey": "ShieldCheck",
+    "group": "Executive & Operations"
+   },
+   {
+    "name": "Workspace",
+    "href": "/products/staff-hub",
+    "description": "One sign-in and one home for every product and every person",
+    "iconKey": "LayoutDashboard",
+    "group": "Executive & Operations"
+   },
+   {
+    "name": "Team Chat",
+    "href": "/products/messenger-yashchat",
+    "description": "Team messaging tied to your projects and people",
+    "iconKey": "MessageSquare",
+    "group": "Executive & Operations"
+   },
+   {
+    "name": "SOPs & Policies",
+    "href": "/products/sop-policies",
+    "description": "Write, version, assign and track acknowledgement of procedures",
+    "iconKey": "ClipboardCheck",
+    "group": "Executive & Operations"
+   },
+   {
+    "name": "AI Assistants",
+    "href": "/products/aibots-studio",
+    "description": "Build assistants that answer from your own documents",
+    "iconKey": "Bot",
+    "group": "AI & Intelligence"
+   },
+   {
+    "name": "AI Intelligence",
+    "href": "/products/ai-intelligence",
+    "description": "Ask your business data a question and get a table or chart back",
+    "iconKey": "BrainCircuit",
+    "group": "AI & Intelligence"
+   },
+   {
+    "name": "HR & Payroll",
+    "href": "/products/hrms-suite",
+    "description": "Employees, attendance, leave, payroll and recruitment",
+    "iconKey": "Users",
+    "group": "HR & Talent"
+   },
+   {
+    "name": "Training",
+    "href": "/products/tms-academy",
+    "description": "Programs, batches, students, certificates and placements",
+    "iconKey": "GraduationCap",
+    "group": "HR & Talent"
+   },
+   {
+    "name": "Projects",
+    "href": "/products/pms-project-command",
+    "description": "Clients, projects, tasks and timesheets with real project costing",
+    "iconKey": "Kanban",
+    "group": "Project & Delivery"
+   },
+   {
+    "name": "Procurement & Assets",
+    "href": "/products/prms-procurement",
+    "description": "Requisitions, purchase orders, vendors, budgets and assets",
+    "iconKey": "ShoppingCart",
+    "group": "Procurement & Finance"
+   },
+   {
+    "name": "Finance",
+    "href": "/products/fms-finance",
+    "description": "Invoices, payments, bills and books that match your operations",
+    "iconKey": "Wallet",
+    "group": "Procurement & Finance"
+   },
+   {
+    "name": "CRM & Sales",
+    "href": "/products/lms-sales-crm",
+    "description": "Capture every enquiry and move it from first contact to won",
+    "iconKey": "Filter",
+    "group": "Sales & Marketing"
+   },
+   {
+    "name": "SEO",
+    "href": "/products/seo-panel",
+    "description": "Audit your site, fix issues and publish metadata without a deploy",
+    "iconKey": "Search",
+    "group": "Sales & Marketing"
+   },
+   {
+    "name": "Social Media",
+    "href": "/products/smms-social-engine",
+    "description": "AI-assisted campaigns, posts and ads with human approval",
+    "iconKey": "Megaphone",
+    "group": "Sales & Marketing"
+   },
+   {
+    "name": "Public Website",
+    "href": "/products/web-portal",
+    "description": "A brand site that feeds enquiries straight into your CRM",
+    "iconKey": "Laptop",
+    "group": "Sales & Marketing"
+   },
+   {
+    "name": "Website & CMS",
+    "href": "/products/cms-website",
+    "description": "Build and edit your public website without a developer",
+    "iconKey": "LayoutTemplate",
+    "group": "Sales & Marketing"
+   },
+   {
+    "name": "Client Portal",
+    "href": "/products/external-portal",
+    "description": "A separate, secure portal for clients, applicants and students",
+    "iconKey": "Globe",
+    "group": "Assessment & Security"
+   },
+   {
+    "name": "Digi Locker",
+    "href": "/products/dlms-digilocker",
+    "description": "A secure vault for credentials, documents and expiries",
+    "iconKey": "KeyRound",
+    "group": "Assessment & Security"
+   },
+   {
+    "name": "Online Tests",
+    "href": "/products/ots-exam-engine",
+    "description": "One test engine for hiring, training and compliance exams",
+    "iconKey": "FileQuestion",
+    "group": "Assessment & Security"
+   }
+  ]
+ },
+ {
   "name": "Industries",
   "href": "/industries",
   "iconKey": "Globe",

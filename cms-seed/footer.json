@@ -45,6 +45,11 @@
   "viewAllLabel": "View All Services",
   "links": [
    {
+    "label": "Products",
+    "href": "/products",
+    "emphasized": true
+   },
+   {
     "label": "Our SaaS Product",
     "href": "/services/our-saas-product",
     "emphasized": true
