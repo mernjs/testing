@@ -1,6 +1,8 @@
 import "server-only";
 import { companyCache } from "@/lib/platform/tenancy/cache";
 import { getDb } from "@/lib/mongodb";
+import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { isProductsHref } from "@/lib/products/shared";
 import { COLLECTIONS, CMS_SITE_TAG, expireSiteCache, newId, createStamp, updateStamp, type Stamps } from "@/lib/cms/db";
 
 /**
@@ -18,6 +20,8 @@ export interface CmsNavItemDoc extends Stamps {
   href: string;
   description: string | null;
   iconKey: string;
+  /** Optional sub-heading this item is listed under in the mega-menu (e.g. a product category). */
+  group?: string | null;
   featuredTitle: string | null;
   featuredDescription: string | null;
   featuredImage: string | null;
@@ -36,7 +40,7 @@ export async function listNavItems(): Promise<CmsNavItemDoc[]> {
 }
 
 export async function createNavItem(
-  input: { parentId: string | null; label: string; href: string; description?: string; iconKey?: string; featuredTitle?: string; featuredDescription?: string; featuredImage?: string },
+  input: { parentId: string | null; label: string; href: string; description?: string; iconKey?: string; group?: string; featuredTitle?: string; featuredDescription?: string; featuredImage?: string },
   actorId: string
 ): Promise<CmsNavItemDoc> {
   const c = await col();
@@ -48,6 +52,7 @@ export async function createNavItem(
     href: input.href.trim(),
     description: input.description?.trim() || null,
     iconKey: input.iconKey || "Sparkles",
+    group: input.group?.trim() || null,
     featuredTitle: input.featuredTitle?.trim() || null,
     featuredDescription: input.featuredDescription?.trim() || null,
     featuredImage: input.featuredImage?.trim() || null,
@@ -84,6 +89,8 @@ export interface PublicNavChild {
   href: string;
   description: string | null;
   iconKey: string;
+  /** Sub-heading the item is listed under; null = ungrouped. */
+  group: string | null;
 }
 export interface PublicNavTop {
   name: string;
@@ -109,7 +116,7 @@ async function loadNav(): Promise<PublicNavTop[]> {
     },
     items: enabled
       .filter((i) => i.parentId === top._id)
-      .map((i) => ({ name: i.label, href: i.href, description: i.description, iconKey: i.iconKey })),
+      .map((i) => ({ name: i.label, href: i.href, description: i.description, iconKey: i.iconKey, group: i.group ?? null })),
   }));
 }
 
@@ -117,5 +124,16 @@ const cachedNav = companyCache(loadNav, ["cms-nav-v1"], { tags: [CMS_SITE_TAG], 
 
 /** The header menu. If the CMS is unreachable this throws, and Next.js keeps serving the last good render. */
 export async function getPublicNav(): Promise<PublicNavTop[]> {
-  return cachedNav();
+  const nav = await cachedNav();
+  // Products are the platform owner's own pages; never show the item on another company's site.
+  return dropProductsNav(nav);
+}
+
+/** The nav without any Products entry (a top-level item or a nested link into /products). Pure; exported for tests. */
+export function withoutProducts(nav: PublicNavTop[]): PublicNavTop[] {
+  return nav.filter((t) => !isProductsHref(t.href)).map((t) => ({ ...t, items: t.items.filter((i) => !isProductsHref(i.href)) }));
+}
+
+async function dropProductsNav(nav: PublicNavTop[]): Promise<PublicNavTop[]> {
+  return (await isPlatformOwnerContext()) ? nav : withoutProducts(nav);
 }

@@ -21,11 +21,12 @@ type Draft = {
   href: string;
   description: string;
   iconKey: string;
+  group: string;
   featuredTitle: string;
   featuredDescription: string;
   featuredImage: string;
 };
-const emptyDraft: Draft = { label: "", href: "", description: "", iconKey: "Sparkles", featuredTitle: "", featuredDescription: "", featuredImage: "" };
+const emptyDraft: Draft = { label: "", href: "", description: "", iconKey: "Sparkles", group: "", featuredTitle: "", featuredDescription: "", featuredImage: "" };
 
 export default function NavigationManager({ initialItems, canEdit }: { initialItems: CmsNavItemDoc[]; canEdit: boolean }) {
   const confirm = useConfirm();
@@ -144,7 +145,7 @@ function NavItemDialog({
 }) {
   const [draft, setDraft] = useState<Draft>(
     item
-      ? { label: item.label, href: item.href, description: item.description ?? "", iconKey: item.iconKey, featuredTitle: item.featuredTitle ?? "", featuredDescription: item.featuredDescription ?? "", featuredImage: item.featuredImage ?? "" }
+      ? { label: item.label, href: item.href, description: item.description ?? "", iconKey: item.iconKey, group: item.group ?? "", featuredTitle: item.featuredTitle ?? "", featuredDescription: item.featuredDescription ?? "", featuredImage: item.featuredImage ?? "" }
       : emptyDraft
   );
   const [pending, startTransition] = useTransition();
@@ -158,14 +159,15 @@ function NavItemDialog({
           href: draft.href,
           description: draft.description || null,
           iconKey: draft.iconKey,
+          group: parentId === null ? null : draft.group.trim() || null,
           featuredTitle: parentId === null ? draft.featuredTitle || null : null,
           featuredDescription: parentId === null ? draft.featuredDescription || null : null,
           featuredImage: parentId === null ? draft.featuredImage || null : null,
         });
         if (!res.ok) { toast.error(res.error); return; }
-        onSaved({ ...item, label: draft.label, href: draft.href, description: draft.description || null, iconKey: draft.iconKey, featuredTitle: draft.featuredTitle || null, featuredDescription: draft.featuredDescription || null, featuredImage: draft.featuredImage || null }, false);
+        onSaved({ ...item, label: draft.label, href: draft.href, description: draft.description || null, iconKey: draft.iconKey, group: parentId === null ? null : draft.group.trim() || null, featuredTitle: draft.featuredTitle || null, featuredDescription: draft.featuredDescription || null, featuredImage: draft.featuredImage || null }, false);
       } else {
-        const res = await createNavItemAction({ parentId, label: draft.label, href: draft.href, description: draft.description, iconKey: draft.iconKey, featuredTitle: draft.featuredTitle, featuredDescription: draft.featuredDescription, featuredImage: draft.featuredImage });
+        const res = await createNavItemAction({ parentId, label: draft.label, href: draft.href, description: draft.description, iconKey: draft.iconKey, group: draft.group, featuredTitle: draft.featuredTitle, featuredDescription: draft.featuredDescription, featuredImage: draft.featuredImage });
         if (!res.ok) { toast.error(res.error); return; }
         onSaved(
           {
@@ -175,6 +177,7 @@ function NavItemDialog({
             href: draft.href,
             description: draft.description || null,
             iconKey: draft.iconKey,
+            group: parentId === null ? null : draft.group.trim() || null,
             featuredTitle: draft.featuredTitle || null,
             featuredDescription: draft.featuredDescription || null,
             featuredImage: draft.featuredImage || null,
@@ -211,6 +214,12 @@ function NavItemDialog({
             <div className="space-y-1.5">
               <Label htmlFor="nav-description">Description (mega-menu row)</Label>
               <Textarea id="nav-description" value={draft.description} onChange={(e) => set("description", e.target.value)} rows={2} />
+            </div>
+          )}
+          {parentId !== null && (
+            <div className="space-y-1.5">
+              <Label htmlFor="nav-group">Group heading (optional — a menu whose items have groups is shown in columns under these headings)</Label>
+              <Input id="nav-group" value={draft.group} onChange={(e) => set("group", e.target.value)} placeholder="HR & Talent" />
             </div>
           )}
           <div className="space-y-1.5">

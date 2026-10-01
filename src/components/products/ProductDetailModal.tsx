@@ -267,6 +267,13 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
             </div>
 
             <div className="flex items-center gap-3 ml-auto">
+              <Link
+                href={`/products/${product.slug}`}
+                onClick={onClose}
+                className="hidden sm:inline-flex px-5 py-2.5 rounded-full border border-border/60 text-xs font-bold text-foreground hover:bg-muted transition-colors"
+              >
+                {tx("catalog.productDetailModal.full-page") || "Full product page"}
+              </Link>
               <button
                 onClick={onClose}
                 className="px-5 py-2.5 rounded-full border border-border/60 text-xs font-bold text-foreground hover:bg-muted transition-colors"

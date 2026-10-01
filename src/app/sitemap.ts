@@ -7,6 +7,8 @@ import type { BlogPostMeta } from "@/types/content";
 import type { Job } from "@/types/content";
 import type { EngagementCategory } from "@/types/content";
 import { getSeoSiteState } from "@/lib/seo-panel/public";
+import { loadProducts } from "@/lib/products/server";
+import { isProductsHref, productHref } from "@/lib/products/shared";
 
 const APP_DIR = path.join(process.cwd(), "src/app/(site)");
 
@@ -54,13 +56,15 @@ function discoverRoutes(dir: string, base = ""): string[] {
  * crawl list. URLs are on the current company's own site origin.
  */
 export async function baseSitemap(): Promise<MetadataRoute.Sitemap> {
-  const [siteUrl, blogPosts, jobs, engagement] = await Promise.all([
+  const [siteUrl, blogPosts, jobs, engagement, products] = await Promise.all([
     companySiteUrl(),
     getRuntimeRecords<BlogPostMeta>("blog"),
     getRuntimeRecords<Job>("jobs"),
     getRuntimeRecords<EngagementCategory>("engagement"),
+    loadProducts(), // null off the platform owner's site: Products pages exist only there
   ]);
   const recordRoutes = [
+    ...(products ?? []).map((p) => productHref(p.slug)),
     ...blogPosts.map((p) => `/blog/${p.slug}`),
     ...jobs.map((j) => `/careers/${j.slug}`),
     ...engagement.map((c) => `/resource-augmentation/${c.slug}`),
@@ -77,6 +81,8 @@ export async function baseSitemap(): Promise<MetadataRoute.Sitemap> {
 
   const routes = Array.from(new Set([...discoverRoutes(APP_DIR), ...recordRoutes]))
     .filter((route) => !EXCLUDED_ROUTES.has(route) && !excludedJobRoutes.has(route))
+    // /products is a real route folder, so it is discovered for every company — but it 404s off the owner's site.
+    .filter((route) => products !== null || !isProductsHref(route))
     .sort();
 
   return routes.map((route) => {

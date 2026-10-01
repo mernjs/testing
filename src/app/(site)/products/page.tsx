@@ -1,0 +1,46 @@
+import type { Metadata } from "next";
+import { withSeoOverrides } from "@/lib/seo-panel/public";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
+import { getSiteInfo } from "@/lib/cms/site-info";
+import { getProductsText, requireProducts } from "@/lib/products/server";
+import { listingJsonLd, listingMetadata } from "@/lib/products/seo";
+import { PRODUCTS_PATH } from "@/lib/products/shared";
+import ProductsHero from "@/components/products/page/ProductsHero";
+import ProductsGrid from "@/components/products/page/ProductsGrid";
+import { ProductsAiSuite, ProductsConnected, ProductsCtaBand } from "@/components/products/page/ProductsSections";
+import SectionHeader from "@/components/sections/SectionHeader";
+
+/**
+ * /products — the platform owner's product portfolio. Products are the owner's own
+ * marketing content, so on any other company's site this is a 404 (`requireProducts`).
+ * It renders per request, like the CMS catch-all: the same path is a different site per host.
+ */
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata(): Promise<Metadata> {
+  await requireProducts();
+  const [text, { brand }, origin] = await Promise.all([getProductsText(), getSiteInfo(), companySiteUrl()]);
+  return withSeoOverrides(PRODUCTS_PATH, listingMetadata({ origin, siteName: brand.namePrimary + brand.nameAccent, text }));
+}
+
+export default async function ProductsPage() {
+  const products = await requireProducts();
+  const [text, origin] = await Promise.all([getProductsText(), companySiteUrl()]);
+  return (
+    <div className="flex min-h-screen flex-col overflow-hidden">
+      {listingJsonLd(products, origin, text).map((ld, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+      ))}
+      <ProductsHero products={products} text={text} />
+      <section id="products" className="relative bg-background py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <SectionHeader heading={text["products.listing.gridHeading"]} description={text["products.listing.gridDescription"]} />
+          <ProductsGrid products={products} text={text} />
+        </div>
+      </section>
+      <ProductsConnected products={products} text={text} />
+      <ProductsAiSuite products={products} text={text} />
+      <ProductsCtaBand products={products} text={text} title={text["products.listing.cta.title"]} description={text["products.listing.cta.description"]} source="products-page" />
+    </div>
+  );
+}

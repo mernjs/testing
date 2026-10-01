@@ -1,6 +1,8 @@
 import "server-only";
 import { companyCache } from "@/lib/platform/tenancy/cache";
 import { getDb } from "@/lib/mongodb";
+import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { isProductsHref } from "@/lib/products/shared";
 import { COLLECTIONS, CMS_SITE_TAG, expireSiteCache, newId, createStamp, updateStamp, type Stamps } from "@/lib/cms/db";
 
 /** Footer columns + links. Contact details, social links and the footer's other text are Site Identity (`site-info.ts`). */
@@ -116,5 +118,12 @@ const cachedFooter = companyCache(loadFooter, ["cms-footer-v1"], { tags: [CMS_SI
 
 /** The footer's link columns. If the CMS is unreachable this throws, and Next.js keeps serving the last good render. */
 export async function getPublicFooter(): Promise<PublicFooterColumn[]> {
-  return cachedFooter();
+  const columns = await cachedFooter();
+  // Products links are the platform owner's own; never show them on another company's site.
+  return (await isPlatformOwnerContext()) ? columns : withoutProductsLinks(columns);
+}
+
+/** The footer without links into /products. Pure; exported for tests. */
+export function withoutProductsLinks(columns: PublicFooterColumn[]): PublicFooterColumn[] {
+  return columns.map((c) => ({ ...c, links: c.links.filter((l) => !isProductsHref(l.href)) }));
 }

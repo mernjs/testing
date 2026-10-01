@@ -1,0 +1,145 @@
+import type { ProductCtaKind, ProductItem } from "@/types/content";
+
+/**
+ * Pure helpers for the Products section (/products, /products/<slug>, the
+ * header menu). Client-safe: no server-only imports.
+ */
+
+/** A product as the CMS stores it (icons as icon-map keys) — what crosses the server/client boundary. */
+export type StoredProduct = Omit<ProductItem, "icon">;
+
+export const PRODUCTS_PATH = "/products";
+export const productHref = (slug: string) => `${PRODUCTS_PATH}/${slug}`;
+
+/** The order categories appear in on the listing and in the menu. */
+export const CATEGORY_ORDER: ProductItem["category"][] = [
+  "Executive & Operations",
+  "AI & Intelligence",
+  "HR & Talent",
+  "Project & Delivery",
+  "Procurement & Finance",
+  "Sales & Marketing",
+  "Assessment & Security",
+];
+
+export const label = (p: Pick<StoredProduct, "name" | "shortName">) => p.shortName || p.name;
+export const valueLine = (p: Pick<StoredProduct, "tagline" | "valueLine">) => p.valueLine || p.tagline;
+
+export interface ProductGroup<T extends { category: string }> {
+  category: string;
+  products: T[];
+}
+
+/** Products grouped by category in `CATEGORY_ORDER`; products keep their catalogue order inside a group. Empty groups are dropped. */
+export function groupByCategory<T extends { category: string }>(products: T[]): ProductGroup<T>[] {
+  const known = new Set<string>(CATEGORY_ORDER);
+  const order = [...CATEGORY_ORDER, ...Array.from(new Set(products.map((p) => p.category))).filter((c) => !known.has(c))];
+  return order.map((category) => ({ category, products: products.filter((p) => p.category === category) })).filter((g) => g.products.length > 0);
+}
+
+/**
+ * Where "Start Using" (existing customers) goes: the product's own panel via
+ * the Workspace sign-in. `/` (the public website product) and unknown values have no panel.
+ */
+export function startUsingHref(panelPath: string): string | null {
+  const p = panelPath.trim();
+  if (!p.startsWith("/") || p === "/" || p.startsWith("//")) return null;
+  // /admin was folded into the Workspace (see next.config.ts redirects).
+  const target = p === "/admin" ? "/workspace" : p;
+  return `/workspace/login?next=${encodeURIComponent(target)}`;
+}
+
+export interface ResolvedCtas {
+  primary: ProductCtaKind;
+  secondary: ProductCtaKind;
+  /** Existing-customer entry; null when the product has no panel to sign in to. */
+  startUsing: string | null;
+}
+
+/** Primary Get Started, secondary Request Demo — unless the product overrides them. "none" hides a button. */
+export function resolveCtas(p: Pick<StoredProduct, "panelPath" | "ctas">): ResolvedCtas {
+  return { primary: p.ctas?.primary ?? "get-started", secondary: p.ctas?.secondary ?? "request-demo", startUsing: startUsingHref(p.panelPath) };
+}
+
+/** Where a CTA kind leads. `request-demo` opens the demo form (an in-page anchor). */
+export function ctaTarget(kind: ProductCtaKind, startUsing: string | null): { href: string; kind: ProductCtaKind } | null {
+  switch (kind) {
+    case "get-started": return { href: "/signup", kind };
+    case "request-demo": return { href: "#demo", kind };
+    case "start-using": return startUsing ? { href: startUsing, kind } : null;
+    default: return null;
+  }
+}
+
+/** Products related to `product`: same category first, then the rest, never itself, at most `limit`. */
+export function relatedProducts<T extends { slug: string; category: string }>(product: T, all: T[], limit = 3): T[] {
+  const others = all.filter((p) => p.slug !== product.slug);
+  return [...others.filter((p) => p.category === product.category), ...others.filter((p) => p.category !== product.category)].slice(0, limit);
+}
+
+/** Previous / next product in catalogue order (wrapping), or null when there is only one. */
+export function neighbours<T extends { slug: string }>(product: T, all: T[]): { prev: T; next: T } | null {
+  const i = all.findIndex((p) => p.slug === product.slug);
+  if (i < 0 || all.length < 2) return null;
+  return { prev: all[(i - 1 + all.length) % all.length], next: all[(i + 1) % all.length] };
+}
+
+/** The 2-3 chips on a listing card: the first features' titles. */
+export function capabilityChips(p: Pick<StoredProduct, "features" | "keyFeatures">, n = 3): string[] {
+  const src = p.features?.length ? p.features : p.keyFeatures;
+  return src.slice(0, n).map((f) => f.title);
+}
+
+/** Header-menu shape for the owner's Products item (matches `PublicNavTop`). */
+export interface ProductsNavTop {
+  name: string;
+  href: string;
+  iconKey: string;
+  featured: { title: string; description: string; image: string };
+  items: { name: string; href: string; description: string; iconKey: string; group: string }[];
+}
+
+export const PRODUCTS_NAV_LABEL = "Products";
+export const PRODUCTS_NAV_FEATURED = {
+  title: "AI-powered business software",
+  description: "One connected platform for HR, projects, finance, sales, AI and more.",
+  image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop",
+};
+
+/** Menu entries for the given products: grouped by category, each with name, one-line value and icon. */
+export function buildProductsNav(products: StoredProduct[]): ProductsNavTop {
+  return {
+    name: PRODUCTS_NAV_LABEL,
+    href: PRODUCTS_PATH,
+    iconKey: "Boxes",
+    featured: PRODUCTS_NAV_FEATURED,
+    items: groupByCategory(products).flatMap((g) =>
+      g.products.map((p) => ({ name: label(p), href: productHref(p.slug), description: valueLine(p), iconKey: p.iconName || "Sparkles", group: g.category })),
+    ),
+  };
+}
+
+/** True for a nav/footer href that belongs to the Products section. */
+export const isProductsHref = (href: string) => href === PRODUCTS_PATH || href.startsWith(`${PRODUCTS_PATH}/`) || href.startsWith(`${PRODUCTS_PATH}?`);
+
+/** The product page's content with each field's fallback applied (new page fields first, then the catalogue's own). */
+export function pageContent(p: StoredProduct) {
+  return {
+    pitch: p.pitch || p.shortDescription,
+    overview: p.overview || p.fullDescription,
+    purpose: p.primaryPurpose,
+    problem: p.problemSolved,
+    outcome: p.outcome || p.businessOutcome,
+    facts: p.facts?.length ? p.facts : p.metrics,
+    features: (p.features?.length ? p.features : p.keyFeatures.map((f) => ({ title: f.title, description: f.description, icon: undefined as string | undefined }))),
+    ai: p.aiFeatures?.length ? p.aiFeatures : p.aiCapabilities.map((c) => ({ title: c, description: "", icon: undefined as string | undefined })),
+    benefits: p.benefits ?? [],
+    useCases: p.useCases ?? [],
+    workflows: p.automationWorkflows ?? [],
+    integrations: p.integrations ?? [],
+    scenarios: p.scenarios ?? [],
+    faq: p.faq ?? [],
+    audience: p.audience ?? "",
+    screenshots: p.screenshots ?? [],
+  };
+}

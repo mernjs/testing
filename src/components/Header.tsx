@@ -65,7 +65,18 @@ interface NavColumn {
   name: string;
   href: string;
   featured: { title: string; description: string; image: string };
-  items: { name: string; href: string; description: string; icon: React.ComponentType<{ className?: string }> }[];
+  items: { name: string; href: string; description: string; group: string; icon: React.ComponentType<{ className?: string }> }[];
+}
+
+/** Items in first-appearance group order: [{ group, items }]. A menu with no groups is a single unnamed group. */
+function groupItems<T extends { group: string }>(items: T[]): { group: string; items: T[] }[] {
+  const out: { group: string; items: T[] }[] = [];
+  for (const it of items) {
+    const g = out.find((x) => x.group === it.group);
+    if (g) g.items.push(it);
+    else out.push({ group: it.group, items: [it] });
+  }
+  return out;
 }
 
 function FeaturedCard({ item, featuredLabel }: { item: NavColumn; featuredLabel: string }) {
@@ -163,7 +174,7 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
         name: top.name,
         href: top.href,
         featured: top.featured,
-        items: top.items.map((i) => ({ name: i.name, href: i.href, description: i.description ?? "", icon: resolveIcon(i.iconKey) })),
+        items: top.items.map((i) => ({ name: i.name, href: i.href, description: i.description ?? "", group: i.group ?? "", icon: resolveIcon(i.iconKey) })),
       })),
     [cmsNavigation]
   );
@@ -173,7 +184,7 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
         name: top.name,
         href: top.href,
         icon: resolveIcon(top.iconKey),
-        items: top.items.map((i) => ({ name: i.name, href: i.href, icon: resolveIcon(i.iconKey) })),
+        items: top.items.map((i) => ({ name: i.name, href: i.href, group: i.group ?? "", icon: resolveIcon(i.iconKey) })),
       })),
     [cmsNavigation]
   );
@@ -261,6 +272,35 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
 
                         <div className="relative w-full flex-auto overflow-hidden rounded-3xl bg-background/95 dark:bg-muted/20 backdrop-blur-2xl shadow-2xl ring-1 ring-border border border-border/50">
                           <div className="h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+                          {item.items.some((x) => x.group) ? (
+                            <div className="p-5">
+                              <div className="grid max-h-[calc(100vh-220px)] grid-cols-3 gap-x-6 gap-y-5 overflow-y-auto pr-1">
+                                {groupItems(item.items).map((g) => (
+                                  <div key={g.group || "_"} className="min-w-0">
+                                    {g.group && <p className="mb-1.5 px-2.5 text-[11px] font-bold uppercase tracking-wider text-primary">{g.group}</p>}
+                                    {g.items.map((subItem) => (
+                                      <Link key={subItem.href} href={subItem.href} className="group relative flex items-start gap-3 rounded-xl p-2.5 hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-colors">
+                                        <div className="flex h-9 w-9 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-border/50 group-hover:from-primary group-hover:to-[#ff8e75] group-hover:border-primary transition-all duration-300">
+                                          <subItem.icon className="h-4 w-4 text-muted-foreground group-hover:text-white transition-colors duration-300" />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                          <div className="font-semibold text-foreground text-sm mb-0.5 group-hover:text-primary transition-colors truncate">{subItem.name}</div>
+                                          <p className="text-xs text-muted-foreground line-clamp-2">{subItem.description}</p>
+                                        </div>
+                                      </Link>
+                                    ))}
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="mt-4 flex items-center justify-between border-t border-border/50 pt-4">
+                                <p className="text-xs text-muted-foreground">{item.featured.description}</p>
+                                <Link href={item.href} className="group inline-flex flex-none items-center gap-1.5 text-sm font-semibold text-primary">
+                                  View all {item.name.toLowerCase()}
+                                  <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                                </Link>
+                              </div>
+                            </div>
+                          ) : (
                           <div className="grid grid-cols-5 p-2">
                             <FeaturedCard item={item} featuredLabel={header.featuredLabel} />
                             <div className="col-span-3 p-5 grid grid-cols-2 gap-x-6 gap-y-2.5">
@@ -283,6 +323,7 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                               ))}
                             </div>
                           </div>
+                          )}
                         </div>
                       </div>
                     </motion.div>
@@ -404,11 +445,13 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                               className="overflow-hidden"
                             >
                               <div className="pb-4 pl-[3.25rem] space-y-1">
-                                {section.items.map((item) => {
+                                {section.items.map((item, idx) => {
                                   const isItemActive = pathname === item.href;
+                                  const showGroup = item.group && item.group !== section.items[idx - 1]?.group;
                                   return (
+                                    <React.Fragment key={item.name}>
+                                    {showGroup && <p className="px-3 pt-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-primary">{item.group}</p>}
                                     <Link
-                                      key={item.name}
                                       href={item.href}
                                       onClick={() => setMobileMenuOpen(false)}
                                       className={`flex items-center gap-3 rounded-r-lg border-l-2 py-2.5 pl-3 pr-3 text-sm transition-colors ${
@@ -420,6 +463,7 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                                       <item.icon className="h-4 w-4 flex-none" />
                                       {item.name}
                                     </Link>
+                                    </React.Fragment>
                                   );
                                 })}
                                 <Link
