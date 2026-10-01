@@ -19,6 +19,7 @@ import {
   Archive, Cookie, Baby, XCircle, Gavel, Ban, Banknote, Bug, AlertTriangle,
   PlayCircle,
   Apple, Calculator, Shuffle, Timer, Building, Crown, LayoutDashboard, Laptop, Coins, PhoneCall,
+  Gift, Download,
 } from "lucide-react";
 
 /**
@@ -47,6 +48,7 @@ export const CMS_ICON_MAP: Record<string, LucideIcon> = {
   Archive, Cookie, Baby, XCircle, Gavel, Ban, Banknote, Bug, AlertTriangle,
   PlayCircle,
   Apple, Calculator, Shuffle, Timer, Building, Crown, LayoutDashboard, Laptop, Coins, PhoneCall,
+  Gift, Download,
 };
 
 export const CMS_ICON_KEYS = Object.keys(CMS_ICON_MAP).sort();

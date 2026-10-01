@@ -167,4 +167,51 @@ export interface ProductItem {
   hotspots: Hotspot[];
   accentColor: string;
   isFeatured?: boolean;
+  // ── Product page (/products/<slug>) content — all optional; sections hide when empty. ──
+  /** Short product label for menus and chips, e.g. "HR & Payroll" (falls back to `name`). */
+  shortName?: string;
+  /** One-line value for menus and cards (falls back to `tagline`). */
+  valueLine?: string;
+  /** Hero pitch (falls back to `shortDescription`). */
+  pitch?: string;
+  /** "What it does" body (falls back to `fullDescription`). */
+  overview?: string;
+  /** "Business outcome" statement on the page (falls back to `businessOutcome`). */
+  outcome?: string;
+  /** Verified numbers/facts shown as the metrics strip (falls back to `metrics`). */
+  facts?: { label: string; value: string }[];
+  /** Product-page feature grid (falls back to `keyFeatures`). */
+  features?: ProductPageItem[];
+  /** What the AI in/around this product concretely does (falls back to `aiCapabilities`). */
+  aiFeatures?: ProductPageItem[];
+  benefits?: ProductPageItem[];
+  useCases?: ProductPageItem[];
+  automationWorkflows?: ProductWorkflow[];
+  /** Other YashOrbit products and real integration points only. */
+  integrations?: { name: string; description: string; href?: string }[];
+  scenarios?: string[];
+  faq?: { q: string; a: string }[];
+  /** "Who it's for" paragraph. */
+  audience?: string;
+  screenshots?: ProductScreenshot[];
+  /** Override which CTAs the page shows. */
+  ctas?: { primary?: ProductCtaKind; secondary?: ProductCtaKind };
 }
+
+export interface ProductPageItem {
+  title: string;
+  description: string;
+  /** Icon-map key. */
+  icon?: string;
+}
+export interface ProductWorkflow {
+  title: string;
+  description: string;
+  steps: string[];
+}
+export interface ProductScreenshot {
+  src: string;
+  alt: string;
+  caption: string;
+}
+export type ProductCtaKind = "get-started" | "request-demo" | "start-using" | "none";
