@@ -40,6 +40,17 @@ unaware of this layer beyond calling `getDb()`, which is company-scoped.
 | `import/` | CSV import for leads, clients and employees (≤ 1,000 rows, 2 MB): `shared.ts` = field definitions, CSV parser, header auto-mapping, sample files (client-safe); `index.ts` = `previewImport()` (dry run: valid rows, row errors, duplicates by email/phone) and `runImport()`, which creates rows through each panel's own validator and create function. Employee invitations are opt-in and limited by the plan's seats. UI `/settings/import` (`/settings/import/run`, `/settings/import/sample`) |
 | `integrations/` | Platform-level provider configuration (email, domains, payments). Company-facing integrations are outbound webhooks only — a workflow action (see `workflows/webhook.ts`) |
 
+## The company side: Workspace
+
+A company signs in once, at `/workspace/login`, and reaches everything from the
+Workspace: its panels, analytics, the management registers (formerly a separate
+admin panel), its own settings and billing. See `src/lib/workspace/`
+(`nav.ts` = the one navigation and its access rules, `access.ts` = the guards
+for pages, actions and APIs, `notifications.ts` = the one notification feed)
+and `src/lib/workspace-session.ts` (the Workspace session every panel accepts).
+The Platform Panel is separate and appears in the Workspace only as one link
+for people the platform's own access check accepts.
+
 ## Rules
 
 - Platform-level collections (shared by all companies) are listed in
