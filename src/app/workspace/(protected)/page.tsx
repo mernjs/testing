@@ -36,6 +36,7 @@ import {
   Trophy,
   BookText,
   SearchCheck,
+  PanelsTopLeft,
   Vault,
   Bot,
   Megaphone,
@@ -53,6 +54,7 @@ import { normalizeAdminRoles } from "@/lib/admin-roles";
 import { normalizeFmsRoles } from "@/lib/fms-roles";
 import { effectiveSopRoles, hasSopAccess } from "@/lib/sop-roles";
 import { hasSeoAccess, normalizeSeoRoles } from "@/lib/seo-roles";
+import { normalizeCmsRoles } from "@/lib/cms-roles";
 import { hasDlmsAccess, normalizeDlmsRoles, isDlmsManagerTier } from "@/lib/dlms-roles";
 import { hasAibotsAccess, normalizeAibotsRoles } from "@/lib/aibots-roles";
 import { hasSmmsAccess, normalizeSmmsRoles } from "@/lib/smms-roles";
@@ -300,6 +302,15 @@ export default async function HubDashboardPage({
         { label: "Critical", value: String(seoCritical) },
         { label: "My tasks", value: String(seoMyTasks) },
       ],
+    },
+    {
+      // The Website panel had no tile: the sidebar's Panels section was its only link from the Workspace.
+      key: "cms",
+      label: "Website",
+      description: "Pages, navigation, media, theme and the site's content.",
+      href: "/cms",
+      icon: <PanelsTopLeft className="size-5" />,
+      roleBadge: normalizeCmsRoles(roles).join(", ").replace(/_/g, " "),
     },
     {
       key: "dlms",
