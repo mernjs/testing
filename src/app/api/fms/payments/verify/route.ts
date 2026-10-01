@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getPaymentIntent, markPaymentIntentSuccessful, markPaymentIntentFailed } from "@/lib/fms/payments/intents";
+import { getPaymentIntent, getPaymentIntentByGatewayPayment, markPaymentIntentSuccessful, markPaymentIntentFailed } from "@/lib/fms/payments/intents";
 import { getPaymentProvider } from "@/lib/fms/payments/provider";
 
 export async function POST(req: Request) {
@@ -21,8 +21,19 @@ export async function POST(req: Request) {
     }
 
     const provider = getPaymentProvider(intent.paymentProvider);
-    if (gatewayPaymentId) {
+    if (gatewayPaymentId && typeof gatewayPaymentId === "string") {
       const statusRes = await provider.getPaymentStatus(gatewayPaymentId);
+      // This route is public, so the gateway payment must be THIS intent's payment:
+      // made against this intent's gateway order (the gateway fixes the order's
+      // amount) and not already used to settle another intent. Otherwise any
+      // captured payment on the account could mark any intent paid.
+      if (statusRes.ok && intent.paymentProvider !== "mock" && intent.paymentProvider !== "offline") {
+        const paidOrder = statusRes.providerOrderId ?? null;
+        const reused = await getPaymentIntentByGatewayPayment(gatewayPaymentId);
+        if (!intent.gatewayOrderId || paidOrder !== intent.gatewayOrderId || (reused && reused._id !== intent._id)) {
+          return NextResponse.json({ ok: false, error: "That payment doesn't belong to this payment request" }, { status: 400 });
+        }
+      }
       if (statusRes.ok && statusRes.status === "SUCCESS") {
         const markRes = await markPaymentIntentSuccessful(intentId, {
           gatewayPaymentId,

@@ -167,6 +167,11 @@ export async function getPaymentIntentByGatewayOrder(gatewayOrderId: string): Pr
   return collection.findOne({ gatewayOrderId, ...notDeleted });
 }
 
+export async function getPaymentIntentByGatewayPayment(gatewayPaymentId: string): Promise<PaymentIntent | null> {
+  const collection = await getCollection();
+  return collection.findOne({ gatewayPaymentId, ...notDeleted });
+}
+
 export interface PaymentIntentFilter {
   search?: string;
   sourceModule?: PaymentSourceModule;
