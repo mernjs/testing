@@ -343,7 +343,10 @@ try {
       ["/admin/login", "/workspace"], // → /workspace/login, which forwards a signed-in user
     ]) {
       await page.goto(`${COMPANY_URL}${from}`);
-      assert.equal(pathOf(page), to, `${from} → ${pathOf(page)}`);
+      // /admin/login → /workspace/login, which forwards a signed-in user by the sign-in landing rule:
+      // the dashboard, or the onboarding wizard while this owner's setup is still open.
+      const ok = from === "/admin/login" ? ["/workspace", "/workspace/onboarding"].includes(pathOf(page)) : pathOf(page) === to;
+      assert.ok(ok, `${from} → ${pathOf(page)}`);
     }
   });
 

@@ -131,6 +131,17 @@ async function run() {
     await setSignupMode("open", "test");
   });
 
+  console.log("skipped setup");
+  await check("after \"Skip for now\" the stored state still has a complete shape (the wizard and strip read completedSteps)", async () => {
+    await runAsCompany(freshCompanyId, () => skipOnboarding());
+    const { state } = await runAsCompany(freshCompanyId, () => getOnboarding());
+    assert.deepEqual(state.completedSteps, []);
+    assert.ok(state.dismissedAt, "dismissedAt is set");
+    assert.equal(state.completedAt, null);
+    // Leave the shared fresh company exactly as the later checks expect it: setup open.
+    await db.collection("companies").updateOne({ _id: freshCompanyId as never }, { $unset: { onboarding: "" } });
+  });
+
   console.log("sign-in landing (pure)");
   const done = new Date();
   await check("fresh company and an existing never-finished company: owner lands on /workspace/onboarding", () => {

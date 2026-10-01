@@ -37,7 +37,10 @@ async function companies() {
 export async function getOnboarding(): Promise<{ company: CompanyDoc; state: OnboardingState }> {
   const doc = await (await companies()).findOne({ _id: await currentCompanyId() });
   if (!doc) throw new Error("Company not found");
-  return { company: doc, state: doc.onboarding ?? { completedSteps: [], completedAt: null, dismissedAt: null } };
+  // "Skip for now" writes only `onboarding.dismissedAt`, so a stored state can lack `completedSteps` —
+  // always hand callers a complete state (the wizard and the setup strip both read the list).
+  const stored = doc.onboarding;
+  return { company: doc, state: { completedSteps: stored?.completedSteps ?? [], completedAt: stored?.completedAt ?? null, dismissedAt: stored?.dismissedAt ?? null } };
 }
 
 /** True while a (non-platform-owner) company's owner still has setup to do. */
