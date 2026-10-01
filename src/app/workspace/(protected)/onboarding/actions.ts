@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { applyStructure, completeTeamStep, saveModules, saveProfile, skipOnboarding, type ProfileInput, type StepResult } from "@/lib/platform/onboarding/state";
 import { inviteTeammate, revokeInvitation } from "@/lib/platform/invitations";
@@ -17,7 +18,9 @@ async function requireOwner() {
 
 export async function saveProfileAction(input: ProfileInput): Promise<StepResult> {
   const user = await requireOwner();
-  return saveProfile(input, user.id);
+  const res = await saveProfile(input, user.id);
+  revalidatePath("/workspace", "layout"); // the setup strip shows the step count
+  return res;
 }
 
 export async function applyStructureAction(departments: DepartmentTemplate[]): Promise<{ created: number }> {
@@ -27,7 +30,9 @@ export async function applyStructureAction(departments: DepartmentTemplate[]): P
     code: String(d?.code ?? ""),
     designations: Array.isArray(d?.designations) ? d.designations.map(String) : [],
   }));
-  return applyStructure(clean, user.id);
+  const res = await applyStructure(clean, user.id);
+  revalidatePath("/workspace", "layout");
+  return res;
 }
 
 export interface InviteRow {
@@ -59,15 +64,18 @@ export async function revokeInviteAction(id: string): Promise<void> {
 export async function finishTeamStepAction(): Promise<void> {
   await requireOwner();
   await completeTeamStep();
+  revalidatePath("/workspace", "layout");
 }
 
 export async function saveModulesAction(keys: string[]): Promise<void> {
   await requireOwner();
   await saveModules(Array.isArray(keys) ? keys.map(String) : []);
+  revalidatePath("/workspace", "layout"); // the last step completes setup: the strip goes away
 }
 
 export async function skipOnboardingAction(): Promise<void> {
   await requireOwner();
   await skipOnboarding();
+  revalidatePath("/workspace", "layout");
   redirect("/workspace");
 }

@@ -9,6 +9,7 @@ import {
 } from "@/lib/hub-auth";
 import { safeNextPath } from "@/lib/workspace-session";
 import { provisionAccessibleSessions } from "@/lib/cross-module-sso";
+import { loginLanding } from "@/lib/platform/onboarding/state";
 
 export interface HubLoginState {
   error?: string;
@@ -37,5 +38,6 @@ export async function hubLoginAction(_prevState: HubLoginState, formData: FormDa
   const user = await getSessionHubUser(token);
   if (user?.mustChangePassword) redirect("/workspace/change-password");
   // Back to the panel the person came from — validated again here, the form field is user input.
-  redirect(safeNextPath(formData.get("next")) ?? "/workspace");
+  // An explicit, validated `next` wins; otherwise an owner with open setup lands on the onboarding wizard.
+  redirect(await loginLanding(user?.roles ?? [], safeNextPath(formData.get("next"))));
 }

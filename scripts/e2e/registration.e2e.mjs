@@ -95,18 +95,20 @@ try {
     await page.getByRole("heading", { name: `Set up ${COMPANY}` }).waitFor();
     // It is the Workspace frame, not a standalone page.
     await page.locator('aside nav[aria-label="Workspace"]').waitFor();
-    assert.equal(await page.getByText("My Operational Panels").count(), 0, "the first screen is onboarding, not the dashboard");
+    assert.equal(await page.getByText("My Operational Panels").count(), 0, "the first screen after sign-up is onboarding, not the dashboard");
     assert.equal(await page.locator("#setup-banner").count(), 0, "no reminder banner on the wizard itself");
   });
 
-  await step("the first Workspace page redirects to onboarding while setup is open; a deep link is not intercepted and shows the setup banner", async () => {
+  await step("/workspace is never redirected: it shows the dashboard with the \"Complete setup\" strip; deep links show the strip too", async () => {
     const origin = new URL(page.url()).origin;
     await page.goto(`${origin}/workspace`);
-    await page.waitForURL((u) => u.pathname === "/workspace/onboarding", { timeout: 30_000 });
+    await page.getByText("My Operational Panels").waitFor();
+    assert.equal(pathOf(page), "/workspace", "not redirected back to onboarding");
+    await page.locator("#setup-banner").getByRole("link", { name: "Complete setup" }).waitFor();
     await page.goto(`${origin}/workspace/settings/billing`);
-    assert.equal(pathOf(page), "/workspace/settings/billing", "deep links are not redirected");
+    assert.equal(pathOf(page), "/workspace/settings/billing");
     await page.locator("#setup-banner").waitFor();
-    await Promise.all([page.waitForURL((u) => u.pathname === "/workspace/onboarding"), page.locator("#setup-banner").click()]);
+    await Promise.all([page.waitForURL((u) => u.pathname === "/workspace/onboarding"), page.locator("#setup-banner-link").click()]);
   });
 
   await step("old /onboarding link still works", async () => {
@@ -131,6 +133,7 @@ try {
     await page.getByRole("link", { name: "Go to your workspace" }).click();
     await page.waitForURL((u) => u.pathname === "/workspace", { timeout: 30_000 });
     await page.getByText("My Operational Panels").waitFor();
+    assert.equal(await page.locator("#setup-banner").count(), 0, "finishing the wizard removes the strip");
   });
 
   await step("setup is recorded (completed), so /workspace now stays on the dashboard and the banner is gone", async () => {
@@ -149,7 +152,7 @@ try {
     assert.equal(pathOf(page), "/workspace/onboarding");
   });
 
-  await step("a returning owner signs in at /workspace/login and goes straight to the dashboard", async () => {
+  await step("a returning owner with completed setup signs in at /workspace/login and goes straight to the dashboard", async () => {
     const c2 = await browser.newContext();
     const p2 = await c2.newPage();
     const origin = new URL(page.url()).origin;

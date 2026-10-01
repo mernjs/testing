@@ -4,6 +4,8 @@ import { currentCompanyId } from "@/lib/platform/tenancy/context";
 import { consumeHandoff } from "@/lib/platform/signup";
 import { createHubSession, setHubSessionCookie } from "@/lib/hub-auth";
 import { provisionAccessibleSessions } from "@/lib/cross-module-sso";
+import { loginLanding } from "@/lib/platform/onboarding/state";
+import { getSessionHubUser } from "@/lib/hub-auth";
 
 /**
  * Signs a freshly signed-up owner in on their company's own host. The token
@@ -17,10 +19,13 @@ export async function GET(req: NextRequest) {
   if (!handoff) return NextResponse.redirect(onThisHost(req, "/workspace/login"));
 
   const adminId = new ObjectId(handoff.adminId);
-  await setHubSessionCookie(await createHubSession(adminId));
+  const hubToken = await createHubSession(adminId);
+  await setHubSessionCookie(hubToken);
   await provisionAccessibleSessions(adminId, "hub");
-  const next = handoff.next.startsWith("/") && !handoff.next.startsWith("//") ? handoff.next : "/workspace";
-  return NextResponse.redirect(onThisHost(req, next));
+  // The plain Workspace home is not an explicit destination: a new owner lands on onboarding.
+  const asked = handoff.next.startsWith("/") && !handoff.next.startsWith("//") && handoff.next !== "/workspace" ? handoff.next : null;
+  const user = await getSessionHubUser(hubToken);
+  return NextResponse.redirect(onThisHost(req, await loginLanding(user?.roles ?? [], asked)));
 }
 
 /**

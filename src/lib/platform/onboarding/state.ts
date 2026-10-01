@@ -5,6 +5,7 @@ import { COMPANIES_COLLECTION, forgetCompanyRouting, type Company } from "@/lib/
 import { getCompanyDetails, updateCompanyDetails } from "@/lib/hrms/company";
 import { syncSiteContact } from "@/lib/platform/website/starter";
 import { createDepartment, createDesignation, listDepartments, listDesignations } from "@/lib/hrms/departments";
+import { isOnboardingOwner, postLoginTarget, showSetupStrip } from "@/lib/platform/onboarding/gate";
 import { COMPANY_SIZES, CURRENCIES, INDUSTRIES, MODULES, ONBOARDING_STEPS, type DepartmentTemplate, type Industry, type ModuleKey, type OnboardingStep } from "@/lib/platform/onboarding/catalog";
 
 /**
@@ -193,4 +194,22 @@ export async function saveModules(keys: string[]): Promise<void> {
 export async function enabledModules(): Promise<Set<string> | null> {
   const doc = await (await companies()).findOne({ _id: await currentCompanyId() }, { projection: { enabledModules: 1 } });
   return doc?.enabledModules ? new Set(doc.enabledModules) : null;
+}
+
+/** Landing path after a sign-in (see `gate.ts`), for the signed-in company's own data. Fails soft to the dashboard. */
+export async function loginLanding(roles: readonly string[], requestedNext: string | null): Promise<string> {
+  try {
+    const { company, state } = await getOnboarding();
+    return postLoginTarget({ isOwner: isOnboardingOwner(roles), isPlatformOwnerCompany: company.isPlatformOwner === true, state, requestedNext });
+  } catch {
+    return requestedNext ?? "/workspace";
+  }
+}
+
+/** True while an owner's setup is not completed (skipped or not): drives the Workspace strip. */
+export async function setupStripNeeded(roles: readonly string[]): Promise<{ show: boolean; done: number; total: number }> {
+  const total = ONBOARDING_STEPS.length;
+  if (!isOnboardingOwner(roles)) return { show: false, done: 0, total };
+  const { company, state } = await getOnboarding();
+  return { show: showSetupStrip({ isOwner: true, isPlatformOwnerCompany: company.isPlatformOwner === true, state }), done: state.completedSteps.length, total };
 }

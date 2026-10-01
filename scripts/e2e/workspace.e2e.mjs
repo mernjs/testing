@@ -48,13 +48,6 @@ async function signIn(page, origin, email, password) {
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', password);
   await Promise.all([page.waitForURL((u) => !u.pathname.endsWith("/login"), { timeout: 60_000 }), page.press('input[name="password"]', "Enter")]);
-  await skipSetupIfShown(page);
-}
-
-/** A company whose setup is still open lands in the onboarding wizard first; skipping it is the way into the dashboard. */
-async function skipSetupIfShown(page) {
-  if (new URL(page.url()).pathname !== "/workspace/onboarding") return;
-  await Promise.all([page.waitForURL((u) => u.pathname === "/workspace", { timeout: 30_000 }), page.getByRole("button", { name: "Skip for now" }).click()]);
 }
 
 async function noHorizontalScroll(page, url) {
@@ -110,8 +103,20 @@ try {
   const page = await ctx.newPage();
   page.on("pageerror", (e) => pageErrors.push(`${pathOf(page)}: ${e.message}`));
 
-  await step("company Super Admin signs in once and lands on the Workspace", async () => {
+  await step("sign-in of an owner whose setup is not complete lands on onboarding; the Dashboard link stays on the dashboard, with the setup strip", async () => {
     await signIn(page, COMPANY_URL, COMPANY_EMAIL, COMPANY_PASSWORD);
+    if (pathOf(page) !== "/workspace/onboarding") return console.log("      (setup already complete for this company: landing/strip checks skipped)");
+    assert.equal(await page.locator("#setup-banner").count(), 0, "no strip on the wizard itself");
+    await sidebar(page).getByRole("link", { name: "Dashboard", exact: true }).click();
+    await page.waitForURL((u) => u.pathname === "/workspace", { timeout: 30_000 });
+    await page.getByText("My Operational Panels").waitFor();
+    assert.equal(pathOf(page), "/workspace", "/workspace is never redirected to onboarding");
+    await page.locator("#setup-banner").getByRole("link", { name: "Complete setup" }).waitFor();
+    await page.goto(`${COMPANY_URL}/workspace/settings/billing`);
+    await page.locator("#setup-banner").waitFor();
+  });
+
+  await step("company Super Admin is signed in and the dashboard opens", async () => {
     await page.goto(`${COMPANY_URL}/workspace`);
     await page.getByText("My Operational Panels").waitFor();
     await sidebar(page).waitFor();

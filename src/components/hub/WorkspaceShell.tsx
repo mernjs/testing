@@ -8,8 +8,7 @@ import { workspaceUnreadCount } from "@/lib/workspace/notifications";
 import type { CurrentHubUser } from "@/lib/hub-auth";
 import type { ResolvedNav } from "@/lib/workspace/nav";
 import SetupBanner from "@/components/workspace/SetupBanner";
-import { isOnboardingOwner } from "@/lib/platform/onboarding/gate";
-import { onboardingPending } from "@/lib/platform/onboarding/state";
+import { setupStripNeeded } from "@/lib/platform/onboarding/state";
 
 /**
  * The Workspace frame: sidebar, top bar, billing notice. One layout
@@ -17,11 +16,11 @@ import { onboardingPending } from "@/lib/platform/onboarding/state";
  * the dashboard, the registers, company settings (`/workspace/settings/*`),
  * onboarding and upgrade — so the whole company-level area is one application.
  *
- * A company owner whose setup is still open also gets a reminder banner
- * (`SetupBanner`, hidden on the home page and the wizard themselves).
+ * A company owner whose setup is not completed also gets the "Complete setup"
+ * strip (`SetupBanner`) on every page except the wizard itself.
  */
 export default async function WorkspaceShell({ user, nav, children }: { user: CurrentHubUser; nav: ResolvedNav; children: React.ReactNode }) {
-  const [unread, setupOpen] = await Promise.all([workspaceUnreadCount(user).catch(() => 0), isOnboardingOwner(user.roles) ? onboardingPending().catch(() => false) : Promise.resolve(false)]);
+  const [unread, setup] = await Promise.all([workspaceUnreadCount(user).catch(() => 0), setupStripNeeded(user.roles).catch(() => ({ show: false, done: 0, total: 0 }))]);
 
   return (
     <TooltipProvider delay={200}>
@@ -39,7 +38,7 @@ export default async function WorkspaceShell({ user, nav, children }: { user: Cu
               <HubTopbar email={user.email} nav={nav.sections} unread={unread} />
             </div>
             <BillingNotice />
-            {setupOpen && <SetupBanner />}
+            {setup.show && <SetupBanner done={setup.done} total={setup.total} />}
             <main id="workspace-content" className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">
               {children}
             </main>

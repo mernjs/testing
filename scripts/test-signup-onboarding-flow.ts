@@ -9,10 +9,11 @@
  *  - a fresh sign-up (start -> e-mailed link -> confirm) creates the company and
  *    hands the owner off to /workspace (not a setup wizard);
  *  - an admin approval path creates the same company with the same fresh setup state;
- *  - the redirect decision (`onboardingGateTarget`, pure): an owner with setup
- *    open is sent to /workspace/onboarding from /workspace only; completed or
- *    skipped owners, invited employees and the platform owner's company never are;
- *    no redirect loop is possible;
+ *  - the sign-in landing (`postLoginTarget`, pure): an owner whose setup is
+ *    neither completed nor skipped lands on /workspace/onboarding at sign-in
+ *    (an explicit `next` wins); completed/skipped owners, invited employees and
+ *    the platform owner's company never do; /workspace itself never redirects;
+ *    the "Complete setup" strip shows until setup is completed (skipped included);
  *  - the real onboarding state (`companies.onboarding`) drives it, including an
  *    invited employee accepting an invitation;
  *  - the sign-up form asks only for what creating the account needs.
@@ -28,7 +29,7 @@ import { setSignupMode } from "@/lib/platform/settings";
 import { acceptInvitation, inviteTeammate } from "@/lib/platform/invitations";
 import { getOnboarding, markOnboardingStep, skipOnboarding } from "@/lib/platform/onboarding/state";
 import { ONBOARDING_STEPS } from "@/lib/platform/onboarding/catalog";
-import { ONBOARDING_PATH, WORKSPACE_HOME, isOnboardingOwner, onboardingGateTarget, setupIsOpen, type OnboardingGateInput } from "@/lib/platform/onboarding/gate";
+import { ONBOARDING_PATH, WORKSPACE_HOME, isOnboardingOwner, postLoginTarget, setupIsOpen, showSetupStrip, type SetupFacts } from "@/lib/platform/onboarding/gate";
 import { getDb } from "@/lib/mongodb";
 
 const uri = process.env.MONGODB_URI ?? "";
@@ -67,7 +68,7 @@ const emailsTo = (addr: string) => sentEmails.filter((e) => e.includes(`to=${add
 const linkIn = (mail: string, re: RegExp) => mail.match(re)?.[1] ?? "";
 
 const open = { completedAt: null, dismissedAt: null };
-const decide = (over: Partial<OnboardingGateInput> = {}) => onboardingGateTarget({ pathname: WORKSPACE_HOME, isOwner: true, isPlatformOwnerCompany: false, state: open, ...over });
+const landing = (over: Partial<SetupFacts & { requestedNext: string | null }> = {}) => postLoginTarget({ isOwner: true, isPlatformOwnerCompany: false, state: open, requestedNext: null, ...over });
 
 async function run() {
   const db = await getPlatformDb();
@@ -108,7 +109,7 @@ async function run() {
     const { state, company } = await runAsCompany(freshCompanyId, () => getOnboarding());
     assert.equal(company.isPlatformOwner, false);
     assert.deepEqual(state, { completedSteps: [], completedAt: null, dismissedAt: null });
-    assert.equal(onboardingGateTarget({ pathname: "/workspace", isOwner: isOnboardingOwner(owner!.roles), isPlatformOwnerCompany: Boolean(company.isPlatformOwner), state }), ONBOARDING_PATH, "opening /workspace starts onboarding");
+    assert.equal(postLoginTarget({ isOwner: isOnboardingOwner(owner!.roles), isPlatformOwnerCompany: Boolean(company.isPlatformOwner), state }), ONBOARDING_PATH, "signing in starts onboarding");
   });
 
   console.log("admin approval path");
@@ -126,60 +127,65 @@ async function run() {
     assert.ok(mail, "the approval e-mail links to the Workspace sign-in");
     const { state } = await runAsCompany((res as { companyId: string }).companyId, () => getOnboarding());
     assert.equal(setupIsOpen({ isOwner: true, isPlatformOwnerCompany: false, state }), true);
-    assert.equal(decide({ state }), ONBOARDING_PATH, "signing in lands on /workspace, which starts onboarding");
+    assert.equal(landing({ state }), ONBOARDING_PATH, "signing in lands on the onboarding wizard");
     await setSignupMode("open", "test");
   });
 
-  console.log("redirect decision (pure)");
-  await check("owner + open setup: /workspace -> /workspace/onboarding", () => assert.equal(decide(), "/workspace/onboarding"));
-  await check("trailing slash and the exact home path only; deep links are never intercepted", () => {
-    assert.equal(decide({ pathname: "/workspace/" }), ONBOARDING_PATH);
-    for (const p of ["/workspace/crm/leads", "/workspace/settings/billing", "/workspace/users", "/workspace/notifications", "/workspace/account/documents", "/workspace/onboarding", "/hrms", "/workspace/settings"]) assert.equal(decide({ pathname: p }), null, p);
+  console.log("sign-in landing (pure)");
+  const done = new Date();
+  await check("fresh company and an existing never-finished company: owner lands on /workspace/onboarding", () => {
+    assert.equal(landing(), ONBOARDING_PATH);
+    assert.equal(landing({ state: { completedAt: null, dismissedAt: null } }), ONBOARDING_PATH, "same for companies that predate onboarding");
+    assert.equal(WORKSPACE_HOME, "/workspace");
   });
-  await check("completed or skipped setup goes straight to the dashboard", () => {
-    assert.equal(decide({ state: { completedAt: new Date(), dismissedAt: null } }), null);
-    assert.equal(decide({ state: { completedAt: null, dismissedAt: new Date() } }), null);
+  await check("skipped or completed setup lands on the dashboard", () => {
+    assert.equal(landing({ state: { completedAt: null, dismissedAt: done } }), WORKSPACE_HOME);
+    assert.equal(landing({ state: { completedAt: done, dismissedAt: null } }), WORKSPACE_HOME);
   });
-  await check("invited employees (any non-Super-Admin role) are never sent to company onboarding", () => {
-    for (const roles of [["employee"], ["pms_employee", "workspace_member"], ["hr", "employee", "chat_hr"], []]) assert.equal(decide({ isOwner: isOnboardingOwner(roles) }), null, roles.join(","));
+  await check("an explicit valid `next` (deep link, panel login) is honoured, never overridden", () => {
+    for (const next of ["/hrms", "/workspace/crm/leads", "/workspace/settings/billing", "/workspace"]) assert.equal(landing({ requestedNext: next }), next);
+  });
+  await check("invited employees, non-Super-Admin roles and the platform owner's company never land on onboarding", () => {
+    for (const roles of [["employee"], ["pms_employee", "workspace_member"], ["hr", "employee", "chat_hr"], []]) assert.equal(landing({ isOwner: isOnboardingOwner(roles) }), WORKSPACE_HOME, roles.join(","));
+    assert.equal(landing({ isPlatformOwnerCompany: true }), WORKSPACE_HOME);
     assert.equal(isOnboardingOwner(["super_admin"]), true);
   });
-  await check("the platform owner's own company has no setup", () => assert.equal(decide({ isPlatformOwnerCompany: true }), null));
-  await check("no loops: following redirects from any start ends in at most one hop, and Skip/Finish end the wizard for good", () => {
-    const follow = (start: string, input: Omit<OnboardingGateInput, "pathname">) => {
-      let at = start;
-      const trail = [at];
-      for (let i = 0; i < 5; i++) {
-        const next = onboardingGateTarget({ ...input, pathname: at });
-        if (!next) return trail;
-        at = next;
-        trail.push(at);
-      }
-      throw new Error(`redirect loop: ${trail.join(" -> ")}`);
-    };
-    const base = { isOwner: true, isPlatformOwnerCompany: false };
-    assert.deepEqual(follow("/workspace", { ...base, state: open }), ["/workspace", "/workspace/onboarding"]);
-    assert.deepEqual(follow("/workspace/onboarding", { ...base, state: open }), ["/workspace/onboarding"]);
-    assert.deepEqual(follow("/workspace", { ...base, state: { completedAt: new Date(), dismissedAt: null } }), ["/workspace"]);
-    assert.deepEqual(follow("/workspace", { ...base, state: { completedAt: null, dismissedAt: new Date() } }), ["/workspace"]);
+  await check("the strip: owner of a customer company until setup is COMPLETED (skipped still shows); nobody else", () => {
+    const f = (over: Partial<SetupFacts>): SetupFacts => ({ isOwner: true, isPlatformOwnerCompany: false, state: open, ...over });
+    assert.equal(showSetupStrip(f({})), true);
+    assert.equal(showSetupStrip(f({ state: { completedAt: null, dismissedAt: done } })), true, "skipped: strip stays");
+    assert.equal(showSetupStrip(f({ state: { completedAt: done, dismissedAt: null } })), false);
+    assert.equal(showSetupStrip(f({ isOwner: false })), false);
+    assert.equal(showSetupStrip(f({ isPlatformOwnerCompany: true })), false);
+    assert.equal(setupIsOpen(f({ state: { completedAt: null, dismissedAt: done } })), false, "skipped: no login landing");
+  });
+  await check("no page redirect decision exists on /workspace: the dashboard and the gate module have none", () => {
+    const page = fs.readFileSync(path.join(process.cwd(), "src/app/workspace/(protected)/page.tsx"), "utf8");
+    assert.ok(!page.includes("/workspace/onboarding"), "the dashboard has no onboarding redirect");
+    assert.ok(!page.includes("onboardingGateTarget"));
+    const gate = fs.readFileSync(path.join(process.cwd(), "src/lib/platform/onboarding/gate.ts"), "utf8");
+    assert.ok(!/onboardingGateTarget/.test(gate), "the old page gate is gone");
   });
 
   console.log("the real state drives the decision");
-  await check("finishing the wizard's steps (or skipping) stops the redirect; partial progress keeps it", async () => {
-    const decideFor = async () => {
-      const { company, state } = await runAsCompany(freshCompanyId, () => getOnboarding());
-      return onboardingGateTarget({ pathname: "/workspace", isOwner: true, isPlatformOwnerCompany: company.isPlatformOwner === true, state });
+  await check("finishing the wizard's steps stops the login landing and the strip; skipping stops only the landing", async () => {
+    const facts = async (id: string): Promise<SetupFacts> => {
+      const { company, state } = await runAsCompany(id, () => getOnboarding());
+      return { isOwner: true, isPlatformOwnerCompany: Boolean(company.isPlatformOwner), state };
     };
-    assert.equal(await decideFor(), ONBOARDING_PATH);
+    assert.equal(postLoginTarget({ ...(await facts(freshCompanyId)) }), ONBOARDING_PATH);
     for (const step of ONBOARDING_STEPS.slice(0, -1)) await runAsCompany(freshCompanyId, () => markOnboardingStep(step.key));
-    assert.equal(await decideFor(), ONBOARDING_PATH, "one step to go: still open");
+    assert.equal(postLoginTarget({ ...(await facts(freshCompanyId)) }), ONBOARDING_PATH, "one step to go: still open");
+    assert.equal(showSetupStrip(await facts(freshCompanyId)), true);
     await runAsCompany(freshCompanyId, () => markOnboardingStep(ONBOARDING_STEPS[ONBOARDING_STEPS.length - 1].key));
-    assert.equal(await decideFor(), null, "all steps done: dashboard");
-    await db.collection(COMPANIES_COLLECTION).updateOne({ slug: "approvedco" }, { $set: { "onboarding.dismissedAt": null } });
+    assert.equal(postLoginTarget({ ...(await facts(freshCompanyId)) }), WORKSPACE_HOME, "all steps done: dashboard");
+    assert.equal(showSetupStrip(await facts(freshCompanyId)), false, "completed: no strip");
     const approved = await db.collection(COMPANIES_COLLECTION).findOne({ slug: "approvedco" });
-    await runAsCompany(String(approved!._id), () => skipOnboarding());
-    const { company, state } = await runAsCompany(String(approved!._id), () => getOnboarding());
-    assert.equal(onboardingGateTarget({ pathname: "/workspace", isOwner: true, isPlatformOwnerCompany: company.isPlatformOwner === true, state }), null, "skipped: dashboard");
+    const aid = String(approved!._id);
+    await runAsCompany(aid, () => skipOnboarding());
+    const sk = await facts(aid);
+    assert.equal(postLoginTarget(sk), WORKSPACE_HOME, "skipped: no login landing");
+    assert.equal(showSetupStrip(sk), true, "skipped: the strip keeps reminding");
   });
   await check("an invitation accepted in the new company makes a teammate who is not routed to onboarding", async () => {
     await db.collection(COMPANIES_COLLECTION).updateOne({ _id: freshCompanyId as never }, { $set: { "onboarding.completedSteps": [], "onboarding.completedAt": null, "onboarding.dismissedAt": null } });
@@ -194,14 +200,14 @@ async function run() {
     assert.ok(user && !isOnboardingOwner(user.roles as string[]), "teammate is not the owner");
     const { company, state } = await runAsCompany(freshCompanyId, () => getOnboarding());
     assert.equal(setupIsOpen({ isOwner: true, isPlatformOwnerCompany: false, state }), true, "the company's setup is still open for its owner");
-    assert.equal(onboardingGateTarget({ pathname: "/workspace", isOwner: isOnboardingOwner(user.roles as string[]), isPlatformOwnerCompany: company.isPlatformOwner === true, state }), null, "but the teammate goes straight to the dashboard");
+    assert.equal(postLoginTarget({ isOwner: isOnboardingOwner(user.roles as string[]), isPlatformOwnerCompany: Boolean(company.isPlatformOwner), state }), WORKSPACE_HOME, "but the teammate goes straight to the dashboard");
   });
 
   console.log("wiring");
-  await check("the dashboard applies the gate; the wizard, settings and upgrade pages sit under /workspace; handoff and approval land in the Workspace", () => {
+  await check("login and handoff use the landing rule; the wizard, settings and upgrade pages sit under /workspace; handoff and approval land in the Workspace", () => {
     const root = process.cwd();
     const read = (rel: string) => fs.readFileSync(path.join(root, rel), "utf8");
-    assert.ok(read("src/app/workspace/(protected)/page.tsx").includes("onboardingGateTarget"));
+    assert.ok(read("src/app/workspace/login/actions.ts").includes("loginLanding") && read("src/app/workspace/handoff/route.ts").includes("loginLanding"), "login and handoff share the one landing rule");
     assert.ok(!read("src/app/workspace/(protected)/onboarding/page.tsx").includes('redirect("/workspace")') || read("src/app/workspace/(protected)/onboarding/page.tsx").includes("super_admin"), "the wizard only bounces non-owners");
     assert.ok(fs.existsSync(path.join(root, "src/app/workspace/(protected)/onboarding/OnboardingWizard.tsx")));
     assert.ok(!read("src/lib/platform/signup.ts").includes('next: "/onboarding"'));

@@ -78,8 +78,6 @@ import { todayDateString, shiftMonth } from "@/lib/hrms/time";
 import CompanyToday from "@/components/platform/hub/CompanyToday";
 import CommandCenterSections from "@/components/workspace/CommandCenterSections";
 import { loadExecutiveOverview } from "@/lib/workspace/executive-overview";
-import { isOnboardingOwner, onboardingGateTarget } from "@/lib/platform/onboarding/gate";
-import { getOnboarding } from "@/lib/platform/onboarding/state";
 import { getCompanyBrand } from "@/lib/platform/branding";
 
 interface ModuleTile {
@@ -132,14 +130,6 @@ export default async function HubDashboardPage({
   const user = await getCurrentHubUser();
   if (!user) redirect("/workspace/login");
   if (user.mustChangePassword) redirect("/workspace/change-password");
-
-  // First Workspace experience: a company owner whose setup isn't finished (or skipped) starts in the onboarding wizard.
-  // Only this page redirects — deep links are never intercepted (the shell's setup banner reminds instead).
-  if (isOnboardingOwner(user.roles)) {
-    const { company, state } = await getOnboarding();
-    const target = onboardingGateTarget({ pathname: "/workspace", isOwner: true, isPlatformOwnerCompany: company.isPlatformOwner === true, state });
-    if (target) redirect(target);
-  }
 
   const sp = await searchParams;
   const executive = await loadExecutiveOverview(

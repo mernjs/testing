@@ -299,23 +299,25 @@ setup questions, so nothing had to be moved into the wizard. Flow:
 1. Sign-up -> e-mail link -> `confirmSignup` creates the company and owner (30-day trial starts here, unchanged) and a
    one-time handoff with `next: "/workspace"`; the handoff signs the owner in on the company host and lands on `/workspace`.
 2. Approval mode: `approveSignup` creates the same company and e-mails a link to `/workspace/login`; signing in lands on `/workspace`.
-3. `/workspace` applies one rule (`onboardingGateTarget`, `src/lib/platform/onboarding/gate.ts`, pure): **a Super Admin of a
-   customer company whose setup is neither completed nor skipped is redirected from `/workspace` to `/workspace/onboarding`.**
-   Nobody else is (invited employees keep landing on the dashboard after accepting an invitation; the platform owner's
-   company has no setup).
-4. Only the exact path `/workspace` is gated. Deep links (`/workspace/crm/leads`, `/workspace/settings/billing`, …) are
-   never intercepted; while setup is open the Workspace shows a "Finish setting up your workspace" banner there
-   (`SetupBanner`, not on `/workspace` or the wizard). Rationale: one place makes the first experience, and a link someone
-   opened on purpose is never hijacked.
-5. The wizard (`/workspace/onboarding`, profile -> departments -> invitations -> branding -> panels) never redirects an owner
-   away, "Skip for now" writes `dismissedAt`, finishing writes `completedAt`; both stop the redirect. No loop is possible:
-   `/workspace` -> wizard is the only edge. The wizard stays reachable any time from Company → Company setup.
-6. Existing companies that never finished (or never saw) setup get the same treatment on their next `/workspace` visit; Skip
-   stops it.
+3. **Login landing, decided in one place** (`postLoginTarget`, `src/lib/platform/onboarding/gate.ts`, pure; called through
+   `loginLanding()` by `/workspace/login` and `/workspace/handoff`, which covers sign-up confirmation and the approval
+   e-mail sign-in): a Super Admin of a customer company whose setup is **neither completed nor skipped** lands on
+   `/workspace/onboarding` at every sign-in, existing never-finished companies included. A valid explicit `next` (a deep
+   link, a panel's `/login?next=/hrms`) is honoured and never overridden. Invited employees, other roles and the platform
+   owner's company never land there (invitation acceptance goes to `/workspace`).
+4. **No page redirects.** `/workspace` always shows the dashboard, and everything in the Workspace works with setup
+   unfinished. The only redirect is the one at sign-in, so no loop is possible.
+5. **The strip** (`SetupBanner`, in `WorkspaceShell`, on every Workspace page including the dashboard): while setup is
+   **not completed** — skipped or not — the owner sees "Your workspace setup isn't finished — N of 5 steps done" with a
+   "Complete setup" link to `/workspace/onboarding`. Hidden on the wizard, for non-owners, the platform owner's company and
+   once completed. The wizard's "Skip for now" writes `dismissedAt`: it only stops the login landing, the strip stays. Wizard
+   actions revalidate the Workspace layout so the strip updates / disappears without a reload. The wizard stays reachable
+   from Company → Company setup.
 
-Section 5 additionally: `scripts/test-signup-onboarding-flow.ts` (13 checks: sign-up -> handoff `next: /workspace`, approval path,
-the pure redirect rule, no loops, invited teammate), `test-workspace-access` 56 checks (one Dashboard, no Command Center item,
-Documents in Account, Audit log in Company, all pages under `/workspace/*`, redirects in `next.config.ts`, executive loader
-returns nothing without the permission), and the existing platform-roles, enforcement, search-notifications, import,
-events-workflows, billing-foundation and console tests. `scripts/e2e/registration.e2e.mjs` and the extended
-`scripts/e2e/workspace.e2e.mjs` are written and syntax-checked, **not run** by the author.
+### 5.7 What was run for section 5
+
+`scripts/test-signup-onboarding-flow.ts` (13 checks: sign-up -> handoff, approval path, the pure login-landing and strip rules,
+explicit `next`, invited teammate), `test-workspace-access` (56), and the platform-roles, enforcement, search-notifications,
+import, events-workflows, billing-foundation and console tests; `npx tsc --noEmit -p .` clean. `scripts/e2e/registration.e2e.mjs`
+and the extended `scripts/e2e/workspace.e2e.mjs` are written and syntax-checked, **not run** by the author; `next build` was
+not run.
