@@ -31,10 +31,10 @@ export interface AddonLimitDoc {
 
 /** The add-ons recorded on a subscription (tolerant of a missing or malformed field). */
 export function subscriptionAddons(sub: CompanySubscription | null): SubscriptionAddon[] {
-  const raw = (sub as (CompanySubscription & { addons?: unknown }) | null)?.addons;
+  const raw: unknown = sub?.addons;
   if (!Array.isArray(raw)) return [];
   return raw
-    .filter((a): a is SubscriptionAddon => !!a && typeof a === "object" && typeof (a as SubscriptionAddon).addonId === "string")
+    .filter((a: unknown): a is SubscriptionAddon => !!a && typeof a === "object" && typeof (a as SubscriptionAddon).addonId === "string")
     .map((a) => ({ addonId: a.addonId, quantity: Number.isFinite(Number(a.quantity)) ? Math.max(0, Math.floor(Number(a.quantity))) : 0 }))
     .filter((a) => a.quantity > 0);
 }

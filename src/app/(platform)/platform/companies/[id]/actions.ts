@@ -28,8 +28,9 @@ export async function setCompanyStatusAction(companyId: string, status: string):
 }
 
 export async function extendTrialAction(companyId: string, days: number): Promise<{ ok: true; trialEndsAt: string } | { ok: false; error: string }> {
-  const user = await requirePlatformPermission("companies.manage");
-  const res = await extendTrial(String(companyId), Number(days), user.id);
+  const auth = await checkPlatformPermission("subscriptions.manage");
+  if (!auth.ok) return auth;
+  const res = await extendTrial(String(companyId), Number(days), auth.user.id);
   if (!res.ok) return res;
   revalidatePath("/platform", "layout");
   return { ok: true, trialEndsAt: res.trialEndsAt.toISOString() };
