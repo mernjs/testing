@@ -144,10 +144,15 @@ async function main() {
     assert.ok(await runAsCompany(susp, () => writeBlockReason()));
     for (const id of [starter, trial, grace, owner]) assert.equal(await runAsCompany(id, () => writeBlockReason()), null);
   });
-  await check("expired trial becomes read-only on read", async () => {
+  await check("expired trial: grace for the platform's grace days, then read-only (on read)", async () => {
+    const justExpired = randomUUID();
+    await db.collection("companies").insertOne(company(justExpired, "just-expired"));
+    await setSub(justExpired, { planId: "growth", status: "trialing", trialEndsAt: new Date(now.getTime() - 1000) });
+    assert.equal(await runAsCompany(justExpired, () => writeBlockReason()), null, "still writable during grace");
+    assert.equal((await runAsCompany(justExpired, () => getBillingNotice()))?.status, "grace");
     const expired = randomUUID();
     await db.collection("companies").insertOne(company(expired, "expired"));
-    await setSub(expired, { planId: "growth", status: "trialing", trialEndsAt: new Date(now.getTime() - 1000) });
+    await setSub(expired, { planId: "growth", status: "trialing", trialEndsAt: new Date(now.getTime() - 60 * 86_400_000) });
     assert.ok(await runAsCompany(expired, () => writeBlockReason()));
   });
   await check("suspended company can't add seats or use AI", async () => {
