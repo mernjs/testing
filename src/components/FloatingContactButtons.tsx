@@ -35,7 +35,7 @@ export default function FloatingContactButtons() {
   if (/^\/(platform|console|signup|workspace\/(settings|onboarding))(\/|$)/.test(pathname ?? "") || pathname?.startsWith("/workspace/invite")) return null;
   // The CMS is an admin panel too (its draft preview, /cms/preview, shows the site exactly as visitors see it).
   const inCms = pathname?.startsWith("/cms") && !pathname.startsWith("/cms/preview");
-  if (pathname?.startsWith("/lms") || pathname?.startsWith("/aibots") || pathname?.startsWith("/smms") || inCms || pathname === "/ask") {
+  if (pathname?.startsWith("/lms") || pathname?.startsWith("/aibots") || pathname?.startsWith("/intelligence") || pathname?.startsWith("/smms") || inCms || pathname === "/ask") {
     return chatOpen ? <ChatWidget open={chatOpen} onClose={() => setChatOpen(false)} /> : null;
   }
 
