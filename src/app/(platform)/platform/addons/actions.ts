@@ -1,5 +1,7 @@
 "use server";
 
+import { repriceSubscription } from "@/lib/platform/billing/subscriptions";
+import { recordPlatformAudit } from "@/lib/platform/audit";
 import { revalidatePath } from "next/cache";
 import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { saveAddon, setAddonActive, setCompanyAddon, type AddonInput, type AddonSaveResult, type CompanyAddonResult } from "@/lib/platform/billing/addons";
@@ -42,6 +44,9 @@ export async function setCompanyAddonAction(companyId: string, addonId: string, 
   const user = await requirePlatformPermission("addons.manage");
   const res = await setCompanyAddon(String(companyId), String(addonId), Number(quantity), { complimentary: Boolean(complimentary), actorId: user.id });
   if (res.ok) {
+    // A paying company's next renewal must reflect its new add-ons (no-op without a live subscription).
+    const repriced = await repriceSubscription(String(companyId), user.id).catch((err: unknown) => ({ ok: false as const, error: err instanceof Error ? err.message : String(err) }));
+    if (!repriced.ok) await recordPlatformAudit({ actorId: user.id, action: "subscription.reprice_failed", target: { type: "company", id: String(companyId) }, companyId: String(companyId), details: { reason: "addon_change", error: repriced.error } });
     revalidatePath(`/platform/companies/${companyId}`);
     revalidatePath("/platform/addons");
   }

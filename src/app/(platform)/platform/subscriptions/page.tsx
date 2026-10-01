@@ -3,7 +3,7 @@ import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
 import { subscriptionStatusLabel } from "@/components/platform/billing/SubscriptionStatusBadge";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { listPlans } from "@/lib/platform/billing/plans";
 import { SUBSCRIPTION_STATUSES, listSubscriptions } from "@/lib/platform/billing/subscriptions-admin";
 import { formatMoney } from "@/lib/platform/billing/types";
@@ -13,7 +13,7 @@ import SubscriptionsGrid from "./SubscriptionsGrid";
 export const metadata: Metadata = { title: "Subscriptions" };
 
 export default async function PlatformSubscriptionsPage({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; plan?: string; page?: string }> }) {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("subscriptions.read");
   const sp = await searchParams;
   const [list, plans] = await Promise.all([listSubscriptions({ q: sp.q, status: sp.status, planId: sp.plan, page: Number(sp.page) || 1 }), listPlans()]);
   const status = SUBSCRIPTION_STATUSES.includes(sp.status as never) ? sp.status! : "";

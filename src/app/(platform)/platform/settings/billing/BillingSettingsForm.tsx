@@ -113,10 +113,10 @@ export default function BillingSettingsForm({ initial, states, prefilled, canEdi
       <GlassCard interactive={false}>
         <CardHeader>
           <CardTitle className="text-base">Invoices</CardTitle>
-          <CardDescription>Numbering restarts each financial year, e.g. {v.invoice.prefix || "SAAS"}/2026-27/000001.</CardDescription>
+          <CardDescription>Numbering restarts each financial year, e.g. {v.invoice.prefix || "SAAS"}/26-27/00001 (16 characters at most under GST rules). Credit notes are numbered CN/26-27/00001.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
-          {field("i-prefix", "Number prefix", <Input id="i-prefix" value={v.invoice.prefix} onChange={(e) => set("invoice", "prefix")(e.target.value.toUpperCase())} maxLength={12} />, "invoice.prefix")}
+          {field("i-prefix", "Number prefix", <Input id="i-prefix" value={v.invoice.prefix} onChange={(e) => set("invoice", "prefix")(e.target.value.toUpperCase())} maxLength={4} />, "invoice.prefix")}
           {field("i-footer", "Footer note", <Input id="i-footer" value={v.invoice.footerNote} onChange={(e) => set("invoice", "footerNote")(e.target.value)} />)}
           <div className="sm:col-span-2">{field("i-terms", "Terms (optional)", <textarea id="i-terms" className={areaClass} value={v.invoice.terms} onChange={(e) => set("invoice", "terms")(e.target.value)} />)}</div>
         </CardContent>

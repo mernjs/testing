@@ -7,7 +7,7 @@ import { CardHeader, CardTitle, CardDescription, CardContent } from "@/component
 import GlassCard from "@/components/lms/GlassCard";
 import SubscriptionStatusBadge from "@/components/platform/billing/SubscriptionStatusBadge";
 import { formatDate, formatDateTime } from "@/lib/utils";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { listPlans } from "@/lib/platform/billing/plans";
 import { getSubscriptionDetail } from "@/lib/platform/billing/subscriptions-admin";
 import { formatMoney } from "@/lib/platform/billing/types";
@@ -36,7 +36,7 @@ const EVENT_LABEL: Record<string, string> = {
 };
 
 export default async function PlatformSubscriptionPage({ params }: { params: Promise<{ id: string }> }) {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("subscriptions.read");
   const detail = await getSubscriptionDetail((await params).id);
   if (!detail) notFound();
   const { row, sub, events, audit } = detail;

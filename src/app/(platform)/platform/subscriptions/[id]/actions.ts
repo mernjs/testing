@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import {
   adminCancel,
   adminChangePlan,
@@ -24,7 +24,7 @@ export type SubscriptionAdminAction =
 
 /** Every owner action on a company's subscription — access re-checked, audited in the service. */
 export async function subscriptionAdminAction(companyId: string, action: SubscriptionAdminAction): Promise<BillingActionResult> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("subscriptions.manage");
   const id = String(companyId ?? "");
   let res: BillingActionResult;
   switch (action?.kind) {
