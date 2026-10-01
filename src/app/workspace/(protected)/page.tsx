@@ -74,6 +74,7 @@ import { getDb } from "@/lib/mongodb";
 // PMS employee-level dashboard
 import { getEmployeeDashboard as getPmsDashboard } from "@/lib/pms/employee-dashboard";
 import { todayDateString, shiftMonth } from "@/lib/hrms/time";
+import CompanyToday from "@/components/platform/hub/CompanyToday";
 
 interface ModuleTile {
   key: string;
@@ -474,6 +475,9 @@ export default async function HubDashboardPage({
           )}
         </div>
       </div>
+
+      {/* ── Company overview: ask, company KPIs, recent activity (platform layer) ── */}
+      <CompanyToday user={user} />
 
       {/* ── My Access KPIs ─────────────────────────────────────────────────── */}
       <ExecutiveSection title="My Workspace Status">
