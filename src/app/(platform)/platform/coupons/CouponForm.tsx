@@ -121,7 +121,7 @@ export default function CouponForm({ coupon, plans, currency }: { coupon: Coupon
   }
 
   return (
-    <form className="space-y-4" onSubmit={submit}>
+    <form className="space-y-4" onSubmit={submit} noValidate>
       <GlassCard interactive={false}>
         <CardHeader>
           <CardTitle className="text-base">Code & discount</CardTitle>

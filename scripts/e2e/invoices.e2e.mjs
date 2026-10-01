@@ -250,18 +250,24 @@ try {
       assert.equal(await cpage.locator(`[data-invoice-number="${foreignInv.number}"]`).count(), 0, "no other company's invoice listed");
       assert.ok((await cpage.locator("[data-invoice-number^='CN/']").count()) >= 2, "credit notes listed");
     });
+    // Node can't resolve *.localhost, so company-host requests are made from inside the browser.
+    const browserGet = (path) =>
+      cpage.evaluate(async (url) => {
+        const r = await fetch(url, { credentials: "include" });
+        const bytes = new Uint8Array(await r.arrayBuffer()).subarray(0, 5);
+        return { status: r.status, head: String.fromCharCode(...bytes) };
+      }, `${COMPANY_URL}${path}`);
     await step("company downloads its own PDF", async () => {
-      const res = await cpage.request.get(`${COMPANY_URL}/api/platform/billing/invoices/${paidInv._id}/pdf?download=1`);
-      assert.equal(res.status(), 200);
-      assert.equal((await res.body()).subarray(0, 5).toString(), "%PDF-");
+      const res = await browserGet(`/api/platform/billing/invoices/${paidInv._id}/pdf?download=1`);
+      assert.equal(res.status, 200);
+      assert.equal(res.head, "%PDF-");
     });
     await step("company can't fetch another company's PDF (404)", async () => {
-      const res = await cpage.request.get(`${COMPANY_URL}/api/platform/billing/invoices/${foreignInv._id}/pdf`);
-      assert.equal(res.status(), 404);
+      assert.equal((await browserGet(`/api/platform/billing/invoices/${foreignInv._id}/pdf`)).status, 404);
     });
     await step("company can't open the Platform Panel invoices or export", async () => {
+      assert.equal((await browserGet(`/platform/invoices/export`)).status, 404);
       assert.equal((await cpage.goto(`${COMPANY_URL}/platform/invoices`))?.status(), 404);
-      assert.equal((await cpage.request.get(`${COMPANY_URL}/platform/invoices/export`)).status(), 404);
     });
     await cctx.close();
   } else {

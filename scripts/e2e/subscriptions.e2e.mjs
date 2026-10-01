@@ -110,7 +110,7 @@ try {
 
   await step("subscription detail shows history, audit and actions", async () => {
     await page.goto(`${BASE}${firstCompanyHref}`);
-    await page.getByText("Subscription history").waitFor();
+    await page.getByText("Subscription history").first().waitFor();
     await page.getByText("Audit", { exact: true }).waitFor();
     const owner = await page.getByText("The platform owner company is never billed.").count();
     if (!owner) {

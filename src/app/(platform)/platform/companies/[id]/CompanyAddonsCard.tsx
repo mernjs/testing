@@ -83,6 +83,7 @@ export default function CompanyAddonsCard({
 
         {available.length > 0 && (
           <form
+            noValidate
             className="grid gap-3 sm:grid-cols-[1fr_6rem_auto_auto] sm:items-end"
             onSubmit={(e) => {
               e.preventDefault();

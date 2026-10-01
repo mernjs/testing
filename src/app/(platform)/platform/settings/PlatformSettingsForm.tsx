@@ -32,6 +32,7 @@ export default function PlatformSettingsForm({ initial, builtInReserved, timezon
 
   return (
     <form
+      noValidate
       className="space-y-4"
       onSubmit={(e) => {
         e.preventDefault();

@@ -32,7 +32,7 @@ export default async function PlatformSettingsPage() {
           <CardDescription>Applies to the public sign-up page. Changing it never affects companies that already exist.</CardDescription>
         </CardHeader>
         <CardContent>
-          <SignupModeForm key={mode} initial={mode} />
+          <SignupModeForm initial={mode} />
         </CardContent>
       </GlassCard>
       <PlatformSettingsForm
