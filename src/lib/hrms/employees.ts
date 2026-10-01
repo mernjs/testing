@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/lib/mongodb";
+import { emitEvent } from "@/lib/platform/events";
 import { escapeRegExp } from "@/lib/text-search";
 import {
   newId,
@@ -282,6 +283,7 @@ export async function createEmployee(
     ...createStamp(actorId),
   };
   await collection.insertOne(doc);
+  await emitEvent("employee.created", { entity: { type: "employee", id: doc._id, label: `${doc.firstName} ${doc.lastName}`.trim(), url: `/hrms/employees/${doc._id}` }, actorId, data: { name: `${doc.firstName} ${doc.lastName}`.trim(), workEmail: doc.workEmail, employeeCode: doc.employeeCode } });
   return doc;
 }
 

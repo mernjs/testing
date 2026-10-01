@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/lib/mongodb";
+import { emitEvent } from "@/lib/platform/events";
 import { escapeRegExp } from "@/lib/text-search";
 import {
   newId,
@@ -221,6 +222,7 @@ export async function createClient(data: ClientWriteData, actorId: string): Prom
     ...createStamp(actorId),
   };
   await collection.insertOne(doc);
+  await emitEvent("client.created", { entity: { type: "client", id: doc._id, label: doc.companyName, url: `/pms/clients/${doc._id}` }, actorId, data: { companyName: doc.companyName, clientCode: doc.clientCode, contactName: doc.primaryContact.name, contactEmail: doc.primaryContact.email, industry: doc.industry } });
   return doc;
 }
 

@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/lib/mongodb";
+import { emitEvent } from "@/lib/platform/events";
 import { newId, createStamp, updateStamp, notDeleted, type AuditFields } from "@/lib/hrms/db";
 import {
   getOrgSettings,
@@ -359,6 +360,7 @@ export async function createLeaveRequest(
     entityType: "leave_request",
     entityId: doc._id,
   });
+  await emitEvent("leave.requested", { entity: { type: "leave_request", id: doc._id, label: emp ? employeeFullName(emp) : "An employee", url: "/hrms/leave?tab=requests" }, actorId, data: { leaveType: type.code, days, startDate: doc.startDate, endDate: doc.endDate, reason: doc.reason } });
 
   return { ok: true, request: doc };
 }

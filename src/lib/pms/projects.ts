@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/lib/mongodb";
+import { emitEvent } from "@/lib/platform/events";
 import { escapeRegExp } from "@/lib/text-search";
 import {
   newId,
@@ -262,6 +263,7 @@ export async function createProject(data: ProjectWriteData, actorId: string): Pr
     ...createStamp(actorId),
   };
   await collection.insertOne(doc);
+  await emitEvent("project.created", { entity: { type: "project", id: doc._id, label: doc.name, url: `/pms/projects/${doc._id}` }, actorId, data: { name: doc.name, projectCode: doc.projectCode, priority: doc.priority, status: doc.status, estimatedBudget: doc.estimatedBudget } });
   return doc;
 }
 

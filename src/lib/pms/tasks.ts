@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/lib/mongodb";
+import { emitEvent } from "@/lib/platform/events";
 import { escapeRegExp } from "@/lib/text-search";
 import {
   newId,
@@ -245,7 +246,18 @@ export async function createTask(
     ...createStamp(actorId),
   };
   await collection.insertOne(doc);
+  await emitEvent("task.created", { entity: taskEntity(doc), actorId, data: { title: doc.title, taskCode: doc.taskCode, priority: doc.priority, dueDate: doc.dueDate } });
   return doc;
+}
+
+function taskEntity(t: Task) {
+  return { type: "task", id: t._id, label: t.title, url: `/pms/projects/${t.projectId}/tasks/${t._id}` };
+}
+
+/** Emits `task.completed` when a status change just moved the task into "done". */
+async function emitIfCompleted(before: Pick<Task, "status"> | null, after: Task | null, actorId: string): Promise<void> {
+  if (!before || !after || isTaskDone(before.status) || !isTaskDone(after.status)) return;
+  await emitEvent("task.completed", { entity: taskEntity(after), actorId, data: { title: after.title, taskCode: after.taskCode, priority: after.priority } });
 }
 
 export async function updateTask(
@@ -258,7 +270,10 @@ export async function updateTask(
   if (data.status !== undefined) {
     set.completedAt = isTaskDone(data.status) ? new Date() : null;
   }
-  return collection.findOneAndUpdate({ _id: id, ...notDeleted }, { $set: set }, { returnDocument: "after" });
+  const before = data.status !== undefined ? await collection.findOne({ _id: id, ...notDeleted }, { projection: { status: 1 } }) : null;
+  const task = await collection.findOneAndUpdate({ _id: id, ...notDeleted }, { $set: set }, { returnDocument: "after" });
+  await emitIfCompleted(before, task, actorId);
+  return task;
 }
 
 /**
@@ -279,7 +294,8 @@ export async function moveTask(
   else if (afterKey != null) orderKey = afterKey - ORDER_GAP;
   else orderKey = ORDER_GAP;
 
-  return collection.findOneAndUpdate(
+  const before = await collection.findOne({ _id: id, ...notDeleted }, { projection: { status: 1 } });
+  const task = await collection.findOneAndUpdate(
     { _id: id, ...notDeleted },
     {
       $set: {
@@ -291,6 +307,8 @@ export async function moveTask(
     },
     { returnDocument: "after" }
   );
+  await emitIfCompleted(before, task, actorId);
+  return task;
 }
 
 export async function deleteTask(id: string, actorId: string): Promise<{ ok: boolean }> {

@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/lib/mongodb";
+import { emitEvent } from "@/lib/platform/events";
 import { escapeRegExp } from "@/lib/text-search";
 import {
   newId,
@@ -223,7 +224,18 @@ export async function createInvoice(data: InvoiceWriteData, actorId: string): Pr
     ...createStamp(actorId),
   };
   await collection.insertOne(doc);
+  await emitEvent("invoice.created", { entity: invoiceEntity(doc), actorId, data: { invoiceNumber: doc.invoiceNumber, customerName: doc.customerName, totalAmount: doc.totalAmount, currency: doc.currency, dueDate: doc.dueDate } });
   return doc;
+}
+
+function invoiceEntity(i: Invoice) {
+  return { type: "invoice", id: i._id, label: `${i.invoiceNumber} · ${i.customerName}`, url: `/fms/invoices/${i._id}` };
+}
+
+/** Emits `invoice.paid` when a receipt or credit note has just settled the invoice in full. */
+async function emitIfPaid(inv: Invoice, status: InvoiceStatus, actorId: string): Promise<void> {
+  if (status !== "paid" || inv.status === "paid") return;
+  await emitEvent("invoice.paid", { entity: invoiceEntity(inv), actorId, data: { invoiceNumber: inv.invoiceNumber, customerName: inv.customerName, totalAmount: inv.totalAmount, currency: inv.currency } });
 }
 
 /** Blocked once money has moved against the invoice — correct via a credit note, not a silent edit. */
@@ -292,6 +304,7 @@ export async function applyReceiptToInvoice(invoiceId: string, amount: number, a
   const balance = round2(inv.totalAmount - amountPaid - inv.amountCredited);
   const status: InvoiceStatus = balance <= 0.01 ? "paid" : amountPaid > 0 ? "partially_paid" : inv.status === "overdue" ? "overdue" : "sent";
   await collection.updateOne({ _id: invoiceId, ...notDeleted }, { $set: { amountPaid, status, ...updateStamp(actorId) } });
+  await emitIfPaid(inv, status, actorId);
 }
 
 /** Same shape as `applyReceiptToInvoice`, for credit notes. */
@@ -303,6 +316,7 @@ export async function applyCreditToInvoice(invoiceId: string, amount: number, ac
   const balance = round2(inv.totalAmount - inv.amountPaid - amountCredited);
   const status: InvoiceStatus = balance <= 0.01 ? "paid" : inv.amountPaid > 0 ? "partially_paid" : inv.status;
   await collection.updateOne({ _id: invoiceId, ...notDeleted }, { $set: { amountCredited, status, ...updateStamp(actorId) } });
+  await emitIfPaid(inv, status, actorId);
 }
 
 export async function deleteInvoice(id: string, actorId: string): Promise<{ ok: boolean; reason?: string }> {

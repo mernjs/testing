@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "@/lib/mongodb";
+import { emitEvent } from "@/lib/platform/events";
 import { externalUsers } from "@/lib/portal-auth";
 import { newId, nextSequence, formatCode } from "@/lib/portal/db";
 import { notifyPortalUser } from "@/lib/portal/notifications";
@@ -95,6 +96,7 @@ export async function createLeadRecord(input: CreateLeadInput): Promise<LeadReco
     deletedAt: null,
   };
   await c.insertOne(doc);
+  await emitEvent("lead.created", { entity: { type: "lead", id: doc._id, label: doc.name, url: `/lms/leads/${doc._id}` }, actorId: input.actorId, data: { name: doc.name, email: doc.email, phone: doc.phone, code: doc.code, leadType: doc.type, leadSource: doc.source } });
   return doc;
 }
 
@@ -182,6 +184,7 @@ export async function advanceLeadStage(
     { _id: leadId },
     { $set: { stage: toStage, stageEnteredAt: now, status, updatedAt: now, updatedBy: actorId } }
   );
+  await emitEvent("lead.status_changed", { entity: { type: "lead", id: leadId, label: lead.name, url: `/lms/leads/${leadId}` }, actorId, data: { name: lead.name, email: lead.email, status: toStage, previousStatus: lead.stage, outcome: status, won: status === "won" } });
 
   await recordLeadEvent(leadId, {
     kind: "stage_changed",
