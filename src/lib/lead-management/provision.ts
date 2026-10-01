@@ -45,6 +45,12 @@ export interface ProvisionInput {
   /** Self-serve signup: the person's own chosen password. When set, no temp password is generated. */
   password?: string | null;
   referralCode?: string | null; // Wallet & Credits — first-touch `?ref=` capture, only applied on a brand-new account
+  /**
+   * Bulk import: the lead still gets the account record the pipeline links to,
+   * but nothing the person would see or receive — no wallet sign-up bonus or
+   * referral reward, no welcome notification or chat message.
+   */
+  quiet?: boolean;
 }
 
 export interface ProvisionResult {
@@ -125,7 +131,7 @@ export async function provisionLeadAndAccount(input: ProvisionInput): Promise<Pr
   if (input.applicationId && !existing?.applicationId) set.applicationId = input.applicationId;
   await users.updateOne({ _id: externalUserId }, { $set: set });
 
-  if (isNewAccount) {
+  if (isNewAccount && !input.quiet) {
     await recordLeadEvent(lead._id, {
       kind: "account_created",
       title: "Portal account created",
@@ -152,25 +158,27 @@ export async function provisionLeadAndAccount(input: ProvisionInput): Promise<Pr
     visibleToLead: true,
   });
 
-  await notifyPortalUser({
-    recipientUserId: externalUserId,
-    type: "welcome",
-    title: isNewAccount ? `Welcome to the ${PORTAL_ROLE_META[role].portalName}` : "We received your submission",
-    body: isNewAccount
-      ? "Your account is ready. Track everything here — it updates live as our team progresses your request."
-      : `A new request (${lead.code}) has been added to your portal.`,
-    link: "/portal",
-  });
-  await sendActivityChatMessage({
-    leadId: lead._id,
-    activityType: "welcome",
-    title: isNewAccount ? `Welcome to your ${PORTAL_ROLE_META[role].portalName}` : `Submission Received (${lead.code})`,
-    stageKey: lead.stage,
-    details: isNewAccount
-      ? "Your account is active. Track your progress, send messages, and receive real-time updates directly in this thread."
-      : `Your new request (${lead.code}) has been received and added to your portal timeline.`,
-    actorStaffId: input.actorId ?? null,
-  });
+  if (!input.quiet) {
+    await notifyPortalUser({
+      recipientUserId: externalUserId,
+      type: "welcome",
+      title: isNewAccount ? `Welcome to the ${PORTAL_ROLE_META[role].portalName}` : "We received your submission",
+      body: isNewAccount
+        ? "Your account is ready. Track everything here — it updates live as our team progresses your request."
+        : `A new request (${lead.code}) has been added to your portal.`,
+      link: "/portal",
+    });
+    await sendActivityChatMessage({
+      leadId: lead._id,
+      activityType: "welcome",
+      title: isNewAccount ? `Welcome to your ${PORTAL_ROLE_META[role].portalName}` : `Submission Received (${lead.code})`,
+      stageKey: lead.stage,
+      details: isNewAccount
+        ? "Your account is active. Track your progress, send messages, and receive real-time updates directly in this thread."
+        : `Your new request (${lead.code}) has been received and added to your portal timeline.`,
+      actorStaffId: input.actorId ?? null,
+    });
+  }
   await recordPortalAudit({
     actorId: externalUserId,
     action: isNewAccount ? "register" : "lead_added",

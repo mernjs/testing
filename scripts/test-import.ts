@@ -166,7 +166,14 @@ async function main() {
       assert.equal(leads[0].source, "manual");
       assert.equal(leads[0].message, "Needs an app");
       assert.equal(leads[0].createdBy, actor.id);
-      assert.equal(await d.collection("external_users").countDocuments({}), 2, "each lead got its portal account, like the New lead form");
+      assert.equal(await d.collection("external_users").countDocuments({}), 2, "each lead has the account record the pipeline links to");
+      // Quiet import: no wallet bonus, no welcome notification or chat message for the lead.
+      const { getPlatformDb } = await import("@/lib/platform/tenancy/platform-db");
+      const raw = await getPlatformDb();
+      for (const c of await raw.listCollections().toArray()) {
+        if (!/wallet_(transactions|ledger|entries)|notification|chat|message/i.test(c.name)) continue;
+        assert.equal(await raw.collection(c.name).countDocuments({ companyId: A }), 0, `import is quiet: nothing written to ${c.name}`);
+      }
       const events = await listEvents({ types: ["lead.created"] });
       assert.equal(events.total, 2, "events fired");
       assert.ok(events.items.every((e) => e.source === "import" && e.actorEmail === "owner@alpha.test"));

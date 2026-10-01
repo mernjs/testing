@@ -217,8 +217,9 @@ export async function previewImport(req: ImportRequest): Promise<ImportPreview |
 async function createRow(row: Row, leadType: PortalRole, actor: ImportActor): Promise<void> {
   const p = row.prepared;
   if (p.kind === "leads") {
-    // The same path as CRM → "New lead": a lead record plus the person's portal account. No email is sent.
-    await provisionLeadAndAccount({ source: "manual", type: leadType, name: p.data.name, email: p.data.email, phone: p.data.phone, message: p.data.message ?? null, actorId: actor.id });
+    // The CRM's own lead path, in quiet mode: the lead record plus the account record the pipeline
+    // links to, but no wallet sign-up bonus, referral reward, welcome notification or chat message.
+    await provisionLeadAndAccount({ source: "manual", type: leadType, name: p.data.name, email: p.data.email, phone: p.data.phone, message: p.data.message ?? null, actorId: actor.id, quiet: true });
   } else if (p.kind === "clients") {
     const client = await createClient(p.data, actor.id);
     await recordActivity({ actorId: actor.id, actorEmail: actor.email, action: "create", entity: "client", entityId: client._id, entityLabel: client.companyName, summary: "Imported from CSV" });
