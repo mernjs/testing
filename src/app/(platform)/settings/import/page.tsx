@@ -23,7 +23,7 @@ export default async function ImportSettingsPage() {
         </Link>
         <GlassCard interactive={false}>
           <CardHeader>
-            <CardTitle className="text-xl">Import data</CardTitle>
+            <CardTitle className="text-xl"><h1>Import data</h1></CardTitle>
             <CardDescription>Bring leads, clients or employees in from a CSV file. You&apos;ll see a preview before anything is saved.</CardDescription>
           </CardHeader>
           <CardContent>

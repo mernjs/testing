@@ -32,7 +32,7 @@ export default async function AutomationsSettingsPage() {
         </Link>
         <GlassCard interactive={false}>
           <CardHeader>
-            <CardTitle className="text-xl">Automations</CardTitle>
+            <CardTitle className="text-xl"><h1>Automations</h1></CardTitle>
             <CardDescription>When something happens in your workspace, notify people, send an email or call a webhook — automatically.</CardDescription>
           </CardHeader>
           <CardContent>

@@ -51,7 +51,7 @@ export default async function ActivitySettingsPage({ searchParams }: { searchPar
         </Link>
         <GlassCard interactive={false}>
           <CardHeader>
-            <CardTitle className="text-xl">Activity log</CardTitle>
+            <CardTitle className="text-xl"><h1>Activity log</h1></CardTitle>
             <CardDescription>What happened across your workspace — who did what, and when. Kept for 180 days.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
