@@ -35,7 +35,7 @@ if (!secret) {
 }
 
 const headers = { "content-type": "application/json", authorization: `Bearer ${secret}` };
-const endpoint = `${server}/api/admin/chatbot/reindex`;
+const endpoint = `${server}/api/lms/chatbot/reindex`;
 
 async function main() {
   console.log(`Triggering ${incremental ? "incremental" : "full"} index`);

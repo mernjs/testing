@@ -1,5 +1,5 @@
 /**
- * Super Admin Command Center role model. Access is gated on the shared
+ * The `super_admin` role (formerly the separate admin panel's role model). Access is gated on the shared
  * `admin_users.roles` array — the same store every other panel (HRMS/PMS/
  * PRMS/TMS/LMS/Messenger) uses. Unlike every other panel, this one grants
  * access to `super_admin` ONLY: no module-scoped admin/manager role opens it,
@@ -21,7 +21,7 @@ export function normalizeAdminRoles(value: unknown): AdminRole[] {
   return Array.from(new Set(value.filter(isAdminRole)));
 }
 
-/** Can open the Command Center at `/admin/*`. */
+/** Holds `super_admin` — the default holder of every Workspace management permission. */
 export function hasAdminAccess(roles: readonly string[] | undefined | null): boolean {
   return normalizeAdminRoles(roles).length > 0;
 }

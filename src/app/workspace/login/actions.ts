@@ -7,6 +7,7 @@ import {
   setHubSessionCookie,
   getSessionHubUser,
 } from "@/lib/hub-auth";
+import { safeNextPath } from "@/lib/workspace-session";
 import { provisionAccessibleSessions } from "@/lib/cross-module-sso";
 
 export interface HubLoginState {
@@ -35,5 +36,6 @@ export async function hubLoginAction(_prevState: HubLoginState, formData: FormDa
 
   const user = await getSessionHubUser(token);
   if (user?.mustChangePassword) redirect("/workspace/change-password");
-  redirect("/workspace");
+  // Back to the panel the person came from — validated again here, the form field is user input.
+  redirect(safeNextPath(formData.get("next")) ?? "/workspace");
 }

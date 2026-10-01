@@ -16,7 +16,7 @@ import { BrandName } from "@/components/platform/BrandProvider";
 const initialState: HubLoginState = {};
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function LoginForm() {
+export default function LoginForm({ next = null }: { next?: string | null }) {
   const [state, formAction, pending] = useActionState(hubLoginAction, initialState);
   const [showPassword, setShowPassword] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
@@ -32,13 +32,14 @@ export default function LoginForm() {
         <CardHeader>
           <div className="mb-1 flex items-center gap-1.5 text-xs font-medium text-primary lg:hidden">
             <BrandMark className="size-4 shrink-0" />
-            <BrandName /> <span className="text-foreground">Staff Hub</span>
+            <BrandName /> <span className="text-foreground">Workspace</span>
           </div>
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>Sign in once to reach every panel you have access to.</CardDescription>
         </CardHeader>
         <CardContent>
           <form action={formAction} className="space-y-4" noValidate>
+            {next && <input type="hidden" name="next" value={next} />}
             <div className="space-y-1.5">
               <Label htmlFor={emailId}>Email</Label>
               <Input

@@ -1,4 +1,5 @@
 import "server-only";
+import { normalizeRoles } from "@/lib/hrms-roles";
 import {
   listNotifications as hrmsList,
   unreadCount as hrmsUnread,
@@ -155,8 +156,8 @@ export async function runAdminNotificationSweeps(): Promise<void> {
 export async function getAdminNotifications(user: FeedUser, limit = 50): Promise<AdminNotificationFeed> {
   const [hrms, hrmsUnreadCount, pms, pmsUnreadCount, prms, prmsUnreadCount, tms, tmsUnreadCount, chat, chatUnreadCount] =
     await Promise.all([
-      hrmsList({ id: user.id, roles: user.roles }, { pageSize: limit }),
-      hrmsUnread({ id: user.id, roles: user.roles }),
+      hrmsList({ id: user.id, roles: normalizeRoles(user.roles) }, { pageSize: limit }),
+      hrmsUnread({ id: user.id, roles: normalizeRoles(user.roles) }),
       pmsList(user.id, limit),
       pmsUnread(user.id),
       prmsList(user.id, limit),
@@ -260,7 +261,7 @@ export async function markAdminNotificationRead(module: NotificationModule, id: 
 
 export async function markAllAdminNotificationsRead(user: FeedUser): Promise<void> {
   await Promise.all([
-    hrmsMarkAllRead({ id: user.id, roles: user.roles }),
+    hrmsMarkAllRead({ id: user.id, roles: normalizeRoles(user.roles) }),
     pmsMarkAllRead(user.id),
     prmsMarkAllRead(user.id),
     tmsMarkAllRead(user.id),

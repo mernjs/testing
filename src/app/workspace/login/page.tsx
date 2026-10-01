@@ -2,11 +2,14 @@ import { redirect } from "next/navigation";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import BrandMark from "@/components/BrandMark";
 import LoginForm from "./LoginForm";
+import { safeNextPath } from "@/lib/workspace-session";
 import { BrandName } from "@/components/platform/BrandProvider";
 
-export default async function HubLoginPage() {
+export default async function HubLoginPage({ searchParams }: { searchParams: Promise<{ next?: string | string[] }> }) {
+  // Where to go after sign-in: only a same-origin path survives `safeNextPath` (no open redirect).
+  const next = safeNextPath((await searchParams).next);
   const user = await getCurrentHubUser();
-  if (user) redirect("/workspace");
+  if (user) redirect(user.mustChangePassword ? "/workspace/change-password" : (next ?? "/workspace"));
 
   return (
     <div className="flex min-h-screen">
@@ -38,7 +41,7 @@ export default async function HubLoginPage() {
       </div>
 
       <div className="flex w-full flex-col items-center justify-center px-4 py-12 lg:w-1/2">
-        <LoginForm />
+        <LoginForm next={next} />
       </div>
     </div>
   );

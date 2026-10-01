@@ -7,7 +7,7 @@ import { getDb } from "@/lib/mongodb";
 
 // NOTE: was literally "admin_session" — an accidental exact collision with
 // the separate Super Admin Command Center's own cookie of the same name
-// (`ADMIN_SESSION_COOKIE` in `src/lib/admin-auth.ts`). Both use `path: "/"`,
+// (the former admin panel, since removed). Both use `path: "/"`,
 // so whichever was set last silently overwrote the other for any browser with
 // both sessions active. Renamed to fix the collision and to allow the Command
 // Center to safely mint a real LMS session alongside its own on login.

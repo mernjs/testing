@@ -261,7 +261,7 @@ export async function createAdminUser(
 /**
  * `actorId` is always the calling super_admin's own id, checked here so a
  * super_admin can never strip their own `super_admin` role through this UI —
- * the one way to lock every admin out of `/admin` for good.
+ * the one way to lock every Super Admin out of company management for good.
  */
 export async function updateAdminUserRoles(
   id: string,
