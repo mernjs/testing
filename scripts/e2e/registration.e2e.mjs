@@ -131,7 +131,7 @@ try {
     await page.getByRole("button", { name: "Finish setup" }).waitFor({ timeout: 30_000 });
     await page.getByRole("button", { name: "Finish setup" }).click();
     await page.getByText("You're all set").waitFor({ timeout: 30_000 });
-    await page.getByRole("link", { name: "Go to your workspace" }).click();
+    await page.getByText("Go to your workspace", { exact: true }).click();
     await page.waitForURL((u) => u.pathname === "/workspace", { timeout: 30_000 });
     await page.getByText("My Operational Panels").waitFor();
     assert.equal(await page.locator("#setup-banner").count(), 0, "finishing the wizard removes the strip");
