@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchExpenses } from "@/lib/prms/expenses";
 import { isValidExpenseStatus } from "@/lib/prms/constants";
@@ -9,6 +10,7 @@ export default async function AdminExpensesPage({
 }: {
   searchParams: Promise<{ page?: string; search?: string; approvalStatus?: string; sortBy?: string; sortDir?: string }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const approvalStatus = sp.approvalStatus && isValidExpenseStatus(sp.approvalStatus) ? sp.approvalStatus : undefined;

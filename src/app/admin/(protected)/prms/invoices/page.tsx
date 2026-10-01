@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchInvoices, serializeInvoice } from "@/lib/prms/invoices";
 import { isValidInvoiceStatus } from "@/lib/prms/constants";
@@ -9,6 +10,7 @@ export default async function AdminInvoicesPage({
 }: {
   searchParams: Promise<{ page?: string; search?: string; status?: string; sortBy?: string; sortDir?: string }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidInvoiceStatus(sp.status) ? sp.status : undefined;

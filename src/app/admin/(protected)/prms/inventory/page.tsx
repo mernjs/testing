@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchInventoryItems } from "@/lib/prms/inventory";
 import InventoryFilterBar from "./InventoryFilterBar";
@@ -8,6 +9,7 @@ export default async function AdminInventoryPage({
 }: {
   searchParams: Promise<{ page?: string; search?: string; lowStock?: string; sortBy?: string; sortDir?: string }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const lowStock = sp.lowStock === "1";

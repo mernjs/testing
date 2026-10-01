@@ -127,7 +127,8 @@ function Field({ label, error, children, htmlFor }: { label: string; error?: str
 
 // ── Step 1 ───────────────────────────────────────────────────────────────────
 
-function ProfileStep({ initial, timezones, onIndustry, onDone }: { initial: ProfileInput; timezones: string[]; onIndustry: (i: Industry) => void; onDone: () => void }) {
+/** Also the form of Settings → Organization profile (`saveLabel` replaces "Save & continue"). */
+export function ProfileStep({ initial, timezones, onIndustry, onDone, saveLabel }: { initial: ProfileInput; timezones: string[]; onIndustry: (i: Industry) => void; onDone: () => void; saveLabel?: string }) {
   const [v, setV] = useState<ProfileInput>({ ...initial, country: initial.country || "India", timezone: initial.timezone || "Asia/Kolkata" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, start] = useTransition();
@@ -200,7 +201,7 @@ function ProfileStep({ initial, timezones, onIndustry, onDone }: { initial: Prof
         </Field>
         <div className="sm:col-span-2 flex justify-end">
           <Button type="submit" disabled={pending}>
-            {pending ? <Loader2 className="size-4 animate-spin" /> : <>Save & continue <ArrowRight className="size-4" /></>}
+            {pending ? <Loader2 className="size-4 animate-spin" /> : saveLabel ? saveLabel : <>Save & continue <ArrowRight className="size-4" /></>}
           </Button>
         </div>
       </form>

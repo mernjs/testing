@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Link from "next/link";
 import { CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +16,7 @@ const PRIORITY_BADGE: Record<NotificationPriority, string> = {
 };
 
 export default async function AdminNotificationsPage() {
+  await requireAdminPage();
   const user = await getCurrentAdminUser();
   if (!user) return null;
 

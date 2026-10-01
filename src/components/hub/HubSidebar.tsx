@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { useState } from "react";
 import {
   LayoutDashboard,
   Users,
@@ -16,17 +17,72 @@ import {
   BarChart3,
   KeyRound,
   Globe,
+  Globe2,
   ExternalLink,
+  BookText,
+  SearchCheck,
+  Vault,
+  Bot,
+  Megaphone,
+  FileCheck2,
+  PanelsTopLeft,
+  Building2,
+  CreditCard,
+  ReceiptText,
+  Gauge,
+  Palette,
+  Wallet,
+  Plug,
+  Zap,
+  FileUp,
+  History,
+  Lock,
+  Bell,
+  FileText,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import { normalizeRoles } from "@/lib/hrms-roles";
-import { normalizePmsRoles } from "@/lib/pms-roles";
-import { normalizePrmsRoles } from "@/lib/prms-roles";
-import { normalizeTmsRoles } from "@/lib/tms-roles";
-import { normalizeFmsRoles } from "@/lib/fms-roles";
-import { normalizeChatRoles } from "@/lib/messenger-roles";
-import { normalizeAdminRoles } from "@/lib/admin-roles";
+import type { NavIcon, NavSection } from "@/lib/workspace/nav";
+
+const ICONS: Record<NavIcon, React.ComponentType<{ className?: string }>> = {
+  dashboard: LayoutDashboard,
+  users: Users,
+  projects: FolderKanban,
+  cart: ShoppingCart,
+  training: GraduationCap,
+  finance: Landmark,
+  book: BookText,
+  search: SearchCheck,
+  vault: Vault,
+  bot: Bot,
+  megaphone: Megaphone,
+  test: FileCheck2,
+  chat: MessagesSquare,
+  grid: LayoutGrid,
+  website: PanelsTopLeft,
+  shield: ShieldCheck,
+  chart: BarChart3,
+  globe: Globe,
+  building: Building2,
+  card: CreditCard,
+  receipt: ReceiptText,
+  gauge: Gauge,
+  palette: Palette,
+  bank: Wallet,
+  plug: Plug,
+  zap: Zap,
+  upload: FileUp,
+  history: History,
+  lock: Lock,
+  bell: Bell,
+  key: KeyRound,
+  file: FileText,
+  platform: Globe2,
+};
+
+/** Long sections start closed; they open by themselves on one of their own pages. */
+const CLOSED_BY_DEFAULT = new Set(["admin", "company"]);
 
 function NavLink({
   href,
@@ -89,54 +145,90 @@ function NavLink({
   );
 }
 
-function SectionLabel({ children, collapsed }: { children: React.ReactNode; collapsed?: boolean }) {
-  if (collapsed) return <div className="mt-4 mb-1 border-t border-border/50" />;
-  return (
-    <div className="mt-4 mb-1 px-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{children}</div>
-  );
+function isActive(pathname: string | null, href: string): boolean {
+  return pathname === href || Boolean(pathname?.startsWith(`${href}/`));
 }
 
+/**
+ * The Workspace sidebar. It renders exactly the sections and items the server
+ * resolved for this user (`resolveWorkspaceNav`) — no access rule lives here.
+ */
 export default function HubSidebar({
-  roles = [],
+  nav,
   onNavigate,
   collapsed = false,
 }: {
-  roles?: string[];
+  nav: NavSection[];
   onNavigate?: () => void;
   collapsed?: boolean;
 }) {
-  const nav = (props: { href: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean; external?: boolean }) => (
-    <NavLink {...props} collapsed={collapsed} onNavigate={onNavigate} />
-  );
-
-  // Strict workspace role access checks for employees
-  const hasHrms = normalizeRoles(roles).length > 0;
-  const hasPms = normalizePmsRoles(roles).length > 0;
-  const hasPrms = normalizePrmsRoles(roles).length > 0;
-  const hasTms = normalizeTmsRoles(roles).length > 0;
-  const hasFms = normalizeFmsRoles(roles).length > 0;
-  const hasChat = normalizeChatRoles(roles).length > 0;
-  const hasAdmin = normalizeAdminRoles(roles).length > 0;
+  const pathname = usePathname();
+  const [toggled, setToggled] = useState<Record<string, boolean>>({});
 
   return (
-    <nav className="flex h-full flex-col gap-1 p-3 overflow-y-auto">
-      {nav({ href: "/workspace", label: "Dashboard", icon: LayoutDashboard, exact: true })}
+    <nav aria-label="Workspace" className="flex h-full flex-col gap-1 p-3 overflow-y-auto">
+      {nav.map((section) => {
+        const links = (
+          <>
+            {section.items.map((item, i) => (
+              <div key={item.key} className="contents">
+                {!collapsed && item.group && item.group !== section.items[i - 1]?.group && (
+                  <div className="mt-2 px-3 text-[10px] font-semibold tracking-wide text-muted-foreground/70 uppercase">{item.group}</div>
+                )}
+                <NavLink
+                  href={item.href}
+                  label={item.label}
+                  icon={ICONS[item.icon]}
+                  exact={item.href === "/workspace" || item.href === "/admin" || item.href === "/settings/billing"}
+                  external={item.external}
+                  collapsed={collapsed}
+                  onNavigate={onNavigate}
+                />
+              </div>
+            ))}
+          </>
+        );
+        if (!section.label) return <div key={section.key} className="contents">{links}</div>;
 
-      {/* Panel Analytics Links — Strictly filtered to employee workspace access */}
-      <SectionLabel collapsed={collapsed}>Panel Analytics</SectionLabel>
-      {(hasFms || hasAdmin) && nav({ href: "/workspace/analytics/fms", label: "Finance Analytics", icon: Landmark })}
-      {(hasHrms || hasAdmin) && nav({ href: "/workspace/analytics/hrms", label: "HR Analytics", icon: Users })}
-      {nav({ href: "/workspace/analytics/lms", label: "Lead Analytics", icon: LayoutGrid })}
-      {(hasChat || hasAdmin) && nav({ href: "/workspace/analytics/messenger", label: "Messenger Analytics", icon: MessagesSquare })}
-      {(hasPms || hasAdmin) && nav({ href: "/workspace/analytics/pms", label: "Project Analytics", icon: FolderKanban })}
-      {hasAdmin && nav({ href: "/workspace/analytics/portal", label: "Portal Analytics", icon: Globe })}
-      {(hasPrms || hasAdmin) && nav({ href: "/workspace/analytics/prms", label: "Procurement Analytics", icon: ShoppingCart })}
-      {(hasTms || hasAdmin) && nav({ href: "/workspace/analytics/tms", label: "Training Analytics", icon: GraduationCap })}
-      {nav({ href: "/workspace/analytics/workspace", label: "Workspace Analytics", icon: BarChart3 })}
-
-      {/* Account Settings */}
-      <SectionLabel collapsed={collapsed}>Account</SectionLabel>
-      {nav({ href: "/workspace/change-password", label: "Change Password", icon: KeyRound })}
+        const hasActive = section.items.some((item) => isActive(pathname, item.href));
+        const open = toggled[section.key] ?? (hasActive || !CLOSED_BY_DEFAULT.has(section.key));
+        // The icon-only sidebar has no room for a section header: show a divider and the open sections' icons.
+        if (collapsed) {
+          return (
+            <div key={section.key} className="contents" data-nav-section={section.key}>
+              <div className="mt-4 mb-1 border-t border-border/50" />
+              {open && links}
+            </div>
+          );
+        }
+        return (
+          <div key={section.key} className="contents" data-nav-section={section.key}>
+            <div className="mt-4 mb-1 flex items-center gap-1 px-3">
+              {section.href ? (
+                <Link
+                  href={section.href}
+                  onClick={onNavigate}
+                  className={cn("flex-1 text-xs font-semibold tracking-wide uppercase hover:text-primary", pathname === section.href ? "text-primary" : "text-muted-foreground")}
+                >
+                  {section.label}
+                </Link>
+              ) : (
+                <span className="flex-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{section.label}</span>
+              )}
+              <button
+                type="button"
+                aria-expanded={open}
+                aria-label={`${open ? "Hide" : "Show"} ${section.label} menu`}
+                onClick={() => setToggled((t) => ({ ...t, [section.key]: !open }))}
+                className="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-primary/8 hover:text-primary"
+              >
+                <ChevronDown className={cn("size-3.5 transition-transform", !open && "-rotate-90")} />
+              </button>
+            </div>
+            {open && links}
+          </div>
+        );
+      })}
     </nav>
   );
 }

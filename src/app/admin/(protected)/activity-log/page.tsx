@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchActivityLog, getActivityActions, ACTIVITY_LOG_MODULES, type ActivityLogModule } from "@/lib/admin/activity-log";
 import ActivityLogFilterBar from "./ActivityLogFilterBar";
@@ -21,6 +22,7 @@ export default async function AdminActivityLogPage({
     dateTo?: string;
   }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const moduleFilter = (ACTIVITY_LOG_MODULES as readonly string[]).includes(sp.module ?? "")

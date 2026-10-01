@@ -42,8 +42,8 @@ import {
   FileCheck2,
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
-import { enabledModules, onboardingPending } from "@/lib/platform/onboarding/state";
-import { getEntitlements } from "@/lib/platform/billing/entitlements";
+import { onboardingPending } from "@/lib/platform/onboarding/state";
+import { getWorkspaceNav } from "@/lib/workspace/access";
 import { normalizeRoles } from "@/lib/hrms-roles";
 import { normalizePmsRoles } from "@/lib/pms-roles";
 import { normalizePrmsRoles } from "@/lib/prms-roles";
@@ -82,7 +82,6 @@ interface ModuleTile {
   description: string;
   href: string;
   icon: React.ReactNode;
-  visible: boolean;
   roleBadge: string;
   /** Optional live figures shown on the tile. */
   kpi?: { label: string; value: string }[];
@@ -243,7 +242,6 @@ export default async function HubDashboardPage({
       description: "Attendance, leaves, payroll & profile.",
       href: "/hrms",
       icon: <Users className="size-5" />,
-      visible: hrmsRoles.length > 0,
       roleBadge: hrmsRoles.join(", ").replace(/_/g, " "),
     },
     {
@@ -252,7 +250,6 @@ export default async function HubDashboardPage({
       description: "Projects, tasks & timesheets.",
       href: "/pms",
       icon: <FolderKanban className="size-5" />,
-      visible: pmsRoles.length > 0,
       roleBadge: pmsRoles.join(", ").replace(/_/g, " "),
     },
     {
@@ -261,7 +258,6 @@ export default async function HubDashboardPage({
       description: "Requisitions, vendors & claims.",
       href: "/prms",
       icon: <ShoppingCart className="size-5" />,
-      visible: prmsRoles.length > 0,
       roleBadge: prmsRoles.join(", ").replace(/_/g, " "),
     },
     {
@@ -270,7 +266,6 @@ export default async function HubDashboardPage({
       description: "Batches, programs & certifications.",
       href: "/tms",
       icon: <GraduationCap className="size-5" />,
-      visible: tmsRoles.length > 0,
       roleBadge: tmsRoles.join(", ").replace(/_/g, " "),
     },
     {
@@ -279,7 +274,6 @@ export default async function HubDashboardPage({
       description: "Ledger, transactions & billing.",
       href: "/fms",
       icon: <Wallet className="size-5" />,
-      visible: fmsRoles.length > 0,
       roleBadge: fmsRoles.join(", ").replace(/_/g, " "),
     },
     {
@@ -288,7 +282,6 @@ export default async function HubDashboardPage({
       description: "Standard operating procedures & acknowledgements.",
       href: "/sop",
       icon: <BookText className="size-5" />,
-      visible: sopAccess,
       roleBadge: effectiveSopRoles(roles).join(", ").replace(/_/g, " "),
       kpi: [
         { label: "To acknowledge", value: String(sopPending.length) },
@@ -301,7 +294,6 @@ export default async function HubDashboardPage({
       description: "Website audits, keywords, rankings, backlinks & technical SEO.",
       href: "/seo",
       icon: <SearchCheck className="size-5" />,
-      visible: seoAccess,
       roleBadge: normalizeSeoRoles(roles).join(", ").replace(/_/g, " "),
       kpi: [
         { label: "Open issues", value: String(seoOpenIssues) },
@@ -315,7 +307,6 @@ export default async function HubDashboardPage({
       description: "Secure vault for company & client credentials, documents, URLs and notes.",
       href: "/dlms",
       icon: <Vault className="size-5" />,
-      visible: dlmsAccess,
       roleBadge: normalizeDlmsRoles(roles).join(", ").replace(/_/g, " "),
       kpi: dlmsSeesAll
         ? [
@@ -330,7 +321,6 @@ export default async function HubDashboardPage({
       description: "Purpose-built AI assistants with their own knowledge — proposals, requirements, meetings and more.",
       href: "/aibots",
       icon: <Bot className="size-5" />,
-      visible: aibotsAccess,
       roleBadge: normalizeAibotsRoles(roles).join(", ").replace(/_/g, " "),
       kpi: [
         { label: "My chats", value: String(aibotsChats) },
@@ -343,7 +333,6 @@ export default async function HubDashboardPage({
       description: "AI-written campaigns, ads and posts for Instagram, Facebook, YouTube, LinkedIn and Google — review, schedule, publish.",
       href: "/smms",
       icon: <Megaphone className="size-5" />,
-      visible: smmsAccess,
       roleBadge: normalizeSmmsRoles(roles).join(", ").replace(/_/g, " "),
       kpi: [
         { label: "Scheduled posts", value: String(smmsScheduled) },
@@ -356,7 +345,6 @@ export default async function HubDashboardPage({
       description: "Assessments, screening tests and exams — take your assigned tests, or build, assign and evaluate them.",
       href: "/ots",
       icon: <FileCheck2 className="size-5" />,
-      visible: otsAccess,
       roleBadge: effectiveOtsRoles(roles).join(", ").replace(/_/g, " "),
       kpi: [
         { label: "My open tests", value: String(otsMine) },
@@ -369,7 +357,6 @@ export default async function HubDashboardPage({
       description: "Channels, DMs & video meetings.",
       href: "/messenger",
       icon: <MessagesSquare className="size-5" />,
-      visible: chatRoles.length > 0,
       roleBadge: chatRoles.join(", ").replace(/_/g, " "),
     },
     {
@@ -378,7 +365,6 @@ export default async function HubDashboardPage({
       description: "Lead pipeline & AI assistant.",
       href: "/lms",
       icon: <LayoutGrid className="size-5" />,
-      visible: true,
       roleBadge: "All Staff",
     },
     {
@@ -387,16 +373,17 @@ export default async function HubDashboardPage({
       description: "Company-wide KPIs & system config.",
       href: "/admin",
       icon: <ShieldCheck className="size-5" />,
-      visible: adminRoles.length > 0,
       roleBadge: adminRoles.join(", ").replace(/_/g, " "),
     },
   ];
 
-  // Panels the company switched off during setup are hidden (null = no choice recorded → all on).
-  const [enabled, setupPending, entitlements] = await Promise.all([enabledModules(), user.roles.includes("super_admin") ? onboardingPending() : Promise.resolve(false), getEntitlements()]);
-  const visibleTiles = tiles.filter((t) => t.visible && (!enabled || enabled.has(t.key)));
-  // Panels outside the company's plan stay visible but locked, pointing at the upgrade page.
-  const isLocked = (key: string) => entitlements.modules !== null && !entitlements.modules.has(key);
+  // Which tiles this person gets comes from the Workspace navigation (roles, permission overrides, plan, switched-on
+  // panels) — the same answer the sidebar shows. Panels outside the plan stay visible but locked, pointing at the upgrade page.
+  const [session, setupPending] = await Promise.all([getWorkspaceNav(), user.roles.includes("super_admin") ? onboardingPending() : Promise.resolve(false)]);
+  const allowed = new Set(session?.nav.allowed ?? []);
+  const locked = new Set(session?.nav.lockedPanels ?? []);
+  const isLocked = (key: string) => locked.has(key);
+  const visibleTiles = tiles.filter((t) => (t.key === "admin" ? allowed.has("admin.dashboard") : allowed.has(`panel.${t.key}`) || locked.has(t.key)));
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const displayName = nameFromEmail(user.email);
@@ -1056,11 +1043,11 @@ export default async function HubDashboardPage({
       <ExecutiveSection title="Quick Self-Service" description="Everyday staff tools and workspace shortcuts">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { label: "Attendance Portal", desc: "Clock in, leaves & payslips", href: "/hrms/me", icon: <UserCheck className="size-5 text-emerald-500" />, tag: "HRMS", external: true },
-            { label: "Team Chat", desc: "Channels, DMs & video calls", href: "/messenger", icon: <MessagesSquare className="size-5 text-yashorbit-blue" />, tag: "Messenger", external: true },
-            { label: "My Tasks & Projects", desc: "Timesheets & deliverables", href: "/pms", icon: <FolderKanban className="size-5 text-amber-500" />, tag: "PMS", external: true },
-            { label: "Change Password", desc: "Update security credentials", href: "/workspace/change-password", icon: <KeyRound className="size-5 text-rose-500" />, tag: "Security", external: false },
-          ].map((action) => (
+            { label: "Attendance Portal", desc: "Clock in, leaves & payslips", href: "/hrms/me", icon: <UserCheck className="size-5 text-emerald-500" />, tag: "HRMS", external: true, needs: "panel.hrms" },
+            { label: "Team Chat", desc: "Channels, DMs & video calls", href: "/messenger", icon: <MessagesSquare className="size-5 text-yashorbit-blue" />, tag: "Messenger", external: true, needs: "panel.messenger" },
+            { label: "My Tasks & Projects", desc: "Timesheets & deliverables", href: "/pms", icon: <FolderKanban className="size-5 text-amber-500" />, tag: "PMS", external: true, needs: "panel.pms" },
+            { label: "Change Password", desc: "Update security credentials", href: "/workspace/change-password", icon: <KeyRound className="size-5 text-rose-500" />, tag: "Security", external: false, needs: "account.password" },
+          ].filter((action) => allowed.has(action.needs)).map((action) => (
             <Link
               key={action.label}
               href={action.href}

@@ -17,6 +17,7 @@ import {
   BarChart3,
   Settings,
   ScrollText,
+  ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -97,6 +98,8 @@ export default function AdminSidebar({
 
   return (
     <nav className="flex h-full flex-col gap-1 p-3">
+      {/* The Command Center is part of the Workspace: one click back to it. */}
+      {nav({ href: "/workspace", label: "Back to Workspace", icon: ArrowLeft, exact: true })}
       {nav({ href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true })}
 
       <SectionLabel collapsed={collapsed}>Your Panels</SectionLabel>

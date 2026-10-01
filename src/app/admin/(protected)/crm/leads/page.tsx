@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchAllLeads } from "@/lib/admin/crm-leads";
 import { isValidCategory, type CategorySlug } from "@/lib/categories";
@@ -25,6 +26,7 @@ export default async function AdminLeadsPage({
     sortDir?: string;
   }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const category = sp.category && isValidCategory(sp.category) ? (sp.category as CategorySlug) : undefined;

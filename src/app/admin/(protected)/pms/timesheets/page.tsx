@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchEntries } from "@/lib/pms/timesheets";
 import { exportProjects } from "@/lib/pms/projects";
@@ -18,6 +19,7 @@ export default async function AdminTimesheetsPage({
     sortDir?: string;
   }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidTimesheetStatus(sp.status) ? sp.status : undefined;

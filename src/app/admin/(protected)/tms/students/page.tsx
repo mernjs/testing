@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchStudents } from "@/lib/tms/students";
 import { isValidStudentStatus } from "@/lib/tms/constants";
@@ -15,6 +16,7 @@ export default async function AdminStudentsPage({
     sortDir?: string;
   }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidStudentStatus(sp.status) ? sp.status : undefined;

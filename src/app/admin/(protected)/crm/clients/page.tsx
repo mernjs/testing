@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchClients, listIndustries, serializeClient } from "@/lib/pms/clients";
 import { isValidClientStatus } from "@/lib/pms/constants";
@@ -16,6 +17,7 @@ export default async function AdminClientsPage({
     sortDir?: string;
   }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidClientStatus(sp.status) ? sp.status : undefined;

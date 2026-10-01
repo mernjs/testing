@@ -1,5 +1,6 @@
 "use client";
 
+import type { NavSection } from "@/lib/workspace/nav";
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import HubSidebar from "@/components/hub/HubSidebar";
 import BrandMark from "@/components/BrandMark";
 import { BrandName } from "@/components/platform/BrandProvider";
 
-export default function HubMobileSidebar({ roles }: { roles: string[] }) {
+export default function HubMobileSidebar({ nav }: { nav: NavSection[] }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -19,14 +20,14 @@ export default function HubMobileSidebar({ roles }: { roles: string[] }) {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="left" className="w-72 p-0 sm:max-w-72">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
-          <SheetDescription className="sr-only">Staff Hub navigation menu</SheetDescription>
+          <SheetDescription className="sr-only">Workspace navigation menu</SheetDescription>
           <div className="flex h-14 items-center gap-2 border-b border-border/60 px-4">
             <BrandMark className="size-6 shrink-0" />
             <span className="text-sm font-bold">
-              <BrandName /> <span className="text-foreground">Staff Hub</span>
+              <BrandName /> <span className="text-foreground">Workspace</span>
             </span>
           </div>
-          <HubSidebar roles={roles} onNavigate={() => setOpen(false)} />
+          <HubSidebar nav={nav} onNavigate={() => setOpen(false)} />
         </SheetContent>
       </Sheet>
     </>

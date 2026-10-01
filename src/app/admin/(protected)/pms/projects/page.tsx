@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchProjects } from "@/lib/pms/projects";
 import { listClientOptions } from "@/lib/pms/clients";
@@ -18,6 +19,7 @@ export default async function AdminProjectsPage({
     sortDir?: string;
   }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidProjectStatus(sp.status) ? sp.status : undefined;

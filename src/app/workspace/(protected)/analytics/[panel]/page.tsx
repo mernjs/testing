@@ -45,13 +45,7 @@ import {
   Lock,
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
-import { normalizeRoles } from "@/lib/hrms-roles";
-import { normalizePmsRoles } from "@/lib/pms-roles";
-import { normalizePrmsRoles } from "@/lib/prms-roles";
-import { normalizeTmsRoles } from "@/lib/tms-roles";
-import { normalizeChatRoles } from "@/lib/messenger-roles";
-import { normalizeAdminRoles } from "@/lib/admin-roles";
-import { normalizeFmsRoles } from "@/lib/fms-roles";
+import { checkWorkspaceAccess } from "@/lib/workspace/access";
 import { CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import KpiCard from "@/components/lms/KpiCard";
@@ -735,16 +729,8 @@ export default async function WorkspacePanelAnalyticsPage({
   const icon = PANEL_ICONS[panel];
 
   const roles = user.roles;
-  const isSuperAdmin = normalizeAdminRoles(roles).length > 0;
-
-  // Access validation per panel
-  let isAuthorized = true;
-  if (panel === "fms") isAuthorized = isSuperAdmin || normalizeFmsRoles(roles).length > 0;
-  if (panel === "hrms") isAuthorized = isSuperAdmin || normalizeRoles(roles).length > 0;
-  if (panel === "pms") isAuthorized = isSuperAdmin || normalizePmsRoles(roles).length > 0;
-  if (panel === "prms") isAuthorized = isSuperAdmin || normalizePrmsRoles(roles).length > 0;
-  if (panel === "tms") isAuthorized = isSuperAdmin || normalizeTmsRoles(roles).length > 0;
-  if (panel === "messenger") isAuthorized = isSuperAdmin || normalizeChatRoles(roles).length > 0;
+  // The same rule that lists this page in the Workspace navigation: role / permission override, plan and switched-on panels.
+  const isAuthorized = await checkWorkspaceAccess(user, `analytics.${panel}`);
 
   const filters: PanelAnalyticsFilters = {
     dateFrom: typeof sp.dateFrom === "string" ? sp.dateFrom : undefined,

@@ -6,8 +6,8 @@ import { CardHeader, CardTitle, CardDescription, CardContent } from "@/component
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import GlassCard from "@/components/lms/GlassCard";
 import { getCurrentHubUser } from "@/lib/hub-auth";
-import { currentCompanyId } from "@/lib/platform/tenancy/context";
-import { formatInvoiceDate, listCompanySaasInvoices } from "@/lib/platform/billing/invoices";
+import { formatInvoiceDate } from "@/lib/platform/billing/invoices";
+import { getCompanyBillingHistory } from "@/lib/workspace/company";
 import { formatMoney } from "@/lib/platform/billing/types";
 
 export const metadata: Metadata = { title: "Invoices", robots: { index: false, follow: false } };
@@ -18,7 +18,8 @@ export default async function BillingInvoicesPage() {
   const user = await getCurrentHubUser();
   if (!user) redirect("/workspace/login");
   if (!user.roles.includes("super_admin")) redirect("/workspace");
-  const invoices = await listCompanySaasInvoices(await currentCompanyId());
+  const { invoices, payments } = await getCompanyBillingHistory();
+  const lastPayment = payments.find((p) => p.kind === "payment") ?? null;
 
   return (
     <div className="min-h-screen bg-background px-4 py-10">
@@ -80,6 +81,51 @@ export default async function BillingInvoicesPage() {
                   ))}
                 </TableBody>
               </Table>
+              </div>
+            )}
+          </CardContent>
+        </GlassCard>
+
+        {/* Money movements, read from the same invoices and credit notes — there is no separate payments ledger. */}
+        <GlassCard id="saas-payments">
+          <CardHeader>
+            <CardTitle className="text-xl">Payments &amp; refunds</CardTitle>
+            <CardDescription>
+              {lastPayment
+                ? `Last payment: ${formatMoney(lastPayment.amount, lastPayment.currency)} on ${formatInvoiceDate(lastPayment.at)}.`
+                : "Every payment made for your subscription, and any refund, appears here."}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {payments.length === 0 ? (
+              <p className="py-6 text-center text-sm text-muted-foreground">No payments yet.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Document</TableHead>
+                      <TableHead>Reference</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {payments.map((p) => (
+                      <TableRow key={p.documentId} data-payment-kind={p.kind} data-payment-document={p.documentNumber}>
+                        <TableCell>{formatInvoiceDate(p.at)}</TableCell>
+                        <TableCell>{p.kind === "payment" ? "Payment" : "Refund / credit"}</TableCell>
+                        <TableCell className="text-xs">{p.documentNumber}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{p.reference ?? "—"}</TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {p.kind === "refund" ? "− " : ""}
+                          {formatMoney(p.amount, p.currency)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
             )}
           </CardContent>

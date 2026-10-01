@@ -1,10 +1,12 @@
 import "server-only";
 import { randomBytes, createHash } from "node:crypto";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import { verifyPassword, hashPassword } from "@/lib/lms-auth";
 import { ADMIN_ROLES, normalizeAdminRoles, hasAdminAccess, type AdminRole } from "@/lib/admin-roles";
+import { HUB_SESSION_COOKIE, getSessionHubUser } from "@/lib/hub-auth";
 
 /**
  * Super Admin Command Center authentication. A separate cookie / session
@@ -173,10 +175,40 @@ export async function clearAdminSessionCookie(): Promise<void> {
   store.delete(ADMIN_SESSION_COOKIE);
 }
 
+/**
+ * The Command Center account behind a request's cookies. The Command Center
+ * is part of the Workspace: the admin session is used when there is one,
+ * otherwise the Workspace (hub) session of the same `admin_users` account is
+ * accepted — under the same rule (`super_admin` in the account's CURRENT
+ * roles), so it opens nothing the roles don't already allow.
+ */
+export async function resolveAdminUser(adminToken: string | undefined | null, hubToken: string | undefined | null): Promise<CurrentAdminUser | null> {
+  const admin = await getSessionAdminUser(adminToken);
+  if (admin) return admin;
+  const hub = await getSessionHubUser(hubToken);
+  if (!hub) return null;
+  const roles = normalizeAdminRoles(hub.roles);
+  if (roles.length === 0) return null;
+  return { id: hub.id, email: hub.email, roles, mustChangePassword: hub.mustChangePassword, createdAt: hub.createdAt, lastLoginAt: hub.lastLoginAt };
+}
+
 export async function getCurrentAdminUser(): Promise<CurrentAdminUser | null> {
   const store = await cookies();
-  const token = store.get(ADMIN_SESSION_COOKIE)?.value;
-  return getSessionAdminUser(token);
+  return resolveAdminUser(store.get(ADMIN_SESSION_COOKIE)?.value, store.get(HUB_SESSION_COOKIE)?.value);
+}
+
+/**
+ * Page guard for every `/admin` page (and the layout). Layouts aren't
+ * re-rendered on navigation, so each page checks for itself. Someone signed
+ * in to the Workspace without Command Center access goes back to the
+ * Workspace; a signed-out visitor goes to the admin sign-in.
+ */
+export async function requireAdminPage(): Promise<CurrentAdminUser> {
+  const store = await cookies();
+  const user = await resolveAdminUser(store.get(ADMIN_SESSION_COOKIE)?.value, store.get(HUB_SESSION_COOKIE)?.value);
+  if (user && hasAdminAccess(user.roles)) return user;
+  if (await getSessionHubUser(store.get(HUB_SESSION_COOKIE)?.value)) redirect("/workspace");
+  redirect("/admin/login");
 }
 
 /**

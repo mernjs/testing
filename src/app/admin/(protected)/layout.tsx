@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentAdminUser } from "@/lib/admin-auth";
-import { hasAdminAccess } from "@/lib/admin-roles";
+import { requireAdminPage } from "@/lib/admin-auth";
 import { getAdminNotifications, runAdminNotificationSweeps } from "@/lib/admin/notifications";
 import AdminSidebarShell from "@/components/admin/AdminSidebarShell";
 import AdminTopbar from "@/components/admin/AdminTopbar";
@@ -10,10 +9,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import BillingNotice from "@/components/platform/BillingNotice";
 
 export default async function ProtectedAdminLayout({ children }: { children: React.ReactNode }) {
-  const user = await getCurrentAdminUser();
-  if (!user) redirect("/admin/login");
+  const user = await requireAdminPage();
   if (user.mustChangePassword) redirect("/admin/change-password");
-  if (!hasAdminAccess(user.roles)) redirect("/admin/login");
 
   // Throttled internally to once/hour, per module, across the whole app.
   await runAdminNotificationSweeps();

@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchApplications, getAllJobPositions } from "@/lib/career-applications";
 import { isValidCareerApplicationStatus } from "@/lib/career-application-status";
@@ -26,6 +27,7 @@ export default async function AdminApplicantsPage({
     sortDir?: string;
   }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidCareerApplicationStatus(sp.status) ? sp.status : undefined;

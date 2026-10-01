@@ -35,6 +35,7 @@ interface HubUserDoc {
   createdAt: Date;
   lastLoginAt: Date | null;
   roles?: string[];
+  permissionOverrides?: Record<string, boolean>;
   mustChangePassword?: boolean;
 }
 
@@ -52,6 +53,8 @@ export interface CurrentHubUser {
   /** Raw `admin_users.roles` — Hub has no role vocabulary of its own; this is
    * used only to decide which OTHER panels' dashboard tiles to show. */
   roles: string[];
+  /** The Super Admin's per-user capability overrides (`permission-overrides.ts`). */
+  permissionOverrides?: Record<string, boolean>;
   mustChangePassword: boolean;
   createdAt: Date;
   lastLoginAt: Date | null;
@@ -151,6 +154,7 @@ export async function getSessionHubUser(token: string | undefined | null): Promi
     id: user._id.toString(),
     email: user.email,
     roles: user.roles ?? [],
+    permissionOverrides: user.permissionOverrides ?? {},
     mustChangePassword: user.mustChangePassword === true,
     createdAt: user.createdAt,
     lastLoginAt: user.lastLoginAt,

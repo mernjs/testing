@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchCertificates } from "@/lib/tms/certificates";
 import CertificatesFilterBar from "./CertificatesFilterBar";
@@ -8,6 +9,7 @@ export default async function AdminCertificatesPage({
 }: {
   searchParams: Promise<{ page?: string; search?: string; sortBy?: string; sortDir?: string }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const sortBy = sp.sortBy === "issuedOn" ? "issuedOn" : "createdAt";

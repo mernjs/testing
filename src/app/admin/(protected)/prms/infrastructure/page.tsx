@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchInfrastructure } from "@/lib/prms/infrastructure";
 import { isValidResourceStatus } from "@/lib/prms/constants";
@@ -9,6 +10,7 @@ export default async function AdminInfrastructurePage({
 }: {
   searchParams: Promise<{ page?: string; search?: string; status?: string; sortBy?: string; sortDir?: string }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidResourceStatus(sp.status) ? sp.status : undefined;

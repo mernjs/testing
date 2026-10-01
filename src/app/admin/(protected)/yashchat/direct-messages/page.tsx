@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchDirectConversations } from "@/lib/admin/yashchat";
 import DirectMessagesFilterBar from "./DirectMessagesFilterBar";
@@ -8,6 +9,7 @@ export default async function AdminDirectMessagesPage({
 }: {
   searchParams: Promise<{ page?: string; search?: string }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
 

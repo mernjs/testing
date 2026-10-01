@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchMeetings } from "@/lib/admin/yashchat";
 import MeetingsFilterBar from "./MeetingsFilterBar";
@@ -8,6 +9,7 @@ export default async function AdminMeetingsPage({
 }: {
   searchParams: Promise<{ page?: string; search?: string; status?: string }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
 

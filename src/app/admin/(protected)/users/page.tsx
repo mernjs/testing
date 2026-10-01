@@ -1,4 +1,7 @@
+import Link from "next/link";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
+import { countSeatsUsed } from "@/lib/platform/billing/enforce";
+import { getEntitlements } from "@/lib/platform/billing/entitlements";
 import { requireAdminUser } from "@/lib/admin-auth";
 import { searchAdminUsers, type AdminUserRow } from "@/lib/admin/admin-users";
 import { ALL_KNOWN_ROLES } from "@/lib/admin/role-catalog";
@@ -43,6 +46,9 @@ export default async function AdminUsersPage({
   });
 
   const rows: AdminUserRow[] = items;
+  // Seats against the plan — the same count and limit that creating a user is checked against.
+  const [seatsUsed, entitlements] = await Promise.all([countSeatsUsed(), getEntitlements()]);
+  const seatLimit = entitlements.limits.seats;
   const hasActiveFilters = Boolean(sp.search || role || panel || status || userType);
 
   return (
@@ -59,7 +65,15 @@ export default async function AdminUsersPage({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Link href="/settings/usage" id="users-seats" title="Seats used against your plan">
+            <Badge variant="outline" className="px-3 py-1 text-xs gap-1.5 bg-primary/10 text-primary border-primary/20">
+              <span className="font-semibold">
+                {seatsUsed} / {seatLimit === null ? "Unlimited" : seatLimit}
+              </span>{" "}
+              seats
+            </Badge>
+          </Link>
           <Badge variant="outline" className="px-3 py-1 text-xs gap-1.5 bg-card">
             <span className="font-semibold text-foreground">{total}</span> accounts shown
           </Badge>

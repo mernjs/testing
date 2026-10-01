@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Link from "next/link";
 import {
   IndianRupee,
@@ -141,6 +142,7 @@ export default async function AdminCommandCenterPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requireAdminPage();
   const brand = await getCompanyBrand();
   const sp = await searchParams;
   const dateFrom = typeof sp.dateFrom === "string" ? sp.dateFrom : undefined;

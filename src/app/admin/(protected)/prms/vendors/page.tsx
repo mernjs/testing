@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchVendors } from "@/lib/prms/vendors";
 import { isValidVendorStatus, isValidVendorCategory } from "@/lib/prms/constants";
@@ -16,6 +17,7 @@ export default async function AdminVendorsPage({
     sortDir?: string;
   }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidVendorStatus(sp.status) ? sp.status : undefined;

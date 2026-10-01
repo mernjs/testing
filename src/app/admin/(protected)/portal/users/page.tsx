@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchPortalUsers } from "@/lib/admin/portal-users";
 import { isPortalRole } from "@/lib/portal-roles";
@@ -23,6 +24,7 @@ export default async function AdminPortalUsersPage({
     sortDir?: string;
   }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const role = sp.role && isPortalRole(sp.role) ? sp.role : undefined;

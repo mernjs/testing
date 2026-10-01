@@ -1,37 +1,45 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowUpRight, Building2, CreditCard, FileUp, Globe, Globe2, History, Landmark, Palette, Users, Zap } from "lucide-react";
+import { ArrowUpRight, Building, Building2, CreditCard, FileUp, Gauge, Globe, Globe2, History, Landmark, Lock, Palette, Plug, ReceiptText, Users, Zap, type LucideIcon } from "lucide-react";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { getCompanyBrand } from "@/lib/platform/branding";
-import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { getWorkspaceNav } from "@/lib/workspace/access";
 
 export const metadata: Metadata = { title: "Company settings", robots: { index: false, follow: false } };
 
-/** The company owner's settings hub. Later phases add Billing, Integrations here. */
-const SECTIONS = [
-  { href: "/onboarding", icon: Building2, title: "Company setup", description: "Profile, departments, invitations and which panels your team uses." },
-  { href: "/settings/branding", icon: Palette, title: "Branding", description: "Logo, name and colour across panels, emails and PDFs." },
-  { href: "/settings/domains", icon: Globe, title: "Domains", description: "Your workspace address and your own custom domains, with automatic SSL." },
-  { href: "/settings/billing", icon: CreditCard, title: "Plan & billing", description: "Your plan, payments, coupon codes and GST billing details." },
-  { href: "/settings/payments", icon: Landmark, title: "Payments & payouts", description: "Connect your own Razorpay account to collect invoice payments and pay salaries." },
-  { href: "/admin/users", icon: Users, title: "Users & roles", description: "Who can sign in and which panels each person can use." },
-  { href: "/settings/automations", icon: Zap, title: "Automations", description: "When something happens, notify people, send an email or call a webhook." },
-  { href: "/settings/import", icon: FileUp, title: "Import data", description: "Bring leads, clients and employees in from CSV files." },
-  { href: "/settings/activity", icon: History, title: "Activity log", description: "Who did what across your workspace, and when." },
-];
+/** Card icons for the Company items of the Workspace navigation (`src/lib/workspace/nav.ts`). */
+const ICONS: Record<string, LucideIcon> = {
+  "company.setup": Building2,
+  "company.profile": Building,
+  "company.users": Users,
+  "company.billing": CreditCard,
+  "company.invoices": ReceiptText,
+  "company.usage": Gauge,
+  "company.domains": Globe,
+  "company.branding": Palette,
+  "company.payments": Landmark,
+  "company.integrations": Plug,
+  "company.automations": Zap,
+  "company.import": FileUp,
+  "company.activity": History,
+  "company.security": Lock,
+  "platform.panel": Globe2,
+};
 
-/** Only on the platform owner's own workspace. */
-const CONSOLE_SECTION = { href: "/platform", icon: Globe2, title: "Platform Panel", description: "The SaaS control centre: companies, sign-ups, plans, billing, tax and platform settings." };
-
+/**
+ * The company's settings hub. The cards are the "Company" section of the
+ * Workspace navigation, so they always match the sidebar; the Platform Panel
+ * card appears only for people the Platform Panel's own access check accepts.
+ */
 export default async function CompanySettingsPage() {
   const user = await getCurrentHubUser();
   if (!user) redirect("/workspace/login");
   if (!user.roles.includes("super_admin")) redirect("/workspace");
-  const [brand, isOwner] = await Promise.all([getCompanyBrand(), isPlatformOwnerContext()]);
-  const sections = isOwner ? [...SECTIONS, CONSOLE_SECTION] : SECTIONS;
+  const [brand, session] = await Promise.all([getCompanyBrand(), getWorkspaceNav()]);
+  const sections = (session?.nav.sections ?? []).filter((s) => s.key === "company" || s.key === "platform").flatMap((s) => s.items);
 
   return (
     <div className="min-h-screen bg-background px-4 py-10">
@@ -41,8 +49,10 @@ export default async function CompanySettingsPage() {
           <p className="text-sm text-muted-foreground">Company-wide configuration. Only Super Admins see this.</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
-          {sections.map(({ href, icon: Icon, title, description }) => (
-            <Link key={href} href={href} className="group">
+          {sections.map(({ key, href, title, description }) => {
+            const Icon = ICONS[key] ?? Building2;
+            return (
+            <Link key={key} href={href} className="group" data-settings-card={key}>
               <GlassCard className="h-full transition-colors group-hover:border-primary/40">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -54,7 +64,8 @@ export default async function CompanySettingsPage() {
                 </CardHeader>
               </GlassCard>
             </Link>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

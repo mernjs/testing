@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
@@ -1362,6 +1363,7 @@ export default async function PanelAnalyticsPage({
   params: Promise<{ panel: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  await requireAdminPage();
   const { panel } = await params;
   const sp = await searchParams;
   if (!isPanelKey(panel)) notFound();

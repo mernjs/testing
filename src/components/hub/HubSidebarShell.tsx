@@ -1,5 +1,6 @@
 "use client";
 
+import type { NavSection } from "@/lib/workspace/nav";
 import { motion } from "framer-motion";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
@@ -14,11 +15,11 @@ const COLLAPSED_WIDTH = 68;
 
 export default function HubSidebarShell({
   email,
-  roles,
+  nav,
   lastLoginAt,
 }: {
   email: string;
-  roles: string[];
+  nav: NavSection[];
   lastLoginAt: string | null;
 }) {
   const { collapsed, toggle, hydrated } = useSidebarCollapse();
@@ -40,7 +41,7 @@ export default function HubSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              <BrandName /> <span className="text-foreground">Staff Hub</span>
+              <BrandName /> <span className="text-foreground">Workspace</span>
             </span>
           )}
         </div>
@@ -55,7 +56,7 @@ export default function HubSidebarShell({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <HubSidebar collapsed={collapsed} roles={roles} />
+        <HubSidebar collapsed={collapsed} nav={nav} />
       </div>
 
       <HubProfileMenu email={email} lastLoginAt={lastLoginAt} />

@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchAllTasks } from "@/lib/admin/pms-work-items";
 import { exportProjects } from "@/lib/pms/projects";
@@ -11,6 +12,7 @@ export default async function AdminTasksPage({
 }: {
   searchParams: Promise<{ page?: string; search?: string; status?: string; priority?: string; sortBy?: string; sortDir?: string }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const status = sp.status && isValidTaskStatus(sp.status) ? sp.status : undefined;

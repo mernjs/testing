@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchConversations } from "@/lib/chat-conversations";
 import ConversationsFilterBar from "./ConversationsFilterBar";
@@ -24,6 +25,7 @@ export default async function AdminChatbotConversationsPage({
     sortDir?: string;
   }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const sortBy = (SORT_FIELDS as readonly string[]).includes(sp.sortBy ?? "")

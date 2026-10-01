@@ -1,3 +1,4 @@
+import { requireAdminPage } from "@/lib/admin-auth";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchDocuments, DOCUMENT_MODULES, type DocumentModule } from "@/lib/admin/documents";
 import DocumentsFilterBar from "./DocumentsFilterBar";
@@ -8,6 +9,7 @@ export default async function AdminDocumentsPage({
 }: {
   searchParams: Promise<{ page?: string; search?: string; module?: string }>;
 }) {
+  await requireAdminPage();
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
   const moduleFilter = (DOCUMENT_MODULES as readonly string[]).includes(sp.module ?? "")
