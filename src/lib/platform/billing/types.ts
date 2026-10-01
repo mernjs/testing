@@ -132,6 +132,18 @@ export interface CompanySubscription {
   priceVersion?: number | null;
   /** Trial reminder thresholds (days left, e.g. 7/3/1) already emailed — see `billing/trials.ts`. */
   trialRemindersSent?: number[];
+  /** A plan change scheduled with the provider for the end of the current period (subscriptions workstream). */
+  pendingChange?: { planId: string; interval: BillingInterval; effectiveAt: Date | null; pricing?: SubscriptionPricing | null } | null;
+  /** Failed-renewal bookkeeping for dunning (subscriptions workstream); reset on every successful charge. */
+  dunning?: { failedPayments: number; pastDueSince: Date | null } | null;
+  /** What the company is charged per cycle — the checkout quote (plan, coupon, add-ons) it subscribed with. */
+  pricing?: SubscriptionPricing | null;
+  /** The last successful charge (for invoices and pro-rata refunds on an immediate upgrade). */
+  lastPayment?: { id: string; amount: number; currency: string; at: Date; periodStart: Date | null; periodEnd: Date | null } | null;
+  /** A checkout started but not yet confirmed by Razorpay: the quote it was created with. */
+  checkout?: { subscriptionId: string; pricing: SubscriptionPricing } | null;
+  /** Set by the Platform Panel: never billed (status "internal") although not the platform owner. */
+  complimentary?: boolean;
   updatedAt: Date;
 }
 
@@ -142,6 +154,24 @@ export interface CompanyAddon {
   addedAt: Date;
   /** Granted free by the platform: priced at 0 for this company. */
   complimentary?: boolean;
+}
+
+/** Snapshot of a checkout quote (`quoteCheckout`) with its tax worked out. Smallest currency unit. */
+export interface SubscriptionPricing {
+  planId: string;
+  interval: BillingInterval;
+  currency: string;
+  couponCode: string | null;
+  couponId: string | null;
+  subtotal: number;
+  discount: number;
+  /** Pre-tax amount per cycle (what MRR is based on). */
+  net: number;
+  gst: number;
+  gstRatePercent: number;
+  /** Charged per cycle, tax-inclusive — the Razorpay plan amount. */
+  total: number;
+  quotedAt: Date;
 }
 
 /** Usage metrics metered per company per calendar month. */
