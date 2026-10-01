@@ -487,7 +487,7 @@
     "description": "A ready-made template.",
     "steps": [
      "A visitor submits a form and a lead is created",
-     "The rule matches the lead.created event",
+     "The rule matches the new-lead event",
      "A notification goes to the sales role",
      "The run is recorded and can be tested with Send test"
     ]
@@ -497,7 +497,7 @@
     "description": "A ready-made template.",
     "steps": [
      "A customer pays and the invoice is marked paid",
-     "The invoice.paid event fires",
+     "The invoice-paid event fires",
      "Finance receives an email with the invoice details",
      "The delivery result is kept in the run log"
     ]
@@ -506,9 +506,9 @@
     "title": "Outbound webhook to your own system",
     "description": "Connect any tool that accepts a webhook.",
     "steps": [
-     "Choose the event, such as task.completed",
+     "Choose the event, such as a task being completed",
      "Add conditions and a webhook action",
-     "Each request is signed with HMAC-SHA256 so your system can verify it",
+     "Each request is signed so your system can verify it came from your workspace",
      "Delivery is limited to public https endpoints"
     ]
    }
@@ -793,14 +793,14 @@
      "A candidate applies through the careers page",
      "Recruiters move the application to selected or hired",
      "The applicant converts into an employee, linked back to the application",
-     "An employee.created event can trigger a welcome automation"
+     "A new-employee event can trigger a welcome automation"
     ]
    },
    {
     "title": "Leave request to attendance",
     "description": "Approvals update the record.",
     "steps": [
-     "The employee submits leave; a leave.requested event fires",
+     "The employee submits leave; a leave-requested event fires",
      "An automation can notify the HR role",
      "The manager approves",
      "Attendance entries for those days are created from the leave"
@@ -1078,7 +1078,7 @@
     "description": "Keep the right people informed.",
     "steps": [
      "A team member marks a task complete",
-     "A task.completed event fires",
+     "A task-completed event fires",
      "An automation notifies the project manager",
      "The activity feed records the change"
     ]
@@ -2141,7 +2141,7 @@
     "description": "Speed to first contact.",
     "steps": [
      "A visitor submits a form; a lead is created",
-     "A lead.created event fires",
+     "A new-lead event fires",
      "An automation notifies the sales role, or emails a named person",
      "The lead appears in the inbox with its source and campaign"
     ]
@@ -4237,7 +4237,7 @@
      "Create the invoice for a client and project",
      "Send it with a payment link",
      "Reminders go out before the due date, on the day and when overdue",
-     "A payment settles it, a receipt is issued and an invoice.paid event fires"
+     "A payment settles it, a receipt is issued and an invoice-paid event fires"
     ]
    },
    {
@@ -4498,7 +4498,7 @@
     "steps": [
      "Your question and the data you may read are checked",
      "The AI plans a structured read-only query",
-     "The plan is validated and run with a 10 second limit and a 500 row cap",
+     "The query is checked, then run read-only with safe time and size limits",
      "The answer is built from the real results and saved to your conversation"
     ]
    },
@@ -4506,7 +4506,7 @@
     "title": "Activity you can audit",
     "description": "Questions are recorded as workspace events.",
     "steps": [
-     "Each question emits an intelligence.question event",
+     "Each question is recorded as a workspace event",
      "The event appears in the company audit log",
      "An automation can react to it like any other event"
     ]
