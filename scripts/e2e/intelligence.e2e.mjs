@@ -134,7 +134,8 @@ try {
     assert.match(csv.split("\r\n")[0], /Project name/);
     assert.match(csv, /Website Redesign/);
     // Copy the answer text.
-    await answer.getByRole("button", { name: "Copy answer" }).click();
+    // The copy control sits under the answer box, in the same message row.
+    await answer.locator("xpath=..").getByRole("button", { name: "Copy answer" }).click();
     assert.match(await page.evaluate(() => navigator.clipboard.readText()), /past (its|their) end date/);
   });
 
