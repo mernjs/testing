@@ -41,7 +41,9 @@ import { delegatedManagerBlock } from "@/lib/workspace/admin-users";
 import { notify as notifyWorkspace } from "@/lib/platform/notifications";
 import { notify as notifyPms } from "@/lib/pms/notifications";
 import { listWorkspaceNotifications, markAllWorkspaceNotificationsRead, markWorkspaceNotificationRead, seesPanelNotifications, workspaceUnreadCount } from "@/lib/workspace/notifications";
-import { MANAGE_PERMISSIONS, NAV_KEYS, NAV_SECTIONS } from "@/lib/workspace/nav";
+import { MANAGE_PERMISSIONS, NAV_KEYS, NAV_SECTIONS, canViewAuditLog, canViewCommandCenter, canViewWorkspaceEvents } from "@/lib/workspace/nav";
+import { loadExecutiveOverview } from "@/lib/workspace/executive-overview";
+import { allowedAuditSources, resolveAuditSource } from "@/lib/workspace/activity-log-shared";
 import { checkWorkspaceAccess, resolveWorkspaceNav, type WorkspaceUser } from "@/lib/workspace/access";
 import { getCompanyBillingHistory, getCompanySecurity, getCompanyUsage, listCompanyIntegrations, paymentsFromInvoices } from "@/lib/workspace/company";
 import { ALL_KNOWN_ROLES } from "@/lib/workspace/role-catalog";
@@ -149,7 +151,7 @@ async function main() {
   const noRolesNav = await allowed(acme, noRoles);
   await check("company super admin: every company and management item of the plan's panels, no Platform link", async () => {
     const a = await allowed(acme, admin);
-    for (const k of [...COMPANY_KEYS, ...GROWTH_MANAGE_KEYS, "dashboard", "account.notifications", "account.password"]) assert.ok(a.has(k), k);
+    for (const k of [...COMPANY_KEYS, ...GROWTH_MANAGE_KEYS, "dashboard", "account.documents", "account.notifications", "account.password"]) assert.ok(a.has(k), k);
     for (const k of MANAGE_KEYS.filter((x) => x.startsWith("manage.tms."))) assert.ok(!a.has(k), `${k}: Training is not in the plan`);
     assert.ok(MANAGE_KEYS.every((k) => ownerKeys.has(k)), "the unlimited owner company gets every register");
     for (const k of ["panel.hrms", "panel.pms", "panel.fms", "panel.lms", "panel.messenger", "analytics.fms", "analytics.portal", "analytics.workspace"]) assert.ok(a.has(k), k);
@@ -171,7 +173,7 @@ async function main() {
   await check("PMS employee: own panels only; lead and portal analytics are not theirs", async () => {
     const a = await allowed(acme, dev);
     for (const k of ["panel.pms", "panel.hrms", "panel.prms", "panel.dlms", "analytics.pms", "analytics.hrms", "analytics.prms"]) assert.ok(a.has(k), k);
-    for (const k of ["panel.fms", "analytics.fms", "analytics.lms", "analytics.portal", "manage.command-center", "company.billing", "company.users"]) assert.ok(!a.has(k), k);
+    for (const k of ["panel.fms", "analytics.fms", "analytics.lms", "analytics.portal", "account.documents", "company.audit", "company.billing", "company.users"]) assert.ok(!a.has(k), k);
   });
   await check("finance user: Finance panel and analytics", async () => {
     const a = await allowed(acme, finance);
@@ -188,7 +190,7 @@ async function main() {
     assert.ok(a.has("analytics.portal") && !base.has("analytics.portal"), "granted portal.isPortalAdmin");
     assert.ok(!a.has("analytics.workspace") && base.has("analytics.workspace"), "denied workspace.canViewAnalytics");
     assert.ok(a.has("manage.pms.projects") && a.has("manage.pms.timesheets") && !base.has("manage.pms.projects"), "granted workspace.manageProjects");
-    assert.ok(!a.has("manage.command-center") && !a.has("company.users") && !a.has("manage.prms.vendors") && !a.has("company.billing"), "one grant opens only its own pages");
+    assert.ok(!canViewCommandCenter({ roles: tuned.user.roles, permissionOverrides: tuned.user.permissionOverrides ?? null }) && !a.has("company.audit") && !a.has("account.documents") && !a.has("company.users") && !a.has("manage.prms.vendors") && !a.has("company.billing"), "one grant opens only its own pages");
   });
   await check("an account without roles gets the dashboard, the open CRM and its own account pages", async () => {
     const a = await allowed(acme, noRoles);
@@ -315,7 +317,7 @@ async function main() {
     await runAsCompany(owner, async () => (await getDb()).collection("admin_users").updateOne({ _id: ownerHr._id }, { $set: { platformRoleId: "owner" } }));
     const a = await allowed(owner, ownerHr);
     assert.ok(a.has("platform.panel"));
-    assert.ok(!a.has("company.billing") && !a.has("manage.command-center"), "platform access is not company management");
+    assert.ok(!a.has("company.billing") && !a.has("company.audit") && !a.has("account.documents"), "platform access is not company management");
     await runAsCompany(owner, async () => (await getDb()).collection("admin_users").updateOne({ _id: ownerHr._id }, { $unset: { platformRoleId: "" } }));
     assert.ok((await allowed(owner, ownerRevoked)).has("company.billing"), "revoked platform access keeps company management");
   });
@@ -328,11 +330,13 @@ async function main() {
   console.log("moved pages, actions and APIs are guarded with their own nav key");
   const ROOT = path.join(process.cwd(), "src/app");
   const walk = (dir: string): string[] => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(dir, e.name)) : [path.join(dir, e.name)]));
-  const MOVED = ["command-center", "users", "activity-log", "documents", "crm", "pms", "prms", "tms", "yashchat", "portal", "careers", "chatbot"];
+  const MOVED = ["users", "account", "crm", "pms", "prms", "tms", "yashchat", "portal", "careers", "chatbot"];
   const keyOf = (rel: string) => {
     const [a, b] = rel.split(path.sep);
     if (a === "users") return "company.users";
-    return ["command-center", "activity-log", "documents"].includes(a) ? `manage.${a}` : `manage.${a}.${b}`;
+    if (a === "documents" || (a === "account" && b === "documents")) return "account.documents";
+    if (a === "activity-log") return "company.audit";
+    return `manage.${a}.${b}`;
   };
   await check("every moved page calls requireWorkspaceAccess with the key of its own path", () => {
     let pages = 0;
@@ -344,7 +348,7 @@ async function main() {
         pages++;
       }
     }
-    assert.equal(pages, 33);
+    assert.equal(pages, 31);
   });
   await check("every server action of a moved page calls requireWorkspaceAction with that key", () => {
     let actions = 0;
@@ -380,7 +384,7 @@ async function main() {
     }
   });
   await check("registers of a panel outside the plan or switched off are closed even to the super admin (F12)", async () => {
-    for (const k of ["manage.pms.projects", "manage.crm.clients", "manage.crm.leads", "manage.command-center", "company.users"]) assert.ok((await allowed(small, smallAdmin)).has(k), k);
+    for (const k of ["manage.pms.projects", "manage.crm.clients", "manage.crm.leads", "company.users", "company.audit", "account.documents"]) assert.ok((await allowed(small, smallAdmin)).has(k), k);
     for (const k of ["manage.prms.vendors", "manage.tms.students", "manage.portal.users"]) assert.equal(await runAsCompany(small, () => checkWorkspaceAccess(smallAdmin.user, k)), false, k);
     await db.collection("companies").updateOne({ _id: beta as never }, { $set: { enabledModules: ["workspace", "admin", "messenger", "hrms"] } });
     assert.equal(await runAsCompany(beta, () => checkWorkspaceAccess(betaAdmin.user, "manage.pms.projects")), false);
@@ -390,8 +394,9 @@ async function main() {
   await check("the Command Center permission opens the full analytics of every panel in the plan", async () => {
     const exec = await account(acme, "exec@acme.test", preset("developer"), { permissionOverrides: { "workspace.viewCommandCenter": true } });
     const a = await allowed(acme, exec);
-    for (const k of ["manage.command-center", "analytics.fms", "analytics.lms", "analytics.portal"]) assert.ok(a.has(k), k);
-    assert.ok(!a.has("analytics.tms") && !a.has("company.users") && !a.has("manage.activity-log"));
+    for (const k of ["analytics.fms", "analytics.lms", "analytics.portal"]) assert.ok(a.has(k), k);
+    assert.ok(canViewCommandCenter({ roles: exec.user.roles, permissionOverrides: exec.user.permissionOverrides ?? null }), "holds the Command Center permission");
+    assert.ok(!a.has("analytics.tms") && !a.has("company.users") && !a.has("company.audit") && !a.has("account.documents"));
     assert.equal(await runAsCompany(acme, () => seesPanelNotifications(exec.user)), true);
     await runAsCompany(acme, async () => (await getDb()).collection("admin_users").deleteOne({ _id: exec._id }));
   });
@@ -457,7 +462,7 @@ async function main() {
     await runAsCompany(acme, async () => (await getDb()).collection("admin_users").updateOne({ _id: temp._id }, { $set: { roles: preset("hr") } }));
     assert.equal(await panelUser(acme, temp.hubToken, getFmsUserForAccount), null);
     const fresh = await runAsCompany(acme, () => getSessionHubUser(temp.hubToken));
-    for (const k of ["company.billing", "company.users", "manage.command-center"]) assert.equal(await runAsCompany(acme, () => checkWorkspaceAccess(fresh!, k)), false, k);
+    for (const k of ["company.billing", "company.users", "company.audit", "account.documents"]) assert.equal(await runAsCompany(acme, () => checkWorkspaceAccess(fresh!, k)), false, k);
     await runAsCompany(acme, async () => (await getDb()).collection("admin_users").deleteOne({ _id: temp._id }));
   });
   await check("every panel's /login is a redirect to the Workspace sign-in; no panel keeps its own form", () => {
@@ -573,7 +578,7 @@ async function main() {
   await check("integrations: status from the company's own gateway, webhooks and domains", async () => {
     const a = await runAsCompany(acme, () => listCompanyIntegrations());
     assert.deepEqual(a.map((i) => [i.key, i.connected]), [["razorpay", false], ["webhooks", true], ["domain", true]]);
-    assert.deepEqual(a.map((i) => i.href), ["/settings/payments", "/settings/automations", "/settings/domains"]);
+    assert.deepEqual(a.map((i) => i.href), ["/workspace/settings/payments", "/workspace/settings/automations", "/workspace/settings/domains"]);
     const b = await runAsCompany(beta, () => listCompanyIntegrations());
     assert.deepEqual(b.map((i) => i.connected), [false, false, false], "the second company sees none of the first's integrations");
   });
@@ -584,6 +589,106 @@ async function main() {
     assert.deepEqual(b, { accounts: 1, superAdmins: 1, mustChangePassword: 0, locked: 0, ownSessions: 1 });
     // Another company's user id finds no sessions here.
     assert.equal((await runAsCompany(beta, () => getCompanySecurity(admin.user.id))).ownSessions, 0);
+  });
+
+
+  console.log("one dashboard, one audit log, documents under Account, everything under /workspace");
+  await check("the nav has one Dashboard and no Command Center; no audit item in Management; Documents in Account; Audit log in Company", async () => {
+    const nav = await navOf(acme, admin);
+    const items = nav.sections.flatMap((s) => s.items.map((i) => ({ ...i, section: s.key })));
+    assert.equal(items.filter((i) => i.section === "dashboard").length, 1);
+    assert.deepEqual(items.filter((i) => /dashboard/i.test(i.label)).map((i) => i.href), ["/workspace"]);
+    assert.ok(!items.some((i) => /command center/i.test(i.label) || i.href.includes("command-center")), "no Command Center item");
+    assert.ok(!NAV_KEYS.some((k) => k === "manage.command-center" || k === "manage.activity-log" || k === "manage.documents"), "old manage keys are gone");
+    assert.ok(!items.filter((i) => i.section === "manage").some((i) => /audit|activity|documents/i.test(i.label)), "Management has no audit/activity/documents item");
+    assert.deepEqual(items.filter((i) => i.section === "account").map((i) => [i.key, i.href]).sort(), [
+      ["account.documents", "/workspace/account/documents"],
+      ["account.notifications", "/workspace/notifications"],
+      ["account.password", "/workspace/change-password"],
+    ]);
+    const audit = items.filter((i) => i.section === "company" && /audit/i.test(i.label));
+    assert.deepEqual(audit.map((i) => [i.key, i.label, i.href]), [["company.audit", "Audit log", "/workspace/settings/audit-log"]]);
+    assert.ok(!items.some((i) => i.section === "company" && i.key === "company.activity"), "the old Company activity item is gone");
+  });
+  await check("every Workspace nav href (except panels and the Platform link) lives under /workspace and has a page", async () => {
+    const nav = await navOf(owner, ownerAdmin);
+    const PROTECTED = path.join(ROOT, "workspace/(protected)");
+    for (const i of nav.sections.flatMap((s) => s.items)) {
+      if (i.external || i.href === "/platform") continue;
+      assert.ok(i.href === "/workspace" || i.href.startsWith("/workspace/"), `${i.key}: ${i.href}`);
+      assert.ok(!/^\/(settings|onboarding|upgrade)/.test(i.href), i.href);
+      const rel = i.href.replace(/^\/workspace\/?/, "");
+      const candidates = [path.join(PROTECTED, rel, "page.tsx"), path.join(ROOT, "workspace", rel, "page.tsx"), path.join(PROTECTED, rel.replace(/\/[^/]+$/, ""), "[panel]", "page.tsx")];
+      assert.ok(candidates.some((f) => fs.existsSync(f)), `${i.key}: no page for ${i.href}`);
+    }
+    for (const old of ["command-center", "activity-log", "documents"]) assert.ok(!fs.existsSync(path.join(PROTECTED, old)), `old page /workspace/${old} is gone`);
+    for (const old of [["(platform)", "settings"], ["(platform)", "onboarding"], ["(platform)", "upgrade"]]) assert.ok(!fs.existsSync(path.join(ROOT, ...old)), `${old.join("/")} moved`);
+  });
+  await check("the company pages keep a server-side guard: their nav key, or the company Super Admin rule they always used", () => {
+    const PROTECTED = path.join(ROOT, "workspace/(protected)");
+    const nameOf = (href: string) => href.replace("/workspace/", "");
+    const guards = (file: string, key: string) => {
+      const src = fs.readFileSync(file, "utf8");
+      return src.includes(`requireWorkspaceAccess("${key}")`) || (src.includes('roles.includes("super_admin")') && src.includes("getCurrentHubUser"));
+    };
+    const pages: [string, string][] = [
+      ["company.setup", "onboarding"], ["company.profile", "settings/profile"], ["company.billing", "settings/billing"], ["company.invoices", "settings/billing/invoices"],
+      ["company.usage", "settings/usage"], ["company.domains", "settings/domains"], ["company.branding", "settings/branding"], ["company.payments", "settings/payments"],
+      ["company.integrations", "settings/integrations"], ["company.automations", "settings/automations"], ["company.import", "settings/import"], ["company.security", "settings/security"],
+    ];
+    for (const [key, rel] of pages) {
+      assert.ok(NAV_KEYS.includes(key), key);
+      assert.ok(guards(path.join(PROTECTED, rel, "page.tsx"), key), `${rel} must guard`);
+    }
+    assert.ok(nameOf("/workspace/settings/audit-log") === "settings/audit-log");
+    assert.ok(fs.readFileSync(path.join(PROTECTED, "settings/audit-log/page.tsx"), "utf8").includes('requireWorkspaceAccess("company.audit")'));
+    for (const f of ["import/run/route.ts", "import/sample/route.ts"]) assert.ok(fs.readFileSync(path.join(PROTECTED, "settings", f), "utf8").includes('"super_admin"'), f);
+  });
+  await check("Audit log: panel activity needs the Audit log permission, workspace events the company Super Admin; the source can only narrow", async () => {
+    const asCtx = (u: { user: WorkspaceUser }) => ({ roles: u.user.roles, permissionOverrides: u.user.permissionOverrides ?? null });
+    const access = (u: { user: WorkspaceUser }) => ({ panels: canViewAuditLog(asCtx(u)), workspace: canViewWorkspaceEvents(asCtx(u)) });
+    assert.deepEqual(access(admin), { panels: true, workspace: true });
+    assert.deepEqual(allowedAuditSources(access(admin)), ["all", "workspace", "panels"]);
+    assert.equal(resolveAuditSource(undefined, access(admin)), "all");
+    assert.equal(resolveAuditSource("workspace", access(admin)), "workspace");
+    for (const u of [hr, dev, finance, sales, noRoles]) assert.deepEqual(access(u), { panels: false, workspace: false });
+    const auditor = await account(acme, "auditor@acme.test", preset("developer"), { permissionOverrides: { "workspace.viewAuditLog": true } });
+    assert.deepEqual(access(auditor), { panels: true, workspace: false }, "the permission alone never opens workspace events");
+    assert.deepEqual(allowedAuditSources(access(auditor)), ["panels"]);
+    assert.equal(resolveAuditSource("workspace", access(auditor)), "panels", "asking for a source they may not read gives their own");
+    assert.equal(resolveAuditSource("all", access(auditor)), "panels");
+    assert.equal(resolveAuditSource("workspace", { panels: false, workspace: false }), null);
+    assert.equal(await runAsCompany(acme, () => checkWorkspaceAccess(auditor.user, "company.audit")), true);
+    assert.equal(await runAsCompany(acme, () => checkWorkspaceAccess(auditor.user, "company.billing")), false);
+    await runAsCompany(acme, async () => (await getDb()).collection("admin_users").deleteOne({ _id: auditor._id }));
+  });
+  await check("the merged dashboard loader returns executive data only to the Command Center permission", async () => {
+    const asCtx = (u: { user: WorkspaceUser }) => ({ roles: u.user.roles, permissionOverrides: u.user.permissionOverrides ?? null });
+    for (const u of [hr, dev, finance, sales, noRoles, tuned]) assert.equal(await runAsCompany(acme, () => loadExecutiveOverview(asCtx(u))), null);
+    const exec = await account(acme, "exec2@acme.test", preset("developer"), { permissionOverrides: { "workspace.viewCommandCenter": true } });
+    const stats = await runAsCompany(acme, () => loadExecutiveOverview(asCtx(exec)));
+    assert.ok(stats && typeof stats.finance.totalRevenue === "number" && Array.isArray(stats.modules), "permission holder gets the executive stats");
+    const adminStats = await runAsCompany(acme, () => loadExecutiveOverview(asCtx(admin)));
+    assert.ok(adminStats, "super admin gets them");
+    await runAsCompany(acme, async () => (await getDb()).collection("admin_users").deleteOne({ _id: exec._id }));
+  });
+  await check("next.config redirects: every old URL maps permanently to its new home; /api, /platform and panels are never captured", async () => {
+    const cfg = (await import("../next.config")).default;
+    const rules = (await cfg.redirects!()) as { source: string; destination: string; permanent: boolean }[];
+    const dest = (src: string) => rules.find((r) => r.source === src);
+    const expected: [string, string][] = [
+      ["/settings/:path*", "/workspace/settings/:path*"], ["/onboarding", "/workspace/onboarding"], ["/upgrade", "/workspace/upgrade"],
+      ["/workspace/command-center", "/workspace"], ["/workspace/documents", "/workspace/account/documents"],
+      ["/settings/activity", "/workspace/settings/audit-log?source=workspace"], ["/workspace/activity-log", "/workspace/settings/audit-log?source=panels"],
+    ];
+    for (const [src, to] of expected) {
+      const r = dest(src);
+      assert.ok(r, src);
+      assert.equal(r!.destination, to);
+      assert.equal(r!.permanent, true, `${src} is permanent`);
+    }
+    assert.ok(rules.findIndex((r) => r.source === "/settings/activity") < rules.findIndex((r) => r.source === "/settings/:path*"), "activity before the catch-all");
+    for (const r of rules) assert.ok(!/^\/(api|platform|hrms|pms|prms|tms|fms|lms|cms|portal)\b/.test(r.source), `${r.source} must not capture /api, /platform or a panel`);
   });
 
   console.log(`workspace access: all ${passed} checks passed`);
