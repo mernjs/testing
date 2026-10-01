@@ -6,7 +6,7 @@ import { DEPARTMENTS_COLLECTION, DESIGNATIONS_COLLECTION, TEAMS_COLLECTION } fro
 import { ACTIVE_EMPLOYEE_STATUSES, EMPLOYMENT_TYPES, getEmploymentTypeLabel } from "@/lib/hrms/employee-status";
 import { APPLICATIONS_COLLECTION } from "@/lib/career-applications";
 import { getCareerApplicationStatusMeta } from "@/lib/career-application-status";
-import { ROLE_GROUPS } from "@/lib/admin/role-catalog";
+import { ROLE_GROUPS } from "@/lib/workspace/role-catalog";
 import { candidateKey, type CandidateKind, type CandidateRef, type TargetType } from "@/lib/ots/constants";
 
 /**

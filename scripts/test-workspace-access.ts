@@ -23,8 +23,8 @@ import { createAdminSession, resolveAdminUser } from "@/lib/admin-auth";
 import { NAV_KEYS, NAV_SECTIONS } from "@/lib/workspace/nav";
 import { checkWorkspaceAccess, resolveWorkspaceNav, type WorkspaceUser } from "@/lib/workspace/access";
 import { getCompanyBillingHistory, getCompanySecurity, getCompanyUsage, listCompanyIntegrations, paymentsFromInvoices } from "@/lib/workspace/company";
-import { ALL_KNOWN_ROLES } from "@/lib/admin/role-catalog";
-import { ALL_PERMISSION_KEYS } from "@/lib/admin/permission-catalog";
+import { ALL_KNOWN_ROLES } from "@/lib/workspace/role-catalog";
+import { ALL_PERMISSION_KEYS } from "@/lib/workspace/permission-catalog";
 
 let passed = 0;
 async function check(name: string, fn: () => Promise<void> | void) {

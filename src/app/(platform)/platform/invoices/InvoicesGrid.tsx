@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Download, ReceiptText } from "lucide-react";
-import AdminDataGrid, { type AdminDataGridColumn } from "@/components/admin/data-grid/AdminDataGrid";
+import AdminDataGrid, { type AdminDataGridColumn } from "@/components/workspace/data-grid/AdminDataGrid";
 import InvoiceStatusBadge from "./InvoiceStatusBadge";
 
 /** Pre-formatted on the server (IST dates, money strings) so server and client render identically. */

@@ -3,9 +3,9 @@ import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import { resolvePermission, type RoleContext } from "@/lib/permission-overrides";
 import { escapeRegExp } from "@/lib/text-search";
-import { searchAdminUsers, type AdminUserRow } from "@/lib/admin/admin-users";
-import { getPanelAccessSummary } from "@/lib/admin/admin-users-shared";
-import { searchActivityLog, type AdminActivityRow, type SearchActivityLogOptions } from "@/lib/admin/activity-log";
+import { searchAdminUsers, type AdminUserRow } from "@/lib/workspace/admin-users";
+import { getPanelAccessSummary } from "@/lib/workspace/admin-users-shared";
+import { searchActivityLog, type AdminActivityRow, type SearchActivityLogOptions } from "@/lib/workspace/activity-log";
 
 /**
  * ============================================================================

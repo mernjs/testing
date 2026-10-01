@@ -2,6 +2,7 @@ import "server-only";
 import { randomBytes, createHash } from "node:crypto";
 import { cookies } from "next/headers";
 import { ObjectId } from "mongodb";
+import { WORKSPACE_SESSION_COOKIE, workspaceSessionAccountId } from "@/lib/workspace-session";
 import { getDb } from "@/lib/mongodb";
 import { verifyPassword, hashPassword } from "@/lib/lms-auth";
 import { normalizeSeoRoles, hasSeoAccess } from "@/lib/seo-roles";
@@ -145,9 +146,16 @@ export async function getSessionSeoUser(token: string | undefined | null): Promi
   const sessions = await getSeoSessionsCollection();
   const session = await sessions.findOne({ tokenHash: hashToken(token), expiresAt: { $gt: new Date() } });
   if (!session) return null;
+  return getSeoUserForAccount(session.adminId);
+}
 
+/**
+ * This panel's user for an `admin_users` account, under the panel's own role
+ * rule — shared by the panel's session and the Workspace session.
+ */
+export async function getSeoUserForAccount(adminId: ObjectId): Promise<CurrentSeoUser | null> {
   const users = await getAdminUsersCollection();
-  const user = await users.findOne({ _id: session.adminId });
+  const user = await users.findOne({ _id: adminId });
   if (!user) return null;
 
   const roles = user.roles ?? [];
@@ -185,8 +193,11 @@ export async function clearSeoSessionCookie(): Promise<void> {
 
 export async function getCurrentSeoUser(): Promise<CurrentSeoUser | null> {
   const store = await cookies();
-  const token = store.get(SEO_SESSION_COOKIE)?.value;
-  return getSessionSeoUser(token);
+  const own = await getSessionSeoUser(store.get(SEO_SESSION_COOKIE)?.value);
+  if (own) return own;
+  // One company sign-in: the Workspace session of the same account opens this panel too (same role rule).
+  const accountId = await workspaceSessionAccountId(store.get(WORKSPACE_SESSION_COOKIE)?.value);
+  return accountId ? getSeoUserForAccount(accountId) : null;
 }
 
 /**

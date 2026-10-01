@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Building2, ChevronRight } from "lucide-react";
-import AdminDataGrid, { type AdminDataGridColumn } from "@/components/admin/data-grid/AdminDataGrid";
+import AdminDataGrid, { type AdminDataGridColumn } from "@/components/workspace/data-grid/AdminDataGrid";
 import { formatDate } from "@/lib/utils";
 import type { CompanyRow } from "@/lib/platform/console/companies";
 import StatusBadge from "./StatusBadge";

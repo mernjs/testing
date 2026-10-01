@@ -6,7 +6,7 @@ import { CardHeader, CardTitle, CardDescription, CardContent } from "@/component
 import GlassCard from "@/components/lms/GlassCard";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { getDb } from "@/lib/mongodb";
-import { ROLE_GROUPS } from "@/lib/admin/role-catalog";
+import { ROLE_GROUPS } from "@/lib/workspace/role-catalog";
 import { listWorkflows } from "@/lib/platform/workflows";
 import { MAX_WORKFLOWS_PER_COMPANY } from "@/lib/platform/workflows/shared";
 import AutomationsManager from "@/components/platform/automations/AutomationsManager";

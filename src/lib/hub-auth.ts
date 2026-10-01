@@ -3,25 +3,22 @@ import { randomBytes, createHash } from "node:crypto";
 import { cookies } from "next/headers";
 import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
+import { WORKSPACE_SESSION_COOKIE } from "@/lib/workspace-session";
 import { verifyPassword, hashPassword } from "@/lib/lms-auth";
 
 /**
- * Staff Hub authentication — the centralized login + dashboard for every
- * `admin_users` account, not just super_admin (that's `admin-auth.ts`). A
- * separate cookie / session store, own collection (`hub_sessions` —
- * deliberately a NEW, correctly-named collection; NOT a repeat of the
- * accidental `admin_sessions` name shared between `admin-auth.ts` and
- * `lms-auth.ts`, found and left as-is elsewhere since fixing it needs a data
- * migration for no functional gain).
+ * Workspace authentication — THE company sign-in (`/workspace/login`) for
+ * every `admin_users` account. Its session (`hub_sessions`) is also accepted
+ * by every staff panel's auth module (see `workspace-session.ts`), so there
+ * is one sign-in for the whole company.
  *
- * Mirrors `admin-auth.ts` almost exactly, with one deliberate difference:
  * `verifyHubCredentials` has NO role restriction — any account with valid
  * credentials can sign in here, same permissiveness as `lms-auth.ts`. Hub
  * itself has no role vocabulary; it exists to show each account whichever
  * OTHER panels its real roles already grant (see `cross-module-sso.ts`).
  */
 
-export const HUB_SESSION_COOKIE = "hub_session";
+export const HUB_SESSION_COOKIE = WORKSPACE_SESSION_COOKIE;
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes

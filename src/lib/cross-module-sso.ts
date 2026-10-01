@@ -1,5 +1,6 @@
 import "server-only";
 import { ObjectId } from "mongodb";
+import { cookies } from "next/headers";
 import { getDb } from "@/lib/mongodb";
 import { normalizeRoles } from "@/lib/hrms-roles";
 import { createHrmsSession, setHrmsSessionCookie, clearHrmsSessionCookie } from "@/lib/hrms-auth";
@@ -14,8 +15,6 @@ import { createTmsSession, setTmsSessionCookie, clearTmsSessionCookie } from "@/
 import { normalizeChatRoles } from "@/lib/messenger-roles";
 import { createMessengerSession, setMessengerSessionCookie, clearMessengerSessionCookie } from "@/lib/messenger-auth";
 import { createLmsSession, setSessionCookie as setLmsSessionCookie, clearSessionCookie as clearLmsSessionCookie } from "@/lib/lms-auth";
-import { normalizeAdminRoles } from "@/lib/admin-roles";
-import { createAdminSession, setAdminSessionCookie, clearAdminSessionCookie } from "@/lib/admin-auth";
 import { hasSopAccess } from "@/lib/sop-roles";
 import { createSopSession, setSopSessionCookie, clearSopSessionCookie } from "@/lib/sop-auth";
 import { hasSeoAccess } from "@/lib/seo-roles";
@@ -45,7 +44,7 @@ import { createHubSession, setHubSessionCookie, clearHubSessionCookie } from "@/
  * enough — no second login anywhere else. This grants nothing new: it only
  * saves a second login for access the account already has. Which roles an
  * account holds — and therefore which panels get provisioned — is entirely
- * controlled by the Super Admin at `/admin/users`.
+ * controlled by the Super Admin at `/workspace/users`.
  *
  * `destroySessionsEverywhere` is the single-logout counterpart: logging out
  * of ANY one panel destroys every session for that account, in every panel,
@@ -54,15 +53,15 @@ import { createHubSession, setHubSessionCookie, clearHubSessionCookie } from "@/
  * this shipped with for that trade-off, made deliberately).
  *
  * `lms` and `hub` have no role gate at all — any signed-in `admin_users`
- * account always gets a session there. `admin` requires `super_admin`; every
- * other module requires that module's own real role.
+ * account always gets a session there; every other module requires that
+ * module's own real role.
  *
  * The External Portal is NOT included — it's a separate identity store
  * (`external_users`, not `admin_users`) keyed to individual client/student/
  * applicant records, structurally outside this system.
  */
 
-export type SsoModule = "hrms" | "pms" | "prms" | "tms" | "messenger" | "lms" | "admin" | "hub" | "fms" | "sop" | "seo" | "dlms" | "aibots" | "smms" | "ots" | "cms";
+export type SsoModule = "hrms" | "pms" | "prms" | "tms" | "messenger" | "lms" | "hub" | "fms" | "sop" | "seo" | "dlms" | "aibots" | "smms" | "ots" | "cms";
 
 interface ModuleEntry {
   key: SsoModule;
@@ -192,14 +191,6 @@ const MODULES: ModuleEntry[] = [
     collection: "messenger_sessions",
     hasAccess: (roles) => normalizeChatRoles(roles).length > 0,
   },
-  {
-    key: "admin",
-    create: createAdminSession,
-    setCookie: setAdminSessionCookie,
-    clearCookie: clearAdminSessionCookie,
-    collection: "admin_sessions",
-    hasAccess: (roles) => normalizeAdminRoles(roles).length > 0,
-  },
   // Unconditional — no role gate on either of these panels.
   { key: "lms", create: createLmsSession, setCookie: setLmsSessionCookie, clearCookie: clearLmsSessionCookie, collection: "admin_sessions" },
   { key: "hub", create: createHubSession, setCookie: setHubSessionCookie, clearCookie: clearHubSessionCookie, collection: "hub_sessions" },
@@ -235,4 +226,6 @@ export async function destroySessionsEverywhere(adminId: ObjectId): Promise<void
   const collections = [...new Set(MODULES.map((m) => m.collection))];
   await Promise.all(collections.map((name) => db.collection(name).deleteMany({ adminId })));
   await Promise.all(MODULES.map((m) => m.clearCookie()));
+  // The separate admin panel is gone; drop its cookie from browsers that still carry one.
+  (await cookies()).delete("admin_session");
 }

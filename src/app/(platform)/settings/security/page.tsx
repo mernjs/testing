@@ -65,7 +65,7 @@ export default async function SecurityPage() {
               ))}
             </dl>
             <div className="flex flex-wrap gap-2">
-              <Link href="/admin/users" className={linkClass}>
+              <Link href="/workspace/users" className={linkClass}>
                 Manage users and reset passwords <ArrowRight className="size-3.5" />
               </Link>
               <Link href="/settings/activity" className={linkClass}>

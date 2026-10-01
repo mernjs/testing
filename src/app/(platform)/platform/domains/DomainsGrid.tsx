@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { Globe } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import AdminDataGrid, { type AdminDataGridColumn } from "@/components/admin/data-grid/AdminDataGrid";
+import AdminDataGrid, { type AdminDataGridColumn } from "@/components/workspace/data-grid/AdminDataGrid";
 import { formatDateTime } from "@/lib/utils";
 import type { PlatformDomainRow } from "@/lib/platform/domains/overview";
 import { DnsBadge, ProviderBadge, SslBadge } from "./DomainBadges";

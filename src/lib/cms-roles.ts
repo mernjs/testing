@@ -5,9 +5,9 @@
  * an explicit `cms_*` role (or super_admin).
  *
  * Every predicate is Super-Admin-override-aware (`resolvePermission`), so the
- * Super Admin can dial individual capabilities per user at `/admin/users`
+ * Super Admin can dial individual capabilities per user at `/workspace/users`
  * (catalog entries are derived from this file in
- * `src/lib/admin/permission-catalog.ts`).
+ * `src/lib/workspace/permission-catalog.ts`).
  *
  * This file is pure (no server-only imports) so client components can use it
  * to hide buttons — hiding a button is never the security boundary; every

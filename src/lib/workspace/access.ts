@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
+import { NextResponse } from "next/server";
 import { getCurrentHubUser, type CurrentHubUser } from "@/lib/hub-auth";
 import { getEntitlements } from "@/lib/platform/billing/entitlements";
 import { enabledModules } from "@/lib/platform/onboarding/state";
@@ -61,6 +62,27 @@ export const getWorkspaceNav = cache(async (): Promise<{ user: CurrentHubUser; n
 export async function requireWorkspaceAccess(key: string): Promise<CurrentHubUser> {
   const user = await getCurrentHubUser();
   if (!user) redirect("/workspace/login");
+  if (user.mustChangePassword) redirect("/workspace/change-password");
   if (!(await checkWorkspaceAccess(user, key))) redirect("/workspace");
   return user;
+}
+
+/**
+ * Server-action guard: the signed-in user, or a thrown `Unauthorized` /
+ * `Forbidden`. Hiding a button is never the boundary — every action of a
+ * Workspace page calls this with the page's own nav key.
+ */
+export async function requireWorkspaceAction(key: string): Promise<CurrentHubUser> {
+  const user = await getCurrentHubUser();
+  if (!user) throw new Error("Unauthorized");
+  if (user.mustChangePassword || !(await checkWorkspaceAccess(user, key))) throw new Error("Forbidden");
+  return user;
+}
+
+/** Route-handler guard: the user, or the 401 / 403 response to return. */
+export async function authorizeWorkspaceApi(key: string): Promise<{ ok: true; user: CurrentHubUser } | { ok: false; response: NextResponse }> {
+  const user = await getCurrentHubUser();
+  if (!user) return { ok: false, response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
+  if (user.mustChangePassword || !(await checkWorkspaceAccess(user, key))) return { ok: false, response: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
+  return { ok: true, user };
 }

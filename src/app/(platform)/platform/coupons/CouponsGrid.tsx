@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ChevronRight, TicketPercent } from "lucide-react";
-import AdminDataGrid, { type AdminDataGridColumn } from "@/components/admin/data-grid/AdminDataGrid";
+import AdminDataGrid, { type AdminDataGridColumn } from "@/components/workspace/data-grid/AdminDataGrid";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { describeCouponDiscount, describeCouponDuration, type Coupon, type CouponStatus } from "@/lib/platform/billing/catalog-types";

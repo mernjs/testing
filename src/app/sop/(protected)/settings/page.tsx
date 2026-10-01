@@ -39,7 +39,7 @@ export default async function SopSettingsPage() {
           <CardTitle className="text-sm font-bold">Roles & permissions</CardTitle>
           <CardDescription className="text-xs">
             The default capabilities of each role. There is no review or approval permission — publishing is direct. Roles are assigned, and individual capabilities overridden, per person in the Admin panel
-            {isSuper ? <> — <Link href="/admin/users" className="inline-flex items-center gap-0.5 text-primary hover:underline">open Users & Access <ExternalLink className="size-3" /></Link></> : " by a Super Admin"}.
+            {isSuper ? <> — <Link href="/workspace/users" className="inline-flex items-center gap-0.5 text-primary hover:underline">open Users & Access <ExternalLink className="size-3" /></Link></> : " by a Super Admin"}.
           </CardDescription>
         </CardHeader>
         <CardContent className="overflow-x-auto">

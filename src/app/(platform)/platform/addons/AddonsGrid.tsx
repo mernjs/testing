@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ChevronRight, PackagePlus } from "lucide-react";
-import AdminDataGrid, { type AdminDataGridColumn } from "@/components/admin/data-grid/AdminDataGrid";
+import AdminDataGrid, { type AdminDataGridColumn } from "@/components/workspace/data-grid/AdminDataGrid";
 import { Badge } from "@/components/ui/badge";
 import { formatMoney } from "@/lib/platform/billing/types";
 import { describeAddonEffect, type Addon } from "@/lib/platform/billing/catalog-types";

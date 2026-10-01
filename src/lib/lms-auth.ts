@@ -2,6 +2,7 @@ import "server-only";
 import { randomBytes, scryptSync, timingSafeEqual, createHash } from "node:crypto";
 import { cookies } from "next/headers";
 import { ObjectId } from "mongodb";
+import { WORKSPACE_SESSION_COOKIE, workspaceSessionAccountId } from "@/lib/workspace-session";
 import { getDb } from "@/lib/mongodb";
 
 // NOTE: was literally "admin_session" — an accidental exact collision with
@@ -140,9 +141,16 @@ export async function getSessionLmsUser(token: string | undefined | null): Promi
   const sessions = await getAdminSessionsCollection();
   const session = await sessions.findOne({ tokenHash: hashToken(token), expiresAt: { $gt: new Date() } });
   if (!session) return null;
+  return getLmsUserForAccount(session.adminId);
+}
 
+/**
+ * This panel's user for an `admin_users` account, under the panel's own role
+ * rule — shared by the panel's session and the Workspace session.
+ */
+export async function getLmsUserForAccount(adminId: ObjectId): Promise<CurrentLmsUser | null> {
   const users = await getAdminUsersCollection();
-  const user = await users.findOne({ _id: session.adminId });
+  const user = await users.findOne({ _id: adminId });
   if (!user) return null;
 
   return {
@@ -172,6 +180,9 @@ export async function clearSessionCookie(): Promise<void> {
 
 export async function getCurrentLmsUser(): Promise<CurrentLmsUser | null> {
   const store = await cookies();
-  const token = store.get(SESSION_COOKIE)?.value;
-  return getSessionLmsUser(token);
+  const own = await getSessionLmsUser(store.get(SESSION_COOKIE)?.value);
+  if (own) return own;
+  // One company sign-in: the Workspace session of the same account opens this panel too (same role rule).
+  const accountId = await workspaceSessionAccountId(store.get(WORKSPACE_SESSION_COOKIE)?.value);
+  return accountId ? getLmsUserForAccount(accountId) : null;
 }

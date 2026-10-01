@@ -4,7 +4,7 @@ import { BarChart3, CalendarClock, FolderKanban, ListTodo, Target, Users, Wallet
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import KpiCard from "@/components/lms/KpiCard";
-import ExecutiveSection from "@/components/admin/ExecutiveSection";
+import ExecutiveSection from "@/components/workspace/ExecutiveSection";
 import { getCompanyKpis, getRecentActivity, type CompanyKpi } from "@/lib/platform/dashboard";
 import type { EventView } from "@/lib/platform/events";
 import { eventLabel } from "@/lib/platform/events/catalog";

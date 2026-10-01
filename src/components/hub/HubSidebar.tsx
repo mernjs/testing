@@ -82,7 +82,7 @@ const ICONS: Record<NavIcon, React.ComponentType<{ className?: string }>> = {
 };
 
 /** Long sections start closed; they open by themselves on one of their own pages. */
-const CLOSED_BY_DEFAULT = new Set(["admin", "company"]);
+const CLOSED_BY_DEFAULT = new Set(["manage", "company"]);
 
 function NavLink({
   href,
@@ -179,7 +179,7 @@ export default function HubSidebar({
                   href={item.href}
                   label={item.label}
                   icon={ICONS[item.icon]}
-                  exact={item.href === "/workspace" || item.href === "/admin" || item.href === "/settings/billing"}
+                  exact={item.href === "/workspace" || item.href === "/settings/billing"}
                   external={item.external}
                   collapsed={collapsed}
                   onNavigate={onNavigate}

@@ -32,7 +32,7 @@ import { canViewLmsAnalytics } from "@/lib/lms-roles";
 import { canViewWorkspaceAnalytics } from "@/lib/workspace-roles";
 import { resolvePermission, type RoleContext } from "@/lib/permission-overrides";
 
-export type NavSectionKey = "dashboard" | "panels" | "analytics" | "admin" | "company" | "account" | "platform";
+export type NavSectionKey = "dashboard" | "panels" | "analytics" | "manage" | "company" | "account" | "platform";
 
 export type NavIcon =
   | "dashboard"
@@ -91,7 +91,7 @@ interface NavItemDef {
 }
 
 const anyone = () => true;
-/** The Command Center rule (`admin-roles.ts`): `super_admin` only. Also what every `/settings` page checks. */
+/** `super_admin` only (`admin-roles.ts`) — what every `/settings` page checks. */
 const superAdmin = (u: RoleContext) => hasAdminAccess(u.roles);
 const has = (normalize: (roles: unknown) => unknown[]) => (u: RoleContext) => normalize([...u.roles]).length > 0;
 const orAdmin = (rule: (u: RoleContext) => boolean) => (u: RoleContext) => superAdmin(u) || rule(u);
@@ -129,52 +129,84 @@ const ANALYTICS: NavItemDef[] = (
     ["tms", "Training Analytics", "training", orAdmin(has(normalizeTmsRoles))],
     ["workspace", "Workspace Analytics", "chart", canViewWorkspaceAnalytics],
   ] as [string, string, NavIcon, NavItemDef["allow"]][]
-).map(([key, label, icon, allow]) => ({ key: `analytics.${key}`, section: "analytics", label, href: `/workspace/analytics/${key}`, icon, module: key, allow }));
+).map(([key, label, icon, allow]) => ({
+  key: `analytics.${key}`,
+  section: "analytics",
+  label,
+  href: `/workspace/analytics/${key}`,
+  icon,
+  module: key,
+  // The Command Center permission includes every panel's (full) analytics.
+  allow: (u: RoleContext) => may(MANAGE_PERMISSIONS.commandCenter)(u) || allow(u),
+}));
 
-// ── Company admin: the existing /admin pages (Command Center) ───────────────
-const ADMIN_PAGES: [group: string, path: string, label: string, icon: NavIcon][] = [
-  ["Overview", "", "Command Center", "shield"],
-  ["Overview", "activity-log", "Audit log", "history"],
-  ["Overview", "notifications", "Admin notifications", "bell"],
-  ["Overview", "documents", "Documents", "file"],
-  ["CRM", "crm/leads", "Leads", "grid"],
-  ["CRM", "crm/clients", "Clients", "grid"],
-  ["Projects", "pms/projects", "Projects", "projects"],
-  ["Projects", "pms/tasks", "Tasks", "projects"],
-  ["Projects", "pms/milestones", "Milestones", "projects"],
-  ["Projects", "pms/timesheets", "Timesheets", "projects"],
-  ["Procurement", "prms/vendors", "Vendors", "cart"],
-  ["Procurement", "prms/requisitions", "Requisitions", "cart"],
-  ["Procurement", "prms/rfqs", "RFQs", "cart"],
-  ["Procurement", "prms/purchase-orders", "Purchase orders", "cart"],
-  ["Procurement", "prms/invoices", "Vendor invoices", "cart"],
-  ["Procurement", "prms/payments", "Vendor payments", "cart"],
-  ["Procurement", "prms/expenses", "Expenses", "cart"],
-  ["Procurement", "prms/assets", "Assets", "cart"],
-  ["Procurement", "prms/inventory", "Inventory", "cart"],
-  ["Procurement", "prms/infrastructure", "Infrastructure", "cart"],
-  ["Procurement", "prms/subscriptions", "Software subscriptions", "cart"],
-  ["Training", "tms/programs", "Programs", "training"],
-  ["Training", "tms/batches", "Batches", "training"],
-  ["Training", "tms/students", "Students", "training"],
-  ["Training", "tms/certificates", "Certificates", "training"],
-  ["Training", "tms/payments", "Fee payments", "training"],
-  ["Team chat", "yashchat/channels", "Channels", "chat"],
-  ["Team chat", "yashchat/direct-messages", "Direct messages", "chat"],
-  ["Team chat", "yashchat/meetings", "Meetings", "chat"],
-  ["People", "portal/users", "Portal users", "users"],
-  ["People", "careers/applicants", "Job applicants", "users"],
-  ["Website chatbot", "chatbot/conversations", "Conversations", "bot"],
-  ["Website chatbot", "chatbot/voice-conversations", "Voice conversations", "bot"],
+// ── Management: the company-wide registers (formerly the separate admin panel) ──
+/**
+ * Company-management capabilities, in the permission catalog
+ * (`permission-catalog.ts`, group "Workspace management"). `super_admin`
+ * holds all of them; nobody else does by default, and a Super Admin can grant
+ * any single one to a person through permission overrides in Users & roles.
+ */
+export const MANAGE_PERMISSIONS = {
+  commandCenter: "workspace.viewCommandCenter",
+  users: "workspace.manageUsers",
+  auditLog: "workspace.viewAuditLog",
+  documents: "workspace.manageDocuments",
+  crm: "workspace.manageCrm",
+  projects: "workspace.manageProjects",
+  procurement: "workspace.manageProcurement",
+  training: "workspace.manageTraining",
+  chat: "workspace.manageChat",
+  portalUsers: "workspace.managePortalUsers",
+  careers: "workspace.manageCareers",
+  chatbot: "workspace.manageChatbot",
+} as const;
+const may = (permission: string) => (u: RoleContext) => resolvePermission(u, permission, () => false);
+
+const P = MANAGE_PERMISSIONS;
+const MANAGE_PAGES: [group: string, path: string, label: string, icon: NavIcon, permission: string, module?: string][] = [
+  ["Overview", "command-center", "Command Center", "shield", P.commandCenter],
+  ["Overview", "activity-log", "Audit log", "history", P.auditLog],
+  ["Overview", "documents", "Documents", "file", P.documents],
+  ["CRM", "crm/leads", "Leads", "grid", P.crm, "lms"],
+  ["CRM", "crm/clients", "Clients", "grid", P.crm, "pms"],
+  ["Projects", "pms/projects", "Projects", "projects", P.projects, "pms"],
+  ["Projects", "pms/tasks", "Tasks", "projects", P.projects, "pms"],
+  ["Projects", "pms/milestones", "Milestones", "projects", P.projects, "pms"],
+  ["Projects", "pms/timesheets", "Timesheets", "projects", P.projects, "pms"],
+  ["Procurement", "prms/vendors", "Vendors", "cart", P.procurement, "prms"],
+  ["Procurement", "prms/requisitions", "Requisitions", "cart", P.procurement, "prms"],
+  ["Procurement", "prms/rfqs", "RFQs", "cart", P.procurement, "prms"],
+  ["Procurement", "prms/purchase-orders", "Purchase orders", "cart", P.procurement, "prms"],
+  ["Procurement", "prms/invoices", "Vendor invoices", "cart", P.procurement, "prms"],
+  ["Procurement", "prms/payments", "Vendor payments", "cart", P.procurement, "prms"],
+  ["Procurement", "prms/expenses", "Expenses", "cart", P.procurement, "prms"],
+  ["Procurement", "prms/assets", "Assets", "cart", P.procurement, "prms"],
+  ["Procurement", "prms/inventory", "Inventory", "cart", P.procurement, "prms"],
+  ["Procurement", "prms/infrastructure", "Infrastructure", "cart", P.procurement, "prms"],
+  ["Procurement", "prms/subscriptions", "Software subscriptions", "cart", P.procurement, "prms"],
+  ["Training", "tms/programs", "Programs", "training", P.training, "tms"],
+  ["Training", "tms/batches", "Batches", "training", P.training, "tms"],
+  ["Training", "tms/students", "Students", "training", P.training, "tms"],
+  ["Training", "tms/certificates", "Certificates", "training", P.training, "tms"],
+  ["Training", "tms/payments", "Fee payments", "training", P.training, "tms"],
+  ["Team chat", "yashchat/channels", "Channels", "chat", P.chat, "messenger"],
+  ["Team chat", "yashchat/direct-messages", "Direct messages", "chat", P.chat, "messenger"],
+  ["Team chat", "yashchat/meetings", "Meetings", "chat", P.chat, "messenger"],
+  ["People", "portal/users", "Portal users", "users", P.portalUsers, "portal"],
+  ["People", "careers/applicants", "Job applicants", "users", P.careers],
+  ["Website chatbot", "chatbot/conversations", "Conversations", "bot", P.chatbot],
+  ["Website chatbot", "chatbot/voice-conversations", "Voice conversations", "bot", P.chatbot],
 ];
-const ADMIN: NavItemDef[] = ADMIN_PAGES.map(([group, path, label, icon]) => ({
-  key: path ? `admin.${path.replace(/\//g, ".")}` : "admin.dashboard",
-  section: "admin",
+const MANAGE: NavItemDef[] = MANAGE_PAGES.map(([group, path, label, icon, permission, module]) => ({
+  key: `manage.${path.replace(/\//g, ".")}`,
+  section: "manage",
   group,
   label,
-  href: path ? `/admin/${path}` : "/admin",
+  href: `/workspace/${path}`,
   icon,
-  allow: superAdmin,
+  module,
+  allow: may(permission),
 }));
 
 // ── Company: the company managing itself ────────────────────────────────────
@@ -182,7 +214,7 @@ const company = (key: string, href: string, icon: NavIcon, label: string, descri
 const COMPANY: NavItemDef[] = [
   company("setup", "/onboarding", "building", "Company setup", "Profile, departments, invitations and which panels your team uses."),
   company("profile", "/settings/profile", "building", "Organization profile", "Company name, legal name, industry, country, currency, time zone and contact details."),
-  company("users", "/admin/users", "users", "Users, roles & seats", "Who can sign in, which panels and permissions each person has, and seats used.", "Users & roles"),
+  { ...company("users", "/workspace/users", "users", "Users, roles & seats", "Who can sign in, which panels and permissions each person has, and seats used.", "Users & roles"), allow: may(P.users) },
   company("billing", "/settings/billing", "card", "Plan & billing", "Your plan, payments, coupon codes and GST billing details."),
   company("invoices", "/settings/billing/invoices", "receipt", "Invoices & payments", "Tax invoices, credit notes and every payment made for your subscription."),
   company("usage", "/settings/usage", "gauge", "Usage", "Seats, AI tokens and file storage used against your plan's limits."),
@@ -200,7 +232,7 @@ const NAV_ITEMS: NavItemDef[] = [
   { key: "dashboard", section: "dashboard", label: "Dashboard", href: "/workspace", icon: "dashboard", allow: anyone },
   ...PANELS,
   ...ANALYTICS,
-  ...ADMIN,
+  ...MANAGE,
   ...COMPANY,
   { key: "account.notifications", section: "account", label: "Notifications", href: "/workspace/notifications", icon: "bell", allow: anyone },
   { key: "account.password", section: "account", label: "Change Password", href: "/workspace/change-password", icon: "key", allow: anyone },
@@ -220,7 +252,7 @@ export const NAV_SECTIONS: { key: NavSectionKey; label: string; href?: string }[
   { key: "dashboard", label: "" },
   { key: "panels", label: "Panels" },
   { key: "analytics", label: "Analytics" },
-  { key: "admin", label: "Company admin" },
+  { key: "manage", label: "Management" },
   { key: "company", label: "Company", href: "/settings" },
   { key: "account", label: "Account" },
   { key: "platform", label: "Platform" },

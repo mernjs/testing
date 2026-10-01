@@ -4,7 +4,7 @@ import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import BillingNotice from "@/components/platform/BillingNotice";
-import { unreadCount } from "@/lib/platform/notifications";
+import { workspaceUnreadCount } from "@/lib/workspace/notifications";
 import type { CurrentHubUser } from "@/lib/hub-auth";
 import type { ResolvedNav } from "@/lib/workspace/nav";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
  * outer wrapper only needs to fill the content area.
  */
 export default async function WorkspaceShell({ user, nav, embedded = false, children }: { user: CurrentHubUser; nav: ResolvedNav; embedded?: boolean; children: React.ReactNode }) {
-  const unread = await unreadCount(user.id).catch(() => 0);
+  const unread = await workspaceUnreadCount(user).catch(() => 0);
   const Content = embedded ? "div" : "main";
 
   return (

@@ -2,6 +2,7 @@ import "server-only";
 import { randomBytes, createHash } from "node:crypto";
 import { cookies } from "next/headers";
 import { ObjectId } from "mongodb";
+import { WORKSPACE_SESSION_COOKIE, workspaceSessionAccountId } from "@/lib/workspace-session";
 import { getDb } from "@/lib/mongodb";
 import { verifyPassword, hashPassword } from "@/lib/lms-auth";
 import { normalizeSmmsRoles, hasSmmsAccess } from "@/lib/smms-roles";
@@ -145,9 +146,16 @@ export async function getSessionSmmsUser(token: string | undefined | null): Prom
   const sessions = await getSmmsSessionsCollection();
   const session = await sessions.findOne({ tokenHash: hashToken(token), expiresAt: { $gt: new Date() } });
   if (!session) return null;
+  return getSmmsUserForAccount(session.adminId);
+}
 
+/**
+ * This panel's user for an `admin_users` account, under the panel's own role
+ * rule — shared by the panel's session and the Workspace session.
+ */
+export async function getSmmsUserForAccount(adminId: ObjectId): Promise<CurrentSmmsUser | null> {
   const users = await getAdminUsersCollection();
-  const user = await users.findOne({ _id: session.adminId });
+  const user = await users.findOne({ _id: adminId });
   if (!user) return null;
 
   const roles = user.roles ?? [];
@@ -185,8 +193,11 @@ export async function clearSmmsSessionCookie(): Promise<void> {
 
 export async function getCurrentSmmsUser(): Promise<CurrentSmmsUser | null> {
   const store = await cookies();
-  const token = store.get(SMMS_SESSION_COOKIE)?.value;
-  return getSessionSmmsUser(token);
+  const own = await getSessionSmmsUser(store.get(SMMS_SESSION_COOKIE)?.value);
+  if (own) return own;
+  // One company sign-in: the Workspace session of the same account opens this panel too (same role rule).
+  const accountId = await workspaceSessionAccountId(store.get(WORKSPACE_SESSION_COOKIE)?.value);
+  return accountId ? getSmmsUserForAccount(accountId) : null;
 }
 
 /**

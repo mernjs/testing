@@ -1,5 +1,5 @@
 import "server-only";
-import { ROLE_GROUPS } from "@/lib/admin/role-catalog";
+import { ROLE_GROUPS } from "@/lib/workspace/role-catalog";
 import { listAibotsStaff, type BotDoc } from "@/lib/aibots/bots";
 import { getSettings } from "@/lib/aibots/settings";
 import type { BotFormValues } from "@/components/aibots/BotForm";

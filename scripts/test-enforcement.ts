@@ -170,7 +170,7 @@ async function main() {
   });
 
   console.log("seats");
-  const { createAdminUser, reactivateAdminUser, updateAdminUserRoles } = await import("@/lib/admin/admin-users");
+  const { createAdminUser, reactivateAdminUser, updateAdminUserRoles } = await import("@/lib/workspace/admin-users");
   await check("training students don't take a seat", () => {
     assert.equal(rolesUseSeat(["training_student"]), false);
     assert.equal(rolesUseSeat(["training_student", "employee"]), true);

@@ -5,7 +5,7 @@
  * super_admin); it is never implied by another panel's role.
  *
  * Every predicate is Super-Admin-override-aware (`resolvePermission`), so the
- * Super Admin can dial individual capabilities per user at `/admin/users`
+ * Super Admin can dial individual capabilities per user at `/workspace/users`
  * (catalog entries are derived from this file in `permission-catalog.ts`).
  *
  * Pure file (no server-only imports) so client components can hide buttons —

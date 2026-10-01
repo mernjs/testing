@@ -21,8 +21,8 @@ by the author**); `code read` = checked by reading the code only.
 | Workspace session | `src/lib/hub-auth.ts`, cookie `hub_session`, collection `hub_sessions` | No role gate: any account of the company can sign in |
 | Admin session | `src/lib/admin-auth.ts`, cookie `admin_session`, collection `admin_sessions` | `super_admin` only |
 | Single sign-on | `src/lib/cross-module-sso.ts` | Signing in to any panel mints a session in every panel the roles allow; sign-out destroys all of them, on every device |
-| Role catalog | `src/lib/admin/role-catalog.ts` (built from each panel's `*-roles.ts`) | Assigned at `/admin/users` |
-| Permission catalog | `src/lib/admin/permission-catalog.ts`, resolved by `src/lib/permission-overrides.ts` | Per-user overrides of single capabilities; `super_admin` always passes |
+| Role catalog | `src/lib/workspace/role-catalog.ts` (built from each panel's `*-roles.ts`) | Assigned at `/admin/users` |
+| Permission catalog | `src/lib/workspace/permission-catalog.ts`, resolved by `src/lib/permission-overrides.ts` | Per-user overrides of single capabilities; `super_admin` always passes |
 | Plan / modules | `src/lib/platform/billing/entitlements.ts` (`getEntitlements`), `onboarding/state.ts` (`enabledModules`) | Panel in plan + switched on |
 | Company-wide data tier | `src/lib/platform/access.ts` (`accessibleAreas`) | Behind KPIs, search, recent activity, AI assistant |
 | Tenant isolation | `getDb()` (company-scoped), `getPlatformDb()` (cross-company) | See findings F9 |
@@ -34,7 +34,7 @@ by the author**); `code read` = checked by reading the code only.
 | `/workspace/login` | Sign-in form | none (public); redirects when already signed in | `hubLoginAction`: `verifyHubCredentials` (lockout after 5 failures), then `provisionAccessibleSessions` |
 | `/workspace/change-password` | Change own password | `getCurrentHubUser()` | `changeOwnHubPassword` on the signed-in user's own id |
 | `/workspace` (Staff Hub) | Personal dashboard, company KPIs, panel tiles | layout + page: `getCurrentHubUser()`; layout also forces a pending password change | `hub-actions.ts` (search, ask, notifications): each calls `getCurrentHubUser()`; data filtered by `accessibleAreas(user)` |
-| `/workspace/analytics/[panel]` | Read-only analytics per panel (fms, hrms, lms, messenger, pms, portal, prms, tms, workspace) | `getCurrentHubUser()` + a per-panel role check **in the page** | loaders in `src/lib/admin/panel-analytics.ts`, no own check (called only from this page and `/admin/analytics`) |
+| `/workspace/analytics/[panel]` | Read-only analytics per panel (fms, hrms, lms, messenger, pms, portal, prms, tms, workspace) | `getCurrentHubUser()` + a per-panel role check **in the page** | loaders in `src/lib/workspace/panel-analytics.ts`, no own check (called only from this page and `/admin/analytics`) |
 | `/workspace/notifications` | Own notifications | `getCurrentHubUser()` | `listNotifications(user.id)` — own rows only |
 | `/workspace/invite`, `/workspace/handoff` | Accept invitation, post-sign-up hand-off | token based | unchanged, out of scope |
 

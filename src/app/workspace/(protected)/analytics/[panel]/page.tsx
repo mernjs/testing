@@ -46,6 +46,7 @@ import {
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { checkWorkspaceAccess } from "@/lib/workspace/access";
+import ExecutiveViews from "./ExecutiveViews";
 import { CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import KpiCard from "@/components/lms/KpiCard";
@@ -53,8 +54,8 @@ import KpiGrid from "@/components/lms/KpiGrid";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import TimeSeriesChart from "@/components/lms/TimeSeriesChart";
 import CategoryBarChart from "@/components/lms/CategoryBarChart";
-import ExecutiveSection from "@/components/admin/ExecutiveSection";
-import { AnalyticsFilterBar, type FilterField } from "@/components/admin/AnalyticsFilterBar";
+import ExecutiveSection from "@/components/workspace/ExecutiveSection";
+import { AnalyticsFilterBar, type FilterField } from "@/components/workspace/AnalyticsFilterBar";
 import {
   isPanelKey,
   PANEL_CONFIGS,
@@ -69,7 +70,7 @@ import {
   getWorkspaceAnalytics,
   type PanelKey,
   type PanelAnalyticsFilters,
-} from "@/lib/admin/panel-analytics";
+} from "@/lib/workspace/panel-analytics";
 import { getCareerDashboardStats } from "@/lib/career-applications";
 import { getChatbotDashboardStats } from "@/lib/chatbot-analytics";
 import { getPortfolioCosting } from "@/lib/pms/costing";
@@ -731,6 +732,8 @@ export default async function WorkspacePanelAnalyticsPage({
   const roles = user.roles;
   // The same rule that lists this page in the Workspace navigation: role / permission override, plan and switched-on panels.
   const isAuthorized = await checkWorkspaceAccess(user, `analytics.${panel}`);
+  // People with the Command Center permission get the full company-wide view; others the role-scoped one.
+  const executive = isAuthorized && (await checkWorkspaceAccess(user, "manage.command-center"));
 
   const filters: PanelAnalyticsFilters = {
     dateFrom: typeof sp.dateFrom === "string" ? sp.dateFrom : undefined,
@@ -788,6 +791,8 @@ export default async function WorkspacePanelAnalyticsPage({
       {/* Access Gate & View Renderer */}
       {!isAuthorized ? (
         <AccessDeniedView panelName={config.label} userRoles={roles} />
+      ) : executive ? (
+        <ExecutiveViews panel={panel} filters={filters} />
       ) : (
         <>
           {panel === "fms"       && <FmsView filters={filters} />}

@@ -63,7 +63,7 @@ import GlassCard from "@/components/lms/GlassCard";
 import { CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import KpiCard from "@/components/lms/KpiCard";
 import KpiGrid from "@/components/lms/KpiGrid";
-import ExecutiveSection from "@/components/admin/ExecutiveSection";
+import ExecutiveSection from "@/components/workspace/ExecutiveSection";
 import HubModuleTile from "@/components/hub/HubModuleTile";
 import TimeSeriesChart from "@/components/lms/TimeSeriesChart";
 import CategoryBarChart from "@/components/lms/CategoryBarChart";
@@ -369,9 +369,9 @@ export default async function HubDashboardPage({
     },
     {
       key: "admin",
-      label: "Super Admin",
-      description: "Company-wide KPIs & system config.",
-      href: "/admin",
+      label: "Command Center",
+      description: "Company-wide KPIs & financial intelligence.",
+      href: "/workspace/command-center",
       icon: <ShieldCheck className="size-5" />,
       roleBadge: adminRoles.join(", ").replace(/_/g, " "),
     },
@@ -383,7 +383,7 @@ export default async function HubDashboardPage({
   const allowed = new Set(session?.nav.allowed ?? []);
   const locked = new Set(session?.nav.lockedPanels ?? []);
   const isLocked = (key: string) => locked.has(key);
-  const visibleTiles = tiles.filter((t) => (t.key === "admin" ? allowed.has("admin.dashboard") : allowed.has(`panel.${t.key}`) || locked.has(t.key)));
+  const visibleTiles = tiles.filter((t) => (t.key === "admin" ? allowed.has("manage.command-center") : allowed.has(`panel.${t.key}`) || locked.has(t.key)));
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const displayName = nameFromEmail(user.email);
