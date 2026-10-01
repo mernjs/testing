@@ -265,7 +265,12 @@ export async function initiatePayout(
     const full = await bankAccountForPayout(payout.bankAccountId);
     if (!account || !full) return { ok: false, error: "Could not read the employee's bank account." };
 
-    let fundAccountId = account.providerFundAccountId;
+    // Cached beneficiary ids belong to the RazorpayX account that created them;
+    // after the company switches accounts they're re-created on the new one.
+    // Ids cached before accounts were tracked came from the owner's env account.
+    const cachedRef = account.providerAccountRef ?? null;
+    const cacheMatches = cachedRef !== null ? cachedRef === provider.accountRef : provider.usesPlatformEnv;
+    let fundAccountId = cacheMatches ? account.providerFundAccountId : null;
     if (!fundAccountId) {
       const emp = await (await getDb()).collection<Employee>(EMPLOYEES_COLLECTION).findOne({ _id: payout.employeeId });
       const bene = await provider.ensureBeneficiary({
@@ -276,7 +281,7 @@ export async function initiatePayout(
         accountNumber: full.accountNumber,
         ifsc: full.ifsc,
       });
-      await cacheProviderIds(payout.bankAccountId, bene.providerContactId, bene.providerFundAccountId);
+      await cacheProviderIds(payout.bankAccountId, bene.providerContactId, bene.providerFundAccountId, provider.accountRef);
       fundAccountId = bene.providerFundAccountId;
     }
 

@@ -1,6 +1,7 @@
 import "server-only";
-import { createHmac } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { paymentPublicBaseUrl } from "@/lib/fms/payments/public-url";
+import { NOT_CONNECTED_MESSAGE, resolveRazorpayCredentials } from "@/lib/platform/integrations/payments";
 import {
   PaymentProvider,
   CreateProviderIntentParams,
@@ -13,26 +14,33 @@ import {
   registerPaymentProvider,
 } from "../provider";
 
+/**
+ * Razorpay payment gateway, on the CURRENT COMPANY's own Razorpay account
+ * (Settings → Payments & payouts). The platform owner falls back to the
+ * platform env credentials when it hasn't connected one; see
+ * `resolveRazorpayCredentials`.
+ */
+async function authHeader(): Promise<string | null> {
+  const creds = await resolveRazorpayCredentials("payments");
+  if (!creds) return null;
+  return `Basic ${Buffer.from(`${creds.keyId}:${creds.keySecret}`).toString("base64")}`;
+}
+
 export const RazorpayProvider: PaymentProvider = {
   id: "razorpay",
   name: "Razorpay Payment Gateway",
 
   async createPaymentIntent(params: CreateProviderIntentParams): Promise<ProviderIntentResult> {
-    const keyId = process.env.RAZORPAY_KEY_ID;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
-
-    if (!keyId || !keySecret) {
-      return { ok: false, error: "Razorpay credentials not configured in environment." };
-    }
+    const auth = await authHeader();
+    if (!auth) return { ok: false, error: NOT_CONNECTED_MESSAGE };
 
     try {
       const amountInPaisa = Math.round(params.amountInRupees * 100);
-      const authHeader = `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString("base64")}`;
 
       const res = await fetch("https://api.razorpay.com/v1/orders", {
         method: "POST",
         headers: {
-          Authorization: authHeader,
+          Authorization: auth,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -63,21 +71,16 @@ export const RazorpayProvider: PaymentProvider = {
   },
 
   async createPaymentLink(params: CreateProviderLinkParams): Promise<ProviderLinkResult> {
-    const keyId = process.env.RAZORPAY_KEY_ID;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
-
-    if (!keyId || !keySecret) {
-      return { ok: false, error: "Razorpay API keys not configured." };
-    }
+    const auth = await authHeader();
+    if (!auth) return { ok: false, error: NOT_CONNECTED_MESSAGE };
 
     try {
       const amountInPaisa = Math.round(params.amount * 100);
-      const authHeader = `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString("base64")}`;
 
       const res = await fetch("https://api.razorpay.com/v1/payment_links", {
         method: "POST",
         headers: {
-          Authorization: authHeader,
+          Authorization: auth,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -122,17 +125,12 @@ export const RazorpayProvider: PaymentProvider = {
   },
 
   async getPaymentStatus(providerPaymentId: string): Promise<ProviderPaymentStatusResult> {
-    const keyId = process.env.RAZORPAY_KEY_ID;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
-
-    if (!keyId || !keySecret) {
-      return { ok: false, status: "FAILED", failureReason: "API credentials missing" };
-    }
+    const auth = await authHeader();
+    if (!auth) return { ok: false, status: "FAILED", failureReason: NOT_CONNECTED_MESSAGE };
 
     try {
-      const authHeader = `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString("base64")}`;
       const res = await fetch(`https://api.razorpay.com/v1/payments/${providerPaymentId}`, {
-        headers: { Authorization: authHeader },
+        headers: { Authorization: auth },
       });
       const data = await res.json();
       if (!res.ok) {
@@ -156,21 +154,16 @@ export const RazorpayProvider: PaymentProvider = {
   },
 
   async refundPayment(params: ProviderRefundParams): Promise<ProviderRefundResult> {
-    const keyId = process.env.RAZORPAY_KEY_ID;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
-
-    if (!keyId || !keySecret) {
-      return { ok: false, status: "FAILED", error: "API credentials missing" };
-    }
+    const auth = await authHeader();
+    if (!auth) return { ok: false, status: "FAILED", error: NOT_CONNECTED_MESSAGE };
 
     try {
-      const authHeader = `Basic ${Buffer.from(`${keyId}:${keySecret}`).toString("base64")}`;
       const amountInPaisa = Math.round(params.refundAmount * 100);
 
       const res = await fetch(`https://api.razorpay.com/v1/payments/${params.providerPaymentId}/refund`, {
         method: "POST",
         headers: {
-          Authorization: authHeader,
+          Authorization: auth,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -198,8 +191,9 @@ export const RazorpayProvider: PaymentProvider = {
 
   verifyWebhookSignature(payload: string, signature: string, secret: string): boolean {
     if (!signature || !secret) return false;
-    const expectedSignature = createHmac("sha256", secret).update(payload).digest("hex");
-    return expectedSignature === signature;
+    const expected = Buffer.from(createHmac("sha256", secret).update(payload).digest("hex"));
+    const given = Buffer.from(signature);
+    return expected.length === given.length && timingSafeEqual(expected, given);
   },
 };
 

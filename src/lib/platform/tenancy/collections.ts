@@ -86,6 +86,7 @@ export const KEYED_COLLECTIONS = new Set<string>([
   "wallet_idempotency_locks",
   "fms_idempotency_keys",
   "billing_usage", // _id = <metric>:<yyyy-mm>
+  "platform_payment_accounts", // _id = provider ("razorpay")
 ]);
 
 export const KEY_SEPARATOR = "::";
