@@ -68,8 +68,8 @@ export default async function SecurityPage() {
               <Link href="/workspace/users" className={linkClass}>
                 Manage users and reset passwords <ArrowRight className="size-3.5" />
               </Link>
-              <Link href="/settings/activity" className={linkClass}>
-                Activity log <ArrowRight className="size-3.5" />
+              <Link href="/workspace/settings/audit-log" className={linkClass}>
+                Audit log <ArrowRight className="size-3.5" />
               </Link>
             </div>
           </CardContent>

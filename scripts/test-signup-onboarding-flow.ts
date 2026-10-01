@@ -71,7 +71,7 @@ const decide = (over: Partial<OnboardingGateInput> = {}) => onboardingGateTarget
 
 async function run() {
   const db = await getPlatformDb();
-  await setSignupMode("open");
+  await setSignupMode("open", "test");
 
   console.log("sign-up form");
   await check("the sign-up form asks only for company, address, owner name, e-mail, password and terms - no setup steps", () => {
@@ -108,12 +108,12 @@ async function run() {
     const { state, company } = await runAsCompany(freshCompanyId, () => getOnboarding());
     assert.equal(company.isPlatformOwner, false);
     assert.deepEqual(state, { completedSteps: [], completedAt: null, dismissedAt: null });
-    assert.equal(onboardingGateTarget({ pathname: "/workspace", isOwner: isOnboardingOwner(owner!.roles), isPlatformOwnerCompany: company.isPlatformOwner === true, state }), ONBOARDING_PATH, "opening /workspace starts onboarding");
+    assert.equal(onboardingGateTarget({ pathname: "/workspace", isOwner: isOnboardingOwner(owner!.roles), isPlatformOwnerCompany: Boolean(company.isPlatformOwner), state }), ONBOARDING_PATH, "opening /workspace starts onboarding");
   });
 
   console.log("admin approval path");
   await check("an approved request creates the same company with the same open setup state and a sign-in link to the Workspace", async () => {
-    await setSignupMode("approval");
+    await setSignupMode("approval", "test");
     const started = await startSignup({ companyName: "Approved Co", slug: "approvedco", name: "Ann Approved", email: "ann@approved.test", password: "correct-horse-battery", acceptTerms: true }, { origin: "http://localhost:3000", clientKey: "t2" });
     assert.ok(started.ok);
     const token = linkIn(emailsTo("ann@approved.test")[0], /signup\/verify\?token=([a-f0-9]+)/);
@@ -127,7 +127,7 @@ async function run() {
     const { state } = await runAsCompany((res as { companyId: string }).companyId, () => getOnboarding());
     assert.equal(setupIsOpen({ isOwner: true, isPlatformOwnerCompany: false, state }), true);
     assert.equal(decide({ state }), ONBOARDING_PATH, "signing in lands on /workspace, which starts onboarding");
-    await setSignupMode("open");
+    await setSignupMode("open", "test");
   });
 
   console.log("redirect decision (pure)");

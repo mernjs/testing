@@ -125,8 +125,8 @@ async function main() {
     assert.equal(await runAsCompany(starter, () => moduleBlockReason("messenger")), null, "core panel");
     assert.match((await runAsCompany(starter, () => moduleBlockReason("fms"))) ?? "", /Starter plan/);
   });
-  await check("requireModule redirects a locked panel to /upgrade", async () => {
-    await rejectsWith(runAsCompany(starter, () => requireModule("fms")), (e) => String((e as { digest?: string }).digest ?? "").includes("/upgrade?module=fms"), "redirect to upgrade");
+  await check("requireModule redirects a locked panel to /workspace/upgrade", async () => {
+    await rejectsWith(runAsCompany(starter, () => requireModule("fms")), (e) => String((e as { digest?: string }).digest ?? "").includes("/workspace/upgrade?module=fms"), "redirect to upgrade");
     await runAsCompany(starter, () => requireModule("pms"));
   });
   await check("internal owner: every panel open", async () => {

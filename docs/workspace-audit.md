@@ -33,7 +33,7 @@ by the author**); `code read` = checked by reading the code only.
 |---|---|---|---|
 | `/workspace/login` | Sign-in form | none (public); redirects when already signed in | `hubLoginAction`: `verifyHubCredentials` (lockout after 5 failures), then `provisionAccessibleSessions` |
 | `/workspace/change-password` | Change own password | `getCurrentHubUser()` | `changeOwnHubPassword` on the signed-in user's own id |
-| `/workspace` (Staff Hub) | Personal dashboard, company KPIs, panel tiles | layout + page: `getCurrentHubUser()`; layout also forces a pending password change | `hub-actions.ts` (search, ask, notifications): each calls `getCurrentHubUser()`; data filtered by `accessibleAreas(user)` |
+| `/workspace` (Dashboard) | The one dashboard: executive overview (Command Center permission), company strip, panel tiles, personal HR/PMS sections | layout + page: `getCurrentHubUser()`; layout also forces a pending password change | `hub-actions.ts` (search, ask, notifications): each calls `getCurrentHubUser()`; data filtered by `accessibleAreas(user)` |
 | `/workspace/analytics/[panel]` | Read-only analytics per panel (fms, hrms, lms, messenger, pms, portal, prms, tms, workspace) | `getCurrentHubUser()` + a per-panel role check **in the page** | loaders in `src/lib/workspace/panel-analytics.ts`, no own check (called only from this page and `/admin/analytics`) |
 | `/workspace/notifications` | Own notifications | `getCurrentHubUser()` | `listNotifications(user.id)` — own rows only |
 | `/workspace/invite`, `/workspace/handoff` | Accept invitation, post-sign-up hand-off | token based | unchanged, out of scope |
@@ -50,17 +50,17 @@ checks; the two import route handlers repeat it and answer 401/403.
 
 | Route | What it does | Actions / APIs |
 |---|---|---|
-| `/settings` | Hub of cards | none |
-| `/onboarding` | Setup wizard: profile, departments, invitations, branding, panels | `onboarding/actions.ts` (`requireOwner`) |
-| `/settings/branding` | Logo, name, colour | `branding/actions.ts` |
-| `/settings/domains` | Workspace address, custom domains | `domains/actions.ts`; lib filters every query by `companyId` |
-| `/settings/billing` | Plan, checkout, change plan, cancel / resume, coupon, GST details | `billing/actions.ts` (company id from the host, never from input) |
-| `/settings/billing/invoices` | SaaS invoices and credit notes | `listCompanySaasInvoices(companyId)`; PDF at `/api/platform/billing/invoices/[id]/pdf` (see F5) |
-| `/settings/payments` | The company's own Razorpay account | `payments/actions.ts` |
-| `/settings/automations` | Event → email / notification / webhook | `automations/actions.ts` |
-| `/settings/import` | CSV import | `import/run`, `import/sample` route handlers |
-| `/settings/activity` | Company activity log | `listEvents()` |
-| `/upgrade` | "This panel is not in your plan" | **no session check** (see F8) |
+| `/workspace/settings` | Hub of cards | none |
+| `/workspace/onboarding` | Setup wizard: profile, departments, invitations, branding, panels | `onboarding/actions.ts` (`requireOwner`) |
+| `/workspace/settings/branding` | Logo, name, colour | `branding/actions.ts` |
+| `/workspace/settings/domains` | Workspace address, custom domains | `domains/actions.ts`; lib filters every query by `companyId` |
+| `/workspace/settings/billing` | Plan, checkout, change plan, cancel / resume, coupon, GST details | `billing/actions.ts` (company id from the host, never from input) |
+| `/workspace/settings/billing/invoices` | SaaS invoices and credit notes | `listCompanySaasInvoices(companyId)`; PDF at `/api/platform/billing/invoices/[id]/pdf` (see F5) |
+| `/workspace/settings/payments` | The company's own Razorpay account | `payments/actions.ts` |
+| `/workspace/settings/automations` | Event → email / notification / webhook | `automations/actions.ts` |
+| `/workspace/settings/import` | CSV import | `import/run`, `import/sample` route handlers |
+| `/workspace/settings/audit-log` | The one Audit log: workspace events (`listEvents()`, Super Admin only) and panel activity (`searchActivityLog()`, Audit log permission) behind a source switch | `requireWorkspaceAccess("company.audit")`; each source re-checked on the page (`canViewAuditLog`, `canViewWorkspaceEvents`) | `/api/workspace/activity-log/export` → `authorizeWorkspaceApi("company.audit")` |
+| `/workspace/upgrade` | "This panel is not in your plan" | the Workspace layout (signed in, password change first); see F8 | none |
 
 ### 1.5 Scoping that exists today (department / team / data)
 
@@ -88,9 +88,9 @@ Management permissions live in the permission catalog (`src/lib/workspace/permis
 
 | Old admin feature | New Workspace location | Permission | API authorization | UI access | Verified |
 |---|---|---|---|---|---|
-| Command Center `/admin` | `/workspace/command-center` | `workspace.viewCommandCenter` | `requireWorkspaceAction("manage.command-center")` in every action | Management → nav key `manage.command-center` | test: "every moved page calls requireWorkspaceAccess…", "every server action…", "every /api/workspace route…", "each moved page key per role…"; e2e |
-| Audit log `/admin/activity-log` | `/workspace/activity-log` | `workspace.viewAuditLog` | `requireWorkspaceAction("manage.activity-log")` in every action; `/api/workspace/activity-log/export` → `authorizeWorkspaceApi("manage.activity-log")` (was `/api/admin/activity-log/export`) | Management → nav key `manage.activity-log` | test: "every moved page calls requireWorkspaceAccess…", "every server action…", "every /api/workspace route…", "each moved page key per role…"; e2e |
-| Documents `/admin/documents` | `/workspace/documents` | `workspace.manageDocuments` | `requireWorkspaceAction("manage.documents")` in every action; `/api/workspace/documents/export` → `authorizeWorkspaceApi("manage.documents")` (was `/api/admin/documents/export`) | Management → nav key `manage.documents` | test: "every moved page calls requireWorkspaceAccess…", "every server action…", "every /api/workspace route…", "each moved page key per role…"; e2e |
+| Command Center `/admin` | the dashboard `/workspace` (executive sections; **no separate page or nav item**) | `workspace.viewCommandCenter` | `loadExecutiveOverview()` returns `null` for anyone without it, so the data is never loaded or rendered for them; `/workspace/command-center` redirects to `/workspace` | none (`canViewCommandCenter(user)` in `nav.ts`) | test: "the merged dashboard loader returns executive data only to the Command Center permission" |
+| Audit log `/admin/activity-log` | Company → Audit log `/workspace/settings/audit-log` (source "Panel activity"; merged with the old Company activity log) | `workspace.viewAuditLog` | `/api/workspace/activity-log/export` → `authorizeWorkspaceApi("company.audit")` | Company → nav key `company.audit` | test: "Audit log: panel activity needs the Audit log permission…" |
+| Documents `/admin/documents` | Account → Documents `/workspace/account/documents` | `workspace.manageDocuments` | `requireWorkspaceAction("account.documents")` in every action; `/api/workspace/documents/export` → `authorizeWorkspaceApi("account.documents")` | Account → nav key `account.documents` | test: "every moved page calls requireWorkspaceAccess with the key of its own path" |
 | CRM leads `/admin/crm/leads` | `/workspace/crm/leads` | `workspace.manageCrm` + plan(lms) | `requireWorkspaceAction("manage.crm.leads")` in every action; `/api/workspace/crm/leads/export` → `authorizeWorkspaceApi("manage.crm.leads")` (was `/api/admin/crm/leads/export`) | Management → nav key `manage.crm.leads` | test: "every moved page calls requireWorkspaceAccess…", "every server action…", "every /api/workspace route…", "each moved page key per role…"; e2e |
 | CRM clients `/admin/crm/clients` | `/workspace/crm/clients` | `workspace.manageCrm` + plan(pms) | `requireWorkspaceAction("manage.crm.clients")` in every action; `/api/workspace/crm/clients/export` → `authorizeWorkspaceApi("manage.crm.clients")` (was `/api/admin/crm/clients/export`) | Management → nav key `manage.crm.clients` | test: "every moved page calls requireWorkspaceAccess…", "every server action…", "every /api/workspace route…", "each moved page key per role…"; e2e |
 | PMS projects `/admin/pms/projects` | `/workspace/pms/projects` | `workspace.manageProjects` + plan(pms) | `requireWorkspaceAction("manage.pms.projects")` in every action; `/api/workspace/pms/projects/export` → `authorizeWorkspaceApi("manage.pms.projects")` (was `/api/admin/pms/projects/export`) | Management → nav key `manage.pms.projects` | test: "every moved page calls requireWorkspaceAccess…", "every server action…", "every /api/workspace route…", "each moved page key per role…"; e2e |
@@ -131,27 +131,27 @@ Management permissions live in the permission catalog (`src/lib/workspace/permis
 
 | Existing feature | Workspace location | Permission | API authorization | UI access | Verified |
 |---|---|---|---|---|---|
-| Onboarding `/onboarding` | Company → Company setup | SA | page + `requireOwner()` in actions | `company.setup` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
-| Organization profile | Company → Organization profile `/settings/profile` (**new page**, reuses the onboarding profile form and `saveProfileAction`) | SA | `requireWorkspaceAccess`; action `requireOwner()` | `company.profile` | test: "navigation = guard" (13 users × 74 keys); page guard `requireWorkspaceAccess`: code read; save: e2e only |
-| Workspace settings / company settings | Company (section header) → `/settings` | SA | page | section link | code read; e2e |
-| Plan, subscription, upgrade, downgrade, renewal (cancel / resume) | Company → Plan & billing `/settings/billing` | SA | `billing/actions.ts` `requireOwner()` | `company.billing` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e (existing `scripts/e2e/subscriptions.e2e.mjs` covers the flows; not re-run) |
-| Upgrade prompt `/upgrade` | reached from locked tiles | any (F8) | none | not a nav item | code read; e2e (frame, phone width) |
+| Onboarding `/workspace/onboarding` | Company → Company setup | SA | page + `requireOwner()` in actions | `company.setup` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
+| Organization profile | Company → Organization profile `/workspace/settings/profile` (**new page**, reuses the onboarding profile form and `saveProfileAction`) | SA | `requireWorkspaceAccess`; action `requireOwner()` | `company.profile` | test: "navigation = guard" (13 users × 74 keys); page guard `requireWorkspaceAccess`: code read; save: e2e only |
+| Workspace settings / company settings | Company (section header) → `/workspace/settings` | SA | page | section link | code read; e2e |
+| Plan, subscription, upgrade, downgrade, renewal (cancel / resume) | Company → Plan & billing `/workspace/settings/billing` | SA | `billing/actions.ts` `requireOwner()` | `company.billing` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e (existing `scripts/e2e/subscriptions.e2e.mjs` covers the flows; not re-run) |
+| Upgrade prompt `/workspace/upgrade` | reached from locked tiles | any (F8) | none | not a nav item | code read; e2e (frame, phone width) |
 | Billing details (GST) | Company → Plan & billing | SA | same | `company.billing` | code read |
-| Invoices | Company → Invoices & payments `/settings/billing/invoices` | SA | page; PDF route (F5) | `company.invoices` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
+| Invoices | Company → Invoices & payments `/workspace/settings/billing/invoices` | SA | page; PDF route (F5) | `company.invoices` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
 | Payments / transactions | same page, "Payments & refunds" card (**added**, from paid invoices and credit notes) | SA | same loader | `company.invoices` | test: "payments: paid invoices and credit notes of this company only"; e2e |
-| Usage | Company → Usage `/settings/usage` (**new page**, read-only) | SA | `requireWorkspaceAccess` | `company.usage` | tests: "usage: own seats, AI tokens and storage against the plan's limits", "usage levels"; e2e |
+| Usage | Company → Usage `/workspace/settings/usage` (**new page**, read-only) | SA | `requireWorkspaceAccess` | `company.usage` | tests: "usage: own seats, AI tokens and storage against the plan's limits", "usage levels"; e2e |
 | Users / seats | Company → Users, roles & seats `/workspace/users` (seats badge **added**) | `workspace.manageUsers` | `requireWorkspaceAction("company.users")` | `company.users` | code read; e2e |
 | Roles & permissions | same page (role editor, permission overrides) | SA | same | `company.users` | code read |
-| Domains | Company → Custom domains `/settings/domains` | SA | page + actions | `company.domains` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
-| Branding | Company → Branding `/settings/branding` | SA | page + actions | `company.branding` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
-| Own payment gateway | Company → Payment account `/settings/payments` | SA | page + actions | `company.payments` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
-| Integrations | Company → Integrations `/settings/integrations` (**new page**, a list with status and links) | SA | `requireWorkspaceAccess` | `company.integrations` | test: "integrations: status from the company's own gateway, webhooks and domains"; e2e |
+| Domains | Company → Custom domains `/workspace/settings/domains` | SA | page + actions | `company.domains` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
+| Branding | Company → Branding `/workspace/settings/branding` | SA | page + actions | `company.branding` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
+| Own payment gateway | Company → Payment account `/workspace/settings/payments` | SA | page + actions | `company.payments` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
+| Integrations | Company → Integrations `/workspace/settings/integrations` (**new page**, a list with status and links) | SA | `requireWorkspaceAccess` | `company.integrations` | test: "integrations: status from the company's own gateway, webhooks and domains"; e2e |
 | Automations (incl. webhooks) | Company → Automations | SA | page + actions | `company.automations` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
 | Import | Company → Import data | SA | page + route handlers | `company.import` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
-| Activity log | Company → Activity log | SA | page | `company.activity` | test: "navigation = guard" (13 users × 74 keys); page/action check: code read; e2e |
-| Security | Company → Security `/settings/security` (**new page**: last sign-in, change password, sign out everywhere, account lock / forced-change counts) | SA | `requireWorkspaceAccess`; existing `hubLogoutAction` | `company.security` | test: "security: own accounts and own sessions only"; e2e |
+| Activity log | merged into Company → Audit log `/workspace/settings/audit-log` (source "Workspace events") | SA | `requireWorkspaceAccess("company.audit")` + `canViewWorkspaceEvents` | `company.audit` | test: "Audit log: panel activity needs the Audit log permission…" |
+| Security | Company → Security `/workspace/settings/security` (**new page**: last sign-in, change password, sign out everywhere, account lock / forced-change counts) | SA | `requireWorkspaceAccess`; existing `hubLogoutAction` | `company.security` | test: "security: own accounts and own sessions only"; e2e |
 | Notifications, change password | Account | any signed-in account | `getCurrentHubUser()` | `account.*` | test: "navigation = guard" (13 users × 74 keys); test: "an account without roles…"; e2e |
-| Platform Panel | single link, bottom of the sidebar and on `/settings` | owner company **and** platform access (`getPlatformAccessForUser`) | `/platform` layout `requirePlatformAccess()` (unchanged) | `platform.panel` | tests: "Platform link: only owner company + platform access", "a platform role gives the link without any Workspace permission…", "the nav never contains a Platform Panel page other than the single link"; e2e |
+| Platform Panel | single link, bottom of the sidebar and on `/workspace/settings` | owner company **and** platform access (`getPlatformAccessForUser`) | `/platform` layout `requirePlatformAccess()` (unchanged) | `platform.panel` | tests: "Platform link: only owner company + platform access", "a platform role gives the link without any Workspace permission…", "the nav never contains a Platform Panel page other than the single link"; e2e |
 
 ### 2.3 Panel sign-in
 
@@ -183,11 +183,11 @@ scoping of Workspace or `/admin`.
 | F3 | Workspace analytics ignored the plan and the switched-on panels (a company without Finance in its plan could still open Finance analytics). | medium | **fixed**: analytics items need the panel in the plan and switched on. Tests: "plan without Finance…", "a panel the company switched off disappears" |
 | F4 | Staff Hub sidebar: hardcoded role checks duplicated the page's checks; "Lead Analytics" and "Workspace Analytics" were shown unconditionally; Staff Hub quick links pointed at `/hrms/me`, `/messenger`, `/pms` for people without those roles. | low | **fixed**: sidebar, mobile sidebar, Staff Hub tiles, quick links and settings cards render from `resolveWorkspaceNav` |
 | F5 | `/api/platform/billing/invoices/[id]/pdf` treated **any** `super_admin` of the platform-owner company as a platform admin, even when their Platform Panel access was revoked or their platform role lacks `invoices.read`; they could download any company's invoice. | medium | **fixed**: "any company" now needs the owner company **and** platform access with `invoices.read`; everyone else gets only their own company's document. Code read (not exercised by a test here; `scripts/e2e/invoices.e2e.mjs` covers the route) |
-| F6 | `/settings` showed the "Platform Panel" card to every `super_admin` of the owner company without checking platform access. | low | **fixed**: the card is the nav item `platform.panel`. Tests: "Platform link…" |
+| F6 | `/workspace/settings` showed the "Platform Panel" card to every `super_admin` of the owner company without checking platform access. | low | **fixed**: the card is the nav item `platform.panel`. Tests: "Platform link…" |
 | F7 | Duplication: `/admin/analytics/[panel]` and `/workspace/analytics/[panel]` render the same analytics; `/admin/login` and `/workspace/login` are two sign-ins for one identity; the `/admin` sidebar links `/admin/users` twice ("User Management", "Access & Roles"). | low | **fixed**: one analytics page, one notifications page and bell, one sign-in; the admin sidebar is gone |
-| F8 | `/upgrade` has no session check; an anonymous visitor on a company's host can read that company's plan name. | low | open |
+| F8 | `/workspace/upgrade` has no session check; an anonymous visitor on a company's host can read that company's plan name. | low | **fixed**: the page now lives under the Workspace layout, which needs a signed-in session. |
 | F9 | `getPlatformDb()` in company-side code: `domains/custom.ts`, `branding`, `onboarding/state.ts`, `billing/{subscription,addons,coupons,invoices,limits}` — every query read is keyed by the current `companyId` (or is a platform catalogue: plans, add-ons). No unfiltered company-side use found. | info | no change needed |
-| F10 | `/settings/*` and `/onboarding` did not enforce a pending forced password change (the Workspace layout does). | low | **fixed** in the shared layout (`CompanyPagesLayout`): redirects to `/workspace/change-password` first. Code read |
+| F10 | `/workspace/settings/*` and `/workspace/onboarding` did not enforce a pending forced password change (the Workspace layout does). | low | **fixed** in the shared layout (`src/app/workspace/(protected)/layout.tsx`, which also replaced the three parallel `CompanyPagesLayout` wrappers): redirects to `/workspace/change-password` first. Code read |
 | F11 | `/platform/invoices/export` checks owner company + `super_admin` rather than the platform permission `invoices.read`. Platform Panel code, out of scope here. | medium | **fixed** by the lead (commit e5e0a11) |
 | F12 | `/admin` grids for a panel outside the company's plan (e.g. `/admin/tms/*` on a plan without Training) stay reachable for the `super_admin`. They read the company's own data only. | low | **fixed**: each register needs its panel in the plan and switched on. Test: "registers of a panel outside the plan or switched off are closed even to the super admin" |
 | F13 | Panel analytics for fms / prms / tms / messenger are company-wide and open to **any** role of that panel (HR and Projects are restricted to the viewer's own records). No finer rule exists in the page today. | low | open |
@@ -198,10 +198,10 @@ scoping of Workspace or `/admin`.
 
 | Check | Result |
 |---|---|
-| `scripts/test-workspace-access.ts` (local mongod, throwaway `ws_test_*` database, dropped) | 46 checks passed |
+| `scripts/test-workspace-access.ts` (local mongod, throwaway `ws_test_*` database, dropped) | 46 checks passed (56 after the restructure in section 5) |
 | `test-platform-roles`, `test-enforcement`, `test-search-notifications`, `test-import`, `test-events-workflows` | 99, 25, 22, 15, 30 checks passed |
 | `npx next typegen` + `npx tsc --noEmit -p .` | clean |
-| `scripts/e2e/workspace.e2e.mjs` | updated for the move, syntax-checked, **not run** |
+| `scripts/e2e/workspace.e2e.mjs` | updated for the move and again for section 5, syntax-checked, **not run** |
 | The 14 existing `scripts/e2e/*.e2e.mjs` | **not run**; none referenced `/admin`, `/api/admin` or a panel `/login`, so none was changed |
 | `next build`, the redirects in `next.config.ts`, rendering of the moved pages | **not run / not verified** here |
 
@@ -210,3 +210,112 @@ when `checkWorkspaceAccess` allows it. The static checks read the source of ever
 route and assert that it calls the Workspace guard with the nav key of its own path. The guards themselves
 (`requireWorkspaceAccess`, `requireWorkspaceAction`, `authorizeWorkspaceApi`) read the request cookie, so their
 redirect / 401 / 403 behaviour is covered only by the browser test.
+
+---
+
+## 5. Restructure: one dashboard, one audit log, everything workspace-specific under `/workspace`
+
+### 5.1 Old → new routes
+
+Every old URL is a **permanent redirect** (`next.config.ts`, 308, query string kept; the patterns are anchored and name
+exact prefixes, so `/api/*`, `/platform/*`, a panel's own `/<panel>/settings` and the public site are never touched).
+
+| Old | New |
+|---|---|
+| `/settings` | `/workspace/settings` |
+| `/settings/*` (profile, billing, billing/invoices, usage, security, integrations, domains, branding, payments, automations, import, import/run, import/sample) | `/workspace/settings/*` |
+| `/settings/activity` | `/workspace/settings/audit-log?source=workspace` |
+| `/onboarding` | `/workspace/onboarding` |
+| `/upgrade?module=x` | `/workspace/upgrade?module=x` |
+| `/workspace/command-center` | `/workspace` (the Command Center is the dashboard) |
+| `/workspace/activity-log` | `/workspace/settings/audit-log?source=panels` |
+| `/workspace/documents` | `/workspace/account/documents` |
+
+Not moved on purpose: `/signup`, `/verify`, `/pay`, `/portal`, the public site, each business panel's own routes,
+`/platform/*`, `/api/platform/*` (Razorpay webhook, crons: URLs registered with external services stay stable) and
+`/workspace-not-found` (the page the proxy rewrites to for a host that has **no** company, so it cannot live in a
+company's Workspace). `/workspace/invite`, `/workspace/handoff` and the hub server actions moved physically from
+`src/app/(platform)/workspace/` to `src/app/workspace/` (same URLs).
+
+All pages sit in the one `src/app/workspace/(protected)/` layout (sidebar, top bar, billing notice); the three parallel
+`(platform)/{settings,onboarding,upgrade}/layout.tsx` wrappers and `CompanyPagesLayout` are gone.
+Guards: every moved page keeps its guard (`requireWorkspaceAccess(<key>)` or the company-Super-Admin check it always had),
+plus the forced password change from the layout. API URLs under `/api/workspace/**` did not change; their guard keys did
+where the nav item moved (`company.audit`, `account.documents`).
+
+### 5.2 The one dashboard
+
+`/workspace` = the Command Center. In order:
+
+1. Welcome header (roles, employee code).
+2. **Executive overview** — only when `loadExecutiveOverview()` returns data, i.e. for holders of
+   `workspace.viewCommandCenter` (Super Admin always): date/granularity filters, Financial Position (FMS), Business
+   Overview, Financial Intelligence charts, Sales & CRM, Operations, Training, Procurement, AI & Communication, Panel
+   Performance Matrix (`src/components/workspace/CommandCenterSections.tsx`, the former page body). Without the permission
+   nothing of this is queried or rendered.
+3. Company strip (`CompanyToday`: Ask box, company KPIs filtered by `accessibleAreas`, recent activity; global search is in
+   the top bar).
+4. Panel tiles (`data-module` / `data-locked`, "Upgrade to unlock" tiles pointing at `/workspace/upgrade?module=x`).
+5. The person's own sections (attendance, leave, pay, projects & tasks, privileges, quick links) — unchanged.
+
+Everyone else gets 1, 3, 4, 5. The Management section no longer has a Command Center item; the permission is checked with
+`canViewCommandCenter(user)` (`nav.ts`) by the dashboard, the analytics pages and the notification bell.
+
+### 5.3 The one Audit log (Company → Audit log, `/workspace/settings/audit-log`)
+
+| Source | Rows | Who may read it (unchanged) | Filters |
+|---|---|---|---|
+| Workspace events | `platform_events` (event bus, 180 days) | company Super Admin (`canViewWorkspaceEvents`) | event type, person, from/to; paging |
+| Panel activity | the panels' audit collections (Procurement, Projects, Team Chat, Training, HR, Portal, Online Tests) | `workspace.viewAuditLog` (`canViewAuditLog`) | search, module, action, from/to; CSV export |
+| All | both, newest first (newest 200 of each paged) | both of the above | from/to |
+
+The page guard is the nav key `company.audit` (= `workspace.viewAuditLog`); the `source` query parameter can only narrow
+what the viewer may already read (`resolveAuditSource`). Someone holding only the Audit log permission sees Panel activity
+only. The Platform Panel's `/platform/audit` (SaaS-provider audit across companies) is a different log and is untouched.
+
+### 5.4 Documents
+
+Account → Documents (`/workspace/account/documents`, key `account.documents`, permission `workspace.manageDocuments`,
+export API `/api/workspace/documents/export`). No second Documents location exists in the Workspace (the Digi Locker
+panel `/dlms` is a different product and was left alone).
+
+### 5.5 Workspace vs Platform
+
+| Lives in the **Platform Panel** (`/platform/*`, SaaS provider only) | Lives in the **Workspace** (`/workspace/*`, one company) |
+|---|---|
+| Companies, sign-ups & approvals, domains & SSL, plans, subscriptions, SaaS invoices, coupons, add-ons, payments / Razorpay config, tax, revenue, usage & limits, platform users & roles, integrations, platform audit log, platform settings | the company's dashboard, panels, analytics, registers, users & roles, its own plan & billing, usage, branding, domains, payment account, automations, import, security, audit log, onboarding, documents, notifications |
+
+Why: the Platform Panel answers "how is the SaaS business doing, across all companies"; the Workspace answers "how does
+this company run". The only link from Platform to a company surface is a plain **Workspace** link (it used to read
+"Staff Hub"); the only Platform item in the Workspace is the single conditional **Platform Panel** link
+(`platform.panel`, owner company and a platform role). Audited: every page under `(platform)/platform/**`, the console
+libraries and the Platform sidebar/shell contain only SaaS functionality; nothing needed moving (only the link label changed).
+
+### 5.6 Registration, Workspace, onboarding
+
+`/signup` stays a single simple form (company name, workspace address, owner name, e-mail, password, terms) — it has no
+setup questions, so nothing had to be moved into the wizard. Flow:
+
+1. Sign-up -> e-mail link -> `confirmSignup` creates the company and owner (30-day trial starts here, unchanged) and a
+   one-time handoff with `next: "/workspace"`; the handoff signs the owner in on the company host and lands on `/workspace`.
+2. Approval mode: `approveSignup` creates the same company and e-mails a link to `/workspace/login`; signing in lands on `/workspace`.
+3. `/workspace` applies one rule (`onboardingGateTarget`, `src/lib/platform/onboarding/gate.ts`, pure): **a Super Admin of a
+   customer company whose setup is neither completed nor skipped is redirected from `/workspace` to `/workspace/onboarding`.**
+   Nobody else is (invited employees keep landing on the dashboard after accepting an invitation; the platform owner's
+   company has no setup).
+4. Only the exact path `/workspace` is gated. Deep links (`/workspace/crm/leads`, `/workspace/settings/billing`, …) are
+   never intercepted; while setup is open the Workspace shows a "Finish setting up your workspace" banner there
+   (`SetupBanner`, not on `/workspace` or the wizard). Rationale: one place makes the first experience, and a link someone
+   opened on purpose is never hijacked.
+5. The wizard (`/workspace/onboarding`, profile -> departments -> invitations -> branding -> panels) never redirects an owner
+   away, "Skip for now" writes `dismissedAt`, finishing writes `completedAt`; both stop the redirect. No loop is possible:
+   `/workspace` -> wizard is the only edge. The wizard stays reachable any time from Company → Company setup.
+6. Existing companies that never finished (or never saw) setup get the same treatment on their next `/workspace` visit; Skip
+   stops it.
+
+Section 5 additionally: `scripts/test-signup-onboarding-flow.ts` (13 checks: sign-up -> handoff `next: /workspace`, approval path,
+the pure redirect rule, no loops, invited teammate), `test-workspace-access` 56 checks (one Dashboard, no Command Center item,
+Documents in Account, Audit log in Company, all pages under `/workspace/*`, redirects in `next.config.ts`, executive loader
+returns nothing without the permission), and the existing platform-roles, enforcement, search-notifications, import,
+events-workflows, billing-foundation and console tests. `scripts/e2e/registration.e2e.mjs` and the extended
+`scripts/e2e/workspace.e2e.mjs` are written and syntax-checked, **not run** by the author.
