@@ -1,7 +1,7 @@
 /**
  * Browser test for SaaS invoices — Platform Panel /platform/invoices (list,
  * filters, CSV, PDF, detail, mark paid, void, credit note) and the company
- * side /settings/billing/invoices (own invoices only; another company's PDF is
+ * side /workspace/settings/billing/invoices (own invoices only; another company's PDF is
  * a 404) — against a RUNNING server (production build recommended).
  *
  * It seeds its own invoices straight into the server's database, so
@@ -244,7 +244,7 @@ try {
       await cpage.fill('input[name="email"]', COMPANY_EMAIL);
       await cpage.fill('input[name="password"]', COMPANY_PASSWORD);
       await Promise.all([cpage.waitForURL((u) => !u.pathname.endsWith("/login"), { timeout: 60_000 }), cpage.press('input[name="password"]', "Enter")]);
-      await cpage.goto(`${COMPANY_URL}/settings/billing/invoices`);
+      await cpage.goto(`${COMPANY_URL}/workspace/settings/billing/invoices`);
       await cpage.getByRole("heading", { name: "Invoices" }).or(cpage.getByText("Invoices", { exact: true })).first().waitFor();
       await cpage.locator(`[data-invoice-number="${paidInv.number}"]`).waitFor();
       assert.equal(await cpage.locator(`[data-invoice-number="${foreignInv.number}"]`).count(), 0, "no other company's invoice listed");

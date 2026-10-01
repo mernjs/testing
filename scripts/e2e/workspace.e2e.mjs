@@ -2,8 +2,10 @@
  * Browser test for the Workspace as the company's single place: one sign-in, a
  * permission-driven sidebar, the company pages and the former admin pages
  * inside the Workspace, panels without a second login, old /admin links
- * redirected, sign-out everywhere, and no Platform Panel for a tenant company. Against a RUNNING server (production
- * build recommended).
+ * redirected, sign-out everywhere, and no Platform Panel for a tenant company. Also: the one Dashboard (no Command
+ * Center item), the one Audit log under Company, Documents under Account, every Company page under /workspace/settings/*,
+ * and the old /settings, /onboarding, /upgrade, /workspace/command-center, /workspace/activity-log and
+ * /workspace/documents URLs redirecting. Against a RUNNING server (production build recommended).
  *
  *   TEST_COMPANY_URL=http://acme.localhost:3006 TEST_COMPANY_EMAIL=... TEST_COMPANY_PASSWORD=... \
  *   [PANEL_BASE_URL=http://localhost:3006 OWNER_EMAIL=... OWNER_PASSWORD=...] \
@@ -46,6 +48,13 @@ async function signIn(page, origin, email, password) {
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', password);
   await Promise.all([page.waitForURL((u) => !u.pathname.endsWith("/login"), { timeout: 60_000 }), page.press('input[name="password"]', "Enter")]);
+  await skipSetupIfShown(page);
+}
+
+/** A company whose setup is still open lands in the onboarding wizard first; skipping it is the way into the dashboard. */
+async function skipSetupIfShown(page) {
+  if (new URL(page.url()).pathname !== "/workspace/onboarding") return;
+  await Promise.all([page.waitForURL((u) => u.pathname === "/workspace", { timeout: 30_000 }), page.getByRole("button", { name: "Skip for now" }).click()]);
 }
 
 async function noHorizontalScroll(page, url) {
@@ -77,20 +86,20 @@ const pathOf = (page) => new URL(page.url()).pathname;
 
 /** The Company pages: path → something only that page renders. */
 const COMPANY_PAGES = [
-  ["/settings", (p) => p.locator("[data-settings-card]").first()],
-  ["/onboarding", (p) => p.locator("#workspace-content button").first()],
-  ["/settings/profile", (p) => p.getByRole("heading", { name: "Organization profile", level: 1 })],
-  ["/settings/billing", (p) => p.locator("#workspace-content").getByText("Plan & billing").first()],
-  ["/settings/billing/invoices", (p) => p.locator("#saas-payments")],
-  ["/settings/usage", (p) => p.locator("#usage-seats")],
-  ["/settings/domains", (p) => p.locator("li[data-domain]").first()],
-  ["/settings/branding", (p) => p.locator("#workspace-content").getByText("Branding").first()],
-  ["/settings/payments", (p) => p.locator("#payment-account-status")],
-  ["/settings/integrations", (p) => p.locator("#integrations-list")],
-  ["/settings/automations", (p) => p.getByRole("heading", { name: "Automations" })],
-  ["/settings/import", (p) => p.getByRole("heading", { name: "Import data" })],
-  ["/settings/activity", (p) => p.getByRole("heading", { name: "Activity log" })],
-  ["/settings/security", (p) => p.locator("#security-accounts")],
+  ["/workspace/settings", (p) => p.locator("[data-settings-card]").first()],
+  ["/workspace/onboarding", (p) => p.locator("#workspace-content button").first()],
+  ["/workspace/settings/profile", (p) => p.getByRole("heading", { name: "Organization profile", level: 1 })],
+  ["/workspace/settings/billing", (p) => p.locator("#workspace-content").getByText("Plan & billing").first()],
+  ["/workspace/settings/billing/invoices", (p) => p.locator("#saas-payments")],
+  ["/workspace/settings/usage", (p) => p.locator("#usage-seats")],
+  ["/workspace/settings/domains", (p) => p.locator("li[data-domain]").first()],
+  ["/workspace/settings/branding", (p) => p.locator("#workspace-content").getByText("Branding").first()],
+  ["/workspace/settings/payments", (p) => p.locator("#payment-account-status")],
+  ["/workspace/settings/integrations", (p) => p.locator("#integrations-list")],
+  ["/workspace/settings/automations", (p) => p.getByRole("heading", { name: "Automations" })],
+  ["/workspace/settings/import", (p) => p.getByRole("heading", { name: "Import data" })],
+  ["/workspace/settings/audit-log", (p) => p.getByRole("heading", { name: "Audit log", level: 1 })],
+  ["/workspace/settings/security", (p) => p.locator("#security-accounts")],
 ];
 
 const browser = await chromium.launch({ channel: "chrome", headless: true });
@@ -110,6 +119,9 @@ try {
 
   await step("sidebar: Dashboard, Analytics, Management, Company, Account — no Panels and no Platform section", async () => {
     await sidebar(page).getByRole("link", { name: "Dashboard", exact: true }).waitFor();
+    assert.equal(await sidebar(page).getByRole("link", { name: "Dashboard", exact: true }).count(), 1, "one Dashboard");
+    assert.equal(await sidebar(page).getByText("Command Center").count(), 0, "no Command Center item: the dashboard is the Command Center");
+    assert.equal(await sidebar(page).locator('a[href="/workspace/command-center"]').count(), 0);
     for (const key of ["analytics", "manage", "company", "account"]) await section(page, key).first().waitFor({ state: "attached" });
     assert.equal(await section(page, "platform").count(), 0, "tenant has no Platform section");
     assert.equal(await page.locator('a[href^="/platform"]').count(), 0, "no Platform link anywhere on the Workspace");
@@ -121,27 +133,32 @@ try {
   });
 
   await step("Company and Management open on demand and list their pages", async () => {
-    assert.equal(await section(page, "company").locator('a[href="/settings/billing"]').count(), 0, "Company starts closed");
+    assert.equal(await section(page, "company").locator('a[href="/workspace/settings/billing"]').count(), 0, "Company starts closed");
     await sidebar(page).getByRole("button", { name: "Show Company menu" }).click();
     for (const [path] of COMPANY_PAGES.slice(1)) await section(page, "company").locator(`a[href="${path}"]`).waitFor();
     await section(page, "company").locator('a[href="/workspace/users"]').waitFor();
     await sidebar(page).getByRole("button", { name: "Show Management menu" }).click();
-    for (const path of ["/workspace/command-center", "/workspace/activity-log", "/workspace/documents", "/workspace/crm/leads"]) await section(page, "manage").locator(`a[href="${path}"]`).waitFor();
+    await section(page, "manage").locator('a[href="/workspace/crm/leads"]').waitFor();
+    for (const gone of ["/workspace/command-center", "/workspace/activity-log", "/workspace/documents", "/workspace/settings/audit-log", "/workspace/account/documents"]) assert.equal(await section(page, "manage").locator(`a[href="${gone}"]`).count(), 0, `Management no longer lists ${gone}`);
+    assert.equal(await section(page, "manage").getByText(/audit|activity log|documents|command center/i).count(), 0, "no audit/activity/documents/command-center item in Management");
     assert.equal(await sidebar(page).locator('a[href^="/admin"]').count(), 0, "nothing points at the old admin panel");
     await sidebar(page).getByRole("button", { name: "Hide Management menu" }).click();
-    assert.equal(await section(page, "manage").locator('a[href="/workspace/command-center"]').count(), 0, "closes again");
+    assert.equal(await section(page, "manage").locator('a[href="/workspace/crm/leads"]').count(), 0, "closes again");
+    // Audit log lives under Company, Documents under Account.
+    await section(page, "company").locator('a[href="/workspace/settings/audit-log"]').waitFor();
+    await section(page, "account").locator('a[href="/workspace/account/documents"]').waitFor();
   });
 
   await step("every Management page listed in the sidebar opens, and its export API answers", async () => {
-    await page.goto(`${COMPANY_URL}/workspace/command-center`);
+    await page.goto(`${COMPANY_URL}/workspace/crm/leads`);
     const hrefs = await section(page, "manage").getByRole("link").evaluateAll((els) => els.map((e) => e.getAttribute("href")));
-    for (const must of ["/workspace/command-center", "/workspace/activity-log", "/workspace/crm/leads"]) assert.ok(hrefs.includes(must), must);
+    for (const must of ["/workspace/crm/leads"]) assert.ok(hrefs.includes(must), must);
     for (const href of hrefs) {
       const res = await page.goto(`${COMPANY_URL}${href}`);
       assert.equal(res?.status(), 200, href);
       assert.equal(pathOf(page), href, `${href} → ${pathOf(page)}`);
       await page.getByRole("heading", { level: 1 }).first().waitFor({ timeout: 30_000 });
-      if (href !== "/workspace/command-center") assert.equal(await fetchStatus(page, `${href.replace("/workspace/", "/api/workspace/")}/export`), 200, `export of ${href}`);
+      assert.equal(await fetchStatus(page, `${href.replace("/workspace/", "/api/workspace/")}/export`), 200, `export of ${href}`);
     }
     console.log(`      (${hrefs.length} management pages)`);
   });
@@ -152,6 +169,33 @@ try {
     await page.locator("#users-seats").getByText("seats").waitFor();
     assert.equal(await fetchStatus(page, "/api/workspace/users/export"), 200);
     assert.equal(await fetchStatus(page, "/api/admin/users/export"), 404, "the old API is gone");
+  });
+
+  await step("Documents (Account): opens at /workspace/account/documents and its export API answers", async () => {
+    const res = await page.goto(`${COMPANY_URL}/workspace/account/documents`);
+    assert.equal(res?.status(), 200);
+    assert.equal(pathOf(page), "/workspace/account/documents");
+    await page.getByRole("heading", { name: "Documents", level: 1 }).waitFor();
+    await section(page, "account").locator('a[href="/workspace/account/documents"]').waitFor();
+    assert.equal(await fetchStatus(page, "/api/workspace/documents/export"), 200);
+  });
+
+  await step("Audit log (Company): one page with a source switch — All, Workspace events, Panel activity — and each source's own filters", async () => {
+    await page.goto(`${COMPANY_URL}/workspace/settings/audit-log`);
+    await page.getByRole("heading", { name: "Audit log", level: 1 }).waitFor();
+    const tabs = await page.locator("#audit-sources a").evaluateAll((els) => els.map((e) => e.getAttribute("data-audit-source")));
+    assert.deepEqual(tabs, ["all", "workspace", "panels"]);
+    await page.locator('#audit-sources a[data-audit-source="workspace"]').click();
+    await page.waitForURL((u) => u.searchParams.get("source") === "workspace", { timeout: 30_000 });
+    await page.locator("#activity-count").waitFor();
+    await page.locator("#activity-type").waitFor(); // event type filter
+    await page.locator('#audit-sources a[data-audit-source="panels"]').click();
+    await page.waitForURL((u) => u.searchParams.get("source") === "panels", { timeout: 30_000 });
+    await page.getByRole("link", { name: "Export" }).waitFor(); // panel activity keeps its CSV export
+    await page.locator('#audit-sources a[data-audit-source="all"]').click();
+    await page.waitForURL((u) => u.searchParams.get("source") === "all", { timeout: 30_000 });
+    await page.getByText("workspace events and panel activity", { exact: false }).first().waitFor();
+    assert.equal(await fetchStatus(page, "/api/workspace/activity-log/export"), 200);
   });
 
   await step("one notifications page and one bell", async () => {
@@ -219,24 +263,24 @@ try {
   }
 
   await step("settings hub: one card per Company item, none for the Platform Panel", async () => {
-    await page.goto(`${COMPANY_URL}/settings`);
+    await page.goto(`${COMPANY_URL}/workspace/settings`);
     const keys = await page.locator("[data-settings-card]").evaluateAll((els) => els.map((e) => e.getAttribute("data-settings-card")));
-    for (const k of ["setup", "profile", "users", "billing", "invoices", "usage", "domains", "branding", "payments", "integrations", "automations", "import", "activity", "security"]) assert.ok(keys.includes(`company.${k}`), `card ${k}`);
+    for (const k of ["setup", "profile", "users", "billing", "invoices", "usage", "domains", "branding", "payments", "integrations", "automations", "import", "audit", "security"]) assert.ok(keys.includes(`company.${k}`), `card ${k}`);
     assert.ok(!keys.includes("platform.panel"), "no Platform Panel card");
     assert.equal(keys.length, 14);
   });
 
   await step("usage shows seats, AI tokens and storage; integrations lists three; invoices page has the payments card", async () => {
-    await page.goto(`${COMPANY_URL}/settings/usage`);
+    await page.goto(`${COMPANY_URL}/workspace/settings/usage`);
     for (const id of ["usage-seats", "usage-ai", "usage-storage"]) assert.match((await page.locator(`#${id}`).getAttribute("data-level")) ?? "", /^(ok|near|over)$/);
-    await page.goto(`${COMPANY_URL}/settings/integrations`);
+    await page.goto(`${COMPANY_URL}/workspace/settings/integrations`);
     assert.deepEqual(await page.locator("#integrations-list [data-integration]").evaluateAll((els) => els.map((e) => e.getAttribute("data-integration"))), ["razorpay", "webhooks", "domain"]);
-    await page.goto(`${COMPANY_URL}/settings/billing/invoices`);
+    await page.goto(`${COMPANY_URL}/workspace/settings/billing/invoices`);
     await page.locator("#saas-payments").getByText("Payments & refunds").waitFor();
   });
 
   await step("organization profile saves with the existing save action", async () => {
-    await page.goto(`${COMPANY_URL}/settings/profile`);
+    await page.goto(`${COMPANY_URL}/workspace/settings/profile`);
     const ready = await page.evaluate(() => Boolean(document.querySelector("#ob-industry")?.value && document.querySelector("#ob-size")?.value));
     if (!ready) return console.log("      (profile has no industry/size yet — save skipped)");
     await page.getByRole("button", { name: "Save profile" }).click();
@@ -244,18 +288,45 @@ try {
   });
 
   await step("security page: last sign-in, sessions, sign out everywhere", async () => {
-    await page.goto(`${COMPANY_URL}/settings/security`);
+    await page.goto(`${COMPANY_URL}/workspace/settings/security`);
     await page.locator("#security-last-signin").waitFor();
     assert.ok(Number(await page.locator("#security-sessions").getAttribute("data-count")) >= 1);
     await page.locator("#security-signout-all").waitFor();
     await page.locator('#workspace-content a[href="/workspace/change-password"]').waitFor();
   });
 
+  await step("old workspace-specific URLs redirect permanently (308) to their new home, query string kept", async () => {
+    const cases = [
+      ["/settings", "/workspace/settings"],
+      ["/settings/profile", "/workspace/settings/profile"],
+      ["/settings/billing/invoices", "/workspace/settings/billing/invoices"],
+      ["/settings/import", "/workspace/settings/import"],
+      ["/settings/activity", "/workspace/settings/audit-log?source=workspace"],
+      ["/onboarding", "/workspace/onboarding"],
+      ["/upgrade?module=fms", "/workspace/upgrade?module=fms"],
+      ["/workspace/command-center", "/workspace"],
+      ["/workspace/activity-log?module=pms", "/workspace/settings/audit-log?source=panels&module=pms"],
+      ["/workspace/documents", "/workspace/account/documents"],
+    ];
+    for (const [from, to] of cases) {
+      const res = await page.goto(`${COMPANY_URL}${from}`);
+      const hop = res?.request().redirectedFrom();
+      assert.ok(hop, `${from} did not redirect`);
+      assert.equal((await hop.response())?.status(), 308, `${from} is a permanent redirect`);
+      const landed = new URL(page.url());
+      const want = new URL(to, COMPANY_URL);
+      assert.equal(landed.pathname, want.pathname, `${from} → ${landed.pathname}`);
+      for (const [k, v] of want.searchParams) assert.equal(landed.searchParams.get(k), v, `${from} keeps ?${k}`);
+    }
+    // Not captured: the API and a panel's own settings page are not redirected to /workspace/settings.
+    assert.notEqual(await fetchStatus(page, "/api/workspace/users/export"), 308);
+  });
+
   await step("old admin links land in the Workspace", async () => {
     for (const [from, to] of [
       ["/admin", "/workspace"],
       ["/admin/users", "/workspace/users"],
-      ["/admin/activity-log", "/workspace/activity-log"],
+      ["/admin/activity-log", "/workspace/settings/audit-log"],
       ["/admin/crm/leads", "/workspace/crm/leads"],
       ["/admin/analytics/workspace", "/workspace/analytics/workspace"],
       ["/admin/notifications", "/workspace/notifications"],
@@ -283,7 +354,7 @@ try {
   });
 
   await step("a tenant company has no Platform Panel: no link, and /platform is a 404", async () => {
-    for (const path of ["/workspace", "/settings", "/workspace/command-center"]) {
+    for (const path of ["/workspace", "/workspace/settings", "/workspace/account/documents"]) {
       await page.goto(`${COMPANY_URL}${path}`);
       assert.equal(await page.locator('a[href^="/platform"]').count(), 0, `Platform link on ${path}`);
     }
@@ -292,24 +363,24 @@ try {
 
   await step("phone width: the mobile menu has the same sections and no page scrolls sideways", async () => {
     await page.setViewportSize({ width: 390, height: 844 });
-    for (const path of ["/workspace", "/settings", "/settings/profile", "/settings/usage", "/settings/integrations", "/settings/security", "/settings/billing/invoices", "/settings/billing", "/onboarding", "/upgrade?module=fms"]) await noHorizontalScroll(page, `${COMPANY_URL}${path}`);
-    await page.goto(`${COMPANY_URL}/settings/usage`);
+    for (const path of ["/workspace", "/workspace/settings", "/workspace/settings/profile", "/workspace/settings/usage", "/workspace/settings/integrations", "/workspace/settings/security", "/workspace/settings/billing/invoices", "/workspace/settings/billing", "/workspace/settings/audit-log", "/workspace/account/documents", "/workspace/onboarding", "/workspace/upgrade?module=fms"]) await noHorizontalScroll(page, `${COMPANY_URL}${path}`);
+    await page.goto(`${COMPANY_URL}/workspace/settings/usage`);
     await page.getByRole("button", { name: "Open navigation menu" }).click();
     const mobile = page.getByRole("dialog").locator('nav[aria-label="Workspace"]');
     await mobile.waitFor();
     for (const key of ["analytics", "manage", "company", "account"]) await mobile.locator(`[data-nav-section="${key}"]`).first().waitFor({ state: "attached" });
     assert.equal(await mobile.locator('[data-nav-section="panels"]').count(), 0, "the mobile menu has no Panels section either");
     assert.equal(await mobile.locator('a[href="/hrms"], a[href="/pms"], a[href="/lms"]').count(), 0, "no panel links in the mobile menu");
-    await mobile.locator('a[href="/settings/usage"]').waitFor(); // Company opens by itself on one of its pages
-    await mobile.locator('a[href="/settings/security"]').click();
-    await page.waitForURL((u) => u.pathname === "/settings/security", { timeout: 30_000 });
+    await mobile.locator('a[href="/workspace/settings/usage"]').waitFor(); // Company opens by itself on one of its pages
+    await mobile.locator('a[href="/workspace/settings/security"]').click();
+    await page.waitForURL((u) => u.pathname === "/workspace/settings/security", { timeout: 30_000 });
     await page.setViewportSize({ width: 1280, height: 800 });
   });
 
   await step("signed out: every page, old admin link and panel sends to the one sign-in", async () => {
     const anon = await browser.newContext();
     const ap = await anon.newPage();
-    for (const path of ["/settings", "/settings/profile", "/settings/usage", "/onboarding", "/workspace/users", "/workspace/command-center", "/workspace/crm/leads", "/admin", "/admin/users"]) {
+    for (const path of ["/workspace/settings", "/workspace/settings/profile", "/workspace/settings/audit-log", "/workspace/account/documents", "/workspace/onboarding", "/workspace/upgrade", "/settings", "/settings/profile", "/onboarding", "/upgrade", "/workspace/users", "/workspace/command-center", "/workspace/crm/leads", "/admin", "/admin/users"]) {
       await ap.goto(`${COMPANY_URL}${path}`);
       assert.equal(pathOf(ap), "/workspace/login", `${path} → ${pathOf(ap)}`);
     }
@@ -338,7 +409,7 @@ try {
   });
 
   await step("sign out everywhere: the Workspace and the panels are closed", async () => {
-    await page.goto(`${COMPANY_URL}/settings/security`);
+    await page.goto(`${COMPANY_URL}/workspace/settings/security`);
     await Promise.all([page.waitForURL((u) => u.pathname === "/workspace/login", { timeout: 60_000 }), page.locator("#security-signout-all").click()]);
     for (const path of ["/workspace", "/hrms", "/pms", "/lms", "/workspace/users"]) {
       await page.goto(`${COMPANY_URL}${path}`);
@@ -364,7 +435,7 @@ try {
       await op.getByRole("heading", { name: "Dashboard" }).waitFor();
     });
     await step("platform owner: settings hub shows the Platform Panel card next to the company cards", async () => {
-      await op.goto(`${BASE}/settings`);
+      await op.goto(`${BASE}/workspace/settings`);
       await op.locator('[data-settings-card="platform.panel"]').waitFor();
       await op.locator('[data-settings-card="company.billing"]').waitFor();
     });

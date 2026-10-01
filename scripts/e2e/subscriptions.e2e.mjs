@@ -1,6 +1,6 @@
 /**
  * Browser test for Payments & Razorpay, Subscriptions (Platform Panel) and a
- * company's /settings/billing, against a RUNNING server (production build
+ * company's /workspace/settings/billing, against a RUNNING server (production build
  * recommended). No real checkout: it never clicks Subscribe, and it never
  * saves Razorpay keys (it only checks validation of an obviously wrong key).
  *
@@ -138,7 +138,7 @@ try {
 
     await step("company billing page shows plan, status and a quote-priced summary", async () => {
       await signIn(cpage, COMPANY_URL, COMPANY_EMAIL, COMPANY_PASSWORD);
-      await cpage.goto(`${COMPANY_URL}/settings/billing`);
+      await cpage.goto(`${COMPANY_URL}/workspace/settings/billing`);
       await cpage.getByRole("heading", { name: "Current plan" }).waitFor();
       await cpage.locator("#billing-total").waitFor({ timeout: 20_000 });
       const total = (await cpage.locator("#billing-total").textContent()) ?? "";

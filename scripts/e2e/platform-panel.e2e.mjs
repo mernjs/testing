@@ -65,6 +65,12 @@ try {
     assert.equal(await nav.getByText("Soon", { exact: true }).count(), 0, "nothing is marked Soon");
   });
 
+  await step("the Platform Panel is SaaS-only: its one link back to a company surface is the plain Workspace link", async () => {
+    const back = await page.locator('aside a[href^="/workspace"], aside a[href^="/settings"], aside a[href^="/onboarding"]').evaluateAll((els) => els.map((e) => [e.getAttribute("href"), e.getAttribute("aria-label") ?? e.textContent?.trim()]));
+    assert.deepEqual(back, [["/workspace", "Workspace"]]);
+    assert.equal(await page.getByText("Staff Hub").count(), 0, "no Staff Hub link in the Platform Panel");
+  });
+
   await step("every sidebar page opens without an error", async () => {
     const nav = page.getByRole("navigation", { name: "Platform Panel" }).first();
     const hrefs = await nav.getByRole("link").evaluateAll((els) => els.map((e) => e.getAttribute("href")));

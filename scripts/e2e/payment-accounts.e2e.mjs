@@ -77,9 +77,9 @@ try {
   });
 
   await step("settings hub links to Payments & payouts", async () => {
-    await page.goto(`${BASE}/settings`);
+    await page.goto(`${BASE}/workspace/settings`);
     await page.getByRole("link", { name: /Payments & payouts/ }).click();
-    await page.waitForURL(/\/settings\/payments$/);
+    await page.waitForURL(/\/workspace\/settings\/payments$/);
     await status().waitFor();
   });
 
@@ -182,7 +182,7 @@ try {
   // Best-effort cleanup: never leave the fake keys connected.
   if (weConnected) {
     try {
-      await page.goto(`${BASE}/settings/payments`);
+      await page.goto(`${BASE}/workspace/settings/payments`);
       await page.locator("#pay-disconnect").click();
       await withAction(() => page.locator("#pay-disconnect-confirm").click());
       await status().getByText("Not connected").waitFor({ timeout: 10_000 });

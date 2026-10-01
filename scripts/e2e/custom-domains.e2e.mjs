@@ -74,9 +74,9 @@ try {
   });
 
   await step("settings hub links to Domains", async () => {
-    await page.goto(`${BASE}/settings`);
+    await page.goto(`${BASE}/workspace/settings`);
     await page.getByRole("link", { name: /Domains/ }).click();
-    await page.waitForURL(/\/settings\/domains$/);
+    await page.waitForURL(/\/workspace\/settings\/domains$/);
     await page.getByText("Domains", { exact: true }).first().waitFor();
   });
 

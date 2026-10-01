@@ -1,0 +1,173 @@
+/**
+ * Browser test for the simple registration flow: public sign-up -> e-mail
+ * confirmation -> the owner is signed in on the new company's host and lands in
+ * the Workspace, whose FIRST screen is the onboarding wizard (/workspace/onboarding)
+ * -> finish the wizard -> the dashboard. Against a RUNNING server (production
+ * build recommended) with EMAIL_PROVIDER=console and PLATFORM_ROOT_DOMAIN=localhost
+ * (company hosts are <slug>.localhost):
+ *
+ *   BASE_URL=http://localhost:3006 \
+ *   E2E_MONGODB_URI=mongodb://127.0.0.1:27099/<a "test" database the server uses> \
+ *   node scripts/e2e/registration.e2e.mjs
+ *
+ * Needs a LOCAL "test" database (E2E_MONGODB_URI is refused otherwise): the
+ * confirmation link is e-mailed by the server's console provider and only its
+ * hash is stored, so the test reads the pending sign-up from the database and
+ * swaps in a token it knows, exactly as scripts/e2e/console.e2e.mjs seeds its
+ * approval request. Creates one throwaway company (slug printed at the end) and
+ * sign-up mode must be "open" (Platform settings).
+ */
+import assert from "node:assert/strict";
+import { createHash, randomBytes } from "node:crypto";
+import { chromium } from "playwright";
+import { MongoClient } from "mongodb";
+
+const BASE = process.env.BASE_URL;
+const URI = process.env.E2E_MONGODB_URI;
+if (!BASE || !URI) {
+  console.error("Set BASE_URL (the platform site, where /signup lives) and E2E_MONGODB_URI (local test database).");
+  process.exit(2);
+}
+const dbName = URI.split("/").pop()?.split("?")[0] ?? "";
+if (!/^mongodb:\/\/(127\.0\.0\.1|localhost)[:/]/.test(URI) || !dbName.includes("test")) {
+  console.error('E2E_MONGODB_URI must be a local database with "test" in its name.');
+  process.exit(2);
+}
+
+let passed = 0;
+const failures = [];
+async function step(name, fn) {
+  try {
+    await fn();
+    passed++;
+    console.log(`  ✓ ${name}`);
+  } catch (err) {
+    failures.push(name);
+    console.log(`  ✗ ${name}\n      ${err instanceof Error ? err.message.split("\n")[0] : String(err)}`);
+  }
+}
+
+const stamp = Date.now().toString(36);
+const SLUG = `reg${stamp}`;
+const COMPANY = `Registration ${stamp}`;
+const EMAIL = `owner@${SLUG}.test`;
+const PASSWORD = "correct-horse-battery";
+const TOKEN = randomBytes(32).toString("hex");
+const pathOf = (page) => new URL(page.url()).pathname;
+
+const mongo = await new MongoClient(URI).connect();
+const browser = await chromium.launch({ channel: "chrome", headless: true });
+const pageErrors = [];
+
+try {
+  const ctx = await browser.newContext();
+  const page = await ctx.newPage();
+  page.on("pageerror", (e) => pageErrors.push(`${pathOf(page)}: ${e.message}`));
+
+  await step("the public sign-up form is one simple step: company, address, name, e-mail, password, terms", async () => {
+    await page.goto(`${BASE}/signup`);
+    await page.getByLabel("Company name").waitFor();
+    const names = await page.locator("form [name]").evaluateAll((els) => els.map((e) => e.getAttribute("name")).filter(Boolean).sort());
+    assert.deepEqual(names, ["acceptTerms", "companyName", "email", "name", "password", "slug"]);
+    assert.equal(await page.getByRole("button", { name: /next|continue|step/i }).count(), 0, "no multi-step wizard on the form");
+  });
+
+  await step("submitting it asks for e-mail confirmation and creates nothing yet", async () => {
+    await page.getByLabel("Company name").fill(COMPANY);
+    await page.getByLabel("Workspace address").fill(SLUG);
+    await page.getByLabel("Your name").fill("Rita Registrant");
+    await page.getByLabel("Work email").fill(EMAIL);
+    await page.locator('input[name="password"]').fill(PASSWORD);
+    await page.locator('input[name="acceptTerms"]').check();
+    await page.getByRole("button", { name: "Create workspace" }).click();
+    await page.getByText("Check your inbox").waitFor({ timeout: 30_000 });
+    assert.equal(await mongo.db().collection("companies").countDocuments({ slug: SLUG }), 0, "no company before confirmation");
+    const pending = await mongo.db().collection("pending_signups").findOne({ email: EMAIL, status: "pending" });
+    assert.ok(pending, "a pending sign-up exists");
+    // Only the hash of the e-mailed token is stored: swap in a token we know.
+    await mongo.db().collection("pending_signups").updateOne({ _id: pending._id }, { $set: { tokenHash: createHash("sha256").update(TOKEN).digest("hex") } });
+  });
+
+  await step("confirming signs the owner in on the new company's host and lands in the Workspace on the onboarding wizard", async () => {
+    await page.goto(`${BASE}/signup/verify?token=${TOKEN}`);
+    await page.getByRole("button", { name: "Create my workspace" }).click();
+    await page.waitForURL((u) => u.hostname.startsWith(`${SLUG}.`) && u.pathname === "/workspace/onboarding", { timeout: 90_000 });
+    await page.getByRole("heading", { name: `Set up ${COMPANY}` }).waitFor();
+    // It is the Workspace frame, not a standalone page.
+    await page.locator('aside nav[aria-label="Workspace"]').waitFor();
+    assert.equal(await page.getByText("My Operational Panels").count(), 0, "the first screen is onboarding, not the dashboard");
+    assert.equal(await page.locator("#setup-banner").count(), 0, "no reminder banner on the wizard itself");
+  });
+
+  await step("the first Workspace page redirects to onboarding while setup is open; a deep link is not intercepted and shows the setup banner", async () => {
+    const origin = new URL(page.url()).origin;
+    await page.goto(`${origin}/workspace`);
+    await page.waitForURL((u) => u.pathname === "/workspace/onboarding", { timeout: 30_000 });
+    await page.goto(`${origin}/workspace/settings/billing`);
+    assert.equal(pathOf(page), "/workspace/settings/billing", "deep links are not redirected");
+    await page.locator("#setup-banner").waitFor();
+    await Promise.all([page.waitForURL((u) => u.pathname === "/workspace/onboarding"), page.locator("#setup-banner").click()]);
+  });
+
+  await step("old /onboarding link still works", async () => {
+    const origin = new URL(page.url()).origin;
+    await page.goto(`${origin}/onboarding`);
+    assert.equal(pathOf(page), "/workspace/onboarding");
+  });
+
+  await step("finishing the wizard (profile, departments, team, branding, panels) lands on the dashboard", async () => {
+    await page.locator("#ob-industry").selectOption({ index: 1 });
+    await page.locator("#ob-size").selectOption({ index: 1 });
+    await page.getByRole("button", { name: "Save & continue" }).click();
+    await page.getByText("Departments & designations", { exact: true }).first().waitFor({ timeout: 30_000 });
+    await page.getByRole("button", { name: "Create & continue" }).click();
+    await page.getByText("Invite your team", { exact: true }).first().waitFor({ timeout: 30_000 });
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByText("Branding", { exact: true }).first().waitFor({ timeout: 30_000 });
+    await page.getByRole("button", { name: "Save & continue" }).click();
+    await page.getByRole("button", { name: "Finish setup" }).waitFor({ timeout: 30_000 });
+    await page.getByRole("button", { name: "Finish setup" }).click();
+    await page.getByText("You're all set").waitFor({ timeout: 30_000 });
+    await page.getByRole("link", { name: "Go to your workspace" }).click();
+    await page.waitForURL((u) => u.pathname === "/workspace", { timeout: 30_000 });
+    await page.getByText("My Operational Panels").waitFor();
+  });
+
+  await step("setup is recorded (completed), so /workspace now stays on the dashboard and the banner is gone", async () => {
+    const company = await mongo.db().collection("companies").findOne({ slug: SLUG });
+    assert.ok(company?.onboarding?.completedAt, "onboarding.completedAt is set");
+    assert.equal(company.onboarding.completedSteps.length, 5);
+    const origin = new URL(page.url()).origin;
+    await page.goto(`${origin}/workspace`);
+    assert.equal(pathOf(page), "/workspace");
+    await page.getByText("My Operational Panels").waitFor();
+    await page.goto(`${origin}/workspace/settings/billing`);
+    assert.equal(await page.locator("#setup-banner").count(), 0);
+    // Company setup stays reachable from the Company section to revisit.
+    await page.locator('aside nav[aria-label="Workspace"] a[href="/workspace/onboarding"]').first().waitFor({ state: "attached" });
+    assert.equal((await page.goto(`${origin}/workspace/onboarding`))?.status(), 200);
+    assert.equal(pathOf(page), "/workspace/onboarding");
+  });
+
+  await step("a returning owner signs in at /workspace/login and goes straight to the dashboard", async () => {
+    const c2 = await browser.newContext();
+    const p2 = await c2.newPage();
+    const origin = new URL(page.url()).origin;
+    await p2.goto(`${origin}/workspace/login`);
+    await p2.fill('input[name="email"]', EMAIL);
+    await p2.fill('input[name="password"]', PASSWORD);
+    await Promise.all([p2.waitForURL((u) => !u.pathname.endsWith("/login"), { timeout: 60_000 }), p2.press('input[name="password"]', "Enter")]);
+    assert.equal(pathOf(p2), "/workspace");
+    await c2.close();
+  });
+
+  await step("no page errors", async () => {
+    assert.deepEqual(pageErrors, []);
+  });
+  console.log(`\n(throwaway company: ${SLUG} in ${dbName})`);
+} finally {
+  await browser.close();
+  await mongo.close();
+}
+console.log(`\n${passed} passed, ${failures.length} failed`);
+if (failures.length) process.exit(1);
