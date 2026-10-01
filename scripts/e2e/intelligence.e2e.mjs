@@ -220,8 +220,12 @@ try {
       await p2.goto(`${COMPANY_URL}/intelligence`);
       await p2.getByRole("heading", { name: "Ask about your business" }).waitFor();
       // Their examples come from their own entities: nothing about revenue or invoices.
-      const sidebar = (await p2.locator("nav").allInnerTexts()).join(" ");
-      assert.ok(!/revenue|invoice|unpaid/i.test(sidebar), `finance examples leaked into the sidebar: ${sidebar.slice(0, 200)}`);
+      // Only the example list is checked: the conversation history above it holds earlier questions of this
+      // same user (on a re-run, "What is this month's revenue?" is a title there, which is fine).
+      const sidebarText = (await p2.locator("nav").allInnerTexts()).join(" ");
+      const examples = sidebarText.split(/what you can ask/i)[1] ?? "";
+      assert.ok(examples.trim().length > 20, "the example list is shown");
+      assert.ok(!/revenue|invoice|unpaid/i.test(examples), `finance examples leaked into the sidebar: ${examples.slice(0, 200)}`);
       const answer = await ask(p2, "What is this month's revenue?");
       assert.match(await answer.innerText(), /isn't available to you because of your access permissions/);
       assert.equal(await answer.locator('[data-block="kpi"]').count(), 0, "no number is shown");
