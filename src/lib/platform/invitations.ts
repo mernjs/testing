@@ -169,7 +169,11 @@ export async function acceptInvitation(token: string, input: { name: string; pas
   // HRMS employee record first (skipped for a pure Company Admin with no employee roles), then the linked login.
   const needsEmployee = !inv.roles.includes("super_admin");
   const [firstName, ...rest] = name.split(/\s+/);
-  const employee = needsEmployee
+  // Someone imported or added in HR beforehand already has an employee record: link it instead of creating a second one.
+  const existingEmployee = needsEmployee ? await db.collection<{ _id: string }>("hrms_employees").findOne({ workEmail: inv.email, deletedAt: null }, { projection: { _id: 1 } }) : null;
+  const employee = existingEmployee
+    ? existingEmployee
+    : needsEmployee
     ? await createEmployee(
         {
           firstName,
