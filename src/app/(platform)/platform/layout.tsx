@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { requirePlatformAccess } from "@/lib/platform/console/access";
+import { can, requirePlatformAccess } from "@/lib/platform/console/access";
+import { ROUTE_PERMISSIONS } from "@/lib/platform/console/permissions";
 import { countAwaitingApproval } from "@/lib/platform/signup";
 import PlatformSidebarShell from "@/components/platform/panel/PlatformSidebarShell";
 import PlatformTopbar from "@/components/platform/panel/PlatformTopbar";
@@ -18,7 +19,10 @@ export const metadata: Metadata = { title: { default: "Platform Panel", template
  */
 export default async function PlatformPanelLayout({ children }: { children: React.ReactNode }) {
   const user = await requirePlatformAccess();
-  const flags: PlatformNavFlags = { pendingApprovals: await countAwaitingApproval() };
+  const flags: PlatformNavFlags = {
+    pendingApprovals: can(user, "signups.read") ? await countAwaitingApproval() : 0,
+    hidden: Object.entries(ROUTE_PERMISSIONS).flatMap(([href, perm]) => (perm && !can(user, perm) ? [href] : [])),
+  };
 
   return (
     <TooltipProvider delay={200}>

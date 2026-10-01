@@ -28,6 +28,8 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip
 /** Live counts shown as badges — computed on the server. */
 export interface PlatformNavFlags {
   pendingApprovals: number;
+  /** Routes the signed-in user has no permission to view — left out of the menu. */
+  hidden?: string[];
 }
 
 type Icon = React.ComponentType<{ className?: string }>;
@@ -37,42 +39,42 @@ type Icon = React.ComponentType<{ className?: string }>;
  * the panel's scope but not built yet — they render greyed out (no dead
  * links), and become links as each one ships.
  */
-const SECTIONS: { label: string; items: { href: string; label: string; icon: Icon; exact?: boolean; planned?: boolean; badge?: keyof PlatformNavFlags }[] }[] = [
+const SECTIONS: { label: string; items: { href: string; label: string; icon: Icon; exact?: boolean; planned?: boolean; badge?: "pendingApprovals" }[] }[] = [
   { label: "", items: [{ href: "/platform", label: "Dashboard", icon: LayoutDashboard, exact: true }] },
   {
     label: "Tenants",
     items: [
       { href: "/platform/companies", label: "Companies", icon: Building2 },
       { href: "/platform/signups", label: "Sign-ups & approvals", icon: UserPlus, badge: "pendingApprovals" },
-      { href: "/platform/domains", label: "Domains & SSL", icon: Globe, planned: true },
+      { href: "/platform/domains", label: "Domains & SSL", icon: Globe },
     ],
   },
   {
     label: "Billing",
     items: [
-      { href: "/platform/plans", label: "Plans & pricing", icon: Package, planned: true },
-      { href: "/platform/subscriptions", label: "Subscriptions", icon: Repeat, planned: true },
-      { href: "/platform/invoices", label: "SaaS invoices", icon: FileText, planned: true },
-      { href: "/platform/coupons", label: "Coupons & discounts", icon: TicketPercent, planned: true },
-      { href: "/platform/add-ons", label: "Add-ons", icon: Puzzle, planned: true },
-      { href: "/platform/payments", label: "Payments & Razorpay", icon: CreditCard, planned: true },
+      { href: "/platform/plans", label: "Plans & pricing", icon: Package },
+      { href: "/platform/subscriptions", label: "Subscriptions", icon: Repeat },
+      { href: "/platform/invoices", label: "SaaS invoices", icon: FileText },
+      { href: "/platform/coupons", label: "Coupons & discounts", icon: TicketPercent },
+      { href: "/platform/addons", label: "Add-ons", icon: Puzzle },
+      { href: "/platform/payments", label: "Payments & Razorpay", icon: CreditCard },
       { href: "/platform/settings/billing", label: "Tax & invoicing", icon: Receipt },
     ],
   },
   {
     label: "Analytics",
     items: [
-      { href: "/platform/revenue", label: "Revenue & subscriptions", icon: LineChart, planned: true },
-      { href: "/platform/usage", label: "Usage & limits", icon: Gauge, planned: true },
+      { href: "/platform/revenue", label: "Revenue & subscriptions", icon: LineChart },
+      { href: "/platform/usage", label: "Usage & limits", icon: Gauge },
     ],
   },
   {
     label: "Administration",
     items: [
-      { href: "/platform/users", label: "Platform users & roles", icon: ShieldCheck, planned: true },
-      { href: "/platform/integrations", label: "Integrations", icon: Plug, planned: true },
-      { href: "/platform/audit", label: "Audit log", icon: ScrollText, planned: true },
-      { href: "/platform/settings", label: "Platform settings", icon: Settings2, exact: true, planned: true },
+      { href: "/platform/users", label: "Platform users & roles", icon: ShieldCheck },
+      { href: "/platform/integrations", label: "Integrations", icon: Plug },
+      { href: "/platform/audit", label: "Audit log", icon: ScrollText },
+      { href: "/platform/settings", label: "Platform settings", icon: Settings2, exact: true },
     ],
   },
 ];
@@ -140,7 +142,9 @@ function NavItem({
 export default function PlatformSidebar({ flags, onNavigate, collapsed = false }: { flags: PlatformNavFlags; onNavigate?: () => void; collapsed?: boolean }) {
   return (
     <nav className="flex h-full flex-col gap-1 p-3" aria-label="Platform Panel">
-      {SECTIONS.map((section) => (
+      {SECTIONS.map((section) => ({ ...section, items: section.items.filter((item) => !flags.hidden?.includes(item.href)) }))
+        .filter((section) => section.items.length > 0)
+        .map((section) => (
         <div key={section.label || "top"} className="flex flex-col gap-1">
           {section.label &&
             (collapsed ? (

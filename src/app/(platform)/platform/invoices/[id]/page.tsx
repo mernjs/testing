@@ -7,7 +7,7 @@ import { CardHeader, CardTitle, CardDescription, CardContent } from "@/component
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import GlassCard from "@/components/lms/GlassCard";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { getCompany } from "@/lib/platform/tenancy/companies";
 import { formatInvoiceDate, getSaasInvoice, listCreditNotes, type SaasInvoiceParty } from "@/lib/platform/billing/invoices";
 import { gstPercentLabel } from "@/lib/platform/billing/gst";
@@ -46,7 +46,7 @@ function PartyCard({ title, party }: { title: string; party: SaasInvoiceParty })
 }
 
 export default async function PlatformInvoicePage({ params }: { params: Promise<{ id: string }> }) {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("invoices.read");
   const inv = await getSaasInvoice((await params).id);
   if (!inv?.number) notFound();
   const isCredit = inv.kind === "credit_note";

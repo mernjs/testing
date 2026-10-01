@@ -7,7 +7,7 @@ import GlassCard from "@/components/lms/GlassCard";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { getAddon, listAddonHolders } from "@/lib/platform/billing/addons";
 import { listPlans } from "@/lib/platform/billing/plans";
 import { getBillingSettings } from "@/lib/platform/billing/settings";
@@ -19,7 +19,7 @@ import { setAddonActiveAction } from "../actions";
 export const metadata: Metadata = { title: "Add-on" };
 
 export default async function AddonDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("addons.read");
   const addon = await getAddon((await params).id);
   if (!addon) notFound();
   const [plans, settings, holders] = await Promise.all([listPlans(), getBillingSettings(), listAddonHolders(addon._id)]);

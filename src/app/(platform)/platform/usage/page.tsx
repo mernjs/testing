@@ -3,7 +3,7 @@ import { AlertOctagon, AlertTriangle, Building2, Gauge } from "lucide-react";
 import KpiCard from "@/components/lms/KpiCard";
 import KpiGrid from "@/components/lms/KpiGrid";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { listCompanyUsage, NEAR_LIMIT_RATIO } from "@/lib/platform/billing/usage-report";
 import { usagePeriod } from "@/lib/platform/billing/usage";
 import UsageTable from "./UsageTable";
@@ -11,7 +11,7 @@ import UsageTable from "./UsageTable";
 export const metadata: Metadata = { title: "Usage & limits" };
 
 export default async function PlatformUsagePage() {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("usage.read");
   const period = usagePeriod();
   const rows = await listCompanyUsage(period);
   const over = rows.filter((r) => r.level === "over").length;

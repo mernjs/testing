@@ -7,7 +7,7 @@ import GlassCard from "@/components/lms/GlassCard";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatDateTime } from "@/lib/utils";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { getCoupon, listCouponRedemptions } from "@/lib/platform/billing/coupons";
 import { listPlans } from "@/lib/platform/billing/plans";
 import { getBillingSettings } from "@/lib/platform/billing/settings";
@@ -20,7 +20,7 @@ import { setCouponActiveAction } from "../actions";
 export const metadata: Metadata = { title: "Coupon" };
 
 export default async function CouponDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("coupons.read");
   const coupon = await getCoupon((await params).id);
   if (!coupon) notFound();
   const [plans, settings, redemptions] = await Promise.all([listPlans(), getBillingSettings(), listCouponRedemptions(coupon._id)]);

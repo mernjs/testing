@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
 import { buttonVariants } from "@/components/ui/button";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { listCoupons } from "@/lib/platform/billing/coupons";
 import { listPlans } from "@/lib/platform/billing/plans";
 import { getBillingSettings } from "@/lib/platform/billing/settings";
@@ -13,7 +13,7 @@ import CouponsGrid, { type CouponRow } from "./CouponsGrid";
 export const metadata: Metadata = { title: "Coupons & discounts" };
 
 export default async function PlatformCouponsPage() {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("coupons.read");
   const [coupons, plans, settings] = await Promise.all([listCoupons(), listPlans(), getBillingSettings()]);
   const planName = new Map(plans.map((p) => [p._id, p.name]));
   const rows: CouponRow[] = coupons.map((c) => ({

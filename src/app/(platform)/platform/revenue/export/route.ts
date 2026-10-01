@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { getRevenueDashboard, listCompanyRevenue, type MonthRow } from "@/lib/platform/billing/metrics";
 import { toCsv } from "@/lib/csv";
 
@@ -23,7 +23,7 @@ function csvResponse(csv: string, filename: string) {
 }
 
 export async function GET(req: NextRequest) {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("revenue.read");
   const sp = req.nextUrl.searchParams;
 
   if (sp.get("kind") === "companies") {

@@ -1,13 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { saveCoupon, setCouponActive, type CouponInput, type CouponSaveResult } from "@/lib/platform/billing/coupons";
 
 const nullableNumber = (v: unknown) => (v === null || v === undefined || v === "" ? null : Number(v));
 
 export async function saveCouponAction(id: string | null, input: CouponInput): Promise<CouponSaveResult> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("coupons.manage");
   const res = await saveCoupon(
     id ? String(id) : null,
     {
@@ -34,7 +34,7 @@ export async function saveCouponAction(id: string | null, input: CouponInput): P
 }
 
 export async function setCouponActiveAction(id: string, active: boolean): Promise<{ ok: boolean }> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("coupons.manage");
   const ok = await setCouponActive(String(id), Boolean(active), user.id);
   if (ok) revalidatePath("/platform/coupons", "layout");
   return { ok };

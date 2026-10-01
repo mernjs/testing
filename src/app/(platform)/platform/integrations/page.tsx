@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { getIntegrationsView } from "@/lib/platform/integrations";
 import IntegrationsForm from "./IntegrationsForm";
 
 export const metadata: Metadata = { title: "Integrations" };
 
 export default async function PlatformIntegrationsPage() {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("integrations.read");
   const view = await getIntegrationsView();
   return (
     <div className="space-y-6 p-1">

@@ -3,7 +3,7 @@ import { CircleAlert, FileDown, IndianRupee, Landmark, ReceiptText, Undo2 } from
 import KpiCard from "@/components/lms/KpiCard";
 import KpiGrid from "@/components/lms/KpiGrid";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { formatInvoiceDate, listInvoiceFinancialYears, listInvoicedCompanies, listSaasInvoices, type SaasInvoiceRow } from "@/lib/platform/billing/invoices";
 import { formatMoney } from "@/lib/platform/billing/types";
 import InvoicesFilterBar from "./InvoicesFilterBar";
@@ -36,7 +36,7 @@ function toRow(inv: SaasInvoiceRow): PanelInvoiceRow {
 }
 
 export default async function PlatformInvoicesPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("invoices.read");
   const sp = await searchParams;
   const { values, filter, active } = parseInvoiceFilters(sp);
   const page = Math.max(1, Number(sp.page) || 1);

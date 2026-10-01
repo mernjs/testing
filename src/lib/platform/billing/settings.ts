@@ -41,7 +41,7 @@ export interface PlatformBillingSettings {
     pricesIncludeTax: boolean;
   };
   invoice: {
-    /** Invoice number prefix, e.g. "SAAS" → SAAS/2026-27/000001. */
+    /** Invoice number prefix, e.g. "SAAS" → SAAS/26-27/00001. */
     prefix: string;
     footerNote: string;
     terms: string;
@@ -114,7 +114,7 @@ export async function saveBillingSettings(input: Omit<PlatformBillingSettings, "
   const rate = Number(input.tax.gstRatePercent);
   if (!Number.isFinite(rate) || rate < 0 || rate > 40) errors["tax.gstRatePercent"] = "Enter a GST rate between 0 and 40%.";
   if (!/^\d{4,8}$/.test(input.tax.sacCode.trim())) errors["tax.sacCode"] = "Enter a numeric SAC code.";
-  if (!/^[A-Z0-9-]{1,12}$/.test(input.invoice.prefix.trim().toUpperCase())) errors["invoice.prefix"] = "Use up to 12 letters, digits or hyphens.";
+  if (!/^[A-Z0-9-]{1,4}$/.test(input.invoice.prefix.trim().toUpperCase())) errors["invoice.prefix"] = "Use up to 4 letters, digits or hyphens — GST limits an invoice number to 16 characters.";
   const trial = Number(input.billing.defaultTrialDays);
   if (!Number.isInteger(trial) || trial < 0 || trial > 365) errors["billing.defaultTrialDays"] = "Enter 0–365 days.";
   const grace = Number(input.billing.graceDays);

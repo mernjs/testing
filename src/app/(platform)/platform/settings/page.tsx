@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { getPlatformSettings, getSignupMode } from "@/lib/platform/settings";
 import { RESERVED_SLUGS } from "@/lib/platform/tenancy/slug";
 import SignupModeForm from "./SignupModeForm";
@@ -11,7 +11,7 @@ import PlatformSettingsForm from "./PlatformSettingsForm";
 export const metadata: Metadata = { title: "Platform settings" };
 
 export default async function PlatformSettingsPage() {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("settings.read");
   const [mode, s] = await Promise.all([getSignupMode(), getPlatformSettings()]);
   const initial = {
     platformName: s.platformName,

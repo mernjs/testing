@@ -1,13 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { saveAddon, setAddonActive, setCompanyAddon, type AddonInput, type AddonSaveResult, type CompanyAddonResult } from "@/lib/platform/billing/addons";
 
 const nullableNumber = (v: unknown) => (v === null || v === undefined || v === "" ? null : Number(v));
 
 export async function saveAddonAction(id: string | null, input: AddonInput): Promise<AddonSaveResult> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("addons.manage");
   const res = await saveAddon(
     id ? String(id) : null,
     {
@@ -31,7 +31,7 @@ export async function saveAddonAction(id: string | null, input: AddonInput): Pro
 }
 
 export async function setAddonActiveAction(id: string, active: boolean): Promise<{ ok: boolean }> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("addons.manage");
   const ok = await setAddonActive(String(id), Boolean(active), user.id);
   if (ok) revalidatePath("/platform/addons", "layout");
   return { ok };
@@ -39,7 +39,7 @@ export async function setAddonActiveAction(id: string, active: boolean): Promise
 
 /** Add, change or remove (quantity 0) an add-on for one company, from its detail page. */
 export async function setCompanyAddonAction(companyId: string, addonId: string, quantity: number, complimentary: boolean): Promise<CompanyAddonResult> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("addons.manage");
   const res = await setCompanyAddon(String(companyId), String(addonId), Number(quantity), { complimentary: Boolean(complimentary), actorId: user.id });
   if (res.ok) {
     revalidatePath(`/platform/companies/${companyId}`);

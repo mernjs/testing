@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { deletePlan, movePlan, savePlan, setDefaultPlan, setPlanActive, validatePlanInput, type PlanMutationResult } from "@/lib/platform/billing/plans";
 import { parsePlanForm, type PlanFormErrors, type PlanFormValues } from "./planFormValues";
 
@@ -10,7 +10,7 @@ export type SavePlanActionResult = { ok: true; id: string; message: string } | {
 const done = () => revalidatePath("/platform", "layout");
 
 export async function savePlanAction(mode: "create" | "update", values: PlanFormValues): Promise<SavePlanActionResult> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("plans.manage");
   if (mode !== "create" && mode !== "update") return { ok: false, error: "Unknown action." };
   if (!values || typeof values !== "object") return { ok: false, error: "Nothing to save." };
   const { input, errors } = parsePlanForm(values);
@@ -31,21 +31,21 @@ export async function savePlanAction(mode: "create" | "update", values: PlanForm
 }
 
 export async function setPlanActiveAction(id: string, active: boolean, confirmCompanies?: number): Promise<PlanMutationResult> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("plans.manage");
   const res = await setPlanActive(String(id), active === true, user.id, { confirmCompanies: typeof confirmCompanies === "number" ? confirmCompanies : undefined });
   if (res.ok) done();
   return res;
 }
 
 export async function setDefaultPlanAction(id: string): Promise<PlanMutationResult> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("plans.manage");
   const res = await setDefaultPlan(String(id), user.id);
   if (res.ok) done();
   return res;
 }
 
 export async function movePlanAction(id: string, direction: "up" | "down"): Promise<PlanMutationResult> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("plans.manage");
   if (direction !== "up" && direction !== "down") return { ok: false, error: "Unknown direction." };
   const res = await movePlan(String(id), direction, user.id);
   if (res.ok) done();
@@ -53,7 +53,7 @@ export async function movePlanAction(id: string, direction: "up" | "down"): Prom
 }
 
 export async function deletePlanAction(id: string): Promise<PlanMutationResult> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("plans.manage");
   const res = await deletePlan(String(id), user.id);
   if (res.ok) done();
   return res;

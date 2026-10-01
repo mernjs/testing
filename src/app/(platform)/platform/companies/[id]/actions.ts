@@ -28,7 +28,7 @@ export async function setCompanyStatusAction(companyId: string, status: string):
 }
 
 export async function extendTrialAction(companyId: string, days: number): Promise<{ ok: true; trialEndsAt: string } | { ok: false; error: string }> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("companies.manage");
   const res = await extendTrial(String(companyId), Number(days), user.id);
   if (!res.ok) return res;
   revalidatePath("/platform", "layout");

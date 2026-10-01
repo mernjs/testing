@@ -1,14 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { SIGNUP_MODES, savePlatformSettings, setSignupMode, type PlatformGeneralInput, type PlatformSettingsResult, type SignupMode } from "@/lib/platform/settings";
 
 export type ActionResult = { ok: true; message: string } | { ok: false; error: string };
 
 /** Sign-up mode (moved here from Sign-ups & approvals). Audited in the lib. */
 export async function setSignupModeAction(mode: string): Promise<ActionResult> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("settings.manage");
   if (!SIGNUP_MODES.includes(mode as SignupMode)) return { ok: false, error: "Unknown sign-up mode." };
   await setSignupMode(mode as SignupMode, user.id);
   revalidatePath("/platform", "layout");
@@ -16,7 +16,7 @@ export async function setSignupModeAction(mode: string): Promise<ActionResult> {
 }
 
 export async function savePlatformSettingsAction(input: PlatformGeneralInput): Promise<PlatformSettingsResult> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("settings.manage");
   const str = (v: unknown) => String(v ?? "");
   const res = await savePlatformSettings(
     {

@@ -6,7 +6,7 @@ import KpiGrid from "@/components/lms/KpiGrid";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { getRevenueDashboard, monthKeyOf, AT_RISK_TRIAL_DAYS, RANGE_PRESETS, type AtRiskRow, type MixRow } from "@/lib/platform/billing/metrics";
 import { formatMoney } from "@/lib/platform/billing/types";
 import { cn } from "@/lib/utils";
@@ -59,7 +59,7 @@ function MixList({ rows, testId, money }: { rows: MixRow[]; testId: string; mone
 }
 
 export default async function PlatformRevenuePage({ searchParams }: { searchParams: SearchParams }) {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("revenue.read");
   const sp = await searchParams;
   const d = await getRevenueDashboard({ range: sp.range, from: sp.from, to: sp.to });
   const money = (v: number) => formatMoney(v, d.currency);

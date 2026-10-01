@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Plus } from "lucide-react";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
 import { buttonVariants } from "@/components/ui/button";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { countAddonHolders, listAddons } from "@/lib/platform/billing/addons";
 import { listPlans } from "@/lib/platform/billing/plans";
 import AddonsGrid, { type AddonRow } from "./AddonsGrid";
@@ -11,7 +11,7 @@ import AddonsGrid, { type AddonRow } from "./AddonsGrid";
 export const metadata: Metadata = { title: "Add-ons" };
 
 export default async function PlatformAddonsPage() {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("addons.read");
   const [addons, plans, holders] = await Promise.all([listAddons(), listPlans(), countAddonHolders()]);
   const planName = new Map(plans.map((p) => [p._id, p.name]));
   const rows: AddonRow[] = addons.map((a) => ({

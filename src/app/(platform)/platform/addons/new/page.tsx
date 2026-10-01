@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { listPlans } from "@/lib/platform/billing/plans";
 import { getBillingSettings } from "@/lib/platform/billing/settings";
 import { MODULES } from "@/lib/platform/onboarding/catalog";
@@ -9,7 +9,7 @@ import AddonForm from "../AddonForm";
 export const metadata: Metadata = { title: "New add-on" };
 
 export default async function NewAddonPage() {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("addons.read");
   const [plans, settings] = await Promise.all([listPlans(), getBillingSettings()]);
   return (
     <div className="space-y-6 p-1">

@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { saveIntegrations, sendIntegrationsTestEmail, testDomainProvider, type IntegrationsInput, type IntegrationsResult, type TestResult } from "@/lib/platform/integrations";
 
 export async function saveIntegrationsAction(input: IntegrationsInput): Promise<IntegrationsResult> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("integrations.manage");
   const str = (v: unknown) => String(v ?? "");
   const res = await saveIntegrations(
     {
@@ -27,12 +27,12 @@ export async function saveIntegrationsAction(input: IntegrationsInput): Promise<
 
 /** Sends a test email to the signed-in admin (never to an arbitrary address). */
 export async function sendTestEmailAction(): Promise<TestResult> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("integrations.manage");
   return sendIntegrationsTestEmail(user.email, user.id);
 }
 
 /** Read-only check of the Vercel token + project. */
 export async function testDomainProviderAction(): Promise<TestResult> {
-  const user = await requirePlatformAdmin();
+  const user = await requirePlatformPermission("integrations.manage");
   return testDomainProvider(user.id);
 }

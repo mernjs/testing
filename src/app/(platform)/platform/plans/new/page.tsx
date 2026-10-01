@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { getBillingSettings } from "@/lib/platform/billing/settings";
 import PlanForm from "../PlanForm";
 import { emptyPlanForm } from "../planFormValues";
@@ -8,7 +8,7 @@ import { emptyPlanForm } from "../planFormValues";
 export const metadata: Metadata = { title: "New plan" };
 
 export default async function NewPlanPage() {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("plans.read");
   const { billing } = await getBillingSettings();
   return (
     <div className="space-y-6 p-1">

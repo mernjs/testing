@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 import GlassCard from "@/components/lms/GlassCard";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
 import { cn } from "@/lib/utils";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { countCompaniesByPlan, listPlans } from "@/lib/platform/billing/plans";
 import { getBillingSettings } from "@/lib/platform/billing/settings";
 import { currentPriceVersion, planIntervals, planPrice } from "@/lib/platform/billing/pricing";
@@ -38,7 +38,7 @@ function panels(plan: Plan): string {
 }
 
 export default async function PlansPage() {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("plans.read");
   const [plans, counts, settings] = await Promise.all([listPlans(), countCompaniesByPlan(), getBillingSettings()]);
   const defaultTrial = settings.billing.defaultTrialDays;
 

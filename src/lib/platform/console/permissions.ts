@@ -108,7 +108,7 @@ export const ROUTE_PERMISSIONS: Record<string, PlatformPermission | null> = {
   "/platform/subscriptions": "subscriptions.read",
   "/platform/invoices": "invoices.read",
   "/platform/coupons": "coupons.read",
-  "/platform/add-ons": "addons.read",
+  "/platform/addons": "addons.read",
   "/platform/payments": "payments.read",
   "/platform/settings/billing": "tax.read",
   "/platform/revenue": "revenue.read",

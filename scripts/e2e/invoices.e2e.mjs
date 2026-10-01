@@ -248,7 +248,7 @@ try {
       await cpage.getByRole("heading", { name: "Invoices" }).or(cpage.getByText("Invoices", { exact: true })).first().waitFor();
       await cpage.locator(`[data-invoice-number="${paidInv.number}"]`).waitFor();
       assert.equal(await cpage.locator(`[data-invoice-number="${foreignInv.number}"]`).count(), 0, "no other company's invoice listed");
-      assert.ok((await cpage.locator("[data-invoice-number*='-CN/']").count()) >= 2, "credit notes listed");
+      assert.ok((await cpage.locator("[data-invoice-number^='CN/']").count()) >= 2, "credit notes listed");
     });
     await step("company downloads its own PDF", async () => {
       const res = await cpage.request.get(`${COMPANY_URL}/api/platform/billing/invoices/${paidInv._id}/pdf?download=1`);

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { listPlans } from "@/lib/platform/billing/plans";
 import { getBillingSettings } from "@/lib/platform/billing/settings";
 import CouponForm from "../CouponForm";
@@ -8,7 +8,7 @@ import CouponForm from "../CouponForm";
 export const metadata: Metadata = { title: "New coupon" };
 
 export default async function NewCouponPage() {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("coupons.read");
   const [plans, settings] = await Promise.all([listPlans(), getBillingSettings()]);
   return (
     <div className="space-y-6 p-1">

@@ -159,12 +159,12 @@ async function main() {
 
   // ── Numbering + idempotency ──
   const r1 = await issueSaasInvoice({ companyId: intra, quote: q, period, paymentRef: "pay_1", paidAt: now, expectedTotal: expected });
-  eq(r1?.number, `PLT/${fy}/000001`, "prefix from settings, FY, 6-digit sequence");
+  eq(r1?.number, `PLT/${fy.slice(2)}/00001`, "prefix from settings, short FY, 5-digit sequence (≤16 chars)");
   eq(r1?.total, expected, "total = quote taxable + GST");
   eq(await issueSaasInvoice({ companyId: intra, quote: q, period, paymentRef: "pay_1", paidAt: now }), r1, "same paymentRef → same invoice");
   const racers = await Promise.all(Array.from({ length: 5 }, () => issueSaasInvoice({ companyId: inter, quote: q, period, paymentRef: "pay_race", paidAt: now })));
   eq(new Set(racers.map((r) => r?.number)).size, 1, "concurrent duplicates → one invoice");
-  eq(racers[0]?.number, `PLT/${fy}/000002`, "no number burnt by the race");
+  eq(racers[0]?.number, `PLT/${fy.slice(2)}/00002`, "no number burnt by the race");
   const parallel = await Promise.all(Array.from({ length: 6 }, (_, i) => issueSaasInvoice({ companyId: intra, lines: [{ kind: "plan", refId: "growth", label: "Growth", amount: 99_900 + i }], paymentRef: `pay_p${i}`, paidAt: now })));
   eq(parallel.map((r) => Number(r!.number.split("/")[2])).sort((a, b) => a - b), [3, 4, 5, 6, 7, 8], "concurrent distinct payments → gap-free sequence");
   eq(await db.collection("saas_invoices").countDocuments({ paymentRef: "pay_race" }), 1, "one document for the raced payment");
@@ -175,9 +175,9 @@ async function main() {
 
   // ── Numbering across FY ──
   const lastFy = await issueSaasInvoice({ companyId: intra, lines: [{ kind: "plan", refId: "growth", label: "Growth", amount: 1000 }], paymentRef: "pay_old", paidAt: new Date("2026-03-31T18:00:00Z") });
-  eq(lastFy?.number, "PLT/2025-26/000001", "previous FY has its own sequence");
+  eq(lastFy?.number, "PLT/25-26/00001", "previous FY has its own sequence");
   const nextFy = await issueSaasInvoice({ companyId: intra, lines: [{ kind: "plan", refId: "growth", label: "Growth", amount: 1000 }], paymentRef: "pay_new", paidAt: new Date("2027-04-01T00:00:00+05:30") });
-  eq(nextFy?.number, "PLT/2027-28/000001", "next FY restarts at 1");
+  eq(nextFy?.number, "PLT/27-28/00001", "next FY restarts at 1");
 
   // ── Stored invoice: tax split, lines, snapshots ──
   const i1 = (await getSaasInvoice(r1!.id))!;
@@ -210,7 +210,7 @@ async function main() {
   const s2 = await getBillingSettings();
   await saveBillingSettings({ ...s2, tax: { ...s2.tax, pricesIncludeTax: true }, invoice: { ...s2.invoice, prefix: "NEW" } }, "test");
   const incl = await issueSaasInvoice({ companyId: intra, lines: [{ kind: "plan", refId: "growth", label: "Growth", amount: 118_000 }], paymentRef: "pay_incl", paidAt: now });
-  eq(incl?.number, `NEW/${fy}/000010`, "new prefix, same FY counter");
+  eq(incl?.number, `NEW/${fy.slice(2)}/00010`, "new prefix, same FY counter");
   const iIncl = (await getSaasInvoice(incl!.id))!;
   eq([iIncl.total, iIncl.taxable, iIncl.cgst, iIncl.sgst], [118_000, 100_000, 9_000, 9_000], "prices-include-tax back-calculates");
   eq((await getSaasInvoice(r1!.id))!.seller.legalName, "Platform Seller Pvt Ltd", "issued invoice keeps its snapshot");
@@ -231,7 +231,7 @@ async function main() {
   // ── Credit notes ──
   const cnA = await issueSaasCreditNote({ invoiceId: r1!.id, amount: 50_000, reason: "Partial refund", refundRef: "rfnd_1", actorId: "system" });
   assert.ok(cnA.ok);
-  eq(cnA.creditNote.number, `NEW-CN/${fy}/000001`, "credit notes have their own series");
+  eq(cnA.creditNote.number, `CN/${fy.slice(2)}/00001`, "credit notes have their own series");
   eq((await issueSaasCreditNote({ invoiceId: r1!.id, amount: 50_000, reason: "Partial refund", refundRef: "rfnd_1", actorId: "system" })), cnA, "same refundRef → same credit note");
   const over = await issueSaasCreditNote({ invoiceId: r1!.id, amount: i1.total, reason: "too much", actorId: "admin" });
   eq(over.ok, false, "can't credit more than what's left");

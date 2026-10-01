@@ -5,7 +5,7 @@ import GlassCard from "@/components/lms/GlassCard";
 import { Badge } from "@/components/ui/badge";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
 import { formatDateTime } from "@/lib/utils";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { requestOrigin } from "@/lib/platform/request";
 import { getRazorpayConfigView } from "@/lib/platform/billing/razorpay-config";
 import { listWebhookEvents } from "@/lib/platform/billing/subscriptions";
@@ -24,7 +24,7 @@ const STATUS_STYLE: Record<string, string> = {
 };
 
 export default async function PlatformPaymentsPage() {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("payments.read");
   const [view, events, { origin }] = await Promise.all([getRazorpayConfigView(), listWebhookEvents(30), requestOrigin()]);
   const ids = [...new Set(events.map((e) => e.companyId).filter((id): id is string => Boolean(id)))];
   const names = new Map(

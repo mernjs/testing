@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import GlassCard from "@/components/lms/GlassCard";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
 import { formatDate } from "@/lib/utils";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { countCompaniesOnPlan, getPlan } from "@/lib/platform/billing/plans";
 import { getBillingSettings } from "@/lib/platform/billing/settings";
 import { currentPriceVersion } from "@/lib/platform/billing/pricing";
@@ -16,7 +16,7 @@ import { planToFormValues } from "../planFormValues";
 export const metadata: Metadata = { title: "Edit plan" };
 
 export default async function EditPlanPage({ params }: { params: Promise<{ id: string }> }) {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("plans.read");
   const { id } = await params;
   const [plan, companies, settings] = await Promise.all([getPlan(id), countCompaniesOnPlan(id), getBillingSettings()]);
   if (!plan) notFound();

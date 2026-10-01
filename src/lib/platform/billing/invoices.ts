@@ -32,8 +32,8 @@ import { renderEmail } from "@/lib/platform/email/template";
  * time, together with the buyer's details, so later edits never change an
  * issued invoice.
  *
- * Numbering: `{prefix}/{FY}/{seq}` for invoices (e.g. `SAAS/2026-27/000001`)
- * and `{prefix}-CN/{FY}/{seq}` for credit notes, sequential per Indian
+ * Numbering: `{prefix}/{FY}/{seq}` for invoices (e.g. `SAAS/26-27/00001`, 16 characters at most — GST rule 46)
+ * and `CN/{FY}/{seq}` for credit notes, sequential per Indian
  * financial year (April–March, IST) from atomic counters in
  * `platform_settings`. An invoice's number is drawn only after its document
  * has won the unique payment-id insert, so retried or concurrent webhooks for
@@ -172,8 +172,10 @@ async function nextNumber(series: "invoice" | "credit_note", prefix: string, fy:
   const counters = (await getPlatformDb()).collection<{ _id: string; seq?: number }>(COUNTERS_COLLECTION);
   const id = series === "invoice" ? `saas_invoice_seq:${fy}` : `saas_credit_note_seq:${fy}`;
   const doc = await counters.findOneAndUpdate({ _id: id }, { $inc: { seq: 1 } }, { upsert: true, returnDocument: "after" });
-  const seq = String(doc?.seq ?? 1).padStart(6, "0");
-  return series === "invoice" ? `${prefix}/${fy}/${seq}` : `${prefix}-CN/${fy}/${seq}`;
+  // GST rule 46 caps a document number at 16 characters: prefix (≤4) + "/26-27/" + 5 digits.
+  const seq = String(doc?.seq ?? 1).padStart(5, "0");
+  const shortFy = fy.slice(2);
+  return series === "invoice" ? `${prefix.slice(0, 4)}/${shortFy}/${seq}` : `CN/${shortFy}/${seq}`;
 }
 
 function isDuplicateKey(err: unknown): boolean {

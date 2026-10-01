@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
-import { requirePlatformAdmin } from "@/lib/platform/console/access";
+import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { listAllDomains, type DomainKindFilter, type DomainSslFilter, type DomainStatusFilter } from "@/lib/platform/domains/overview";
 import DomainsFilterBar from "./DomainsFilterBar";
 import DomainsGrid from "./DomainsGrid";
@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "Domains & SSL" };
 type SP = { q?: string; kind?: string; status?: string; ssl?: string; issues?: string; page?: string };
 
 export default async function PlatformDomainsPage({ searchParams }: { searchParams: Promise<SP> }) {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("domains.read");
   const sp = await searchParams;
   const kind = (["subdomain", "custom"].includes(sp.kind ?? "") ? sp.kind : "all") as DomainKindFilter;
   const status = (["verified", "pending"].includes(sp.status ?? "") ? sp.status : "all") as DomainStatusFilter;
