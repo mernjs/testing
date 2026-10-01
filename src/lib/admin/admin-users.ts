@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 import { getDb } from "@/lib/mongodb";
 import { escapeRegExp } from "@/lib/text-search";
 import { hashPassword } from "@/lib/lms-auth";
+import { rolesUseSeat, seatBlockReason } from "@/lib/platform/billing/enforce";
 
 /**
  * Super Admin management of the shared `admin_users` collection — the
@@ -214,6 +215,8 @@ export async function createAdminUser(
   const col = await collection();
   const existing = await col.findOne({ email: normalizedEmail });
   if (existing) return { ok: false, error: "An account with this email already exists." };
+  const seatBlock = rolesUseSeat(roles) ? await seatBlockReason(1) : null;
+  if (seatBlock) return { ok: false, error: seatBlock };
 
   const tempPassword = generateTempPassword();
   const doc: AdminUserDoc = {
@@ -249,6 +252,11 @@ export async function updateAdminUserRoles(
     return { ok: false, error: "You can't remove your own Super Admin role." };
   }
   const col = await collection();
+  if (rolesUseSeat(roles)) {
+    const current = await col.findOne({ _id: new ObjectId(id) }, { projection: { roles: 1 } });
+    const seatBlock = current && !rolesUseSeat(current.roles) ? await seatBlockReason(1) : null;
+    if (seatBlock) return { ok: false, error: seatBlock };
+  }
   const res = await col.updateOne({ _id: new ObjectId(id) }, { $set: { roles } });
   return { ok: res.matchedCount === 1 };
 }
@@ -341,6 +349,8 @@ export async function reactivateAdminUser(
       : existing.savedRoles && existing.savedRoles.length > 0
       ? existing.savedRoles
       : ["employee"];
+  const seatBlock = rolesUseSeat(roles) && !rolesUseSeat(existing.roles) ? await seatBlockReason(1) : null;
+  if (seatBlock) return { ok: false, error: seatBlock };
 
   const res = await col.updateOne(
     { _id: new ObjectId(id) },

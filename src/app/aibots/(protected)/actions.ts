@@ -14,6 +14,7 @@ import { createBot, deleteBot, getBot, setBotStatus, updateBot, type BotInput } 
 import { deleteBotFile, getBotFileText, refreshProcessing, setBotFileEnabled, updateBotFileMeta, friendlyError } from "@/lib/aibots/knowledge";
 import { deleteChat, renameChat } from "@/lib/aibots/chats";
 import { saveSettings } from "@/lib/aibots/settings";
+import { isBillingLimitError, writeBlockReason } from "@/lib/platform/billing/enforce";
 
 /**
  * Every AI Bots mutation except uploads and chat turns (those are route
@@ -27,7 +28,7 @@ type Ok<T = object> = { ok: true } & T;
 const SESSION_EXPIRED: Fail = { ok: false, error: "Your session has expired — please sign in again." };
 const DENIED: Fail = { ok: false, error: "You don't have permission to do that." };
 
-async function run<T extends object>(permission: AibotsPermission | null, fn: (v: AibotsViewer) => Promise<T>, opts: { revalidate?: boolean } = {}): Promise<Ok<T> | Fail> {
+async function run<T extends object>(permission: AibotsPermission | null, fn: (v: AibotsViewer) => Promise<T>, opts: { revalidate?: boolean; readOnlySafe?: boolean } = {}): Promise<Ok<T> | Fail> {
   let v: AibotsViewer;
   try {
     v = await requireViewer();
@@ -35,13 +36,17 @@ async function run<T extends object>(permission: AibotsPermission | null, fn: (v
     return SESSION_EXPIRED;
   }
   if (permission && !can(v, permission)) return DENIED;
+  if (!opts.readOnlySafe) {
+    const readOnly = await writeBlockReason();
+    if (readOnly) return { ok: false, error: readOnly };
+  }
   try {
     const out = await fn(v);
     // The sidebar lists bots and chats, so every mutation refreshes the whole panel.
     if (opts.revalidate !== false) revalidatePath("/aibots", "layout");
     return { ok: true, ...out };
   } catch (err) {
-    if (err instanceof AibotsInputError) return { ok: false, error: err.message };
+    if (err instanceof AibotsInputError || isBillingLimitError(err)) return { ok: false, error: err.message };
     if (err instanceof ForbiddenError) return DENIED;
     if (err instanceof NotFoundError) return { ok: false, error: "That item no longer exists." };
     console.error("[aibots action]", friendlyError(err));
@@ -148,7 +153,7 @@ export async function viewFileAction(botId: string, fileId: string) {
   return run(null, async (v) => {
     if (!can(v, "EDIT_BOT") && !can(v, "MANAGE_KB") && !can(v, "UPLOAD_FILES") && !can(v, "DELETE_FILES")) throw new ForbiddenError();
     return getBotFileText(await loadBot(botId), fileId);
-  }, { revalidate: false });
+  }, { revalidate: false, readOnlySafe: true });
 }
 
 export async function refreshFilesAction(botId: string) {
@@ -156,7 +161,7 @@ export async function refreshFilesAction(botId: string) {
     if (!can(v, "EDIT_BOT") && !can(v, "MANAGE_KB") && !can(v, "UPLOAD_FILES")) throw new ForbiddenError();
     await refreshProcessing(await loadBot(botId));
     return {};
-  });
+  }, { readOnlySafe: true });
 }
 
 // ── Chats ──────────────────────────────────────────────────────────────────

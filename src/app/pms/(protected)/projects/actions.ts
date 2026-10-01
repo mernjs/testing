@@ -15,6 +15,7 @@ import { isValidProjectStatus, getProjectStatusMeta } from "@/lib/pms/constants"
 import { recordActivity, diffSummary } from "@/lib/pms/activity";
 import { listProjectMembers } from "@/lib/pms/project-members";
 import { notifyEmployees } from "@/lib/pms/notifications";
+import { writeBlockReason } from "@/lib/platform/billing/enforce";
 
 export interface ProjectActionResult {
   ok: boolean;
@@ -54,6 +55,8 @@ export async function saveProjectAction(
   id?: string
 ): Promise<ProjectActionResult> {
   const user = await requireManage();
+  const readOnly = await writeBlockReason();
+  if (readOnly) return { ok: false, error: readOnly };
   const v = validateProject(input);
   if (!v.valid) return { ok: false, fieldErrors: v.errors };
 

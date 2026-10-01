@@ -37,6 +37,7 @@ import { createTemplate, deleteTemplate, duplicateTemplate, updateTemplate } fro
 import { updateSettings } from "@/lib/sop/settings";
 import { markSopNotificationsRead } from "@/lib/sop/notifications";
 import type { SopViewer } from "@/lib/sop/types";
+import { writeBlockReason } from "@/lib/platform/billing/enforce";
 
 /**
  * Every SOP mutation. Each action resolves the viewer from the SESSION COOKIE
@@ -81,6 +82,8 @@ export async function sopLogoutAction(): Promise<void> {
 // --- SOP lifecycle ----------------------------------------------------------
 
 export async function createSopAction(input: { title: string; departmentId: string; templateId?: string | null; functionId?: string | null; processId?: string | null; categoryId?: string | null }) {
+  const readOnly = await writeBlockReason();
+  if (readOnly) return { ok: false as const, error: readOnly };
   return run(async (v) => {
     const res = await createSop(v, {
       title: str(input?.title),

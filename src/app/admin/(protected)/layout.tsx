@@ -7,6 +7,7 @@ import AdminTopbar from "@/components/admin/AdminTopbar";
 import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import BillingNotice from "@/components/platform/BillingNotice";
 
 export default async function ProtectedAdminLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentAdminUser();
@@ -37,6 +38,7 @@ export default async function ProtectedAdminLayout({ children }: { children: Rea
             <div className="lms-surface relative z-30 shrink-0 rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md dark:bg-card/85">
               <AdminTopbar roles={user.roles} notifications={notifications} unread={unreadTotal} />
             </div>
+            <BillingNotice />
             <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">{children}</main>
           </div>
         </div>

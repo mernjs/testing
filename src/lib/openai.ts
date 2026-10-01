@@ -1,5 +1,8 @@
 import "server-only";
 import OpenAI from "openai";
+import { unstable_rethrow } from "next/navigation";
+import { currentCompanyIdOrNull } from "@/lib/platform/tenancy/context";
+import { assertAiAvailable, meterAiTokens } from "@/lib/platform/billing/enforce";
 
 const apiKey = process.env.OPENAI_API_KEY;
 
@@ -9,6 +12,7 @@ const apiKey = process.env.OPENAI_API_KEY;
 // callers get a clear error only when they actually try to use it.
 const globalForOpenAI = globalThis as unknown as {
   _openAIClient?: OpenAI;
+  _openAIMetered?: OpenAI;
 };
 
 export function getOpenAI(): OpenAI {
@@ -17,7 +21,113 @@ export function getOpenAI(): OpenAI {
       "OPENAI_API_KEY is not set. The AI chatbot is unavailable until it is configured."
     );
   }
-  return (globalForOpenAI._openAIClient ??= new OpenAI({ apiKey }));
+  const client = (globalForOpenAI._openAIClient ??= new OpenAI({ apiKey }));
+  return (globalForOpenAI._openAIMetered ??= meteredClient(client));
+}
+
+// ---------------------------------------------------------------------------
+// Plan enforcement: every token-consuming call made through getOpenAI() is
+// checked against the company's monthly AI allowance first (throws a friendly
+// BillingLimitError when it's used up) and metered afterwards from the
+// response's `usage` — streamed replies are metered when their final event
+// arrives. Other endpoints (files, vector stores, conversations) pass through.
+// ---------------------------------------------------------------------------
+
+type Usage = { total_tokens?: number; input_tokens?: number; output_tokens?: number; prompt_tokens?: number; completion_tokens?: number } | null | undefined;
+
+function tokensOf(usage: Usage): number {
+  if (!usage) return 0;
+  if (typeof usage.total_tokens === "number") return usage.total_tokens;
+  return (usage.input_tokens ?? usage.prompt_tokens ?? 0) + (usage.output_tokens ?? usage.completion_tokens ?? 0);
+}
+
+/** Usage carried by a stream event (Responses: `response.completed` etc.; Chat Completions: the final chunk). */
+function streamEventUsage(event: unknown): Usage {
+  if (!event || typeof event !== "object") return null;
+  const e = event as { response?: { usage?: Usage }; usage?: Usage };
+  return e.response?.usage ?? e.usage ?? null;
+}
+
+function meterStream<T extends object>(stream: T, companyId: string): T {
+  let metered = false;
+  return new Proxy(stream, {
+    get(target, prop) {
+      if (prop === Symbol.asyncIterator) {
+        return () => {
+          const it = (target as unknown as AsyncIterable<unknown>)[Symbol.asyncIterator]();
+          return {
+            async next() {
+              const r = await it.next();
+              if (!r.done && !metered) {
+                const tokens = tokensOf(streamEventUsage(r.value));
+                if (tokens > 0) {
+                  metered = true;
+                  await meterAiTokens(tokens, companyId);
+                }
+              }
+              return r;
+            },
+            return: it.return ? (v?: unknown) => it.return!(v) : undefined,
+            throw: it.throw ? (e?: unknown) => it.throw!(e) : undefined,
+            [Symbol.asyncIterator]() {
+              return this;
+            },
+          };
+        };
+      }
+      const v = Reflect.get(target, prop, target);
+      return typeof v === "function" ? v.bind(target) : v;
+    },
+  });
+}
+
+function meteredMethod(owner: object, fn: (...args: unknown[]) => unknown) {
+  return async (...args: unknown[]) => {
+    let companyId: string | null = null;
+    try {
+      companyId = await currentCompanyIdOrNull();
+    } catch (err) {
+      unstable_rethrow(err);
+    }
+    // Outside any company (scripts) there is no plan to check or meter against.
+    if (companyId) await assertAiAvailable();
+    const result = await fn.apply(owner, args);
+    const streaming = Boolean((args[0] as { stream?: boolean } | undefined)?.stream);
+    if (companyId && streaming && result && typeof result === "object" && Symbol.asyncIterator in result) return meterStream(result, companyId);
+    if (companyId) await meterAiTokens(tokensOf((result as { usage?: Usage } | null)?.usage), companyId);
+    return result;
+  };
+}
+
+/** Wraps `resource[method]` (e.g. `responses.create`) with the check + meter; everything else is untouched. */
+function wrapResource<T extends object>(resource: T, methods: string[], children: Record<string, string[]> = {}): T {
+  return new Proxy(resource, {
+    get(target, prop) {
+      const v = Reflect.get(target, prop, target);
+      if (typeof prop === "string" && methods.includes(prop) && typeof v === "function") return meteredMethod(target, v as (...args: unknown[]) => unknown);
+      if (typeof prop === "string" && prop in children && v && typeof v === "object") return wrapResource(v as object, children[prop]);
+      return typeof v === "function" ? v.bind(target) : v;
+    },
+  });
+}
+
+function meteredClient(client: OpenAI): OpenAI {
+  const wrapped: Record<string, [string[], Record<string, string[]>?]> = {
+    responses: [["create"]],
+    images: [["generate", "edit"]],
+    embeddings: [["create"]],
+    chat: [[], { completions: ["create"] }],
+  };
+  return new Proxy(client, {
+    get(target, prop) {
+      const v = Reflect.get(target, prop, target);
+      if (typeof prop === "string" && prop in wrapped && v && typeof v === "object") {
+        const [methods, children] = wrapped[prop];
+        return wrapResource(v as object, methods, children);
+      }
+      return typeof v === "function" ? v.bind(target) : v;
+    },
+  });
 }
 
 /** True when the server is configured to talk to OpenAI at all. */

@@ -8,6 +8,8 @@ import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import type { SerializedLead, SerializedCareerApplication } from "@/components/lms/types";
+import { requireModule } from "@/lib/platform/billing/enforce";
+import BillingNotice from "@/components/platform/BillingNotice";
 
 function serializeLead(lead: Lead): SerializedLead {
   return {
@@ -37,6 +39,7 @@ function serializeApplication(application: CareerApplication): SerializedCareerA
 }
 
 export default async function ProtectedLmsLayout({ children }: { children: React.ReactNode }) {
+  await requireModule("lms");
   const lmsUser = await getCurrentLmsUser();
   if (!lmsUser) redirect("/lms/login");
 
@@ -93,6 +96,7 @@ export default async function ProtectedLmsLayout({ children }: { children: React
                 whole shell (not to main's scroll content), so it stays put
                 behind every translucent panel at any scroll depth — no
                 per-page blobs needed on top of it. */}
+            <BillingNotice />
             <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">{children}</main>
           </div>
         </div>

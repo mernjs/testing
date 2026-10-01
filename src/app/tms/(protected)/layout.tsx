@@ -7,8 +7,11 @@ import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { listNotifications, unreadCount, runTmsSweep } from "@/lib/tms/notifications";
+import { requireModule } from "@/lib/platform/billing/enforce";
+import BillingNotice from "@/components/platform/BillingNotice";
 
 export default async function ProtectedTmsLayout({ children }: { children: React.ReactNode }) {
+  await requireModule("tms");
   const user = await getCurrentTmsUser();
   if (!user) redirect("/tms/login");
   if (user.mustChangePassword) redirect("/tms/change-password");
@@ -55,6 +58,7 @@ export default async function ProtectedTmsLayout({ children }: { children: React
                 unread={unread}
               />
             </div>
+            <BillingNotice />
             <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">{children}</main>
           </div>
         </div>

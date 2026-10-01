@@ -7,8 +7,11 @@ import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { listNotifications, unreadCount, runDeadlineSweep } from "@/lib/pms/notifications";
+import { requireModule } from "@/lib/platform/billing/enforce";
+import BillingNotice from "@/components/platform/BillingNotice";
 
 export default async function ProtectedPmsLayout({ children }: { children: React.ReactNode }) {
+  await requireModule("pms");
   const user = await getCurrentPmsUser();
   if (!user) redirect("/pms/login");
   if (user.mustChangePassword) redirect("/pms/change-password");
@@ -58,6 +61,7 @@ export default async function ProtectedPmsLayout({ children }: { children: React
                 unread={unread}
               />
             </div>
+            <BillingNotice />
             <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">{children}</main>
           </div>
         </div>

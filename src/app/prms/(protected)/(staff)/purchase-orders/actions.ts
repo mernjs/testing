@@ -18,6 +18,7 @@ import { getRequisition } from "@/lib/prms/requisitions";
 import { recordAudit } from "@/lib/prms/audit";
 import { notifyStaff } from "@/lib/prms/notifications";
 import { DEFAULT_GST_RATE } from "@/lib/prms/constants";
+import { writeBlockReason } from "@/lib/platform/billing/enforce";
 
 export interface PoActionResult {
   ok: boolean;
@@ -67,6 +68,8 @@ export async function savePurchaseOrderAction(
   id?: string
 ): Promise<PoActionResult> {
   const user = await requireManage();
+  const readOnly = await writeBlockReason();
+  if (readOnly) return { ok: false, error: readOnly };
 
   const vendorId = String(input.vendorId ?? "");
   const vendor = vendorId ? await getVendor(vendorId) : null;

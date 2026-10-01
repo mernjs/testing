@@ -38,7 +38,7 @@ async function main() {
   assert.equal(settings.tax.gstRatePercent, 18);
   const bad = await saveBillingSettings({ ...settings, seller: { ...settings.seller, legalName: "Owner Pvt Ltd", gstin: "NOT-A-GSTIN" } }, "test");
   assert.ok(!bad.ok && "seller.gstin" in bad.errors, "invalid GSTIN rejected");
-  const good = await saveBillingSettings({ ...settings, seller: { ...settings.seller, legalName: "Owner Pvt Ltd", gstin: "33ABCDE1234F1Z5" }, billing: { ...settings.billing, defaultTrialDays: 45 } }, "test");
+  const good = await saveBillingSettings({ ...settings, seller: { ...settings.seller, legalName: "Owner Pvt Ltd", gstin: "33ABCDE1234F1Z7" }, billing: { ...settings.billing, defaultTrialDays: 45 } }, "test");
   assert.ok(good.ok);
   const saved = await getBillingSettings();
   assert.equal(saved.seller.stateCode, "33", "state derived from GSTIN");

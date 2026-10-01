@@ -20,6 +20,7 @@ import { recordAudit, diffSummary } from "@/lib/hrms/audit";
 import { getApplicationForConversion } from "@/lib/hrms/recruitment";
 import { markOfferJoined } from "@/lib/hrms/offers";
 import { notify } from "@/lib/hrms/notifications";
+import { writeBlockReason } from "@/lib/platform/billing/enforce";
 
 async function requireManage(): Promise<{ id: string; email: string; roles: HrmsRole[] }> {
   const user = await getCurrentHrmsUser();
@@ -48,6 +49,8 @@ export async function createEmployeeAction(
   applicationId?: string
 ): Promise<EmployeeActionResult> {
   const user = await requireManage();
+  const readOnly = await writeBlockReason();
+  if (readOnly) return { ok: false, error: readOnly };
   const validation = validateEmployeeCreate(input);
   if (!validation.valid) return { ok: false, fieldErrors: validation.errors };
 

@@ -5,6 +5,7 @@ import { getSettings, estimateCost, type AiSettings } from "@/lib/smms/settings"
 import { countUserAiToday } from "@/lib/smms/generations";
 import { SmmsInputError } from "@/lib/smms/viewer";
 import { PLATFORM_META, isPlatform, type ImageSize } from "@/lib/smms/constants";
+import { aiBlockReason, isBillingLimitError } from "@/lib/platform/billing/enforce";
 
 /**
  * The only AI provider in SMMS is OpenAI. Text goes through the Responses API
@@ -107,6 +108,7 @@ export interface AiResult<T> {
 
 /** Friendly, key-free message for an OpenAI failure. */
 export function aiErrorMessage(err: unknown): string {
+  if (isBillingLimitError(err)) return err.message;
   const e = err as { status?: number; message?: string };
   if (e?.status === 401) return "OpenAI rejected the API key configured on the server.";
   if (e?.status === 429) return "OpenAI rate limit or quota reached — try again shortly.";
@@ -116,6 +118,8 @@ export function aiErrorMessage(err: unknown): string {
 
 async function guard(userId: string, ai: AiSettings) {
   if (!isOpenAIConfigured()) throw new SmmsInputError("OpenAI isn't configured on this server (OPENAI_API_KEY), so AI generation is unavailable.");
+  const planBlock = await aiBlockReason();
+  if (planBlock) throw new SmmsInputError(planBlock);
   if (ai.dailyGenerationLimit > 0 && (await countUserAiToday(userId)) >= ai.dailyGenerationLimit) {
     throw new SmmsInputError(`You've reached today's limit of ${ai.dailyGenerationLimit} AI generations.`);
   }

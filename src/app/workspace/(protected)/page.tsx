@@ -43,6 +43,7 @@ import {
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { enabledModules, onboardingPending } from "@/lib/platform/onboarding/state";
+import { getEntitlements } from "@/lib/platform/billing/entitlements";
 import { normalizeRoles } from "@/lib/hrms-roles";
 import { normalizePmsRoles } from "@/lib/pms-roles";
 import { normalizePrmsRoles } from "@/lib/prms-roles";
@@ -391,8 +392,10 @@ export default async function HubDashboardPage({
   ];
 
   // Panels the company switched off during setup are hidden (null = no choice recorded → all on).
-  const [enabled, setupPending] = await Promise.all([enabledModules(), user.roles.includes("super_admin") ? onboardingPending() : Promise.resolve(false)]);
+  const [enabled, setupPending, entitlements] = await Promise.all([enabledModules(), user.roles.includes("super_admin") ? onboardingPending() : Promise.resolve(false), getEntitlements()]);
   const visibleTiles = tiles.filter((t) => t.visible && (!enabled || enabled.has(t.key)));
+  // Panels outside the company's plan stay visible but locked, pointing at the upgrade page.
+  const isLocked = (key: string) => entitlements.modules !== null && !entitlements.modules.has(key);
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const displayName = nameFromEmail(user.email);
@@ -976,9 +979,9 @@ export default async function HubDashboardPage({
       >
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visibleTiles.map((tile, i) => (
-            <div key={tile.key} className="relative group">
+            <div key={tile.key} className="relative group" data-module={tile.key} data-locked={isLocked(tile.key) ? "true" : undefined}>
               <HubModuleTile
-                href={tile.href}
+                href={isLocked(tile.key) ? `/upgrade?module=${tile.key}` : tile.href}
                 label={tile.label}
                 description={tile.description}
                 icon={tile.icon}
@@ -986,10 +989,17 @@ export default async function HubDashboardPage({
                 kpi={tile.kpi}
               />
               <div className="absolute top-3 right-3 pointer-events-none">
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                  <Activity className="size-2.5" />
-                  Active
-                </span>
+                {isLocked(tile.key) ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                    <Lock className="size-2.5" />
+                    Upgrade to unlock
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <Activity className="size-2.5" />
+                    Active
+                  </span>
+                )}
               </div>
             </div>
           ))}
