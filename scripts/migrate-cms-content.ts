@@ -44,12 +44,15 @@ import { recordAudit } from "@/lib/cms/audit";
 import { parsePageFrame, parsePageJsonLd, parsePageSeo } from "@/lib/cms/page-seo";
 import type { PageSection } from "@/lib/cms/section-registry";
 import { getDb } from "@/lib/mongodb";
-import { COLLECTIONS } from "@/lib/cms/db";
+import { COLLECTIONS, expireSiteCache } from "@/lib/cms/db";
 import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import { runAsCompany } from "@/lib/platform/tenancy/context";
 import { COMPANIES_COLLECTION, type Company } from "@/lib/platform/tenancy/companies";
+import { fillProductPageFields } from "@/lib/products/seed";
 
 const APPLY = process.argv.includes("--apply");
+/** Set once the target company is known: the products catalogue is the platform owner's own content. */
+let TARGET_IS_OWNER = true;
 const ACTOR = "system:content-migration";
 const SUMMARY = "Migrated from the website's existing content";
 const SEED = path.resolve("cms-seed");
@@ -172,6 +175,8 @@ async function migrateRecords() {
   const db = await getDb();
   const records = db.collection<{ collection: string; slug: string; orderKey?: number }>("cms_records");
   for (const key of Object.keys(SITE_COLLECTIONS) as CollectionKey[]) {
+    // The products catalogue (the Products section of the marketing site) belongs to the platform owner only.
+    if (key === "products" && !TARGET_IS_OWNER) { note("skipped", "products — the catalogue is the platform owner's own content"); continue; }
     const list = seed<{ slug: string }[]>(`collections/${key}.json`);
     for (const [i, rec] of list.entries()) {
       const label = `${key}/${rec.slug}`;
@@ -181,6 +186,8 @@ async function migrateRecords() {
         if (current.doc.orderKey === undefined) {
           if (APPLY) await records.updateOne({ collection: key, slug: rec.slug }, { $set: { orderKey } });
           note("updated", `record ${label} — display order set`);
+        } else if (key === "products" && (await fillProductPage(records, current.doc, rec as unknown as Record<string, unknown>, label))) {
+          // product page content filled in (below)
         } else note("skipped", `record ${label} — already in the CMS`);
         continue;
       }
@@ -193,6 +200,25 @@ async function migrateRecords() {
       note("created", `record ${label} → published`);
     }
   }
+}
+
+/** Fills the product-page fields (see PRODUCT_PAGE_FIELDS) that are still empty on an existing product — in its draft and live copy — never changing a field that has content. */
+async function fillProductPage(
+  records: { updateOne: (f: object, u: object) => Promise<unknown> },
+  doc: { draft: Record<string, unknown>; live: Record<string, unknown> | null },
+  seedRec: Record<string, unknown>,
+  label: string
+): Promise<boolean> {
+  const draft = fillProductPageFields(doc.draft, seedRec);
+  const live = doc.live ? fillProductPageFields(doc.live, seedRec) : null;
+  if (!draft && !live) return false;
+  if (APPLY) {
+    await records.updateOne({ collection: "products", slug: label.split("/")[1] }, { $set: { ...(draft ? { draft } : {}), ...(live ? { live } : {}), updatedBy: ACTOR, updatedAt: new Date() } });
+    expireSiteCache();
+    await recordAudit({ actorId: ACTOR, action: "update", entity: "collection", entityId: label, entityLabel: label, summary: "Product page content filled in (existing content untouched)" });
+  }
+  note("updated", `record ${label} — product page content filled in (existing content untouched)`);
+  return true;
 }
 
 async function migrateNav() {
@@ -292,7 +318,7 @@ async function main() {
 }
 
 /** The company whose website this migrates: `--company <slug>`, else the platform owner. */
-async function targetCompany(): Promise<{ _id: string; name: string }> {
+async function targetCompany(): Promise<{ _id: string; name: string; isPlatformOwner?: boolean }> {
   const i = process.argv.indexOf("--company");
   const slug = i >= 0 ? process.argv[i + 1] : undefined;
   const db = await getPlatformDb();
@@ -303,6 +329,7 @@ async function targetCompany(): Promise<{ _id: string; name: string }> {
 
 targetCompany()
   .then((company) => {
+    TARGET_IS_OWNER = company.isPlatformOwner === true;
     console.log(`Company: ${company.name} (${company._id})`);
     return runAsCompany(company._id, main);
   })
