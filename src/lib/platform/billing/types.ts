@@ -6,7 +6,17 @@ import type { ModuleKey } from "@/lib/platform/onboarding/catalog";
  * Money is always an integer in the smallest currency unit (paise for INR).
  */
 
-export type BillingInterval = "monthly" | "yearly";
+/**
+ * Billing cycles the platform knows about. Adding one (e.g. quarterly) means
+ * adding a row here; each plan then chooses which cycles it offers and its
+ * price for each (`Plan.intervals` / `Plan.prices`).
+ */
+export const BILLING_INTERVALS = [
+  { id: "monthly", label: "Monthly", adjective: "per month", months: 1 },
+  { id: "yearly", label: "Yearly", adjective: "per year", months: 12 },
+] as const;
+export type BillingInterval = (typeof BILLING_INTERVALS)[number]["id"];
+export const BILLING_INTERVAL_IDS: readonly BillingInterval[] = BILLING_INTERVALS.map((i) => i.id);
 
 export interface PlanLimits {
   /** Max active user accounts (admin_users); null = unlimited. */
@@ -15,6 +25,44 @@ export interface PlanLimits {
   aiTokensPerMonth: number | null;
   /** File storage in MB; null = unlimited. */
   storageMb: number | null;
+  /** Further numeric limits added in the Platform Panel (camelCase key); null = unlimited. */
+  [key: string]: number | null;
+}
+
+/** Limits with a known meaning and label. Any other key in `PlanLimits` is a custom limit. */
+export const PLAN_LIMIT_DEFS = [
+  { key: "seats", label: "Seats (users)", unit: "users", min: 1 },
+  { key: "aiTokensPerMonth", label: "AI tokens per month", unit: "tokens", min: 0 },
+  { key: "storageMb", label: "Storage (MB)", unit: "MB", min: 0 },
+] as const;
+
+/**
+ * Capability flags a plan can switch on (enforced by the feature that owns
+ * each one; shown on pricing). Adding a flag = adding a row here.
+ */
+export const PLAN_FLAGS = [
+  { key: "customDomain", label: "Custom domain" },
+  { key: "whiteLabel", label: "White-label branding" },
+  { key: "apiAccess", label: "API access" },
+  { key: "prioritySupport", label: "Priority support" },
+] as const;
+export type PlanFlag = (typeof PLAN_FLAGS)[number]["key"];
+
+/**
+ * One immutable price point of a plan. Editing a plan's prices, cycles or
+ * currency appends a new version instead of rewriting history; subscriptions
+ * remember the version they bought (`CompanySubscription.priceVersion`).
+ */
+export interface PlanPriceVersion {
+  version: number;
+  currency: string;
+  intervals: BillingInterval[];
+  prices: Partial<Record<BillingInterval, number>>;
+  effectiveFrom: Date;
+  /** admin_users id, or "seed". */
+  createdBy: string;
+  /** Provider plan ids that were live for this version (retired when superseded). */
+  provider?: { razorpay?: Partial<Record<BillingInterval, string>> };
 }
 
 export interface Plan {
@@ -23,13 +71,30 @@ export interface Plan {
   name: string;
   description: string;
   currency: string;
-  /** Per month / per year, smallest currency unit, before tax. */
+  /**
+   * Per month / per year, smallest currency unit, before tax. Kept in step
+   * with `prices` for code written before billing cycles were configurable;
+   * new code should read `planPrice(plan, interval)` (billing/pricing.ts).
+   */
   priceMonthly: number;
   priceYearly: number;
+  /** Billing cycles offered (absent on older docs = monthly + yearly). */
+  intervals?: BillingInterval[];
+  /** Price per offered cycle (paise, before tax). Absent on older docs = priceMonthly/priceYearly. */
+  prices?: Partial<Record<BillingInterval, number>>;
+  /** Current price version (see `priceHistory`). Absent on older docs = 1. */
+  priceVersion?: number;
+  /** Every price version ever offered, oldest first, current last. */
+  priceHistory?: PlanPriceVersion[];
+  /** Bullet points shown on the pricing page. */
+  highlights?: string[];
+  /** Capability flags (see `PLAN_FLAGS`). */
+  flags?: string[];
   /** Panels included; "all" = every panel. Core panels (see MODULES.core) are always included. */
   modules: ModuleKey[] | "all";
   limits: PlanLimits;
-  trialDays: number;
+  /** Free-trial length; null = the platform default (`getBillingSettings().billing.defaultTrialDays`). */
+  trialDays: number | null;
   /** Shown on the pricing/checkout pages and selectable for new subscriptions. */
   active: boolean;
   /** Plan offered by default to new sign-ups (exactly one). */
@@ -63,6 +128,10 @@ export interface CompanySubscription {
   billingDetails?: { legalName: string; gstin: string | null; address: string; state: string; email: string } | null;
   /** Purchased (or complimentary) add-ons — see `addons.ts`. Missing = none. */
   addons?: CompanyAddon[];
+  /** The plan price version this subscription was bought at (set at checkout); price edits never change it. */
+  priceVersion?: number | null;
+  /** Trial reminder thresholds (days left, e.g. 7/3/1) already emailed — see `billing/trials.ts`. */
+  trialRemindersSent?: number[];
   updatedAt: Date;
 }
 

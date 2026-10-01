@@ -4,6 +4,8 @@ import { COMPANIES_COLLECTION, type Company } from "@/lib/platform/tenancy/compa
 import { getDefaultPlan, getPlan } from "@/lib/platform/billing/plans";
 import { type CompanySubscription } from "@/lib/platform/billing/types";
 import { getBillingSettings } from "@/lib/platform/billing/settings";
+import { resolveTrialDays } from "@/lib/platform/billing/pricing";
+import { recordSubscriptionEvent } from "@/lib/platform/billing/events";
 
 /**
  * A company's subscription lives on its registry document
@@ -42,7 +44,7 @@ export async function getCompanySubscription(companyId: string): Promise<Company
   if (company.isPlatformOwner) return INTERNAL;
   if (company.subscription) return company.subscription;
   const plan = await getDefaultPlan();
-  const trialDays = plan?.trialDays ?? (await getBillingSettings()).billing.defaultTrialDays;
+  const trialDays = resolveTrialDays(plan, (await getBillingSettings()).billing.defaultTrialDays);
   return {
     ...INTERNAL,
     planId: plan?._id ?? "trial",
@@ -55,7 +57,7 @@ export async function getCompanySubscription(companyId: string): Promise<Company
 /** Starts a trial of the default (or given) plan — called when a company is created. */
 export async function startTrial(companyId: string, planId?: string): Promise<CompanySubscription> {
   const plan = planId ? await getPlan(planId) : await getDefaultPlan();
-  const trialDays = plan?.trialDays ?? (await getBillingSettings()).billing.defaultTrialDays;
+  const trialDays = resolveTrialDays(plan, (await getBillingSettings()).billing.defaultTrialDays);
   const now = new Date();
   const sub: CompanySubscription = {
     ...INTERNAL,
@@ -64,7 +66,8 @@ export async function startTrial(companyId: string, planId?: string): Promise<Co
     trialEndsAt: new Date(now.getTime() + trialDays * 86_400_000),
     updatedAt: now,
   };
-  await (await companies()).updateOne({ _id: companyId, isPlatformOwner: { $ne: true } }, { $set: { subscription: sub } });
+  const res = await (await companies()).updateOne({ _id: companyId, isPlatformOwner: { $ne: true } }, { $set: { subscription: sub } });
+  if (res.modifiedCount === 1) await recordSubscriptionEvent({ companyId, type: "trial_started", planId: sub.planId, interval: sub.interval, at: now });
   return sub;
 }
 

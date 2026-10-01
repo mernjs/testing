@@ -20,6 +20,8 @@ import Link from "next/link";
 import { listDomainsForCompany } from "@/lib/platform/domains/overview";
 import DomainActions from "../../domains/DomainActions";
 import { DnsBadge, SslBadge } from "../../domains/DomainBadges";
+import TrialCard from "./TrialCard";
+import { getTrialOverview } from "@/lib/platform/billing/trials";
 
 export const metadata: Metadata = { title: "Company" };
 
@@ -41,6 +43,7 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
   const base = companyBaseUrl(company.slug, host);
   const { onboarding: ob } = company;
   const [allAddons, heldAddons] = company.isPlatformOwner ? [[], []] : await Promise.all([listAddons(), getCompanyAddons(company.id)]);
+  const trial = company.isPlatformOwner ? null : await getTrialOverview(company.id);
 
   return (
     <div className="space-y-4 p-1">
@@ -77,6 +80,21 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
             </dl>
           </CardContent>
         </GlassCard>
+
+        {trial && (
+          <TrialCard
+            companyId={company.id}
+            data={{
+              planId: trial.planId,
+              planName: trial.planName,
+              status: trial.status,
+              trialEndsAt: trial.trialEndsAt?.toISOString() ?? null,
+              graceEndsAt: trial.graceEndsAt?.toISOString() ?? null,
+              daysLeft: trial.daysLeft,
+              canExtend: trial.canExtend,
+            }}
+          />
+        )}
 
         <div className="grid gap-4 md:grid-cols-2">
           <GlassCard interactive={false}>

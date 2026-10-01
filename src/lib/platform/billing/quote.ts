@@ -4,6 +4,7 @@ import { getBillingSettings } from "@/lib/platform/billing/settings";
 import { addonAvailableOnPlan, addonUnitPrice, getCompanyAddons, listAddons } from "@/lib/platform/billing/addons";
 import { computeCouponDiscount, validateCoupon } from "@/lib/platform/billing/coupons";
 import { describeCouponDiscount } from "@/lib/platform/billing/catalog-types";
+import { planPrice } from "@/lib/platform/billing/pricing";
 import type { BillingInterval, CompanyAddon } from "@/lib/platform/billing/types";
 
 /**
@@ -83,7 +84,9 @@ function requestedAddons(input: QuoteInput, held: CompanyAddon[]): Map<string, n
 export async function quoteCheckout(input: QuoteInput): Promise<Quote | null> {
   const [plan, settings] = await Promise.all([getPlan(input.planId), getBillingSettings()]);
   if (!plan) return null;
-  const price = input.interval === "yearly" ? plan.priceYearly : plan.priceMonthly;
+  // Current catalogue price; null when the plan doesn't offer this billing cycle.
+  const price = planPrice(plan, input.interval);
+  if (price === null) return null;
   const lines: QuoteLine[] = [{ kind: "plan", refId: plan._id, label: `${plan.name} (${input.interval})`, amount: price }];
 
   const held = input.companyId ? await getCompanyAddons(input.companyId) : [];
