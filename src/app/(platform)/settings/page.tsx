@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowUpRight, Building2, CreditCard, Globe, Globe2, Landmark, Palette, Users } from "lucide-react";
+import { ArrowUpRight, Building2, CreditCard, FileUp, Globe, Globe2, History, Landmark, Palette, Users, Zap } from "lucide-react";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getCurrentHubUser } from "@/lib/hub-auth";
@@ -18,6 +18,9 @@ const SECTIONS = [
   { href: "/settings/billing", icon: CreditCard, title: "Plan & billing", description: "Your plan, payments, coupon codes and GST billing details." },
   { href: "/settings/payments", icon: Landmark, title: "Payments & payouts", description: "Connect your own Razorpay account to collect invoice payments and pay salaries." },
   { href: "/admin/users", icon: Users, title: "Users & roles", description: "Who can sign in and which panels each person can use." },
+  { href: "/settings/automations", icon: Zap, title: "Automations", description: "When something happens, notify people, send an email or call a webhook." },
+  { href: "/settings/import", icon: FileUp, title: "Import data", description: "Bring leads, clients and employees in from CSV files." },
+  { href: "/settings/activity", icon: History, title: "Activity log", description: "Who did what across your workspace, and when." },
 ];
 
 /** Only on the platform owner's own workspace. */
