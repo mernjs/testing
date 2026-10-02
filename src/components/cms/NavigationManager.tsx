@@ -25,8 +25,9 @@ type Draft = {
   featuredTitle: string;
   featuredDescription: string;
   featuredImage: string;
+  featuredHref: string;
 };
-const emptyDraft: Draft = { label: "", href: "", description: "", iconKey: "Sparkles", group: "", featuredTitle: "", featuredDescription: "", featuredImage: "" };
+const emptyDraft: Draft = { label: "", href: "", description: "", iconKey: "Sparkles", group: "", featuredTitle: "", featuredDescription: "", featuredImage: "", featuredHref: "" };
 
 export default function NavigationManager({ initialItems, canEdit }: { initialItems: CmsNavItemDoc[]; canEdit: boolean }) {
   const confirm = useConfirm();
@@ -145,7 +146,7 @@ function NavItemDialog({
 }) {
   const [draft, setDraft] = useState<Draft>(
     item
-      ? { label: item.label, href: item.href, description: item.description ?? "", iconKey: item.iconKey, group: item.group ?? "", featuredTitle: item.featuredTitle ?? "", featuredDescription: item.featuredDescription ?? "", featuredImage: item.featuredImage ?? "" }
+      ? { label: item.label, href: item.href, description: item.description ?? "", iconKey: item.iconKey, group: item.group ?? "", featuredTitle: item.featuredTitle ?? "", featuredDescription: item.featuredDescription ?? "", featuredImage: item.featuredImage ?? "", featuredHref: item.featuredHref ?? "" }
       : emptyDraft
   );
   const [pending, startTransition] = useTransition();
@@ -163,11 +164,12 @@ function NavItemDialog({
           featuredTitle: parentId === null ? draft.featuredTitle || null : null,
           featuredDescription: parentId === null ? draft.featuredDescription || null : null,
           featuredImage: parentId === null ? draft.featuredImage || null : null,
+          featuredHref: parentId === null ? draft.featuredHref || null : null,
         });
         if (!res.ok) { toast.error(res.error); return; }
-        onSaved({ ...item, label: draft.label, href: draft.href, description: draft.description || null, iconKey: draft.iconKey, group: parentId === null ? null : draft.group.trim() || null, featuredTitle: draft.featuredTitle || null, featuredDescription: draft.featuredDescription || null, featuredImage: draft.featuredImage || null }, false);
+        onSaved({ ...item, label: draft.label, href: draft.href, description: draft.description || null, iconKey: draft.iconKey, group: parentId === null ? null : draft.group.trim() || null, featuredTitle: draft.featuredTitle || null, featuredDescription: draft.featuredDescription || null, featuredImage: draft.featuredImage || null, featuredHref: draft.featuredHref || null }, false);
       } else {
-        const res = await createNavItemAction({ parentId, label: draft.label, href: draft.href, description: draft.description, iconKey: draft.iconKey, group: draft.group, featuredTitle: draft.featuredTitle, featuredDescription: draft.featuredDescription, featuredImage: draft.featuredImage });
+        const res = await createNavItemAction({ parentId, label: draft.label, href: draft.href, description: draft.description, iconKey: draft.iconKey, group: draft.group, featuredTitle: draft.featuredTitle, featuredDescription: draft.featuredDescription, featuredImage: draft.featuredImage, featuredHref: draft.featuredHref });
         if (!res.ok) { toast.error(res.error); return; }
         onSaved(
           {
@@ -181,6 +183,7 @@ function NavItemDialog({
             featuredTitle: draft.featuredTitle || null,
             featuredDescription: draft.featuredDescription || null,
             featuredImage: draft.featuredImage || null,
+            featuredHref: draft.featuredHref || null,
             orderKey: Date.now(),
             enabled: true,
             createdAt: new Date(),
@@ -250,6 +253,10 @@ function NavItemDialog({
               <div className="space-y-1.5">
                 <Label htmlFor="nav-featured-image">Featured card image URL</Label>
                 <Input id="nav-featured-image" type="url" value={draft.featuredImage} onChange={(e) => set("featuredImage", e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="nav-featured-href">Featured card link (optional — defaults to the menu link)</Label>
+                <Input id="nav-featured-href" value={draft.featuredHref} onChange={(e) => set("featuredHref", e.target.value)} placeholder="/services/our-saas-product" />
               </div>
             </>
           )}

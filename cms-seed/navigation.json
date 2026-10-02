@@ -66,12 +66,19 @@
   "featured": {
    "title": "Digital Transformation & SaaS Platform",
    "description": "End-to-end tech solutions and SaaS products.",
-   "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop"
+   "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop",
+   "href": "/services/our-saas-product"
   },
   "items": [
    {
+    "name": "All Services",
+    "href": "/services",
+    "description": "End-to-end tech solutions and SaaS products",
+    "iconKey": "Layers"
+   },
+   {
     "name": "Our SaaS Product",
-    "href": "/services/our-saas-product",
+    "href": "/products",
     "description": "15-application integrated AI SaaS ecosystem",
     "iconKey": "Sparkles"
    },

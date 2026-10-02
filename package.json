@@ -23,6 +23,7 @@
     "db:create-company": "npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/create-company.ts",
     "db:migrate-cms-content": "npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/migrate-cms-content.ts",
     "db:add-products-nav": "npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/add-products-nav.ts",
+    "db:update-services-nav": "npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/update-services-nav.ts",
     "db:seed-dlms": "node --env-file=.env scripts/seed-dlms-demo.mjs",
     "db:seed-aibots": "node --env-file=.env scripts/seed-aibots-demo.mjs",
     "db:seed-smms": "node --env-file=.env scripts/seed-smms-demo.mjs",

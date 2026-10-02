@@ -66,7 +66,7 @@ const mobileContactLinksFor = (header: SiteInfo["header"], whatsappHref: string)
 interface NavColumn {
   name: string;
   href: string;
-  featured: { title: string; description: string; image: string };
+  featured: { title: string; description: string; image: string; href?: string | null };
   items: { name: string; href: string; description: string; icon: React.ComponentType<{ className?: string }> }[];
 }
 
@@ -102,7 +102,7 @@ function FeaturedCard({ item, featuredLabel, cta }: { item: NavColumn; featuredL
       className="col-span-2 group/card relative"
     >
       <Link
-        href={item.href}
+        href={item.featured.href || item.href}
         className="block h-full p-6 rounded-2xl relative overflow-hidden isolate ring-1 ring-border/50 hover:ring-primary/40 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/25"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}

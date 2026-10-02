@@ -62,7 +62,7 @@ const seedJson = <T>(file: string): T => JSON.parse(fs.readFileSync(path.join(SE
 const seed = seedJson;
 
 interface SeedPage { path: string; title: string; sections: PageSection[]; seo?: unknown; jsonLd?: unknown; frame?: unknown }
-interface SeedNavTop { name: string; href: string; iconKey: string; featured: { title: string; description: string; image: string }; items: { name: string; href: string; description: string; iconKey: string }[] }
+interface SeedNavTop { name: string; href: string; iconKey: string; featured: { title: string; description: string; image: string; href?: string }; items: { name: string; href: string; description: string; iconKey: string }[] }
 interface SeedFooterColumn { title: string; viewAllHref?: string; viewAllLabel?: string; links: { label: string; href: string; emphasized?: boolean }[] }
 
 const report: Record<"created" | "updated" | "skipped" | "failed", string[]> = { created: [], updated: [], skipped: [], failed: [] };
@@ -230,7 +230,7 @@ async function migrateNav() {
   if (!APPLY) { note("created", `navigation (${nav.length} menus, ${count} items)`); return; }
   for (const top of nav) {
     const parent = await createNavItem(
-      { parentId: null, label: top.name, href: top.href, iconKey: top.iconKey, featuredTitle: top.featured.title, featuredDescription: top.featured.description, featuredImage: top.featured.image },
+      { parentId: null, label: top.name, href: top.href, iconKey: top.iconKey, featuredTitle: top.featured.title, featuredDescription: top.featured.description, featuredImage: top.featured.image, featuredHref: top.featured.href },
       ACTOR
     );
     for (const item of top.items) await createNavItem({ parentId: parent._id, label: item.name, href: item.href, description: item.description, iconKey: item.iconKey }, ACTOR);

@@ -25,6 +25,8 @@ export interface CmsNavItemDoc extends Stamps {
   featuredTitle: string | null;
   featuredDescription: string | null;
   featuredImage: string | null;
+  /** Where the featured card links to. Empty = the menu's own link (`href`). */
+  featuredHref?: string | null;
   orderKey: number;
   enabled: boolean;
 }
@@ -40,7 +42,7 @@ export async function listNavItems(): Promise<CmsNavItemDoc[]> {
 }
 
 export async function createNavItem(
-  input: { parentId: string | null; label: string; href: string; description?: string; iconKey?: string; group?: string; featuredTitle?: string; featuredDescription?: string; featuredImage?: string },
+  input: { parentId: string | null; label: string; href: string; description?: string; iconKey?: string; group?: string; featuredTitle?: string; featuredDescription?: string; featuredImage?: string; featuredHref?: string },
   actorId: string
 ): Promise<CmsNavItemDoc> {
   const c = await col();
@@ -56,6 +58,7 @@ export async function createNavItem(
     featuredTitle: input.featuredTitle?.trim() || null,
     featuredDescription: input.featuredDescription?.trim() || null,
     featuredImage: input.featuredImage?.trim() || null,
+    featuredHref: input.featuredHref?.trim() || null,
     orderKey: (last[0]?.orderKey ?? 0) + 1024,
     enabled: true,
     ...createStamp(actorId),
@@ -97,7 +100,7 @@ export interface PublicNavTop {
   href: string;
   iconKey: string;
   /** Always populated (falls back to the item's own label/href/icon) — `FeaturedCard` in Header.tsx renders it unconditionally, matching the code-defined default nav's shape. */
-  featured: { title: string; description: string; image: string };
+  featured: { title: string; description: string; image: string; href: string | null };
   items: PublicNavChild[];
 }
 
@@ -113,6 +116,7 @@ async function loadNav(): Promise<PublicNavTop[]> {
       title: top.featuredTitle || top.label,
       description: top.featuredDescription ?? "",
       image: top.featuredImage ?? "",
+      href: top.featuredHref || null,
     },
     items: enabled
       .filter((i) => i.parentId === top._id)
