@@ -15,8 +15,9 @@ declare global {
 
 let isLoading = false;
 
-export function loadAndToggleTawk() {
-  if (typeof window === "undefined") return;
+/** Opens the company's own Tawk.to chat (`widgetId` = `propertyId/widgetId` from CMS → Settings → Tracking). No id → nothing to open. */
+export function loadAndToggleTawk(widgetId?: string) {
+  if (typeof window === "undefined" || !widgetId) return;
 
   // If Tawk is already loaded and toggle method exists, toggle chat
   if (window.Tawk_API?.toggle) {
@@ -44,7 +45,7 @@ export function loadAndToggleTawk() {
 
   const script = document.createElement("script");
   script.async = true;
-  script.src = "https://embed.tawk.to/6a731f8063910b1d443c296b/1jv8r63rg";
+  script.src = `https://embed.tawk.to/${widgetId}`;
   script.charset = "UTF-8";
   script.onerror = function () {
     isLoading = false;

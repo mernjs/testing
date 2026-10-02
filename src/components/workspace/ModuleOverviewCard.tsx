@@ -25,7 +25,7 @@ export default function ModuleOverviewCard({
   return (
     <GlassCard>
       <CardHeader className="flex-row items-center gap-3 space-y-0 pb-2">
-        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-[#ff8e75] text-white">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-brand-accent text-white">
           {icon}
         </div>
         <CardTitle className="text-base">{label}</CardTitle>

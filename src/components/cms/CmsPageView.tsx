@@ -1,4 +1,5 @@
 import SectionRenderer from "@/components/cms/SectionRenderer";
+import { jsonForScript } from "@/lib/security/json-script";
 import { getRuntimeRecords } from "@/lib/cms/collections/store";
 import { jsonLdNeeds, resolveJsonLd } from "@/lib/cms/json-ld-generators";
 import type { PublicPage } from "@/lib/cms/public";
@@ -45,7 +46,7 @@ export default async function CmsPageView({
     products: products as ProductItem[],
   });
   const scripts = jsonLd.map((schema, i) => (
-    <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+    <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonForScript(schema) }} />
   ));
   const sections = wrapSections(<SectionRenderer sections={page.sections} runtimeProps={runtimeProps} />);
 

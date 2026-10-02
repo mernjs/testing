@@ -2,8 +2,9 @@ import "server-only";
 import { AsyncLocalStorage } from "node:async_hooks";
 import type { ReactElement } from "react";
 import { renderToBuffer } from "@react-pdf/renderer";
-import { PDF_ORG, PDF_ORG_CONTACT, loadPdfLogo } from "@/lib/pdf/brand";
-import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { pdfAccentScope } from "@/lib/pdf/colors-scope";
+import { getActiveThemeState } from "@/lib/cms/theme";
+import { DEFAULT_BRAND } from "@/lib/cms/theme-shared";
 import { getCompanyBrand } from "@/lib/platform/branding";
 import { getCompanyDetails } from "@/lib/hrms/company";
 import { LOGO_ROUTE, readCompanyLogo } from "@/lib/platform/branding/logo";
@@ -30,21 +31,6 @@ export interface PdfIdentity {
   logo: string | null;
 }
 
-/** The platform owner's letterhead — exactly what every PDF printed before multi-tenancy. */
-function ownerIdentity(): PdfIdentity {
-  return {
-    name: PDF_ORG.name,
-    legalName: PDF_ORG.legalName,
-    addressLine: PDF_ORG.addressLine,
-    cityLine: PDF_ORG.cityLine,
-    contactLine: PDF_ORG_CONTACT,
-    wordPrimary: "Yash",
-    wordAccent: "Orbit",
-    capsLine: "TECHNOLOGIES PVT. LTD.",
-    logo: loadPdfLogo(),
-  };
-}
-
 const pdfIdentityScope = new AsyncLocalStorage<PdfIdentity>();
 
 /** The letterhead identity of the PDF being rendered (by `renderPdf`). */
@@ -65,7 +51,6 @@ async function logoDataUri(url: string | null): Promise<string | null> {
 
 export async function resolvePdfIdentity(): Promise<PdfIdentity> {
   const brand = await getCompanyBrand();
-  if ((await isPlatformOwnerContext()) && !brand.logoUrl) return ownerIdentity();
   const c = await getCompanyDetails();
   return {
     name: c.name || brand.name,
@@ -87,6 +72,9 @@ export async function resolvePdfIdentity(): Promise<PdfIdentity> {
  * billing-settings seller details).
  */
 export async function renderPdf(document: ReactElement, override?: Partial<PdfIdentity>): Promise<Buffer> {
-  const identity = { ...(await resolvePdfIdentity()), ...override };
-  return pdfIdentityScope.run(identity, () => renderToBuffer(document as Parameters<typeof renderToBuffer>[0]) as Promise<Buffer>);
+  const [base, { tokens }] = await Promise.all([resolvePdfIdentity(), getActiveThemeState()]);
+  const identity = { ...base, ...override };
+  // The letterhead's accents are the company's active theme — deep accent + primary.
+  const accent = { navy: (tokens.brand ?? DEFAULT_BRAND).deep, coral: tokens.colors.primary };
+  return pdfAccentScope.run(accent, () => pdfIdentityScope.run(identity, () => renderToBuffer(document as Parameters<typeof renderToBuffer>[0]) as Promise<Buffer>));
 }

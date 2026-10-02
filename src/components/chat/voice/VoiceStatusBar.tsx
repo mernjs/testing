@@ -26,13 +26,13 @@ const PHASE = (tx: (key: string) => string): Record<
     label: tx("chat.voiceStatusBar.processing"),
     description: tx("chat.voiceStatusBar.working-on-your-answer"),
     Icon: Loader2,
-    tone: "text-yashorbit-orange",
+    tone: "text-primary",
   },
   speaking: {
     label: tx("chat.voiceStatusBar.speaking"),
     description: tx("chat.voiceStatusBar.playing-the-answer-aloud-press-stop-to-i"),
     Icon: Volume2,
-    tone: "text-yashorbit-blue dark:text-secondary-foreground",
+    tone: "text-brand-deep dark:text-secondary-foreground",
   },
 });
 
@@ -64,7 +64,7 @@ export function VoiceStatusBar() {
               <span
                 className={cn(
                   "absolute inline-flex size-full rounded-full opacity-75 motion-safe:animate-ping",
-                  phase === "listening" ? "bg-primary" : "bg-yashorbit-blue dark:bg-secondary-foreground"
+                  phase === "listening" ? "bg-primary" : "bg-brand-deep dark:bg-secondary-foreground"
                 )}
               />
             )}

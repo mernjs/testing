@@ -29,7 +29,7 @@ export default async function SignupPage() {
       <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/20 p-10 lg:flex">
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -top-[20%] -left-[10%] h-[60%] w-[60%] rounded-full bg-primary/15 blur-[120px] mix-blend-multiply dark:mix-blend-screen animate-blob" />
-          <div className="absolute -bottom-[20%] left-[20%] h-[70%] w-[70%] rounded-full bg-yashorbit-coral/15 blur-[140px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000" />
+          <div className="absolute -bottom-[20%] left-[20%] h-[70%] w-[70%] rounded-full bg-brand-accent/15 blur-[140px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000" />
         </div>
         <div className="relative z-10 flex items-center gap-2 text-lg font-bold">
           <BrandMark className="size-7 shrink-0" />
@@ -38,7 +38,7 @@ export default async function SignupPage() {
         <div className="relative z-10 max-w-md">
           <h1 className="text-4xl font-black tracking-tight text-foreground">
             Your whole company,{" "}
-            <span className="bg-gradient-to-r from-primary to-yashorbit-coral bg-clip-text text-transparent">one workspace.</span>
+            <span className="bg-gradient-to-r from-primary to-brand-accent bg-clip-text text-transparent">one workspace.</span>
           </h1>
           <ul className="mt-6 space-y-3">
             {POINTS.map((p) => (

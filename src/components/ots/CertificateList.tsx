@@ -26,7 +26,7 @@ export default function CertificateList({ certs }: { certs: OtsCertificate[] }) 
           <GlassCard key={c._id} interactive={false}>
             <CardContent className="space-y-2 py-4">
               <div className="flex items-start gap-2">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-yashorbit-coral text-white">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-brand-accent text-white">
                   <Award className="size-4" />
                 </span>
                 <div className="min-w-0 flex-1">

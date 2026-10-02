@@ -1,5 +1,6 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, View, Text } from "@react-pdf/renderer";
+import { lazyStyles } from "@/lib/pdf/lazy-styles";
 import type { Receipt } from "@/lib/fms/receipts";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
@@ -15,13 +16,13 @@ function fmtDate(iso: string) {
   return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 }
 
-const s = StyleSheet.create({
+const s = lazyStyles(() => ({
   page: pdfSheet.pagePortrait,
   small: { fontSize: 8, color: C.mute },
   row: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 4, borderBottomWidth: 0.5, borderBottomColor: C.line },
   label: { ...pdfSheet.label, marginTop: 16 },
   grand: { flexDirection: "row", justifyContent: "space-between", marginTop: 12, paddingTop: 6, borderTopWidth: 1, borderTopColor: C.ink, fontFamily: "Helvetica-Bold", fontSize: 12 },
-});
+}));
 
 function ReceiptDoc({ receipt }: { receipt: Receipt }) {
   return (

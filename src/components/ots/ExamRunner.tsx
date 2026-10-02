@@ -432,7 +432,7 @@ export default function ExamRunner({ channel, initial, resultsBase, testsBase }:
 
   const timeLow = remaining !== null && remaining < 60_000;
   return (
-    <div className={cn("flex min-h-screen flex-col bg-[#e9ebee] dark:bg-background", sec.blockCopyPaste && "select-none")}>
+    <div className={cn("flex min-h-screen flex-col bg-canvas", sec.blockCopyPaste && "select-none")}>
       <header className="sticky top-0 z-20 border-b border-border/50 bg-background/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-3 py-2 sm:px-5">
           <div className="min-w-0 flex-1">
@@ -638,7 +638,7 @@ export default function ExamRunner({ channel, initial, resultsBase, testsBase }:
 
 function Gate({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#e9ebee] p-4 dark:bg-background">
+    <div className="flex min-h-screen items-center justify-center bg-canvas p-4">
       <div className="w-full max-w-md space-y-4 rounded-3xl border border-border/40 bg-background/95 p-6 text-center dark:bg-card/85">
         <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">{icon}</div>
         <h1 className="text-lg font-bold">{title}</h1>

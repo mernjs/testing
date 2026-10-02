@@ -9,9 +9,10 @@ import { getSnapshot } from "@/lib/cms/collections/store";
 import SectionRenderer from "@/components/cms/SectionRenderer";
 import { CollectionsProvider } from "@/components/cms/CollectionsContext";
 import { ThemeVariantsProvider } from "@/components/cms/ThemeVariantsContext";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import FooterCompact from "@/components/FooterCompact";
+import Header, { type HeaderVariant } from "@/components/Header";
+import ThemeImageFilters from "@/components/cms/ThemeImageFilters";
+import SiteFooter from "@/components/footer/SiteFooter";
+import { layoutCss } from "@/lib/cms/component-variants";
 
 export const metadata = { title: "Draft preview", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -34,13 +35,13 @@ export default async function CmsDraftPreviewPage({ params }: { params: Promise<
     getSiteInfo(),
     getSnapshot(["blog", "jobs", "engagement", "products"]),
   ]);
-  const SiteFooter = components.footer === "compact" ? FooterCompact : Footer;
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: themeCssBlock(tokens) }} />
-      <Header cmsNavigation={cmsNavigation} variant={components.header === "menu" ? "menu" : "default"} />
-      <main className="flex-grow pt-[88px]">
+      <style dangerouslySetInnerHTML={{ __html: themeCssBlock(tokens) + layoutCss(components) }} />
+      {components.images === "themed" && <ThemeImageFilters tokens={tokens} />}
+      <Header cmsNavigation={cmsNavigation} variant={components.header as HeaderVariant} menuStyle={components.menu} />
+      <main className="flex-grow pt-[var(--site-header-h,88px)]">
         <CollectionsProvider snapshot={collections}>
           <ThemeVariantsProvider sections={components.sections}>
             {page.draft.sections.length ? (
@@ -51,7 +52,7 @@ export default async function CmsDraftPreviewPage({ params }: { params: Promise<
           </ThemeVariantsProvider>
         </CollectionsProvider>
       </main>
-      <SiteFooter cmsFooter={cmsFooter} siteInfo={siteInfo} />
+      <SiteFooter variant={components.footer} cmsFooter={cmsFooter} siteInfo={siteInfo} />
     </>
   );
 }

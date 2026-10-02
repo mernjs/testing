@@ -1,5 +1,6 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, View, Text } from "@react-pdf/renderer";
+import { lazyStyles } from "@/lib/pdf/lazy-styles";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
 import { renderPdf } from "@/lib/pdf/identity";
@@ -35,13 +36,13 @@ function money(n: number, currency = "INR"): string {
   return `${currency} ${(Math.round((n || 0) * 100) / 100).toLocaleString("en-IN")}`;
 }
 
-const s = StyleSheet.create({
+const s = lazyStyles(() => ({
   page: pdfSheet.pagePortrait,
   small: { fontSize: 8, color: C.mute },
   sectionTitle: pdfSheet.sectionTitle,
   tHead: { ...pdfSheet.tHead, marginTop: 12 },
   tRow: pdfSheet.tRow,
-});
+}));
 
 function FmsReportDocument({ data }: { data: FmsReportPdfData }) {
   return (

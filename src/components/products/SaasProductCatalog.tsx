@@ -37,6 +37,7 @@ import { SUCCESS_AUTO_HIDE_MS, useLeadSubmit } from "@/lib/useLeadSubmit";
 import { useStableCardHeight } from "@/lib/useStableCardHeight";
 import LeadSuccessState from "@/components/sections/LeadSuccessState";
 import { useText } from "@/components/cms/TextContext";
+import { useSiteInfo } from "@/components/cms/SiteInfoContext";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -67,6 +68,8 @@ export default function SaasProductCatalog({ categories }: { categories: string[
   /** The first filter tab shows every product. */
   const allLabel = categories[0] ?? "";
   const tx = useText();
+  const { brand: siteBrand, contact: siteContact } = useSiteInfo();
+  const brandName = siteBrand.namePrimary + siteBrand.nameAccent;
   const PRODUCTS = useProducts();
   const [selectedCategory, setSelectedCategory] = useState<string>(allLabel);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -233,7 +236,7 @@ export default function SaasProductCatalog({ categories }: { categories: string[
 
   const faqs = [
     {
-      q: "Are all 15 applications included in the YashOrbit ecosystem?",
+      q: `Are all 15 applications included in the ${brandName} ecosystem?`,
       a: "Yes. All 15 applications are built around a shared single sign-on (SSO) identity store, a unified design system, and a central permission matrix. You can deploy the complete platform or license specific application modules based on your business requirements.",
     },
     {
@@ -246,7 +249,7 @@ export default function SaasProductCatalog({ categories }: { categories: string[
     },
     {
       q: "Can the products be customized to fit our business workflows?",
-      a: "Yes. Because every application in the ecosystem was engineered in-house by YashOrbit, we offer custom feature extensions, API integrations, and workflow adaptations tailored to your enterprise needs.",
+      a: `Yes. Because every application in the ecosystem was engineered in-house by ${brandName}, we offer custom feature extensions, API integrations, and workflow adaptations tailored to your enterprise needs.`,
     },
     {
       q: "How is security and data isolation handled for external users?",
@@ -287,7 +290,7 @@ export default function SaasProductCatalog({ categories }: { categories: string[
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-[15%] -left-[10%] w-[55vw] h-[55vw] rounded-full bg-primary/15 blur-[140px] mix-blend-multiply dark:mix-blend-screen animate-blob" />
           <div className="absolute top-[20%] right-[5%] w-[45vw] h-[45vw] rounded-full bg-secondary/15 blur-[120px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-2000" />
-          <div className="absolute -bottom-[20%] left-[25%] w-[65vw] h-[65vw] rounded-full bg-[#ff8e75]/15 blur-[150px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000" />
+          <div className="absolute -bottom-[20%] left-[25%] w-[65vw] h-[65vw] rounded-full bg-brand-accent/15 blur-[150px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000" />
         </div>
 
         {/* Interactive Mouse Spotlight Reveal Grid */}
@@ -319,7 +322,7 @@ export default function SaasProductCatalog({ categories }: { categories: string[
                 className="text-4xl sm:text-6xl font-black tracking-tight text-foreground leading-[1.1]"
               >
                 {tx("catalog.saasProductCatalog.automate-your-entire-business-with")}<br className="hidden sm:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-[#ff8e75] to-secondary bg-300% animate-gradient">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-brand-accent to-secondary bg-300% animate-gradient">
                   {tx("catalog.saasProductCatalog.one-ai-saas-platform")}</span>
               </motion.h1>
 
@@ -876,18 +879,22 @@ export default function SaasProductCatalog({ categories }: { categories: string[
               </div>
 
               <div className="flex flex-col sm:flex-row gap-6 pt-4 border-t border-border/40">
-                <a href="mailto:support@yashorbit.com" className="flex items-center gap-3 group">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
-                    <Mail className="w-4 h-4 text-primary group-hover:text-primary-foreground transition-colors" />
-                  </div>
-                  <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{tx("catalog.saasProductCatalog.support-yashorbit-com")}</span>
-                </a>
-                <a href="tel:+918072278460" className="flex items-center gap-3 group">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
-                    <Phone className="w-4 h-4 text-primary group-hover:text-primary-foreground transition-colors" />
-                  </div>
-                  <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">+91 8072278460</span>
-                </a>
+                {siteContact.email && (
+                  <a href={`mailto:${siteContact.email}`} className="flex items-center gap-3 group">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
+                      <Mail className="w-4 h-4 text-primary group-hover:text-primary-foreground transition-colors" />
+                    </div>
+                    <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{siteContact.email}</span>
+                  </a>
+                )}
+                {siteContact.phoneHref && siteContact.phoneDisplay && (
+                  <a href={siteContact.phoneHref} className="flex items-center gap-3 group">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary transition-colors">
+                      <Phone className="w-4 h-4 text-primary group-hover:text-primary-foreground transition-colors" />
+                    </div>
+                    <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{siteContact.phoneDisplay}</span>
+                  </a>
+                )}
               </div>
             </motion.div>
 

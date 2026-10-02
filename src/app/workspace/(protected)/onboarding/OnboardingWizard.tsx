@@ -26,8 +26,8 @@ import {
 } from "@/lib/platform/onboarding/catalog";
 import type { ProfileInput } from "@/lib/platform/onboarding/state";
 import type { StoredBranding } from "@/lib/platform/branding/types";
-import BrandingForm from "@/components/platform/BrandingForm";
-import { saveBrandingAction, uploadLogoAction } from "../settings/branding/actions";
+import BrandingThemeForm from "@/components/platform/BrandingThemeForm";
+import type { PickerTheme } from "@/components/platform/ThemePicker";
 import { applyStructureAction, finishTeamStepAction, inviteAction, revokeInviteAction, saveModulesAction, saveProfileAction, skipOnboardingAction, skipStepAction, type InviteRow } from "./actions";
 
 const selectClass =
@@ -42,13 +42,16 @@ interface Props {
   enabledModules: string[] | null;
   timezones: string[];
   branding: StoredBranding;
+  themes: PickerTheme[];
+  activeThemeKey: string;
+  appliedThemeKey: string;
 }
 
 const STEP_META: Record<string, { icon: React.ComponentType<{ className?: string }>; hint: string; why: string }> = {
   profile: { icon: Building2, hint: "About your company", why: "Printed on invoices, payslips, letters and your website." },
   structure: { icon: Network, hint: "Departments", why: "Gives every person a place in the company and drives reporting lines." },
   team: { icon: UserPlus, hint: "Invite people", why: "Teammates get an email and see only the panels their role allows." },
-  branding: { icon: Palette, hint: "Logo & colours", why: "Your name and colours appear on every panel, email and PDF." },
+  branding: { icon: Palette, hint: "Logo & theme", why: "Your name and theme appear on your website and every panel, email and PDF." },
   modules: { icon: LayoutGrid, hint: "Pick panels", why: "Switch on what you use; the rest stays out of everyone's way." },
 };
 
@@ -146,8 +149,8 @@ export default function OnboardingWizard(props: Props) {
           {step === 1 && <StructureStep industry={industry || "software_services"} existing={props.existingDepartments} onDone={next} />}
           {step === 2 && <TeamStep departments={props.existingDepartments} invitations={props.invitations} onDone={next} />}
           {step === 3 && (
-            <StepCard title="Branding" description="Your logo, name and colour — shown across every panel, sign-in page, email and PDF.">
-              <BrandingForm initial={props.branding} companyName={props.companyName} actions={{ save: saveBrandingAction, uploadLogo: uploadLogoAction }} submitLabel="Save & continue" onSaved={next} />
+            <StepCard title="Branding & theme" description="Your logo, name and theme — applied to your website and every panel.">
+              <BrandingThemeForm initial={props.branding} companyName={props.companyName} themes={props.themes} activeKey={props.activeThemeKey} appliedKey={props.appliedThemeKey} submitLabel="Save & continue" onSaved={next} />
             </StepCard>
           )}
           {step === 4 && <ModulesStep industry={industry || "software_services"} enabled={props.enabledModules} onDone={next} />}

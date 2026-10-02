@@ -36,9 +36,9 @@ export function VoicePanel({ className }: { className?: string }) {
         className={cn(
           "pointer-events-none absolute inset-0 -z-10 transition-opacity duration-500",
           listening
-            ? "bg-gradient-to-br from-primary/10 via-transparent to-yashorbit-coral/10 opacity-100"
+            ? "bg-gradient-to-br from-primary/10 via-transparent to-brand-accent/10 opacity-100"
             : speaking
-              ? "bg-gradient-to-br from-yashorbit-blue/10 via-transparent to-secondary/20 opacity-100"
+              ? "bg-gradient-to-br from-brand-deep/10 via-transparent to-secondary/20 opacity-100"
               : "opacity-0"
         )}
       />

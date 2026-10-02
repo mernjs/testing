@@ -200,7 +200,7 @@ function Row({ label, value, strong, accent }: { label: string; value: string; s
       <span
         className={
           accent
-            ? "bg-gradient-to-r from-primary to-[color:var(--color-yashorbit-coral)] bg-clip-text font-bold text-transparent"
+            ? "bg-gradient-to-r from-primary to-[color:var(--color-brand-accent)] bg-clip-text font-bold text-transparent"
             : strong
               ? "font-bold text-foreground"
               : "font-medium text-foreground"

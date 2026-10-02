@@ -17,7 +17,7 @@ export default function ComingSoon({
       <div className="mx-auto max-w-xl">
         <Breadcrumbs items={[{ label: "Messenger", href: "/messenger" }, { label: title }]} />
         <div className="mt-6 rounded-3xl border border-border/50 bg-card p-8 text-center">
-          <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-yashorbit-coral text-white">
+          <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-brand-accent text-white">
             <Rocket className="size-5" />
           </div>
           <h1 className="text-xl font-black tracking-tight text-foreground">{title}</h1>

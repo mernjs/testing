@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { hasBearer } from "@/lib/security/bearer";
 import { runSopReminders } from "@/lib/sop/reminders";
 import { forEachCompany } from "@/lib/platform/tenancy/context";
 
@@ -9,7 +10,7 @@ import { forEachCompany } from "@/lib/platform/tenancy/context";
  */
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET;
-  if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) {
+  if (!secret || !hasBearer(req, secret)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   // Once per company, each in its own scope.

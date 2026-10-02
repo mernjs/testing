@@ -620,7 +620,7 @@ export default async function HubDashboardPage({
                       </div>
                       <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-gradient-to-r from-primary to-yashorbit-coral transition-all duration-500"
+                          className="h-full rounded-full bg-gradient-to-r from-primary to-brand-accent transition-all duration-500"
                           style={{ width: `${usedPct}%` }}
                         />
                       </div>
@@ -915,7 +915,7 @@ export default async function HubDashboardPage({
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-24 rounded-full bg-muted overflow-hidden">
                             <div
-                              className="h-full rounded-full bg-gradient-to-r from-primary to-yashorbit-coral"
+                              className="h-full rounded-full bg-gradient-to-r from-primary to-brand-accent"
                               style={{ width: `${p.progressPercent}%` }}
                             />
                           </div>
@@ -1062,7 +1062,7 @@ export default async function HubDashboardPage({
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { label: "Attendance Portal", desc: "Clock in, leaves & payslips", href: "/hrms/me", icon: <UserCheck className="size-5 text-emerald-500" />, tag: "HRMS", external: true, needs: "panel.hrms" },
-            { label: "Team Chat", desc: "Channels, DMs & video calls", href: "/messenger", icon: <MessagesSquare className="size-5 text-yashorbit-blue" />, tag: "Messenger", external: true, needs: "panel.messenger" },
+            { label: "Team Chat", desc: "Channels, DMs & video calls", href: "/messenger", icon: <MessagesSquare className="size-5 text-brand-deep" />, tag: "Messenger", external: true, needs: "panel.messenger" },
             { label: "My Tasks & Projects", desc: "Timesheets & deliverables", href: "/pms", icon: <FolderKanban className="size-5 text-amber-500" />, tag: "PMS", external: true, needs: "panel.pms" },
             { label: "Change Password", desc: "Update security credentials", href: "/workspace/change-password", icon: <KeyRound className="size-5 text-rose-500" />, tag: "Security", external: false, needs: "account.password" },
           ].filter((action) => allowed.has(action.needs)).map((action) => (

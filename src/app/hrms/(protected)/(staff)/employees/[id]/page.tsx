@@ -284,7 +284,7 @@ export default async function EmployeeProfilePage({
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-yashorbit-coral text-lg font-bold text-white">
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-brand-accent text-lg font-bold text-white">
             {employee.firstName[0]}
             {employee.lastName[0]}
           </div>

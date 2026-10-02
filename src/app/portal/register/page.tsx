@@ -13,7 +13,7 @@ export default async function PortalRegisterPage() {
       headline={
         <>
           One account,{" "}
-          <span className="bg-gradient-to-r from-primary to-yashorbit-coral bg-clip-text text-transparent">built for you.</span>
+          <span className="bg-gradient-to-r from-primary to-brand-accent bg-clip-text text-transparent">built for you.</span>
         </>
       }
       sub="Register once with the email and phone we have on file. We'll recognise whether you're an applicant, an intern, a trainee or a client and load the right portal."

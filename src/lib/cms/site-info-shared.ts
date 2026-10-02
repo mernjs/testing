@@ -21,14 +21,83 @@ export interface SiteSocialLink {
   href: string;
 }
 
+/**
+ * Which pieces of the header, footer and floating button are shown. Defaults
+ * match the original site; an element whose content is empty (no WhatsApp
+ * link, no phone …) is also hidden regardless of its switch.
+ */
+export interface SiteDisplay {
+  header: { themeToggle: boolean; askAi: boolean; authLinks: boolean; cta: boolean; social: boolean; contactTiles: boolean };
+  footer: { ctaBand: boolean; whatsappButton: boolean; contact: boolean; social: boolean; about: boolean; bottomBar: boolean };
+  floating: { enabled: boolean; assistant: boolean; whatsapp: boolean; liveChat: boolean };
+}
+
+export const DEFAULT_DISPLAY: SiteDisplay = {
+  header: { themeToggle: true, askAi: true, authLinks: true, cta: true, social: false, contactTiles: true },
+  footer: { ctaBand: true, whatsappButton: true, contact: true, social: true, about: true, bottomBar: false },
+  floating: { enabled: true, assistant: true, whatsapp: true, liveChat: true },
+};
+
+export const DISPLAY_LABELS: { group: keyof SiteDisplay; title: string; items: { key: string; label: string }[] }[] = [
+  {
+    group: "header",
+    title: "Header",
+    items: [
+      { key: "themeToggle", label: "Light / dark mode toggle" },
+      { key: "askAi", label: "AI assistant link" },
+      { key: "authLinks", label: "Login / Dashboard link" },
+      { key: "cta", label: "Call-to-action button" },
+      { key: "social", label: "Social icons in the header bar" },
+      { key: "contactTiles", label: "Mobile menu — contact tiles (consultation, chat, WhatsApp)" },
+    ],
+  },
+  {
+    group: "footer",
+    title: "Footer",
+    items: [
+      { key: "ctaBand", label: "Call-to-action band" },
+      { key: "whatsappButton", label: "WhatsApp button" },
+      { key: "contact", label: "Email & phone" },
+      { key: "social", label: "Social icons" },
+      { key: "about", label: "About paragraph" },
+      { key: "bottomBar", label: "Copyright & legal links bar" },
+    ],
+  },
+  {
+    group: "floating",
+    title: "Floating contact button",
+    items: [
+      { key: "enabled", label: "Show the floating button" },
+      { key: "assistant", label: "AI assistant" },
+      { key: "whatsapp", label: "WhatsApp" },
+      { key: "liveChat", label: "Live chat" },
+    ],
+  },
+];
+
+function parseDisplay(raw: unknown): SiteDisplay {
+  const r = rec(raw);
+  const group = <K extends keyof SiteDisplay>(k: K): SiteDisplay[K] => {
+    const src = rec(r[k]);
+    const def = DEFAULT_DISPLAY[k] as Record<string, boolean>;
+    return Object.fromEntries(Object.entries(def).map(([key, v]) => [key, typeof src[key] === "boolean" ? src[key] : v])) as SiteDisplay[K];
+  };
+  return { header: group("header"), footer: group("footer"), floating: group("floating") };
+}
+
 export interface SiteInfo {
+  display: SiteDisplay;
+  /** Set at render time from CMS → Settings → Tracking (not part of Site Identity): the Tawk.to widget id, or "" for no live chat. */
+  liveChatId?: string;
   brand: {
     /** Wordmark is rendered two-tone: `namePrimary` in the text colour, `nameAccent` in the brand colour. */
     namePrimary: string;
     nameAccent: string;
     subtitle: string;
-    /** Empty = the built-in YashOrbit SVG logo. */
+    /** Empty = the company's generated monogram (the platform owner's own site keeps its built-in logo). */
     logoUrl: string;
+    /** Optional logo for dark mode; empty = the same logo in both modes. */
+    logoDarkUrl: string;
   };
   header: {
     ctaLabel: string;
@@ -100,7 +169,8 @@ export interface SiteInfo {
 
 /** The shape with no content — what a missing field reads as. The content itself lives only in the CMS. */
 export const EMPTY_SITE_INFO: SiteInfo = {
-  brand: { namePrimary: "", nameAccent: "", subtitle: "", logoUrl: "" },
+  display: DEFAULT_DISPLAY,
+  brand: { namePrimary: "", nameAccent: "", subtitle: "", logoUrl: "", logoDarkUrl: "" },
   header: {
     ctaLabel: "", ctaHref: "", followLabel: "", askAiLabel: "", askAiHref: "", featuredLabel: "",
     consultLabel: "", consultHref: "", liveChatLabel: "", whatsappLabel: "", dashboardLabel: "", loginLabel: "", signupLabel: "",
@@ -141,6 +211,7 @@ export function parseSiteInfo(raw: unknown): SiteInfo {
         .slice(0, 20)
     : [];
   return {
+    display: parseDisplay(r.display),
     brand: obj(pick("brand"), d.brand),
     header: obj(pick("header"), d.header),
     contact: obj(pick("contact"), d.contact),

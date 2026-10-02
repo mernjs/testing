@@ -8,6 +8,8 @@ import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from
 import { Menu, X, ChevronDown, Moon, Sun, ArrowRight, Zap, Monitor, Smartphone, Cpu, Box, Code2, Database, Sparkles, Bot, MessageSquare, ScanEye, Compass, Briefcase, Layers, Glasses, Eye, GraduationCap, Building2, Landmark, Calendar, Mail, Phone, Globe, HeartPulse, ShoppingCart, Umbrella, Tractor, Share2, Plane, Hotel, Palette, Handshake, Users, UserPlus, UserCheck, Clock, Target, Newspaper, Workflow, BarChart3, FileSearch, TrendingUp, Plug, BrainCircuit, Megaphone, FileQuestion, Kanban, Filter, ShieldCheck, FileText } from "lucide-react";
 import { useTheme } from "next-themes";
 import { WhatsAppIcon } from "@/components/icons/SocialIcons";
+import SiteLogo from "@/components/SiteLogo";
+import NavDropdown from "@/components/header/NavDropdown";
 import { socialIconFor } from "@/components/icons/social-icon-for";
 import { useSiteInfo } from "@/components/cms/SiteInfoContext";
 import type { SiteInfo } from "@/lib/cms/site-info-shared";
@@ -17,50 +19,12 @@ import type { PublicNavTop } from "@/lib/cms/nav";
 import { isProductsHref, SIGNUP_PATH } from "@/lib/products/shared";
 import { resolveProductsText } from "@/lib/products/text";
 
-function Logo({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
-      <path d="M4,50 C0,60 40,38 50,26" fill="none" stroke="#ECF2FD" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
-      <circle cx="32" cy="32" r="25.5" fill="#1D428A" />
-      <g fill="#ECF2FD" opacity="0.4">
-        <circle cx="29.4" cy="24.6" r="0.92" />
-        <circle cx="34.6" cy="24.6" r="0.92" />
-        <circle cx="26.8" cy="29.8" r="0.98" />
-        <circle cx="32.0" cy="29.8" r="1.09" />
-        <circle cx="37.2" cy="29.8" r="0.98" />
-        <circle cx="24.2" cy="35.0" r="0.9" />
-        <circle cx="29.4" cy="35.0" r="1.03" />
-        <circle cx="34.6" cy="35.0" r="1.03" />
-        <circle cx="39.8" cy="35.0" r="0.9" />
-        <circle cx="21.6" cy="19.4" r="0.75" />
-        <circle cx="32.0" cy="19.4" r="0.78" />
-        <circle cx="42.4" cy="19.4" r="0.75" />
-        <circle cx="19.0" cy="45.4" r="0.6" />
-        <circle cx="29.4" cy="45.4" r="0.75" />
-        <circle cx="34.6" cy="45.4" r="0.75" />
-        <circle cx="45.0" cy="45.4" r="0.6" />
-      </g>
-      <path d="M17.6,17.6 L32,33.6" fill="none" stroke="#ECF2FD" strokeWidth="8" strokeLinecap="round" />
-      <path d="M32,33.6 L32,48" fill="none" stroke="#ECF2FD" strokeWidth="8" strokeLinecap="round" />
-      <path d="M46.4,17.6 L36,29.2" fill="none" stroke="#ECF2FD" strokeWidth="8" strokeLinecap="round" />
-      <circle cx="34.4" cy="30.4" r="4.8" fill="#E56043" />
-      <path d="M8,44 C2,57 45,31 56,12" fill="none" stroke="#E56043" strokeWidth="3" strokeLinecap="round" />
-      <polygon points="58.6,15.8 51.4,11.6 59.8,5.5" fill="#E56043" />
-    </svg>
-  );
-}
-
-/** The brand logo: the CMS Site Identity logo image when one is set, else the built-in SVG. */
-function SiteLogo({ className, logoUrl }: { className: string; logoUrl: string }) {
-  // eslint-disable-next-line @next/next/no-img-element -- CMS logo URL (any host)
-  return logoUrl ? <img src={logoUrl} alt="" className={`${className} object-contain`} /> : <Logo className={className} />;
-}
-
-const mobileContactLinksFor = (header: SiteInfo["header"], whatsappHref: string) => [
-  { name: header.consultLabel, type: "link" as const, href: header.consultHref, icon: Calendar },
-  { name: header.liveChatLabel, type: "action" as const, icon: MessageSquare },
-  { name: header.whatsappLabel, type: "external" as const, href: whatsappHref, icon: WhatsAppIcon },
-];
+const mobileContactLinksFor = (header: SiteInfo["header"], whatsappHref: string, liveChatId?: string) =>
+  [
+    header.consultLabel && header.consultHref ? { name: header.consultLabel, type: "link" as const, href: header.consultHref, icon: Calendar } : null,
+    header.liveChatLabel && liveChatId ? { name: header.liveChatLabel, type: "action" as const, icon: MessageSquare } : null,
+    header.whatsappLabel && whatsappHref ? { name: header.whatsappLabel, type: "external" as const, href: whatsappHref, icon: WhatsAppIcon } : null,
+  ].filter((x): x is NonNullable<typeof x> => x !== null);
 
 /** A desktop mega-menu column, resolved from the CMS navigation. */
 interface NavColumn {
@@ -156,15 +120,21 @@ function FeaturedCard({ item, featuredLabel, cta }: { item: NavColumn; featuredL
 /**
  * `variant` is chosen per theme in the CMS (src/lib/cms/component-variants.ts):
  * "default" is the site's standard header; "menu" drops the desktop nav bar
- * and uses the slide-out menu at every screen width.
+ * and uses the slide-out menu at every screen width; "centered" puts the logo
+ * above a centered nav row; "floating" is a rounded bar floating over the page.
  */
-export default function Header({ cmsNavigation, variant = "default" }: { cmsNavigation: PublicNavTop[]; variant?: "default" | "menu" }) {
+export type HeaderVariant = "default" | "menu" | "centered" | "floating";
+
+export default function Header({ cmsNavigation, variant = "default", menuStyle = "default" }: { cmsNavigation: PublicNavTop[]; variant?: HeaderVariant; menuStyle?: string }) {
   const menuOnly = variant === "menu";
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   // Brand, CTA, contact details and social links: CMS → Site Identity.
-  const { brand, header, contact, social, text: siteText } = useSiteInfo();
+  const { brand, header, contact, social, text: siteText, display, liveChatId } = useSiteInfo();
+  const show = display.header;
+  const showAskAi = show.askAi && !!header.askAiLabel && !!header.askAiHref;
+  const showCta = show.cta && !!header.ctaLabel && !!header.ctaHref;
   const productsText = React.useMemo(() => resolveProductsText(siteText), [siteText]);
-  const mobileContactLinks = React.useMemo(() => mobileContactLinksFor(header, contact.whatsappHref), [header, contact.whatsappHref]);
+  const mobileContactLinks = React.useMemo(() => (show.contactTiles ? mobileContactLinksFor(header, contact.whatsappHref, liveChatId) : []), [header, contact.whatsappHref, liveChatId, show.contactTiles]);
   const [activeMenu, setActiveMenu] = React.useState<string | null>(null);
   const [openMobileSection, setOpenMobileSection] = React.useState<string | null>(null);
   const { theme, setTheme } = useTheme();
@@ -198,24 +168,23 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
     [cmsNavigation]
   );
 
-  return (
-    <>
-    <header className="fixed inset-x-0 top-[var(--offer-strip-h,0px)] z-50 h-[88px] bg-background/80 dark:bg-muted/20 backdrop-blur-xl border-b border-border/50">
-      <nav className="mx-auto flex h-full max-w-7xl items-center justify-between px-6 lg:px-8" aria-label="Global">
-        <div className="flex shrink-0">
-          <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2.5 group">
-            <SiteLogo logoUrl={brand.logoUrl} className="w-9 h-9 shrink-0 transition-transform duration-300 group-hover:scale-105" />
-            <span className="flex flex-col leading-none">
-              <span className="font-extrabold text-2xl tracking-tight">
-                <span className="text-foreground">{brand.namePrimary}</span><span className="text-primary">{brand.nameAccent}</span>
-              </span>
-              <span className="mt-0.5 whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.15em] text-foreground/80">
-                {brand.subtitle}
-              </span>
-            </span>
-          </Link>
-        </div>
+  const logoLink = (
+    <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2.5 group">
+      <SiteLogo logoUrl={brand.logoUrl} logoDarkUrl={brand.logoDarkUrl} className="w-9 h-9 shrink-0 transition-transform duration-300 group-hover:scale-105" />
+      <span className="flex flex-col leading-none">
+        <span className="font-extrabold text-2xl tracking-tight">
+          <span className="text-foreground">{brand.namePrimary}</span><span className="text-primary">{brand.nameAccent}</span>
+        </span>
+        {brand.subtitle && (
+          <span className="mt-0.5 whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.15em] text-foreground/80">
+            {brand.subtitle}
+          </span>
+        )}
+      </span>
+    </Link>
+  );
 
+  const mobileControls = (
         <div className={`${menuOnly ? "flex" : "flex xl:hidden"} gap-4 items-center ml-auto`}>
           <button
             type="button"
@@ -231,6 +200,7 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
           >
             <Menu className="h-6 w-6" aria-hidden="true" />
           </button>
+          {show.themeToggle && (
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
@@ -238,9 +208,12 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
           >
             {isDark ? <Sun className="w-5 h-5 text-foreground" /> : <Moon className="w-5 h-5 text-foreground" />}
           </button>
+          )}
         </div>
 
-        <div className={`${menuOnly ? "hidden" : "hidden xl:flex"} xl:items-center xl:gap-x-3 ml-auto relative h-full`}>
+  );
+
+  const navItems = (
           <div className="flex items-center gap-x-0.5 relative h-full">
             {navigation.map((item) => {
               const isActive = pathname === item.href || pathname?.startsWith(item.href + "/");
@@ -268,7 +241,8 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                 </Link>
 
                 <AnimatePresence>
-                  {activeMenu === item.name && (
+                  {activeMenu === item.name && menuStyle !== "default" && <NavDropdown style={menuStyle} nav={item} />}
+                  {activeMenu === item.name && menuStyle === "default" && (
                     <motion.div
                       initial={{ opacity: 0, y: 15, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -295,7 +269,7 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                                   href={subItem.href}
                                   className="group relative flex items-start gap-3.5 rounded-xl p-2.5 hover:bg-muted/50 transition-colors"
                                 >
-                                  <div className="flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-border/50 group-hover:from-primary group-hover:to-[#ff8e75] group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                                  <div className="flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-border/50 group-hover:from-primary group-hover:to-brand-accent group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                                     <subItem.icon className="h-4.5 w-4.5 text-muted-foreground group-hover:text-white transition-colors duration-300" />
                                   </div>
                                   <div className="min-w-0 flex-1">
@@ -317,6 +291,7 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
               );
             })}
 
+            {showAskAi && (
             <Link
               href={header.askAiHref}
               className={`relative ml-1 flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-2 text-sm font-semibold transition-colors duration-200 ${
@@ -328,10 +303,28 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
               <Bot className="h-4 w-4 text-primary" />
               {header.askAiLabel}
             </Link>
+            )}
           </div>
 
+  );
+
+  const actions = (
           <div className="flex items-center gap-3">
-            <PortalAuthLink variant="desktop" />
+            {show.social && social.length > 0 && (
+              <div className="flex items-center gap-1.5">
+                {social.map((link) => {
+                  const Icon = socialIconFor(link.name);
+                  return (
+                    <a key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" className="flex size-9 items-center justify-center rounded-full border border-border/50 bg-muted/30 text-muted-foreground transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground">
+                      <span className="sr-only">{link.name}</span>
+                      <Icon className="h-4 w-4" />
+                    </a>
+                  );
+                })}
+              </div>
+            )}
+            {show.authLinks && <PortalAuthLink variant="desktop" />}
+            {showCta && (
             <Link
               href={header.ctaHref}
               className="group relative inline-flex flex-none items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-all hover:scale-105 active:scale-95"
@@ -340,6 +333,8 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                 {header.ctaLabel} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
             </Link>
+            )}
+            {show.themeToggle && (
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
@@ -347,9 +342,49 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
             >
               {isDark ? <Sun className="w-4 h-4 text-foreground" /> : <Moon className="w-4 h-4 text-foreground" />}
             </button>
+            )}
           </div>
-        </div>
-      </nav>
+  );
+
+  const centered = variant === "centered";
+  const floating = variant === "floating";
+  const headerClass = floating
+    ? "fixed inset-x-3 top-[calc(var(--offer-strip-h,0px)+12px)] z-50 mx-auto h-[64px] max-w-7xl rounded-full border border-border/60 bg-background/85 shadow-lg shadow-black/5 backdrop-blur-xl dark:bg-muted/30"
+    : "fixed inset-x-0 top-[var(--offer-strip-h,0px)] z-50 h-[88px] xl:h-[var(--site-header-h,88px)] bg-background/80 dark:bg-muted/20 backdrop-blur-xl border-b border-border/50";
+
+  return (
+    <>
+    <header className={headerClass}>
+      {centered ? (
+        <nav className="mx-auto flex h-full max-w-7xl flex-col px-6 lg:px-8" aria-label="Global">
+          <div className="flex h-[88px] shrink-0 items-center justify-between xl:h-[76px]">
+            <div className="hidden flex-1 items-center gap-2 xl:flex">
+              {show.social && social.length > 0 && social.map((link) => {
+                const Icon = socialIconFor(link.name);
+                return (
+                  <a key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" className="flex size-9 items-center justify-center rounded-full border border-border/50 bg-muted/30 text-muted-foreground transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground">
+                    <span className="sr-only">{link.name}</span>
+                    <Icon className="h-4 w-4" />
+                  </a>
+                );
+              })}
+            </div>
+            <div className="flex shrink-0 xl:justify-center">{logoLink}</div>
+            {mobileControls}
+            <div className="hidden flex-1 items-center justify-end gap-3 xl:flex">{actions}</div>
+          </div>
+          <div className="relative hidden h-[52px] flex-1 items-center justify-center border-t border-border/40 xl:flex">{navItems}</div>
+        </nav>
+      ) : (
+        <nav className={`mx-auto flex h-full max-w-7xl items-center justify-between ${floating ? "px-6" : "px-6 lg:px-8"}`} aria-label="Global">
+          <div className="flex shrink-0">{logoLink}</div>
+          {mobileControls}
+          <div className={`${menuOnly ? "hidden" : "hidden xl:flex"} xl:items-center xl:gap-x-3 ml-auto relative h-full`}>
+            {navItems}
+            {actions}
+          </div>
+        </nav>
+      )}
     </header>
 
       {/* Mobile Menu */}
@@ -371,14 +406,16 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
             >
               <div className="flex items-center justify-between">
                 <Link href="/" className="-m-1.5 p-1.5 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                  <SiteLogo logoUrl={brand.logoUrl} className="w-8 h-8 shrink-0" />
+                  <SiteLogo logoUrl={brand.logoUrl} logoDarkUrl={brand.logoDarkUrl} className="w-8 h-8 shrink-0" />
                   <span className="flex flex-col leading-none">
                     <span className="font-extrabold text-xl tracking-tight">
                       <span className="text-foreground">{brand.namePrimary}</span><span className="text-primary">{brand.nameAccent}</span>
                     </span>
-                    <span className="mt-0.5 whitespace-nowrap text-[8px] font-bold uppercase tracking-[0.13em] text-foreground/80">
-                      {brand.subtitle}
-                    </span>
+                    {brand.subtitle && (
+                      <span className="mt-0.5 whitespace-nowrap text-[8px] font-bold uppercase tracking-[0.13em] text-foreground/80">
+                        {brand.subtitle}
+                      </span>
+                    )}
                   </span>
                 </Link>
                 <button
@@ -463,6 +500,7 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                     );
                   })}
 
+                  {showAskAi && (
                   <Link
                     href={header.askAiHref}
                     onClick={() => setMobileMenuOpen(false)}
@@ -481,10 +519,12 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                     </span>
                     <span className="text-base font-bold">{header.askAiLabel}</span>
                   </Link>
+                  )}
                 </div>
 
+                {mobileContactLinks.length > 0 && (
                 <div className="border-b border-border/50 py-4">
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${mobileContactLinks.length}, minmax(0, 1fr))` }}>
                     {mobileContactLinks.map((link) => {
                       const tileContent = (
                         <>
@@ -502,7 +542,7 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                             key={link.name}
                             type="button"
                             onClick={() => {
-                              loadAndToggleTawk();
+                              loadAndToggleTawk(liveChatId);
                               setMobileMenuOpen(false);
                             }}
                             className={tileClassName}
@@ -540,39 +580,40 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                     })}
                   </div>
                 </div>
+                )}
 
                 <div className="space-y-5 pt-6">
                   <div className="grid grid-cols-1 gap-3">
-                    <PortalAuthLink variant="mobile" onNavigate={() => setMobileMenuOpen(false)} />
-                    <Link
+                    {show.authLinks && <PortalAuthLink variant="mobile" onNavigate={() => setMobileMenuOpen(false)} />}
+                    {showCta && <Link
                       href={header.ctaHref}
                       onClick={() => setMobileMenuOpen(false)}
                       className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-3 py-3.5 text-base font-semibold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.98]"
                     >
                       {header.ctaLabel} <ArrowRight className="w-5 h-5" />
-                    </Link>
+                    </Link>}
                   </div>
 
                   <div className="flex flex-col gap-3">
-                    <a href={`mailto:${contact.email}`} className="group flex items-center gap-3">
+                    {contact.email && <a href={`mailto:${contact.email}`} className="group flex items-center gap-3">
                       <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary">
                         <Mail className="h-4 w-4 text-primary transition-colors group-hover:text-primary-foreground" />
                       </span>
                       <span className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
                         {contact.email}
                       </span>
-                    </a>
-                    <a href={contact.phoneHref} className="group flex items-center gap-3">
+                    </a>}
+                    {contact.phoneHref && contact.phoneDisplay && <a href={contact.phoneHref} className="group flex items-center gap-3">
                       <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary">
                         <Phone className="h-4 w-4 text-primary transition-colors group-hover:text-primary-foreground" />
                       </span>
                       <span className="text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
                         {contact.phoneDisplay}
                       </span>
-                    </a>
+                    </a>}
                   </div>
 
-                  <div className="pt-1">
+                  {social.length > 0 && <div className="pt-1">
                     <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">{header.followLabel}</p>
                     <div className="flex items-center gap-3">
                       {social.map((link) => {
@@ -589,7 +630,7 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                         );
                       })}
                     </div>
-                  </div>
+                  </div>}
                 </div>
               </div>
             </motion.div>

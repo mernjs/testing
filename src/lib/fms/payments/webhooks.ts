@@ -34,6 +34,8 @@ async function getCollection() {
   return collection;
 }
 
+import { simulatedPaymentsAllowed } from "@/lib/fms/payments/guard";
+
 export async function processPaymentWebhook(
   providerId: PaymentProviderId,
   rawBody: string,
@@ -50,8 +52,10 @@ export async function processPaymentWebhook(
     if (!getPaymentProvider("razorpay").verifyWebhookSignature(rawBody, signature, secret)) {
       return { ok: false, status: 400, message: "Invalid webhook signature" };
     }
-  } else if (providerId !== "mock") {
-    // No other gateway has a real integration (or a secret) yet.
+  } else if (providerId === "mock" && simulatedPaymentsAllowed()) {
+    // Development / explicit staging opt-in only: the simulated gateway's "signature" is not a signature.
+  } else {
+    // No other gateway has a real integration (or a secret) yet — and a forged "mock" event must never settle a payment.
     return { ok: false, status: 404, message: "Unsupported payment provider" };
   }
 
@@ -137,7 +141,7 @@ export async function processPaymentWebhook(
     await collection.insertOne(logDoc);
     await recordAudit({
       actorId: "system",
-      actorEmail: "webhook@yashorbit.com",
+      actorEmail: "webhook@internal.invalid",
       action: "webhook_received",
       entity: "webhook_event",
       entityId: logDoc._id,

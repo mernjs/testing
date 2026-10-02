@@ -46,23 +46,21 @@ export interface TmsSettings {
 }
 
 const DEFAULT_INSTITUTE: InstituteIdentity = {
-  name: "YashOrbit Training",
+  name: "",
   addressLine: null,
   city: null,
   email: null,
   phone: null,
-  website: "https://www.yashorbit.com",
+  website: null,
   signatoryName: null,
   signatoryTitle: "Training Head",
 };
 
 /**
  * Defaults for a company that hasn't saved its institute identity yet: the
- * platform owner's own details for the platform owner only — any other
- * company starts from its own name, never the owner's.
+ * its own name with blank details.
  */
 async function defaultInstituteIdentity(): Promise<InstituteIdentity> {
-  if (await isPlatformOwnerContext()) return DEFAULT_INSTITUTE;
   return { ...DEFAULT_INSTITUTE, name: (await getCompanyBrand()).name, website: null };
 }
 

@@ -80,7 +80,7 @@ export function ContactHero({
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[120px] mix-blend-multiply dark:mix-blend-screen animate-blob"></div>
         <div className="absolute top-[10%] right-[5%] w-[50%] h-[50%] rounded-full bg-secondary/15 blur-[100px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-[20%] left-[20%] w-[70%] h-[70%] rounded-full bg-[#ff8e75]/15 blur-[140px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000"></div>
+        <div className="absolute -bottom-[20%] left-[20%] w-[70%] h-[70%] rounded-full bg-brand-accent/15 blur-[140px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000"></div>
       </div>
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-grid-slate-900/[0.02] dark:bg-grid-slate-400/[0.02] [mask-image:linear-gradient(to_bottom,black,transparent)]"></div>
@@ -101,7 +101,7 @@ export function ContactHero({
               <span>{badge}</span>
             </motion.div>
             <motion.h1 variants={fadeIn} className="text-5xl font-black tracking-tight text-foreground sm:text-6xl mb-6 leading-[1.1]">
-              {headingLead}<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#ff8e75]">{headingHighlight}</span>{headingTail}
+              {headingLead}<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-brand-accent">{headingHighlight}</span>{headingTail}
             </motion.h1>
             <motion.p variants={fadeIn} className="text-xl leading-8 text-muted-foreground">
               {description}
@@ -262,6 +262,7 @@ export function ContactFormSection({
             </div>
 
             <div className="space-y-8">
+              {contact.email && (
               <div className="flex gap-4 p-6 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <Mail className="w-6 h-6 text-primary" />
@@ -276,7 +277,9 @@ export function ContactFormSection({
                   </div>
                 </div>
               </div>
+              )}
 
+              {contact.phoneHref && contact.phoneDisplay && (
               <div className="flex gap-4 p-6 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <Phone className="w-6 h-6 text-primary" />
@@ -287,7 +290,9 @@ export function ContactFormSection({
                   <a href={contact.phoneHref} className="text-primary font-medium hover:underline">{contact.phoneDisplay}</a>
                 </div>
               </div>
+              )}
 
+              {contact.whatsappHref && (
               <div className="flex gap-4 p-6 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <WhatsAppIcon className="w-6 h-6 text-primary" />
@@ -300,7 +305,9 @@ export function ContactFormSection({
                   </a>
                 </div>
               </div>
+              )}
 
+              {(contact.address || contact.mapsUrl) && (
               <div className="flex gap-4 p-6 rounded-2xl bg-muted/30 border border-border/50 hover:bg-muted/50 transition-colors">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <MapPin className="w-6 h-6 text-primary" />
@@ -310,6 +317,7 @@ export function ContactFormSection({
                   <p className="text-muted-foreground"><span className="font-semibold"><span className="text-foreground">{brand.namePrimary}</span><span className="text-primary">{brand.nameAccent}</span></span>{` ${contact.addressName}`}{contact.address.split("\n").map((line, i) => <React.Fragment key={i}><br/>{line}</React.Fragment>)}</p>
                 </div>
               </div>
+              )}
             </div>
           </motion.div>
 

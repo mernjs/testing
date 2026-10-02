@@ -2,7 +2,7 @@ import "server-only";
 import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { COLLECTIONS, seoCollection } from "@/lib/seo-panel/db";
 import { invalidateSite } from "@/lib/seo-panel/pages";
-import { DEFAULT_ROBOTS_TXT, robotsTxtTemplate, validateRobots } from "@/lib/seo-panel/robots-parse";
+import { robotsTxtTemplate, validateRobots } from "@/lib/seo-panel/robots-parse";
 import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 import { SeoInputError } from "@/lib/seo-panel/viewer";
 import type { SeoPage } from "@/lib/seo-panel/types";
@@ -40,7 +40,7 @@ export async function getRobotsDoc(): Promise<RobotsDoc> {
 
 /** The code default served until a company publishes its own file: the owner's historical file, else one pointing at the company's own sitemap. */
 export async function defaultRobots(): Promise<string> {
-  return (await isPlatformOwnerContext()) ? DEFAULT_ROBOTS_TXT : robotsTxtTemplate(await companySiteUrl());
+  return robotsTxtTemplate(await companySiteUrl());
 }
 
 /** Paths the latest audit found indexable — the validator warns if a rule would block them. */

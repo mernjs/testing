@@ -1,5 +1,6 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, View, Text } from "@react-pdf/renderer";
+import { lazyStyles } from "@/lib/pdf/lazy-styles";
 import type { ProjectReport } from "@/lib/pms/reports";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
@@ -19,7 +20,7 @@ function fmtDate(iso: string | null): string {
   return Number.isNaN(d.getTime()) ? "—" : d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 }
 
-const s = StyleSheet.create({
+const s = lazyStyles(() => ({
   page: pdfSheet.pagePortrait,
   section: pdfSheet.sectionTitle,
   grid: { flexDirection: "row", flexWrap: "wrap" },
@@ -33,7 +34,7 @@ const s = StyleSheet.create({
   kpiValue: pdfSheet.kpiValue,
   tHead: pdfSheet.tHead,
   tRow: pdfSheet.tRow,
-});
+}));
 
 function Row({ k, v }: { k: string; v: string }) {
   return (

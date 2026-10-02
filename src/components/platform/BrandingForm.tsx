@@ -1,32 +1,42 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useRef, useState, useTransition, type CSSProperties, type ReactNode } from "react";
 import { ImageUp, Loader2, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { brandInitials, type StoredBranding } from "@/lib/platform/branding/types";
-import { readableOn } from "@/lib/platform/branding/theme";
-
-const PRESETS = ["#1D428A", "#E56043", "#0F766E", "#7C3AED", "#DB2777", "#EA580C", "#16A34A", "#0891B2", "#111827"];
 
 export interface BrandingFormActions {
-  save: (input: { namePrimary: string; nameAccent: string; primaryColor: string | null; logoUrl: string | null }) => Promise<{ ok: true } | { ok: false; errors: Record<string, string> }>;
+  save: (input: { namePrimary: string; nameAccent: string; logoUrl: string | null }) => Promise<{ ok: true } | { ok: false; errors: Record<string, string> }>;
   uploadLogo: (form: FormData) => Promise<{ ok: true; url: string } | { ok: false; error: string }>;
 }
 
-/** Logo, wordmark and brand colour, with a live preview. Shared by Settings → Branding and the setup wizard. */
-export default function BrandingForm({ initial, companyName, actions, submitLabel, onSaved }: { initial: StoredBranding; companyName: string; actions: BrandingFormActions; submitLabel: string; onSaved?: () => void }) {
+/**
+ * Logo and wordmark with a live preview. Shared by Settings → Branding and the setup wizard.
+ * `extra` renders between the fields and the save button (the theme picker); `beforeSave` runs
+ * first and may veto the save by returning an error message; `previewVars` re-colours the preview.
+ */
+export default function BrandingForm({
+  initial, companyName, actions, submitLabel, onSaved, extra, beforeSave, previewVars,
+}: {
+  initial: StoredBranding;
+  companyName: string;
+  actions: BrandingFormActions;
+  submitLabel: string;
+  onSaved?: () => void;
+  extra?: ReactNode;
+  beforeSave?: () => Promise<string | null>;
+  previewVars?: CSSProperties;
+}) {
   const [namePrimary, setNamePrimary] = useState(initial.namePrimary ?? companyName);
   const [nameAccent, setNameAccent] = useState(initial.nameAccent ?? "");
-  const [color, setColor] = useState<string | null>(initial.primaryColor ?? null);
   const [logoUrl, setLogoUrl] = useState<string | null>(initial.logoUrl ?? null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
   const [uploading, startUpload] = useTransition();
   const [saving, startSave] = useTransition();
   const fileRef = useRef<HTMLInputElement>(null);
-  const accent = color ?? "#E56043";
 
   return (
     <div className="grid gap-6 md:grid-cols-[1fr_260px]">
@@ -36,7 +46,12 @@ export default function BrandingForm({ initial, companyName, actions, submitLabe
           e.preventDefault();
           setSaved(false);
           startSave(async () => {
-            const res = await actions.save({ namePrimary, nameAccent, primaryColor: color, logoUrl });
+            const veto = await beforeSave?.();
+            if (veto) {
+              setErrors({ form: veto });
+              return;
+            }
+            const res = await actions.save({ namePrimary, nameAccent, logoUrl });
             if (res.ok) {
               setErrors({});
               setSaved(true);
@@ -90,63 +105,39 @@ export default function BrandingForm({ initial, companyName, actions, submitLabe
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="br-accent">Accent part (optional)</Label>
-            <Input id="br-accent" value={nameAccent} onChange={(e) => setNameAccent(e.target.value)} maxLength={40} placeholder="Shown in your brand colour" />
+            <Input id="br-accent" value={nameAccent} onChange={(e) => setNameAccent(e.target.value)} maxLength={40} placeholder="Shown in your theme's accent colour" />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="br-color">Brand colour</Label>
-          <div className="flex flex-wrap items-center gap-2">
-            {PRESETS.map((c) => (
-              <button
-                key={c}
-                type="button"
-                aria-label={`Use ${c}`}
-                aria-pressed={color === c}
-                onClick={() => setColor(c)}
-                className="size-7 rounded-full border-2 transition-transform hover:scale-110 aria-pressed:border-foreground"
-                style={{ backgroundColor: c }}
-              />
-            ))}
-            <input id="br-color" type="color" value={accent} onChange={(e) => setColor(e.target.value)} className="h-7 w-10 cursor-pointer rounded border bg-transparent" aria-label="Custom colour" />
-            {color && (
-              <Button type="button" variant="ghost" size="sm" onClick={() => setColor(null)}>
-                Default
-              </Button>
-            )}
-          </div>
-          {errors.primaryColor && <p className="text-xs text-destructive">{errors.primaryColor}</p>}
-        </div>
+        {extra}
 
         {errors.form && <p className="text-sm text-destructive">{errors.form}</p>}
         <div className="flex items-center gap-3">
           <Button type="submit" disabled={saving || uploading}>
             {saving ? <Loader2 className="size-4 animate-spin" /> : submitLabel}
           </Button>
-          {saved && <span className="text-sm text-emerald-600" aria-live="polite">Saved — reload any open panel to see it.</span>}
+          {saved && <span className="text-sm text-emerald-600" aria-live="polite">Saved — your theme now applies to the website and every panel.</span>}
         </div>
       </form>
 
       {/* Live preview */}
-      <div className="space-y-3 rounded-xl border bg-muted/30 p-4" aria-hidden="true">
+      <div className="h-fit space-y-3 rounded-xl border bg-muted/30 p-4" style={previewVars} aria-hidden="true">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Preview</p>
-        <div className="flex items-center gap-2 rounded-lg bg-background p-3 text-base font-bold shadow-sm">
+        <div className="flex items-center gap-2 rounded-lg bg-background p-3 text-base font-bold text-foreground shadow-sm">
           {logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- uploaded logo preview
             <img src={logoUrl} alt="" className="size-7 rounded object-contain" />
           ) : (
-            <span className="flex size-7 items-center justify-center rounded-md text-xs font-black" style={{ backgroundColor: accent, color: readableOn(accent) }}>
+            <span className="flex size-7 items-center justify-center rounded-md bg-primary text-xs font-black text-primary-foreground">
               {brandInitials(namePrimary + " " + nameAccent)}
             </span>
           )}
           <span>
             {namePrimary}
-            <span style={{ color: accent }}>{nameAccent}</span>
+            <span className="text-primary">{nameAccent}</span>
           </span>
         </div>
-        <span className="inline-block rounded-md px-3 py-1.5 text-sm font-semibold" style={{ backgroundColor: accent, color: readableOn(accent) }}>
-          Primary button
-        </span>
+        <span className="inline-block rounded-md bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground">Primary button</span>
       </div>
     </div>
   );

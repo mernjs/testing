@@ -1,5 +1,6 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, View, Text } from "@react-pdf/renderer";
+import { lazyStyles } from "@/lib/pdf/lazy-styles";
 import type { Invoice } from "@/lib/fms/invoices";
 import { invoiceBalance } from "@/lib/fms/invoices";
 import { PDF_COLORS } from "@/lib/pdf/brand";
@@ -16,7 +17,7 @@ function fmtDate(iso: string): string {
   return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 }
 
-const s = StyleSheet.create({
+const s = lazyStyles(() => ({
   page: pdfSheet.pagePortrait,
   small: { fontSize: 8, color: C.mute },
   cols: { flexDirection: "row", justifyContent: "space-between", marginTop: 14 },
@@ -24,7 +25,7 @@ const s = StyleSheet.create({
   value: pdfSheet.value,
   tHead: { ...pdfSheet.tHead, marginTop: 16 },
   tRow: pdfSheet.tRow,
-});
+}));
 
 function InvoiceDocument({ invoice }: { invoice: Invoice }) {
   const balance = invoiceBalance(invoice);

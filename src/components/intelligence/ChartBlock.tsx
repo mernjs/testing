@@ -4,7 +4,7 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, Legend, Line, LineChart,
 import { formatCell, type BlockColumn, type BlockRow } from "@/lib/intelligence/blocks";
 
 /** Series colours: the repo's blue and coral first (as in the lead-status charts), then distinct accents. */
-const COLORS = ["#1D428A", "#E56043", "#0ca30c", "#7c5cbf", "#d09a1c", "#2a9db8", "#d03b3b", "#6b7280"];
+const COLORS = ["var(--brand-deep)", "var(--primary)", "#0ca30c", "#7c5cbf", "#d09a1c", "#2a9db8", "#d03b3b", "#6b7280"];
 const compact = new Intl.NumberFormat("en-IN", { notation: "compact", maximumFractionDigits: 1 });
 const short = (v: unknown, n = 12) => {
   const s = String(v ?? "");

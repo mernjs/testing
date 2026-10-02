@@ -56,6 +56,8 @@ export interface HomeHeroProps {
   perfTitle: string;
   perfText: string;
   scrollLabel: string;
+  /** Background photo; empty = the built-in one. */
+  image?: string;
 }
 
 export default function HomeHero({
@@ -75,6 +77,7 @@ export default function HomeHero({
   perfTitle,
   perfText,
   scrollLabel,
+  image,
 }: HomeHeroProps) {
   const { brand } = useSiteInfo();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -97,7 +100,7 @@ export default function HomeHero({
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1600&auto=format&fit=crop"
+          src={image || "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1600&auto=format&fit=crop"}
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -121,7 +124,7 @@ export default function HomeHero({
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[10%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-primary/15 blur-[120px] mix-blend-multiply dark:mix-blend-screen animate-blob"></div>
         <div className="absolute top-[20%] right-[5%] w-[40vw] h-[40vw] rounded-full bg-secondary/15 blur-[100px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-[20%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-[#ff8e75]/15 blur-[140px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000"></div>
+        <div className="absolute -bottom-[20%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-brand-accent/15 blur-[140px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000"></div>
       </div>
 
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -164,7 +167,7 @@ export default function HomeHero({
 
             <motion.h1 variants={fadeIn} className="text-5xl font-black tracking-tighter text-foreground sm:text-7xl leading-[1.1] mb-6">
               {titleLine1} <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-[#ff8e75] to-primary bg-300% animate-gradient">{titleHighlight}</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-brand-accent to-primary bg-300% animate-gradient">{titleHighlight}</span>
             </motion.h1>
 
             <motion.p variants={fadeIn} className="text-lg sm:text-xl leading-relaxed text-muted-foreground mb-10 max-w-lg">
@@ -212,7 +215,7 @@ export default function HomeHero({
                   <div className="flex gap-1.5">
                     <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-primary/10 text-primary">{chipOne}</span>
                     <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-secondary/20 text-secondary-foreground">{chipTwo}</span>
-                    <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-[#ff8e75]/15 text-[#ff8e75]">{chipThree}</span>
+                    <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-brand-accent/15 text-brand-accent">{chipThree}</span>
                   </div>
                 </div>
                 <div className="flex-1 grid grid-cols-2 gap-4">

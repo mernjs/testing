@@ -262,7 +262,7 @@ function MockupContent({ type }: { type: string }) {
             </div>
             <div className="space-y-1.5 text-xs">
               <ChatBubble sender="Prospect" text={tx("catalog.productMockup.hi-we-need-an-ai-powered-hrms-and-assess")} align="left" />
-              <ChatBubble sender="YashOrbit AI Assistant" text={tx("catalog.productMockup.great-yashorbit-offers-integrated-hrms-w")} align="right" ai />
+              <ChatBubble sender="AI Assistant" text={tx("catalog.productMockup.great-yashorbit-offers-integrated-hrms-w")} align="right" ai />
               <ChatBubble sender="Prospect" text={tx("catalog.productMockup.sure-alex-enterprise-com-we-have-200-emp")} align="left" />
             </div>
           </div>
@@ -384,7 +384,7 @@ function MockupContent({ type }: { type: string }) {
               <span className="text-muted-foreground text-[11px]">{tx("catalog.productMockup.role-gated")}</span>
             </div>
             <div className="space-y-1 font-mono text-[11px]">
-              <VaultItem title={tx("catalog.productMockup.aws-production-cloud")} username="admin@yashorbit.com" secret="••••••••••••••••" status="Audit Logged" />
+              <VaultItem title={tx("catalog.productMockup.aws-production-cloud")} username="admin@company.com" secret="••••••••••••••••" status="Audit Logged" />
               <VaultItem title={tx("catalog.productMockup.mongodb-enterprise-cluster")} username="dba_prod" secret="••••••••••••••••" status="Audit Logged" />
             </div>
           </div>

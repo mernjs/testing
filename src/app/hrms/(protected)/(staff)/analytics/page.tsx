@@ -45,10 +45,10 @@ function parseDateParam(value: string | undefined, endOfDay = false): Date | und
 }
 
 const GENDER_COLORS: Record<string, string> = {
-  male: "#1D428A",
-  female: "#E56043",
-  other: "#ff8e75",
-  undisclosed: "#7ba0d9",
+  male: "var(--brand-deep)",
+  female: "var(--primary)",
+  other: "var(--brand-gradient)",
+  undisclosed: "color-mix(in srgb, var(--brand-deep) 45%, white)",
   unknown: "#94a3b8",
 };
 

@@ -19,7 +19,7 @@ export default async function PublicPaymentPage({
   const serializedLink = serializePaymentLink(link);
 
   return (
-    <div className="relative min-h-screen bg-[#e9ebee] dark:bg-background text-foreground flex flex-col justify-center items-center p-4 overflow-hidden">
+    <div className="relative min-h-screen bg-canvas text-foreground flex flex-col justify-center items-center p-4 overflow-hidden">
       {/* Platform Ambient Background */}
       <div className="lms-ambient pointer-events-none absolute inset-0 overflow-hidden">
         <div className="lms-ambient-mid" />

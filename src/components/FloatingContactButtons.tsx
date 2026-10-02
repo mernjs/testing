@@ -13,10 +13,14 @@ export default function FloatingContactButtons() {
   const [open, setOpen] = React.useState(false);
   const [chatOpen, setChatOpen] = React.useState(false);
   const pathname = usePathname();
-  const { contact, floating } = useSiteInfo();
+  const { contact, floating, display, liveChatId } = useSiteInfo();
+  const fd = display.floating;
+  const showAssistant = fd.assistant && !!floating.assistantLabel;
+  const showWhatsApp = fd.whatsapp && !!contact.whatsappHref && !!floating.whatsappLabel;
+  const showLiveChat = fd.liveChat && !!floating.liveChatLabel && !!liveChatId;
 
   const openLiveChat = () => {
-    loadAndToggleTawk();
+    loadAndToggleTawk(liveChatId);
     setOpen(false);
   };
 
@@ -29,6 +33,7 @@ export default function FloatingContactButtons() {
   // buttons sit in this corner) and on the dedicated chat page (which has the
   // full experience inline — no need for the floating duplicate there).
   // Never on an exam page: tests are distraction-free and a chat widget would be an aid.
+  if (!fd.enabled || !(showAssistant || showWhatsApp || showLiveChat)) return null;
   if (pathname?.startsWith("/ots/take") || pathname?.startsWith("/portal/exam")) return null;
   // SaaS administration screens (Platform Panel, company settings, setup, sign-up) aren't the public
   // site — the visitor chat/WhatsApp buttons don't belong there and sat on top of their controls.
@@ -53,6 +58,7 @@ export default function FloatingContactButtons() {
               variants={{ visible: { transition: { staggerChildren: 0.06 } } }}
               className="flex flex-col items-end gap-3"
             >
+              {showAssistant && (
               <motion.button
                 type="button"
                 variants={{
@@ -61,14 +67,16 @@ export default function FloatingContactButtons() {
                 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
                 onClick={openAiChat}
-                className="group flex items-center gap-3 rounded-full bg-gradient-to-br from-primary to-yashorbit-coral pl-4 pr-1.5 py-1.5 text-sm font-bold text-white shadow-xl shadow-black/15 hover:scale-105 active:scale-95 transition-transform"
+                className="group flex items-center gap-3 rounded-full bg-gradient-to-br from-primary to-brand-accent pl-4 pr-1.5 py-1.5 text-sm font-bold text-white shadow-xl shadow-black/15 hover:scale-105 active:scale-95 transition-transform"
               >
                 {floating.assistantLabel}
                 <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-white/20">
                   <Bot className="h-4 w-4" />
                 </span>
               </motion.button>
+              )}
 
+              {showWhatsApp && (
               <motion.a
                 variants={{
                   hidden: { opacity: 0, y: 12, scale: 0.85 },
@@ -86,7 +94,9 @@ export default function FloatingContactButtons() {
                   <WhatsAppIcon className="h-4 w-4" />
                 </span>
               </motion.a>
+              )}
 
+              {showLiveChat && (
               <motion.button
                 type="button"
                 variants={{
@@ -102,6 +112,7 @@ export default function FloatingContactButtons() {
                   <MessageCircle className="h-4 w-4" />
                 </span>
               </motion.button>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

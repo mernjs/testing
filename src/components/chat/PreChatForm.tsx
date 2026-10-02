@@ -76,7 +76,7 @@ export function PreChatForm({ wide = false }: { wide?: boolean }) {
         )}
       >
         <div className="mb-4 flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-yashorbit-coral text-white shadow-sm">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-brand-accent text-white shadow-sm">
             <Bot className="size-5" />
           </div>
           <div>
@@ -144,7 +144,7 @@ export function PreChatForm({ wide = false }: { wide?: boolean }) {
           <button
             type="submit"
             disabled={submitting}
-            className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-yashorbit-coral px-4 py-3 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition-all hover:shadow-md hover:shadow-primary/30 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/40 disabled:opacity-60"
+            className="mt-1 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-brand-accent px-4 py-3 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition-all hover:shadow-md hover:shadow-primary/30 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/40 disabled:opacity-60"
           >
             {submitting ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <ArrowRight className="size-4" aria-hidden />}
             {tx("chat.preChatForm.start-chat")}</button>

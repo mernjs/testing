@@ -104,7 +104,7 @@ export default function IncomingCallModal({
                 animate={{ scale: [1, 1.7], opacity: [0.5, 0] }}
                 transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut", delay: 0.6 }}
               />
-              <span className="relative flex size-20 items-center justify-center rounded-full bg-gradient-to-br from-primary to-yashorbit-coral text-2xl font-bold text-white shadow-lg">
+              <span className="relative flex size-20 items-center justify-center rounded-full bg-gradient-to-br from-primary to-brand-accent text-2xl font-bold text-white shadow-lg">
                 {call.fromName.slice(0, 1).toUpperCase()}
               </span>
             </div>

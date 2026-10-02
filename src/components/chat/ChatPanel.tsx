@@ -16,7 +16,7 @@ export function ChatPanel({ onClose }: { onClose?: () => void }) {
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <div className="flex items-center justify-between border-b border-border/60 bg-background/70 px-4 py-3 backdrop-blur-xl">
         <div className="flex items-center gap-2.5">
-          <div className="relative flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-yashorbit-coral text-white shadow-sm">
+          <div className="relative flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-brand-accent text-white shadow-sm">
             <Bot className="size-4" aria-hidden />
             <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-background bg-emerald-500" aria-hidden />
           </div>

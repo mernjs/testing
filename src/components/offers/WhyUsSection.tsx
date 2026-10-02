@@ -23,13 +23,13 @@ const TRUST_ITEMS = (tx: (key: string) => string) => ([
   { title: tx("offers.whyYashOrbitSection.transparent-engagement"), description: tx("offers.whyYashOrbitSection.clear-scope-clear-pricing-clear-timeline") },
 ]);
 
-export default function WhyYashOrbitSection() {
+export default function WhyUsSection() {
   const tx = useText();
   return (
     <>
       <StatsBand title={tx("offers.whyYashOrbitSection.why-yashorbit")} description={tx("offers.whyYashOrbitSection.a-festival-discount-is-only-worth-it-if-")} stats={REAL_STATS(tx)} />
       <ChecklistGrid
-        id="why-yashorbit"
+        id="why-us"
         title={tx("offers.whyYashOrbitSection.built-for-trust-not-just-discounts")}
         description={tx("offers.whyYashOrbitSection.a-steep-discount-can-make-anyone-pause-h")}
         items={TRUST_ITEMS(tx)}

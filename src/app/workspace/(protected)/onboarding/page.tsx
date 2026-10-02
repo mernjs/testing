@@ -7,6 +7,7 @@ import { listDepartments } from "@/lib/hrms/departments";
 import { listPendingInvitations } from "@/lib/platform/invitations";
 import OnboardingWizard from "./OnboardingWizard";
 import { getCompanyBrand, getStoredBranding } from "@/lib/platform/branding";
+import { listThemeOptions } from "@/lib/platform/branding/theme-options";
 
 export const metadata: Metadata = { title: "Set up your workspace", robots: { index: false, follow: false } };
 
@@ -16,6 +17,7 @@ export default async function OnboardingPage() {
   if (!user.roles.includes("super_admin")) redirect("/workspace");
 
   const [{ company, state }, details, departments, invitations, stored, brand] = await Promise.all([getOnboarding(), getCompanyDetails(), listDepartments(), listPendingInvitations(), getStoredBranding(), getCompanyBrand()]);
+  const { options: themes, activeKey, appliedKey } = await listThemeOptions();
 
   return (
     <OnboardingWizard
@@ -36,6 +38,9 @@ export default async function OnboardingPage() {
       existingDepartments={departments.map((d) => ({ id: d._id, name: d.name }))}
       invitations={invitations.map((i) => ({ id: i._id, email: i.email, name: i.name, preset: i.preset }))}
       enabledModules={company.enabledModules ?? null}
+      themes={themes}
+      activeThemeKey={activeKey}
+      appliedThemeKey={appliedKey}
       timezones={Intl.supportedValuesOf("timeZone")}
       branding={{ ...stored, namePrimary: stored.namePrimary ?? brand.namePrimary, nameAccent: stored.nameAccent ?? brand.nameAccent }}
     />

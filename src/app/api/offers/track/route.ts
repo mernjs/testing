@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { readSafeJson } from "@/lib/security/safe-json";
 import { recordOfferEvent } from "@/lib/offers/analytics";
 import { isValidEventType, isValidDeviceType, isValidAudience } from "@/lib/offers/constants";
 import { isValidCategory } from "@/lib/categories";
@@ -12,7 +13,7 @@ import { isValidCategory } from "@/lib/categories";
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>;
   try {
-    body = await req.json();
+    body = (await readSafeJson(req)) as typeof body;
   } catch {
     return NextResponse.json({ ok: false }, { status: 202 });
   }

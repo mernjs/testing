@@ -12,10 +12,10 @@ export interface ThemedColor {
  * glance; single-series charts keep the plain brand-coral treatment.
  */
 export const CATEGORY_CHART_COLORS: Record<CategorySlug, ThemedColor> = {
-  "software-development": { light: "#1D428A", dark: "#3b6fd4" },
+  "software-development": { light: "var(--brand-deep)", dark: "color-mix(in srgb, var(--brand-deep) 65%, white)" },
   "digital-marketing": { light: "#059669", dark: "#34d399" },
-  "ai-automations": { light: "#E56043", dark: "#E56043" },
-  "industrial-training": { light: "#ff8e75", dark: "#ff8e75" },
-  "resource-augmentation": { light: "#7ba0d9", dark: "#5f84c2" },
+  "ai-automations": { light: "var(--primary)", dark: "var(--primary)" },
+  "industrial-training": { light: "var(--brand-gradient)", dark: "var(--brand-gradient)" },
+  "resource-augmentation": { light: "color-mix(in srgb, var(--brand-deep) 45%, white)", dark: "color-mix(in srgb, var(--brand-deep) 55%, white)" },
   "internship-program": { light: "#94a3b8", dark: "#94a3b8" },
 };

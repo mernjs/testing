@@ -22,9 +22,9 @@ import { forgetCompanySiteUrls } from "@/lib/platform/tenancy/site-url";
  */
 
 export const MAX_CUSTOM_DOMAINS = 10;
-/** Owner-published proof of control: `_yashorbit-verify.<host>` TXT = `yashorbit-verify=<token>`. */
-export const VERIFY_LABEL = "_yashorbit-verify";
-const VERIFY_PREFIX = "yashorbit-verify=";
+/** Owner-published proof of control: `_domain-verify.<host>` TXT = `domain-verify=<token>`. */
+export const VERIFY_LABEL = "_domain-verify";
+const VERIFY_PREFIX = "domain-verify=";
 /**
  * A pending claim another company never verified stops blocking the address
  * after this long — otherwise anyone could squat a domain by adding it first.

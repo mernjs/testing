@@ -155,7 +155,7 @@ export async function saveIntegrations(input: IntegrationsInput, actorId: string
   if (teamId && !VERCEL_ID_RE.test(teamId)) errors["domains.teamId"] = "Use the team id from Vercel (letters, digits, - and _).";
   const rootRaw = str(input?.domains?.rootDomain);
   const rootDomain = rootRaw ? normalizeHost(rootRaw) : "";
-  if (rootRaw && (!rootDomain || !validRootDomain(rootDomain))) errors["domains.rootDomain"] = "Enter a domain, e.g. yashorbit.com.";
+  if (rootRaw && (!rootDomain || !validRootDomain(rootDomain))) errors["domains.rootDomain"] = "Enter a domain, e.g. example.com.";
 
   if ((apiKey || token) && !isPlatformEncryptionConfigured()) {
     const msg = "Set PLATFORM_ENCRYPTION_KEY on the server before saving credentials here.";

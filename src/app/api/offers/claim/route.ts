@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { limitOr429 } from "@/lib/security/rate-limit";
+import { readSafeJson } from "@/lib/security/safe-json";
 import { createLead, validateLeadInput } from "@/lib/leads";
 import { provisionLeadAndAccount } from "@/lib/lead-management/provision";
 import { CATEGORY_TO_SOURCE } from "@/lib/lead-management/types";
@@ -17,9 +19,11 @@ import { validateClaimInput, formatClaimMessage } from "@/lib/offers/claim-valid
 import { isValidAudience, getCampaignEffectiveStatus, DEFAULT_CURRENCY } from "@/lib/offers/constants";
 
 export async function POST(req: NextRequest) {
+  const limited = await limitOr429(req, "offers-claim", 12, 600);
+  if (limited) return limited;
   let body: Record<string, unknown>;
   try {
-    body = await req.json();
+    body = (await readSafeJson(req)) as typeof body;
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
@@ -69,7 +73,7 @@ export async function POST(req: NextRequest) {
     if (offer.segment === "new_user") {
       const [account, priorClaim] = await Promise.all([externalUsers().then((c) => c.findOne({ email: emailLc }, { projection: { _id: 1 } })), hasClaimByEmail(emailLc)]);
       if (account || priorClaim) {
-        return NextResponse.json({ error: "This offer is for first-time customers only. Check the other live offers made for existing customers.", fields: { email: "Already a YashOrbit customer." } }, { status: 403 });
+        return NextResponse.json({ error: "This offer is for first-time customers only. Check the other live offers made for existing customers.", fields: { email: "Already a customer." } }, { status: 403 });
       }
     } else {
       const who = await getCurrentPortalUser();

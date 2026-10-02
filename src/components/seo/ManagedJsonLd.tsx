@@ -1,5 +1,6 @@
 "use client";
 
+import { escapeJsonForScript } from "@/lib/security/json-script";
 import { usePathname } from "next/navigation";
 import type { PublishedSchema } from "@/lib/seo-panel/public";
 
@@ -17,7 +18,7 @@ export default function ManagedJsonLd({ schemas }: { schemas: PublishedSchema[] 
   return (
     <>
       {matching.map((s, i) => (
-        <script key={`${s.path}-${i}`} type="application/ld+json" dangerouslySetInnerHTML={{ __html: s.json }} />
+        <script key={`${s.path}-${i}`} type="application/ld+json" dangerouslySetInnerHTML={{ __html: escapeJsonForScript(s.json) }} />
       ))}
     </>
   );

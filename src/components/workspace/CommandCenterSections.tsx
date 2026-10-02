@@ -62,7 +62,7 @@ const PANEL_GRID = [
     icon: <Landmark className="size-5" />,
     analyticsHref: "/workspace/analytics/fms",
     panelHref: "/fms",
-    color: "from-primary to-yashorbit-coral",
+    color: "from-primary to-brand-accent",
   },
   {
     key: "hrms",
@@ -70,7 +70,7 @@ const PANEL_GRID = [
     icon: <Users className="size-5" />,
     analyticsHref: "/workspace/analytics/hrms",
     panelHref: "/hrms",
-    color: "from-yashorbit-blue to-primary",
+    color: "from-brand-deep to-primary",
   },
   {
     key: "lms",
@@ -78,7 +78,7 @@ const PANEL_GRID = [
     icon: <LayoutGrid className="size-5" />,
     analyticsHref: "/workspace/analytics/lms",
     panelHref: "/lms",
-    color: "from-primary to-yashorbit-blue",
+    color: "from-primary to-brand-deep",
   },
   {
     key: "messenger",
@@ -86,7 +86,7 @@ const PANEL_GRID = [
     icon: <MessagesSquare className="size-5" />,
     analyticsHref: "/workspace/analytics/messenger",
     panelHref: "/messenger",
-    color: "from-yashorbit-blue to-yashorbit-coral",
+    color: "from-brand-deep to-brand-accent",
   },
   {
     key: "pms",
@@ -94,7 +94,7 @@ const PANEL_GRID = [
     icon: <FolderKanban className="size-5" />,
     analyticsHref: "/workspace/analytics/pms",
     panelHref: "/pms",
-    color: "from-yashorbit-coral to-yashorbit-blue",
+    color: "from-brand-accent to-brand-deep",
   },
   {
     key: "portal",
@@ -102,7 +102,7 @@ const PANEL_GRID = [
     icon: <Globe className="size-5" />,
     analyticsHref: "/workspace/analytics/portal",
     panelHref: "/portal",
-    color: "from-primary/80 to-yashorbit-blue/80",
+    color: "from-primary/80 to-brand-deep/80",
   },
   {
     key: "prms",
@@ -110,7 +110,7 @@ const PANEL_GRID = [
     icon: <ShoppingCart className="size-5" />,
     analyticsHref: "/workspace/analytics/prms",
     panelHref: "/prms",
-    color: "from-yashorbit-blue/80 to-primary/80",
+    color: "from-brand-deep/80 to-primary/80",
   },
   {
     key: "tms",
@@ -118,7 +118,7 @@ const PANEL_GRID = [
     icon: <GraduationCap className="size-5" />,
     analyticsHref: "/workspace/analytics/tms",
     panelHref: "/tms",
-    color: "from-yashorbit-coral to-primary",
+    color: "from-brand-accent to-primary",
   },
   {
     key: "workspace",
@@ -126,7 +126,7 @@ const PANEL_GRID = [
     icon: <LayoutDashboard className="size-5" />,
     analyticsHref: "/workspace/analytics/workspace",
     panelHref: "/workspace",
-    color: "from-yashorbit-blue to-yashorbit-coral/80",
+    color: "from-brand-deep to-brand-accent/80",
   },
 ];
 
@@ -312,7 +312,7 @@ export default function CommandCenterSections({ stats, companyName }: { stats: C
                       href={panel.panelHref}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex flex-1 items-center justify-center gap-1 rounded-lg bg-gradient-to-r from-primary/90 to-[var(--color-yashorbit-coral)] px-3 py-1.5 text-xs font-medium text-white transition-all hover:opacity-90"
+                      className="inline-flex flex-1 items-center justify-center gap-1 rounded-lg bg-gradient-to-r from-primary/90 to-[var(--color-brand-accent)] px-3 py-1.5 text-xs font-medium text-white transition-all hover:opacity-90"
                     >
                       Open
                       <ArrowUpRight className="size-3" />

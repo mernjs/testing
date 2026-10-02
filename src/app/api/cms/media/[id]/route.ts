@@ -24,6 +24,8 @@ export async function GET(_req: NextRequest, { params }: Context) {
       "Content-Type": media.contentType,
       ...(media.size ? { "Content-Length": String(media.size) } : {}),
       "X-Content-Type-Options": "nosniff",
+      // An uploaded SVG can carry script: as an <img> it is inert, and opened directly this policy sandboxes it.
+      "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; img-src data:; sandbox",
       "Cache-Control": "public, max-age=31536000, immutable",
     },
   });

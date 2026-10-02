@@ -12,11 +12,11 @@ import Link from "next/link";
 
 const COLORS = {
   primary: "var(--primary)",
-  coral: "var(--color-yashorbit-coral)",
-  blue: "var(--color-yashorbit-blue)",
+  coral: "var(--color-brand-accent)",
+  blue: "var(--color-brand-deep)",
   green: "#22c55e",
 } as const;
-const PALETTE = ["var(--primary)", "var(--color-yashorbit-blue)", "var(--color-yashorbit-coral)", "#22c55e", "#f59e0b", "#8b5cf6"];
+const PALETTE = ["var(--primary)", "var(--color-brand-deep)", "var(--color-brand-accent)", "#22c55e", "#f59e0b", "#8b5cf6"];
 
 const tooltipStyle = { background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12, color: "var(--popover-foreground)" };
 const axis = { fontSize: 11, fill: "var(--muted-foreground)" };

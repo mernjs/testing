@@ -38,51 +38,44 @@ export default function VerifyEmailBanner({ email }: { email: string }) {
     });
 
   const sent = state.status === "sent";
-  const button = "inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:opacity-60";
+  const button = "inline-flex shrink-0 items-center gap-1.5 rounded-full bg-primary px-2.5 py-1 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60";
   return (
     <motion.div
       id="verify-banner"
-      initial={{ opacity: 0, y: -8 }}
+      initial={{ opacity: 0, y: -4 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25 }}
-      className={`flex shrink-0 flex-wrap items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-sm transition-colors ${sent ? "border-emerald-500/40 bg-emerald-500/10" : "border-amber-500/40 bg-amber-500/10"}`}
+      transition={{ duration: 0.2 }}
+      title={sent ? "The link stays valid for 24 hours. Check spam too." : "One click keeps your account secure."}
+      className={`inline-flex max-w-full shrink-0 items-center gap-2 rounded-full border py-1 pl-3 pr-1 text-xs transition-colors ${sent ? "border-emerald-500/30 bg-emerald-500/10" : "border-amber-500/30 bg-amber-500/10"}`}
     >
-      <div className="flex min-w-0 items-center gap-3">
-        <span className={`flex size-9 shrink-0 items-center justify-center rounded-full ${sent ? "bg-emerald-500/20 text-emerald-600" : "bg-amber-500/20 text-amber-600"}`}>
-          {sent ? <MailCheck className="size-4.5" /> : <Mail className="size-4.5" />}
-        </span>
-        <div role="status" aria-live="polite" className="min-w-0">
-          {sent ? (
-            <>
-              <p className="font-semibold text-foreground">Check your inbox</p>
-              <p className="text-xs text-muted-foreground">
-                We sent a link to <span className="break-all font-medium text-foreground">{state.email}</span>. It stays valid for 24 hours — check spam too.
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="font-semibold text-foreground">Verify your email address</p>
-              <p className="text-xs text-muted-foreground">
-                <span className="break-all">{email}</span> isn&apos;t verified yet. It takes one click and keeps your account secure.
-              </p>
-            </>
-          )}
-          {state.status === "error" && (
-            <p id="verify-banner-error" className="mt-1 text-xs text-destructive">
-              {state.error}
-            </p>
-          )}
-        </div>
-      </div>
+      {sent ? <MailCheck className="size-3.5 shrink-0 text-emerald-600" /> : <Mail className="size-3.5 shrink-0 text-amber-600" />}
+      <span role="status" aria-live="polite" className="flex min-w-0 items-center gap-1.5">
+        {sent ? (
+          <>
+            <span className="font-semibold text-foreground">Link sent</span>
+            <span className="max-w-[180px] truncate text-muted-foreground">{state.email}</span>
+          </>
+        ) : (
+          <>
+            <span className="font-semibold text-foreground">Verify email</span>
+            <span className="max-w-[180px] truncate text-muted-foreground">{email}</span>
+          </>
+        )}
+        {state.status === "error" && (
+          <span id="verify-banner-error" className="text-destructive">
+            {state.error}
+          </span>
+        )}
+      </span>
       {sent ? (
         <button type="button" id="verify-banner-resend" onClick={send} disabled={pending || cooldown > 0} className={button}>
-          {pending && <Loader2 className="size-3.5 animate-spin" />}
+          {pending && <Loader2 className="size-3 animate-spin" />}
           {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend"}
         </button>
       ) : (
         <button type="button" onClick={send} disabled={pending} className={button}>
-          {pending && <Loader2 className="size-3.5 animate-spin" />}
-          Verify email
+          {pending && <Loader2 className="size-3 animate-spin" />}
+          Verify
         </button>
       )}
     </motion.div>

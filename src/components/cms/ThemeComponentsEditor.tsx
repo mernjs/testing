@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import GlassCard from "@/components/lms/GlassCard";
 import { SECTION_REGISTRY } from "@/lib/cms/section-registry";
-import { HEADER_VARIANTS, FOOTER_VARIANTS, SECTION_VARIANTS, type VariantOption, type ThemeComponentSelections } from "@/lib/cms/component-variants";
+import { HEADER_VARIANTS, FOOTER_VARIANTS, SECTION_VARIANTS, WIDTH_VARIANTS, DENSITY_VARIANTS, IMAGE_VARIANTS, CARD_VARIANTS, MENU_VARIANTS, type VariantOption, type ThemeComponentSelections } from "@/lib/cms/component-variants";
 import { saveThemeComponentsAction } from "@/app/cms/(protected)/theme/actions";
 
 function VariantSelect({ id, label, options, value, onChange, disabled }: { id: string; label: string; options: VariantOption[]; value: string; onChange: (v: string) => void; disabled: boolean }) {
@@ -80,6 +80,11 @@ export default function ThemeComponentsEditor({
       <div className="grid gap-4 sm:grid-cols-2">
         <VariantSelect id="variant-header" label="Header" options={HEADER_VARIANTS} value={value.header} onChange={(v) => setValue((s) => ({ ...s, header: v }))} disabled={!canEdit} />
         <VariantSelect id="variant-footer" label="Footer" options={FOOTER_VARIANTS} value={value.footer} onChange={(v) => setValue((s) => ({ ...s, footer: v }))} disabled={!canEdit} />
+        <VariantSelect id="variant-menu" label="Header dropdown" options={MENU_VARIANTS} value={value.menu} onChange={(v) => setValue((s) => ({ ...s, menu: v }))} disabled={!canEdit} />
+        <VariantSelect id="variant-cards" label="Card style" options={CARD_VARIANTS} value={value.cards} onChange={(v) => setValue((s) => ({ ...s, cards: v }))} disabled={!canEdit} />
+        <VariantSelect id="variant-images" label="Photo treatment" options={IMAGE_VARIANTS} value={value.images} onChange={(v) => setValue((s) => ({ ...s, images: v }))} disabled={!canEdit} />
+        <VariantSelect id="variant-width" label="Page width" options={WIDTH_VARIANTS} value={value.width} onChange={(v) => setValue((s) => ({ ...s, width: v }))} disabled={!canEdit} />
+        <VariantSelect id="variant-density" label="Section spacing" options={DENSITY_VARIANTS} value={value.density} onChange={(v) => setValue((s) => ({ ...s, density: v }))} disabled={!canEdit} />
         {Object.entries(SECTION_VARIANTS).map(([type, options]) => (
           <VariantSelect
             key={type}

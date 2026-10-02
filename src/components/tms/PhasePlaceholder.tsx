@@ -29,7 +29,7 @@ export default function PhasePlaceholder({
       </div>
       <GlassCard interactive={false}>
         <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
-          <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-yashorbit-coral text-white">
+          <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-brand-accent text-white">
             <Hammer className="size-5" />
           </div>
           <p className="text-base font-semibold text-foreground">Coming in {phase}</p>

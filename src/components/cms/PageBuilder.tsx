@@ -48,7 +48,7 @@ const DEFAULT_TAB = "default";
 function sectionSummary(config: Record<string, unknown>): string {
   for (const key of ["heading", "title", "titleLine1", "headingLead", "eyebrow", "badge", "sectionLabel", "slug", "panel"]) {
     const v = config[key];
-    if (typeof v === "string" && v.trim()) return v.replace(/\[\[(brand|YashOrbit)\]\]/g, "").trim();
+    if (typeof v === "string" && v.trim()) return v.replace(/\[\[[^\]\n]{1,40}\]\]/g, "").trim();
   }
   return "";
 }

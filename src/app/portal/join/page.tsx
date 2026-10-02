@@ -22,7 +22,7 @@ export default async function PortalJoinPage({ searchParams }: { searchParams: P
       headline={
         <>
           Create your free account,{" "}
-          <span className="bg-gradient-to-r from-primary to-yashorbit-coral bg-clip-text text-transparent">earn credits.</span>
+          <span className="bg-gradient-to-r from-primary to-brand-accent bg-clip-text text-transparent">earn credits.</span>
         </>
       }
       sub={`Join in under a minute. Get signup credits, share your own referral link and use your credits on ${brand.name} offers.`}

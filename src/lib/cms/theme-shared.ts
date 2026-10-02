@@ -56,6 +56,34 @@ export const FALLBACK_THEME: ThemeTokens = {
   radius: "0.625rem",
 };
 
+/** True for the built-in default theme's own tokens — the original site/panel look, kept byte-for-byte. */
+export function isDefaultTokens(tokens: ThemeTokens): boolean {
+  return (
+    !tokens.typography && !tokens.brand && !tokens.customCss &&
+    JSON.stringify([tokens.colors, tokens.colorsDark, tokens.radius]) === JSON.stringify([FALLBACK_THEME.colors, FALLBACK_THEME.colorsDark, FALLBACK_THEME.radius])
+  );
+}
+
+/**
+ * Modern surfaces for every theme EXCEPT the default. Light mode: a softly tinted canvas behind white cards. Dark mode:
+ * the original site's black-and-primary look — near-black surfaces carrying a whisper of the theme's primary, lifted
+ * cards, soft neutral text — instead of each palette's own tinted navy/purple/green backgrounds. All derived from the
+ * theme's own primary, so every theme still reads as itself.
+ */
+function modernSurfaceCss(): string {
+  return (
+    `:root{--canvas:color-mix(in oklab,var(--primary) 3%,color-mix(in oklab,var(--foreground) 4%,var(--background)));}` +
+    `.dark{` +
+    `--background:color-mix(in oklab,black 94%,var(--primary) 6%);` +
+    `--card:color-mix(in oklab,var(--background) 92%,white);` +
+    `--popover:color-mix(in oklab,var(--background) 90%,white);` +
+    `--muted:color-mix(in oklab,var(--background) 87%,white);` +
+    `--muted-foreground:color-mix(in oklab,var(--foreground) 58%,var(--background));` +
+    `--canvas:color-mix(in oklab,var(--background) 78%,black);` +
+    `}`
+  );
+}
+
 export const DEFAULT_TYPOGRAPHY: ThemeTypography = { bodyFont: "geist", headingFont: "geist", scale: 100 };
 export const DEFAULT_BRAND: ThemeBrand = { gradient: "#ff8e75", deep: "#1D428A" };
 
@@ -178,8 +206,11 @@ export function themeCssBlock(tokens: ThemeTokens): string {
   const fontsUrl = typo ? googleFontsUrl([typo.bodyFont, typo.headingFont]) : null;
   let css = fontsUrl ? `@import url("${fontsUrl}");` : "";
 
-  const brandVars = tokens.brand ? `--brand-gradient:${tokens.brand.gradient};--brand-deep:${tokens.brand.deep};` : "";
+  const brand = tokens.brand ?? DEFAULT_BRAND;
+  const brandVars = `--brand-gradient:${brand.gradient};--brand-deep:${brand.deep};`;
   css += `:root{${colorVars(tokens.colors)}--radius:${tokens.radius};${brandVars}}.dark{${colorVars(tokens.colorsDark)}}`;
+
+  if (!isDefaultTokens(tokens)) css += modernSurfaceCss();
 
   if (typo) {
     // next/font sets --font-geist-sans with a class on <html>; `html:root` out-ranks it.
@@ -203,4 +234,43 @@ export function themeCssVars(tokens: ThemeTokens, dark = false): Record<string, 
     "--border": t.border, "--input": t.input, "--ring": t.ring, "--radius": tokens.radius,
     ...(tokens.brand ? { "--brand-gradient": tokens.brand.gradient, "--brand-deep": tokens.brand.deep } : {}),
   };
+}
+
+// ── Themed photos ────────────────────────────────────────────────────
+
+function rgb(hex: string): [number, number, number] {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return [0.5, 0.5, 0.5];
+  const n = parseInt(m[1], 16);
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+}
+const mix = (a: [number, number, number], b: [number, number, number], t: number): [number, number, number] => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+
+function duotone(id: string, shadow: [number, number, number], light: [number, number, number], strength: number): string {
+  const f = (i: number) => `${shadow[i].toFixed(3)} ${light[i].toFixed(3)}`;
+  return (
+    `<filter id="${id}" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">` +
+    `<feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0.2126 0.7152 0.0722 0 0 0 0 0 1 0" result="gray"/>` +
+    `<feComponentTransfer in="gray" result="duo"><feFuncR type="table" tableValues="${f(0)}"/><feFuncG type="table" tableValues="${f(1)}"/><feFuncB type="table" tableValues="${f(2)}"/></feComponentTransfer>` +
+    `<feComposite in="duo" in2="SourceGraphic" operator="arithmetic" k1="0" k2="${strength}" k3="${(1 - strength).toFixed(2)}" k4="0"/>` +
+    `</filter>`
+  );
+}
+
+/**
+ * Inline SVG `<filter>`s that tone photos with a theme: shadows lean to the theme's deep colour, highlights to a pale
+ * tint of its primary, blended with the original so photos stay recognisable. `#theme-photo` for light mode,
+ * `#theme-photo-dark` for dark — referenced by the CSS `layoutCss()` emits.
+ */
+export function themePhotoFilters(tokens: ThemeTokens): string {
+  const deep = rgb((tokens.brand ?? DEFAULT_BRAND).deep);
+  const prim = rgb(tokens.colors.primary);
+  const primDark = rgb(tokens.colorsDark.primary);
+  const bgDark = rgb(tokens.colorsDark.background);
+  const white: [number, number, number] = [1, 1, 1];
+  const black: [number, number, number] = [0, 0, 0];
+  return (
+    duotone("theme-photo", mix(deep, black, 0.35), mix(prim, white, 0.82), 0.62) +
+    duotone("theme-photo-dark", mix(bgDark, deep, 0.35), mix(primDark, white, 0.45), 0.6)
+  );
 }

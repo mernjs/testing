@@ -36,7 +36,7 @@ export function RegisterHero({ badge, headingLead, headingHighlight, description
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-[10%] -top-[20%] h-[60%] w-[60%] animate-blob rounded-full bg-primary/10 blur-[120px] mix-blend-multiply dark:mix-blend-screen" />
         <div className="animation-delay-2000 absolute right-[5%] top-[10%] h-[50%] w-[50%] animate-blob rounded-full bg-secondary/15 blur-[100px] mix-blend-multiply dark:mix-blend-screen" />
-        <div className="animation-delay-4000 absolute -bottom-[20%] left-[20%] h-[70%] w-[70%] animate-blob rounded-full bg-[#ff8e75]/15 blur-[140px] mix-blend-multiply dark:mix-blend-screen" />
+        <div className="animation-delay-4000 absolute -bottom-[20%] left-[20%] h-[70%] w-[70%] animate-blob rounded-full bg-brand-accent/15 blur-[140px] mix-blend-multiply dark:mix-blend-screen" />
         <div className="absolute inset-0 bg-grid-slate-900/[0.02] [mask-image:linear-gradient(to_bottom,black,transparent)] dark:bg-grid-slate-400/[0.02]" />
       </div>
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8">
@@ -47,7 +47,7 @@ export function RegisterHero({ badge, headingLead, headingHighlight, description
           </motion.div>
           <motion.h1 variants={fadeIn} className="mb-6 text-5xl font-black leading-[1.1] tracking-tight text-foreground sm:text-6xl">
             {headingLead}{" "}
-            <span className="bg-gradient-to-r from-primary to-[#ff8e75] bg-clip-text text-transparent">{headingHighlight}</span>
+            <span className="bg-gradient-to-r from-primary to-brand-accent bg-clip-text text-transparent">{headingHighlight}</span>
           </motion.h1>
           <motion.p variants={fadeIn} className="text-xl leading-8 text-muted-foreground">
             {description}

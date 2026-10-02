@@ -46,25 +46,23 @@ export interface PrmsSettings {
 }
 
 const DEFAULT_COMPANY: CompanyIdentity = {
-  name: "YashOrbit Technologies",
+  name: "",
   addressLine: null,
   city: null,
   gstin: null,
   pan: null,
   email: null,
   phone: null,
-  website: "https://www.yashorbit.com",
+  website: null,
   signatoryName: null,
   signatoryTitle: "Procurement Head",
 };
 
 /**
  * Defaults for a company that hasn't saved its company identity yet: the
- * platform owner's own details for the platform owner only — any other
- * company starts from its own name, never the owner's.
+ * its own name with blank details.
  */
 async function defaultCompanyIdentity(): Promise<CompanyIdentity> {
-  if (await isPlatformOwnerContext()) return DEFAULT_COMPANY;
   return { ...DEFAULT_COMPANY, name: (await getCompanyBrand()).name, website: null };
 }
 

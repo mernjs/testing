@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { readSafeJson } from "@/lib/security/safe-json";
 import { validateSubscription } from "@/lib/offers/subscription-validation";
 import { subscribeToOffers } from "@/lib/offers/subscriptions";
 
@@ -16,7 +17,7 @@ function tooMany(ip: string): boolean {
 export async function POST(req: NextRequest) {
   let body: Record<string, unknown>;
   try {
-    body = await req.json();
+    body = (await readSafeJson(req)) as typeof body;
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }

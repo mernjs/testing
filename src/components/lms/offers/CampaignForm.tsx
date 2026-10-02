@@ -279,11 +279,11 @@ export default function CampaignForm({ campaign }: { campaign?: SerializedCampai
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label>Primary color (optional, hex)</Label>
-            <Input value={form.primaryColor} onChange={(e) => setForm({ ...form, primaryColor: e.target.value })} placeholder="#E56043" />
+            <Input value={form.primaryColor} onChange={(e) => setForm({ ...form, primaryColor: e.target.value })} placeholder="#RRGGBB" />
           </div>
           <div className="space-y-1.5">
             <Label>Accent color (optional, hex)</Label>
-            <Input value={form.accentColor} onChange={(e) => setForm({ ...form, accentColor: e.target.value })} placeholder="#1D428A" />
+            <Input value={form.accentColor} onChange={(e) => setForm({ ...form, accentColor: e.target.value })} placeholder="#RRGGBB" />
           </div>
         </div>
       </div>

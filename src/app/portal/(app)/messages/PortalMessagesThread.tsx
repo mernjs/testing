@@ -164,7 +164,7 @@ export default function PortalMessagesThread({ initialMessages }: { initialMessa
     <div className="flex h-[min(70vh,640px)] min-h-[26rem] flex-col overflow-hidden rounded-3xl border border-border/40 bg-background/95 shadow-sm backdrop-blur-md dark:bg-card/70">
       {/* Contact header */}
       <div className="flex items-center gap-3 border-b border-border/40 px-4 py-3 sm:px-5">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-yashorbit-coral text-white shadow-sm">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-brand-accent text-white shadow-sm">
           <MessagesSquare className="size-4.5" />
         </span>
         <div className="min-w-0">
@@ -180,7 +180,7 @@ export default function PortalMessagesThread({ initialMessages }: { initialMessa
       <div ref={listRef} className="flex-1 space-y-0.5 overflow-y-auto px-3 py-4 sm:px-5">
         {messages.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-yashorbit-coral text-white">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-brand-accent text-white">
               <Sparkles className="size-6" />
             </div>
             <p className="text-sm font-semibold text-foreground">Say hello 👋</p>
@@ -213,7 +213,7 @@ export default function PortalMessagesThread({ initialMessages }: { initialMessa
               >
                 {!mine && (
                   <Avatar size="sm" className={cn("mb-0.5 self-end", !item.showMeta && "invisible")}>
-                    <AvatarFallback className="bg-gradient-to-br from-primary to-yashorbit-coral text-[10px] font-bold text-white">YO</AvatarFallback>
+                    <AvatarFallback className="bg-gradient-to-br from-primary to-brand-accent text-[10px] font-bold text-white">YO</AvatarFallback>
                   </Avatar>
                 )}
                 <div className={cn("flex max-w-[75%] flex-col", mine && "items-end")}>
@@ -278,7 +278,7 @@ export default function PortalMessagesThread({ initialMessages }: { initialMessa
           <Button
             type="button"
             size="icon"
-            className={cn("rounded-full transition-all", canSend ? "bg-gradient-to-br from-primary to-yashorbit-coral" : "")}
+            className={cn("rounded-full transition-all", canSend ? "bg-gradient-to-br from-primary to-brand-accent" : "")}
             onClick={submit}
             disabled={!canSend}
             aria-label="Send"

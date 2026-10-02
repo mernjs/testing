@@ -5,7 +5,7 @@ import { BILLING_SETTINGS_PATH, getBillingNotice, type BillingNoticeInfo } from 
 import { cn } from "@/lib/utils";
 
 /**
- * Subscription banner shown at the top of every business panel: trial days
+ * Compact subscription pill shown at the top of every business panel: trial days
  * left, payment overdue, grace period, suspended / ended (read-only). Renders
  * nothing for an active subscription or the platform owner, and never breaks
  * the panel — a lookup failure just hides it.
@@ -49,17 +49,12 @@ export default async function BillingNotice({ className }: { className?: string 
   const Icon = notice.status === "trialing" ? Timer : notice.status === "suspended" || notice.status === "canceled" ? Lock : AlertTriangle;
 
   return (
-    <div id="billing-notice" role="status" data-status={notice.status} className={cn("flex shrink-0 flex-col gap-2 rounded-2xl border px-4 py-2.5 text-sm backdrop-blur-md sm:flex-row sm:items-center sm:justify-between", TONES[c.tone], className)}>
-      <div className="flex min-w-0 items-start gap-2.5">
-        <Icon className="notice-icon mt-0.5 size-4 shrink-0" aria-hidden />
-        <p className="min-w-0">
-          <span className="font-semibold">{c.title}</span>
-          <span className="text-muted-foreground"> — {c.body}</span>
-        </p>
-      </div>
-      <Link href={BILLING_SETTINGS_PATH} className="inline-flex shrink-0 items-center gap-1 self-start rounded-lg px-2 py-1 text-xs font-semibold text-primary hover:bg-primary/10 sm:self-auto">
+    <div id="billing-notice" role="status" data-status={notice.status} title={c.body} className={cn("inline-flex max-w-full shrink-0 items-center gap-2 self-start rounded-full border py-1 pl-3 pr-1 text-xs backdrop-blur-md", TONES[c.tone], className)}>
+      <Icon className="notice-icon size-3.5 shrink-0" aria-hidden />
+      <span className="min-w-0 truncate font-semibold">{c.title}</span>
+      <Link href={BILLING_SETTINGS_PATH} className="inline-flex shrink-0 items-center gap-1 rounded-full bg-background/70 px-2.5 py-1 font-semibold text-primary transition-colors hover:bg-background">
         {c.cta}
-        <ArrowRight className="size-3.5" />
+        <ArrowRight className="size-3" />
       </Link>
     </div>
   );

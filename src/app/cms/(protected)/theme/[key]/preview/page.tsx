@@ -7,13 +7,12 @@ import { listPages, getPage } from "@/lib/cms/pages";
 import SectionRenderer from "@/components/cms/SectionRenderer";
 import ThemePreviewPageSelect from "@/components/cms/ThemePreviewPageSelect";
 import { ThemeVariantsProvider } from "@/components/cms/ThemeVariantsContext";
-import Footer from "@/components/Footer";
-import FooterCompact from "@/components/FooterCompact";
-import { normalizeSelections, HEADER_VARIANTS } from "@/lib/cms/component-variants";
+import SiteFooter from "@/components/footer/SiteFooter";
+import { normalizeSelections, HEADER_VARIANTS, HEADER_HEIGHT_DESKTOP } from "@/lib/cms/component-variants";
 import { getPublicFooter } from "@/lib/cms/footer";
 import { getSiteInfo } from "@/lib/cms/site-info";
 import { getPublicNav } from "@/lib/cms/nav";
-import Header from "@/components/Header";
+import Header, { type HeaderVariant } from "@/components/Header";
 import { CollectionsProvider } from "@/components/cms/CollectionsContext";
 import { getSnapshot } from "@/lib/cms/collections/store";
 
@@ -37,7 +36,6 @@ export default async function CmsThemePreviewPage({
   const selectedPage = selectedPageId ? await getPage(selectedPageId) : null;
 
   const components = normalizeSelections(theme.components);
-  const PreviewFooter = components.footer === "compact" ? FooterCompact : Footer;
   const [cmsFooter, cmsNavigation, collections, siteInfo] = await Promise.all([getPublicFooter(), getPublicNav(), getSnapshot(["blog", "jobs", "engagement"]), getSiteInfo()]);
   const variantSections = selectedPage?.themeVariants?.[key]?.sections;
   const sections = key !== "default" && variantSections?.length ? variantSections : (selectedPage?.live?.sections ?? selectedPage?.draft.sections ?? []);
@@ -67,14 +65,14 @@ export default async function CmsThemePreviewPage({
         // (and its slide-out menu), so they render inside the preview instead of over the CMS.
         <div className="overflow-hidden rounded-2xl border border-border/60" style={{ ...(themeCssVars(theme.tokens) as React.CSSProperties), transform: "translateZ(0)" }}>
           <div className="bg-background text-foreground">
-            <Header cmsNavigation={cmsNavigation} variant={components.header === "menu" ? "menu" : "default"} />
-            <div className="pt-[88px]" />
+            <Header cmsNavigation={cmsNavigation} variant={components.header as HeaderVariant} menuStyle={components.menu} />
+            <div style={{ paddingTop: HEADER_HEIGHT_DESKTOP[components.header] ?? 88 }} />
             <CollectionsProvider snapshot={collections}>
               <ThemeVariantsProvider sections={components.sections}>
                 <SectionRenderer sections={sections} />
               </ThemeVariantsProvider>
             </CollectionsProvider>
-            <PreviewFooter cmsFooter={cmsFooter} siteInfo={siteInfo} />
+            <SiteFooter variant={components.footer} cmsFooter={cmsFooter} siteInfo={siteInfo} />
           </div>
         </div>
       )}

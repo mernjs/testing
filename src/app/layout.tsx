@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Script from "next/script";
+import { jsonForScript } from "@/lib/security/json-script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -10,13 +10,23 @@ import { parseSiteInfo } from "@/lib/cms/site-info-shared";
 import { siteUrl } from "@/lib/seo";
 import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { getSiteSeo, parseSiteSeo, siteMetadata } from "@/lib/cms/site-seo";
-import { currentCompanyIdOrNull, isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { currentCompanyIdOrNull } from "@/lib/platform/tenancy/context";
 import { getCompanyBrand } from "@/lib/platform/branding";
 import { NEUTRAL_BRAND } from "@/lib/platform/branding/types";
-import { brandColorCss } from "@/lib/platform/branding/theme";
+import { resolveSiteThemeState } from "@/lib/cms/theme-preview";
+import { FALLBACK_THEME, isDefaultTokens, themeCssBlock } from "@/lib/cms/theme-shared";
 import { BrandProvider } from "@/components/platform/BrandProvider";
 import PlatformNoticeBanner from "@/components/platform/PlatformNoticeBanner";
+import { getTracking, type TrackingSettings } from "@/lib/cms/tracking";
 import { getPlatformSettings } from "@/lib/platform/settings";
+
+function verificationMetadata(t: TrackingSettings): Metadata["verification"] {
+  const other: Record<string, string[]> = {};
+  const add = (name: string, content: string) => (other[name] ??= []).push(content);
+  t.bingVerification.forEach((c) => add("msvalidate.01", c));
+  t.verificationMeta.filter((m) => m.attr === "name").forEach((m) => add(m.name, m.content));
+  return { google: t.googleSiteVerification.length ? t.googleSiteVerification : undefined, other: Object.keys(other).length ? other : undefined };
+}
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,7 +45,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const [seo, origin] = hasCompany ? await Promise.all([getSiteSeo(), companySiteUrl()]) : [parseSiteSeo(null), siteUrl];
   return siteMetadata(seo, {
     metadataBase: new URL(origin),
-    verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION },
+    // Search-engine site verification: the company's own tags (CMS → Settings → Tracking).
+    verification: hasCompany ? verificationMetadata(await getTracking()) : undefined,
   });
 }
 
@@ -47,68 +58,28 @@ export default async function RootLayout({
   // Brand, contact details and social links (CMS → Site Identity); site-wide structured data (CMS → Settings).
   // No company owns this host (the proxy is showing /workspace-not-found): render the bare shell.
   const hasCompany = (await currentCompanyIdOrNull()) !== null;
-  const [siteInfo, { jsonLd }, isPlatformOwner, brand] = hasCompany
-    ? await Promise.all([getSiteInfo(), getSiteSeo(), isPlatformOwnerContext(), getCompanyBrand()])
-    : [parseSiteInfo(null), parseSiteSeo(null), false, NEUTRAL_BRAND];
-  const brandCss = brandColorCss(brand.primaryColor);
+  const [siteInfo, { jsonLd }, brand] = hasCompany
+    ? await Promise.all([getSiteInfo(), getSiteSeo(), getCompanyBrand()])
+    : [parseSiteInfo(null), parseSiteSeo(null), NEUTRAL_BRAND];
+  // The company's active theme (CMS → Themes, or the pick made in setup) — colours, fonts and corner radius
+  // for the public website AND every panel. A CMS user previewing a theme sees that one instead. Never fails the page.
+  const liveChatId = hasCompany ? (await getTracking()).tawkId : "";
+  const themeTokens = hasCompany ? ((await resolveSiteThemeState().catch(() => null))?.tokens ?? FALLBACK_THEME) : FALLBACK_THEME;
+  const themeCss = hasCompany ? themeCssBlock(themeTokens) : "";
+  // Every theme but the original default gets the modern panel treatment (see globals.css `[data-ui="modern"]`).
+  const modernUi = hasCompany && !isDefaultTokens(themeTokens);
   // Platform Panel → Platform settings: a maintenance message for every company's panels (cached; never fails the page).
   const notice = hasCompany ? ((await getPlatformSettings().catch(() => null))?.maintenanceBanner ?? "") : "";
 
   return (
-    <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" suppressHydrationWarning data-ui={modernUi ? "modern" : undefined} className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <head>
-        {/* YashOrbit's own analytics — never on another company's workspace. */}
-        {isPlatformOwner && (
-          <>
-            <Script id="google-tag-manager" strategy="afterInteractive">
-              {`
-                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','GTM-WZ456GGS');
-              `}
-            </Script>
-            <Script
-              src="https://www.googletagmanager.com/gtag/js?id=G-WPFPFSCWXB"
-              strategy="afterInteractive"
-            />
-            <Script id="google-analytics" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', 'G-WPFPFSCWXB');
-              `}
-            </Script>
-            <Script id="microsoft-clarity" strategy="afterInteractive">
-              {`
-                (function(c,l,a,r,i,t,y){
-                    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-                })(window, document, "clarity", "script", "xxlaecvsng");
-              `}
-            </Script>
-          </>
-        )}
-
-        {/* The company's brand colour (Settings → Branding); absent = the platform palette. */}
-        {brandCss && <style id="company-brand-vars" dangerouslySetInnerHTML={{ __html: brandCss }} />}
+        {/* The active theme, for the website and every panel. */}
+        {themeCss && <style id="company-theme-vars" dangerouslySetInnerHTML={{ __html: themeCss }} />}
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        {isPlatformOwner && (
-          <noscript>
-            <iframe
-              src="https://www.googletagmanager.com/ns.html?id=GTM-WZ456GGS"
-              height="0"
-              width="0"
-              style={{ display: "none", visibility: "hidden" }}
-            />
-          </noscript>
-        )}
         {jsonLd.map((schema, i) => (
-          <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+          <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonForScript(schema) }} />
         ))}
         <ThemeProvider
           attribute="class"
@@ -117,7 +88,7 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <BrandProvider brand={brand}>
-            <SiteInfoProvider value={siteInfo}>
+            <SiteInfoProvider value={{ ...siteInfo, liveChatId }}>
               {children}
               <FloatingContactButtons />
               {notice && <PlatformNoticeBanner message={notice} />}

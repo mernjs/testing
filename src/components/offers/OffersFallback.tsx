@@ -5,7 +5,7 @@ import NotifyMeForm from "@/components/offers/NotifyMeForm";
 import EvergreenSection from "@/components/offers/EvergreenSection";
 import StateWatcher from "@/components/offers/StateWatcher";
 import HowItWorksSection from "@/components/offers/HowItWorksSection";
-import WhyYashOrbitSection from "@/components/offers/WhyYashOrbitSection";
+import WhyUsSection from "@/components/offers/WhyUsSection";
 import OffersFaqSection from "@/components/offers/OffersFaqSection";
 import { formatDate } from "@/lib/utils";
 import { useText } from "@/components/cms/TextContext";
@@ -48,7 +48,7 @@ export default function OffersFallback({
 
       <EvergreenSection />
       <HowItWorksSection />
-      <WhyYashOrbitSection />
+      <WhyUsSection />
       <OffersFaqSection faqs={faqs} />
     </div>
   );

@@ -13,7 +13,7 @@ interface Point {
 const SERIES = [
   { key: "present", label: "Present", color: "#22c55e" },
   { key: "half_day", label: "Half Day", color: "#f59e0b" },
-  { key: "on_leave", label: "On Leave", color: "#E56043" },
+  { key: "on_leave", label: "On Leave", color: "var(--primary)" },
   { key: "absent", label: "Absent", color: "#ef4444" },
 ] as const;
 

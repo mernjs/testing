@@ -40,7 +40,7 @@ export default async function ProtectedCmsLayout({ children }: { children: React
     <TooltipProvider delay={200}>
       <ConfirmProvider>
       <SidebarCollapseProvider>
-        <div className="relative flex h-screen gap-3 overflow-hidden bg-[#e9ebee] p-3 dark:bg-background">
+        <div className="relative flex h-screen gap-3 overflow-hidden bg-canvas p-3">
           <div className="lms-ambient pointer-events-none absolute inset-0 overflow-hidden">
             <div className="lms-ambient-mid" />
             <div className="absolute inset-0 bg-grid-slate-900/[0.015] dark:bg-grid-slate-400/[0.02] [mask-image:linear-gradient(to_bottom,black,transparent_80%)]" />

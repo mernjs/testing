@@ -6,8 +6,8 @@ import { CardHeader, CardTitle, CardDescription, CardContent } from "@/component
 import GlassCard from "@/components/lms/GlassCard";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { getCompanyBrand, getStoredBranding } from "@/lib/platform/branding";
-import BrandingForm from "@/components/platform/BrandingForm";
-import { saveBrandingAction, uploadLogoAction } from "./actions";
+import BrandingThemeForm from "@/components/platform/BrandingThemeForm";
+import { listThemeOptions } from "@/lib/platform/branding/theme-options";
 
 export const metadata: Metadata = { title: "Branding", robots: { index: false, follow: false } };
 
@@ -15,7 +15,7 @@ export default async function BrandingSettingsPage() {
   const user = await getCurrentHubUser();
   if (!user) redirect("/workspace/login");
   if (!user.roles.includes("super_admin")) redirect("/workspace");
-  const [stored, brand] = await Promise.all([getStoredBranding(), getCompanyBrand()]);
+  const [stored, brand, { options: themes, activeKey, appliedKey }] = await Promise.all([getStoredBranding(), getCompanyBrand(), listThemeOptions()]);
 
   return (
     <div className="min-h-screen bg-background px-4 py-10">
@@ -26,13 +26,15 @@ export default async function BrandingSettingsPage() {
         <GlassCard>
           <CardHeader>
             <CardTitle className="text-xl">Branding</CardTitle>
-            <CardDescription>Your logo, name and colour across every panel, sign-in page, email and PDF.</CardDescription>
+            <CardDescription>Your logo, name and theme — applied to your website and every panel.</CardDescription>
           </CardHeader>
           <CardContent>
-            <BrandingForm
+            <BrandingThemeForm
               initial={{ ...stored, namePrimary: stored.namePrimary ?? brand.namePrimary, nameAccent: stored.nameAccent ?? brand.nameAccent }}
               companyName={brand.name}
-              actions={{ save: saveBrandingAction, uploadLogo: uploadLogoAction }}
+              themes={themes}
+              activeKey={activeKey}
+              appliedKey={appliedKey}
               submitLabel="Save branding"
             />
           </CardContent>

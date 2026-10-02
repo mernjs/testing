@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   // Node-only libs used inside route handlers — keep them out of the bundler.
   serverExternalPackages: ["exceljs"],
   images: {
@@ -34,6 +35,37 @@ const nextConfig: NextConfig = {
       { source: "/workspace/activity-log", destination: "/workspace/settings/audit-log?source=panels", permanent: true }, // management activity log → Audit log, panel activity
       { source: "/workspace/documents", destination: "/workspace/account/documents", permanent: true },
     ];
+  },
+  // Baseline security headers on every response. (No site-wide Content-Security-Policy: companies add their own
+  // tracking scripts and chat widgets in CMS → Settings, which a fixed policy would block.)
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          // Only this site may frame itself (the theme customizer previews the site in a same-origin frame).
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Permissions-Policy", value: "camera=(), geolocation=(), payment=(self), microphone=(self)" },
+          { key: "Strict-Transport-Security", value: "max-age=63072000" },
+          { key: "X-DNS-Prefetch-Control", value: "on" },
+        ],
+      },
+    ];
+  },
+  // Verification / well-known text files (Search Console "HTML file", Bing, ads.txt …) come from the company's own
+  // CMS → Settings → Tracking, served at the site root where search engines look for them. Any such file name works;
+  // the platform's own root files (robots, sitemaps, manifest) are excluded, and the route 404s for names the
+  // company hasn't defined.
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: "/:file((?!robots\\.txt$|sitemap[^/]*\\.xml$|manifest\\.json$)[A-Za-z0-9][A-Za-z0-9._-]*\\.(?:html?|xml|txt|json|js|csv))", destination: "/api/site-verification/:file" },
+      ],
+      afterFiles: [],
+      fallback: [],
+    };
   },
   allowedDevOrigins: ['7710-103-44-54-34.ngrok-free.app'],
 };

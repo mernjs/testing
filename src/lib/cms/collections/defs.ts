@@ -85,7 +85,7 @@ export const blogCollection: CollectionDef<BlogPostMeta, BlogPostMeta> = {
     { key: "related", label: "Related posts (slugs, up to 3)", kind: "list" },
     { key: "icon", label: "Category icon", kind: "icon" },
   ],
-  blank: (slug) => ({ slug, title: "", seoTitle: "", description: "", excerpt: "", category: "", keywords: [], tags: [], image: "", imageAlt: "", author: "YashOrbit Team", date: new Date().toISOString().slice(0, 10), readTime: "5 min read", related: [] }),
+  blank: (slug) => ({ slug, title: "", seoTitle: "", description: "", excerpt: "", category: "", keywords: [], tags: [], image: "", imageAlt: "", author: "", date: new Date().toISOString().slice(0, 10), readTime: "5 min read", related: [] }),
 };
 
 // ── jobs ─────────────────────────────────────────────────────────────────

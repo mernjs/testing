@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { hasBearer } from "@/lib/security/bearer";
 import { getSettings } from "@/lib/seo-panel/settings";
 import { runCrawl, latestCompletedRun, CrawlBusyError } from "@/lib/seo-panel/crawler";
 import { syncSearchConsole } from "@/lib/seo-panel/integrations/gsc";
@@ -21,7 +22,7 @@ export const maxDuration = 300;
  */
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET;
-  if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!secret || !hasBearer(req, secret)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const companies = await forEachCompany(() => runSeoHousekeeping());
   return NextResponse.json({ ok: true, companies });
 }

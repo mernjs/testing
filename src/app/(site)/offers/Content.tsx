@@ -8,7 +8,7 @@ import AudienceSelector from "@/components/offers/AudienceSelector";
 import DealOfTheDaySection from "@/components/offers/DealOfTheDaySection";
 import CategoryOffersSection from "@/components/offers/CategoryOffersSection";
 import FlashDealsStrip from "@/components/offers/FlashDealsStrip";
-import WhyYashOrbitSection from "@/components/offers/WhyYashOrbitSection";
+import WhyUsSection from "@/components/offers/WhyUsSection";
 import HowItWorksSection from "@/components/offers/HowItWorksSection";
 import OffersFaqSection from "@/components/offers/OffersFaqSection";
 import FinalCtaSection from "@/components/offers/FinalCtaSection";
@@ -27,6 +27,7 @@ import type { SerializedCampaign } from "@/lib/offers/campaigns";
 import type { SerializedOffer } from "@/lib/offers/offers";
 import type { CategorySlug } from "@/lib/categories";
 import { useText } from "@/components/cms/TextContext";
+import { useSiteInfo } from "@/components/cms/SiteInfoContext";
 
 const CATEGORY_META = (tx: (key: string) => string): Record<CategorySlug, { id: string; icon: typeof Code2; title: string; description: string }> => ({
   "software-development": {
@@ -111,6 +112,8 @@ export default function OffersContent({
   viewerTab: PublicAudienceTabKey | null;
 }) {
   const tx = useText();
+  const { brand: shareSiteBrand } = useSiteInfo();
+  const shareBrand = shareSiteBrand.namePrimary + shareSiteBrand.nameAccent;
   const [tab, setTabState] = useState<PublicAudienceTabKey | null>(viewerTab);
   const [offers, setOffers] = useState<SerializedOffer[]>(initialOffers);
   const [detailOffer, setDetailOffer] = useState<SerializedOffer | null>(null);
@@ -263,7 +266,7 @@ export default function OffersContent({
     const url = `${window.location.origin}/offers?offer=${offer._id}`;
     try {
       if (navigator.share) {
-        await navigator.share({ title: offer.title, text: `${offer.title} — limited-time offer from YashOrbit`, url });
+        await navigator.share({ title: offer.title, text: `${offer.title} — limited-time offer from ${shareBrand}`, url });
         return;
       }
       await navigator.clipboard.writeText(url);
@@ -366,7 +369,7 @@ export default function OffersContent({
         );
       })}
 
-      <WhyYashOrbitSection />
+      <WhyUsSection />
       <HowItWorksSection />
       <OffersFaqSection faqs={faqs} />
       <FinalCtaSection

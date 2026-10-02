@@ -85,7 +85,7 @@ function SectionHeader({
   return (
     <div className="flex flex-wrap items-center justify-between gap-2.5 mb-2.5">
       <div className="flex items-center gap-2">
-        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-[color:var(--color-yashorbit-coral)] text-white shadow-xs">
+        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-[color:var(--color-brand-accent)] text-white shadow-xs">
           {icon}
         </div>
         <div>
@@ -221,7 +221,7 @@ export default async function FmsDashboardPage({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 mb-0.5">
-            <div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-[color:var(--color-yashorbit-coral)] text-white shadow-xs">
+            <div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-[color:var(--color-brand-accent)] text-white shadow-xs">
               <BarChart3 className="size-3.5" />
             </div>
             <Badge variant="outline" className="text-[9px] font-bold bg-primary/10 text-primary border-primary/25 uppercase tracking-wider py-0 px-1.5">
@@ -498,7 +498,7 @@ export default async function FmsDashboardPage({
                     {stats.expensesByCategory.map((r) => (
                       <div key={r.label} className="flex items-center justify-between text-xs">
                         <div className="flex items-center gap-1.5">
-                          <div className="size-2 rounded-full bg-[color:var(--color-yashorbit-coral)]" />
+                          <div className="size-2 rounded-full bg-[color:var(--color-brand-accent)]" />
                           <span className="text-muted-foreground font-medium capitalize">{r.label || "General"}</span>
                         </div>
                         <span className="font-bold text-foreground tabular-nums">{formatCurrency(r.value)}</span>

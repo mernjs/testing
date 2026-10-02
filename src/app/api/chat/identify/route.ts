@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { readSafeJson } from "@/lib/security/safe-json";
 import { getChatbotConfig } from "@/lib/chatbot-config";
 import { applyChatCookies, ensureVisitorCookie, hashClientIp } from "@/lib/chatbot-sessions";
 import { validateIdentity, upsertVisitorProfile } from "@/lib/chat-visitors";
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
 
   let body: Record<string, unknown>;
   try {
-    body = await req.json();
+    body = (await readSafeJson(req)) as typeof body;
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }

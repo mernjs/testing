@@ -170,7 +170,7 @@ export function ChatMessage({ message, wide = false }: { message: ChatMessageTyp
           "flex size-8 flex-none items-center justify-center rounded-full shadow-sm",
           isUser
             ? "border border-border bg-muted text-muted-foreground"
-            : "bg-gradient-to-br from-primary to-yashorbit-coral text-white"
+            : "bg-gradient-to-br from-primary to-brand-accent text-white"
         )}
       >
         {isUser ? <User className="size-4" aria-hidden /> : <Bot className="size-4" aria-hidden />}

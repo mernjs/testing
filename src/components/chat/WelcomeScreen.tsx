@@ -30,8 +30,8 @@ export function WelcomeScreen({
       className="mx-auto flex max-w-2xl flex-col items-center gap-6 px-4 py-10 text-center sm:py-14"
     >
       <div className="relative">
-        <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-primary/30 to-yashorbit-coral/20 blur-2xl motion-safe:animate-pulse" />
-        <div className="relative flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-yashorbit-coral text-white shadow-xl shadow-primary/25">
+        <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-primary/30 to-brand-accent/20 blur-2xl motion-safe:animate-pulse" />
+        <div className="relative flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-brand-accent text-white shadow-xl shadow-primary/25">
           <Bot className="size-8" aria-hidden />
         </div>
       </div>

@@ -74,7 +74,7 @@ async function ownerEmail(companyId: string): Promise<string | null> {
 
 const billingUrl = (slug: string) => `${companyBaseUrl(slug)}/workspace/settings/billing`;
 const plural = (n: number) => `${n} day${n === 1 ? "" : "s"}`;
-const brandOf = (s: PlatformBillingSettings) => s.seller.tradeName || s.seller.legalName || "YashOrbit";
+const brandOf = (s: PlatformBillingSettings) => s.seller.tradeName || s.seller.legalName || "Our team";
 
 function reminderEmail(brand: string, company: CompanyDoc, planName: string, daysLeft: number) {
   return {

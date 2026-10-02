@@ -33,7 +33,11 @@ export default function ThemeThumbnail({
   const line = (w: string, color = c.mutedForeground, h = "1.1cqw"): CSSProperties => ({ width: w, height: h, borderRadius: "1cqw", background: color, opacity: 0.35 });
   const menuHeader = components?.header === "menu";
   const terminalHero = components?.sections?.["page-hero"] === "terminal";
-  const compactFooter = components?.footer === "compact";
+  const footerKind = components?.footer ?? "default";
+  const slimFooter = footerKind === "compact" || footerKind === "minimal";
+  const centeredHeader = components?.header === "centered";
+  const floatingHeader = components?.header === "floating";
+  const darkFooter = footerKind === "split";
 
   return (
     <div
@@ -42,7 +46,7 @@ export default function ThemeThumbnail({
       style={{ containerType: "inline-size", aspectRatio: "16 / 10", overflow: "hidden", background: c.background, color: c.foreground, fontFamily: fontStack(tokens.typography?.bodyFont), display: "flex", flexDirection: "column", userSelect: "none" }}
     >
       {/* Header */}
-      <div style={{ height: "8.5cqw", flexShrink: 0, display: "flex", alignItems: "center", gap: "2cqw", padding: "0 4.5cqw", borderBottom: `1px solid ${c.border}` }}>
+      <div style={{ height: "8.5cqw", flexShrink: 0, display: "flex", alignItems: "center", gap: "2cqw", padding: "0 4.5cqw", ...(floatingHeader ? { margin: "1.4cqw 3cqw 0", borderRadius: "6cqw", border: `1px solid ${c.border}`, height: "6.6cqw" } : { borderBottom: `1px solid ${c.border}` }), ...(centeredHeader ? { justifyContent: "center", flexDirection: "column", gap: "0.8cqw", height: "10.5cqw", justifyItems: "center" } : {}) }}>
         <span style={{ width: "3.2cqw", height: "3.2cqw", borderRadius: "0.9cqw", background: gradient }} />
         <span style={{ fontFamily: heading, fontWeight: 700, fontSize: "2.5cqw" }}>Brand</span>
         {menuHeader ? (
@@ -106,13 +110,13 @@ export default function ThemeThumbnail({
       </div>
 
       {/* Footer */}
-      {compactFooter ? (
+      {slimFooter ? (
         <div style={{ height: "4cqw", flexShrink: 0, display: "flex", alignItems: "center", gap: "2cqw", padding: "0 4.5cqw", borderTop: `1px solid ${c.border}` }}>
           <span style={line("10cqw")} />
           <span style={{ ...line("16cqw"), marginLeft: "auto" }} />
         </div>
       ) : (
-        <div style={{ height: "6cqw", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 4.5cqw", background: brand.deep, color: "#fff" }}>
+        <div style={{ height: darkFooter ? "8cqw" : "6cqw", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: footerKind === "centered" ? "center" : "space-between", padding: "0 4.5cqw", background: darkFooter ? c.foreground : brand.deep, color: darkFooter ? c.background : "#fff" }}>
           <span style={{ fontFamily: heading, fontWeight: 700, fontSize: "1.9cqw" }}>Let&apos;s build together</span>
           <span style={{ padding: "0.6cqw 1.8cqw", borderRadius: r, background: c.primary, color: c.primaryForeground, fontSize: "1.4cqw", fontWeight: 600 }}>Contact</span>
         </div>

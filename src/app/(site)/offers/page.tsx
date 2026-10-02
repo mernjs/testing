@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { jsonForScript } from "@/lib/security/json-script";
 import { withSeoOverrides } from "@/lib/seo-panel/public";
 import { cache } from "react";
 import { resolveOffersPage } from "@/lib/offers/state";
@@ -105,7 +106,7 @@ export default async function OffersPage() {
   return (
     <>
       {jsonLd.map((ld, i) => (
-        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonForScript(ld) }} />
       ))}
       {page.state === "active" && data && (
         <>

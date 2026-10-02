@@ -37,7 +37,7 @@ export default async function ReportsPage() {
           <GlassCard key={k} interactive={false}>
             <CardContent className="flex h-full flex-col gap-3 p-4">
               <div className="flex items-start gap-3">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-yashorbit-coral text-white"><FileBarChart className="size-4" /></div>
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-brand-accent text-white"><FileBarChart className="size-4" /></div>
                 <div className="min-w-0">
                   <p className="text-sm font-bold">{REPORTS[k].title}</p>
                   <p className="text-xs text-muted-foreground">{REPORTS[k].description}</p>

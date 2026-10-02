@@ -1,4 +1,5 @@
 import "server-only";
+import { siteUrl } from "@/lib/seo";
 import { decryptPlatformSecret } from "@/lib/platform/crypto";
 import { loadIntegrationsDoc, type IntegrationsDoc, type StoredSecret } from "@/lib/platform/integrations/store";
 import type { VercelConfig } from "@/lib/platform/domains/vercel";
@@ -28,7 +29,7 @@ export const DOMAIN_PROVIDERS = ["vercel", "manual"] as const;
 export type EmailProviderId = (typeof EMAIL_PROVIDERS)[number];
 export type DomainProviderId = (typeof DOMAIN_PROVIDERS)[number];
 
-export const DEFAULT_EMAIL_FROM = "YashOrbit <no-reply@yashorbit.com>";
+export const DEFAULT_EMAIL_FROM = `Business OS <no-reply@${new URL(siteUrl).hostname}>`;
 
 function env(name: string): string | null {
   return process.env[name]?.trim() || null;

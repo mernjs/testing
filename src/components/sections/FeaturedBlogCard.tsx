@@ -57,7 +57,7 @@ export default function FeaturedBlogCard({ post }: { post: BlogPostMeta }) {
         </div>
 
         <div className="relative z-10 flex flex-col justify-center p-8 sm:p-10 lg:p-12">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/15 to-secondary/15 border border-primary/20 flex items-center justify-center mb-6 group-hover/featured:from-primary group-hover/featured:to-[#ff8e75] group-hover/featured:border-primary group-hover/featured:shadow-lg group-hover/featured:shadow-primary/20 group-hover/featured:scale-110 group-hover/featured:rotate-3 transition-all duration-300">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/15 to-secondary/15 border border-primary/20 flex items-center justify-center mb-6 group-hover/featured:from-primary group-hover/featured:to-brand-accent group-hover/featured:border-primary group-hover/featured:shadow-lg group-hover/featured:shadow-primary/20 group-hover/featured:scale-110 group-hover/featured:rotate-3 transition-all duration-300">
             <DynamicIcon name={post.icon} className="w-6 h-6 text-primary group-hover/featured:text-white transition-colors duration-300" />
           </div>
 

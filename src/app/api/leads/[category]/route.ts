@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { limitOr429 } from "@/lib/security/rate-limit";
 import { isAuthorizedLmsRequest } from "@/lib/api-auth";
 import {
   CATEGORIES,
@@ -17,6 +18,8 @@ import { createPortalSession, setPortalSessionCookie } from "@/lib/portal-auth";
 type Context = { params: Promise<{ category: string }> };
 
 export async function POST(req: NextRequest, { params }: Context) {
+  const limited = await limitOr429(req, "lead-submit", 10, 600);
+  if (limited) return limited;
   const { category } = await params;
 
   if (!isValidCategory(category)) {

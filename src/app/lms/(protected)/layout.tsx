@@ -58,7 +58,7 @@ export default async function ProtectedLmsLayout({ children }: { children: React
   return (
     <TooltipProvider delay={200}>
       <SidebarCollapseProvider>
-        <div className="relative flex h-screen gap-3 overflow-hidden bg-[#e9ebee] p-3 dark:bg-background">
+        <div className="relative flex h-screen gap-3 overflow-hidden bg-canvas p-3">
           {/* `position: fixed` here used to escape this wrapper's own stacking
               context straight to the document root — where <body>'s own
               opaque `bg-background` paints ON TOP of it (a fixed + negative

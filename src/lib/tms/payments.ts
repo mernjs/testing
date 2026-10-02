@@ -402,7 +402,7 @@ export async function addInstallment(
         attachments: [],
       },
       actorId,
-      "tms@yashorbit.com"
+      "tms@internal.invalid"
     );
   } catch {
     // Non-blocking fallback for FMS sync

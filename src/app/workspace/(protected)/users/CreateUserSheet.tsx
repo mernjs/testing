@@ -51,7 +51,7 @@ const USER_TYPE_META = [
     label: "System Service Account",
     description: "Automated API bot, webhook worker, or background process",
     icon: Cpu,
-    color: "text-yashorbit-blue bg-yashorbit-blue/10 border-yashorbit-blue/20",
+    color: "text-brand-deep bg-brand-deep/10 border-brand-deep/20",
   },
 ];
 

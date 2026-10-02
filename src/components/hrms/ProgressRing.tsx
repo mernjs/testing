@@ -55,7 +55,7 @@ export default function ProgressRing({
           <defs>
             <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stopColor="var(--primary)" />
-              <stop offset="100%" stopColor="var(--color-yashorbit-coral)" />
+              <stop offset="100%" stopColor="var(--color-brand-accent)" />
             </linearGradient>
           </defs>
           <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--border)" strokeWidth={stroke} opacity={0.5} />

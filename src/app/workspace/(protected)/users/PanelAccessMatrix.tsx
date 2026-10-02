@@ -29,22 +29,22 @@ import {
 
 const MODULE_ICONS: Record<string, React.ReactNode> = {
   admin: <ShieldCheck className="size-5 text-primary" />,
-  hrms: <Users className="size-5 text-yashorbit-blue" />,
+  hrms: <Users className="size-5 text-brand-deep" />,
   pms: <Briefcase className="size-5 text-primary" />,
-  prms: <Layers className="size-5 text-yashorbit-blue" />,
+  prms: <Layers className="size-5 text-brand-deep" />,
   tms: <GraduationCap className="size-5 text-primary" />,
-  fms: <DollarSign className="size-5 text-yashorbit-blue" />,
+  fms: <DollarSign className="size-5 text-brand-deep" />,
   sop: <BookText className="size-5 text-primary" />,
-  seo: <SearchCheck className="size-5 text-yashorbit-blue" />,
+  seo: <SearchCheck className="size-5 text-brand-deep" />,
   dlms: <Vault className="size-5 text-primary" />,
-  aibots: <Bot className="size-5 text-yashorbit-blue" />,
+  aibots: <Bot className="size-5 text-brand-deep" />,
   intelligence: <Sparkles className="size-5 text-primary" />,
   smms: <Megaphone className="size-5 text-primary" />,
-  ots: <FileCheck2 className="size-5 text-yashorbit-blue" />,
+  ots: <FileCheck2 className="size-5 text-brand-deep" />,
   messenger: <MessageSquare className="size-5 text-primary" />,
-  lms: <BookOpen className="size-5 text-yashorbit-blue" />,
+  lms: <BookOpen className="size-5 text-brand-deep" />,
   portal: <UserCheck className="size-5 text-primary" />,
-  workspace: <LayoutDashboard className="size-5 text-yashorbit-blue" />,
+  workspace: <LayoutDashboard className="size-5 text-brand-deep" />,
 };
 
 export default function PanelAccessMatrix({

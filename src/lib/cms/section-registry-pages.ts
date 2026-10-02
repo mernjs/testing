@@ -166,7 +166,7 @@ const listingGrid: SectionTypeDef<ListingGridConfig> = {
     { key: "badgeIcon", label: "Card badge icon", kind: "icon" },
     { key: "sectionLabel", label: "Label above the grid (e.g. \"More Industries\")", kind: "text" },
     { key: "ctaLabel", label: "Card button label (optional)", kind: "text" },
-    { key: "brandDescriptions", label: "Style \"YashOrbit\" in descriptions with brand colours", kind: "boolean" },
+    { key: "brandDescriptions", label: "Style the brand name in descriptions with brand colours", kind: "boolean" },
   ],
   repeaters: [{ key: "items", label: "Items (the first is shown as the featured card)", itemFields: LISTING_ITEM_FIELDS }],
 };
@@ -193,7 +193,7 @@ const textPanel: SectionTypeDef<TextPanelConfig> = {
   fields: [
     { key: "title", label: "Title", kind: "text" },
     { key: "body", label: "Text", kind: "textarea" },
-    { key: "brandBody", label: "Style \"YashOrbit\" with brand colours", kind: "boolean" },
+    { key: "brandBody", label: "Style the brand name with brand colours", kind: "boolean" },
   ],
 };
 
@@ -308,7 +308,7 @@ const legalDocument: SectionTypeDef<LegalDocumentConfig> = {
   repeaters: [
     {
       key: "sections",
-      label: "Sections (each also appears in the \"On this page\" list). Write [[YashOrbit]] for the brand-coloured wordmark.",
+      label: "Sections (each also appears in the \"On this page\" list). Write [[brand]] for the brand-coloured wordmark.",
       itemFields: [
         { key: "title", label: "Title", kind: "text" },
         { key: "id", label: "Anchor id (for links, e.g. \"cookies-policy\")", kind: "text" },

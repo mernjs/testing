@@ -30,7 +30,7 @@ export function BrandForm({ brand, services }: { brand: BrandContext; services: 
         <Field label="Services (one per line)" htmlFor="b-svc" hint={`Suggestions from the site catalogue: ${services.slice(0, 6).join(", ")}…`}><Textarea id="b-svc" rows={5} value={f.services} onChange={(e) => set("services", e.target.value)} /></Field>
         <Field label="Products (one per line)" htmlFor="b-prod"><Textarea id="b-prod" rows={5} value={f.products} onChange={(e) => set("products", e.target.value)} /></Field>
         <Field label="Brand tone" htmlFor="b-tone"><Input id="b-tone" value={f.tone} onChange={(e) => set("tone", e.target.value)} /></Field>
-        <Field label="Branded hashtags" htmlFor="b-tags"><Input id="b-tags" value={f.brandHashtags} onChange={(e) => set("brandHashtags", e.target.value)} placeholder="#YashOrbit #BuiltWithAI" /></Field>
+        <Field label="Branded hashtags" htmlFor="b-tags"><Input id="b-tags" value={f.brandHashtags} onChange={(e) => set("brandHashtags", e.target.value)} placeholder="#YourBrand #BuiltWithAI" /></Field>
         <Field label="Target audience" htmlFor="b-aud" className="sm:col-span-2"><Textarea id="b-aud" rows={2} value={f.targetAudience} onChange={(e) => set("targetAudience", e.target.value)} /></Field>
         <Field label="Brand messaging" htmlFor="b-msg" className="sm:col-span-2"><Textarea id="b-msg" rows={3} value={f.messaging} onChange={(e) => set("messaging", e.target.value)} placeholder="Core message, tagline, proof points" /></Field>
         <Field label="Website information" htmlFor="b-web" className="sm:col-span-2"><Textarea id="b-web" rows={2} value={f.websiteInfo} onChange={(e) => set("websiteInfo", e.target.value)} placeholder="Key pages and what visitors should do there" /></Field>

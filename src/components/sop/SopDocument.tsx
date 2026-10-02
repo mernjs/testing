@@ -50,7 +50,7 @@ function Block({
         <ol className="space-y-2">
           {items.map((t, i) => (
             <li key={i} className="flex gap-3">
-              <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-yashorbit-coral text-xs font-bold text-white">{i + 1}</span>
+              <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-brand-accent text-xs font-bold text-white">{i + 1}</span>
               <div className="min-w-0 flex-1"><SopMarkdown>{t}</SopMarkdown></div>
             </li>
           ))}

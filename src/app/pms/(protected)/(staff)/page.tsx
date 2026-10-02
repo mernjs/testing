@@ -39,8 +39,8 @@ import { formatDate } from "@/lib/utils";
 const VALID_GRANULARITIES: DashboardGranularity[] = ["day", "week", "month", "year"];
 
 const STATUS_COLORS: Record<string, string> = {
-  planning: "#7ba0d9",
-  in_progress: "#E56043",
+  planning: "color-mix(in srgb, var(--brand-deep) 45%, white)",
+  in_progress: "var(--primary)",
   review: "#3b82f6",
   testing: "#a855f7",
   completed: "#22c55e",

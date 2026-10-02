@@ -2,6 +2,7 @@
 
 import { CalendarPlus } from "lucide-react";
 import { useText } from "@/components/cms/TextContext";
+import { useSiteInfo } from "@/components/cms/SiteInfoContext";
 
 function stamp(d: Date): string {
   return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
@@ -10,19 +11,22 @@ function stamp(d: Date): string {
 /** Real reminder, no backend needed: an .ics file (Apple/Outlook) or a Google Calendar link for the campaign start. */
 export default function AddToCalendar({ name, startsAt, endsAt, description }: { name: string; startsAt: string; endsAt: string; description?: string }) {
   const tx = useText();
+  const { brand } = useSiteInfo();
+  const brandName = brand.namePrimary + brand.nameAccent;
+  const slug = brandName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "offers";
   const start = new Date(startsAt);
   const end = new Date(endsAt);
-  const title = `${name} goes live — YashOrbit`;
+  const title = `${name} goes live — ${brandName}`;
   const details = description ?? "Limited-time offers on software, AI, training, internships and developer hiring.";
-  const url = typeof window !== "undefined" ? `${window.location.origin}/offers` : "https://yashorbit.com/offers";
+  const url = typeof window !== "undefined" ? `${window.location.origin}/offers` : "/offers";
 
   function downloadIcs() {
     const ics = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
-      "PRODID:-//YashOrbit//Offers//EN",
+      `PRODID:-//${brandName}//Offers//EN`,
       "BEGIN:VEVENT",
-      `UID:offer-${stamp(start)}@yashorbit`,
+      `UID:offer-${stamp(start)}@${slug}`,
       `DTSTAMP:${stamp(new Date())}`,
       `DTSTART:${stamp(start)}`,
       `DTEND:${stamp(new Date(Math.min(start.getTime() + 3600_000, end.getTime())))}`,
@@ -39,7 +43,7 @@ export default function AddToCalendar({ name, startsAt, endsAt, description }: {
     ].join("\r\n");
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
-    a.download = "yashorbit-offer-reminder.ics";
+    a.download = `${slug}-offer-reminder.ics`;
     a.click();
     URL.revokeObjectURL(a.href);
   }

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Mail, Phone } from "lucide-react";
-import { LinkedinIcon } from "@/components/icons/SocialIcons";
+import { socialIconFor } from "@/components/icons/social-icon-for";
+import { socialLinks } from "@/components/footer/FooterParts";
 import type { SiteInfo } from "@/lib/cms/site-info-shared";
 import type { PublicFooterColumn } from "@/lib/cms/footer";
-import BrandMark from "@/components/BrandMark";
+import SiteLogo from "@/components/SiteLogo";
 
 /**
  * "Compact" footer variant, selectable per theme in the CMS
@@ -13,7 +14,9 @@ import BrandMark from "@/components/BrandMark";
  * row of link groups, a slim bottom bar.
  */
 export default function FooterCompact({ cmsFooter, siteInfo }: { cmsFooter: PublicFooterColumn[]; siteInfo: SiteInfo }) {
-  const { brand, contact, footer } = siteInfo;
+  const { brand, contact, footer, display } = siteInfo;
+  const social = display.footer.social ? socialLinks(siteInfo) : [];
+  const hasPhone = !!contact.phoneHref && !!contact.phoneDisplay;
   const columns = cmsFooter;
 
   return (
@@ -22,24 +25,25 @@ export default function FooterCompact({ cmsFooter, siteInfo }: { cmsFooter: Publ
         <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
           <div className="max-w-xs space-y-4">
             <Link href="/" className="flex w-fit items-center gap-2">
-              {brand.logoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element -- CMS logo URL (any host)
-                <img src={brand.logoUrl} alt="" className="size-7 object-contain" />
-              ) : (
-                <BrandMark className="size-7" />
-              )}
+              <SiteLogo logoUrl={brand.logoUrl} logoDarkUrl={brand.logoDarkUrl} className="size-7" />
               <span className="text-lg font-extrabold tracking-tight">
                 {brand.namePrimary}<span className="text-primary">{brand.nameAccent}</span>
               </span>
             </Link>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <a href={`mailto:${contact.email}`} className="flex items-center gap-2 hover:text-primary">
-                <Mail className="size-4" aria-hidden="true" /> {contact.email}
-              </a>
-              <a href={contact.phoneHref} className="flex items-center gap-2 hover:text-primary">
-                <Phone className="size-4" aria-hidden="true" /> {contact.phoneDisplay}
-              </a>
-            </div>
+            {display.footer.contact && (contact.email || hasPhone) && (
+              <div className="space-y-2 text-sm text-muted-foreground">
+                {contact.email && (
+                  <a href={`mailto:${contact.email}`} className="flex items-center gap-2 hover:text-primary">
+                    <Mail className="size-4" aria-hidden="true" /> {contact.email}
+                  </a>
+                )}
+                {hasPhone && (
+                  <a href={contact.phoneHref} className="flex items-center gap-2 hover:text-primary">
+                    <Phone className="size-4" aria-hidden="true" /> {contact.phoneDisplay}
+                  </a>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="grid flex-1 grid-cols-2 gap-8 sm:grid-cols-4 lg:max-w-3xl">
@@ -68,15 +72,20 @@ export default function FooterCompact({ cmsFooter, siteInfo }: { cmsFooter: Publ
         </div>
 
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row">
-          <p>&copy; {new Date().getFullYear()} {brand.namePrimary}{brand.nameAccent} {brand.subtitle}</p>
+          <p>&copy; {new Date().getFullYear()} {brand.namePrimary}{brand.nameAccent} {footer.copyright || brand.subtitle}</p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             {footer.compactLinks.map((link) => (
               <Link key={link.href + link.label} href={link.href} className="hover:text-primary">{link.label}</Link>
             ))}
-            <a href={contact.linkedinHref} target="_blank" rel="noopener noreferrer" className="hover:text-primary">
-              <span className="sr-only">LinkedIn</span>
-              <LinkedinIcon className="size-4" />
-            </a>
+            {social.map((link) => {
+              const Icon = socialIconFor(link.name);
+              return (
+                <a key={link.name} href={link.href} target="_blank" rel="noopener noreferrer" className="hover:text-primary">
+                  <span className="sr-only">{link.name}</span>
+                  <Icon className="size-4" />
+                </a>
+              );
+            })}
           </div>
         </div>
       </div>

@@ -77,7 +77,7 @@ const OWNER_DEFAULT_SETTINGS: SeoSettings = {
   schedule: { auditFrequency: "weekly", syncSearchData: true, verifyBacklinks: true },
   defaults: { country: "IN", language: "en", device: "desktop", engine: "google" },
   integrations: {
-    gsc: { enabled: false, property: "sc-domain:yashorbit.com", lastSyncAt: null, lastError: null },
+    gsc: { enabled: false, property: "", lastSyncAt: null, lastError: null },
     ga4: { enabled: false, propertyId: "", lastSyncAt: null, lastError: null },
     psi: { enabled: true, strategy: "mobile" },
   },

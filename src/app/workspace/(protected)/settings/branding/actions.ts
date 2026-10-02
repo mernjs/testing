@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { saveBranding, type BrandingInput, type BrandingResult } from "@/lib/platform/branding";
 import { uploadCompanyLogo, type LogoUploadResult } from "@/lib/platform/branding/logo";
+import { applyTheme } from "@/lib/platform/branding/theme-options";
 import { markOnboardingStep } from "@/lib/platform/onboarding/state";
 
 async function requireOwner() {
@@ -19,7 +20,6 @@ export async function saveBrandingAction(input: BrandingInput): Promise<Branding
   const res = await saveBranding({
     namePrimary: String(input?.namePrimary ?? ""),
     nameAccent: String(input?.nameAccent ?? ""),
-    primaryColor: input?.primaryColor ? String(input.primaryColor) : null,
     logoUrl: input?.logoUrl ? String(input.logoUrl) : null,
   });
   if (res.ok) {
@@ -34,4 +34,12 @@ export async function uploadLogoAction(form: FormData): Promise<LogoUploadResult
   await requireOwner();
   const file = form.get("logo");
   return file instanceof File ? uploadCompanyLogo(file) : { ok: false, error: "Choose an image file." };
+}
+
+/** Picks the company's theme — it becomes the look of the public website and every panel. */
+export async function applyThemeAction(key: string): Promise<{ ok: true } | { ok: false; error: string }> {
+  const user = await requireOwner();
+  const res = await applyTheme(String(key ?? ""), user.id);
+  if (res.ok) revalidatePath("/", "layout");
+  return res;
 }

@@ -25,7 +25,7 @@ export default function ChatTranscript({
                 "flex size-7 flex-none items-center justify-center rounded-full border",
                 isUser
                   ? "border-border/60 bg-muted text-muted-foreground"
-                  : "border-primary/30 bg-gradient-to-br from-primary to-yashorbit-coral text-white"
+                  : "border-primary/30 bg-gradient-to-br from-primary to-brand-accent text-white"
               )}
             >
               {isUser ? <User className="size-3.5" /> : <Bot className="size-3.5" />}

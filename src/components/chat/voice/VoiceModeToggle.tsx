@@ -99,7 +99,7 @@ export function VoiceModeToggle({
                 reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 34 }
               }
               className={cn(
-                "absolute inset-0 -z-10 bg-gradient-to-r from-primary to-yashorbit-coral shadow-sm shadow-primary/30",
+                "absolute inset-0 -z-10 bg-gradient-to-r from-primary to-brand-accent shadow-sm shadow-primary/30",
                 size === "sm" ? "rounded-full" : "rounded-xl"
               )}
             />

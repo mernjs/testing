@@ -30,7 +30,7 @@ import type { DashboardGranularity } from "@/lib/granularity";
 const VALID_GRANULARITIES: DashboardGranularity[] = ["day", "week", "month", "year"];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  industrial: "#E56043",
+  industrial: "var(--primary)",
   internship: "#3b82f6",
 };
 

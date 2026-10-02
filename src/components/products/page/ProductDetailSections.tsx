@@ -90,7 +90,7 @@ export function CompareSection({ product, text, tones }: { product: StoredProduc
                   <p className="text-sm leading-relaxed text-foreground/90 sm:text-base">{pair.before}</p>
                 </div>
                 <span className="flex items-center justify-center" aria-hidden="true">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-[#ff8e75] text-white shadow-lg shadow-primary/20">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-brand-accent text-white shadow-lg shadow-primary/20">
                     <ArrowRight className="hidden h-4 w-4 md:block" />
                     <ArrowDown className="h-4 w-4 md:hidden" />
                   </span>
@@ -277,7 +277,7 @@ export function AutomationSection({ product, text, tones }: { product: StoredPro
                 <ol className="grid gap-8 lg:grid-flow-col lg:auto-cols-fr lg:gap-6" aria-label={text["products.detail.steps"]}>
                   {w.steps.map((s, j) => (
                     <li key={j} className="relative pl-14 lg:pl-0 lg:pt-14">
-                      <span className="absolute left-0 top-0 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-[#ff8e75] text-sm font-bold text-white shadow-lg shadow-primary/20">{j + 1}</span>
+                      <span className="absolute left-0 top-0 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-brand-accent text-sm font-bold text-white shadow-lg shadow-primary/20">{j + 1}</span>
                       {j < w.steps.length - 1 && (
                         <span className="absolute left-5 top-10 -bottom-8 w-px bg-gradient-to-b from-primary/50 to-border lg:bottom-auto lg:left-10 lg:right-[-1.5rem] lg:top-5 lg:h-px lg:w-auto lg:bg-gradient-to-r" aria-hidden="true" />
                       )}

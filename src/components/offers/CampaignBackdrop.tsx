@@ -8,8 +8,8 @@ import { motion, useReducedMotion } from "framer-motion";
  * look from the LMS with no frontend change. All artwork is inline SVG/CSS — no image downloads.
  */
 
-const FALLBACK_PRIMARY = "#E56043";
-const FALLBACK_ACCENT = "#1D428A";
+const FALLBACK_PRIMARY = "var(--primary)";
+const FALLBACK_ACCENT = "var(--brand-deep)";
 const INK = "#0a0d16";
 
 /** Deterministic pseudo-random so server and client render identical particle positions. */

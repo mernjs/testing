@@ -1,6 +1,5 @@
 import "server-only";
 import { getDb } from "@/lib/mongodb";
-import { organizationInfo } from "@/lib/seo";
 import { COLLECTIONS } from "@/lib/ots/db";
 import { OtsInputError } from "@/lib/ots/viewer";
 
@@ -26,7 +25,7 @@ export interface OtsSettings {
 }
 
 const DEFAULTS: OtsSettings = {
-  organizationName: organizationInfo.name,
+  organizationName: "",
   certificateNumberFormat: "OTS-{yyyy}-{n}",
   signatoryName: "",
   signatoryTitle: "Head of Assessments",

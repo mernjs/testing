@@ -391,7 +391,7 @@ export async function markPaymentIntentSuccessful(
           notes: `Automated payment for ${intent.paymentNumber} (${intent.sourceModule})`,
         },
         opts.actorId || "system",
-        "system@yashorbit.com"
+        "system@internal.invalid"
       );
       if (recRes.ok) {
         receiptId = recRes.receipt._id;

@@ -34,13 +34,34 @@ function colors(p: Palette): ThemeColorTokens {
   };
 }
 
+/**
+ * Each library theme changes the site's STRUCTURE, not only its colours: its own
+ * header, footer, page width, section spacing and section layouts.
+ */
+const STRUCTURE: Record<string, ThemeComponentSelections> = {
+  aurora: { menu: "default", header: "floating", footer: "default", images: "themed", cards: "glass", sections: { "home-hero": "centered", "home-how-we-work": "timeline", "listing-hero": "centered", "faq-accordion": "cards", "detail-cta": "banner" } },
+  "midnight-tech": { menu: "tiles", header: "menu", footer: "default", width: "wide", images: "themed", cards: "outline", sections: { "page-hero": "terminal", "home-hero": "spotlight", "listing-grid": "compact", "home-why-choose-us": "list", "listing-hero": "banner", "faq-accordion": "split", "detail-cta": "split" } },
+  "emerald-finance": { menu: "list", header: "centered", footer: "centered", images: "themed", cards: "elevated", sections: { "page-hero": "minimal", "home-why-choose-us": "split", "home-how-we-work": "numbered", "listing-hero": "split", "faq-accordion": "split", "detail-cta": "default" } },
+  "corporate-blue": { menu: "default", header: "default", footer: "compact", density: "compact", images: "themed", cards: "classic", sections: { "page-hero": "banner", "listing-grid": "list", "listing-hero": "banner", "faq-accordion": "default", "detail-cta": "split" } },
+  "sunset-studio": { menu: "tiles", header: "floating", footer: "split", density: "spacious", images: "themed", cards: "elevated", sections: { "home-hero": "spotlight", "listing-grid": "list", "home-how-we-work": "timeline", "page-hero": "banner", "listing-hero": "split", "faq-accordion": "cards", "detail-cta": "banner" } },
+  monochrome: { menu: "minimal", header: "menu", footer: "minimal", width: "narrow", images: "themed", cards: "outline", sections: { "page-hero": "minimal", "home-why-choose-us": "list", "home-how-we-work": "numbered", "listing-grid": "compact", "listing-hero": "centered", "faq-accordion": "split", "detail-cta": "default" } },
+  "royal-luxe": { menu: "list", header: "centered", footer: "split", width: "narrow", density: "spacious", images: "themed", cards: "glass", sections: { "home-hero": "centered", "page-hero": "minimal", "home-why-choose-us": "split", "listing-hero": "centered", "faq-accordion": "default", "detail-cta": "banner" } },
+  "ocean-breeze": { menu: "list", header: "floating", footer: "centered", images: "themed", cards: "elevated", sections: { "home-hero": "centered", "home-how-we-work": "timeline", "listing-grid": "compact", "listing-hero": "split", "faq-accordion": "cards", "detail-cta": "split" } },
+  "crimson-edge": { menu: "minimal", header: "default", footer: "split", density: "compact", images: "themed", cards: "outline", sections: { "home-hero": "spotlight", "page-hero": "banner", "home-why-choose-us": "list", "listing-grid": "list", "listing-hero": "banner", "faq-accordion": "split", "detail-cta": "banner" } },
+  "forest-clay": { menu: "minimal", header: "centered", footer: "default", width: "narrow", images: "themed", cards: "classic", sections: { "page-hero": "minimal", "listing-grid": "list", "home-how-we-work": "timeline", "listing-hero": "split", "faq-accordion": "default", "detail-cta": "default" } },
+  "neon-cyber": { menu: "tiles", header: "menu", footer: "minimal", width: "wide", images: "themed", cards: "glass", sections: { "page-hero": "terminal", "home-hero": "centered", "listing-grid": "compact", "home-how-we-work": "numbered", "listing-hero": "banner", "faq-accordion": "cards", "detail-cta": "split" } },
+  "graphite-pro": { menu: "list", header: "default", footer: "split", density: "compact", images: "themed", cards: "elevated", sections: { "page-hero": "banner", "home-why-choose-us": "list", "listing-grid": "compact", "listing-hero": "split", "faq-accordion": "split", "detail-cta": "banner" } },
+  "candy-pastel": { menu: "tiles", header: "floating", footer: "centered", density: "spacious", images: "themed", cards: "elevated", sections: { "home-hero": "centered", "home-why-choose-us": "split", "home-how-we-work": "timeline", "listing-hero": "centered", "faq-accordion": "cards", "detail-cta": "default" } },
+  editorial: { menu: "minimal", header: "centered", footer: "minimal", width: "narrow", images: "themed", cards: "outline", sections: { "page-hero": "minimal", "listing-grid": "list", "home-why-choose-us": "list", "listing-hero": "split", "faq-accordion": "split", "detail-cta": "split" } },
+};
+
 function preset(
   id: string, name: string, category: ThemeCategory, description: string, tags: string[],
   t: { light: Palette; dark: Palette; radius: string; body: string; heading: string; scale?: number; gradient: string; deep: string },
   components: ThemeComponentSelections = {}
 ): ThemePreset {
   return {
-    id, name, category, description, tags, components,
+    id, name, category, description, tags, components: STRUCTURE[id] ?? components,
     tokens: {
       colors: colors(t.light),
       colorsDark: colors(t.dark),
@@ -57,7 +78,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     dark: { background: "#0b1020", foreground: "#e0e7ff", card: "#111735", primary: "#818cf8", primaryForeground: "#0b1020", secondary: "#1e1b4b", secondaryForeground: "#e0e7ff", muted: "#161c3a", mutedForeground: "#94a3b8", accent: "#1e1b4b", accentForeground: "#c7d2fe", border: "#252b4d" },
     radius: "0.875rem", body: "inter", heading: "plus-jakarta-sans", gradient: "#a855f7", deep: "#312e81",
   }),
-  preset("midnight-tech", "Midnight Tech", "Technology", "Cyan-on-navy engineering aesthetic with a terminal-style hero and a minimal menu header.", ["Developer", "Dark-friendly", "Terminal"], {
+  preset("midnight-tech", "Midnight Tech", "Technology", "Cyan-on-navy engineering aesthetic with a terminal-style hero, wide pages and a minimal menu header.", ["Developer", "Dark-friendly", "Terminal"], {
     light: { background: "#ffffff", foreground: "#0f172a", primary: "#0891b2", primaryForeground: "#ffffff", secondary: "#ecfeff", secondaryForeground: "#155e75", muted: "#f1f5f9", mutedForeground: "#64748b", accent: "#cffafe", accentForeground: "#164e63", border: "#e2e8f0" },
     dark: { background: "#020617", foreground: "#e2e8f0", card: "#0b1224", primary: "#22d3ee", primaryForeground: "#020617", secondary: "#0c4a6e", secondaryForeground: "#e0f2fe", muted: "#0f172a", mutedForeground: "#94a3b8", accent: "#083344", accentForeground: "#a5f3fc", border: "#1e293b" },
     radius: "0.5rem", body: "inter", heading: "space-grotesk", gradient: "#3b82f6", deep: "#0c4a6e",
@@ -77,7 +98,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     dark: { background: "#1a0f0d", foreground: "#fdece4", card: "#24140f", primary: "#fb7185", primaryForeground: "#1a0f0d", secondary: "#4c1d24", secondaryForeground: "#ffe4e6", muted: "#2a1a15", mutedForeground: "#a8a29e", accent: "#431407", accentForeground: "#fed7aa", border: "#3b2620" },
     radius: "1rem", body: "dm-sans", heading: "outfit", gradient: "#f59e0b", deep: "#9f1239",
   }),
-  preset("monochrome", "Monochrome", "Minimal", "Strict black and white with sharp corners, Manrope throughout, a menu header and compact footer.", ["Minimal", "High contrast", "Editorial"], {
+  preset("monochrome", "Monochrome", "Minimal", "Strict black and white with sharp corners, Manrope throughout, a menu header, minimal footer and narrow pages.", ["Minimal", "High contrast", "Editorial"], {
     light: { background: "#ffffff", foreground: "#09090b", primary: "#111111", primaryForeground: "#ffffff", secondary: "#f4f4f5", secondaryForeground: "#18181b", muted: "#f4f4f5", mutedForeground: "#71717a", accent: "#f4f4f5", accentForeground: "#18181b", border: "#e4e4e7" },
     dark: { background: "#09090b", foreground: "#fafafa", card: "#111113", primary: "#fafafa", primaryForeground: "#09090b", secondary: "#27272a", secondaryForeground: "#fafafa", muted: "#18181b", mutedForeground: "#a1a1aa", accent: "#27272a", accentForeground: "#fafafa", border: "#27272a" },
     radius: "0.25rem", body: "manrope", heading: "manrope", gradient: "#52525b", deep: "#18181b",
@@ -117,7 +138,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     dark: { background: "#1a1020", foreground: "#fbe7f3", card: "#22152a", primary: "#f472b6", primaryForeground: "#1a1020", secondary: "#2e1a45", secondaryForeground: "#ede9fe", muted: "#24172e", mutedForeground: "#b49ac0", accent: "#4a1734", accentForeground: "#fbcfe8", border: "#3a2743" },
     radius: "1.5rem", body: "nunito", heading: "quicksand", gradient: "#8b5cf6", deep: "#6d28d9",
   }),
-  preset("editorial", "Editorial", "Minimal", "Magazine-style ink on warm paper with Fraunces serif headlines, hairline corners and a compact footer.", ["Blog", "Publishing", "Serif"], {
+  preset("editorial", "Editorial", "Minimal", "Magazine-style ink on warm paper with Fraunces serif headlines, hairline corners, a centered header and a minimal footer.", ["Blog", "Publishing", "Serif"], {
     light: { background: "#fffdf8", foreground: "#1c1917", primary: "#1f2937", primaryForeground: "#ffffff", secondary: "#f5f0e6", secondaryForeground: "#44403c", muted: "#f5f2eb", mutedForeground: "#78716c", accent: "#fef3c7", accentForeground: "#78350f", border: "#e7e0d2" },
     dark: { background: "#151311", foreground: "#f5f0e6", card: "#1c1917", primary: "#f5f0e6", primaryForeground: "#151311", secondary: "#292524", secondaryForeground: "#f5f0e6", muted: "#1f1c19", mutedForeground: "#a8a29e", accent: "#3a2e14", accentForeground: "#fde68a", border: "#2e2a26" },
     radius: "0.125rem", body: "source-sans-3", heading: "fraunces", scale: 102, gradient: "#b45309", deep: "#292524",

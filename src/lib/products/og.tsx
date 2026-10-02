@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getSiteInfo } from "@/lib/cms/site-info";
+import { getActiveThemeState } from "@/lib/cms/theme";
 import { requireProducts } from "@/lib/products/server";
 import { valueLine, type StoredProduct } from "@/lib/products/shared";
 
@@ -10,20 +11,21 @@ export async function renderProductOgImage(slug?: string) {
   const products = await requireProducts();
   const product: StoredProduct | undefined = slug ? products.find((p) => p.slug === slug) : undefined;
   const { brand } = await getSiteInfo();
+  const dark = (await getActiveThemeState()).tokens.colorsDark;
   const title = product ? product.name : "AI-powered business software";
   const sub = product ? valueLine(product) : `${products.length} products. One connected platform.`;
   const kicker = product ? product.category : "Products";
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "72px 88px", background: "linear-gradient(135deg, #1b1a1a 0%, #26221f 60%, #1b1a1a 100%)", fontFamily: "sans-serif" }}>
-        <div style={{ display: "flex", fontSize: 34, fontWeight: 800, color: "#ECF2FD" }}>
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "72px 88px", background: dark.background, fontFamily: "sans-serif" }}>
+        <div style={{ display: "flex", fontSize: 34, fontWeight: 800, color: dark.foreground }}>
           {brand.namePrimary}
-          <span style={{ color: "#E56043" }}>{brand.nameAccent}</span>
+          <span style={{ color: dark.primary }}>{brand.nameAccent}</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", fontSize: 26, fontWeight: 700, letterSpacing: 4, textTransform: "uppercase", color: "#E56043", marginBottom: 20 }}>{kicker}</div>
-          <div style={{ display: "flex", fontSize: product ? 68 : 76, fontWeight: 900, lineHeight: 1.1, color: "#ECF2FD", marginBottom: 24 }}>{title}</div>
-          <div style={{ display: "flex", fontSize: 30, lineHeight: 1.4, color: "#a8a6a6" }}>{sub.length > 140 ? `${sub.slice(0, 137)}...` : sub}</div>
+          <div style={{ display: "flex", fontSize: 26, fontWeight: 700, letterSpacing: 4, textTransform: "uppercase", color: dark.primary, marginBottom: 20 }}>{kicker}</div>
+          <div style={{ display: "flex", fontSize: product ? 68 : 76, fontWeight: 900, lineHeight: 1.1, color: dark.foreground, marginBottom: 24 }}>{title}</div>
+          <div style={{ display: "flex", fontSize: 30, lineHeight: 1.4, color: dark.mutedForeground }}>{sub.length > 140 ? `${sub.slice(0, 137)}...` : sub}</div>
         </div>
       </div>
     ),

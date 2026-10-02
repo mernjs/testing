@@ -55,7 +55,7 @@ export default function LeadJourney({ events }: { events: SerializedLeadTimeline
             <span
               className={cn(
                 "absolute -left-[35px] flex size-6 items-center justify-center rounded-full ring-4 ring-background",
-                newest ? "bg-gradient-to-br from-primary to-yashorbit-coral text-white" : "bg-muted text-muted-foreground"
+                newest ? "bg-gradient-to-br from-primary to-brand-accent text-white" : "bg-muted text-muted-foreground"
               )}
             >
               <Icon className="size-3.5" />

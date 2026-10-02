@@ -56,7 +56,7 @@ export function Waveform({
     return () => cancelAnimationFrame(raf);
   }, [reduceMotion]);
 
-  const color = tone === "coral" ? "bg-primary" : "bg-yashorbit-blue dark:bg-secondary-foreground";
+  const color = tone === "coral" ? "bg-primary" : "bg-brand-deep dark:bg-secondary-foreground";
   // mirror the half-array outward from the centre
   const mirrored = [...heights.slice(1).reverse(), ...heights];
 

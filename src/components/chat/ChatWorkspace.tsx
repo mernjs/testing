@@ -35,7 +35,7 @@ export function ChatWorkspace() {
       {showSidebar && (
         <aside className="hidden w-72 shrink-0 flex-col border-r border-border/60 bg-muted/25 dark:bg-muted/10 lg:flex">
           <div className="flex items-center gap-2 border-b border-border/60 px-4 py-3">
-            <div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-yashorbit-coral text-white">
+            <div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-brand-accent text-white">
               <Bot className="size-3.5" aria-hidden />
             </div>
             <span className="text-sm font-bold text-foreground">
@@ -68,7 +68,7 @@ export function ChatWorkspace() {
               </button>
             )}
             <div className="flex items-center gap-2 lg:hidden">
-              <div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-yashorbit-coral text-white">
+              <div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-brand-accent text-white">
                 <Bot className="size-3.5" aria-hidden />
               </div>
               <span className="text-sm font-bold text-foreground">

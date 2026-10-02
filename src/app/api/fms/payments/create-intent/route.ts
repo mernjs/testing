@@ -1,11 +1,79 @@
 import { NextResponse } from "next/server";
+import { limitOr429 } from "@/lib/security/rate-limit";
 import { createPaymentIntent, CreatePaymentIntentData } from "@/lib/fms/payments/intents";
 import { acquireIdempotencyLock, releaseIdempotencyLock } from "@/lib/fms/payments/idempotency";
+import { getCurrentFmsUser } from "@/lib/fms-auth";
+import { getPaymentLinkByToken } from "@/lib/fms/payments/links";
+import { simulatedPaymentsAllowed, SIMULATED_PAYMENTS_MESSAGE } from "@/lib/fms/payments/guard";
+import { readSafeJson, UnsafeBodyError } from "@/lib/security/safe-json";
 
+const str = (v: unknown, max = 200) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+
+/**
+ * Creates a payment intent. Two callers only:
+ *  - signed-in FMS staff (any detail they choose, as before, with types enforced), or
+ *  - a payer on a public payment link — identified by the link's secret TOKEN. For them everything that matters
+ *    (amount, currency, invoice, customer) is read from the stored link, never from the request, discounts and wallet
+ *    credits are not accepted, and a simulated gateway is refused outside development.
+ */
 export async function POST(req: Request) {
+  const limited = await limitOr429(req, "pay-intent", 20, 600);
+  if (limited) return limited;
   try {
-    const body = await req.json();
-    const idempotencyKey = req.headers.get("x-idempotency-key") || body.idempotencyKey;
+    let body: Record<string, unknown>;
+    try {
+      body = await readSafeJson(req);
+    } catch (err) {
+      if (err instanceof UnsafeBodyError) return NextResponse.json({ ok: false, error: err.message }, { status: 400 });
+      throw err;
+    }
+    const staff = await getCurrentFmsUser();
+    const idempotencyKey = str(req.headers.get("x-idempotency-key") || body.idempotencyKey, 120) || undefined;
+
+    let input: CreatePaymentIntentData;
+    if (staff) {
+      input = {
+        sourceModule: body.sourceModule as CreatePaymentIntentData["sourceModule"],
+        sourceType: str(body.sourceType),
+        sourceId: str(body.sourceId),
+        customerId: body.customerId ? str(body.customerId) : undefined,
+        customerName: str(body.customerName) || "Customer",
+        customerEmail: str(body.customerEmail) || "customer@example.com",
+        customerPhone: body.customerPhone ? str(body.customerPhone, 40) : undefined,
+        invoiceId: body.invoiceId ? str(body.invoiceId) : undefined,
+        amount: Number(body.amount),
+        walletCreditsUsed: body.walletCreditsUsed ? Number(body.walletCreditsUsed) : 0,
+        offerDiscountAmount: body.offerDiscountAmount ? Number(body.offerDiscountAmount) : 0,
+        currency: str(body.currency, 8) || "INR",
+        paymentMethod: (str(body.paymentMethod, 20) || "UPI") as CreatePaymentIntentData["paymentMethod"],
+        paymentProvider: str(body.paymentProvider, 30) || "mock",
+        idempotencyKey,
+        metadata: body.metadata && typeof body.metadata === "object" ? (body.metadata as Record<string, unknown>) : undefined,
+      };
+    } else {
+      const link = await getPaymentLinkByToken(str(body.linkToken, 64));
+      if (!link || link.status === "PAID" || link.status === "EXPIRED" || link.status === "CANCELLED" || link.status === "DRAFT") {
+        return NextResponse.json({ ok: false, error: "This payment link isn't available." }, { status: 403 });
+      }
+      if (!simulatedPaymentsAllowed()) return NextResponse.json({ ok: false, error: SIMULATED_PAYMENTS_MESSAGE }, { status: 403 });
+      input = {
+        sourceModule: link.sourceModule,
+        sourceType: "DIRECT_LINK",
+        sourceId: link._id,
+        customerId: link.customerId ?? undefined,
+        customerName: link.customerName,
+        customerEmail: link.customerEmail,
+        customerPhone: link.customerPhone ?? undefined,
+        invoiceId: link.invoiceId ?? undefined,
+        amount: link.amount,
+        walletCreditsUsed: 0,
+        offerDiscountAmount: 0,
+        currency: link.currency,
+        paymentMethod: "UPI",
+        paymentProvider: "mock",
+        idempotencyKey,
+      };
+    }
 
     if (idempotencyKey) {
       const lock = await acquireIdempotencyLock(idempotencyKey, "create_payment_intent");
@@ -14,26 +82,7 @@ export async function POST(req: Request) {
       }
     }
 
-    const input: CreatePaymentIntentData = {
-      sourceModule: body.sourceModule,
-      sourceType: body.sourceType,
-      sourceId: body.sourceId,
-      customerId: body.customerId,
-      customerName: body.customerName || "Customer",
-      customerEmail: body.customerEmail || "customer@yashorbit.com",
-      customerPhone: body.customerPhone,
-      invoiceId: body.invoiceId,
-      amount: Number(body.amount),
-      walletCreditsUsed: body.walletCreditsUsed ? Number(body.walletCreditsUsed) : 0,
-      offerDiscountAmount: body.offerDiscountAmount ? Number(body.offerDiscountAmount) : 0,
-      currency: body.currency || "INR",
-      paymentMethod: body.paymentMethod || "UPI",
-      paymentProvider: body.paymentProvider || "mock",
-      idempotencyKey,
-      metadata: body.metadata,
-    };
-
-    if (!input.sourceModule || !input.sourceType || !input.sourceId || !input.amount) {
+    if (!input.sourceModule || !input.sourceType || !input.sourceId || !Number.isFinite(input.amount) || input.amount <= 0) {
       return NextResponse.json(
         { ok: false, error: "Missing required fields: sourceModule, sourceType, sourceId, amount" },
         { status: 400 }

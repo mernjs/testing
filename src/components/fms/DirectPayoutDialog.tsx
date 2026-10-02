@@ -109,7 +109,7 @@ export default function DirectPayoutDialog({
       <SheetContent className="sm:max-w-lg" side="right">
         <SheetHeader className="border-b border-border/60">
           <SheetTitle className="flex items-center gap-2">
-            <div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-yashorbit-coral text-white">
+            <div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-brand-accent text-white">
               <Landmark className="size-3.5" />
             </div>
             Bank Payout

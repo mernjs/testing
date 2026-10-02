@@ -35,7 +35,7 @@ export default function TopCategories({ data }: { data: TopCategoryDatum[] }) {
               initial={{ width: 0 }}
               animate={{ width: `${(d.total / max) * 100}%` }}
               transition={{ duration: 0.5, delay: i * 0.05, ease: "easeOut" }}
-              className="h-full rounded-full bg-gradient-to-r from-primary to-yashorbit-coral"
+              className="h-full rounded-full bg-gradient-to-r from-primary to-brand-accent"
             />
           </div>
         </div>

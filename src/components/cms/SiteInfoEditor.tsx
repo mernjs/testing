@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import GlassCard from "@/components/lms/GlassCard";
 import MediaPicker from "@/components/cms/MediaPicker";
 import { KNOWN_SOCIAL_NAMES } from "@/components/icons/social-icon-for";
-import type { SiteInfo, SiteLink } from "@/lib/cms/site-info-shared";
+import { DISPLAY_LABELS, type SiteInfo, type SiteLink } from "@/lib/cms/site-info-shared";
 import { UI_LABELS, type UiLabelKey } from "@/lib/cms/ui-labels";
 import { saveSiteInfoAction } from "@/app/cms/(protected)/site-identity/actions";
 
@@ -24,7 +24,7 @@ const GROUPS: { group: Group; title: string; fields: FieldDef[] }[] = [
     title: "Brand",
     fields: [
       { key: "namePrimary", label: "Wordmark — first part", help: "Shown in the text colour (\"Yash\")." },
-      { key: "nameAccent", label: "Wordmark — accent part", help: "Shown in the brand colour (\"Orbit\")." },
+      { key: "nameAccent", label: "Wordmark — accent part", help: "Shown in the brand colour (for example the second half of your name)." },
       { key: "subtitle", label: "Subtitle under the wordmark" },
     ],
   },
@@ -108,10 +108,13 @@ export default function SiteInfoEditor({ initial, canEdit }: { initial: SiteInfo
     setInfo(saved);
   };
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [darkPickerOpen, setDarkPickerOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
   const setField = (group: Group, key: string, value: string) =>
     setInfo((s) => ({ ...s, [group]: { ...s[group], [key]: value } }));
+  const setDisplay = (group: keyof SiteInfo["display"], key: string, value: boolean) =>
+    setInfo((s) => ({ ...s, display: { ...s.display, [group]: { ...s.display[group], [key]: value } } }));
   const setSocial = (social: SiteInfo["social"]) => setInfo((s) => ({ ...s, social }));
   const move = (i: number, d: -1 | 1) => {
     const next = [...info.social];
@@ -158,8 +161,54 @@ export default function SiteInfoEditor({ initial, canEdit }: { initial: SiteInfo
             )}
           </div>
         </div>
-        <p className="text-xs text-muted-foreground">Empty = the built-in logo artwork (with its dark-mode variant in the footer).</p>
+        <p className="text-xs text-muted-foreground">Empty = a monogram generated from your company name.</p>
         <MediaPicker open={pickerOpen} onClose={() => setPickerOpen(false)} onSelect={(url) => { setField("brand", "logoUrl", url); setPickerOpen(false); }} />
+        <div className="flex items-center gap-3 border-t border-border/50 pt-3">
+          <div className="flex size-14 items-center justify-center rounded-lg border border-border/60 bg-slate-900">
+            {info.brand.logoDarkUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- CMS media URL
+              <img src={info.brand.logoDarkUrl} alt="" className="size-10 object-contain" />
+            ) : (
+              <span className="text-[10px] text-slate-400">Same</span>
+            )}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm text-foreground">Dark-mode logo (optional)</span>
+            <Button type="button" variant="outline" size="sm" disabled={!canEdit} onClick={() => setDarkPickerOpen(true)}>
+              <ImageIcon className="size-3.5" /> Choose image
+            </Button>
+            {info.brand.logoDarkUrl && (
+              <Button type="button" variant="ghost" size="sm" disabled={!canEdit} onClick={() => setField("brand", "logoDarkUrl", "")}>
+                <RotateCcw className="size-3.5" /> Use the same logo
+              </Button>
+            )}
+          </div>
+        </div>
+        <MediaPicker open={darkPickerOpen} onClose={() => setDarkPickerOpen(false)} onSelect={(url) => { setField("brand", "logoDarkUrl", url); setDarkPickerOpen(false); }} />
+      </GlassCard>
+
+      <GlassCard className="space-y-4 p-5">
+        <div>
+          <h2 className="text-sm font-semibold text-foreground">Show or hide</h2>
+          <p className="mt-1 text-xs text-muted-foreground">Switch off anything you don&apos;t want on the site. Items with no content (for example WhatsApp without a number) are hidden automatically.</p>
+        </div>
+        <div className="grid gap-5 md:grid-cols-3">
+          {DISPLAY_LABELS.map(({ group, title, items }) => (
+            <div key={group} className="space-y-2.5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</p>
+              {items.map((item) => {
+                const id = `display-${group}-${item.key}`;
+                const checked = (info.display[group] as Record<string, boolean>)[item.key];
+                return (
+                  <label key={item.key} htmlFor={id} className="flex cursor-pointer items-start gap-2.5 text-sm text-foreground">
+                    <input id={id} type="checkbox" className="mt-0.5 size-4 accent-[var(--primary)]" checked={checked} disabled={!canEdit} onChange={(e) => setDisplay(group, item.key, e.target.checked)} />
+                    <span>{item.label}</span>
+                  </label>
+                );
+              })}
+            </div>
+          ))}
+        </div>
       </GlassCard>
 
       {GROUPS.map(({ group, title, fields }) => (
@@ -194,8 +243,8 @@ export default function SiteInfoEditor({ initial, canEdit }: { initial: SiteInfo
       <GlassCard className="space-y-3 p-5">
         <h2 className="text-sm font-semibold text-foreground">Social links</h2>
         <p className="text-xs text-muted-foreground">
-          Shown in the footer and the mobile menu, in this order. Names with a brand icon: {KNOWN_SOCIAL_NAMES.join(", ")}; any other name gets a link icon.
-          LinkedIn is set under Contact details.
+          Shown in the footer, the mobile menu and (if switched on) the header, in this order. Names with a brand icon: {KNOWN_SOCIAL_NAMES.join(", ")}; any other name gets a link icon.
+          LinkedIn can be added here or set under Contact details.
         </p>
         {info.social.map((s, i) => (
           <div key={i} className="flex flex-wrap items-center gap-2">

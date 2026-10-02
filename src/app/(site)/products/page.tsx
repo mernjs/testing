@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { jsonForScript } from "@/lib/security/json-script";
 import { withSeoOverrides } from "@/lib/seo-panel/public";
 import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { getSiteInfo } from "@/lib/cms/site-info";
@@ -28,7 +29,7 @@ export default async function ProductsPage() {
   return (
     <div className="flex min-h-screen flex-col overflow-hidden">
       {listingJsonLd(products, origin, text).map((ld, i) => (
-        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonForScript(ld) }} />
       ))}
       <ProductsHero text={text} />
       <ProductsGrid products={products} text={text} />

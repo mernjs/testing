@@ -19,7 +19,7 @@ import {
   type ThemeColorTokens, type ThemeTokens,
 } from "@/lib/cms/theme-shared";
 import { THEME_PRESETS } from "@/lib/cms/theme-presets";
-import { HEADER_VARIANTS, FOOTER_VARIANTS, SECTION_VARIANTS, normalizeSelections, type ThemeComponentSelections } from "@/lib/cms/component-variants";
+import { HEADER_VARIANTS, FOOTER_VARIANTS, SECTION_VARIANTS, WIDTH_VARIANTS, DENSITY_VARIANTS, IMAGE_VARIANTS, CARD_VARIANTS, MENU_VARIANTS, normalizeSelections, type ThemeComponentSelections } from "@/lib/cms/component-variants";
 import { installThemePresetAction, publishThemeDraftAction, saveThemeDraftAction } from "@/app/cms/(protected)/theme/actions";
 
 type Sel = Required<ThemeComponentSelections>;
@@ -28,7 +28,16 @@ type Device = "desktop" | "tablet" | "mobile";
 type Mode = "light" | "dark";
 
 const DEVICE_WIDTH: Record<Device, string> = { desktop: "100%", tablet: "820px", mobile: "390px" };
-const SECTION_LABELS: Record<string, string> = { "page-hero": "Page hero" };
+const SECTION_LABELS: Record<string, string> = {
+  "page-hero": "Page hero",
+  "home-hero": "Homepage hero",
+  "listing-hero": "Listing page hero",
+  "faq-accordion": "FAQ",
+  "detail-cta": "Call to action",
+  "listing-grid": "Service / listing grids",
+  "home-why-choose-us": "Why choose us",
+  "home-how-we-work": "Process steps",
+};
 
 const COLOR_GROUPS: { label: string; fields: { key: keyof ThemeColorTokens; label: string; hint?: string }[] }[] = [
   { label: "Brand", fields: [
@@ -441,8 +450,18 @@ export default function ThemeCustomizer({
                   <>
                     <GroupLabel>Header</GroupLabel>
                     <OptionCards name="Header style" options={HEADER_VARIANTS} value={components.header} onChange={(v) => setComponent({ ...components, header: v })} disabled={readOnly} />
+                    <GroupLabel>Header dropdown</GroupLabel>
+                    <OptionCards name="Header dropdown" options={MENU_VARIANTS} value={components.menu} onChange={(v) => setComponent({ ...components, menu: v })} disabled={readOnly} />
                     <GroupLabel>Footer</GroupLabel>
                     <OptionCards name="Footer style" options={FOOTER_VARIANTS} value={components.footer} onChange={(v) => setComponent({ ...components, footer: v })} disabled={readOnly} />
+                    <GroupLabel>Card style</GroupLabel>
+                    <OptionCards name="Card style" options={CARD_VARIANTS} value={components.cards} onChange={(v) => setComponent({ ...components, cards: v })} disabled={readOnly} />
+                    <GroupLabel>Photo treatment</GroupLabel>
+                    <OptionCards name="Photo treatment" options={IMAGE_VARIANTS} value={components.images} onChange={(v) => setComponent({ ...components, images: v })} disabled={readOnly} />
+                    <GroupLabel>Page width</GroupLabel>
+                    <OptionCards name="Page width" options={WIDTH_VARIANTS} value={components.width} onChange={(v) => setComponent({ ...components, width: v })} disabled={readOnly} />
+                    <GroupLabel>Section spacing</GroupLabel>
+                    <OptionCards name="Section spacing" options={DENSITY_VARIANTS} value={components.density} onChange={(v) => setComponent({ ...components, density: v })} disabled={readOnly} />
                   </>
                 )}
 

@@ -15,7 +15,7 @@ import { isIP } from "node:net";
  * fetched unguarded.
  */
 
-export const SEO_USER_AGENT = "Mozilla/5.0 (compatible; YashOrbitSEOBot/1.0; +https://yashorbit.com)";
+export const SEO_USER_AGENT = "Mozilla/5.0 (compatible; SEOBot/1.0)";
 const MAX_BODY = 5 * 1024 * 1024;
 
 export interface FetchResult {
@@ -97,7 +97,9 @@ export async function fetchUrl(
   url: string,
   opts: { timeoutMs?: number; method?: "GET" | "HEAD"; guard?: boolean; wantBody?: boolean } = {}
 ): Promise<FetchResult> {
-  const { timeoutMs = 15000, method = "GET", guard = false, wantBody = true } = opts;
+  // Outbound fetches are SSRF-guarded in production by default (a company controls its own domain and the pages it links to);
+  // only local development, where the "site" is localhost, skips the check.
+  const { timeoutMs = 15000, method = "GET", guard = process.env.NODE_ENV === "production", wantBody = true } = opts;
   const chain: { url: string; status: number }[] = [];
   const started = Date.now();
   let current = url;

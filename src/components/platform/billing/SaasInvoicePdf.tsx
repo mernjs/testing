@@ -1,5 +1,6 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, View, Text } from "@react-pdf/renderer";
+import { lazyStyles } from "@/lib/pdf/lazy-styles";
 import type { SaasInvoice, SaasInvoiceParty } from "@/lib/platform/billing/invoices";
 import { gstPercentLabel } from "@/lib/platform/billing/gst";
 import { PDF_COLORS } from "@/lib/pdf/brand";
@@ -31,7 +32,7 @@ const STAMP: Record<string, { text: string; color: string }> = {
   unpaid: { text: "UNPAID", color: "#b45309" },
 };
 
-const s = StyleSheet.create({
+const s = lazyStyles(() => ({
   page: pdfSheet.pagePortrait,
   small: { fontSize: 8, color: C.mute },
   cols: { flexDirection: "row", justifyContent: "space-between", marginTop: 14 },
@@ -56,7 +57,7 @@ const s = StyleSheet.create({
   stampSub: { fontSize: 7 },
   words: { marginTop: 10, fontSize: 8.5 },
   note: { marginTop: 14, padding: 8, backgroundColor: C.soft, fontSize: 8, color: C.mute },
-});
+}));
 
 function Party({ title, party }: { title: string; party: SaasInvoiceParty }) {
   return (

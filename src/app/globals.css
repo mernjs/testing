@@ -10,11 +10,10 @@
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
   
-  --color-yashorbit-orange: #E56043;
-  --color-yashorbit-coral: var(--brand-gradient, #ff8e75);
-  --color-yashorbit-light: #ECF2FD;
-  --color-yashorbit-blue: var(--brand-deep, #1D428A);
-  --color-yashorbit-dark: #1b1a1a;
+  /* The active theme's supporting colours (set per company by the theme — see themeCssBlock). */
+  --color-brand-accent: var(--brand-gradient);
+  --color-brand-deep: var(--brand-deep);
+  --color-canvas: var(--canvas);
 
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -61,9 +60,15 @@
   --input: #e2e8f0;
   --ring: #E56043;
   --radius: 0.625rem;
+  /* Supporting colours + the panels' page canvas. These are the default theme's exact values; every other theme
+     sets its own through the theme CSS (themeCssBlock). */
+  --brand-gradient: #ff8e75;
+  --brand-deep: #1D428A;
+  --canvas: #e9ebee;
 }
 
 .dark {
+  --canvas: var(--background);
   --background: #1b1a1a;
   --foreground: #ECF2FD;
   --card: #1b1a1a;
@@ -92,12 +97,8 @@
    Services page does (where dark cards sit on `dark:bg-muted/10`). Scoped to
    .lms-shell so the public site's dark mode is untouched. */
 .dark .lms-shell {
-  --card: #1c2740;
-  --card-foreground: #ECF2FD;
-  --popover: #1c2740;
-  --popover-foreground: #ECF2FD;
-  --border: color-mix(in oklch, #334155 82%, var(--primary) 10%);
-  --muted-foreground: color-mix(in oklch, #94a3b8 88%, var(--primary) 8%);
+  --card: color-mix(in oklch, var(--background) 82%, var(--secondary) 18%);
+  --popover: color-mix(in oklch, var(--background) 82%, var(--secondary) 18%);
 }
 
 /* Light mode's --border/--muted-foreground are plain cool Tailwind slate
@@ -110,10 +111,6 @@
    --muted stays plain neutral (not warmed) — it backs FILLED surfaces
    (loading skeletons, table row hover, badge hover) where a coral tint reads
    as a stray pink cast rather than a neutral "not loaded yet"/"hovered" state. */
-.lms-shell {
-  --border: color-mix(in oklch, #e2e8f0 82%, var(--primary) 10%);
-  --muted-foreground: color-mix(in oklch, #64748b 88%, var(--primary) 10%);
-}
 
 /* ---------------------------------------------------------------------------
    LMS panel theme — matches the public Services Listing page
@@ -185,7 +182,7 @@
   right: 8%;
   width: 55%;
   height: 55%;
-  background: color-mix(in oklch, var(--color-yashorbit-coral) 5%, transparent);
+  background: color-mix(in oklch, var(--color-brand-accent) 5%, transparent);
   animation: blob 7s infinite;
   animation-delay: 4s;
 }
@@ -193,7 +190,7 @@
   background: color-mix(in oklch, var(--primary) 15%, transparent);
 }
 .dark .lms-ambient::after {
-  background: color-mix(in oklch, var(--color-yashorbit-coral) 15%, transparent);
+  background: color-mix(in oklch, var(--color-brand-accent) 15%, transparent);
 }
 .lms-ambient > .lms-ambient-mid {
   position: absolute;
@@ -249,19 +246,19 @@
   border-radius: var(--radius-xl);
   /* Plain neutral gray, not the warm coral-tinted --border used elsewhere —
      input borders read as a stray pink cast when tinted. */
-  border-color: #e2e8f0;
+  border-color: var(--border);
 }
 .dark .lms-shell [data-slot="input"],
 .dark .lms-shell [data-slot="textarea"],
 .dark .lms-shell [data-slot="select-trigger"] {
-  border-color: #334155;
+  border-color: var(--border);
 }
 .lms-shell [data-slot="button"] {
   border-radius: var(--radius-xl);
   transition: background-color 0.2s ease, background-image 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 .lms-shell [data-slot="button"].bg-primary {
-  background-image: linear-gradient(135deg, var(--primary), var(--color-yashorbit-coral));
+  background-image: linear-gradient(135deg, var(--primary), var(--color-brand-accent));
   box-shadow: 0 10px 25px -8px color-mix(in oklch, var(--primary) 50%, transparent);
 }
 .lms-shell [data-slot="button"].bg-primary:hover {
@@ -343,5 +340,172 @@
   }
   .sop-print-hide {
     display: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Modern panel treatment — every theme EXCEPT the built-in default (the root
+   layout sets data-ui="modern" on <html>). Soft glass surfaces with a hairline
+   border and a layered shadow in light mode, lifted translucent surfaces in
+   dark mode, a gentle aurora behind the panels in both. Everything derives from
+   the active theme's own colours, so each theme reads as itself.
+   --------------------------------------------------------------------------- */
+html[data-ui="modern"] {
+  --border: color-mix(in oklab, var(--foreground) 11%, var(--background));
+  --input: color-mix(in oklab, var(--foreground) 14%, var(--background));
+}
+html[data-ui="modern"].dark {
+  --border: color-mix(in oklab, white 11%, transparent);
+  --input: color-mix(in oklab, white 14%, transparent);
+}
+
+html[data-ui="modern"] .lms-surface {
+  border-color: color-mix(in oklab, var(--foreground) 7%, transparent);
+  box-shadow:
+    0 1px 2px color-mix(in oklab, var(--foreground) 5%, transparent),
+    0 16px 34px -20px color-mix(in oklab, var(--foreground) 24%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+html[data-ui="modern"].dark .lms-surface {
+  border-color: color-mix(in oklab, white 9%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 7%, transparent),
+    0 20px 44px -24px black;
+  background-image: linear-gradient(to bottom, color-mix(in oklab, white 4%, transparent), transparent 45%);
+}
+
+/* The aurora is on in light mode too, as a soft colour wash rather than a multiply-blended stain. */
+html[data-ui="modern"] .lms-ambient {
+  display: block;
+}
+html[data-ui="modern"] .lms-ambient::before,
+html[data-ui="modern"] .lms-ambient::after,
+html[data-ui="modern"] .lms-ambient > .lms-ambient-mid {
+  mix-blend-mode: normal;
+  filter: blur(110px);
+}
+html[data-ui="modern"] .lms-ambient::before { background: color-mix(in oklab, var(--primary) 11%, transparent); }
+html[data-ui="modern"] .lms-ambient::after { background: color-mix(in oklab, var(--color-brand-accent) 9%, transparent); }
+html[data-ui="modern"] .lms-ambient > .lms-ambient-mid { background: color-mix(in oklab, var(--color-brand-deep) 9%, transparent); }
+html[data-ui="modern"].dark .lms-ambient::before { background: color-mix(in oklab, var(--primary) 20%, transparent); }
+html[data-ui="modern"].dark .lms-ambient::after { background: color-mix(in oklab, var(--color-brand-accent) 16%, transparent); }
+html[data-ui="modern"].dark .lms-ambient > .lms-ambient-mid { background: color-mix(in oklab, var(--color-brand-deep) 22%, transparent); }
+
+/* Dark mode, fully modern: near-black with a soft glow of the theme's primary, glowing primary buttons, hairline cards. */
+html[data-ui="modern"].dark body {
+  background-image:
+    radial-gradient(60rem 28rem at 88% -8%, color-mix(in oklab, var(--primary) 15%, transparent), transparent 62%),
+    radial-gradient(48rem 26rem at -8% 6%, color-mix(in oklab, var(--color-brand-deep) 18%, transparent), transparent 62%);
+  background-attachment: fixed;
+}
+html[data-ui="modern"].dark [data-slot="button"].bg-primary {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--primary) 45%, transparent),
+    0 10px 26px -10px color-mix(in oklab, var(--primary) 60%, transparent);
+}
+html[data-ui="modern"].dark [data-slot="input"],
+html[data-ui="modern"].dark [data-slot="textarea"],
+html[data-ui="modern"].dark [data-slot="select-trigger"] {
+  background-color: color-mix(in oklab, white 4%, transparent);
+}
+html[data-ui="modern"].dark ::selection {
+  background: color-mix(in oklab, var(--primary) 40%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   Modern polish (light + dark), non-default themes only: gradient hairline
+   borders, tight display type, glossy primary buttons, pill badges, calm
+   tables, thin scrollbars, visible focus rings and a shimmering skeleton.
+   --------------------------------------------------------------------------- */
+html[data-ui="modern"] :is(h1, h2, h3) {
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+html[data-ui="modern"] p {
+  text-wrap: pretty;
+}
+html[data-ui="modern"] :is(table, [data-slot="table"]) {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Cards: a gradient hairline (primary → neutral → deep accent) instead of a flat border. */
+html[data-ui="modern"] .lms-surface {
+  border-color: transparent;
+  background-image:
+    linear-gradient(transparent, transparent),
+    linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--primary) 30%, transparent),
+      color-mix(in oklab, var(--foreground) 7%, transparent) 38%,
+      color-mix(in oklab, var(--color-brand-deep) 24%, transparent)
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+html[data-ui="modern"].dark .lms-surface {
+  background-image:
+    linear-gradient(color-mix(in oklab, white 3%, transparent), transparent 50%),
+    linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--primary) 38%, transparent),
+      color-mix(in oklab, white 9%, transparent) 40%,
+      color-mix(in oklab, var(--color-brand-deep) 34%, transparent)
+    );
+}
+
+/* Primary buttons: a glossy top highlight and a soft coloured shadow; they press in. */
+html[data-ui="modern"] [data-slot="button"].bg-primary {
+  background-image: linear-gradient(180deg, color-mix(in oklab, white 16%, transparent), transparent 60%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 28%, transparent),
+    0 8px 20px -10px color-mix(in oklab, var(--primary) 70%, transparent);
+}
+html[data-ui="modern"] [data-slot="button"] {
+  transition: transform 0.18s ease, box-shadow 0.25s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+html[data-ui="modern"] [data-slot="button"]:active {
+  transform: scale(0.98);
+}
+
+/* Pill badges, calm tables. */
+html[data-ui="modern"] [data-slot="badge"] {
+  border-radius: 9999px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+html[data-ui="modern"] [data-slot="table-head"] {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+html[data-ui="modern"] [data-slot="table-row"] {
+  transition: background-color 0.18s ease;
+}
+html[data-ui="modern"] [data-slot="table-row"]:hover {
+  background-color: color-mix(in oklab, var(--primary) 6%, transparent);
+}
+
+/* Thin scrollbars, visible keyboard focus. */
+html[data-ui="modern"] * {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--foreground) 24%, transparent) transparent;
+}
+html[data-ui="modern"] :is(a, button, [role="button"], input, textarea, select):focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--primary) 75%, transparent);
+  outline-offset: 2px;
+}
+
+/* Skeletons shimmer instead of pulsing. */
+@keyframes modern-shimmer {
+  to { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-ui="modern"] [data-slot="skeleton"] {
+    background-image: linear-gradient(90deg, transparent 0%, color-mix(in oklab, var(--foreground) 9%, transparent) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: modern-shimmer 1.5s linear infinite;
   }
 }

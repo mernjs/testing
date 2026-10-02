@@ -46,7 +46,7 @@ export function DistributionChart({ data }: { data: { label: string; value: numb
         <defs>
           <linearGradient id="otsDistFill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="var(--primary)" />
-            <stop offset="100%" stopColor="var(--color-yashorbit-coral)" />
+            <stop offset="100%" stopColor="var(--color-brand-accent)" />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />

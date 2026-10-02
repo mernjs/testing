@@ -1,7 +1,6 @@
 import "server-only";
 import { getDb } from "@/lib/mongodb";
 import { updateStamp } from "@/lib/hrms/db";
-import { organizationInfo } from "@/lib/seo";
 import { currentCompanyId, isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 import { getCompany } from "@/lib/platform/tenancy/companies";
 
@@ -41,19 +40,19 @@ export interface CompanyDetails {
   updatedBy: string | null;
 }
 
-/** The platform owner's own identity — its defaults, and only its. */
-const OWNER_DEFAULTS: Omit<CompanyDetails, "_id" | "updatedAt" | "updatedBy"> = {
-  name: organizationInfo.name,
-  legalName: organizationInfo.legalName,
-  addressLine1: organizationInfo.address.streetAddress,
+/** Statutory / letter defaults every company starts with — the company's own name and details are filled in by it. */
+const BASE_DEFAULTS: Omit<CompanyDetails, "_id" | "updatedAt" | "updatedBy"> = {
+  name: "",
+  legalName: "",
+  addressLine1: "",
   addressLine2: "",
-  city: organizationInfo.address.addressLocality,
-  state: organizationInfo.address.addressRegion,
-  postalCode: organizationInfo.address.postalCode,
-  country: "India",
-  email: organizationInfo.email,
-  phone: organizationInfo.telephone,
-  website: organizationInfo.url,
+  city: "",
+  state: "",
+  postalCode: "",
+  country: "",
+  email: "",
+  phone: "",
+  website: "",
   pan: "",
   gstin: "",
   cin: "",
@@ -66,27 +65,13 @@ const OWNER_DEFAULTS: Omit<CompanyDetails, "_id" | "updatedAt" | "updatedBy"> = 
 };
 
 /**
- * Starting values for a company that hasn't saved its details yet. Any other
- * company starts from its own registered name with blank contact/statutory
- * fields — never the platform owner's address, email or phone.
+ * Starting values for a company that hasn't saved its details yet: its own
+ * registered name with blank contact/statutory fields.
  */
 async function defaultsForCurrentCompany(): Promise<Omit<CompanyDetails, "_id" | "updatedAt" | "updatedBy">> {
-  if (await isPlatformOwnerContext()) return OWNER_DEFAULTS;
   const company = await getCompany(await currentCompanyId());
   const name = company?.name ?? "";
-  return {
-    ...OWNER_DEFAULTS,
-    name,
-    legalName: name,
-    addressLine1: "",
-    city: "",
-    state: "",
-    postalCode: "",
-    country: "",
-    email: "",
-    phone: "",
-    website: "",
-  };
+  return { ...BASE_DEFAULTS, name, legalName: name };
 }
 
 export async function getCompanyDetails(): Promise<CompanyDetails> {

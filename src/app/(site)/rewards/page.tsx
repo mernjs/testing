@@ -1,4 +1,5 @@
 import { getCurrentPortalUser } from "@/lib/portal-auth";
+import { jsonForScript } from "@/lib/security/json-script";
 import { getRewardsGuide } from "@/lib/wallet/guide";
 import { GUIDE_FAQS } from "@/lib/wallet/earn-guide";
 import { cmsPageMetadata, requirePublicPage } from "@/lib/cms/page-route";
@@ -15,7 +16,7 @@ export default async function RewardsPage() {
   return (
     <>
       {page.jsonLd.map((ld, i) => (
-        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonForScript(ld) }} />
       ))}
       <RewardsContent guide={guide} signedIn={Boolean(user)} defaultAudience={user?.role ?? "trainee"} faqs={GUIDE_FAQS} />
     </>

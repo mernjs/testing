@@ -29,7 +29,7 @@ export async function processPaymentReminders(): Promise<{ processed: number; se
     const logDoc: PaymentReminderLog = {
       _id: newId(),
       invoiceId: String(inv._id),
-      customerEmail: inv.customerName || "customer@yashorbit.com",
+      customerEmail: inv.customerName || "customer@example.com",
       reminderType: "OVERDUE",
       sentAt: now,
       status: "SENT",
@@ -40,7 +40,7 @@ export async function processPaymentReminders(): Promise<{ processed: number; se
 
   await recordAudit({
     actorId: "system",
-    actorEmail: "scheduler@yashorbit.com",
+    actorEmail: "scheduler@internal.invalid",
     action: "reminder_cron",
     entity: "payment_reminders",
     entityId: `rem_${todayStr}`,

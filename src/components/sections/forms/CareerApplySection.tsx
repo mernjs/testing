@@ -116,7 +116,7 @@ export default function CareerApplySection({
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full bg-primary/10 blur-[120px] mix-blend-multiply dark:mix-blend-screen animate-blob"></div>
           <div className="absolute top-[10%] right-[5%] w-[50%] h-[50%] rounded-full bg-secondary/15 blur-[100px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-[20%] left-[20%] w-[70%] h-[70%] rounded-full bg-[#ff8e75]/15 blur-[140px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000"></div>
+          <div className="absolute -bottom-[20%] left-[20%] w-[70%] h-[70%] rounded-full bg-brand-accent/15 blur-[140px] mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000"></div>
         </div>
 
         <div className="mx-auto max-w-3xl px-6 lg:px-8 relative z-10 text-center">
@@ -126,9 +126,9 @@ export default function CareerApplySection({
           </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }} className="text-4xl font-black tracking-tight text-foreground sm:text-5xl mb-6 leading-[1.1]">
             {selectedPosition ? (
-              <>{roleHeadingLead}<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#ff8e75]">{selectedPosition.title}</span></>
+              <>{roleHeadingLead}<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-brand-accent">{selectedPosition.title}</span></>
             ) : (
-              <>{generalHeadingLead}<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#ff8e75]">{generalHeadingHighlight}</span>{generalHeadingTail}</>
+              <>{generalHeadingLead}<span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-brand-accent">{generalHeadingHighlight}</span>{generalHeadingTail}</>
             )}
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="text-lg leading-8 text-muted-foreground">

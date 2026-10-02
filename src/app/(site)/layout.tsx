@@ -1,6 +1,6 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import FooterCompact from "@/components/FooterCompact";
+import Header, { type HeaderVariant } from "@/components/Header";
+import SiteFooter from "@/components/footer/SiteFooter";
+import { layoutCss } from "@/lib/cms/component-variants";
 import { ThemeVariantsProvider } from "@/components/cms/ThemeVariantsContext";
 import { CollectionsProvider } from "@/components/cms/CollectionsContext";
 import { getSnapshot } from "@/lib/cms/collections/store";
@@ -14,6 +14,9 @@ import { getPublicNav } from "@/lib/cms/nav";
 import { getPublicFooter } from "@/lib/cms/footer";
 import { themeCssBlock } from "@/lib/cms/theme";
 import { resolveSiteThemeState } from "@/lib/cms/theme-preview";
+import SiteTracking from "@/components/cms/SiteTracking";
+import { getTracking } from "@/lib/cms/tracking";
+import ThemeImageFilters from "@/components/cms/ThemeImageFilters";
 import ThemePreviewBridge from "@/components/cms/theme/ThemePreviewBridge";
 import CmsAdminToolbar from "@/components/cms/CmsAdminToolbar";
 import { getSiteInfo } from "@/lib/cms/site-info";
@@ -23,7 +26,7 @@ export default async function SiteLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [{ schemas }, cmsNavigation, cmsFooter, { tokens: theme, components, preview }, collections, siteInfo] = await Promise.all([
+  const [{ schemas }, cmsNavigation, cmsFooter, { tokens: theme, components, preview }, collections, siteInfo, tracking] = await Promise.all([
     getSeoSiteState(),
     getPublicNav(),
     getPublicFooter(),
@@ -32,23 +35,26 @@ export default async function SiteLayout({
     // Blog posts, jobs and engagement models (code + published CMS records) for every client listing/card.
     getSnapshot(["blog", "jobs", "engagement"]),
     getSiteInfo(),
+    getTracking(),
   ]);
   // Header/footer variant chosen by the active theme in the CMS (component-variants.ts); "default" = the standard components.
-  const SiteFooter = components.footer === "compact" ? FooterCompact : Footer;
   return (
     <OfferClaimProvider>
       {/* Overrides globals.css's :root/.dark custom properties — CSS cascade (later tag wins) does the rest, no globals.css change needed. */}
-      <style id="cms-theme-vars" dangerouslySetInnerHTML={{ __html: themeCssBlock(theme) }} />
+      <style id="cms-theme-vars" dangerouslySetInnerHTML={{ __html: themeCssBlock(theme) + layoutCss(components) }} />
+      {components.images === "themed" && <ThemeImageFilters tokens={theme} />}
+      {/* The company's own analytics / tracking — never while a CMS user is previewing a theme. */}
+      {!preview && <SiteTracking t={tracking} />}
       <ManagedJsonLd schemas={schemas} />
       <OfferPromotions />
       <ReferralWelcome />
-      <Header cmsNavigation={cmsNavigation} variant={components.header === "menu" ? "menu" : "default"} />
-      <main className="flex-grow pt-[calc(88px+var(--offer-strip-h,0px))]">
+      <Header cmsNavigation={cmsNavigation} variant={components.header as HeaderVariant} menuStyle={components.menu} />
+      <main className="flex-grow pt-[calc(var(--site-header-h,88px)+var(--offer-strip-h,0px))]">
         <CollectionsProvider snapshot={collections}>
           <ThemeVariantsProvider sections={components.sections}>{children}</ThemeVariantsProvider>
         </CollectionsProvider>
       </main>
-      <SiteFooter cmsFooter={cmsFooter} siteInfo={siteInfo} />
+      <SiteFooter variant={components.footer} cmsFooter={cmsFooter} siteInfo={siteInfo} />
       <Toaster position="top-right" richColors closeButton />
       {preview && <ThemePreviewBridge themeName={preview.name} />}
       {/* Signed-in CMS users only (client-side; visitors never request it). */}

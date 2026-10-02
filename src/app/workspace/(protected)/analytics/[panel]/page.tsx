@@ -458,7 +458,7 @@ function BarList({
           <span className="w-36 shrink-0 truncate text-xs text-muted-foreground" title={d.label}>{d.label}</span>
           <div className="flex-1 h-2 rounded-full bg-muted/40 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-primary to-[var(--color-yashorbit-coral)] transition-all"
+              className="h-full rounded-full bg-gradient-to-r from-primary to-[var(--color-brand-accent)] transition-all"
               style={{ width: `${Math.max((Math.abs(d.value) / max) * 100, 2)}%` }}
             />
           </div>
@@ -1075,7 +1075,7 @@ export default async function WorkspacePanelAnalyticsPage({
             ]}
           />
           <div className="mt-3 flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-[var(--color-yashorbit-coral)] text-white shadow-md">
+            <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-[var(--color-brand-accent)] text-white shadow-md">
               {icon}
             </div>
             <div>
@@ -1088,7 +1088,7 @@ export default async function WorkspacePanelAnalyticsPage({
           href={config.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-[var(--color-yashorbit-coral)] px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg"
+          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-[var(--color-brand-accent)] px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg"
         >
           {config.ctaLabel}
           <ArrowUpRight className="size-4" />

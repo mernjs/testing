@@ -84,7 +84,7 @@ const loginPage = copyType(
     rewardsLead: "Rewards line (before the link)",
     rewardsLinkLabel: "Rewards link text",
     formTitle: "Form title",
-    formSubtitle: "Form subtitle ([[YashOrbit]] = brand wordmark)",
+    formSubtitle: "Form subtitle ([[brand]] = brand wordmark)",
     emailLabel: "Email label",
     emailPlaceholder: "Email placeholder",
     passwordLabel: "Password label",

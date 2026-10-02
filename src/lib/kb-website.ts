@@ -3,10 +3,12 @@ import { createHash } from "node:crypto";
 import * as cheerio from "cheerio";
 import { ObjectId, type Collection } from "mongodb";
 import { getDb } from "@/lib/mongodb";
-import { organizationInfo } from "@/lib/seo";
 import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { fetchUrl } from "@/lib/seo-panel/fetch";
 import { getSiteInfo } from "@/lib/cms/site-info";
+import { getCompanyBrand } from "@/lib/platform/branding";
+import { getCompanyDetails } from "@/lib/hrms/company";
 import { ensureVectorStore } from "@/lib/chatbot-config";
 import {
   uploadTextToVectorStore,
@@ -186,19 +188,10 @@ function buildPageDocument(page: ExtractedPage, url: string): string {
 }
 
 async function fetchHtml(url: string): Promise<string> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15_000);
-  try {
-    const res = await fetch(url, {
-      signal: controller.signal,
-      headers: { "user-agent": "YashOrbitKnowledgeBot/1.0 (+https://yashorbit.com)" },
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.text();
-  } finally {
-    clearTimeout(timeout);
-  }
+  // SSRF-guarded (public hosts only, redirects re-checked, size-capped) — the URL comes from a company-controlled site.
+  const res = await fetchUrl(url, { timeoutMs: 15_000 });
+  if (res.status === 0 || res.status >= 400 || res.body === null) throw new Error(res.error || `HTTP ${res.status}`);
+  return res.body;
 }
 
 function hashOf(text: string): string {
@@ -211,33 +204,33 @@ function hashOf(text: string): string {
 // ---------------------------------------------------------------------------
 
 async function buildCompanyFactsDocument(): Promise<{ title: string; text: string }> {
-  const a = organizationInfo.address;
   const siteUrl = await companySiteUrl();
   // Contact details + social links as currently published in CMS → Site Identity.
-  const { contact, social } = await getSiteInfo();
+  const { contact, social, brand } = await getSiteInfo();
+  const name = (brand.namePrimary + brand.nameAccent).trim() || (await getCompanyBrand()).name;
+  // Only what the company has published itself (HRMS → Company, CMS → Site Identity).
+  const company = await getCompanyDetails().catch(() => null);
+  const email = company?.email || contact.email;
+  const phone = company?.phone || contact.phoneDisplay;
+  const address = [company?.addressLine1, company?.addressLine2, company?.city, company?.state, company?.postalCode].filter((x) => x?.trim()).join(", ") || contact.address.replace(/\n/g, ", ");
   const lines = [
-    "# YashOrbit — Company Facts",
+    `# ${name} — Company Facts`,
     "",
     "This is authoritative reference information about the company.",
     "",
-    `Legal name: ${organizationInfo.legalName}`,
-    `Common name: YashOrbit (YashOrbit Technologies Pvt. Ltd.)`,
+    `Name: ${company?.legalName || name}`,
     `Website: ${siteUrl}`,
-    `Primary contact email: ${organizationInfo.email}`,
-    `Support email: ${contact.email}`,
-    `Phone: ${organizationInfo.telephone}`,
-    `WhatsApp: ${contact.whatsappHref}`,
-    `Office address: ${a.streetAddress}, ${a.addressLocality}, ${a.addressRegion} ${a.postalCode}, ${a.addressCountry}`,
-    `Map: ${contact.mapsUrl}`,
+    ...(email ? [`Primary contact email: ${email}`] : []),
+    ...(contact.email ? [`Support email: ${contact.email}`] : []),
+    ...(phone ? [`Phone: ${phone}`] : []),
+    ...(contact.whatsappHref ? [`WhatsApp: ${contact.whatsappHref}`] : []),
+    ...(address ? [`Office address: ${address}`] : []),
+    ...(contact.mapsUrl ? [`Map: ${contact.mapsUrl}`] : []),
     "",
-    "Social profiles:",
-    ...social.map((s) => `- ${s.name}: ${s.href}`),
-    "",
-    "What YashOrbit does: custom software development (web, mobile, desktop), AI & automation solutions (workflows, chatbots, RAG systems, RPA), data analytics, plus industrial training and internship programs for developers.",
-    "",
-    "To start a project or get a quote, visit the contact page at " + `${siteUrl}/contact` + " or email " + organizationInfo.email + ".",
+    ...(social.length ? ["Social profiles:", ...social.map((s) => `- ${s.name}: ${s.href}`), ""] : []),
+    "To start a project or get a quote, visit the contact page at " + `${siteUrl}/contact` + (email ? " or email " + email : "") + ".",
   ];
-  return { title: "YashOrbit — Company Facts", text: lines.join("\n") };
+  return { title: `${name} — Company Facts`, text: lines.join("\n") };
 }
 
 // ---------------------------------------------------------------------------

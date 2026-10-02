@@ -40,7 +40,7 @@ export default function GroupedBarChart({
         />
         <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, color: "var(--muted-foreground)" }} />
         <Bar dataKey="a" name={aName} fill="var(--primary)" radius={[4, 4, 0, 0]} animationDuration={600} />
-        <Bar dataKey="b" name={bName} fill="var(--color-yashorbit-coral)" radius={[4, 4, 0, 0]} animationDuration={600} />
+        <Bar dataKey="b" name={bName} fill="var(--color-brand-accent)" radius={[4, 4, 0, 0]} animationDuration={600} />
       </BarChart>
     </ResponsiveContainer>
   );

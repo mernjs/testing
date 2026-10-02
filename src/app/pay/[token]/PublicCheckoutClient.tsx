@@ -31,6 +31,8 @@ export default function PublicCheckoutClient({ link }: { link: SerializedPayment
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          // The link's secret token authorises this payment; the server takes amount, invoice and customer from the link itself.
+          linkToken: link.token,
           sourceModule: link.sourceModule,
           sourceType: "DIRECT_LINK",
           sourceId: link._id,

@@ -49,15 +49,15 @@ export default function LeadSuccessState({
     >
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <div className="absolute left-1/2 top-1/2 w-40 h-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-3xl animate-blob" />
-        <div className="absolute left-1/2 top-1/2 w-32 h-32 -translate-x-[65%] -translate-y-1/2 rounded-full bg-[#ff8e75]/10 blur-3xl animate-blob animation-delay-2000" />
+        <div className="absolute left-1/2 top-1/2 w-32 h-32 -translate-x-[65%] -translate-y-1/2 rounded-full bg-brand-accent/10 blur-3xl animate-blob animation-delay-2000" />
       </div>
 
       <div className="relative flex items-center justify-center" style={{ width: ringSize, height: ringSize }}>
         <svg width={ringSize} height={ringSize} className="absolute -rotate-90">
           <defs>
             <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#E56043" />
-              <stop offset="100%" stopColor="#ff8e75" />
+              <stop offset="0%" stopColor="var(--primary)" />
+              <stop offset="100%" stopColor="var(--brand-gradient)" />
             </linearGradient>
           </defs>
           <circle cx={center} cy={center} r={radius} fill="none" stroke="currentColor" strokeWidth={strokeWidth} className="text-border" />
@@ -86,7 +86,7 @@ export default function LeadSuccessState({
           initial={{ scale: 0, rotate: -20 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 260, damping: 16, delay: 0.05 }}
-          className="relative flex items-center justify-center rounded-full bg-gradient-to-br from-primary to-[#ff8e75] shadow-lg shadow-primary/30"
+          className="relative flex items-center justify-center rounded-full bg-gradient-to-br from-primary to-brand-accent shadow-lg shadow-primary/30"
           style={{ width: badgeSize, height: badgeSize }}
         >
           <Check className={compact ? "w-7 h-7 text-primary-foreground" : "w-10 h-10 text-primary-foreground"} strokeWidth={3} />

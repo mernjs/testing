@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { readSafeJson } from "@/lib/security/safe-json";
 import type OpenAI from "openai";
 import { isOpenAIConfigured } from "@/lib/openai";
 import { getChatbotConfig } from "@/lib/chatbot-config";
@@ -13,6 +14,8 @@ import {
 } from "@/lib/chatbot-sessions";
 import { prepareAnswer, streamAnswer, resolveCitations } from "@/lib/chatbot-rag";
 import { getVisitorProfile } from "@/lib/chat-visitors";
+import { getCompanyBrand } from "@/lib/platform/branding";
+import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 import { isDemoChat, answerDemoQuestion, streamDemoAnswer, DEMO_MODEL } from "@/lib/chat-demo";
 
 // Long-running streamed completion.
@@ -32,7 +35,7 @@ export async function POST(req: NextRequest) {
 
   let body: { message?: unknown; sourcePage?: unknown; voice?: unknown };
   try {
-    body = await req.json();
+    body = (await readSafeJson(req)) as typeof body;
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
@@ -88,7 +91,7 @@ export async function POST(req: NextRequest) {
 
   // ---- Demo mode: scripted, locally-streamed answer -----------------------
   if (demo) {
-    const answer = answerDemoQuestion(sanitized.text);
+    const answer = answerDemoQuestion(sanitized.text, { name: (await getCompanyBrand()).name, siteUrl: await companySiteUrl() });
     const readable = new ReadableStream<Uint8Array>({
       async start(controller) {
         const send = (obj: unknown) =>

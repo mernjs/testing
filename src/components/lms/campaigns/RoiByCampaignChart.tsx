@@ -35,7 +35,7 @@ export default function RoiByCampaignChart({ data }: { data: Row[] }) {
         />
         <Bar dataKey="roiPercent" radius={[0, 4, 4, 0]} animationDuration={600}>
           {rows.map((r) => (
-            <Cell key={r.name} fill={r.roiPercent >= 0 ? "var(--color-yashorbit-blue)" : "var(--destructive)"} />
+            <Cell key={r.name} fill={r.roiPercent >= 0 ? "var(--color-brand-deep)" : "var(--destructive)"} />
           ))}
         </Bar>
       </BarChart>

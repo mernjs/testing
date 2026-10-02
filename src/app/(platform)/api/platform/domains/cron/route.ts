@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { hasBearer } from "@/lib/security/bearer";
 import { recheckPendingDomains } from "@/lib/platform/domains/custom";
 
 /**
@@ -7,6 +8,6 @@ import { recheckPendingDomains } from "@/lib/platform/domains/custom";
  */
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET;
-  if (!secret || req.headers.get("authorization") !== `Bearer ${secret}`) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!secret || !hasBearer(req, secret)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   return NextResponse.json({ ok: true, companies: await recheckPendingDomains() });
 }

@@ -1,5 +1,3 @@
-import { isHexColor } from "@/lib/platform/branding/types";
-
 /** Relative luminance (WCAG) of a `#rrggbb` colour. */
 function luminance(hex: string): number {
   const [r, g, b] = [1, 3, 5].map((i) => {
@@ -14,16 +12,4 @@ export function readableOn(hex: string): string {
   const onDark = (1.05) / (luminance(hex) + 0.05);
   const onLight = (luminance(hex) + 0.05) / (luminance("#1b1a1a") + 0.05);
   return onLight >= onDark ? "#1b1a1a" : "#ffffff";
-}
-
-/**
- * CSS that re-points the theme's accent at the company's brand colour, for
- * light and dark mode alike. Empty when the company hasn't chosen one, so the
- * platform's own palette (and the CMS site theme, which is applied later in
- * the cascade on public pages) is untouched.
- */
-export function brandColorCss(primaryColor: string | null): string {
-  if (!isHexColor(primaryColor)) return "";
-  const fg = readableOn(primaryColor);
-  return `:root,.dark{--primary:${primaryColor};--primary-foreground:${fg};--ring:${primaryColor};}`;
 }

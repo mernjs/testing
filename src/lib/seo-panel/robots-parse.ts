@@ -237,4 +237,3 @@ Sitemap: ${siteUrl}/sitemap.xml
  * byte-for-byte what the previous code-defined `src/app/robots.ts` served.
  * Other companies get `robotsTxtTemplate(companySiteUrl())` (see `defaultRobots()`).
  */
-export const DEFAULT_ROBOTS_TXT = robotsTxtTemplate("https://www.yashorbit.com");

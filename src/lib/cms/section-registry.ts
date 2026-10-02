@@ -157,7 +157,7 @@ const pageHero: SectionTypeDef<PageHeroConfig> = {
       : {}),
   }),
   fields: [
-    { key: "brandDescription", label: "Style \"YashOrbit\" in the description with brand colours", kind: "boolean" },
+    { key: "brandDescription", label: "Style the brand name in the description with brand colours", kind: "boolean" },
     { key: "categoryLabel", label: "Category label", kind: "text" },
     { key: "title", label: "Title", kind: "text" },
     { key: "subtitle", label: "Subtitle", kind: "textarea" },
@@ -207,7 +207,7 @@ const courseOverview: SectionTypeDef<CourseOverviewConfig> = {
     tone: c.tone,
   }),
   fields: [
-    { key: "brandParagraphs", label: "Style \"YashOrbit\" in paragraphs with brand colours", kind: "boolean" },
+    { key: "brandParagraphs", label: "Style the brand name in paragraphs with brand colours", kind: "boolean" },
     { key: "title", label: "Title", kind: "text" },
     { key: "paragraphs", label: "Paragraphs", kind: "list" },
   ],
@@ -571,7 +571,7 @@ const faqAccordion: SectionTypeDef<FAQAccordionConfig> = {
     { key: "title", label: "Title (optional)", kind: "text" },
     { key: "category", label: "Eyebrow label (optional)", kind: "text" },
     { key: "icon", label: "Icon (optional)", kind: "icon" },
-    { key: "brandQuestions", label: "Style \"YashOrbit\" in questions with brand colours", kind: "boolean" },
+    { key: "brandQuestions", label: "Style the brand name in questions with brand colours", kind: "boolean" },
   ],
   repeaters: [{ key: "faqs", label: "Questions", itemFields: [{ key: "question", label: "Question", kind: "text" }, { key: "answer", label: "Answer", kind: "textarea" }] }],
 };
@@ -774,6 +774,8 @@ interface HomeHeroConfig extends Record<string, unknown> {
   perfTitle: string;
   perfText: string;
   scrollLabel: string;
+  /** Optional background photo (empty = the built-in one). */
+  image?: string;
 }
 
 const homeHero: SectionTypeDef<HomeHeroConfig> = {
@@ -801,6 +803,7 @@ const homeHero: SectionTypeDef<HomeHeroConfig> = {
       perfTitle: str(r.perfTitle, 100),
       perfText: str(r.perfText, 100),
       scrollLabel: str(r.scrollLabel, 100),
+      image: strOpt(r.image, 1000),
     };
   },
   Renderer: HomeHero,
@@ -822,6 +825,7 @@ const homeHero: SectionTypeDef<HomeHeroConfig> = {
     { key: "perfTitle", label: "Floating badge 2 — title", kind: "text" },
     { key: "perfText", label: "Floating badge 2 — text", kind: "text" },
     { key: "scrollLabel", label: "\"Scroll\" hint", kind: "text" },
+    { key: "image", label: "Background photo (optional)", kind: "image" },
   ],
 };
 

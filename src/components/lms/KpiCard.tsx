@@ -103,7 +103,7 @@ export default function KpiCard({
       <GlassCard>
         <CardContent className="flex h-full items-center gap-3 py-3.5 px-4">
           {icon && (
-            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-yashorbit-coral text-white">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-brand-accent text-white">
               {icon}
             </div>
           )}
@@ -113,7 +113,7 @@ export default function KpiCard({
               <p
                 className={cn(
                   "text-[17px] font-bold tracking-tight tabular-nums text-foreground whitespace-nowrap shrink-0",
-                  accent && "bg-gradient-to-r from-primary to-[color:var(--color-yashorbit-coral)] bg-clip-text text-transparent",
+                  accent && "bg-gradient-to-r from-primary to-[color:var(--color-brand-accent)] bg-clip-text text-transparent",
                   tone === "up" && "text-emerald-600 dark:text-emerald-400",
                   tone === "down" && "text-rose-600 dark:text-rose-400"
                 )}

@@ -67,10 +67,10 @@ export function MicButton() {
           "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           "disabled:cursor-not-allowed disabled:opacity-50",
           listening
-            ? "bg-gradient-to-br from-primary to-yashorbit-coral shadow-primary/40 ring-4 ring-primary/25"
+            ? "bg-gradient-to-br from-primary to-brand-accent shadow-primary/40 ring-4 ring-primary/25"
             : speaking
-              ? "bg-gradient-to-br from-yashorbit-blue to-secondary-foreground shadow-yashorbit-blue/40 ring-4 ring-yashorbit-blue/25"
-              : "bg-gradient-to-br from-primary to-yashorbit-coral shadow-primary/30 motion-safe:hover:scale-105 active:scale-95"
+              ? "bg-gradient-to-br from-brand-deep to-secondary-foreground shadow-brand-deep/40 ring-4 ring-brand-deep/25"
+              : "bg-gradient-to-br from-primary to-brand-accent shadow-primary/30 motion-safe:hover:scale-105 active:scale-95"
         )}
       >
         {busy ? (

@@ -1,5 +1,6 @@
 import "server-only";
-import { View, Text, Image, StyleSheet } from "@react-pdf/renderer";
+import { View, Text, Image } from "@react-pdf/renderer";
+import { lazyStyles } from "@/lib/pdf/lazy-styles";
 import { PDF_COLORS, PDF_TYPO } from "@/lib/pdf/brand";
 import { usePdfIdentity } from "@/lib/pdf/identity";
 
@@ -15,7 +16,7 @@ import { usePdfIdentity } from "@/lib/pdf/identity";
 
 const C = PDF_COLORS;
 
-const st = StyleSheet.create({
+const st = lazyStyles(() => ({
   // ---- brand lockup -------------------------------------------------------
   lockup: { flexDirection: "row", alignItems: "center", gap: 7 },
   lockupCol: { alignItems: "flex-start" },
@@ -49,7 +50,7 @@ const st = StyleSheet.create({
     color: C.mute,
     fontSize: PDF_TYPO.footer,
   },
-});
+}));
 
 /**
  * Icon + two-tone "YashOrbit" wordmark + "TECHNOLOGIES PVT. LTD." caps line.
@@ -160,7 +161,7 @@ export function PdfFooter({ note }: { note?: string }) {
  * copies of these and pulls the shared version so tables, totals blocks,
  * section titles and signature blocks are pixel-identical everywhere.
  */
-export const pdfSheet = StyleSheet.create({
+export const pdfSheet = lazyStyles(() => ({
   pagePortrait: {
     paddingTop: PDF_TYPO.pagePadding,
     paddingHorizontal: PDF_TYPO.pagePadding,
@@ -229,4 +230,4 @@ export const pdfSheet = StyleSheet.create({
   sigLine: { borderTopWidth: 0.75, borderTopColor: C.ink, borderTopStyle: "solid", width: 150, height: 22, marginBottom: 3 },
   sigName: { fontSize: 8.5, fontFamily: "Helvetica-Bold" },
   sigTitle: { fontSize: 7.5, color: C.mute },
-});
+}));

@@ -62,7 +62,7 @@ const STATUS_PIE_COLORS: Record<string, string> = {
   on_hold: "#f59e0b",
   planning: "#8b5cf6",
   overrun: "#ef4444",
-  in_progress: "#E56043",
+  in_progress: "var(--primary)",
   testing: "#06b6d4",
   review: "#f472b6",
 };
@@ -75,7 +75,7 @@ const PRIORITY_COLORS: Record<string, string> = {
   backlog: "#94a3b8",
 };
 
-const CHART_COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#3b82f6", "#8b5cf6", "#E56043", "#06b6d4"];
+const CHART_COLORS = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#3b82f6", "#8b5cf6", "var(--primary)", "#06b6d4"];
 
 // ──────────────────────────────────────────────
 // Shared tooltip style

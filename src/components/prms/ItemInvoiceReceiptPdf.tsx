@@ -1,5 +1,6 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, View, Text } from "@react-pdf/renderer";
+import { lazyStyles } from "@/lib/pdf/lazy-styles";
 import type { CompanyIdentity } from "@/lib/prms/settings";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
@@ -39,7 +40,7 @@ function fmtDate(iso: string) {
     : d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 }
 
-const s = StyleSheet.create({
+const s = lazyStyles(() => ({
   page: pdfSheet.pagePortrait,
   small: { fontSize: 8, color: C.mute },
   cols: { flexDirection: "row", justifyContent: "space-between", marginTop: 14 },
@@ -50,7 +51,7 @@ const s = StyleSheet.create({
   row: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 4, borderBottomWidth: 0.5, borderBottomColor: C.line },
   sigWrap: { marginTop: 40, flexDirection: "row", justifyContent: "flex-end" },
   grand: { flexDirection: "row", justifyContent: "space-between", marginTop: 12, paddingTop: 6, borderTopWidth: 1, borderTopColor: C.ink, fontFamily: "Helvetica-Bold", fontSize: 12 },
-});
+}));
 
 function InvoicePdfDocument({ item, company }: { item: PdfItemDetails; company: CompanyIdentity }) {
   const subtotal = item.subtotal ?? item.amount;

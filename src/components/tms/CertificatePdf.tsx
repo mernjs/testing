@@ -1,5 +1,6 @@
 import "server-only";
-import { Document, Page, View, Text, Image, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, View, Text, Image } from "@react-pdf/renderer";
+import { lazyStyles } from "@/lib/pdf/lazy-styles";
 import { qrToSvg } from "@/lib/tms/qrcode";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { usePdfIdentity } from "@/lib/pdf/identity";
@@ -44,7 +45,7 @@ function fmtDate(iso: string): string {
   return Number.isNaN(d.getTime()) ? iso : d.toLocaleDateString("en-GB", { day: "2-digit", month: "long", year: "numeric" });
 }
 
-const s = StyleSheet.create({
+const s = lazyStyles(() => ({
   page: { padding: 0, fontFamily: "Helvetica", color: C.ink },
   frame: { margin: 18, borderWidth: 2, borderColor: C.navy, borderStyle: "solid", flex: 1, padding: 28, position: "relative" },
   inner: { borderWidth: 0.75, borderColor: C.coral, borderStyle: "solid", flex: 1, padding: 30, alignItems: "center" },
@@ -63,7 +64,7 @@ const s = StyleSheet.create({
   qrBlock: { alignItems: "center", width: 120 },
   qr: { width: 76, height: 76 },
   meta: { fontSize: 7.5, color: C.mute, textAlign: "center", marginTop: 2 },
-});
+}));
 
 function CertDocument({ data }: { data: CertificatePdfData }) {
   const org = usePdfIdentity();

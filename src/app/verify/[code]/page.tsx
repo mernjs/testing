@@ -50,7 +50,7 @@ function OtsVerification({ cert, siteHost }: { cert: OtsCertificate; siteHost: s
     ["Organization", cert.organization],
   ];
   return (
-    <div className="lms-shell flex min-h-screen flex-col items-center justify-center gap-6 bg-[#e9ebee] px-4 py-12 dark:bg-background">
+    <div className="lms-shell flex min-h-screen flex-col items-center justify-center gap-6 bg-canvas px-4 py-12">
       <div className="flex items-center gap-2 text-lg font-bold">
         <BrandMark className="size-7 shrink-0" />
         <BrandName /> <span className="text-foreground">Assessments</span>
@@ -91,7 +91,7 @@ export default async function VerifyCertificatePage({ params }: { params: Promis
   const valid = cert && !cert.revoked;
 
   return (
-    <div className="lms-shell flex min-h-screen flex-col items-center justify-center gap-6 bg-[#e9ebee] px-4 py-12 dark:bg-background">
+    <div className="lms-shell flex min-h-screen flex-col items-center justify-center gap-6 bg-canvas px-4 py-12">
       <div className="flex items-center gap-2 text-lg font-bold">
         <BrandMark className="size-7 shrink-0" />
         <BrandName /> <span className="text-foreground">Training</span>

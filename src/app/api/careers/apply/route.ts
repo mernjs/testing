@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { limitOr429 } from "@/lib/security/rate-limit";
 import { createApplication, getOpenJobPositionBySlug, uploadResume } from "@/lib/career-applications";
 import { validateApplicationInput, validateResumeFile } from "@/lib/career-application-validation";
 import { provisionLeadAndAccount } from "@/lib/lead-management/provision";
 import { createPortalSession, setPortalSessionCookie } from "@/lib/portal-auth";
 
 export async function POST(req: NextRequest) {
+  const limited = await limitOr429(req, "careers-apply", 6, 3600);
+  if (limited) return limited;
   let formData: FormData;
   try {
     formData = await req.formData();

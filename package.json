@@ -21,6 +21,7 @@
     "db:seed-cms": "node --env-file=.env scripts/seed-cms-demo.mjs",
     "db:migrate-tenancy": "npx --yes tsx --env-file=.env scripts/migrate-to-multitenant.ts",
     "db:create-company": "npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/create-company.ts",
+    "db:seed-owner-profile": "npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/seed-owner-profile.ts",
     "db:migrate-cms-content": "npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/migrate-cms-content.ts",
     "db:add-products-nav": "npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/add-products-nav.ts",
     "db:revert-services-nav": "npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/revert-services-nav.ts",
@@ -47,7 +48,7 @@
     "framer-motion": "^12.43.0",
     "lucide-react": "^1.27.0",
     "mongodb": "^7.6.0",
-    "next": "16.2.12",
+    "next": "^16.3.8",
     "next-themes": "^0.4.6",
     "openai": "^6.49.0",
     "react": "19.2.4",
@@ -67,7 +68,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.12",
+    "eslint-config-next": "^16.3.8",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

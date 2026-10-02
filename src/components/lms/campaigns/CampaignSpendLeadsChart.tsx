@@ -49,7 +49,7 @@ export default function CampaignSpendLeadsChart({ data, currency }: { data: Poin
         />
         <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, color: "var(--muted-foreground)" }} />
         <Bar yAxisId="spend" dataKey="spend" name={`Spend (${currency})`} fill="url(#campaignSpendFill)" radius={[4, 4, 0, 0]} maxBarSize={40} animationDuration={600} />
-        <Line yAxisId="leads" type="monotone" dataKey="leads" name="Attributed leads" stroke="var(--color-yashorbit-coral)" strokeWidth={2.5} dot={false} animationDuration={700} />
+        <Line yAxisId="leads" type="monotone" dataKey="leads" name="Attributed leads" stroke="var(--color-brand-accent)" strokeWidth={2.5} dot={false} animationDuration={700} />
       </ComposedChart>
     </ResponsiveContainer>
   );

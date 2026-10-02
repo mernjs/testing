@@ -55,7 +55,7 @@ export default function DeliveryTimeline({ title, description, bands, tone = "de
                   whileInView={{ width: `${band.fill}%` }}
                   viewport={{ once: true, margin: "-40px" }}
                   transition={{ duration: 0.8, delay: i * 0.1 + 0.1, ease: "easeOut" }}
-                  className="h-full rounded-full bg-gradient-to-r from-primary to-[#ff8e75]"
+                  className="h-full rounded-full bg-gradient-to-r from-primary to-brand-accent"
                 />
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">{band.description}</p>

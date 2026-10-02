@@ -126,7 +126,7 @@ export default function IntegrationsForm({ view, adminEmail }: { view: Integrati
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="int-email-from">From address</Label>
-            <Input id="int-email-from" value={v.email.from} onChange={(e) => setEmail("from", e.target.value)} placeholder="YashOrbit <no-reply@yashorbit.com>" />
+            <Input id="int-email-from" value={v.email.from} onChange={(e) => setEmail("from", e.target.value)} placeholder="Your Company <no-reply@yourdomain.com>" />
             <Effective field={view.email.from} />
             {err("email.from")}
           </div>
@@ -184,7 +184,7 @@ export default function IntegrationsForm({ view, adminEmail }: { view: Integrati
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="int-root-domain">Root domain</Label>
-            <Input id="int-root-domain" value={v.domains.rootDomain} onChange={(e) => setDomains("rootDomain", e.target.value)} placeholder="yashorbit.com" />
+            <Input id="int-root-domain" value={v.domains.rootDomain} onChange={(e) => setDomains("rootDomain", e.target.value)} placeholder="example.com" />
             <Effective field={view.domains.rootDomain} />
             <p className="text-xs text-muted-foreground">New companies get &lt;slug&gt;.root. Existing addresses aren&apos;t moved.</p>
             {err("domains.rootDomain")}

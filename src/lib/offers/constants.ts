@@ -395,13 +395,13 @@ export function classifyDevice(viewportWidth: number): DeviceType {
 
 export const CAMPAIGN_THEME_PRESETS = [
   { key: "custom", label: "Custom (manual colors)", emoji: null, primaryColor: null, accentColor: null },
-  { key: "diwali", label: "Diwali — Festive Gold", emoji: "🪔", primaryColor: "#E56043", accentColor: "#D4AF37" },
+  { key: "diwali", label: "Diwali — Festive Gold", emoji: "🪔", primaryColor: "#E8590C", accentColor: "#D4AF37" },
   { key: "holi", label: "Holi — Colorful", emoji: "🎨", primaryColor: "#E0537A", accentColor: "#4CAF93" },
-  { key: "new-year", label: "New Year — Modern", emoji: "🎉", primaryColor: "#1D428A", accentColor: "#E56043" },
+  { key: "new-year", label: "New Year — Modern", emoji: "🎉", primaryColor: "#2B59C3", accentColor: "#E8590C" },
   { key: "independence-day", label: "Independence Day — Patriotic", emoji: "🇮🇳", primaryColor: "#FF9933", accentColor: "#138808" },
   { key: "christmas", label: "Christmas", emoji: "🎄", primaryColor: "#B3261E", accentColor: "#1E7A4C" },
-  { key: "summer-sale", label: "Summer Sale", emoji: "☀️", primaryColor: "#F5A623", accentColor: "#1D428A" },
-  { key: "back-to-college", label: "Back to College", emoji: "🎓", primaryColor: "#1D428A", accentColor: "#E56043" },
+  { key: "summer-sale", label: "Summer Sale", emoji: "☀️", primaryColor: "#F5A623", accentColor: "#2B59C3" },
+  { key: "back-to-college", label: "Back to College", emoji: "🎓", primaryColor: "#2B59C3", accentColor: "#E8590C" },
 ] as const;
 
 export type CampaignThemePreset = (typeof CAMPAIGN_THEME_PRESETS)[number]["key"];

@@ -1,5 +1,6 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, View, Text } from "@react-pdf/renderer";
+import { lazyStyles } from "@/lib/pdf/lazy-styles";
 import type { ReportData } from "@/lib/tms/reports";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter, pdfSheet } from "@/lib/pdf/layout";
@@ -10,12 +11,12 @@ import { renderPdf } from "@/lib/pdf/identity";
 
 const C = PDF_COLORS;
 
-const s = StyleSheet.create({
+const s = lazyStyles(() => ({
   page: pdfSheet.pageLandscape,
   tHead: { ...pdfSheet.tHead, paddingVertical: 4, paddingHorizontal: 3, marginTop: 4 },
   tRow: { ...pdfSheet.tRow, paddingVertical: 3, paddingHorizontal: 3 },
   cell: { paddingRight: 3 },
-});
+}));
 
 function ReportDocument({ report, brandName }: { report: ReportData; brandName: string }) {
   const widths = report.columns.map((c) => c.width ?? 14);

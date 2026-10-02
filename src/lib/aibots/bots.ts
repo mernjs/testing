@@ -236,7 +236,7 @@ export async function ensureBotVectorStore(bot: Pick<BotDoc, "_id" | "name" | "v
   }
   const store = await openai.vectorStores.create({
     name: `${(await getCompanyBrand()).name} AI Bot · ${bot.name}`.slice(0, 120),
-    metadata: { app: "yashorbit-aibots", bot_id: bot._id },
+    metadata: { app: "aibots", bot_id: bot._id },
   });
   const col = await botsCollection();
   await col.updateOne({ _id: bot._id }, { $set: { vectorStoreId: store.id } });

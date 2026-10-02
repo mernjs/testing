@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import BrandMark from "@/components/BrandMark";
 import { CheckCircle2, ShieldCheck, Sparkles, Rocket } from "lucide-react";
 import { useSiteInfo } from "@/components/cms/SiteInfoContext";
 import type { BrandName } from "@/lib/brand";
@@ -17,18 +18,6 @@ interface FeatureHighlightsProps {
   features: Feature[];
 }
 
-function BrandMark() {
-  return (
-    <svg viewBox="0 0 64 64" className="w-5 h-5 shrink-0 mx-1.5 inline-block align-[-3px]" aria-hidden="true">
-      <circle cx="32" cy="32" r="25.5" fill="#1D428A" />
-      <path d="M17.6,17.6 L32,33.6" fill="none" stroke="#ECF2FD" strokeWidth="9" strokeLinecap="round" />
-      <path d="M32,33.6 L32,48" fill="none" stroke="#ECF2FD" strokeWidth="9" strokeLinecap="round" />
-      <path d="M46.4,17.6 L36,29.2" fill="none" stroke="#ECF2FD" strokeWidth="9" strokeLinecap="round" />
-      <circle cx="34.4" cy="30.4" r="5.2" fill="#E56043" />
-    </svg>
-  );
-}
-
 // Renders the section title as-is, except any brand-name mention is swapped for the
 // icon + two-tone wordmark, matching the treatment already used in Header/Footer.
 function renderTitle(title: string, brand: BrandName) {
@@ -38,7 +27,7 @@ function renderTitle(title: string, brand: BrandName) {
   return (
     <>
       {title.slice(0, idx)}
-      <BrandMark />
+      <BrandMark className="w-5 h-5 shrink-0 mx-1.5 inline-block align-[-3px]" />
       <span className="text-foreground">{brand.namePrimary}</span>
       <span className="text-primary">{brand.nameAccent}</span>
       {title.slice(idx + name.length)}

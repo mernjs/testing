@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import { limitOr429 } from "@/lib/security/rate-limit";
+import { readSafeJson } from "@/lib/security/safe-json";
 import { getOffer } from "@/lib/offers/offers";
 import { validateCoupon } from "@/lib/offers/coupons";
 import { isValidAudience } from "@/lib/offers/constants";
 
 /** Read-only "Apply coupon" preview. The final claim submit always re-validates from scratch — this never redeems. */
 export async function POST(req: NextRequest) {
+  const limited = await limitOr429(req, "coupon-validate", 30, 600);
+  if (limited) return limited;
   let body: Record<string, unknown>;
   try {
-    body = await req.json();
+    body = (await readSafeJson(req)) as typeof body;
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }

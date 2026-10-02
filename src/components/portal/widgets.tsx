@@ -49,7 +49,7 @@ export function ProgressRing({ value, size = 132, label }: { value: number; size
         <defs>
           <linearGradient id="portalRing" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor="var(--primary)" />
-            <stop offset="100%" stopColor="var(--color-yashorbit-coral)" />
+            <stop offset="100%" stopColor="var(--color-brand-accent)" />
           </linearGradient>
         </defs>
       </svg>
@@ -79,7 +79,7 @@ export function HiringTimeline({ steps, rejected }: { steps: TimelineStep[]; rej
               className={cn(
                 "absolute -left-[35px] flex size-6 items-center justify-center rounded-full ring-4 ring-background",
                 s.state === "done" && "bg-green-500 text-white",
-                s.state === "current" && "bg-gradient-to-br from-primary to-yashorbit-coral text-white",
+                s.state === "current" && "bg-gradient-to-br from-primary to-brand-accent text-white",
                 s.state === "upcoming" && "bg-muted text-muted-foreground",
                 s.state === "skipped" && "bg-destructive/20 text-destructive"
               )}

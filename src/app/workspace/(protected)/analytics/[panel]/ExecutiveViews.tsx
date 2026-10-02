@@ -171,7 +171,7 @@ function BarList({
           <span className="w-36 shrink-0 truncate text-xs text-muted-foreground" title={d.label}>{d.label}</span>
           <div className="flex-1 h-2 rounded-full bg-muted/40 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-primary to-[var(--color-yashorbit-coral)] transition-all"
+              className="h-full rounded-full bg-gradient-to-r from-primary to-[var(--color-brand-accent)] transition-all"
               style={{ width: `${Math.max((Math.abs(d.value) / max) * 100, 2)}%` }}
             />
           </div>
@@ -194,7 +194,7 @@ function StatRow({ items }: { items: { label: string; value: string | number; ac
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
       {items.map((item, i) => (
         <div key={i} className="rounded-xl border border-border/40 bg-muted/20 px-4 py-3 text-center">
-          <div className={`text-xl font-black tabular-nums ${item.accent ? "bg-gradient-to-r from-primary to-[var(--color-yashorbit-coral)] bg-clip-text text-transparent" : "text-foreground"}`}>
+          <div className={`text-xl font-black tabular-nums ${item.accent ? "bg-gradient-to-r from-primary to-[var(--color-brand-accent)] bg-clip-text text-transparent" : "text-foreground"}`}>
             {typeof item.value === "number" ? item.value.toLocaleString("en-IN") : item.value}
           </div>
           <div className="mt-0.5 text-[11px] text-muted-foreground">{item.label}</div>
@@ -865,7 +865,7 @@ async function PortalView({ filters }: { filters?: PanelAnalyticsFilters }) {
                   <span className="text-sm text-muted-foreground capitalize">{r.label}</span>
                   <div className="flex items-center gap-2">
                     <div className="w-32 h-2 rounded-full bg-muted/40 overflow-hidden">
-                      <div className="h-full rounded-full bg-gradient-to-r from-primary to-[var(--color-yashorbit-coral)]" style={{ width: `${(r.value / total) * 100}%` }} />
+                      <div className="h-full rounded-full bg-gradient-to-r from-primary to-[var(--color-brand-accent)]" style={{ width: `${(r.value / total) * 100}%` }} />
                     </div>
                     <span className="text-xs font-bold tabular-nums w-12 text-right">{Math.round((r.value / total) * 100)}%</span>
                   </div>
@@ -1060,7 +1060,7 @@ async function TmsView({ filters }: { filters?: PanelAnalyticsFilters }) {
                     <span className="font-bold">{c.value} ({Math.round((c.value / totalStudents) * 100)}%)</span>
                   </div>
                   <div className="h-2.5 rounded-full bg-muted/40 overflow-hidden">
-                    <div className="h-full rounded-full bg-gradient-to-r from-primary to-[var(--color-yashorbit-coral)]" style={{ width: `${(c.value / totalStudents) * 100}%` }} />
+                    <div className="h-full rounded-full bg-gradient-to-r from-primary to-[var(--color-brand-accent)]" style={{ width: `${(c.value / totalStudents) * 100}%` }} />
                   </div>
                 </div>
               ))}

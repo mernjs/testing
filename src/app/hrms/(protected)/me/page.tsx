@@ -38,10 +38,10 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import { getCompanyBrand } from "@/lib/platform/branding";
 
 const LEAVE_COLORS: Record<string, string> = {
-  casual: "#1D428A",
+  casual: "var(--brand-deep)",
   sick: "#f59e0b",
   earned: "#22c55e",
-  wfh: "#7ba0d9",
+  wfh: "color-mix(in srgb, var(--brand-deep) 45%, white)",
   unpaid: "#94a3b8",
 };
 const PUNCTUALITY_COLORS: Record<string, string> = { on_time: "#22c55e", late: "#f59e0b" };

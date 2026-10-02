@@ -1,5 +1,6 @@
 import "server-only";
-import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, View, Text } from "@react-pdf/renderer";
+import { lazyStyles } from "@/lib/pdf/lazy-styles";
 import type { PayslipPdfData, PayLine } from "@/lib/hrms/payslip-pdf";
 import { PDF_COLORS } from "@/lib/pdf/brand";
 import { PdfLetterhead, PdfFooter } from "@/lib/pdf/layout";
@@ -23,7 +24,7 @@ function fmtDay(day: string | null): string {
   return fmtDate(day ? `${day}T00:00:00Z` : null);
 }
 
-const s = StyleSheet.create({
+const s = lazyStyles(() => ({
   page: { paddingTop: 30, paddingHorizontal: 34, paddingBottom: 42, fontFamily: "Helvetica", fontSize: 8.5, color: C.ink, lineHeight: 1.35 },
 
   sectionTitle: { fontSize: 8, fontFamily: "Helvetica-Bold", color: C.navy, textTransform: "uppercase", letterSpacing: 1, marginTop: 12, marginBottom: 5 },
@@ -65,7 +66,7 @@ const s = StyleSheet.create({
   footNote: { fontSize: 6.8, color: C.mute, textAlign: "right", marginTop: 1 },
 
   watermark: { position: "absolute", top: 320, left: 70, fontSize: 82, color: "#ed6a4d", opacity: 0.12, fontFamily: "Helvetica-Bold", transform: "rotate(-32deg)", letterSpacing: 6 },
-});
+}));
 
 function Cell({ label, value }: { label: string; value: string | number }) {
   return (

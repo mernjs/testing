@@ -1,13 +1,16 @@
 import type { PageSection } from "@/lib/cms/section-registry";
+import { fillName, type StarterPack } from "@/lib/platform/website/starter-packs";
 
 /**
  * A neutral starter website for a new company — the pages the public site
  * can't render without (`/`, `/contact`) plus Services, About and a privacy
  * policy starting point. Built only from the CMS's existing section types, so
- * everything is editable in the company's CMS afterwards.
+ * everything is editable in the company's CMS afterwards. Which copy, images
+ * and section order a company gets comes from its starter pack
+ * (`starter-packs.ts`), so new websites don't all look alike.
  *
- * Content is deliberately generic for an IT/software company: no client
- * names, testimonials, statistics or promises that the company hasn't made.
+ * Content is deliberately generic: no client names, testimonials, statistics
+ * or promises that the company hasn't made.
  */
 
 export interface StarterVars {
@@ -24,16 +27,12 @@ export interface StarterPage {
 }
 
 const IMG = {
-  team: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1400&auto=format&fit=crop",
-  code: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1200&auto=format&fit=crop",
-  mobile: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=1200&auto=format&fit=crop",
-  cloud: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop",
-  ai: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=1200&auto=format&fit=crop",
-  design: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=1200&auto=format&fit=crop",
-  support: "https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=1200&auto=format&fit=crop",
   contact: "https://images.unsplash.com/photo-1519337265831-281ec6cc8514?q=80&w=1600&auto=format&fit=crop",
   privacy: "https://images.unsplash.com/photo-1633265486064-086b219458ec?q=80&w=1200&auto=format&fit=crop",
 };
+
+/** `/services/<slug>` for a service title. */
+export const serviceSlug = (title: string) => title.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 let order = 0;
 function section(type: string, config: Record<string, unknown>): PageSection {
@@ -41,86 +40,54 @@ function section(type: string, config: Record<string, unknown>): PageSection {
   return { id: `${type}-${order}`, type, orderKey: order, enabled: true, config } as PageSection;
 }
 
-const SERVICES = [
-  { title: "Web Applications", subtitle: "Fast, secure, built to scale.", description: "Custom web platforms, portals and dashboards built with modern frameworks and engineered for performance.", icon: "Code2", image: IMG.code, highlights: ["Web apps", "Portals", "APIs"] },
-  { title: "Mobile Apps", subtitle: "iOS, Android and cross-platform.", description: "Native and cross-platform mobile apps with clean design, offline support and reliable releases.", icon: "Smartphone", image: IMG.mobile, highlights: ["iOS", "Android", "Cross-platform"] },
-  { title: "Cloud & DevOps", subtitle: "Infrastructure that keeps up.", description: "Cloud architecture, CI/CD pipelines, monitoring and cost optimisation for teams that ship often.", icon: "Cloud", image: IMG.cloud, highlights: ["Cloud", "CI/CD", "Monitoring"] },
-  { title: "AI & Data", subtitle: "Practical AI for real problems.", description: "Automation, analytics and AI features that fit your product and your data — where they genuinely add value.", icon: "Sparkles", image: IMG.ai, highlights: ["Automation", "Analytics", "AI features"] },
-  { title: "UI/UX Design", subtitle: "Products people enjoy using.", description: "Research, wireframes, design systems and prototypes that turn ideas into clear, usable products.", icon: "Palette", image: IMG.design, highlights: ["Research", "Design systems", "Prototypes"] },
-  { title: "Support & Maintenance", subtitle: "We stay after launch.", description: "Updates, fixes, security patches and improvements so your software keeps running smoothly.", icon: "LifeBuoy", image: IMG.support, highlights: ["Updates", "Security", "Improvements"] },
-];
-
-export function starterPages(v: StarterVars): StarterPage[] {
+export function starterPages(v: StarterVars, pack: StarterPack): StarterPage[] {
   order = 0;
+  const t = (text: string) => fillName(text, v.name);
+  const servicesSection = () => section("listing-grid", { badge: "Services", badgeIcon: "Layers", sectionLabel: "What We Do", items: pack.services.map((s) => ({ ...s, href: `/services/${serviceSlug(s.title)}` })) });
+  const homeSections: Record<string, () => PageSection> = {
+    services: servicesSection,
+    why: () => section("home-why-choose-us", { eyebrow: t(pack.why.eyebrow), headerIcon: pack.why.icon, heading: pack.why.heading, description: pack.why.description, reasons: pack.why.reasons }),
+    steps: () => section("home-how-we-work", { eyebrow: pack.steps.eyebrow, headerIcon: pack.steps.icon, heading: pack.steps.heading, accent: pack.steps.accent, description: pack.steps.description, steps: pack.steps.items, linkLabel: pack.steps.linkLabel, linkHref: "/contact" }),
+    faq: () => section("faq-accordion", { title: "Frequently asked questions", faqs: pack.faqs.map((f) => ({ question: t(f.question), answer: f.answer })) }),
+    cta: () => section("detail-cta", { heading: pack.cta.heading, description: pack.cta.description, ctaLabel: pack.cta.label, external: false, checklist: pack.cta.checklist }),
+  };
+
+  const h = pack.hero;
   const home: StarterPage = {
     path: "/",
     title: "Home",
-    seo: { title: `${v.name} — Software Development & IT Services`, description: `${v.name} designs, builds and supports web, mobile and cloud software for growing businesses.` },
+    seo: { title: `${v.name} — ${h.badge.split("·")[0].trim()}`, description: t(h.description) },
     sections: [
       section("home-hero", {
-        badge: "Software Development · Cloud · AI",
-        titleLine1: "Software that moves",
-        titleHighlight: "your business forward",
-        description: `${v.name} designs, builds and supports web, mobile and cloud software — from first idea to launch and beyond.`,
-        primaryCtaLabel: "Let's Talk",
+        badge: h.badge,
+        titleLine1: h.line1,
+        titleHighlight: h.highlight,
+        description: t(h.description),
+        primaryCtaLabel: h.primaryCta,
         primaryCtaHref: "/contact",
-        secondaryCtaLabel: "Our Services",
+        secondaryCtaLabel: h.secondaryCta,
         secondaryCtaHref: "/services",
-        chipOne: "Web",
-        chipTwo: "Mobile",
-        chipThree: "Cloud",
-        statusTitle: "Built to last",
-        statusText: "Secure by design",
-        perfTitle: "Performance",
-        perfText: "Optimised",
+        chipOne: h.chips[0],
+        chipTwo: h.chips[1],
+        chipThree: h.chips[2],
+        statusTitle: h.status[0],
+        statusText: h.status[1],
+        perfTitle: h.perf[0],
+        perfText: h.perf[1],
         scrollLabel: "Scroll to explore",
+        image: h.image,
       }),
-      section("home-why-choose-us", {
-        eyebrow: "Why Choose Us",
-        headerIcon: "ShieldCheck",
-        heading: "A partner focused on outcomes.",
-        description: "What working with us looks like.",
-        reasons: [
-          { name: "Clear Communication", desc: "Regular updates and demos, so you always know where your project stands.", icon: "MessageSquare" },
-          { name: "Quality First", desc: "Code reviews, testing and documentation are part of the work, not extras.", icon: "BadgeCheck" },
-          { name: "Agile Delivery", desc: "Short iterations that turn feedback into working software quickly.", icon: "Workflow" },
-          { name: "Long-term Support", desc: "We keep improving and maintaining what we build after it goes live.", icon: "LifeBuoy" },
-        ],
-      }),
-      section("home-how-we-work", {
-        eyebrow: "How We Work",
-        headerIcon: "Workflow",
-        heading: "From first call to launch.",
-        accent: "Four steps.",
-        description: "A simple, transparent process for every project.",
-        steps: [
-          { title: "Discovery", description: "We learn your goals, users and constraints.", icon: "MessageSquare" },
-          { title: "Proposal", description: "A clear scope, timeline and estimate.", icon: "FileSignature" },
-          { title: "Build", description: "Iterative development with regular demos.", icon: "Workflow" },
-          { title: "Launch & Support", description: "Go live, then keep improving together.", icon: "Rocket" },
-        ],
-        linkLabel: "Start a conversation",
-        linkHref: "/contact",
-      }),
-      section("faq-accordion", {
-        title: "Frequently asked questions",
-        faqs: [
-          { question: `How do I start a project with ${v.name}?`, answer: "Send us a message through the contact page. We'll set up a short call to understand your goals and suggest the right next step." },
-          { question: "How long does a project take?", answer: "It depends on scope. After the discovery call we share a timeline with clear milestones before any work begins." },
-          { question: "Do you support software after launch?", answer: "Yes — we offer ongoing maintenance, updates and improvements." },
-        ],
-      }),
-      section("detail-cta", { heading: "Have a project in mind?", description: "Tell us about it — we'll get back to you with next steps.", ctaLabel: "Contact Us", external: false, checklist: ["Free consultation", "Clear estimates", "Regular updates"] }),
+      ...pack.home.map((key) => homeSections[key]()),
     ],
   };
 
   const services: StarterPage = {
     path: "/services",
     title: "Services",
-    seo: { title: `Services | ${v.name}`, description: `Web, mobile, cloud, AI and design services from ${v.name}.` },
+    seo: { title: `Services | ${v.name}`, description: t(pack.servicesIntro) },
     sections: [
-      section("listing-hero", { eyebrow: "services", title: "Our Services", description: "End-to-end software development, from design to launch and ongoing support.", icon: "Layers", image: IMG.code }),
-      section("listing-grid", { badge: "Services", badgeIcon: "Layers", sectionLabel: "What We Do", items: SERVICES.map((s) => ({ ...s, href: "/contact" })) }),
+      section("listing-hero", { eyebrow: "services", title: "Our Services", description: t(pack.servicesIntro), icon: "Layers", image: pack.servicesImage }),
+      servicesSection(),
       section("detail-cta", { heading: "Not sure what you need?", description: "Tell us about your idea and we'll recommend the right approach.", ctaLabel: "Contact Us", external: false, checklist: [] }),
     ],
   };
@@ -130,19 +97,14 @@ export function starterPages(v: StarterVars): StarterPage[] {
     title: "About",
     seo: { title: `About | ${v.name}`, description: `Learn about ${v.name} and how we work.` },
     sections: [
-      section("listing-hero", { eyebrow: "about", title: `About ${v.name}`, description: "We're a software team that builds reliable products and stays with them after launch.", icon: "Users", image: IMG.team }),
+      section("listing-hero", { eyebrow: "about", title: `About ${v.name}`, description: t(pack.about.intro), icon: "Users", image: pack.about.image }),
       section("home-how-we-work", {
         eyebrow: "Our Approach",
         headerIcon: "Compass",
-        heading: "How we work with you.",
+        heading: pack.about.approachHeading,
         accent: "",
-        description: "Principles we bring to every project.",
-        steps: [
-          { title: "Understand first", description: "We start with your users and your business goals.", icon: "Search" },
-          { title: "Build in the open", description: "Frequent demos and honest progress updates.", icon: "Eye" },
-          { title: "Own the quality", description: "Testing, reviews and documentation as standard.", icon: "BadgeCheck" },
-          { title: "Stay accountable", description: "Support and improvements long after launch.", icon: "HeartHandshake" },
-        ],
+        description: pack.about.approachDescription,
+        steps: pack.about.principles,
         linkLabel: "Work with us",
         linkHref: "/contact",
       }),
@@ -209,18 +171,32 @@ export function starterPages(v: StarterVars): StarterPage[] {
     ],
   };
 
-  return [home, services, about, contact, privacy];
+  // One detail page per service — so a listing card leads somewhere of its own.
+  const details: StarterPage[] = pack.services.map((svc) => ({
+    path: `/services/${serviceSlug(svc.title)}`,
+    title: svc.title,
+    seo: { title: `${svc.title} | ${v.name}`, description: t(svc.description) },
+    sections: [
+      section("page-hero", { category: "services", categoryLabel: "services", title: svc.title, subtitle: svc.subtitle, description: t(svc.description), icon: svc.icon, image: svc.image, primaryCtaLabel: pack.cta.label, primaryCtaHref: "/contact" }),
+      section("feature-highlights", { title: "What's included", features: svc.highlights.slice(0, 6).map((h) => ({ name: h, desc: `${h} — planned, built and supported by the ${v.name} team.` })) }),
+      homeSections.steps(),
+      section("faq-accordion", { title: `${svc.title} — questions`, faqs: pack.faqs.slice(0, 2).map((f) => ({ question: t(f.question), answer: f.answer })) }),
+      section("detail-cta", { heading: `Interested in ${svc.title}?`, description: "Tell us what you need and we'll reply with next steps.", ctaLabel: pack.cta.label, external: false, checklist: pack.cta.checklist }),
+    ],
+  }));
+
+  return [home, services, about, contact, privacy, ...details];
 }
 
-export function starterNavigation(): { name: string; href: string; iconKey: string; featured: { title: string; description: string; image: string }; items: { name: string; href: string; description: string; iconKey: string }[] }[] {
+export function starterNavigation(pack: StarterPack): { name: string; href: string; iconKey: string; featured: { title: string; description: string; image: string }; items: { name: string; href: string; description: string; iconKey: string }[] }[] {
   return [
     {
       name: "Services",
       href: "/services",
       iconKey: "Layers",
-      featured: { title: "What We Do", description: "Software development from design to support.", image: IMG.code },
+      featured: { title: "What We Do", description: pack.servicesIntro, image: pack.servicesImage },
       items: [
-        { name: "All Services", href: "/services", description: "Web, mobile, cloud, AI and design", iconKey: "Layers" },
+        ...pack.services.slice(0, 4).map((s) => ({ name: s.title, href: `/services/${serviceSlug(s.title)}`, description: s.subtitle, iconKey: s.icon })),
         { name: "Start a Project", href: "/contact", description: "Tell us about your idea", iconKey: "Rocket" },
       ],
     },
@@ -228,7 +204,7 @@ export function starterNavigation(): { name: string; href: string; iconKey: stri
       name: "About",
       href: "/about",
       iconKey: "Compass",
-      featured: { title: "About Us", description: "Who we are and how we work.", image: IMG.team },
+      featured: { title: "About Us", description: "Who we are and how we work.", image: pack.about.image },
       items: [
         { name: "About Us", href: "/about", description: "Our team and approach", iconKey: "Users" },
         { name: "Contact", href: "/contact", description: "Get in touch", iconKey: "Mail" },

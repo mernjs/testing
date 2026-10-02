@@ -70,7 +70,7 @@ export interface PlatformGeneralSettings {
 export type PlatformGeneralInput = Omit<PlatformGeneralSettings, "updatedAt" | "updatedBy">;
 
 export const PLATFORM_SETTINGS_DEFAULTS: PlatformGeneralInput = {
-  platformName: "YashOrbit",
+  platformName: "Business OS",
   supportEmail: "",
   supportUrl: "",
   defaultLocale: "en-IN",

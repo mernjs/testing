@@ -90,7 +90,7 @@ export default async function BeneficiariesPage({
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-yashorbit-coral text-white shadow-sm">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-brand-accent text-white shadow-sm">
               <Building2 className="size-5" />
             </div>
             <div>

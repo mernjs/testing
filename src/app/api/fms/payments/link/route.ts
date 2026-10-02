@@ -1,11 +1,23 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
 import { createPaymentLink, CreatePaymentLinkInput } from "@/lib/fms/payments/links";
+import { getCurrentFmsUser } from "@/lib/fms-auth";
+import { readSafeJson, UnsafeBodyError } from "@/lib/security/safe-json";
 
 export async function POST(req: Request) {
+  // Creating a payment link (and stamping a transaction) is a finance-staff action — never public.
+  const staff = await getCurrentFmsUser();
+  if (!staff) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   try {
-    const body = await req.json();
-    const { sourceTransactionId, ...rest } = body;
+    let body: Record<string, unknown>;
+    try {
+      body = await readSafeJson(req);
+    } catch (err) {
+      if (err instanceof UnsafeBodyError) return NextResponse.json({ ok: false, error: err.message }, { status: 400 });
+      throw err;
+    }
+    const { sourceTransactionId: rawTransactionId, ...rest } = body as Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+    const sourceTransactionId = typeof rawTransactionId === "string" ? rawTransactionId : undefined;
 
     const input: CreatePaymentLinkInput = {
       title: rest.title,

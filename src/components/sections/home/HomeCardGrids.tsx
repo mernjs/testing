@@ -87,7 +87,7 @@ export function HomeWhyChooseUs({ reasons, ...header }: HomeSectionHeaderProps &
 
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-5">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-brand-accent flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                       <reason.icon className="w-5 h-5 text-white" />
                     </div>
                     <span className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-background/70 border border-border/50 px-2.5 py-1 rounded-full backdrop-blur-sm group-hover:border-primary/30 group-hover:text-foreground transition-colors duration-300">
@@ -145,7 +145,7 @@ export function HomeHowWeWork({
 
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-5">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-brand-accent flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                       <step.icon className="w-5 h-5 text-white" />
                     </div>
                     <span className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-background/70 border border-border/50 px-2.5 py-1 rounded-full backdrop-blur-sm group-hover:border-primary/30 group-hover:text-foreground transition-colors duration-300">
@@ -210,7 +210,7 @@ export function HomeDeliveryProcess({
 
                 <div className="relative z-10 flex flex-col h-full">
                   <div className="flex items-center justify-between mb-5">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-brand-accent flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                       <phase.icon className="w-5 h-5 text-white" />
                     </div>
                     <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
@@ -279,7 +279,7 @@ export function HomeCommitments({ items, ...header }: HomeSectionHeaderProps & {
 
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-5">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-brand-accent flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                       <item.icon className="w-5 h-5 text-white" />
                     </div>
                     <span className="inline-flex items-center gap-1.5 text-xs font-bold text-muted-foreground bg-background/70 border border-border/50 px-2.5 py-1 rounded-full backdrop-blur-sm group-hover:border-primary/30 group-hover:text-foreground transition-colors duration-300">
@@ -327,7 +327,7 @@ export function HomeAssurances({ items, ...header }: HomeSectionHeaderProps & { 
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/5 to-muted/20" />
                 </div>
                 <div className="w-full flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-[#ff8e75] flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-brand-accent flex items-center justify-center shadow-md shadow-primary/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                     <item.icon className="w-4 h-4 text-white" />
                   </div>
                   <span className="inline-flex items-center gap-1 text-[11px] font-bold text-muted-foreground bg-background/70 border border-border/50 px-2 py-0.5 rounded-full backdrop-blur-sm">

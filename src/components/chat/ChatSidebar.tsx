@@ -185,7 +185,7 @@ export function ChatSidebar({ onNavigate }: { onNavigate?: () => void }) {
           void newConversation();
           onNavigate?.();
         }}
-        className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-yashorbit-coral px-3 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition-all hover:shadow-md hover:shadow-primary/30 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/40"
+        className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-brand-accent px-3 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition-all hover:shadow-md hover:shadow-primary/30 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/40"
       >
         <Plus className="size-4" aria-hidden />
         {tx("chat.chatSidebar.new-chat")}</button>

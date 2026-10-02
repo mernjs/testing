@@ -15,10 +15,10 @@ export const CAREER_STATUS_ICONS: Record<CareerApplicationStatus, LucideIcon> = 
  * "won" stages and destructive red for rejected. Intermediate stages are
  * blue/coral tints so charts stay on the YashOrbit palette. */
 export const CAREER_STATUS_COLORS: Record<CareerApplicationStatus, string> = {
-  new: "#1D428A",
-  under_review: "#3b6fd4",
-  shortlisted: "#E56043",
-  interview_scheduled: "#ff8e75",
+  new: "var(--brand-deep)",
+  under_review: "color-mix(in srgb, var(--brand-deep) 65%, white)",
+  shortlisted: "var(--primary)",
+  interview_scheduled: "var(--brand-gradient)",
   selected: "#1baf7a",
   hired: "#0ca30c",
   rejected: "#d03b3b",

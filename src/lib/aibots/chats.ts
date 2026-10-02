@@ -83,7 +83,7 @@ export function autoTitle(message: string): string {
 /** Creates the chat row and its OpenAI Conversation (the per-chat context container). */
 export async function createChat(viewer: AibotsViewer, botId: string, firstMessage: string): Promise<ChatDoc> {
   const openai = getOpenAI();
-  const conversation = await openai.conversations.create({ metadata: { app: "yashorbit-aibots", bot_id: botId, user_id: viewer.userId } });
+  const conversation = await openai.conversations.create({ metadata: { app: "aibots", bot_id: botId, user_id: viewer.userId } });
   const now = new Date();
   const chat: ChatDoc = {
     _id: newId(),
@@ -110,7 +110,7 @@ export async function createChat(viewer: AibotsViewer, botId: string, firstMessa
  */
 export async function ensureConversation(chat: ChatDoc): Promise<string> {
   if (chat.conversationId) return chat.conversationId;
-  const conversation = await getOpenAI().conversations.create({ metadata: { app: "yashorbit-aibots", bot_id: chat.botId, user_id: chat.userId } });
+  const conversation = await getOpenAI().conversations.create({ metadata: { app: "aibots", bot_id: chat.botId, user_id: chat.userId } });
   const col = await chatsCollection();
   await col.updateOne({ _id: chat._id, conversationId: null }, { $set: { conversationId: conversation.id } });
   chat.conversationId = conversation.id;

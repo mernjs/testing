@@ -15,7 +15,7 @@ export const CHAT_VISITOR_COOKIE = "yo_visitor";
 const SESSION_TTL_SEC = 30 * 24 * 60 * 60; // 30 days
 const VISITOR_TTL_SEC = 365 * 24 * 60 * 60; // 1 year
 
-const IP_SALT = process.env.CHATBOT_IP_SALT || "yashorbit-chat-analytics-v1";
+const IP_SALT = process.env.CHATBOT_IP_SALT || "chat-analytics-v1";
 
 export type ChatRole = "user" | "assistant";
 

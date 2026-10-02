@@ -11,7 +11,7 @@ export interface BrandName {
  * sidebars). The PUBLIC website never uses this — its sections get the brand
  * from CMS → Site Identity (see `SectionRenderContext.brand`).
  */
-export const PANEL_BRAND: BrandName = { namePrimary: "Yash", nameAccent: "Orbit" };
+
 
 const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -24,7 +24,7 @@ function wordmark(brand: BrandName, key: number) {
  * the two-tone wordmark treatment. Strings without a match pass through
  * unchanged, so this is safe to call on any text.
  */
-export function brandify(text: string, brand: BrandName = PANEL_BRAND): React.ReactNode {
+export function brandify(text: string, brand: BrandName = { namePrimary: "", nameAccent: "" }): React.ReactNode {
   const name = brand.namePrimary + brand.nameAccent;
   if (!name) return text;
   const parts = text.split(new RegExp(`(${escape(name)})`, "g"));
@@ -34,7 +34,7 @@ export function brandify(text: string, brand: BrandName = PANEL_BRAND): React.Re
 
 /** How CMS text marks a brand-styled mention (a plain brand name stays plain). `[[YashOrbit]]` is the older spelling. */
 export const BRAND_TOKEN = "[[brand]]";
-const TOKEN_RE = /(\[\[brand\]\]|\[\[YashOrbit\]\])/g;
+const TOKEN_RE = /(\[\[[^\]\n]{1,40}\]\])/g;
 
 /**
  * Like `brandify`, but only for occurrences written as the brand token — so
@@ -44,5 +44,5 @@ const TOKEN_RE = /(\[\[brand\]\]|\[\[YashOrbit\]\])/g;
 export function brandTokens(text: string, brand: BrandName): React.ReactNode {
   if (!TOKEN_RE.test(text)) return text;
   TOKEN_RE.lastIndex = 0;
-  return text.split(TOKEN_RE).map((part, i) => (part === BRAND_TOKEN || part === "[[YashOrbit]]" ? wordmark(brand, i) : part));
+  return text.split(TOKEN_RE).map((part, i) => (/^\[\[[^\]\n]{1,40}\]\]$/.test(part) ? wordmark(brand, i) : part));
 }

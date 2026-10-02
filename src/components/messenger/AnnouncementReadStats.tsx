@@ -34,7 +34,7 @@ export default function AnnouncementReadStats({
         <ChevronDown className={cn("ml-auto size-4 text-muted-foreground transition-transform", open && "rotate-180")} />
       </button>
       <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-border">
-        <div className="h-full rounded-full bg-gradient-to-r from-primary to-yashorbit-coral" style={{ width: `${pct}%` }} />
+        <div className="h-full rounded-full bg-gradient-to-r from-primary to-brand-accent" style={{ width: `${pct}%` }} />
       </div>
 
       {open && (

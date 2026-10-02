@@ -94,7 +94,7 @@ export default function HomeDepartments({
                     <div className="flex items-center justify-between gap-4 mb-6">
                       <span className={`inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest ${
                         isFeatured
-                          ? "text-primary-foreground bg-gradient-to-r from-primary to-[#ff8e75] shadow-lg shadow-primary/30"
+                          ? "text-primary-foreground bg-gradient-to-r from-primary to-brand-accent shadow-lg shadow-primary/30"
                           : "text-foreground bg-background border border-border/50"
                       } px-3.5 py-1.5 rounded-full`}>
                         <Sparkles className="w-3.5 h-3.5" />
