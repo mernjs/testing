@@ -147,6 +147,8 @@ try {
   });
 
   await step("finishing the wizard (profile, departments, team, branding, panels) lands on the dashboard", async () => {
+    // Verifying the email leaves the owner on the dashboard (never the wizard): open the wizard from there, as a person would.
+    await page.goto(`${new URL(page.url()).origin}/workspace/onboarding`);
     await page.locator("#ob-industry").selectOption({ index: 1 });
     await page.locator("#ob-size").selectOption({ index: 1 });
     await page.getByRole("button", { name: "Save & continue" }).click();
