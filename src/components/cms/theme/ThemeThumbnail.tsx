@@ -46,7 +46,7 @@ export default function ThemeThumbnail({
       style={{ containerType: "inline-size", aspectRatio: "16 / 10", overflow: "hidden", background: c.background, color: c.foreground, fontFamily: fontStack(tokens.typography?.bodyFont), display: "flex", flexDirection: "column", userSelect: "none" }}
     >
       {/* Header */}
-      <div style={{ height: "8.5cqw", flexShrink: 0, display: "flex", alignItems: "center", gap: "2cqw", padding: "0 4.5cqw", ...(floatingHeader ? { margin: "1.4cqw 3cqw 0", borderRadius: "6cqw", border: `1px solid ${c.border}`, height: "6.6cqw" } : { borderBottom: `1px solid ${c.border}` }), ...(centeredHeader ? { justifyContent: "center", flexDirection: "column", gap: "0.8cqw", height: "10.5cqw", justifyItems: "center" } : {}) }}>
+      <div style={{ height: centeredHeader ? "10.5cqw" : floatingHeader ? "6.6cqw" : "8.5cqw", flexShrink: 0, display: "flex", alignItems: "center", gap: centeredHeader ? "0.8cqw" : "2cqw", padding: "0 4.5cqw", ...(floatingHeader ? { margin: "1.4cqw 3cqw 0", borderRadius: "6cqw", border: `1px solid ${c.border}` } : { borderBottom: `1px solid ${c.border}` }), ...(centeredHeader ? { justifyContent: "center", flexDirection: "column" as const, justifyItems: "center" } : {}) }}>
         <span style={{ width: "3.2cqw", height: "3.2cqw", borderRadius: "0.9cqw", background: gradient }} />
         <span style={{ fontFamily: heading, fontWeight: 700, fontSize: "2.5cqw" }}>Brand</span>
         {menuHeader ? (

@@ -14,7 +14,7 @@ import { COMPANIES_COLLECTION, COMPANY_DOMAINS_COLLECTION, forgetCompanyRouting,
 import { companySiteHost, companySiteUrl, forgetCompanySiteUrls } from "@/lib/platform/tenancy/site-url";
 import { siteUrl } from "@/lib/seo";
 import { defaultRobots } from "@/lib/seo-panel/robots-store";
-import { DEFAULT_ROBOTS_TXT } from "@/lib/seo-panel/robots-parse";
+import { robotsTxtTemplate } from "@/lib/seo-panel/robots-parse";
 import { getSettings } from "@/lib/seo-panel/settings";
 
 const uri = process.env.MONGODB_URI ?? "";
@@ -145,8 +145,9 @@ async function run() {
 
   console.log("Consumers");
   await check("robots.txt default: owner byte-for-byte unchanged, others point at their own sitemap", async () => {
-    assert.equal(await as("owner", defaultRobots), DEFAULT_ROBOTS_TXT);
-    assert.ok(DEFAULT_ROBOTS_TXT.includes("Sitemap: https://www.yashorbit.com/sitemap.xml\n"));
+    // Every company, the owner included, points at its own site's sitemap (no owner-specific constant any more).
+    assert.equal(await as("owner", defaultRobots), robotsTxtTemplate(siteUrl));
+    assert.ok(robotsTxtTemplate(siteUrl).includes(`Sitemap: ${siteUrl}/sitemap.xml\n`));
     const acme = await as("acme", defaultRobots);
     assert.ok(acme.endsWith("\nSitemap: https://acme.yashorbit.com/sitemap.xml\n"), acme);
   });

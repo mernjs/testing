@@ -46,7 +46,7 @@ async function starterSiteInfo(name: string, namePrimary: string, nameAccent: st
   return rebrand(
     {
       ...base,
-      brand: { namePrimary, nameAccent, subtitle: "", logoUrl: "" },
+      brand: { namePrimary, nameAccent, subtitle: "", logoUrl: "", logoDarkUrl: "" },
       header: { ...base.header, askAiLabel: "", askAiHref: "" },
       floating: { ...base.floating, assistantLabel: "Ask AI" },
       // Filled in from the company profile (onboarding) — never guessed.

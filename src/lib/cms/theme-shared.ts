@@ -69,25 +69,20 @@ export function isDefaultTokens(tokens: ThemeTokens): boolean {
  * carrying a whisper of the theme's primary, lifted cards and popovers, soft neutral text. Dark mode only: light mode
  * is left exactly as it is.
  */
-function lightenHex(hex: string, amount: number): string {
-  const c = rgb(hex).map((v) => Math.round((v + (1 - v) * amount) * 255));
-  return `#${c.map((v) => v.toString(16).padStart(2, "0")).join("")}`;
-}
-
-function modernSurfaceCss(tokens: ThemeTokens): string {
-  // A brighter primary in dark mode (it reads better on near-black), and a deeper layer (`--chrome`) for headers.
-  const hex = /^#[0-9a-f]{6}$/i.test(tokens.colorsDark.primary.trim());
-  const primary = hex ? lightenHex(tokens.colorsDark.primary.trim(), 0.22) : "";
+function modernSurfaceCss(): string {
+  // One colour family: a true near-black (#09090b, the Vercel/Linear-style base) carries a whisper of the theme's own primary, and every
+  // surface, fill and hairline is derived from that same pair — so the dark UI reads as one palette, not black plus an accent.
+  // `--chrome` is a clearly deeper layer for headers (top bar, sidebar, table + card headers).
   return (
     `.dark{` +
-    (primary ? `--primary:${primary};--ring:${primary};` : "") +
-    `--background:color-mix(in oklab,black 94%,var(--primary) 6%);` +
-    `--card:color-mix(in oklab,var(--background) 92%,white);` +
-    `--popover:color-mix(in oklab,var(--background) 90%,white);` +
-    `--muted:color-mix(in oklab,var(--background) 87%,white);` +
-    `--muted-foreground:color-mix(in oklab,var(--foreground) 58%,var(--background));` +
-    `--canvas:color-mix(in oklab,var(--background) 78%,black);` +
-    `--chrome:color-mix(in oklab,var(--background) 40%,black);` +
+    `--background:color-mix(in oklab,#09090b 95%,var(--primary) 5%);` +
+    `--card:color-mix(in oklab,var(--background) 94%,white);` +
+    `--popover:color-mix(in oklab,var(--background) 91%,white);` +
+    `--muted:color-mix(in oklab,var(--background) 90%,var(--primary) 10%);` +
+    `--accent:color-mix(in oklab,var(--background) 87%,var(--primary) 13%);` +
+    `--muted-foreground:color-mix(in oklab,var(--foreground) 64%,var(--background));` +
+    `--canvas:var(--background);` +
+    `--chrome:color-mix(in oklab,var(--background) 55%,black);` +
     `}`
   );
 }
@@ -218,7 +213,7 @@ export function themeCssBlock(tokens: ThemeTokens): string {
   const brandVars = `--brand-gradient:${brand.gradient};--brand-deep:${brand.deep};`;
   css += `:root{${colorVars(tokens.colors)}--radius:${tokens.radius};${brandVars}}.dark{${colorVars(tokens.colorsDark)}}`;
 
-  if (!isDefaultTokens(tokens)) css += modernSurfaceCss(tokens);
+  if (!isDefaultTokens(tokens)) css += modernSurfaceCss();
 
   if (typo) {
     // next/font sets --font-geist-sans with a class on <html>; `html:root` out-ranks it.

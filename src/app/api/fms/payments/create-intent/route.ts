@@ -46,7 +46,7 @@ export async function POST(req: Request) {
         offerDiscountAmount: body.offerDiscountAmount ? Number(body.offerDiscountAmount) : 0,
         currency: str(body.currency, 8) || "INR",
         paymentMethod: (str(body.paymentMethod, 20) || "UPI") as CreatePaymentIntentData["paymentMethod"],
-        paymentProvider: str(body.paymentProvider, 30) || "mock",
+        paymentProvider: (str(body.paymentProvider, 30) || "mock") as CreatePaymentIntentData["paymentProvider"],
         idempotencyKey,
         metadata: body.metadata && typeof body.metadata === "object" ? (body.metadata as Record<string, unknown>) : undefined,
       };

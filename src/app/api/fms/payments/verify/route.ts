@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { limitOr429 } from "@/lib/security/rate-limit";
+import type { PaymentMethod } from "@/lib/fms/payments/intents";
 import { getPaymentIntent, getPaymentIntentByGatewayPayment, markPaymentIntentSuccessful, markPaymentIntentFailed } from "@/lib/fms/payments/intents";
 import { getPaymentProvider } from "@/lib/fms/payments/provider";
 import { getCurrentFmsUser } from "@/lib/fms-auth";
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
           gatewayPaymentId,
           gatewaySignature,
           utr: utr || statusRes.utr,
-          paymentMethod: paymentMethod || (statusRes.paymentMethod as any),
+          paymentMethod: (paymentMethod || statusRes.paymentMethod) as PaymentMethod | undefined,
         });
         return NextResponse.json({ ok: markRes.ok, intent: markRes.intent });
       } else if (statusRes.ok && statusRes.status === "FAILED") {
@@ -72,7 +73,7 @@ export async function POST(req: Request) {
       const markRes = await markPaymentIntentSuccessful(intentId, {
         gatewayPaymentId: gatewayPaymentId || `mock_${Date.now()}`,
         utr: utr || `UTR_MOCK_${Date.now()}`,
-        paymentMethod: paymentMethod || "UPI",
+        paymentMethod: (paymentMethod || "UPI") as PaymentMethod,
       });
       return NextResponse.json({ ok: markRes.ok, intent: markRes.intent });
     }
