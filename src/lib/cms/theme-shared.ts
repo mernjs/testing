@@ -83,6 +83,8 @@ function modernSurfaceCss(): string {
     `--muted-foreground:color-mix(in oklab,var(--foreground) 64%,var(--background));` +
     `--canvas:var(--background);` +
     `--chrome:color-mix(in oklab,var(--background) 55%,black);` +
+    // The top bar and sidebar: near-black, a shade deeper than the page, with only a trace of the theme colour.
+    `--bar:color-mix(in oklab,#030304 94%,var(--primary) 6%);` +
     `}`
   );
 }
