@@ -117,7 +117,7 @@ export async function answerQuestion(input: TurnInput): Promise<TurnOutput> {
   const status = input.onStatus ?? (() => {});
   status("Checking permissions…");
   const view = input.view ?? (await buildCatalogView(input.user));
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
 
   const results = new Map<string, QueryResult>();
   const queries: StoredQuery[] = [];
@@ -255,6 +255,6 @@ export function friendlyTurnError(err: unknown): string {
   const name = (err as { name?: string } | null)?.name ?? "";
   if (name === "TimeoutError" || name === "APIConnectionTimeoutError" || name === "APIUserAbortError") return TOO_SLOW;
   const msg = err instanceof Error ? err.message : "";
-  if (/OPENAI_API_KEY/i.test(msg)) return "The AI assistant isn't set up for this workspace yet. Ask your platform administrator to add an OpenAI key.";
+  if (/OpenAI isn't connected/i.test(msg)) return "The AI assistant isn't set up for this workspace yet. Add your OpenAI key in Settings → Integrations.";
   return "The analyst is unavailable right now. Please try again in a moment.";
 }

@@ -21,7 +21,7 @@ export default async function SitemapPage() {
   if (!viewer) redirect("/seo/login");
   const [records, pages, settings, siteUrl] = await Promise.all([listSitemapRecords(), allPages(), getSettings(), companySiteUrl()]);
   const canManage = can(viewer, "MANAGE_SITEMAP");
-  const gscReady = settings.integrations.gsc.enabled && !!integrationEnv().google;
+  const gscReady = settings.integrations.gsc.enabled && !!(await integrationEnv()).google;
   const inSitemap = pages.filter((p) => p.inSitemap);
   const nonIndexableListed = inSitemap.filter((p) => p.crawl && !p.crawl.indexable);
   const missing = pages.filter((p) => !p.inSitemap && p.crawl?.indexable && !p.sitemap?.exclude);

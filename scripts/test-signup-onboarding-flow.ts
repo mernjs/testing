@@ -19,6 +19,7 @@
  *  - the sign-up form asks only for what creating the account needs.
  */
 import assert from "node:assert/strict";
+import { sampleBusinessInput } from "@/lib/platform/business-taxonomy";
 import fs from "node:fs";
 import path from "node:path";
 import { clientPromise, getPlatformDb } from "@/lib/platform/tenancy/platform-db";
@@ -85,7 +86,7 @@ async function run() {
   console.log("fresh sign-up -> handoff -> /workspace");
   let freshCompanyId = "";
   await check("an open-mode sign-up creates the company at once and a handoff whose next is /workspace", async () => {
-    const started = await startSignup({ companyName: "Fresh Co", slug: "freshco", name: "Fiona Founder", email: "fiona@fresh.test", password: "correct-horse-battery", acceptTerms: true }, { hostHint: "localhost:3000", clientKey: "t1" });
+    const started = await startSignup({ companyName: "Fresh Co", slug: "freshco", name: "Fiona Founder", email: "fiona@fresh.test", password: "correct-horse-battery", businessCategories: sampleBusinessInput().categories, businessSubCategories: sampleBusinessInput().subCategories, acceptTerms: true }, { hostHint: "localhost:3000", clientKey: "t1" });
     assert.ok(started.ok && started.kind === "created", JSON.stringify(started));
     assert.equal(await db.collection("pending_signups").countDocuments({ email: "fiona@fresh.test" }), 0, "no pending sign-up / confirmation step in open mode");
     const url = new URL(started.redirectTo);
@@ -99,9 +100,9 @@ async function run() {
     assert.equal(await consumeHandoff(url.searchParams.get("token")!, freshCompanyId), null, "single use");
   });
   await check("the same e-mail may sign up another company (user e-mail is unique per company); a taken address is refused", async () => {
-    const again = await startSignup({ companyName: "Fresh Two", slug: "freshco", name: "Other Person", email: "other@fresh.test", password: "correct-horse-battery", acceptTerms: true }, { hostHint: "localhost:3000", clientKey: "t1b" });
+    const again = await startSignup({ companyName: "Fresh Two", slug: "freshco", name: "Other Person", email: "other@fresh.test", password: "correct-horse-battery", businessCategories: sampleBusinessInput().categories, businessSubCategories: sampleBusinessInput().subCategories, acceptTerms: true }, { hostHint: "localhost:3000", clientKey: "t1b" });
     assert.ok(!again.ok && again.errors.slug, JSON.stringify(again));
-    const second = await startSignup({ companyName: "Fresh Two", slug: "freshtwo", name: "Fiona Founder", email: "fiona@fresh.test", password: "correct-horse-battery", acceptTerms: true }, { hostHint: "localhost:3000", clientKey: "t1c" });
+    const second = await startSignup({ companyName: "Fresh Two", slug: "freshtwo", name: "Fiona Founder", email: "fiona@fresh.test", password: "correct-horse-battery", businessCategories: sampleBusinessInput().categories, businessSubCategories: sampleBusinessInput().subCategories, acceptTerms: true }, { hostHint: "localhost:3000", clientKey: "t1c" });
     assert.ok(second.ok && second.kind === "created");
   });
   await check("the owner is a Super Admin and the new company's setup is open (nothing completed, not skipped)", async () => {
@@ -117,7 +118,7 @@ async function run() {
   console.log("admin approval path");
   await check("approval mode stores the request without any e-mail step; approving creates the same company with the same open setup state and a sign-in link to the Workspace", async () => {
     await setSignupMode("approval", "test");
-    const started = await startSignup({ companyName: "Approved Co", slug: "approvedco", name: "Ann Approved", email: "ann@approved.test", password: "correct-horse-battery", acceptTerms: true }, { hostHint: "localhost:3000", clientKey: "t2" });
+    const started = await startSignup({ companyName: "Approved Co", slug: "approvedco", name: "Ann Approved", email: "ann@approved.test", password: "correct-horse-battery", businessCategories: sampleBusinessInput().categories, businessSubCategories: sampleBusinessInput().subCategories, acceptTerms: true }, { hostHint: "localhost:3000", clientKey: "t2" });
     assert.ok(started.ok && started.kind === "awaiting_approval", JSON.stringify(started));
     assert.equal(emailsTo("ann@approved.test").length, 0, "no confirmation e-mail before approval");
     assert.equal(await db.collection("companies").countDocuments({ slug: "approvedco" }), 0, "nothing is created before approval");

@@ -142,8 +142,8 @@ export default async function CampaignPage({ params }: { params: Promise<{ id: s
             hasContent={hasAi}
             label="Generate strategy with AI"
             generate={generateCampaignAction.bind(null, id)}
-            disabled={!canEdit || !can(viewer, "GENERATE_AI_CONTENT") || !isOpenAIConfigured() || c.status === "published"}
-            disabledReason={!isOpenAIConfigured() ? "OpenAI isn't configured on this server." : c.status === "published" ? "Launched campaigns keep their strategy — duplicate to plan a new version." : "You can read this strategy but not regenerate it."}
+            disabled={!canEdit || !can(viewer, "GENERATE_AI_CONTENT") || !(await isOpenAIConfigured()) || c.status === "published"}
+            disabledReason={!(await isOpenAIConfigured()) ? "OpenAI isn't connected for this workspace (Settings → Integrations)." : c.status === "published" ? "Launched campaigns keep their strategy — duplicate to plan a new version." : "You can read this strategy but not regenerate it."}
           />
           {hasAi && c.ai.adConcepts.length > 0 && (
             <SectionCard title="Ad concepts" description="Turn a concept into an ad draft, then generate its full creative.">

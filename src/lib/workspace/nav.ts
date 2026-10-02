@@ -116,7 +116,7 @@ const PANELS: NavItemDef[] = (
     ["seo", "SEO", "search", (u) => hasSeoAccess(u.roles)],
     ["cms", "Website", "website", (u) => hasCmsAccess(u.roles)],
   ] as [string, string, NavIcon, NavItemDef["allow"]][]
-).map(([key, label, icon, allow]) => ({ key: `panel.${key}`, section: "panels", label, href: `/${key}`, icon, module: key, external: true, allow }));
+).map(([key, label, icon, allow]) => ({ key: `panel.${key}`, section: "panels", label, href: `/${key}`, icon, module: key, allow }));
 
 // ── Analytics: /workspace/analytics/[panel] ─────────────────────────────────
 // Each page shows COMPANY-WIDE numbers, so a panel whose own screens are scoped
@@ -233,7 +233,14 @@ const MANAGE: NavItemDef[] = MANAGE_PAGES.map(([group, path, label, icon, permis
 }));
 
 // ── Company: the company managing itself ────────────────────────────────────
-const company = (key: string, href: string, icon: NavIcon, label: string, description: string, title?: string): NavItemDef => ({ key: `company.${key}`, section: "company", label, title, description, href, icon, allow: superAdmin });
+const COMPANY_GROUPS: Record<string, string> = {
+  setup: "Organization", profile: "Organization", users: "Organization",
+  billing: "Billing & plan", invoices: "Billing & plan", usage: "Billing & plan",
+  branding: "Branding & domains", domains: "Branding & domains",
+  payments: "Connections & automation", integrations: "Connections & automation", automations: "Connections & automation", import: "Connections & automation",
+  audit: "Security & logs", security: "Security & logs",
+};
+const company = (key: string, href: string, icon: NavIcon, label: string, description: string, title?: string): NavItemDef => ({ key: `company.${key}`, section: "company", group: COMPANY_GROUPS[key], label, title, description, href, icon, allow: superAdmin });
 const COMPANY: NavItemDef[] = [
   company("setup", "/workspace/onboarding", "building", "Company setup", "Profile, departments, invitations and which panels your team uses."),
   company("profile", "/workspace/settings/profile", "building", "Organization profile", "Company name, legal name, industry, country, currency, time zone and contact details."),
@@ -241,8 +248,8 @@ const COMPANY: NavItemDef[] = [
   company("billing", "/workspace/settings/billing", "card", "Plan & billing", "Your plan, payments, coupon codes and GST billing details."),
   company("invoices", "/workspace/settings/billing/invoices", "receipt", "Invoices & payments", "Tax invoices, credit notes and every payment made for your subscription."),
   company("usage", "/workspace/settings/usage", "gauge", "Usage", "Seats, AI tokens and file storage used against your plan's limits."),
-  company("domains", "/workspace/settings/domains", "globe", "Custom domains", "Your workspace address and your own custom domains, with automatic SSL.", "Domains"),
   company("branding", "/workspace/settings/branding", "palette", "Branding", "Logo, name and colour across panels, emails and PDFs."),
+  company("domains", "/workspace/settings/domains", "globe", "Custom domains", "Your workspace address and your own custom domains, with automatic SSL.", "Domains"),
   company("payments", "/workspace/settings/payments", "bank", "Payment account", "Connect your own Razorpay account to collect invoice payments and pay salaries.", "Payments & payouts"),
   company("integrations", "/workspace/settings/integrations", "plug", "Integrations", "What your workspace is connected to: payment gateway, webhooks and your own domain."),
   company("automations", "/workspace/settings/automations", "zap", "Automations", "When something happens, notify people, send an email or call a webhook."),
@@ -280,11 +287,11 @@ export const NAV_SECTIONS: { key: NavSectionKey; label: string; href?: string; /
   { key: "dashboard", label: "" },
   // The panels are opened from the Staff Hub tiles (which also show the locked ones), not from the sidebar.
   { key: "panels", label: "Panels", sidebar: false },
-  { key: "analytics", label: "Analytics" },
-  { key: "manage", label: "Management" },
+  { key: "analytics", label: "Analytics", sidebar: false },
+  { key: "manage", label: "Management", sidebar: false },
   { key: "company", label: "Company", href: "/workspace/settings" },
-  { key: "account", label: "Account" },
-  { key: "platform", label: "Platform" },
+  { key: "account", label: "Account", sidebar: false },
+  { key: "platform", label: "Platform", sidebar: false },
 ];
 
 export const NAV_KEYS: string[] = NAV_ITEMS.map((i) => i.key);

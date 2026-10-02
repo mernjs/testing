@@ -243,7 +243,7 @@ export default function BotForm({
           ) : canUpload ? (
             <>
               <KnowledgeQueueFields queue={queue} disabled={!openAIReady || pending} idPrefix="new-kb" />
-              {!openAIReady && <p className="text-[11px] text-muted-foreground">OpenAI isn&apos;t configured on this server, so files can&apos;t be uploaded yet.</p>}
+              {!openAIReady && <p className="text-[11px] text-muted-foreground">OpenAI isn&apos;t connected for this workspace (Settings → Integrations), so files can&apos;t be uploaded yet.</p>}
             </>
           ) : (
             <p className="text-xs text-muted-foreground">You don&apos;t have permission to upload knowledge files. Someone with that permission can add them after the bot is created.</p>

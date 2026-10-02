@@ -107,7 +107,7 @@ export default function ChatbotConfigForm({
           <CardContent className="flex items-start gap-3 py-3 text-sm">
             <TriangleAlert className="mt-0.5 size-4 shrink-0 text-primary" />
             <p className="text-muted-foreground">
-              <span className="font-medium text-foreground">OPENAI_API_KEY is not set.</span> Settings save
+              <span className="font-medium text-foreground">OpenAI isn&apos;t connected.</span> Add your key in Workspace → Settings → Integrations. Settings save
               normally, but the assistant stays offline until the key is added to the server environment.
             </p>
           </CardContent>

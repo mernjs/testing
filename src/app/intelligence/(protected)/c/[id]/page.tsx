@@ -12,5 +12,5 @@ export default async function ConversationPage({ params }: { params: Promise<{ i
   const conversation = await getConversation(user.id, id);
   if (!conversation) notFound();
   const messages = await listMessages(user.id, conversation._id);
-  return <ChatWorkspace conversationId={conversation._id} title={conversation.title} initialMessages={messages} ownerEmail={user.email} openAIReady={isOpenAIConfigured()} />;
+  return <ChatWorkspace conversationId={conversation._id} title={conversation.title} initialMessages={messages} ownerEmail={user.email} openAIReady={(await isOpenAIConfigured())} />;
 }

@@ -73,7 +73,7 @@ export default function LeadLinksPanel({
             )}
             <p className="mt-1 text-[11px] text-muted-foreground">
               Create the student first from{" "}
-              <a href="/tms/students" className="text-primary hover:underline" target="_blank" rel="noreferrer">
+              <a href="/tms/students" className="text-primary hover:underline">
                 TMS → Students
               </a>
               , then paste its id.
@@ -117,7 +117,7 @@ export default function LeadLinksPanel({
             )}
             <p className="mt-1 text-[11px] text-muted-foreground">
               Create the client / project in{" "}
-              <a href="/pms/clients" className="text-primary hover:underline" target="_blank" rel="noreferrer">
+              <a href="/pms/clients" className="text-primary hover:underline">
                 PMS
               </a>
               , then paste the ids.

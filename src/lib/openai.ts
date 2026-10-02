@@ -3,26 +3,26 @@ import OpenAI from "openai";
 import { unstable_rethrow } from "next/navigation";
 import { currentCompanyIdOrNull } from "@/lib/platform/tenancy/context";
 import { assertAiAvailable, meterAiTokens } from "@/lib/platform/billing/enforce";
+import { connectionValues } from "@/lib/platform/connections/resolve";
 
-const apiKey = process.env.OPENAI_API_KEY;
+// One client per distinct credential set (a workspace brings its own OpenAI key — Workspace → Settings → Integrations),
+// reused across hot reloads and invocations. Created lazily, so a workspace without a key only gets a clear error when it
+// actually tries to use AI.
+const globalForOpenAI = globalThis as unknown as { _openAIClients?: Map<string, OpenAI> };
 
-// Reuse a single OpenAI client across hot reloads in dev and across invocations
-// in production. The client is lazily created so that importing this module in
-// a context where the key isn't configured doesn't crash the whole route —
-// callers get a clear error only when they actually try to use it.
-const globalForOpenAI = globalThis as unknown as {
-  _openAIClient?: OpenAI;
-  _openAIMetered?: OpenAI;
-};
+export const OPENAI_NOT_CONNECTED = "OpenAI isn't connected for this workspace. Add your OpenAI API key in Workspace → Settings → Integrations.";
 
-export function getOpenAI(): OpenAI {
-  if (!apiKey) {
-    throw new Error(
-      "OPENAI_API_KEY is not set. The AI chatbot is unavailable until it is configured."
-    );
+export async function getOpenAI(): Promise<OpenAI> {
+  const creds = await connectionValues("openai");
+  if (!creds?.apiKey) throw new Error(OPENAI_NOT_CONNECTED);
+  const clients = (globalForOpenAI._openAIClients ??= new Map());
+  const id = `${creds.apiKey}|${creds.organization ?? ""}|${creds.project ?? ""}`;
+  let metered = clients.get(id);
+  if (!metered) {
+    metered = meteredClient(new OpenAI({ apiKey: creds.apiKey, organization: creds.organization || undefined, project: creds.project || undefined }));
+    clients.set(id, metered);
   }
-  const client = (globalForOpenAI._openAIClient ??= new OpenAI({ apiKey }));
-  return (globalForOpenAI._openAIMetered ??= meteredClient(client));
+  return metered;
 }
 
 // ---------------------------------------------------------------------------
@@ -130,9 +130,9 @@ function meteredClient(client: OpenAI): OpenAI {
   });
 }
 
-/** True when the server is configured to talk to OpenAI at all. */
-export function isOpenAIConfigured(): boolean {
-  return Boolean(apiKey);
+/** True when this workspace has an OpenAI key (its own, from Integrations). */
+export async function isOpenAIConfigured(): Promise<boolean> {
+  return Boolean((await connectionValues("openai"))?.apiKey);
 }
 
 /**

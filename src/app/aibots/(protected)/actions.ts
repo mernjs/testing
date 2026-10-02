@@ -93,7 +93,7 @@ export async function saveBotAction(botId: string | null, input: BotInput) {
     const bot = await createBot(input, v.userId);
     await recordAudit({ actorId: v.userId, actorEmail: v.email, action: "create", entity: "bot", entityId: bot._id, entityLabel: bot.name, botId: bot._id, summary: `${bot.model} · ${bot.access.mode === "all" ? "all users" : "restricted"}` });
     await notifyNewlyGranted(v, bot, [], bot.access.userIds);
-    return { botId: bot._id, vectorStoreReady: Boolean(bot.vectorStoreId) || !isOpenAIConfigured() };
+    return { botId: bot._id, vectorStoreReady: Boolean(bot.vectorStoreId) || !(await isOpenAIConfigured()) };
   });
 }
 

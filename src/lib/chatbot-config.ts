@@ -420,7 +420,7 @@ export async function updateChatbotConfig(
  */
 export async function ensureVectorStore(): Promise<string> {
   const config = await getChatbotConfig();
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
 
   if (config.vectorStoreId) {
     try {

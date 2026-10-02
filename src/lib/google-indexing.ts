@@ -1,3 +1,4 @@
+import { connectionValues } from "@/lib/platform/connections/resolve";
 import { getServiceAccountToken } from "@/lib/google-service-account";
 
 export type IndexingNotificationType = "URL_UPDATED" | "URL_DELETED";
@@ -17,15 +18,16 @@ export async function notifyGoogleIndexing(
   targetUrl: string,
   type: IndexingNotificationType = "URL_UPDATED"
 ): Promise<IndexingResponse> {
-  const clientEmail = process.env.GOOGLE_INDEXING_CLIENT_EMAIL;
-  const privateKey = process.env.GOOGLE_INDEXING_PRIVATE_KEY;
+  const sa = await connectionValues("google-service-account");
+  const clientEmail = sa?.clientEmail;
+  const privateKey = sa?.privateKey;
 
   if (!clientEmail || !privateKey) {
     return {
       success: false,
       url: targetUrl,
       type,
-      message: "Google Indexing API environment variables (GOOGLE_INDEXING_CLIENT_EMAIL / GOOGLE_INDEXING_PRIVATE_KEY) are not set.",
+      message: "Google isn't connected for this workspace. Add your service account in Workspace → Settings → Integrations.",
     };
   }
 

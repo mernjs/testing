@@ -7,5 +7,5 @@ import { isOpenAIConfigured } from "@/lib/openai";
 export default async function IntelligenceHomePage() {
   const user = await getCurrentIntelligenceUser();
   if (!user) redirect("/intelligence/login");
-  return <ChatWorkspace conversationId={null} title={null} initialMessages={[]} ownerEmail={user.email} openAIReady={isOpenAIConfigured()} />;
+  return <ChatWorkspace conversationId={null} title={null} initialMessages={[]} ownerEmail={user.email} openAIReady={(await isOpenAIConfigured())} />;
 }

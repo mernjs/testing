@@ -42,7 +42,7 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
   const engines = Array.from(new Set(keywords.map((k) => k.engine)));
   const countries = Array.from(new Set(keywords.map((k) => k.country)));
   const canManage = can(viewer, "MANAGE_RANKINGS");
-  const gscReady = settings.integrations.gsc.enabled && !!integrationEnv().google;
+  const gscReady = settings.integrations.gsc.enabled && !!(await integrationEnv()).google;
 
   return (
     <div className="space-y-4">

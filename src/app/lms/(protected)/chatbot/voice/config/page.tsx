@@ -26,7 +26,7 @@ export default async function VoiceConfigPage() {
         </p>
       </div>
 
-      <VoiceConfigForm voice={config.voice} elevenLabsConfigured={isElevenLabsConfigured()} />
+      <VoiceConfigForm voice={config.voice} elevenLabsConfigured={(await isElevenLabsConfigured())} />
     </div>
   );
 }

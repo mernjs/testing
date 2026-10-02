@@ -22,6 +22,8 @@ export interface AnalyticsFilterBarProps {
   showDateRange?: boolean;
   showGranularity?: boolean;
   title?: string;
+  /** Namespaces this bar's URL params (`<prefix>_dateFrom`…) so several bars can live on one page, e.g. one per panel on the dashboard. */
+  prefix?: string;
 }
 
 const GRANULARITY_OPTIONS = [
@@ -36,32 +38,34 @@ export function AnalyticsFilterBar({
   showDateRange = true,
   showGranularity = true,
   title = "Analytics Filters",
+  prefix,
 }: AnalyticsFilterBarProps) {
+  const K = (key: string) => (prefix ? `${prefix}_${key}` : key);
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
-  const currentDateFrom = searchParams.get("dateFrom") ?? "";
-  const currentDateTo = searchParams.get("dateTo") ?? "";
-  const currentGranularity = searchParams.get("granularity") ?? "month";
+  const currentDateFrom = searchParams.get(K("dateFrom")) ?? "";
+  const currentDateTo = searchParams.get(K("dateTo")) ?? "";
+  const currentGranularity = searchParams.get(K("granularity")) ?? "month";
 
   // Calculate active filters count
   let activeCount = 0;
   if (currentDateFrom) activeCount++;
   if (currentDateTo) activeCount++;
-  if (searchParams.get("granularity") && searchParams.get("granularity") !== "month") activeCount++;
+  if (searchParams.get(K("granularity")) && searchParams.get(K("granularity")) !== "month") activeCount++;
 
   fields.forEach((f) => {
-    if (searchParams.get(f.key)) activeCount++;
+    if (searchParams.get(K(f.key))) activeCount++;
   });
 
   const updateParam = (key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
     if (value && value.trim() !== "" && value !== "all") {
-      params.set(key, value);
+      params.set(K(key), value);
     } else {
-      params.delete(key);
+      params.delete(K(key));
     }
     startTransition(() => {
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
@@ -72,9 +76,9 @@ export function AnalyticsFilterBar({
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(updates).forEach(([k, v]) => {
       if (v && v.trim() !== "" && v !== "all") {
-        params.set(k, v);
+        params.set(K(k), v);
       } else {
-        params.delete(k);
+        params.delete(K(k));
       }
     });
     startTransition(() => {
@@ -83,8 +87,14 @@ export function AnalyticsFilterBar({
   };
 
   const clearAllFilters = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (prefix) {
+      ["dateFrom", "dateTo", "granularity", ...fields.map((f) => f.key)].forEach((key) => params.delete(K(key)));
+    } else {
+      params.forEach((_, key) => params.delete(key));
+    }
     startTransition(() => {
-      router.replace(pathname, { scroll: false });
+      router.replace(params.size ? `${pathname}?${params.toString()}` : pathname, { scroll: false });
     });
   };
 
@@ -253,7 +263,7 @@ export function AnalyticsFilterBar({
 
         {/* Dynamic Fields */}
         {fields.map((field) => {
-          const val = searchParams.get(field.key) ?? "";
+          const val = searchParams.get(K(field.key)) ?? "";
           if (field.type === "text") {
             return (
               <div key={field.key}>

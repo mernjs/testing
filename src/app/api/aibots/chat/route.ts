@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   const viewer = await getViewer();
   if (!viewer) return fail("Your session has expired — please sign in again.", 401);
   if (!can(viewer, "USE_BOT") && !can(viewer, "EDIT_BOT")) return fail("You don't have permission to use AI bots.", 403);
-  if (!isOpenAIConfigured()) return fail("OpenAI isn't configured on the server yet. Ask an administrator to set OPENAI_API_KEY.", 503);
+  if (!(await isOpenAIConfigured())) return fail("OpenAI isn't connected for this workspace yet (Settings → Integrations). Connect OpenAI in Workspace → Settings → Integrations.", 503);
 
   let form: FormData;
   try {

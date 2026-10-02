@@ -1,4 +1,5 @@
 import "server-only";
+import type { BusinessSelection } from "@/lib/platform/business-taxonomy";
 import { randomUUID } from "node:crypto";
 import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import { runAsCompany } from "@/lib/platform/tenancy/context";
@@ -75,6 +76,8 @@ export interface NewCompany {
   slug: string;
   /** `emailVerified` omitted = the field isn't written (counts as verified: scripts, seeders). Self-serve sign-up passes false. */
   owner: { email: string; name: string; passwordHash: string; mustChangePassword: boolean; emailVerified?: boolean };
+  /** The company's line of business (ISIC category + sub-category) chosen at registration. */
+  business?: BusinessSelection;
 }
 
 export type ProvisionResult = { ok: true; companyId: string; adminId: string; host: string; hostingError: string | null } | { ok: false; error: string };
@@ -100,6 +103,7 @@ export async function createCompanyWithOwner(input: NewCompany): Promise<Provisi
     name: input.name.trim(),
     status: "active",
     isPlatformOwner: false,
+    ...(input.business ? { business: input.business } : {}),
     ...(defaults ? { locale: defaults.defaultLocale, timezone: defaults.defaultTimezone } : {}),
     createdAt: now,
     updatedAt: now,

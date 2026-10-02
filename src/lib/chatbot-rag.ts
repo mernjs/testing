@@ -50,7 +50,7 @@ export async function prepareAnswer(
 export async function streamAnswer(
   prepared: PreparedAnswer
 ): Promise<AsyncIterable<OpenAI.Responses.ResponseStreamEvent>> {
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   const { config, vectorStoreId, input } = prepared;
 
   const base: OpenAI.Responses.ResponseCreateParamsStreaming = {

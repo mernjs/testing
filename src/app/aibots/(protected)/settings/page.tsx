@@ -16,7 +16,7 @@ export default async function AibotsSettingsPage() {
   if (!viewer) redirect("/aibots/login");
   if (!can(viewer, "MANAGE_SETTINGS")) redirect("/aibots");
   const settings = await getSettings();
-  const ready = isOpenAIConfigured();
+  const ready = await isOpenAIConfigured();
 
   return (
     <div className="space-y-4">

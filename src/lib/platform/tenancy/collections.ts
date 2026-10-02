@@ -87,6 +87,7 @@ export const KEYED_COLLECTIONS = new Set<string>([
   "fms_idempotency_keys",
   "billing_usage", // _id = <metric>:<yyyy-mm>
   "platform_payment_accounts", // _id = provider ("razorpay")
+  "workspace_connections", // _id = provider key (Workspace → Settings → Integrations)
 ]);
 
 export const KEY_SEPARATOR = "::";

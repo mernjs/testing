@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     return Response.json({
       callId: result.call._id,
       reused: result.reused,
-      iceServers: getIceServers(),
+      iceServers: (await getIceServers()),
       call: await serializeCall(result.call, user.id),
     });
   } catch (err) {

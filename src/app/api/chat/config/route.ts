@@ -13,12 +13,12 @@ export async function GET(req: NextRequest) {
   const visitorId = getVisitorIdFromRequest(req);
   const profile = visitorId ? await getVisitorProfile(visitorId) : null;
 
-  const demo = isDemoChat();
-  const demoVoice = isDemoVoice();
-  const liveVoice = config.voice.enabled && isElevenLabsConfigured();
+  const demo = await isDemoChat();
+  const demoVoice = await isDemoVoice();
+  const liveVoice = config.voice.enabled && (await isElevenLabsConfigured());
 
   return NextResponse.json({
-    available: isOpenAIConfigured() || demo,
+    available: (await isOpenAIConfigured()) || demo,
     demo,
     welcomeMessage: config.welcomeMessage,
     suggestedQuestions: config.suggestedQuestions,

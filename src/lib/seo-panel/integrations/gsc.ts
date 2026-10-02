@@ -49,7 +49,7 @@ export interface SearchRow {
 class GscError extends Error {}
 
 async function token(write = false) {
-  const env = integrationEnv();
+  const env = await integrationEnv();
   if (!env.google) throw new GscError("Google service-account credentials are not configured (GOOGLE_SEO_CLIENT_EMAIL / GOOGLE_SEO_PRIVATE_KEY).");
   return getServiceAccountToken(env.google, [write ? WRITE_SCOPE : READ_SCOPE]);
 }

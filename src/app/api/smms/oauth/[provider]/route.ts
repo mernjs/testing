@@ -14,13 +14,13 @@ export async function GET(req: NextRequest, { params }: Context) {
   const back = new URL("/smms/settings?tab=integrations", req.url);
   if (!can(viewer, "MANAGE_INTEGRATIONS")) return NextResponse.redirect(back);
   const { provider } = await params;
-  if (!isProvider(provider) || !providerConfigured(provider)) {
-    back.searchParams.set("error", "That platform's app credentials aren't configured on the server.");
+  if (!isProvider(provider) || !(await providerConfigured(provider))) {
+    back.searchParams.set("error", "That platform's app credentials aren't set up yet. Add them in Workspace → Settings → Integrations.");
     return NextResponse.redirect(back);
   }
   const state = newOAuthState();
   const store = await cookies();
   store.set(OAUTH_STATE_COOKIE, `${provider}.${state}.${viewer.userId}`, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/api/smms/oauth", maxAge: 600 });
   const redirectUri = new URL(`/api/smms/oauth/${provider}/callback`, req.url).toString();
-  return NextResponse.redirect(authorizeUrl(provider, redirectUri, state));
+  return NextResponse.redirect(await authorizeUrl(provider, redirectUri, state));
 }

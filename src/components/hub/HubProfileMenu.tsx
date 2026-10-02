@@ -31,9 +31,12 @@ function initialsFor(email: string) {
 export default function HubProfileMenu({
   email,
   lastLoginAt,
+  links = [],
 }: {
   email: string;
   lastLoginAt: string | null;
+  /** Pages that no longer have a sidebar section (notifications, documents, platform panel…). */
+  links?: { href: string; label: string }[];
 }) {
   const { collapsed } = useSidebarCollapse();
   const [isPending, startTransition] = useTransition();
@@ -76,6 +79,11 @@ export default function HubProfileMenu({
             {lastLoginAt ? `Last sign-in ${formatDateTime(lastLoginAt)}` : "First sign-in"}
           </div>
           <DropdownMenuSeparator />
+          {links.map((l) => (
+            <DropdownMenuItem key={l.href} render={<Link href={l.href} />}>
+              {l.label}
+            </DropdownMenuItem>
+          ))}
           <DropdownMenuItem render={<Link href="/workspace/change-password" />}>
             <KeyRound className="size-3.5" data-icon="inline-start" />
             Change password

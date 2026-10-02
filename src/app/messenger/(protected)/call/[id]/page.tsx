@@ -25,7 +25,7 @@ export default async function CallPage({ params }: { params: Promise<{ id: strin
     <div className="h-full overflow-hidden rounded-2xl border border-border/40">
       <CallStage
         call={serialized}
-        iceServers={getIceServers() as RTCIceServer[]}
+        iceServers={(await getIceServers()) as RTCIceServer[]}
         currentUserId={user.id}
         currentUserName={user.displayName}
         conversationScope={conversationScope}

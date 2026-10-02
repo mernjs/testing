@@ -71,7 +71,7 @@ function RowActions({ row, onViewDetails }: { row: AdminVendorRow; onViewDetails
           </DropdownMenuItem>
           <DropdownMenuItem
             render={
-              <a href={`/prms/vendors/${row._id}`} target="_blank" rel="noopener noreferrer">
+              <a href={`/prms/vendors/${row._id}`}>
                 <ExternalLink className="size-3.5" />
                 Open in PRMS
               </a>

@@ -6,7 +6,7 @@ import { isElevenLabsConfigured, listVoices } from "@/lib/elevenlabs";
 export async function GET(_req: NextRequest) {
   const lmsUser = await getCurrentLmsUser();
   if (!lmsUser) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (!isElevenLabsConfigured()) return NextResponse.json({ voices: [], configured: false });
+  if (!(await isElevenLabsConfigured())) return NextResponse.json({ voices: [], configured: false });
 
   try {
     const voices = await listVoices();

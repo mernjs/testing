@@ -13,7 +13,7 @@ export default async function CreateBotPage() {
   return (
     <div className="space-y-4">
       <PageHeader title="Create Bot" crumbs={[{ label: "Manage Bots", href: "/aibots/bots" }, { label: "Create Bot" }]} description="Configure the bot and, optionally, its own knowledge base. With files it answers only from them; without, from its instructions. It appears in the sidebar as soon as it's saved." />
-      {!isOpenAIConfigured() && <Notice tone="warn">OpenAI isn&apos;t configured on this server yet — you can create bots now, but they can&apos;t answer or index files until OPENAI_API_KEY is set.</Notice>}
+      {!(await isOpenAIConfigured()) && <Notice tone="warn">OpenAI isn&apos;t connected for this workspace (Settings → Integrations) yet — you can create bots now, but they can&apos;t answer or index files until OPENAI_API_KEY is set.</Notice>}
       <BotForm
         botId={null}
         initial={formValuesFor(null, o.settings.defaultModel)}
@@ -21,7 +21,7 @@ export default async function CreateBotPage() {
         roleOptions={o.roleOptions}
         userOptions={o.userOptions}
         canUpload={can(viewer, "UPLOAD_FILES")}
-        openAIReady={isOpenAIConfigured()}
+        openAIReady={(await isOpenAIConfigured())}
       />
     </div>
   );

@@ -1,4 +1,5 @@
 import "server-only";
+import { connectionValues } from "@/lib/platform/connections/resolve";
 import { siteUrl } from "@/lib/seo";
 import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
@@ -142,14 +143,15 @@ export async function markIntegrationSync(key: "gsc" | "ga4", error: string | nu
   await col.updateOne({ _id: "global" }, { $set: set }, { upsert: true });
 }
 
-/** Which credentials are present in the environment (never their values). */
-export function integrationEnv() {
-  const clientEmail = process.env.GOOGLE_SEO_CLIENT_EMAIL || process.env.GOOGLE_INDEXING_CLIENT_EMAIL || "";
-  const privateKey = process.env.GOOGLE_SEO_PRIVATE_KEY || process.env.GOOGLE_INDEXING_PRIVATE_KEY || "";
+/** Which credentials this workspace has connected (Workspace → Settings → Integrations) — never their values. */
+export async function integrationEnv() {
+  const sa = await connectionValues("google-service-account");
+  const clientEmail = sa?.clientEmail ?? "";
+  const privateKey = sa?.privateKey ?? "";
   return {
     google: clientEmail && privateKey ? { clientEmail, privateKey } : null,
     googleClientEmail: clientEmail || null,
-    pagespeedKey: process.env.PAGESPEED_API_KEY || null,
+    pagespeedKey: (await connectionValues("pagespeed"))?.apiKey ?? null,
   };
 }
 

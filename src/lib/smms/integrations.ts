@@ -1,4 +1,5 @@
 import "server-only";
+import { connectionValues } from "@/lib/platform/connections/resolve";
 import { randomBytes } from "node:crypto";
 import { COLLECTIONS, smmsCollection, str } from "@/lib/smms/db";
 import { encryptSecret, decryptSecret, isEncryptionConfigured, type EncryptedValue } from "@/lib/smms/crypto";
@@ -59,8 +60,16 @@ export const PROVIDERS: Record<Provider, ProviderConfig> = {
 
 export const isProvider = (v: unknown): v is Provider => v === "meta" || v === "google" || v === "linkedin";
 
-export function providerConfigured(p: Provider): boolean {
-  return Boolean(process.env[PROVIDERS[p].clientIdEnv] && process.env[PROVIDERS[p].secretEnv]);
+/** The workspace's own OAuth app for a provider (Workspace → Settings → Integrations), or null. */
+export async function oauthApp(p: Provider): Promise<{ id: string; secret: string } | null> {
+  const v = await connectionValues(p);
+  const id = p === "meta" ? v?.appId : v?.clientId;
+  const secret = p === "meta" ? v?.appSecret : v?.clientSecret;
+  return id && secret ? { id, secret } : null;
+}
+
+export async function providerConfigured(p: Provider): Promise<boolean> {
+  return (await oauthApp(p)) !== null;
 }
 
 export interface Target {
@@ -118,7 +127,7 @@ export interface IntegrationView {
 
 export async function listIntegrationViews(): Promise<IntegrationView[]> {
   const docs = await (await col()).find({}).toArray();
-  return (Object.keys(PROVIDERS) as Provider[]).map((p) => {
+  return Promise.all((Object.keys(PROVIDERS) as Provider[]).map(async (p) => {
     const d = docs.find((x) => x._id === p);
     const t = d?.targets ?? EMPTY_TARGETS;
     const strip = (xs: Target[]) => xs.map((x) => ({ id: x.id, name: x.name }));
@@ -126,7 +135,7 @@ export async function listIntegrationViews(): Promise<IntegrationView[]> {
       provider: p,
       label: PROVIDERS[p].label,
       platforms: PROVIDERS[p].platforms,
-      configured: providerConfigured(p),
+      configured: await providerConfigured(p),
       connected: Boolean(d),
       status: d?.status ?? null,
       accountName: d?.accountName ?? null,
@@ -136,7 +145,7 @@ export async function listIntegrationViews(): Promise<IntegrationView[]> {
       targets: { facebook: strip(t.facebookPages), instagram: strip(t.instagramAccounts), youtube: strip(t.youtubeChannels), google_business: strip(t.gbpLocations), linkedin: strip(t.linkedinAuthors) },
       selected: d?.selected ?? {},
     };
-  });
+  }));
 }
 
 /** Which post platforms can publish through the API right now (connected + a target selected). */
@@ -153,9 +162,11 @@ export function newOAuthState(): string {
   return randomBytes(24).toString("base64url");
 }
 
-export function authorizeUrl(p: Provider, redirectUri: string, state: string): string {
+export async function authorizeUrl(p: Provider, redirectUri: string, state: string): Promise<string> {
   const cfg = PROVIDERS[p];
-  const params = new URLSearchParams({ client_id: process.env[cfg.clientIdEnv]!, redirect_uri: redirectUri, state, response_type: "code", scope: cfg.scopes.join(p === "meta" ? "," : " "), ...(cfg.extraAuthParams ?? {}) });
+  const app = await oauthApp(p);
+  if (!app) throw new SmmsInputError(`${cfg.label} isn't set up. Add your app credentials in Workspace → Settings → Integrations.`);
+  const params = new URLSearchParams({ client_id: app.id, redirect_uri: redirectUri, state, response_type: "code", scope: cfg.scopes.join(p === "meta" ? "," : " "), ...(cfg.extraAuthParams ?? {}) });
   return `${cfg.authorizeUrl}?${params.toString()}`;
 }
 
@@ -186,8 +197,10 @@ interface TokenSet {
 
 async function exchangeCode(p: Provider, code: string, redirectUri: string): Promise<TokenSet> {
   const cfg = PROVIDERS[p];
-  const id = process.env[cfg.clientIdEnv]!;
-  const secret = process.env[cfg.secretEnv]!;
+  const app = await oauthApp(p);
+  if (!app) throw new SmmsInputError(`${cfg.label} isn't set up. Add your app credentials in Workspace → Settings → Integrations.`);
+  const id = app.id;
+  const secret = app.secret;
   if (p === "meta") {
     const short = await jsonFetch<{ access_token: string }>(`${GRAPH}/oauth/access_token?${new URLSearchParams({ client_id: id, client_secret: secret, redirect_uri: redirectUri, code })}`);
     // Long-lived user token (~60 days); page tokens derived from it don't expire.
@@ -302,7 +315,7 @@ export async function accessToken(p: Provider): Promise<{ doc: IntegrationDoc; t
     const t = await jsonFetch<{ access_token: string; expires_in?: number }>("https://oauth2.googleapis.com/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: refresh, client_id: process.env.GOOGLE_OAUTH_CLIENT_ID ?? "", client_secret: process.env.GOOGLE_OAUTH_CLIENT_SECRET ?? "" }),
+      body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: refresh, client_id: (await oauthApp("google"))?.id ?? "", client_secret: (await oauthApp("google"))?.secret ?? "" }),
     });
     token = t.access_token;
     await (await col()).updateOne({ _id: p }, { $set: { accessEnc: encryptSecret(token, `${p}:access`), expiresAt: new Date(Date.now() + (t.expires_in ?? 3600) * 1000), updatedAt: new Date() } });

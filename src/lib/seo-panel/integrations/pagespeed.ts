@@ -21,7 +21,7 @@ const LIMITS = {
 } as const;
 
 async function runPsi(url: string, strategy: "mobile" | "desktop"): Promise<PagePerformance> {
-  const key = integrationEnv().pagespeedKey;
+  const key = (await integrationEnv()).pagespeedKey;
   const qs = new URLSearchParams({ url, strategy, category: "performance" });
   if (key) qs.set("key", key);
   const controller = new AbortController();

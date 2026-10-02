@@ -75,7 +75,7 @@ export async function getDashboard(viewerId: string) {
   const indexedTrend: Point[] = runs.map((r) => ({ label: r.startedAt.toISOString().slice(5, 10), indexable: r.indexablePages, crawled: r.pagesCrawled }));
   const backlinkTrend: Point[] = backlinks.growth.map((g) => ({ label: g.month, backlinks: g.total, domains: g.domains, added: g.added, lost: g.lost }));
 
-  const env = integrationEnv();
+  const env = await integrationEnv();
   return {
     run,
     scores: run?.scores ?? null,

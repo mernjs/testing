@@ -38,7 +38,7 @@ export default async function BotWorkspacePage({ params }: { params: Promise<{ b
       initialMessages={transcript.messages}
       ownerEmail={viewer.email}
       manageHref={bot._id === GENERAL_BOT_ID ? (can(viewer, "MANAGE_SETTINGS") ? "/aibots/settings" : null) : can(viewer, "EDIT_BOT") ? `/aibots/bots/${bot._id}` : null}
-      openAIReady={isOpenAIConfigured()}
+      openAIReady={(await isOpenAIConfigured())}
       historyError={transcript.error}
       knowledgeFiles={knowledgeFiles}
     />

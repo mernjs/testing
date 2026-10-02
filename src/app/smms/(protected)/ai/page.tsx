@@ -17,7 +17,7 @@ export default async function AiGeneratorPage() {
   return (
     <div className="space-y-4">
       <PageHeader title="AI Content Generator" crumbs={[{ label: "AI Content Generator" }]} description="Campaign ideas, ad copy, posts, captions, scripts, headlines, CTAs, hashtags and creative concepts — written by OpenAI from your brand context." />
-      {!isOpenAIConfigured() && <Notice tone="warn">OpenAI isn&apos;t configured on this server (<code>OPENAI_API_KEY</code>), so generation will fail.</Notice>}
+      {!(await isOpenAIConfigured()) && <Notice tone="warn">OpenAI isn&apos;t connected for this workspace (Settings → Integrations), so generation will fail.</Notice>}
       <AiWorkspace
         canCreatePost={can(viewer, "MANAGE_POSTS")}
         offers={offers.map((o) => ({ _id: o._id, title: o.title, badge: o.badge }))}

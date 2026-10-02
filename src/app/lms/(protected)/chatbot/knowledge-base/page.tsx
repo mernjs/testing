@@ -33,7 +33,7 @@ export default async function KnowledgeBasePage() {
       </div>
 
       <KnowledgeBaseManager
-        openAiConfigured={isOpenAIConfigured()}
+        openAiConfigured={(await isOpenAIConfigured())}
         vectorStoreId={config.vectorStoreId}
         websiteSummary={websiteSummary}
         pages={pages}

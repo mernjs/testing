@@ -1,4 +1,5 @@
 import "server-only";
+import { connectionValues } from "@/lib/platform/connections/resolve";
 import { getDb } from "@/lib/mongodb";
 import { newId, createStamp, updateStamp, notDeleted, type AuditFields } from "@/lib/messenger/db";
 import { emit, emitMany, type EmitInput } from "@/lib/messenger/events";
@@ -135,18 +136,13 @@ async function callNotifications() {
 // ICE config
 // ---------------------------------------------------------------------------
 
-export function getIceServers(): IceServerConfig[] {
+export async function getIceServers(): Promise<IceServerConfig[]> {
   const servers: IceServerConfig[] = [
     { urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"] },
   ];
-  const turnUrl = process.env.MESSENGER_TURN_URL?.trim();
-  if (turnUrl) {
-    servers.push({
-      urls: turnUrl,
-      username: process.env.MESSENGER_TURN_USERNAME?.trim() || undefined,
-      credential: process.env.MESSENGER_TURN_CREDENTIAL?.trim() || undefined,
-    });
-  }
+  // The workspace's own TURN relay (Workspace → Settings → Integrations), when it has one.
+  const turn = await connectionValues("turn");
+  if (turn?.url) servers.push({ urls: turn.url, username: turn.username || undefined, credential: turn.credential || undefined });
   return servers;
 }
 

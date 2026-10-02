@@ -19,7 +19,7 @@ export default async function OverviewPage() {
   const viewer = await getViewer();
   if (!viewer) redirect("/seo/login");
   const [d, priorities, keywords] = await Promise.all([getDashboard(viewer.userId), listIssues({ status: "active", pageSize: 12 }), allActiveKeywords()]);
-  const env = integrationEnv();
+  const env = await integrationEnv();
   const striking = keywords.filter((k) => k.currentPosition !== null && k.currentPosition > 3 && k.currentPosition <= 20).sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0)).slice(0, 10);
 
   const freshness: Record<string, { status: string; when: string | null; ok: boolean }> = {

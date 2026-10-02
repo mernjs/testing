@@ -59,7 +59,11 @@ export default function HubSidebarShell({
         <HubSidebar collapsed={collapsed} nav={nav} />
       </div>
 
-      <HubProfileMenu email={email} lastLoginAt={lastLoginAt} />
+      <HubProfileMenu
+        email={email}
+        lastLoginAt={lastLoginAt}
+        links={nav.filter((section) => section.key === "account" || section.key === "platform").flatMap((section) => section.items).filter((item) => item.href !== "/workspace/change-password").map((item) => ({ href: item.href, label: item.label }))}
+      />
     </motion.aside>
   );
 }

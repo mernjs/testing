@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
   if (!config.voice.enabled) {
     return NextResponse.json({ error: "Voice mode is turned off." }, { status: 403 });
   }
-  if (!isElevenLabsConfigured()) {
+  if (!(await isElevenLabsConfigured())) {
     return NextResponse.json({ error: "Voice mode is not configured yet." }, { status: 503 });
   }
 

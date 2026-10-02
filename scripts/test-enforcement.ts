@@ -265,14 +265,14 @@ async function main() {
   try {
     await check("OpenAI wrapper meters responses.create usage", async () => {
       const before = await runAsCompany(starter, () => getUsage("ai_tokens"));
-      await runAsCompany(starter, () => getOpenAI().responses.create({ model: "mock", input: "hi" }));
+      await runAsCompany(starter, async () => (await getOpenAI()).responses.create({ model: "mock", input: "hi" }));
       assert.equal(await runAsCompany(starter, () => getUsage("ai_tokens")), before + 42);
     });
     await check("OpenAI wrapper meters a streamed reply on its final event", async () => {
       const before = await runAsCompany(starter, () => getUsage("ai_tokens"));
       const events: string[] = [];
       await runAsCompany(starter, async () => {
-        const stream = await getOpenAI().responses.create({ model: "mock", input: "hi", stream: true });
+        const stream = await (await getOpenAI()).responses.create({ model: "mock", input: "hi", stream: true });
         for await (const ev of stream) events.push(ev.type);
       });
       assert.deepEqual(events, ["response.output_text.delta", "response.completed"]);
@@ -281,14 +281,14 @@ async function main() {
     await check("OpenAI wrapper blocks an over-limit company before calling OpenAI", async () => {
       const hits = mock.hits();
       await rejectsWith(
-        runAsCompany(tiny, () => getOpenAI().responses.create({ model: "mock", input: "hi" })),
+        runAsCompany(tiny, async () => (await getOpenAI()).responses.create({ model: "mock", input: "hi" })),
         (e) => isBillingLimitError(e),
         "blocked",
       );
       assert.equal(mock.hits(), hits, "no request sent");
     });
     await check("OpenAI wrapper: owner over any number is never blocked", async () => {
-      await runAsCompany(owner, () => getOpenAI().responses.create({ model: "mock", input: "hi" }));
+      await runAsCompany(owner, async () => (await getOpenAI()).responses.create({ model: "mock", input: "hi" }));
     });
   } finally {
     mock.close();

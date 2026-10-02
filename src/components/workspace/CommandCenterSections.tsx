@@ -39,6 +39,7 @@ import {
   ShieldCheck,
   MessagesSquare,
   LayoutDashboard,
+  Lock,
 } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -127,6 +128,62 @@ const PANEL_GRID = [
     analyticsHref: "/workspace/analytics/workspace",
     panelHref: "/workspace",
     color: "from-brand-deep to-brand-accent/80",
+  },
+  {
+    key: "aibots",
+    label: "AI Bots",
+    icon: <Bot className="size-5" />,
+    analyticsHref: "/workspace/analytics/aibots",
+    panelHref: "/aibots",
+    color: "from-primary to-brand-accent",
+  },
+  {
+    key: "cms",
+    label: "Website CMS",
+    icon: <Globe className="size-5" />,
+    analyticsHref: "/workspace/analytics/cms",
+    panelHref: "/cms",
+    color: "from-brand-deep to-primary",
+  },
+  {
+    key: "dlms",
+    label: "Digi Locker",
+    icon: <Boxes className="size-5" />,
+    analyticsHref: "/workspace/analytics/dlms",
+    panelHref: "/dlms",
+    color: "from-primary to-brand-deep",
+  },
+  {
+    key: "ots",
+    label: "Online Tests",
+    icon: <GraduationCap className="size-5" />,
+    analyticsHref: "/workspace/analytics/ots",
+    panelHref: "/ots",
+    color: "from-brand-accent to-brand-deep",
+  },
+  {
+    key: "seo",
+    label: "SEO",
+    icon: <Activity className="size-5" />,
+    analyticsHref: "/workspace/analytics/seo",
+    panelHref: "/seo",
+    color: "from-primary to-brand-accent",
+  },
+  {
+    key: "smms",
+    label: "Social Media",
+    icon: <MessagesSquare className="size-5" />,
+    analyticsHref: "/workspace/analytics/smms",
+    panelHref: "/smms",
+    color: "from-brand-deep to-primary",
+  },
+  {
+    key: "sop",
+    label: "SOPs",
+    icon: <ReceiptText className="size-5" />,
+    analyticsHref: "/workspace/analytics/sop",
+    panelHref: "/sop",
+    color: "from-primary to-brand-deep",
   },
 ];
 
@@ -267,16 +324,46 @@ export default function CommandCenterSections({ stats, companyName }: { stats: C
         </KpiGrid>
       </ExecutiveSection>
 
-      {/* ── 9-Panel Status Grid ── */}
+      <PanelPerformanceMatrix modules={stats.modules} />
+    </section>
+  );
+}
+
+/**
+ * The Panel Performance Matrix: one card per panel with its live headline numbers and Analytics / Open links.
+ * `modules` is absent for people without the Command Center permission (cards then show links only);
+ * `panels` limits and `locked` marks panels outside the plan (Open becomes an upgrade link).
+ */
+export function PanelPerformanceMatrix({
+  modules,
+  stats,
+  panels,
+  locked,
+  query,
+}: {
+  modules?: CommandCenterStats["modules"];
+  /** Headline figures per panel key (take precedence over `modules`). */
+  stats?: Record<string, { label: string; value: number }[]>;
+  /** Panel keys this person may see; omitted = all. */
+  panels?: string[];
+  locked?: string[];
+  /** Case-insensitive text matched against the panel name. */
+  query?: string;
+}) {
+  const moduleStats = { ...Object.fromEntries((modules ?? []).map((m) => [m.key, m.stats])), ...Object.fromEntries(Object.entries(stats ?? {}).filter(([, v]) => v.length > 0)) };
+  const q = query?.trim().toLowerCase();
+  const grid = PANEL_GRID.filter((p) => (!panels || panels.includes(p.key) || locked?.includes(p.key)) && (!q || p.label.toLowerCase().includes(q) || p.key.includes(q)));
+  return (
       <ExecutiveSection
         title="Panel Performance Matrix"
-        description="Live status across all 9 panels. Click 'Analytics' for deep insights, 'Open' to access the live panel."
+        description="Live status across every panel. Click 'Analytics' for deep insights, 'Open' to access the live panel."
       >
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {PANEL_GRID.map((panel) => {
+          {grid.map((panel) => {
             const mStats = moduleStats[panel.key] ?? [];
+            const isLocked = locked?.includes(panel.key) ?? false;
             return (
-              <GlassCard key={panel.key}>
+              <GlassCard key={panel.key} className="h-full">
                 <CardHeader className="flex-row items-center gap-3 space-y-0 pb-2">
                   <div
                     className={`flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${panel.color} text-white shadow-sm`}
@@ -284,22 +371,22 @@ export default function CommandCenterSections({ stats, companyName }: { stats: C
                     {panel.icon}
                   </div>
                   <CardTitle className="text-base">{panel.label}</CardTitle>
+                  {isLocked && <span className="ml-auto inline-flex items-center gap-1 rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400"><Lock className="size-2.5" />Locked</span>}
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {mStats.length > 0 && (
-                    <dl className="grid grid-cols-3 gap-2">
-                      {mStats.slice(0, 3).map((s) => (
-                        <div key={s.label} className="rounded-lg border border-border/50 px-2 py-2 text-center">
+                  <dl className="grid grid-cols-3 gap-2">
+                    {[0, 1, 2].map((i) => {
+                      const s = mStats[i];
+                      return (
+                        <div key={i} className="flex h-16 flex-col items-center justify-center rounded-lg border border-border/50 px-2 text-center">
                           <dd className="text-base font-bold tabular-nums text-foreground">
-                            {typeof s.value === "number" && s.value > 999
-                              ? formatCurrency(s.value)
-                              : s.value.toLocaleString("en-IN")}
+                            {s ? (s.value > 999 ? formatCurrency(s.value) : s.value.toLocaleString("en-IN")) : "—"}
                           </dd>
-                          <dt className="mt-0.5 truncate text-[10px] text-muted-foreground">{s.label}</dt>
+                          <dt className="mt-0.5 w-full truncate text-[10px] text-muted-foreground">{s?.label ?? "No data"}</dt>
                         </div>
-                      ))}
-                    </dl>
-                  )}
+                      );
+                    })}
+                  </dl>
                   <div className="flex items-center gap-2 pt-1">
                     <Link
                       href={panel.analyticsHref}
@@ -309,12 +396,10 @@ export default function CommandCenterSections({ stats, companyName }: { stats: C
                       Analytics
                     </Link>
                     <Link
-                      href={panel.panelHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={isLocked ? `/workspace/upgrade?module=${panel.key}` : panel.panelHref}
                       className="inline-flex flex-1 items-center justify-center gap-1 rounded-lg bg-gradient-to-r from-primary/90 to-[var(--color-brand-accent)] px-3 py-1.5 text-xs font-medium text-white transition-all hover:opacity-90"
                     >
-                      Open
+                      {isLocked ? "Upgrade" : "Open"}
                       <ArrowUpRight className="size-3" />
                     </Link>
                   </div>
@@ -324,6 +409,5 @@ export default function CommandCenterSections({ stats, companyName }: { stats: C
           })}
         </div>
       </ExecutiveSection>
-    </section>
   );
 }

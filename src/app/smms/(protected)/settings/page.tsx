@@ -51,7 +51,7 @@ export default async function SmmsSettingsPage({ searchParams }: { searchParams:
         <TabsContent value="ai" className="mt-4 space-y-4">
           <SectionCard title="OpenAI" description="OpenAI is the only AI provider in this panel. The key stays on the server.">
             <ul className="mb-4 space-y-1.5 text-sm">
-              <li className="flex items-center gap-2">{isOpenAIConfigured() ? <Check className="size-4 text-emerald-600" /> : <Minus className="size-4 text-rose-600" />}{`OPENAI_API_KEY ${isOpenAIConfigured() ? "is set" : "is NOT set — generation is unavailable"}`}</li>
+              <li className="flex items-center gap-2">{(await isOpenAIConfigured()) ? <Check className="size-4 text-emerald-600" /> : <Minus className="size-4 text-rose-600" />}{`OPENAI_API_KEY ${(await isOpenAIConfigured()) ? "is set" : "is NOT set — generation is unavailable"}`}</li>
               <li className="flex items-center gap-2"><Check className="size-4 text-emerald-600" />Text: Responses API with strict JSON-schema output; images: Images API</li>
               <li className="flex items-center gap-2"><Check className="size-4 text-emerald-600" />Every generation is stored as a version; nothing is published automatically</li>
             </ul>

@@ -27,11 +27,15 @@ export interface WorkflowCondition {
 export type WorkflowAction =
   | { type: "email"; to: string; subject: string; body: string }
   | { type: "notify"; target: "role" | "user"; value: string; title: string; body: string }
+  | { type: "sms"; to: string; body: string }
+  | { type: "whatsapp"; to: string; body: string }
   | { type: "webhook"; url: string };
 
 export const ACTION_TYPES = [
   { value: "notify", label: "Send an in-app notification" },
   { value: "email", label: "Send an email" },
+  { value: "sms", label: "Send an SMS (Twilio)" },
+  { value: "whatsapp", label: "Send a WhatsApp message" },
   { value: "webhook", label: "Call a webhook" },
 ] as const;
 
@@ -126,6 +130,7 @@ export function matchesAll(conditions: readonly WorkflowCondition[], ctx: EventC
 // ---------------------------------------------------------------------------
 
 const EMAIL_RE = /^[^\s@,;<>]+@[^\s@,;<>]+\.[^\s@,;<>]{2,}$/;
+const PHONE_RE = /^\+?[0-9][0-9 ()-]{6,18}$/;
 const ONLY_TOKEN = /^\{\{\s*[a-zA-Z0-9_]+\s*\}\}$/;
 
 export function isEmailAddress(value: string): boolean {
@@ -180,6 +185,13 @@ export function validateWorkflow(raw: unknown): ValidateResult {
       if (!value) return { ok: false, error: `Notification action: choose a ${target === "user" ? "person" : "role"}.` };
       if (!title) return { ok: false, error: "Notification action: enter a title." };
       actions.push({ type: "notify", target, value, title, body: str(a.body, 1000) });
+    } else if (a.type === "sms" || a.type === "whatsapp") {
+      const to = str(a.to, 40);
+      const body = typeof a.body === "string" ? a.body.trim().slice(0, 1000) : "";
+      const label = a.type === "sms" ? "SMS" : "WhatsApp";
+      if (!PHONE_RE.test(to) && !ONLY_TOKEN.test(to)) return { ok: false, error: `${label} action: enter a phone number with country code (+91…), or a field like {{phone}}.` };
+      if (!body) return { ok: false, error: `${label} action: enter a message.` };
+      actions.push({ type: a.type, to, body });
     } else if (a.type === "webhook") {
       const url = str(a.url, 2000);
       let parsed: URL | null = null;

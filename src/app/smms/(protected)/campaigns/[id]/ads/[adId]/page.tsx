@@ -50,7 +50,7 @@ export default async function AdPage({ params }: { params: Promise<{ id: string;
         actions={
           <>
             {can(viewer, "CREATE_ADS") && c.status !== "archived" && <ActionButton action={duplicateAdAction.bind(null, id, adId, undefined)} success="Duplicated" redirectPrefix={`/smms/campaigns/${id}/ads/`}><Copy className="size-3.5" /> Duplicate</ActionButton>}
-            {can(viewer, "CREATE_ADS") && c.status !== "archived" && <AdaptButton campaignId={id} adId={adId} platforms={c.platforms} current={ad.platform} canGenerate={can(viewer, "GENERATE_AI_CONTENT") && isOpenAIConfigured()} />}
+            {can(viewer, "CREATE_ADS") && c.status !== "archived" && <AdaptButton campaignId={id} adId={adId} platforms={c.platforms} current={ad.platform} canGenerate={can(viewer, "GENERATE_AI_CONTENT") && (await isOpenAIConfigured())} />}
             {!locked && can(viewer, "SCHEDULE_POSTS") && (ad.status === "scheduled" ? (
               <ActionButton action={scheduleAdAction.bind(null, id, adId, null)} success="Unscheduled"><CalendarX className="size-3.5" /> Unschedule</ActionButton>
             ) : (
@@ -86,8 +86,8 @@ export default async function AdPage({ params }: { params: Promise<{ id: string;
         hasContent={hasContent}
         label={`Generate ${ad.format} ad with AI`}
         generate={generateAdAction.bind(null, id, adId)}
-        disabled={!canEdit || !can(viewer, "GENERATE_AI_CONTENT") || !isOpenAIConfigured()}
-        disabledReason={!isOpenAIConfigured() ? "OpenAI isn't configured on this server." : locked ? "This ad is locked in its current state." : "You can view this ad but not generate content for it."}
+        disabled={!canEdit || !can(viewer, "GENERATE_AI_CONTENT") || !(await isOpenAIConfigured())}
+        disabledReason={!(await isOpenAIConfigured()) ? "OpenAI isn't connected for this workspace (Settings → Integrations)." : locked ? "This ad is locked in its current state." : "You can view this ad but not generate content for it."}
       />
 
       <AdEditor
@@ -102,7 +102,7 @@ export default async function AdPage({ params }: { params: Promise<{ id: string;
         brand={brand.companyName}
         landingPage={c.landingPage}
         canEdit={canEdit}
-        canGenerate={can(viewer, "GENERATE_AI_CONTENT") && isOpenAIConfigured()}
+        canGenerate={can(viewer, "GENERATE_AI_CONTENT") && (await isOpenAIConfigured())}
         canUpload={can(viewer, "MANAGE_MEDIA")}
       />
 

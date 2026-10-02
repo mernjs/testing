@@ -20,7 +20,7 @@ export interface TrafficDaily {
 }
 
 async function runReport(propertyId: string, body: Record<string, unknown>) {
-  const env = integrationEnv();
+  const env = await integrationEnv();
   if (!env.google) throw new Error("Google service-account credentials are not configured.");
   if (!/^\d+$/.test(propertyId)) throw new Error("Set the numeric GA4 property id in Settings → Integrations.");
   const token = await getServiceAccountToken(env.google, ["https://www.googleapis.com/auth/analytics.readonly"]);

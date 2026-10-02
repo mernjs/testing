@@ -23,7 +23,7 @@ export default async function EditBotPage({ params, searchParams }: { params: Pr
   const bot = await getBot(botId);
   if (!bot) notFound();
   const tab = sp.tab === "knowledge" || !mayEdit ? "knowledge" : "config";
-  const openAIReady = isOpenAIConfigured();
+  const openAIReady = await isOpenAIConfigured();
   if (tab === "knowledge" && openAIReady) await refreshProcessing(bot).catch(() => {});
   const [files, o] = await Promise.all([listBotFiles(bot._id), tab === "config" ? botFormOptions() : null]);
 
@@ -54,7 +54,7 @@ export default async function EditBotPage({ params, searchParams }: { params: Pr
           </Link>
         ))}
       </nav>
-      {!openAIReady && <Notice tone="warn">OpenAI isn&apos;t configured on this server (OPENAI_API_KEY), so knowledge files can&apos;t be uploaded and the bot can&apos;t reply yet.</Notice>}
+      {!openAIReady && <Notice tone="warn">OpenAI isn&apos;t connected for this workspace (Settings → Integrations), so knowledge files can&apos;t be uploaded and the bot can&apos;t reply yet.</Notice>}
       {tab === "config" && o ? (
         <BotForm
           key={bot.updatedAt.toISOString()}

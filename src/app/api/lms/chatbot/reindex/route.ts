@@ -35,8 +35,8 @@ export async function POST(req: NextRequest) {
   const triggeredBy = await authorize(req);
   if (!triggeredBy) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  if (!isOpenAIConfigured()) {
-    return NextResponse.json({ error: "OPENAI_API_KEY is not configured." }, { status: 503 });
+  if (!(await isOpenAIConfigured())) {
+    return NextResponse.json({ error: "OpenAI isn't connected. Add your key in Workspace → Settings → Integrations." }, { status: 503 });
   }
 
   let body: { incremental?: unknown; baseUrl?: unknown } = {};

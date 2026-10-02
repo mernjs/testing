@@ -20,7 +20,7 @@ export default async function SeoSettingsPage() {
   if (!viewer) redirect("/seo/login");
   if (!can(viewer, "MANAGE_INTEGRATIONS")) redirect("/seo");
   const [s, siteUrl] = await Promise.all([getSettings(), companySiteUrl()]);
-  const env = integrationEnv();
+  const env = await integrationEnv();
 
   return (
     <div className="space-y-4">

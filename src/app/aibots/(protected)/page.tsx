@@ -35,9 +35,9 @@ export default async function AibotsDashboardPage() {
         }
       />
 
-      {!isOpenAIConfigured() && (
+      {!(await isOpenAIConfigured()) && (
         <Notice tone="warn">
-          OpenAI isn&apos;t configured on this server (<code>OPENAI_API_KEY</code> is not set), so bots can be set up but can&apos;t answer or index knowledge files yet.
+          OpenAI isn&apos;t connected for this workspace (Settings → Integrations), so bots can be set up but can&apos;t answer or index knowledge files yet.
         </Notice>
       )}
 

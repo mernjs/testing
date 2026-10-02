@@ -1,4 +1,5 @@
 import "server-only";
+import { resolveBusiness, type BusinessSelection } from "@/lib/platform/business-taxonomy";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import { companyBaseUrl, createCompanyWithOwner, isSlugTaken, slugFormatError } from "@/lib/platform/tenancy/provisioning";
@@ -43,6 +44,7 @@ interface PendingSignup {
   companyName: string;
   slug: string;
   passwordHash: string;
+  business?: BusinessSelection;
   status: "pending" | "awaiting_approval";
   createdAt: Date;
   expiresAt: Date;
@@ -85,6 +87,9 @@ export interface SignupInput {
   name: string;
   email: string;
   password: string;
+  /** Business category codes, sub-category codes (see business-taxonomy.ts — multi-select) and, for "Other", a short description. */
+  businessCategories: string[];
+  businessSubCategories: string[];
   acceptTerms: boolean;
 }
 
@@ -99,6 +104,8 @@ export function validateSignup(input: SignupInput): SignupFieldErrors {
   if (input.name.trim().length < 2) errors.name = "Enter your name.";
   if (!EMAIL_RE.test(input.email.trim())) errors.email = "Enter a valid email address.";
   if (input.password.length < MIN_PASSWORD_LENGTH) errors.password = `Use at least ${MIN_PASSWORD_LENGTH} characters.`;
+  const business = resolveBusiness(input.businessCategories, input.businessSubCategories);
+  if (!business.ok) Object.assign(errors, business.errors);
   if (!input.acceptTerms) errors.acceptTerms = "Accept the terms to continue.";
   return errors;
 }
@@ -180,6 +187,7 @@ export async function startSignup(input: SignupInput, ctx: { hostHint: string | 
   }
   if (!(await isSlugAvailable(input.slug, email))) return { ok: false, errors: { slug: "That workspace address is taken." } };
 
+  const business = (resolveBusiness(input.businessCategories, input.businessSubCategories) as { ok: true; value: BusinessSelection }).value;
   const passwordHash = hashPassword(input.password);
   const companyName = input.companyName.trim();
   const name = input.name.trim();
@@ -197,6 +205,7 @@ export async function startSignup(input: SignupInput, ctx: { hostHint: string | 
       companyName,
       slug: input.slug,
       passwordHash,
+      business,
       status: "awaiting_approval",
       createdAt: now,
       expiresAt: new Date(now.getTime() + 30 * PENDING_TTL_MS),
@@ -204,7 +213,7 @@ export async function startSignup(input: SignupInput, ctx: { hostHint: string | 
     return { ok: true, kind: "awaiting_approval", email };
   }
 
-  const created = await createCompanyWithOwner({ name: companyName, slug: input.slug, owner: { email, name, passwordHash, mustChangePassword: false, emailVerified: false } });
+  const created = await createCompanyWithOwner({ name: companyName, slug: input.slug, owner: { email, name, passwordHash, mustChangePassword: false, emailVerified: false }, business });
   // "Address just taken" (two sign-ups racing for it) belongs on the address field.
   if (!created.ok) return { ok: false, errors: /address/i.test(created.error) ? { slug: created.error } : { form: created.error } };
 
@@ -236,6 +245,7 @@ export async function confirmSignup(token: string, ctx: { hostHint: string | nul
     name: doc.companyName,
     slug: doc.slug,
     owner: { email: doc.email, name: doc.name, passwordHash: doc.passwordHash, mustChangePassword: false, emailVerified: true }, // confirmed through the emailed link
+    business: doc.business,
   });
   if (!created.ok) {
     // Put it back so the user can retry from the same link once they've been told why.
@@ -309,6 +319,7 @@ export async function approveSignup(id: string, ctx: { hostHint: string | null }
     name: doc.companyName,
     slug: doc.slug,
     owner: { email: doc.email, name: doc.name, passwordHash: doc.passwordHash, mustChangePassword: false, emailVerified: false },
+    business: doc.business,
   });
   if (!created.ok) {
     await pending.insertOne(doc);

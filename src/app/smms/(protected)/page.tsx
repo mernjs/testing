@@ -53,7 +53,7 @@ export default async function SmmsDashboardPage() {
         }
       />
 
-      {!isOpenAIConfigured() && <Notice tone="warn">OpenAI isn&apos;t configured on this server (<code>OPENAI_API_KEY</code>), so AI generation is unavailable. Everything else works.</Notice>}
+      {!(await isOpenAIConfigured()) && <Notice tone="warn">OpenAI isn&apos;t connected for this workspace (Settings → Integrations), so AI generation is unavailable. Everything else works.</Notice>}
 
       <KpiGrid>
         <KpiCard label="Active Campaigns" value={active} accent icon={<Megaphone className="size-4" />} />

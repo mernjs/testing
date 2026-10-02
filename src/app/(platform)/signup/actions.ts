@@ -37,6 +37,8 @@ function signupInput(formData: FormData) {
     name: field("name").trim() || nameFromEmail(email),
     email,
     password: field("password"),
+    businessCategories: formData.getAll("businessCategory").map(String),
+    businessSubCategories: formData.getAll("businessSubCategory").map(String),
     acceptTerms: formData.get("acceptTerms") === "on",
   };
 }

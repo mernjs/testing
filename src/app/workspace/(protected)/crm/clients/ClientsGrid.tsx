@@ -80,7 +80,7 @@ function RowActions({ row, onViewActivity }: { row: AdminClientRow; onViewActivi
           </DropdownMenuItem>
           <DropdownMenuItem
             render={
-              <a href={`/pms/clients/${row._id}`} target="_blank" rel="noopener noreferrer">
+              <a href={`/pms/clients/${row._id}`}>
                 <ExternalLink className="size-3.5" />
                 Open in PMS
               </a>

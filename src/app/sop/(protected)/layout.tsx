@@ -13,6 +13,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 import { requireModule } from "@/lib/platform/billing/enforce";
+import PanelBackBar from "@/components/hub/PanelBackBar";
 import BillingNotice from "@/components/platform/BillingNotice";
 
 export const generateMetadata = () => brandedMetadata("{brand} SOP", { robots: { index: false, follow: false } });
@@ -60,6 +61,7 @@ export default async function ProtectedSopLayout({ children }: { children: React
             <div className="lms-surface sop-print-hide relative z-30 shrink-0 rounded-3xl border border-border/40 bg-background/95 shadow-none backdrop-blur-md dark:bg-card/85">
               <SopTopbar roles={user.roles} flags={flags} notifications={bell.items} unread={bell.unread} />
             </div>
+            <PanelBackBar />
             <BillingNotice />
             <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">{children}</main>
           </div>

@@ -1,49 +1,64 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import GlassCard from "@/components/lms/GlassCard";
+import { ArrowLeft } from "lucide-react";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
+import { CONNECTION_PROVIDERS } from "@/lib/platform/connections/catalog";
+import { listConnectionViews } from "@/lib/platform/connections/store";
+import { resolveConnection } from "@/lib/platform/connections/resolve";
+import { isPlatformEncryptionConfigured } from "@/lib/platform/crypto";
 import { listCompanyIntegrations } from "@/lib/workspace/company";
+import { getTrackingForEdit } from "@/lib/cms/tracking";
+import ConnectionsHub, { type HubProvider } from "./ConnectionsHub";
 
 export const metadata: Metadata = { title: "Integrations", robots: { index: false, follow: false } };
 
-/** What this workspace is connected to. A list only: each integration is managed on its own page. */
+/** One place for every third-party service the workspace uses. Configure once; every panel and automation uses it. */
 export default async function IntegrationsPage() {
   await requireWorkspaceAccess("company.integrations");
-  const integrations = await listCompanyIntegrations();
+  const [views, managed, tracking] = await Promise.all([listConnectionViews(), listCompanyIntegrations().catch(() => []), getTrackingForEdit().catch(() => null)]);
+  const managedByKey = new Map<string, (typeof managed)[number]>(managed.map((m) => [m.key, m]));
+  const trackingOn = !!tracking && (tracking.ga4Ids.length + tracking.gtmIds.length + tracking.clarityIds.length + tracking.metaPixelIds.length + tracking.scripts.length > 0 || !!tracking.tawkId);
+
+  const providers: HubProvider[] = [];
+  for (const p of CONNECTION_PROVIDERS) {
+    const view = views[p.key];
+    let environment = false;
+    let statusNote: string | null = null;
+    let connected = false;
+    if (p.managedElsewhere) {
+      const m = managedByKey.get(p.key === "domains" ? "domain" : p.key);
+      if (m) {
+        connected = m.connected;
+        statusNote = m.status;
+      } else if (p.key === "website-tracking") {
+        connected = trackingOn;
+        statusNote = trackingOn ? "Tracking is on" : "Nothing set up yet";
+      }
+    } else {
+      connected = !!view?.saved;
+      if (!connected) environment = (await resolveConnection(p.key))?.source === "environment";
+    }
+    providers.push({
+      key: p.key, name: p.name, group: p.group, description: p.description, usedBy: p.usedBy, fields: p.fields, docsUrl: p.docsUrl ?? null, note: p.note ?? null,
+      testable: !!p.testable, managedElsewhere: p.managedElsewhere ?? null, connected, environment, statusNote,
+      saved: view ? { values: view.values, secrets: view.secrets, lastTest: view.lastTest, updatedAt: view.updatedAt } : null,
+    });
+  }
 
   return (
     <div className="min-h-screen bg-background px-4 py-10">
-      <div className="mx-auto max-w-4xl space-y-4">
+      <div className="mx-auto max-w-5xl space-y-6">
         <Link href="/workspace/settings" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" /> Company settings
         </Link>
-        <GlassCard interactive={false}>
-          <CardHeader>
-            <CardTitle className="text-xl">
-              <h1>Integrations</h1>
-            </CardTitle>
-            <CardDescription>The outside services your workspace is connected to.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ul id="integrations-list" className="divide-y divide-border/60">
-              {integrations.map((i) => (
-                <li key={i.key} data-integration={i.key} data-connected={i.connected ? "true" : "false"} className="flex flex-wrap items-center justify-between gap-3 py-4">
-                  <div className="min-w-0 flex-1 basis-64">
-                    <p className="text-sm font-semibold">{i.name}</p>
-                    <p className="text-sm text-muted-foreground">{i.description}</p>
-                    <p className={`mt-1 text-xs font-medium ${i.connected ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"}`}>{i.status}</p>
-                  </div>
-                  <Link href={i.href} className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-sm font-medium hover:border-primary/40 hover:text-primary">
-                    {i.connected ? "Manage" : "Set up"}
-                    <ArrowRight className="size-3.5" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </GlassCard>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Integrations</h1>
+          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+            Connect your own accounts once — email, SMS, AI, social, Google and more. Every panel and automation in your workspace uses these connections, so there is nothing to set up again inside each panel.
+            Keys are encrypted and are never shown again.
+          </p>
+        </div>
+        <ConnectionsHub providers={providers} encryptionReady={isPlatformEncryptionConfigured()} />
       </div>
     </div>
   );

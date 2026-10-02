@@ -41,7 +41,7 @@ export default async function MediaPage({ searchParams }: { searchParams: Promis
         key={r.items.map((m) => m._id + m.updatedAt.getTime()).join(",")}
         openId={sp.open ?? null}
         canManage={can(viewer, "MANAGE_MEDIA")}
-        canGenerate={can(viewer, "GENERATE_AI_CONTENT") && isOpenAIConfigured()}
+        canGenerate={can(viewer, "GENERATE_AI_CONTENT") && (await isOpenAIConfigured())}
         items={r.items.map((m) => ({ ...toMediaCard(m), description: m.description, tags: m.tags, platform: m.platform, creativePrompt: m.creativePrompt, script: m.script, caption: m.caption, createdAt: m.createdAt.toISOString(), versions: m.versions.length, thumbnail: m.thumbnailId ? (thumbs.get(m.thumbnailId) ?? null) : null }))}
       />
       {r.totalPages > 1 && (

@@ -6,6 +6,7 @@
  *     npx --yes tsx --require ./scripts/lib/next-server-shims.cjs scripts/test-email-verification.ts
  */
 import assert from "node:assert/strict";
+import { sampleBusinessInput } from "@/lib/platform/business-taxonomy";
 import { createHash } from "node:crypto";
 import { ObjectId } from "mongodb";
 import { clientPromise, getPlatformDb } from "@/lib/platform/tenancy/platform-db";
@@ -56,7 +57,7 @@ const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 async function run() {
   const platform = await getPlatformDb();
   await setSignupMode("open", "test");
-  const signup = (slug: string, email: string, key: string) => startSignup({ companyName: `${slug} Co`, slug, name: "Owner", email, password: "correct-horse-battery", acceptTerms: true }, { hostHint: "localhost:3000", clientKey: key });
+  const signup = (slug: string, email: string, key: string) => startSignup({ companyName: `${slug} Co`, slug, name: "Owner", email, password: "correct-horse-battery", businessCategories: sampleBusinessInput().categories, businessSubCategories: sampleBusinessInput().subCategories, acceptTerms: true }, { hostHint: "localhost:3000", clientKey: key });
   const idOf = async (slug: string) => String((await platform.collection("companies").findOne({ slug }))!._id);
   const usersOf = (companyId: string) => runAsCompany(companyId, async () => (await getDb()).collection("admin_users"));
   const ownerOf = async (companyId: string, email: string) => runAsCompany(companyId, async () => (await getDb()).collection("admin_users").findOne({ email }));

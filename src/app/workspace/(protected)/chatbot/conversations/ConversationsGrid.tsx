@@ -68,7 +68,7 @@ function RowActions({ row }: { row: AdminConversationRow }) {
         <DropdownMenuContent align="end">
           <DropdownMenuItem
             render={
-              <a href={`/lms/chatbot/conversations/${row._id}`} target="_blank" rel="noopener noreferrer">
+              <a href={`/lms/chatbot/conversations/${row._id}`}>
                 <ExternalLink className="size-3.5" />
                 View transcript
               </a>

@@ -110,8 +110,8 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         hasContent={hasContent}
         label="Generate all platform versions"
         generate={generatePostAction.bind(null, id)}
-        disabled={!canEdit || !can(viewer, "GENERATE_AI_CONTENT") || !isOpenAIConfigured()}
-        disabledReason={!isOpenAIConfigured() ? "OpenAI isn't configured on this server." : !canEdit ? "This post can't be regenerated in its current state." : "You can view this post but not generate content."}
+        disabled={!canEdit || !can(viewer, "GENERATE_AI_CONTENT") || !(await isOpenAIConfigured())}
+        disabledReason={!(await isOpenAIConfigured()) ? "OpenAI isn't connected for this workspace (Settings → Integrations)." : !canEdit ? "This post can't be regenerated in its current state." : "You can view this post but not generate content."}
       />
 
       <PostEditor
@@ -126,7 +126,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         brand={brand.companyName}
         link={p.link}
         canEdit={canEdit}
-        canGenerate={can(viewer, "GENERATE_AI_CONTENT") && isOpenAIConfigured()}
+        canGenerate={can(viewer, "GENERATE_AI_CONTENT") && (await isOpenAIConfigured())}
         canUpload={can(viewer, "MANAGE_MEDIA")}
       />
 

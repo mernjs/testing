@@ -3,6 +3,10 @@ import { createConsoleEmailProvider } from "@/lib/platform/email/console";
 import { createResendEmailProvider } from "@/lib/platform/email/resend";
 import type { EmailMessage, EmailProvider, EmailResult } from "@/lib/platform/email/types";
 import { resolveEmailConfig, type ResolvedEmailConfig } from "@/lib/platform/integrations/resolve";
+import { createSmtpEmailProvider } from "@/lib/platform/email/smtp";
+import { createSendgridEmailProvider } from "@/lib/platform/email/sendgrid";
+import { getSavedConnection } from "@/lib/platform/connections/store";
+import { currentCompanyIdOrNull } from "@/lib/platform/tenancy/context";
 
 export type { EmailMessage, EmailResult } from "@/lib/platform/email/types";
 
@@ -24,6 +28,22 @@ function providerFor(cfg: ResolvedEmailConfig): EmailProvider {
   return cfg.provider === "resend" ? createResendEmailProvider(cfg.resendApiKey) : createConsoleEmailProvider(cfg.explicit);
 }
 
+/**
+ * The WORKSPACE's own email connection (Workspace → Settings → Integrations: SMTP, Resend or SendGrid), when it has one.
+ * Mail sent while serving a company goes out through the company's own account and sender; otherwise it falls back to the
+ * platform's provider below. SMTP wins over Resend over SendGrid when several are connected.
+ */
+async function workspaceEmail(): Promise<{ provider: EmailProvider; from: string } | null> {
+  if (!(await currentCompanyIdOrNull())) return null;
+  const smtp = await getSavedConnection("smtp");
+  if (smtp?.host && smtp.fromEmail) return { provider: createSmtpEmailProvider(smtp), from: smtp.fromName ? `${smtp.fromName} <${smtp.fromEmail}>` : smtp.fromEmail };
+  const resend = await getSavedConnection("resend");
+  if (resend?.apiKey && resend.from) return { provider: createResendEmailProvider(resend.apiKey), from: resend.from };
+  const sendgrid = await getSavedConnection("sendgrid");
+  if (sendgrid?.apiKey && sendgrid.from) return { provider: createSendgridEmailProvider(sendgrid.apiKey), from: sendgrid.from };
+  return null;
+}
+
 /** The platform's default sender, e.g. `YashOrbit <no-reply@yashorbit.com>`. */
 export async function defaultFrom(): Promise<string> {
   return (await resolveEmailConfig()).from;
@@ -36,9 +56,10 @@ export async function defaultFrom(): Promise<string> {
  */
 export async function sendEmail(message: Omit<EmailMessage, "from"> & { from?: string }): Promise<EmailResult> {
   try {
-    const cfg = await resolveEmailConfig();
-    const provider = providerFor(cfg);
-    const result = await provider.send({ ...message, from: message.from ?? cfg.from });
+    const own = await workspaceEmail().catch(() => null);
+    const cfg = own ? null : await resolveEmailConfig();
+    const provider = own ? own.provider : providerFor(cfg!);
+    const result = await provider.send({ ...message, from: message.from ?? own?.from ?? cfg!.from });
     if (!result.ok) console.error(`[email:${provider.id}] send failed`, result.error);
     return result;
   } catch (err) {

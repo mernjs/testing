@@ -82,7 +82,7 @@ export function autoTitle(message: string): string {
 
 /** Creates the chat row and its OpenAI Conversation (the per-chat context container). */
 export async function createChat(viewer: AibotsViewer, botId: string, firstMessage: string): Promise<ChatDoc> {
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   const conversation = await openai.conversations.create({ metadata: { app: "aibots", bot_id: botId, user_id: viewer.userId } });
   const now = new Date();
   const chat: ChatDoc = {
@@ -110,7 +110,7 @@ export async function createChat(viewer: AibotsViewer, botId: string, firstMessa
  */
 export async function ensureConversation(chat: ChatDoc): Promise<string> {
   if (chat.conversationId) return chat.conversationId;
-  const conversation = await getOpenAI().conversations.create({ metadata: { app: "aibots", bot_id: chat.botId, user_id: chat.userId } });
+  const conversation = await (await getOpenAI()).conversations.create({ metadata: { app: "aibots", bot_id: chat.botId, user_id: chat.userId } });
   const col = await chatsCollection();
   await col.updateOne({ _id: chat._id, conversationId: null }, { $set: { conversationId: conversation.id } });
   chat.conversationId = conversation.id;
@@ -138,7 +138,7 @@ export async function deleteChat(viewer: AibotsViewer, chatId: string): Promise<
   const chat = await col.findOne({ _id: chatId, ...notDeleted });
   if (!chat || (chat.userId !== viewer.userId && !can(viewer, "DELETE_CHATS"))) throw new NotFoundError();
   await col.updateOne({ _id: chat._id }, { $set: { deletedAt: new Date() } });
-  if (chat.conversationId) await getOpenAI().conversations.delete(chat.conversationId).catch(() => {});
+  if (chat.conversationId) await (await getOpenAI()).conversations.delete(chat.conversationId).catch(() => {});
   return chat;
 }
 
@@ -185,7 +185,7 @@ export function parseAttachmentPart(text: string): string | null {
 }
 
 export async function listConversationItems(conversationId: string): Promise<Item[]> {
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   const out: Item[] = [];
   for await (const item of openai.conversations.items.list(conversationId, { order: "asc", limit: 100 })) {
     out.push(item);

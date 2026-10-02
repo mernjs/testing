@@ -1,19 +1,22 @@
 import "server-only";
+import { connectionValues } from "@/lib/platform/connections/resolve";
 
 const API_BASE = "https://api.elevenlabs.io/v1";
 const STT_MODEL = "scribe_v1";
 
-const apiKey = process.env.ELEVENLABS_API_KEY;
-
-export function isElevenLabsConfigured(): boolean {
-  return Boolean(apiKey);
+/** The workspace's own ElevenLabs key (Workspace → Settings → Integrations). */
+async function workspaceKey(): Promise<string | null> {
+  return (await connectionValues("elevenlabs"))?.apiKey ?? null;
 }
 
-function requireKey(): string {
-  if (!apiKey) {
-    throw new Error("ELEVENLABS_API_KEY is not set. Voice mode is unavailable.");
-  }
-  return apiKey;
+export async function isElevenLabsConfigured(): Promise<boolean> {
+  return Boolean(await workspaceKey());
+}
+
+async function requireKey(): Promise<string> {
+  const key = await workspaceKey();
+  if (!key) throw new Error("ElevenLabs isn't connected for this workspace. Add your ElevenLabs API key in Workspace → Settings → Integrations.");
+  return key;
 }
 
 // ---------------------------------------------------------------------------
@@ -39,7 +42,7 @@ export async function transcribeAudio(
 
   const res = await fetch(`${API_BASE}/speech-to-text`, {
     method: "POST",
-    headers: { "xi-api-key": requireKey() },
+    headers: { "xi-api-key": await requireKey() },
     body: form,
   });
 
@@ -84,7 +87,7 @@ export async function streamTts(text: string, cfg: TtsSettings): Promise<Readabl
     {
       method: "POST",
       headers: {
-        "xi-api-key": requireKey(),
+        "xi-api-key": await requireKey(),
         "content-type": "application/json",
         accept: "audio/mpeg",
       },
@@ -123,7 +126,7 @@ export interface ElevenLabsVoice {
 
 export async function listVoices(): Promise<ElevenLabsVoice[]> {
   const res = await fetch(`${API_BASE}/voices`, {
-    headers: { "xi-api-key": requireKey() },
+    headers: { "xi-api-key": await requireKey() },
     cache: "no-store",
   });
   if (!res.ok) {

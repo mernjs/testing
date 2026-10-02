@@ -224,7 +224,7 @@ async function clean(input: BotInput) {
 
 /** Creates the bot's private OpenAI vector store (lazily — a bot can exist before OpenAI is configured). */
 export async function ensureBotVectorStore(bot: Pick<BotDoc, "_id" | "name" | "vectorStoreId">): Promise<string> {
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   if (bot.vectorStoreId) {
     try {
       await openai.vectorStores.retrieve(bot.vectorStoreId);
@@ -251,7 +251,7 @@ export async function createBot(input: BotInput, actorId: string): Promise<BotDo
   }
   const doc: BotDoc = { _id: newId(), ...data, vectorStoreId: null, ...createStamp(actorId) };
   await col.insertOne(doc);
-  if (isOpenAIConfigured()) {
+  if ((await isOpenAIConfigured())) {
     // Best-effort now; uploading the first file retries it.
     await ensureBotVectorStore(doc).then((id) => (doc.vectorStoreId = id)).catch((err) => console.error("[aibots] vector store create failed", err instanceof Error ? err.message : err));
   }

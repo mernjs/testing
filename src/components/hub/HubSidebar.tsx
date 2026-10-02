@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { useState } from "react";
 import {
   LayoutDashboard,
   Users,
@@ -39,7 +38,6 @@ import {
   Lock,
   Bell,
   FileText,
-  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -81,8 +79,6 @@ const ICONS: Record<NavIcon, React.ComponentType<{ className?: string }>> = {
   platform: Globe2,
 };
 
-/** Long sections start closed; they open by themselves on one of their own pages. */
-const CLOSED_BY_DEFAULT = new Set(["manage", "company"]);
 
 function NavLink({
   href,
@@ -165,7 +161,6 @@ export default function HubSidebar({
   collapsed?: boolean;
 }) {
   const pathname = usePathname();
-  const [toggled, setToggled] = useState<Record<string, boolean>>({});
 
   return (
     <nav aria-label="Workspace" className="flex h-full flex-col gap-1 p-3 overflow-y-auto">
@@ -174,8 +169,13 @@ export default function HubSidebar({
           <>
             {section.items.map((item, i) => (
               <div key={item.key} className="contents">
-                {!collapsed && item.group && item.group !== section.items[i - 1]?.group && (
-                  <div className="mt-2 px-3 text-[10px] font-semibold tracking-wide text-muted-foreground/70 uppercase">{item.group}</div>
+                {item.group && item.group !== section.items[i - 1]?.group && (
+                  // A category is a heading in its own right — same look as a section heading, not clickable, not collapsible.
+                  collapsed ? <div className="mt-4 mb-1 border-t border-border/50" /> : (
+                    <div className="mt-4 mb-1 flex items-center gap-1 px-3">
+                      <span className="flex-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{item.group}</span>
+                    </div>
+                  )
                 )}
                 <NavLink
                   href={item.href}
@@ -190,44 +190,24 @@ export default function HubSidebar({
             ))}
           </>
         );
-        if (!section.label) return <div key={section.key} className="contents">{links}</div>;
+        // Sections whose items carry categories show those as the headings instead of one umbrella heading.
+        if (!section.label || section.items.some((item) => item.group)) return <div key={section.key} className="contents">{links}</div>;
 
-        const hasActive = section.items.some((item) => isActive(pathname, item.href));
-        const open = toggled[section.key] ?? (hasActive || !CLOSED_BY_DEFAULT.has(section.key));
         // The icon-only sidebar has no room for a section header: show a divider and the open sections' icons.
         if (collapsed) {
           return (
             <div key={section.key} className="contents" data-nav-section={section.key}>
               <div className="mt-4 mb-1 border-t border-border/50" />
-              {open && links}
+              {links}
             </div>
           );
         }
         return (
           <div key={section.key} className="contents" data-nav-section={section.key}>
             <div className="mt-4 mb-1 flex items-center gap-1 px-3">
-              {section.href ? (
-                <Link
-                  href={section.href}
-                  onClick={onNavigate}
-                  className={cn("flex-1 text-xs font-semibold tracking-wide uppercase hover:text-primary", pathname === section.href ? "text-primary" : "text-muted-foreground")}
-                >
-                  {section.label}
-                </Link>
-              ) : (
-                <span className="flex-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{section.label}</span>
-              )}
-              <button
-                type="button"
-                aria-expanded={open}
-                aria-label={`${open ? "Hide" : "Show"} ${section.label} menu`}
-                onClick={() => setToggled((t) => ({ ...t, [section.key]: !open }))}
-                className="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-primary/8 hover:text-primary"
-              >
-                <ChevronDown className={cn("size-3.5 transition-transform", !open && "-rotate-90")} />
-              </button>
+              <span className="flex-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{section.label}</span>
             </div>
-            {open && links}
+            {links}
           </div>
         );
       })}

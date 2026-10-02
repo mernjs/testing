@@ -13,6 +13,10 @@ import { slugFormatError, slugFromName } from "@/lib/platform/tenancy/slug";
 import { checkSlugAction, startSignupAction, validateSignupAction, type SignupState } from "./actions";
 import type { SignupFieldErrors } from "@/lib/platform/signup";
 import CreatingWorkspace from "./CreatingWorkspace";
+import { BUSINESS_CATEGORIES, CUSTOM_PREFIX, MAX_BUSINESS_CATEGORIES, MAX_BUSINESS_SUBCATEGORIES, cleanCustomName } from "@/lib/platform/business-taxonomy";
+import SearchMultiSelect, { type MultiOption } from "@/components/platform/SearchMultiSelect";
+
+const CATEGORY_OPTIONS: MultiOption[] = BUSINESS_CATEGORIES.map((c) => ({ value: c.code, label: c.name }));
 
 const initialState: SignupState = {};
 type SlugCheck = { for: string; state: "idle" | "checking" | "ok" | "bad"; message: string | null };
@@ -28,7 +32,11 @@ export default function SignupForm({ rootDomain, approval = false }: { rootDomai
   const [slugEdited, setSlugEdited] = useState(false);
   const [check, setCheck] = useState<SlugCheck>({ for: "", state: "idle", message: null });
   const [showPassword, setShowPassword] = useState(false);
-  const ids = { company: useId(), slug: useId(), email: useId(), password: useId(), terms: useId() };
+  const [categories, setCategories] = useState<string[]>([]);
+  const [subCategories, setSubCategories] = useState<string[]>([]);
+  // Sub-categories of the chosen categories, grouped by category.
+  const subOptions: MultiOption[] = BUSINESS_CATEGORIES.filter((c) => categories.includes(c.code)).flatMap((c) => c.subs.map((x) => ({ value: x.code, label: x.name, group: c.name })));
+  const ids = { company: useId(), slug: useId(), email: useId(), password: useId(), terms: useId(), category: useId(), sub: useId() };
 
   // The creation answered with something to fix (rate limit, address taken a moment ago…): back to the form.
   useEffect(() => {
@@ -154,6 +162,48 @@ export default function SignupForm({ rootDomain, approval = false }: { rootDomai
                 {slugMessage && <X className="size-3" />}
                 {slugMessage ?? (current.state === "ok" ? "Available" : "Your team signs in here. You can add your own domain later.")}
               </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor={ids.category}>Business categories</Label>
+              <SearchMultiSelect
+                id={ids.category}
+                name="businessCategory"
+                options={CATEGORY_OPTIONS}
+                values={categories}
+                onChange={(next) => {
+                  setCategories(next);
+                  // Drop sub-categories whose category was just removed.
+                  setSubCategories((subs) => subs.filter((c) => c.startsWith(CUSTOM_PREFIX) || next.includes(c.split(":")[0])));
+                }}
+                placeholder="Select up to 5 industries…"
+                searchPlaceholder="Search, or type your own…"
+                max={MAX_BUSINESS_CATEGORIES}
+                customPrefix={CUSTOM_PREFIX}
+                cleanCustom={cleanCustomName}
+                invalid={!!errors.businessCategories}
+              />
+              {fieldError(errors.businessCategories)}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor={ids.sub}>Sub-categories</Label>
+              <SearchMultiSelect
+                id={ids.sub}
+                name="businessSubCategory"
+                options={subOptions}
+                values={subCategories}
+                onChange={setSubCategories}
+                disabled={categories.length === 0}
+                placeholder={categories.length === 0 ? "Choose a category first" : "Select up to 25 things your business does…"}
+                searchPlaceholder="Search, or type your own…"
+                max={MAX_BUSINESS_SUBCATEGORIES}
+                customPrefix={CUSTOM_PREFIX}
+                cleanCustom={cleanCustomName}
+                invalid={!!errors.businessSubCategories}
+              />
+              {fieldError(errors.businessSubCategories)}
+              <p className="text-xs text-muted-foreground">Up to 5 categories and 25 sub-categories — and if yours isn&apos;t listed, type it and press Enter. Based on the UN&apos;s ISIC classification, extended for modern industries.</p>
             </div>
 
             <div className="space-y-1.5">

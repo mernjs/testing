@@ -63,7 +63,7 @@ export async function bulkDeleteConversationsAction(ids: string[]): Promise<{ de
 
 export async function triggerWebsiteIndexAction(mode: "full" | "incremental"): Promise<{ runId?: string; error?: string }> {
   const lmsUser = await requireLmsUser();
-  if (!isOpenAIConfigured()) return { error: "OPENAI_API_KEY is not configured." };
+  if (!(await isOpenAIConfigured())) return { error: "OpenAI isn't connected. Add your key in Workspace → Settings → Integrations." };
   const incremental = mode === "incremental";
   const { runId, logger } = await beginWebsiteIndex({ triggeredBy: lmsUser.email, incremental });
   const baseUrl = await crawlBaseUrl();
@@ -74,7 +74,7 @@ export async function triggerWebsiteIndexAction(mode: "full" | "incremental"): P
 
 export async function reindexPagesAction(pageIds: string[]): Promise<{ runId?: string; error?: string }> {
   const lmsUser = await requireLmsUser();
-  if (!isOpenAIConfigured()) return { error: "OPENAI_API_KEY is not configured." };
+  if (!(await isOpenAIConfigured())) return { error: "OpenAI isn't connected. Add your key in Workspace → Settings → Integrations." };
   const urls = await urlsForPageIds(pageIds);
   if (urls.length === 0) return { error: "No matching pages selected." };
   const { runId, logger } = await beginWebsiteIndex({ triggeredBy: lmsUser.email, onlyUrls: urls });
@@ -88,7 +88,7 @@ export async function reindexPagesAction(pageIds: string[]): Promise<{ runId?: s
 
 export async function reindexPdfAction(id: string): Promise<{ error?: string }> {
   const lmsUser = await requireLmsUser();
-  if (!isOpenAIConfigured()) return { error: "OPENAI_API_KEY is not configured." };
+  if (!(await isOpenAIConfigured())) return { error: "OpenAI isn't connected. Add your key in Workspace → Settings → Integrations." };
   const ok = await reindexPdf(id, lmsUser.email);
   if (!ok) return { error: "Document not found." };
   revalidatePath("/lms/chatbot/knowledge-base");

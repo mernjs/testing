@@ -569,7 +569,7 @@ export default function ChatWorkspace({
                   Answers come only from this bot&apos;s {knowledgeFiles} knowledge file{knowledgeFiles === 1 ? "" : "s"}. If something isn&apos;t in them, it will say so.
                 </p>
               )}
-              {!openAIReady && <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-200">OpenAI isn&apos;t configured on this server yet, so this bot can&apos;t reply.</p>}
+              {!openAIReady && <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-200">OpenAI isn&apos;t connected for this workspace (Settings → Integrations) yet, so this bot can&apos;t reply.</p>}
               {!readOnly && bot.starterPrompts.length > 0 && (
                 <div className="mt-2 grid w-full gap-2 sm:grid-cols-2">
                   {bot.starterPrompts.map((p) => (

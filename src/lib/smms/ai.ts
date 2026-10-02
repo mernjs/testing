@@ -117,7 +117,7 @@ export function aiErrorMessage(err: unknown): string {
 }
 
 async function guard(userId: string, ai: AiSettings) {
-  if (!isOpenAIConfigured()) throw new SmmsInputError("OpenAI isn't configured on this server (OPENAI_API_KEY), so AI generation is unavailable.");
+  if (!(await isOpenAIConfigured())) throw new SmmsInputError("OpenAI isn't connected for this workspace (Settings → Integrations), so AI generation is unavailable.");
   const planBlock = await aiBlockReason();
   if (planBlock) throw new SmmsInputError(planBlock);
   if (ai.dailyGenerationLimit > 0 && (await countUserAiToday(userId)) >= ai.dailyGenerationLimit) {
@@ -129,7 +129,7 @@ async function guard(userId: string, ai: AiSettings) {
 export async function generateStructured<T>(opts: { userId: string; schema: SchemaName; input: string; normalize: (v: unknown) => T }): Promise<AiResult<T>> {
   const { ai } = await getSettings();
   await guard(opts.userId, ai);
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   const started = Date.now();
   const params: OpenAI.Responses.ResponseCreateParamsNonStreaming = {
     model: ai.textModel,
@@ -164,7 +164,7 @@ export async function generateImage(opts: { userId: string; prompt: string; size
   await guard(opts.userId, ai);
   const prompt = opts.prompt.trim();
   if (prompt.length < 10) throw new SmmsInputError("Write (or generate) an image prompt first.");
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   const started = Date.now();
   const res = await openai.images.generate({ model: ai.imageModel, prompt: prompt.slice(0, 4000), size: opts.size, quality: ai.imageQuality, n: 1 });
   const b64 = res.data?.[0]?.b64_json;

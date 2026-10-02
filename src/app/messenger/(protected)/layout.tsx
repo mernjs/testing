@@ -15,6 +15,7 @@ import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
+import PanelBackBar from "@/components/hub/PanelBackBar";
 import BillingNotice from "@/components/platform/BillingNotice";
 
 export const generateMetadata = () => brandedMetadata("{brand} Messenger", { robots: { index: false, follow: false } });
@@ -84,7 +85,8 @@ export default async function ProtectedMessengerLayout({ children }: { children:
                   unread={unread}
                 />
               </div>
-              <BillingNotice />
+              <PanelBackBar />
+            <BillingNotice />
               <main className="min-h-0 flex-1 overflow-hidden rounded-2xl">{children}</main>
             </div>
           </div>

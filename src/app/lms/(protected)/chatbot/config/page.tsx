@@ -23,7 +23,7 @@ export default async function ChatbotConfigPage() {
         </p>
       </div>
 
-      <ChatbotConfigForm config={config} openAiConfigured={isOpenAIConfigured()} />
+      <ChatbotConfigForm config={config} openAiConfigured={(await isOpenAIConfigured())} />
     </div>
   );
 }

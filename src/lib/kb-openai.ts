@@ -27,7 +27,7 @@ async function attachAndPoll(
   fileId: string,
   attributes: Attributes
 ): Promise<VectorStoreUploadResult> {
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   const vsFile = await openai.vectorStores.files.createAndPoll(vectorStoreId, {
     file_id: fileId,
     attributes: trimAttributes(attributes),
@@ -50,7 +50,7 @@ export async function uploadTextToVectorStore(params: {
   text: string;
   attributes: Attributes;
 }): Promise<VectorStoreUploadResult> {
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   const file = await toFile(Buffer.from(params.text, "utf-8"), params.filename, {
     type: "text/markdown",
   });
@@ -66,7 +66,7 @@ export async function uploadBinaryToVectorStore(params: {
   contentType: string;
   attributes: Attributes;
 }): Promise<VectorStoreUploadResult> {
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   const file = await toFile(params.buffer, params.filename, { type: params.contentType });
   const uploaded = await openai.files.create({ file, purpose: "assistants" });
   return attachAndPoll(params.vectorStoreId, uploaded.id, params.attributes);
@@ -78,7 +78,7 @@ export async function removeFromVectorStore(params: {
   vectorStoreFileId?: string | null;
   fileId?: string | null;
 }): Promise<void> {
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   if (params.vectorStoreFileId) {
     await openai.vectorStores.files
       .delete(params.vectorStoreFileId, { vector_store_id: params.vectorStoreId })
@@ -95,7 +95,7 @@ export async function countChunks(
   vectorStoreFileId: string
 ): Promise<number | null> {
   try {
-    const openai = getOpenAI();
+    const openai = await getOpenAI();
     let count = 0;
     const page = await openai.vectorStores.files.content(vectorStoreFileId, {
       vector_store_id: vectorStoreId,

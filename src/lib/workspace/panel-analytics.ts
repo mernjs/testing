@@ -1055,3 +1055,25 @@ export function isPanelKey(val: unknown): val is PanelKey {
   // Own keys only: "toString" and friends are `in` every object.
   return typeof val === "string" && Object.prototype.hasOwnProperty.call(PANEL_CONFIGS, val);
 }
+
+/**
+ * The first three numeric KPIs of a panel's analytics, for the dashboard's Panel Performance Matrix: every card
+ * shows exactly three figures. Never throws — a panel that can't be read just shows dashes.
+ */
+export async function getPanelHeadlineStats(panel: PanelKey, filters?: PanelAnalyticsFilters): Promise<{ label: string; value: number }[]> {
+  const getters: Record<PanelKey, (f?: PanelAnalyticsFilters) => Promise<{ kpis?: unknown }>> = {
+    aibots: getAibotsAnalytics, cms: getCmsAnalytics, dlms: getDlmsAnalytics, fms: getFmsAnalytics, hrms: getHrmsAnalytics,
+    lms: getLmsAnalytics, messenger: getMessengerAnalytics, ots: getOtsAnalytics, pms: getPmsAnalytics, portal: getPortalAnalytics,
+    prms: getPrmsAnalytics, seo: getSeoAnalytics, smms: getSmmsAnalytics, sop: getSopAnalytics, tms: getTmsAnalytics,
+    workspace: getWorkspaceAnalytics,
+  };
+  try {
+    const data = await getters[panel](filters);
+    return Object.entries((data.kpis ?? {}) as Record<string, unknown>)
+      .filter((e): e is [string, number] => typeof e[1] === "number" && Number.isFinite(e[1]))
+      .slice(0, 3)
+      .map(([key, value]) => ({ label: key.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/^./, (c) => c.toUpperCase()), value }));
+  } catch {
+    return [];
+  }
+}

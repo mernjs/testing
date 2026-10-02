@@ -129,7 +129,7 @@ async function prepare(file: File): Promise<{ upload: Awaited<ReturnType<typeof 
 
 /** Uploads to OpenAI Files and attaches to the bot's vector store WITHOUT waiting for indexing. */
 async function pushToOpenAI(bot: BotDoc, upload: Awaited<ReturnType<typeof toFile>>, meta: { fileDocId: string; title: string; category: string }) {
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   const vectorStoreId = await ensureBotVectorStore(bot);
   const uploaded = await openai.files.create({ file: upload, purpose: "assistants" });
   try {
@@ -216,7 +216,7 @@ export async function setBotFileEnabled(bot: BotDoc, fileId: string, enabled: bo
   const f = await getFile(bot._id, fileId);
   if (f.enabled === enabled) return f;
   if (!f.openaiFileId) throw new AibotsInputError("This file never reached OpenAI — replace it with a new upload.");
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   const col = await filesCollection();
   if (!enabled) {
     if (bot.vectorStoreId && f.vectorStoreFileId) {
@@ -252,7 +252,7 @@ export async function refreshProcessing(bot: BotDoc): Promise<void> {
   const col = await filesCollection();
   const pending = await col.find({ botId: bot._id, status: "processing", ...notDeleted }).limit(50).toArray();
   if (pending.length === 0) return;
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   await Promise.all(
     pending.map(async (f) => {
       if (!f.vectorStoreFileId) return;
@@ -281,7 +281,7 @@ export async function getBotFileText(bot: BotDoc, fileId: string): Promise<{ tex
   if (!bot.vectorStoreId || !f.vectorStoreFileId || !f.enabled) throw new AibotsInputError("Enable the file to view its indexed content.");
   if (f.status !== "ready") throw new AibotsInputError(f.status === "processing" ? "OpenAI is still indexing this file — try again in a moment." : "This file wasn't indexed — replace it with a new upload.");
   let text = "";
-  for await (const chunk of getOpenAI().vectorStores.files.content(f.vectorStoreFileId, { vector_store_id: bot.vectorStoreId })) {
+  for await (const chunk of (await getOpenAI()).vectorStores.files.content(f.vectorStoreFileId, { vector_store_id: bot.vectorStoreId })) {
     if (chunk.text) text += (text ? "\n\n" : "") + chunk.text;
     if (text.length > VIEW_MAX_CHARS) return { text: text.slice(0, VIEW_MAX_CHARS), truncated: true };
   }
@@ -292,7 +292,7 @@ export async function getBotFileText(bot: BotDoc, fileId: string): Promise<{ tex
 export async function purgeBotFiles(bot: BotDoc): Promise<void> {
   const col = await filesCollection();
   const files = await col.find({ botId: bot._id, ...notDeleted }).toArray();
-  const openai = getOpenAI();
+  const openai = await getOpenAI();
   await Promise.all(files.map((f) => (f.openaiFileId ? openai.files.delete(f.openaiFileId).catch(() => {}) : null)));
   if (bot.vectorStoreId) await openai.vectorStores.delete(bot.vectorStoreId).catch(() => {});
   await col.updateMany({ botId: bot._id, ...notDeleted }, { $set: { deletedAt: new Date(), enabled: false, status: "disabled" } });

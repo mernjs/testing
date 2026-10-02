@@ -14,13 +14,13 @@ import type { ChatCitation } from "@/lib/chatbot-sessions";
  * `isDemoChat()` returns false and the real RAG pipeline takes over untouched.
  */
 
-export function isDemoChat(): boolean {
-  return !isOpenAIConfigured();
+export async function isDemoChat(): Promise<boolean> {
+  return !(await isOpenAIConfigured());
 }
 
 /** In demo mode, Voice Mode runs entirely on the browser's Web Speech APIs. */
-export function isDemoVoice(): boolean {
-  return isDemoChat() && !isElevenLabsConfigured();
+export async function isDemoVoice(): Promise<boolean> {
+  return (await isDemoChat()) && !(await isElevenLabsConfigured());
 }
 
 export const DEMO_MODEL = "demo";

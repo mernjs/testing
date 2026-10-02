@@ -84,12 +84,12 @@ export default async function ChatbotDashboardPage({
         </div>
       </div>
 
-      {!isOpenAIConfigured() && (
+      {!(await isOpenAIConfigured()) && (
         <GlassCard interactive={false} className="border-primary/40 bg-primary/5">
           <CardContent className="flex items-start gap-3 py-3 text-sm">
             <TriangleAlert className="mt-0.5 size-4 shrink-0 text-primary" />
             <p className="text-muted-foreground">
-              <span className="font-medium text-foreground">OPENAI_API_KEY is not set.</span> The public chatbot
+              <span className="font-medium text-foreground">OpenAI isn&apos;t connected.</span> Add your key in Workspace → Settings → Integrations. The public chatbot
               returns a friendly “unavailable” message until it is configured in the server environment.
             </p>
           </CardContent>

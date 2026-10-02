@@ -24,9 +24,9 @@ export const maxDuration = 60;
 const GENERIC_ERROR = "Sorry — something went wrong generating a response. Please try again.";
 
 export async function POST(req: NextRequest) {
-  const demo = isDemoChat();
+  const demo = await isDemoChat();
 
-  if (!demo && !isOpenAIConfigured()) {
+  if (!demo && !(await isOpenAIConfigured())) {
     return NextResponse.json(
       { error: "The AI assistant is not configured yet. Please try again later." },
       { status: 503 }

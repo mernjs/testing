@@ -77,7 +77,7 @@ function RowActions({ row }: { row: AdminPortalUserRow }) {
           {row.linkedRecordHref && (
             <DropdownMenuItem
               render={
-                <a href={row.linkedRecordHref} target="_blank" rel="noopener noreferrer">
+                <a href={row.linkedRecordHref}>
                   <ExternalLink className="size-3.5" />
                   View linked record
                 </a>

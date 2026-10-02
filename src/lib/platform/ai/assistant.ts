@@ -92,10 +92,10 @@ function textOf(output: OutputItem[]): string {
 export async function askBusiness(user: AccessUser, rawQuestion: unknown): Promise<AssistantReply> {
   const q = sanitizeUserMessage(rawQuestion, MAX_QUESTION_CHARS);
   if (!q.ok) return { ok: false, error: q.error ?? "Type a question first." };
-  if (!isOpenAIConfigured()) return { ok: false, error: "The AI assistant isn't set up for this workspace yet. Ask your platform administrator to add an OpenAI key." };
+  if (!(await isOpenAIConfigured())) return { ok: false, error: "The AI assistant isn't set up for this workspace yet. Ask your platform administrator to add an OpenAI key." };
 
   try {
-    const openai = getOpenAI();
+    const openai = await getOpenAI();
     // The conversation lives only in this array for the length of the request.
     const input: unknown[] = [{ role: "user", content: q.text }];
     for (let round = 0; round <= MAX_TOOL_ROUNDS; round++) {

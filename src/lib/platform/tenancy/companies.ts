@@ -1,4 +1,5 @@
 import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
+import type { BusinessSelection } from "@/lib/platform/business-taxonomy";
 import type { DnsRecord } from "@/lib/platform/domains/types";
 import { RESERVED_SLUGS } from "@/lib/platform/tenancy/slug";
 import { cachedIntegrationsDoc, loadIntegrationsDoc } from "@/lib/platform/integrations/store";
@@ -34,6 +35,8 @@ export interface Company {
   /** Defaults from Platform settings at creation (BCP 47 locale, IANA time zone); onboarding can change the time zone. */
   locale?: string;
   timezone?: string;
+  /** Line of business (ISIC Rev.4 category + sub-category) chosen at registration. */
+  business?: BusinessSelection;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -30,7 +30,7 @@ export async function GET(_req: NextRequest, ctx: { params: Promise<{ id: string
     return Response.json({
       call: await serializeCall(call, user.id),
       roster: await activeRoster(id),
-      iceServers: getIceServers(),
+      iceServers: (await getIceServers()),
     });
   } catch (err) {
     return jsonError(err);
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest, ctx: { params: Promise<{ id: st
           ok: true,
           call: call ? await serializeCall(call, user.id) : null,
           roster: await activeRoster(id),
-          iceServers: getIceServers(),
+          iceServers: (await getIceServers()),
         });
       }
       case "decline":
