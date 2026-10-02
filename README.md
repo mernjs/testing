@@ -452,3 +452,15 @@ npm run db:migrate-cms-content
 npm run db:migrate-cms-content -- --apply
 npm run db:add-products-nav
 npm run db:add-products-nav -- --apply
+
+
+npm run db:migrate-cms-content          # naya product aur uske text keys banata hai
+npm run db:migrate-cms-content -- --apply
+npm run db:add-products-nav             # Products menu me naya item
+npm run db:add-products-nav -- --apply
+npm run db:revert-services-nav          # sirf agar aapne pehle db:update-services-nav live par chalayi thi
+npm run db:revert-services-nav -- --apply
+
+npm run db:migrate-cms-content
+npm run db:add-products-nav
+npm run db:revert-services-nav     # sirf agar aapne pehle db:update-services-nav live par chalayi thi

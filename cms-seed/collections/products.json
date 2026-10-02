@@ -1,4 +1,381 @@
 [
+{
+  "id": "business-automation-saas",
+  "slug": "business-automation-saas",
+  "name": "AI-Powered Business Automation SaaS",
+  "badge": "Automation Layer",
+  "tagline": "The automation layer of the connected suite: when something happens in one product, the right people are told and the right systems are called, automatically.",
+  "category": "Executive & Operations",
+  "panelPath": "/workspace/settings/automations",
+  "iconName": "Workflow",
+  "accentColor": "from-amber-600 to-orange-600",
+  "isFeatured": true,
+  "shortDescription": "Turn events in any product into emails, in-app notifications and signed webhooks with rules you set up yourself, backed by an activity trail, search and an assistant that answers from your own data.",
+  "fullDescription": "Business Automation is the layer that connects the products. A Super Admin picks an event such as a new lead, a paid invoice, a completed task or a leave request, adds optional conditions, and chooses what should happen: an email, an in-app notification to a person or a role, or a signed webhook to your own system. Every run is recorded, so you can see what fired and what each action did.",
+  "primaryPurpose": "Remove routine hand-offs between teams and products by letting events trigger the right follow-up on rules the company controls.",
+  "problemSolved": "Hand-offs between teams that depend on someone remembering to pass a message on, and products that do not talk to each other.",
+  "businessOutcome": "Routine follow-ups happen on their own, and the company can see exactly what ran and what it did.",
+  "targetDepartments": [
+   "Operations",
+   "Sales",
+   "Finance",
+   "HR & People",
+   "IT"
+  ],
+  "targetUsers": [
+   "Super Admins",
+   "Operations leads",
+   "Business owners"
+  ],
+  "aiCapabilities": [
+   "Ask about your business in plain language, answered from your own data with read-only access",
+   "AI Intelligence answers deeper questions with tables and charts",
+   "Automations act on events where you want action rather than answers"
+  ],
+  "keyFeatures": [
+   {
+    "title": "Rules on company events",
+    "description": "Start an automation from events in leads, clients, projects, tasks, invoices, employees and leave."
+   },
+   {
+    "title": "Email, notification or webhook",
+    "description": "Each automation can send an email, notify a person or a whole role, or call a signed webhook."
+   },
+   {
+    "title": "Test and run history",
+    "description": "Send a test with sample values and see every run with the result of each action."
+   }
+  ],
+  "metrics": [
+   {
+    "label": "Triggers",
+    "value": "Company events"
+   },
+   {
+    "label": "Actions",
+    "value": "Email · Notify · Webhook"
+   },
+   {
+    "label": "Every run",
+    "value": "Recorded"
+   }
+  ],
+  "hotspots": [
+   {
+    "id": "h-auto-1",
+    "x": 40,
+    "y": 45,
+    "title": "Rule list",
+    "description": "Each automation shows its trigger, whether it is on, and the result of its last run.",
+    "badge": "Automations"
+   }
+  ],
+  "screens": [
+   {
+    "id": "automation-list",
+    "title": "Automations",
+    "description": "Ready-made templates and your own rules, each with its trigger and last result.",
+    "badge": "Rules",
+    "mockupType": "automation-list"
+   },
+   {
+    "id": "automation-runs",
+    "title": "Run history",
+    "description": "What fired, and what each action did.",
+    "badge": "History",
+    "mockupType": "automation-runs"
+   }
+  ],
+  "shortName": "Business Automation",
+  "valueLine": "Events in any product become emails, notifications and webhooks, on your rules",
+  "pitch": "The automation layer that connects your products: pick an event, add conditions, choose the action, and let the platform do the follow-up, with a record of every run and an AI assistant that answers from your own data.",
+  "overview": "Business Automation is how the products work together instead of side by side. A Super Admin builds rules in the Workspace: choose an event from the products your company uses, narrow it with conditions, and decide what happens next. Actions can send an email, notify a person or everyone with a role, or call a signed webhook so your own systems can react.\n\nStart from a ready-made template or build from scratch, send a test with sample values before turning a rule on, and open the run history to see what fired and what each action did. Around the rules sit the pieces that make a connected company work: one sign-in and role model across every product, search across your records, a notifications bell, an activity trail, CSV import, and an assistant that answers questions from your own data.\n\nA company starts by registering itself, goes through the Workspace set-up, and then manages its plan, trial and billing itself. Each company's data and automations are kept separate from every other company's.",
+  "outcome": "Hand-offs happen without anyone having to remember them, and the company can see what ran, when and with what result.",
+  "facts": [
+   {
+    "label": "Triggers",
+    "value": "Company events"
+   },
+   {
+    "label": "Actions",
+    "value": "Email · Notify · Webhook"
+   },
+   {
+    "label": "Who builds rules",
+    "value": "Super Admins"
+   }
+  ],
+  "features": [
+   {
+    "title": "Automations on company events",
+    "description": "Trigger a rule from a new or changed lead, client, project, task, invoice, employee or leave request.",
+    "icon": "Workflow"
+   },
+   {
+    "title": "Conditions",
+    "description": "Run only when the event matches, for example a lead of a certain type or an invoice above an amount you choose.",
+    "icon": "Filter"
+   },
+   {
+    "title": "Three kinds of action",
+    "description": "Send an email, send an in-app notification to a person or everyone with a role, or call a webhook. One rule can have up to five actions.",
+    "icon": "Zap"
+   },
+   {
+    "title": "Message templates",
+    "description": "Fill subjects and messages with values from the event, such as the customer name or invoice number.",
+    "icon": "FileText"
+   },
+   {
+    "title": "Ready-made templates",
+    "description": "Start from templates such as notifying sales about a new lead or emailing finance when an invoice is paid.",
+    "icon": "Rocket"
+   },
+   {
+    "title": "Send a test",
+    "description": "Try an automation with sample values before it reacts to real events.",
+    "icon": "PlayCircle"
+   },
+   {
+    "title": "Run history",
+    "description": "See each run with its result and the outcome of every action, so a failed email or webhook is never silent.",
+    "icon": "Clock"
+   },
+   {
+    "title": "Signed webhooks",
+    "description": "Each webhook request is signed so your own system can check it came from your workspace. Delivery goes to public https addresses only.",
+    "icon": "ShieldCheck"
+   },
+   {
+    "title": "Activity and audit trail",
+    "description": "One place for who did what and when, across the products.",
+    "icon": "ClipboardCheck"
+   },
+   {
+    "title": "Notifications bell",
+    "description": "Alerts from automations and the products land in one bell.",
+    "icon": "Bell"
+   },
+   {
+    "title": "Search and import",
+    "description": "Find records across products with one search box, and bring existing data in from CSV with a preview first.",
+    "icon": "Search"
+   },
+   {
+    "title": "Self-serve company set-up",
+    "description": "Register your company, follow the Workspace set-up, and manage your plan, trial and billing yourself.",
+    "icon": "Rocket"
+   }
+  ],
+  "aiFeatures": [
+   {
+    "title": "Ask about your business",
+    "description": "Ask a question in plain language. The assistant uses read-only tools to fetch headline figures, search records and read recent activity, with the permissions of the person asking. It cannot change data.",
+    "icon": "Sparkles"
+   },
+   {
+    "title": "AI Intelligence for deeper questions",
+    "description": "Ask questions that span clients, projects, invoices and more, and get a table or chart built from the real results.",
+    "icon": "BrainCircuit"
+   },
+   {
+    "title": "Automations as the hands",
+    "description": "Where you want action rather than an answer, automations turn events into emails, notifications and webhooks on rules you control.",
+    "icon": "Workflow"
+   }
+  ],
+  "benefits": [
+   {
+    "title": "Fewer missed hand-offs",
+    "description": "Sales hears about a new lead and finance hears about a paid invoice without anyone passing it on."
+   },
+   {
+    "title": "One rule set for every product",
+    "description": "Events from CRM, Projects, Finance and HR are handled in one place."
+   },
+   {
+    "title": "Visible and testable",
+    "description": "Test before switching on and review every run afterwards."
+   },
+   {
+    "title": "Connects to your own systems",
+    "description": "Signed webhooks let other tools react to what happens in your company."
+   },
+   {
+    "title": "Safe by design",
+    "description": "Roles decide who sees what, and each company's data is separate from every other company's."
+   }
+  ],
+  "useCases": [
+   {
+    "title": "Tell sales about every new lead",
+    "description": "A notification goes to everyone with the CRM manager role the moment a lead is created.",
+    "icon": "Filter"
+   },
+   {
+    "title": "Let finance know about payment",
+    "description": "An email with the invoice details goes out when an invoice is paid.",
+    "icon": "Wallet"
+   },
+   {
+    "title": "Keep project managers informed",
+    "description": "Project managers are notified when a task is marked done.",
+    "icon": "Kanban"
+   },
+   {
+    "title": "Alert HR to leave requests",
+    "description": "HR gets a notification for every new leave request.",
+    "icon": "Users"
+   },
+   {
+    "title": "Feed your own system",
+    "description": "A webhook sends a signed message to your own tool when an event you care about happens.",
+    "icon": "Plug"
+   }
+  ],
+  "automationWorkflows": [
+   {
+    "title": "New lead to sales team",
+    "description": "A ready-made template.",
+    "steps": [
+     "A visitor submits a form and a lead is created",
+     "The rule matches the new-lead event",
+     "Everyone with the CRM manager role gets a notification",
+     "The run is recorded in the history"
+    ]
+   },
+   {
+    "title": "Paid invoice to finance",
+    "description": "A ready-made template.",
+    "steps": [
+     "A customer pays and the invoice is marked paid",
+     "The paid-invoice event starts the rule",
+     "An email with the customer and invoice number goes to finance",
+     "The result of the email is kept with the run"
+    ]
+   },
+   {
+    "title": "Event to your own system",
+    "description": "Connect any tool that accepts a webhook.",
+    "steps": [
+     "Choose the event, such as a task being completed",
+     "Add conditions if only some events should count",
+     "Add a webhook action with your https address",
+     "Each request is signed so your system can verify it, and the delivery result is recorded"
+    ]
+   }
+  ],
+  "integrations": [
+   {
+    "name": "Workspace",
+    "description": "Automations are built and managed in the Workspace settings.",
+    "href": "/products/staff-hub"
+   },
+   {
+    "name": "CRM & Sales",
+    "description": "Lead events can start automations.",
+    "href": "/products/lms-sales-crm"
+   },
+   {
+    "name": "Projects",
+    "description": "Client, project and task events can start automations.",
+    "href": "/products/pms-project-command"
+   },
+   {
+    "name": "Finance",
+    "description": "Invoice events can start automations.",
+    "href": "/products/fms-finance"
+   },
+   {
+    "name": "HR & Payroll",
+    "description": "Employee and leave events can start automations.",
+    "href": "/products/hrms-suite"
+   },
+   {
+    "name": "AI Intelligence",
+    "description": "Deeper questions across the same company data.",
+    "href": "/products/ai-intelligence"
+   },
+   {
+    "name": "Outbound webhooks",
+    "description": "Signed https webhooks are the integration point for your own systems."
+   }
+  ],
+  "scenarios": [
+   "An operations lead who wants routine hand-offs automated",
+   "A growing company connecting sales, delivery, finance and HR",
+   "A team that wants its own tools to react to events in the platform",
+   "A new company registering and setting itself up without help"
+  ],
+  "faq": [
+   {
+    "q": "How is this different from the Workspace?",
+    "a": "The Workspace is the one sign-in and home for every product. Business Automation is the layer inside it that turns events in those products into actions, together with the activity trail, notifications and assistant that support it."
+   },
+   {
+    "q": "What can an automation do?",
+    "a": "React to company events such as a new lead, a completed task, a paid invoice or a leave request. Rules can have conditions and up to five actions: send an email, send an in-app notification to a person or a role, or call a signed webhook."
+   },
+   {
+    "q": "Who can build automations?",
+    "a": "Super Admins. Everyone else sees the notifications and emails the automations send."
+   },
+   {
+    "q": "Can I try an automation before it goes live?",
+    "a": "Yes. Send a test with sample values, then check the run history to see what each action did."
+   },
+   {
+    "q": "Does the assistant change anything in our data?",
+    "a": "No. It uses read-only tools and runs with the permissions of the person asking."
+   },
+   {
+    "q": "Is our data kept separate from other companies?",
+    "a": "Yes. Every company has its own workspace, and all reads and writes are limited to that company, including its automations and run history."
+   }
+  ],
+  "audience": "Super Admins, operations leads and business owners who want the products to work together. Everyone in the company benefits from the notifications and emails the rules send.",
+  "problemIntro": "When products work side by side, the connections between them are people. Someone has to notice the new lead, remember the paid invoice and tell the right team, and when they forget, work stalls.",
+  "problems": [
+   {
+    "title": "Hand-offs that rely on memory",
+    "description": "Telling sales about a new enquiry or finance about a payment depends on someone passing it on."
+   },
+   {
+    "title": "Products that do not talk to each other",
+    "description": "An event in one tool means nothing to the next without manual re-entry."
+   },
+   {
+    "title": "No record of what happened",
+    "description": "When a follow-up was missed, nobody can say what was sent or what failed."
+   },
+   {
+    "title": "Your own tools left out",
+    "description": "Systems outside the platform have no clean way to hear about events inside it."
+   },
+   {
+    "title": "Setup that needs a project",
+    "description": "Getting a business onto software takes outside help, forms and waiting."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "A new lead waits until someone tells the sales team.",
+    "after": "An automation notifies everyone with the CRM manager role as the lead is created."
+   },
+   {
+    "before": "Finance finds out about a payment when someone remembers to mention it.",
+    "after": "An email with the invoice details goes out when the invoice is paid."
+   },
+   {
+    "before": "Nobody can tell whether a follow-up was sent.",
+    "after": "The run history shows each run and the result of every action."
+   },
+   {
+    "before": "Your own systems learn about events by hand or not at all.",
+    "after": "A signed webhook tells them as it happens."
+   }
+  ]
+ },
  {
   "id": "admin-command-center",
   "slug": "admin-command-center",
@@ -9,7 +386,7 @@
   "panelPath": "/admin",
   "iconName": "ShieldCheck",
   "accentColor": "from-blue-600 to-indigo-600",
-  "isFeatured": true,
+  "isFeatured": false,
   "shortDescription": "Central executive dashboard aggregating live operational metrics, revenue streams, single sign-on security, and role governance across all 15 platform modules.",
   "fullDescription": "The Executive Command Center serves as the nerve center for leadership. Instead of logging into separate SaaS applications, executives gain instant, single-pane-of-glass visibility into company-wide revenue, active client projects, HR headcount, procurement spend, and OpenAI API token consumption—all updated in real time with zero manual reconciliation.",
   "primaryPurpose": "Unify cross-module enterprise operations, automate identity & access control, and provide real-time executive decision intelligence.",
@@ -5896,383 +6273,6 @@
    {
     "before": "Form enquiries are copied into the sales system.",
     "after": "Forms you control feed the CRM."
-   }
-  ]
- },
- {
-  "id": "business-automation-saas",
-  "slug": "business-automation-saas",
-  "name": "AI-Powered Business Automation SaaS",
-  "badge": "Automation Layer",
-  "tagline": "The automation layer of the connected suite: when something happens in one product, the right people are told and the right systems are called, automatically.",
-  "category": "Executive & Operations",
-  "panelPath": "/workspace/settings/automations",
-  "iconName": "Workflow",
-  "accentColor": "from-amber-600 to-orange-600",
-  "isFeatured": false,
-  "shortDescription": "Turn events in any product into emails, in-app notifications and signed webhooks with rules you set up yourself, backed by an activity trail, search and an assistant that answers from your own data.",
-  "fullDescription": "Business Automation is the layer that connects the products. A Super Admin picks an event such as a new lead, a paid invoice, a completed task or a leave request, adds optional conditions, and chooses what should happen: an email, an in-app notification to a person or a role, or a signed webhook to your own system. Every run is recorded, so you can see what fired and what each action did.",
-  "primaryPurpose": "Remove routine hand-offs between teams and products by letting events trigger the right follow-up on rules the company controls.",
-  "problemSolved": "Hand-offs between teams that depend on someone remembering to pass a message on, and products that do not talk to each other.",
-  "businessOutcome": "Routine follow-ups happen on their own, and the company can see exactly what ran and what it did.",
-  "targetDepartments": [
-   "Operations",
-   "Sales",
-   "Finance",
-   "HR & People",
-   "IT"
-  ],
-  "targetUsers": [
-   "Super Admins",
-   "Operations leads",
-   "Business owners"
-  ],
-  "aiCapabilities": [
-   "Ask about your business in plain language, answered from your own data with read-only access",
-   "AI Intelligence answers deeper questions with tables and charts",
-   "Automations act on events where you want action rather than answers"
-  ],
-  "keyFeatures": [
-   {
-    "title": "Rules on company events",
-    "description": "Start an automation from events in leads, clients, projects, tasks, invoices, employees and leave."
-   },
-   {
-    "title": "Email, notification or webhook",
-    "description": "Each automation can send an email, notify a person or a whole role, or call a signed webhook."
-   },
-   {
-    "title": "Test and run history",
-    "description": "Send a test with sample values and see every run with the result of each action."
-   }
-  ],
-  "metrics": [
-   {
-    "label": "Triggers",
-    "value": "Company events"
-   },
-   {
-    "label": "Actions",
-    "value": "Email · Notify · Webhook"
-   },
-   {
-    "label": "Every run",
-    "value": "Recorded"
-   }
-  ],
-  "hotspots": [
-   {
-    "id": "h-auto-1",
-    "x": 40,
-    "y": 45,
-    "title": "Rule list",
-    "description": "Each automation shows its trigger, whether it is on, and the result of its last run.",
-    "badge": "Automations"
-   }
-  ],
-  "screens": [
-   {
-    "id": "automation-list",
-    "title": "Automations",
-    "description": "Ready-made templates and your own rules, each with its trigger and last result.",
-    "badge": "Rules",
-    "mockupType": "automation-list"
-   },
-   {
-    "id": "automation-runs",
-    "title": "Run history",
-    "description": "What fired, and what each action did.",
-    "badge": "History",
-    "mockupType": "automation-runs"
-   }
-  ],
-  "shortName": "Business Automation",
-  "valueLine": "Events in any product become emails, notifications and webhooks, on your rules",
-  "pitch": "The automation layer that connects your products: pick an event, add conditions, choose the action, and let the platform do the follow-up, with a record of every run and an AI assistant that answers from your own data.",
-  "overview": "Business Automation is how the products work together instead of side by side. A Super Admin builds rules in the Workspace: choose an event from the products your company uses, narrow it with conditions, and decide what happens next. Actions can send an email, notify a person or everyone with a role, or call a signed webhook so your own systems can react.\n\nStart from a ready-made template or build from scratch, send a test with sample values before turning a rule on, and open the run history to see what fired and what each action did. Around the rules sit the pieces that make a connected company work: one sign-in and role model across every product, search across your records, a notifications bell, an activity trail, CSV import, and an assistant that answers questions from your own data.\n\nA company starts by registering itself, goes through the Workspace set-up, and then manages its plan, trial and billing itself. Each company's data and automations are kept separate from every other company's.",
-  "outcome": "Hand-offs happen without anyone having to remember them, and the company can see what ran, when and with what result.",
-  "facts": [
-   {
-    "label": "Triggers",
-    "value": "Company events"
-   },
-   {
-    "label": "Actions",
-    "value": "Email · Notify · Webhook"
-   },
-   {
-    "label": "Who builds rules",
-    "value": "Super Admins"
-   }
-  ],
-  "features": [
-   {
-    "title": "Automations on company events",
-    "description": "Trigger a rule from a new or changed lead, client, project, task, invoice, employee or leave request.",
-    "icon": "Workflow"
-   },
-   {
-    "title": "Conditions",
-    "description": "Run only when the event matches, for example a lead of a certain type or an invoice above an amount you choose.",
-    "icon": "Filter"
-   },
-   {
-    "title": "Three kinds of action",
-    "description": "Send an email, send an in-app notification to a person or everyone with a role, or call a webhook. One rule can have up to five actions.",
-    "icon": "Zap"
-   },
-   {
-    "title": "Message templates",
-    "description": "Fill subjects and messages with values from the event, such as the customer name or invoice number.",
-    "icon": "FileText"
-   },
-   {
-    "title": "Ready-made templates",
-    "description": "Start from templates such as notifying sales about a new lead or emailing finance when an invoice is paid.",
-    "icon": "Rocket"
-   },
-   {
-    "title": "Send a test",
-    "description": "Try an automation with sample values before it reacts to real events.",
-    "icon": "PlayCircle"
-   },
-   {
-    "title": "Run history",
-    "description": "See each run with its result and the outcome of every action, so a failed email or webhook is never silent.",
-    "icon": "Clock"
-   },
-   {
-    "title": "Signed webhooks",
-    "description": "Each webhook request is signed so your own system can check it came from your workspace. Delivery goes to public https addresses only.",
-    "icon": "ShieldCheck"
-   },
-   {
-    "title": "Activity and audit trail",
-    "description": "One place for who did what and when, across the products.",
-    "icon": "ClipboardCheck"
-   },
-   {
-    "title": "Notifications bell",
-    "description": "Alerts from automations and the products land in one bell.",
-    "icon": "Bell"
-   },
-   {
-    "title": "Search and import",
-    "description": "Find records across products with one search box, and bring existing data in from CSV with a preview first.",
-    "icon": "Search"
-   },
-   {
-    "title": "Self-serve company set-up",
-    "description": "Register your company, follow the Workspace set-up, and manage your plan, trial and billing yourself.",
-    "icon": "Rocket"
-   }
-  ],
-  "aiFeatures": [
-   {
-    "title": "Ask about your business",
-    "description": "Ask a question in plain language. The assistant uses read-only tools to fetch headline figures, search records and read recent activity, with the permissions of the person asking. It cannot change data.",
-    "icon": "Sparkles"
-   },
-   {
-    "title": "AI Intelligence for deeper questions",
-    "description": "Ask questions that span clients, projects, invoices and more, and get a table or chart built from the real results.",
-    "icon": "BrainCircuit"
-   },
-   {
-    "title": "Automations as the hands",
-    "description": "Where you want action rather than an answer, automations turn events into emails, notifications and webhooks on rules you control.",
-    "icon": "Workflow"
-   }
-  ],
-  "benefits": [
-   {
-    "title": "Fewer missed hand-offs",
-    "description": "Sales hears about a new lead and finance hears about a paid invoice without anyone passing it on."
-   },
-   {
-    "title": "One rule set for every product",
-    "description": "Events from CRM, Projects, Finance and HR are handled in one place."
-   },
-   {
-    "title": "Visible and testable",
-    "description": "Test before switching on and review every run afterwards."
-   },
-   {
-    "title": "Connects to your own systems",
-    "description": "Signed webhooks let other tools react to what happens in your company."
-   },
-   {
-    "title": "Safe by design",
-    "description": "Roles decide who sees what, and each company's data is separate from every other company's."
-   }
-  ],
-  "useCases": [
-   {
-    "title": "Tell sales about every new lead",
-    "description": "A notification goes to everyone with the CRM manager role the moment a lead is created.",
-    "icon": "Filter"
-   },
-   {
-    "title": "Let finance know about payment",
-    "description": "An email with the invoice details goes out when an invoice is paid.",
-    "icon": "Wallet"
-   },
-   {
-    "title": "Keep project managers informed",
-    "description": "Project managers are notified when a task is marked done.",
-    "icon": "Kanban"
-   },
-   {
-    "title": "Alert HR to leave requests",
-    "description": "HR gets a notification for every new leave request.",
-    "icon": "Users"
-   },
-   {
-    "title": "Feed your own system",
-    "description": "A webhook sends a signed message to your own tool when an event you care about happens.",
-    "icon": "Plug"
-   }
-  ],
-  "automationWorkflows": [
-   {
-    "title": "New lead to sales team",
-    "description": "A ready-made template.",
-    "steps": [
-     "A visitor submits a form and a lead is created",
-     "The rule matches the new-lead event",
-     "Everyone with the CRM manager role gets a notification",
-     "The run is recorded in the history"
-    ]
-   },
-   {
-    "title": "Paid invoice to finance",
-    "description": "A ready-made template.",
-    "steps": [
-     "A customer pays and the invoice is marked paid",
-     "The paid-invoice event starts the rule",
-     "An email with the customer and invoice number goes to finance",
-     "The result of the email is kept with the run"
-    ]
-   },
-   {
-    "title": "Event to your own system",
-    "description": "Connect any tool that accepts a webhook.",
-    "steps": [
-     "Choose the event, such as a task being completed",
-     "Add conditions if only some events should count",
-     "Add a webhook action with your https address",
-     "Each request is signed so your system can verify it, and the delivery result is recorded"
-    ]
-   }
-  ],
-  "integrations": [
-   {
-    "name": "Workspace",
-    "description": "Automations are built and managed in the Workspace settings.",
-    "href": "/products/staff-hub"
-   },
-   {
-    "name": "CRM & Sales",
-    "description": "Lead events can start automations.",
-    "href": "/products/lms-sales-crm"
-   },
-   {
-    "name": "Projects",
-    "description": "Client, project and task events can start automations.",
-    "href": "/products/pms-project-command"
-   },
-   {
-    "name": "Finance",
-    "description": "Invoice events can start automations.",
-    "href": "/products/fms-finance"
-   },
-   {
-    "name": "HR & Payroll",
-    "description": "Employee and leave events can start automations.",
-    "href": "/products/hrms-suite"
-   },
-   {
-    "name": "AI Intelligence",
-    "description": "Deeper questions across the same company data.",
-    "href": "/products/ai-intelligence"
-   },
-   {
-    "name": "Outbound webhooks",
-    "description": "Signed https webhooks are the integration point for your own systems."
-   }
-  ],
-  "scenarios": [
-   "An operations lead who wants routine hand-offs automated",
-   "A growing company connecting sales, delivery, finance and HR",
-   "A team that wants its own tools to react to events in the platform",
-   "A new company registering and setting itself up without help"
-  ],
-  "faq": [
-   {
-    "q": "How is this different from the Workspace?",
-    "a": "The Workspace is the one sign-in and home for every product. Business Automation is the layer inside it that turns events in those products into actions, together with the activity trail, notifications and assistant that support it."
-   },
-   {
-    "q": "What can an automation do?",
-    "a": "React to company events such as a new lead, a completed task, a paid invoice or a leave request. Rules can have conditions and up to five actions: send an email, send an in-app notification to a person or a role, or call a signed webhook."
-   },
-   {
-    "q": "Who can build automations?",
-    "a": "Super Admins. Everyone else sees the notifications and emails the automations send."
-   },
-   {
-    "q": "Can I try an automation before it goes live?",
-    "a": "Yes. Send a test with sample values, then check the run history to see what each action did."
-   },
-   {
-    "q": "Does the assistant change anything in our data?",
-    "a": "No. It uses read-only tools and runs with the permissions of the person asking."
-   },
-   {
-    "q": "Is our data kept separate from other companies?",
-    "a": "Yes. Every company has its own workspace, and all reads and writes are limited to that company, including its automations and run history."
-   }
-  ],
-  "audience": "Super Admins, operations leads and business owners who want the products to work together. Everyone in the company benefits from the notifications and emails the rules send.",
-  "problemIntro": "When products work side by side, the connections between them are people. Someone has to notice the new lead, remember the paid invoice and tell the right team, and when they forget, work stalls.",
-  "problems": [
-   {
-    "title": "Hand-offs that rely on memory",
-    "description": "Telling sales about a new enquiry or finance about a payment depends on someone passing it on."
-   },
-   {
-    "title": "Products that do not talk to each other",
-    "description": "An event in one tool means nothing to the next without manual re-entry."
-   },
-   {
-    "title": "No record of what happened",
-    "description": "When a follow-up was missed, nobody can say what was sent or what failed."
-   },
-   {
-    "title": "Your own tools left out",
-    "description": "Systems outside the platform have no clean way to hear about events inside it."
-   },
-   {
-    "title": "Setup that needs a project",
-    "description": "Getting a business onto software takes outside help, forms and waiting."
-   }
-  ],
-  "beforeAfter": [
-   {
-    "before": "A new lead waits until someone tells the sales team.",
-    "after": "An automation notifies everyone with the CRM manager role as the lead is created."
-   },
-   {
-    "before": "Finance finds out about a payment when someone remembers to mention it.",
-    "after": "An email with the invoice details goes out when the invoice is paid."
-   },
-   {
-    "before": "Nobody can tell whether a follow-up was sent.",
-    "after": "The run history shows each run and the result of every action."
-   },
-   {
-    "before": "Your own systems learn about events by hand or not at all.",
-    "after": "A signed webhook tells them as it happens."
    }
   ]
  }
