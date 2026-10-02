@@ -117,10 +117,11 @@ try {
     await page.waitForSelector("[data-products-grid] a");
     const links = await page.$$eval('[data-products-grid] a[href^="/products/"]', (as) => as.map((a) => a.getAttribute("href")));
     slugs = [...new Set(links.map((h) => h.replace("/products/", "")))];
-    assert.ok(slugs.length >= 19, `expected the full catalogue, found ${slugs.length}`);
+    assert.equal(slugs.length, 20, `expected the 20-product catalogue, found ${slugs.length}`);
+    assert.ok(slugs.includes("business-automation-saas"), "Business Automation SaaS missing");
     assert.equal(links.length, slugs.length, "one card per product");
     assert.ok(slugs.includes("ai-intelligence"), "AI Intelligence missing");
-    for (const must of ["hrms-suite", "fms-finance", "sop-policies", "cms-website", "staff-hub"]) assert.ok(slugs.includes(must), `${must} missing`);
+    for (const must of ["hrms-suite", "fms-finance", "sop-policies", "cms-website", "staff-hub", "business-automation-saas"]) assert.ok(slugs.includes(must), `${must} missing`);
     // featured card: exact title, before the grid, wider than one grid column
     const featured = page.locator("[data-products-featured]");
     assert.equal((await featured.getByRole("heading", { level: 2 }).innerText()).trim(), FEATURED_TITLE);
@@ -131,8 +132,11 @@ try {
     assert.ok(fBox.width > cardBox.width * 1.8, `featured card (${fBox.width}) should be much wider than a product card (${cardBox.width})`);
     const cta = featured.getByRole("link", { name: "Start Automating Your Business" });
     assert.equal(await cta.getAttribute("href"), "/signup");
-    assert.equal(await featured.getByRole("link", { name: "Explore the Platform" }).getAttribute("href"), "/products/staff-hub");
-    assert.ok((await featured.locator("span", { hasText: /Workflow automation|AI Intelligence|AI Assistants/ }).count()) >= 3, "capability chips");
+    assert.equal(await featured.getByRole("link", { name: "Explore the Platform" }).getAttribute("href"), "/services/our-saas-product");
+    assert.ok((await featured.locator("span", { hasText: /Every product in one workspace|Workflow automation across all of them|AI that answers from your own data|One sign-in, one set of roles/ }).count()) >= 3, "capability chips");
+    assert.equal((await page.request.get(`${OWNER}/services/our-saas-product`)).status(), 200, "the card's destination exists");
+    // the filter chip counts every product
+    assert.ok(await page.getByRole("button", { name: /^All products\s*20$/ }).count(), "All products chip shows 20");
     // every card shows its call to action; the pills narrow the grid and "All products" restores it
     assert.equal(await page.locator('[data-products-grid] a[aria-label$="Explore Product"]').count(), slugs.length);
     await page.getByRole("button", { name: /^AI & Intelligence/ }).click();
@@ -171,11 +175,12 @@ try {
     for (const layer of ["panel", "ring", "accentBar", "grid", "featured", "featuredLink", "featuredImage", "item", "itemIcon", "itemText"]) assert.equal(normalise(products[layer]), normalise(services[layer]), `layer "${layer}" differs from the Services dropdown`);
     // the item list differs only by the scroll guard a long list needs
     assert.equal(normalise(products.list), normalise(services.list));
-    assert.ok(products.itemCount >= 19, `menu lists ${products.itemCount} products`);
+    assert.ok(products.itemCount >= 20, `menu lists ${products.itemCount} products`);
     assert.ok(!/grid-cols-3/.test(products.list), "no custom 3-column layout");
     // contents: AI Intelligence, the featured card, the signup call to action, View all
     const panel = page.locator(PANEL).first();
     assert.equal(await panel.getByRole("link", { name: /AI Intelligence/ }).first().getAttribute("href"), "/products/ai-intelligence");
+    assert.ok(await panel.locator('a[href="/products/business-automation-saas"]').count(), "the dropdown lists the new product");
     assert.ok(await panel.getByText(FEATURED_TITLE).isVisible());
     assert.equal(await panel.getByRole("link", { name: "Start Automating Your Business" }).getAttribute("href"), "/signup");
     assert.equal(await panel.getByRole("link", { name: /View all Products/i }).getAttribute("href"), "/products");
@@ -232,7 +237,7 @@ try {
     await d.locator('button[aria-label="Switch to dark mode"]:visible').first().click();
     await d.waitForFunction(() => document.documentElement.classList.contains("dark"));
     const sig = await dropdownSignature(d, "Products");
-    assert.ok(sig.itemCount >= 19);
+    assert.ok(sig.itemCount >= 20);
     const panel = d.locator(PANEL).first();
     assert.ok(await panel.getByRole("link", { name: "Start Automating Your Business" }).isVisible());
     const bg = await panel.locator("div.relative.overflow-hidden").first().evaluate((el) => getComputedStyle(el).backgroundColor);
@@ -255,7 +260,7 @@ try {
     const prod = await itemClass("Products", "AI Intelligence");
     assert.equal(prod.cls.replace(/border-primary bg-primary\/5 font-semibold text-primary|border-transparent text-muted-foreground hover:bg-muted\/50 hover:text-primary/, ""), svc.cls.replace(/border-primary bg-primary\/5 font-semibold text-primary|border-transparent text-muted-foreground hover:bg-muted\/50 hover:text-primary/, ""), "mobile item markup differs");
     assert.equal(prod.expanded, "true");
-    assert.equal(await m.locator('a[href^="/products/"]').count() >= 19, true);
+    assert.equal(await m.locator('a[href^="/products/"]').count() >= 20, true);
     assert.equal(await m.getByText(/^(Executive & Operations|Assessment & Security)$/).count(), 0, "no category headings in the mobile menu");
     assert.equal(await m.getByRole("link", { name: /View All Products/i }).first().getAttribute("href"), "/products");
     await m.close();
@@ -363,6 +368,7 @@ try {
     const list = lds.find((j) => j["@type"] === "ItemList");
     assert.ok(list, "ItemList missing");
     assert.equal(list.itemListElement.length, slugs.length);
+    assert.equal(list.itemListElement.length, 20);
     assert.ok(lds.some((j) => j["@type"] === "BreadcrumbList"));
   });
 
@@ -373,6 +379,22 @@ try {
     assert.ok(locs.includes("/products"));
     const missing = slugs.filter((s) => !locs.includes(`/products/${s}`));
     assert.deepEqual(missing, []);
+    assert.ok(locs.includes("/products/business-automation-saas"));
+  });
+
+  await check("/products/business-automation-saas: the Business Automation page opens with its sections, automations content and Start Using into the automations settings", async () => {
+    const p = await newPage();
+    try {
+      const res = await p.goto(`${OWNER}/products/business-automation-saas`, { waitUntil: "domcontentloaded" });
+      assert.equal(res.status(), 200);
+      assert.match((await p.locator("h1").innerText()).trim(), /Business Automation/);
+      for (const id of ["problem", "compare", "features", "ai", "automation", "integrations", "faqs"]) assert.ok(await p.locator(`#${id}`).count(), `#${id} missing`);
+      assert.ok(await p.locator("#automation").getByText("New lead to sales team").count(), "workflow shown");
+      assert.equal(await p.locator("section").first().getByRole("link", { name: "Start Using" }).getAttribute("href"), `/workspace/login?next=${encodeURIComponent("/workspace/settings/automations")}`);
+      assert.ok(await p.locator('#integrations a[href="/products/staff-hub"]').count(), "links to the Workspace");
+    } finally {
+      await p.close();
+    }
   });
 
   await check("an unknown product slug is a 404", async () => {

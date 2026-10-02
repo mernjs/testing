@@ -58,7 +58,8 @@ const ORIGINAL_IDS = [
   "admin-command-center", "staff-hub", "hrms-suite", "pms-project-command", "prms-procurement", "tms-academy", "messenger-yashchat",
   "lms-sales-crm", "external-portal", "seo-panel", "dlms-digilocker", "aibots-studio", "smms-social-engine", "ots-exam-engine", "web-portal",
 ];
-const ADDED_IDS = ["fms-finance", "ai-intelligence", "sop-policies", "cms-website"];
+const ADDED_IDS = ["fms-finance", "ai-intelligence", "sop-policies", "cms-website", "business-automation-saas"];
+const PRODUCT_COUNT = 20;
 
 const now = new Date();
 const company = (id: string, slug: string, isPlatformOwner = false): Company => ({ _id: id, slug, name: slug, status: "active", isPlatformOwner, createdAt: now, updatedAt: now });
@@ -156,6 +157,7 @@ async function main() {
     assert.deepEqual(slugs.slice(0, ORIGINAL_IDS.length), ORIGINAL_IDS, "original order changed");
     for (const id of ADDED_IDS) assert.ok(slugs.includes(id), `${id} missing`);
     assert.equal(seed.length, ORIGINAL_IDS.length + ADDED_IDS.length);
+    assert.equal(seed.length, PRODUCT_COUNT);
   });
   await check("original records' existing fields are untouched by the content pass", () => {
     // the pre-existing fields keep their original wording (flagged claims are reported, not silently rewritten)
@@ -188,6 +190,45 @@ async function main() {
       assert.ok(p.beforeAfter!.length >= 3 && p.beforeAfter!.length <= 4, `${where}: beforeAfter (${p.beforeAfter?.length})`);
       for (const ba of p.beforeAfter!) assert.ok(ba.before.length > 15 && ba.after.length > 15, `${where}: beforeAfter pair`);
     }
+  });
+  await check("the Business Automation SaaS record: distinct from the Workspace, panel is the automations page, every claim guarded", () => {
+    const p = seed.find((x) => x.slug === "business-automation-saas")!;
+    assert.ok(p);
+    assert.equal(p.name, "AI-Powered Business Automation SaaS");
+    assert.equal(p.shortName, "Business Automation");
+    assert.equal(p.category, "Executive & Operations");
+    assert.equal(p.panelPath, "/workspace/settings/automations");
+    assert.equal(startUsingHref(p.panelPath), "/workspace/login?next=%2Fworkspace%2Fsettings%2Fautomations");
+    assert.ok(p.iconName && CMS_ICON_KEYS.includes(p.iconName));
+    assert.ok(p.keyFeatures.length >= 3 && p.metrics.length >= 1 && p.screens.length >= 1 && p.hotspots.length >= 1);
+    const navSeed = JSON.parse(fs.readFileSync(path.join(ROOT, "cms-seed/navigation.json"), "utf8")) as { name: string; items: { href: string; group: string; iconKey: string }[] }[];
+    const entry = navSeed.find((t) => t.name === "Products")!.items.find((i) => i.href === "/products/business-automation-saas");
+    assert.ok(entry && entry.group === "Executive & Operations" && CMS_ICON_KEYS.includes(entry.iconKey), "seed navigation lists it");
+    assert.ok(seedProductsNav().items.some((i) => i.href === "/products/business-automation-saas"), "the nav script adds it");
+    const hub = seed.find((x) => x.slug === "staff-hub")!;
+    assert.notEqual(p.valueLine, hub.valueLine);
+    assert.notEqual(p.pitch, hub.pitch);
+    assert.deepEqual(p.problems!.length >= 4 && p.problems!.length <= 6, true);
+    for (const href of ["staff-hub", "lms-sales-crm", "pms-project-command", "fms-finance", "hrms-suite"]) assert.ok(p.integrations!.some((i) => i.href === `/products/${href}`), href);
+    const banned: [RegExp, string][] = [
+      [/\d\s?%/, "percentage"], [/[₹$€£]|\b(rs\.?|inr|usd|eur)\b/i, "currency"], [/\bSLA\b|uptime|24\/7|\bpercent\b/i, "SLA/uptime"],
+      [/certified|certification|\bISO\b|\bSOC\b|GDPR|HIPAA|\bawards?\b|guarantee|trusted by/i, "certification/award/promise"],
+      [/\b(Razorpay\w*|OpenAI|Google|Meta|Instagram|Facebook|LinkedIn|YouTube|WhatsApp|Excel|Outlook|Gmail|Jira|Trello|Asana|Notion|Zoom|PayPal|Slack|Zoho|Zapier|Salesforce|HubSpot|Tally|QuickBooks|Stripe)\b/, "named third-party tool"],
+      [/\b[a-z]{2,}\.[a-z]{2,}(\.[a-z_]+)*\b/, "dotted identifier"], [/collection|maxTimeMS|_id\b|\bwebhook_|[a-z][A-Z][a-z]/, "internal identifier"],
+      [/\b\d+\s?(x|times|hours?|days?|minutes?|weeks?|seconds?|months?)\b/i, "timing/multiplier"], [/\b\d{2,}\b/, "number"],
+    ];
+    // only the words people read (values), not field names or technical fields
+    const strings: string[] = [];
+    const walk = (v: unknown, key = "") => {
+      if (typeof v === "string") { if (!["icon", "iconName", "panelPath", "href", "id", "slug", "accentColor", "mockupType", "category"].includes(key)) strings.push(v); }
+      else if (Array.isArray(v)) v.forEach((x) => walk(x, key));
+      else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) walk(x, k);
+    };
+    walk(p);
+    const t = strings.join("\n");
+    const hits: string[] = [];
+    for (const [re, why] of banned) { const m = re.exec(t); if (m) hits.push(`${why} ("${m[0]}")`); }
+    assert.equal(hits.join("; "), "");
   });
   await check("round-2 text (problems, comparison, intro) makes no unverifiable claim and shows no internal identifier", () => {
     const banned: [RegExp, string][] = [
@@ -276,7 +317,7 @@ async function main() {
     assert.equal(hits.join("; "), "");
   });
   await check("AI claims only exist where an AI feature does: products with no AI of their own say so", () => {
-    const real = new Set(["staff-hub", "ai-intelligence", "aibots-studio", "smms-social-engine", "lms-sales-crm", "web-portal", "cms-website", "admin-command-center", "hrms-suite", "pms-project-command", "fms-finance", "prms-procurement"]);
+    const real = new Set(["staff-hub", "ai-intelligence", "aibots-studio", "smms-social-engine", "lms-sales-crm", "web-portal", "cms-website", "admin-command-center", "hrms-suite", "pms-project-command", "fms-finance", "prms-procurement", "business-automation-saas"]);
     for (const p of seed) {
       if (real.has(p.slug)) continue;
       assert.ok(p.aiFeatures!.every((a) => /no ai of its own/i.test(a.title)), `${p.slug} claims AI`);
@@ -284,7 +325,7 @@ async function main() {
   });
 
   await check("hasOwnAi is true exactly for the products that have AI of their own (the AI badge and the suite list use it)", () => {
-    const real = new Set(["staff-hub", "ai-intelligence", "aibots-studio", "smms-social-engine", "lms-sales-crm", "web-portal", "cms-website", "admin-command-center", "hrms-suite", "pms-project-command", "fms-finance", "prms-procurement"]);
+    const real = new Set(["staff-hub", "ai-intelligence", "aibots-studio", "smms-social-engine", "lms-sales-crm", "web-portal", "cms-website", "admin-command-center", "hrms-suite", "pms-project-command", "fms-finance", "prms-procurement", "business-automation-saas"]);
     for (const p of seed) assert.equal(hasOwnAi(p), real.has(p.slug), p.slug);
     assert.equal(hasOwnAi({ aiFeatures: undefined }), false);
     assert.equal(hasOwnAi({ aiFeatures: [{ title: "No AI of its own", description: "x" }] }), false);
@@ -371,12 +412,20 @@ async function main() {
     assert.equal(t["products.menu.cta"], "Start Automating Your Business");
     assert.equal(SIGNUP_PATH, "/signup");
     assert.deepEqual(ctaTarget("get-started", null), { href: "/signup", kind: "get-started" });
-    for (const k of ["chip1", "chip2", "chip3", "chip4"]) assert.ok(t[`products.featured.${k}`], k);
+    for (const k of ["point1", "point2", "point3", "point4"]) assert.ok(t[`products.featured.${k}`], k);
+    // the card's destination is an editable text key (code default and CMS seed agree), and the signup CTA stays /signup
+    assert.equal(t["products.featured.href"], "/services/our-saas-product");
+    const siteSeed = (JSON.parse(fs.readFileSync(path.join(ROOT, "cms-seed/site-info.json"), "utf8")) as { text: Record<string, string> }).text;
+    for (const k of ["href", "pitch", "point1", "point2", "point3", "point4", "title"]) assert.equal(siteSeed[`products.featured.${k}`], t[`products.featured.${k}`], `seed ${k}`);
+    assert.equal(resolveProductsText({ "products.featured.href": "/elsewhere" })["products.featured.href"], "/elsewhere");
+    assert.ok(fs.existsSync(path.join(ROOT, "src/app/(site)/services/[slug]/page.tsx")) || fs.existsSync(path.join(ROOT, "src/app/(site)/services")), "services route");
+    const grid = fs.readFileSync(path.join(ROOT, "src/components/products/page/ProductsGrid.tsx"), "utf8");
+    assert.ok(grid.includes('text["products.featured.href"]') && !grid.includes("staff-hub"), "the card reads its destination from the text key");
     assert.equal(PRODUCTS_NAV_FEATURED.title, t["products.featured.title"]);
     assert.notEqual(PRODUCTS_NAV_FEATURED.title, PRODUCTS_NAV_FEATURED_PREVIOUS.title);
     // the featured pitch only mentions things the platform has
-    for (const w of ["sign-in", "roles", "automation", "AI"]) assert.ok(t["products.featured.description"].includes(w), w);
-    assert.ok(!/\d\s?%|guarantee|certified/i.test(t["products.featured.description"]));
+    for (const w of ["sign-in", "roles", "automation", "AI", "workspace"]) assert.ok(t["products.featured.pitch"].includes(w), w);
+    assert.ok(!/\d\s?%|guarantee|certified/i.test(t["products.featured.pitch"]));
   });
   await check("hero images: allowed remote host, AI visual for the AI category, editable through text keys", () => {
     const t = resolveProductsText({});
@@ -637,7 +686,12 @@ async function main() {
     const nav = JSON.parse(fs.readFileSync(path.join(ROOT, "cms-seed/navigation.json"), "utf8")) as { name: string; href: string; items: { href: string; group?: string }[] }[];
     const names = nav.map((t) => t.name);
     assert.equal(names.indexOf("Products"), names.indexOf("Services") + 1);
-    assert.deepEqual(nav.find((t) => t.name === "Products"), JSON.parse(JSON.stringify(seedProductsNav())));
+    // The stored menu was trimmed by hand on purpose: every seed entry must still equal the catalogue's own entry for that product (and the new product must be in it).
+    const planned = JSON.parse(JSON.stringify(seedProductsNav())) as ReturnType<typeof seedProductsNav>;
+    const seeded = nav.find((t) => t.name === "Products") as unknown as ReturnType<typeof seedProductsNav>;
+    assert.deepEqual({ ...seeded, items: [] }, { ...planned, items: [] });
+    for (const it of seeded.items) assert.deepEqual(it, planned.items.find((x) => x.href === it.href), it.href);
+    assert.ok(seeded.items.some((i) => i.href === "/products/business-automation-saas"));
     const footer = JSON.parse(fs.readFileSync(path.join(ROOT, "cms-seed/footer.json"), "utf8")) as { viewAllHref?: string; links: { href: string }[] }[];
     assert.equal(footer.find((c) => c.viewAllHref === "/services")!.links[0].href, PRODUCTS_FOOTER_LINK.href);
   });
