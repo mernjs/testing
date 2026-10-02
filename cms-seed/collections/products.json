@@ -280,7 +280,52 @@
     "a": "No. During setup you choose which products your company uses, and your plan decides what is unlocked. You can start with the products you need today and switch on more as you grow."
    }
   ],
-  "audience": "Owners, CEOs, heads of operations and IT or security administrators who need one place to see the business and manage access."
+  "audience": "Owners, CEOs, heads of operations and IT or security administrators who need one place to see the business and manage access.",
+  "problemIntro": "As a company adds people, tools and clients, owners lose sight of the whole picture. Figures live in separate systems, access is granted case by case, and nobody can say with confidence who can open what or who changed it.",
+  "problems": [
+   {
+    "title": "No single picture of the business",
+    "description": "Leads, projects, invoices and people are reported from different tools, so leadership pieces the picture together by hand before every review."
+   },
+   {
+    "title": "Access handed out case by case",
+    "description": "Accounts are created one tool at a time, and nobody can quickly say which person can reach which system."
+   },
+   {
+    "title": "Permissions that do not fit the role",
+    "description": "Giving one person a little extra access often means inventing a new role or lending a login that belongs to someone else."
+   },
+   {
+    "title": "Changes nobody can trace",
+    "description": "When a setting or a permission changes, there is rarely a record of who changed it or when."
+   },
+   {
+    "title": "Access that outlives the job",
+    "description": "When someone's role changes or they leave, their access has to be found and withdrawn in each tool separately."
+   },
+   {
+    "title": "Questions that wait for a report",
+    "description": "Simple questions about the business sit in a queue until someone has time to pull the figures."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Company figures are collected from several tools and pasted together before a review.",
+    "after": "One dashboard shows open leads, active projects, tasks due, unpaid invoices, employees and pending leave, each drawn from the product that owns it."
+   },
+   {
+    "before": "Access is set up tool by tool, and nobody sees the whole picture.",
+    "after": "A panel access matrix shows which person can reach which product, and it can be changed from one screen."
+   },
+   {
+    "before": "A one-off permission needs a new role or a borrowed login.",
+    "after": "Permission overrides grant or withdraw a single capability for one person."
+   },
+   {
+    "before": "When something changes, there is no record of who did it.",
+    "after": "The audit log shows who changed what across the workspace, including settings and automation runs."
+   }
+  ]
  },
  {
   "id": "staff-hub",
@@ -562,7 +607,52 @@
     "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
    }
   ],
-  "audience": "Every employee, plus owners and administrators who set the company up. People see the products and figures their role allows."
+  "audience": "Every employee, plus owners and administrators who set the company up. People see the products and figures their role allows.",
+  "problemIntro": "Every tool adds another login, another bookmark and another place to look. People lose time finding the right system, and routine hand-offs between teams depend on someone remembering to send a message.",
+  "problems": [
+   {
+    "title": "A login for every tool",
+    "description": "Each tool has its own sign-in, so people keep lists of bookmarks and passwords and ask for resets."
+   },
+   {
+    "title": "Slow starts for new people",
+    "description": "New joiners wait for accounts in several tools and do not know which ones apply to them."
+   },
+   {
+    "title": "Searching in many places",
+    "description": "Finding a client, a lead or an invoice means opening the right tool first and then searching inside it."
+   },
+   {
+    "title": "Hand-offs that rely on memory",
+    "description": "Telling sales about a new enquiry or finance about a paid invoice depends on someone remembering to pass it on."
+   },
+   {
+    "title": "Data brought in by hand",
+    "description": "Moving existing clients, leads or employees into a new system means retyping rows or repairing a broken import."
+   },
+   {
+    "title": "Company settings everywhere",
+    "description": "Branding, domain, billing and integrations are configured in different places by different people."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "A separate login and bookmark for every tool.",
+    "after": "One sign-in opens every product the person has a role in."
+   },
+   {
+    "before": "Looking something up means choosing a tool, opening it and searching there.",
+    "after": "One search box finds clients, leads, projects, tasks, employees and invoices the person is allowed to open."
+   },
+   {
+    "before": "Telling sales about a new lead depends on someone passing it on.",
+    "after": "An automation notifies the sales role the moment a lead is created."
+   },
+   {
+    "before": "Existing records are retyped, mistakes and all.",
+    "after": "Bulk import brings in leads, clients and employees from a spreadsheet file with a preview, duplicate checks and row-level errors before anything is written."
+   }
+  ]
  },
  {
   "id": "hrms-suite",
@@ -866,7 +956,52 @@
     "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
    }
   ],
-  "audience": "HR managers, recruiters, payroll specialists, department heads and every employee for self-service."
+  "audience": "HR managers, recruiters, payroll specialists, department heads and every employee for self-service.",
+  "problemIntro": "HR work is repetitive and sensitive at once. When it lives in spreadsheets and inboxes, attendance, leave and payroll are re-typed between files, hiring slips between folders, and changes to pay or status leave no trail.",
+  "problems": [
+   {
+    "title": "Payroll rebuilt by hand each month",
+    "description": "Salary is calculated from attendance and leave summaries that were typed in again, so mistakes creep in and are hard to trace."
+   },
+   {
+    "title": "Leave and attendance in different places",
+    "description": "Requests arrive by message, balances live in a file, and attendance has to be corrected afterwards."
+   },
+   {
+    "title": "Hiring that restarts after the offer",
+    "description": "A selected candidate's details are typed into the employee file all over again."
+   },
+   {
+    "title": "Employees asking HR for everything",
+    "description": "Payslips, leave balances and documents are requested one message at a time."
+   },
+   {
+    "title": "Employee records scattered",
+    "description": "Profiles, documents, departments and reporting lines sit in separate files that drift apart."
+   },
+   {
+    "title": "No trail for sensitive changes",
+    "description": "Changes to salary, status or roles are made quietly, and nobody can show who made them."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Payroll is calculated from re-typed summaries.",
+    "after": "Monthly payroll runs are built from the attendance, leave and salary structures already recorded, and move from draft to approved to paid."
+   },
+   {
+    "before": "Leave requests arrive by message and balances live in a file.",
+    "after": "Employees request leave in the system, managers approve it, and attendance entries are created from the approved days."
+   },
+   {
+    "before": "A hired candidate is typed in again as an employee.",
+    "after": "A selected applicant converts into an employee record, linked back to the application."
+   },
+   {
+    "before": "Employees ask HR for payslips and balances.",
+    "after": "Self-service shows employees their own attendance, leave, salary slips and documents."
+   }
+  ]
  },
  {
   "id": "pms-project-command",
@@ -1144,7 +1279,52 @@
     "a": "No. During setup you choose which products your company uses, and your plan decides what is unlocked. You can start with the products you need today and switch on more as you grow."
    }
   ],
-  "audience": "Project managers, delivery leads, developers and designers who log time, and finance teams who bill from delivery data."
+  "audience": "Project managers, delivery leads, developers and designers who log time, and finance teams who bill from delivery data.",
+  "problemIntro": "Projects rarely go wrong in one dramatic moment; they drift. Hours are logged somewhere else, tasks live in personal lists, and the first time anyone compares cost with plan is after the client has been billed.",
+  "problems": [
+   {
+    "title": "Cost seen too late",
+    "description": "Without hours tied to cost, over-runs are discovered once the work is done, when little can be changed."
+   },
+   {
+    "title": "Client details in several places",
+    "description": "The same client is typed into the project tool, the billing tool and a contact list, and the copies disagree."
+   },
+   {
+    "title": "Tasks without a shared view",
+    "description": "Work sits in personal lists, so managers cannot see what is due, blocked or finished."
+   },
+   {
+    "title": "Time recorded from memory",
+    "description": "Timesheets reconstructed at the end of the week are rarely accurate."
+   },
+   {
+    "title": "Status that jumps ahead",
+    "description": "Projects are marked as done before the work or the paperwork is."
+   },
+   {
+    "title": "Clients left to ask",
+    "description": "Clients ask for updates because there is no place where they can see progress for themselves."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Cost is compared with plan once the project is over.",
+    "after": "Costing compares estimated and actual hours and cost for each project from logged timesheets, while the project is still running."
+   },
+   {
+    "before": "The same client is kept in several tools.",
+    "after": "The client record lives here and is shared with Finance and the Client Portal."
+   },
+   {
+    "before": "Tasks live in personal lists.",
+    "after": "Each project has a task list, a board and a timeline, with comments and attachments."
+   },
+   {
+    "before": "Statuses are changed to whatever is convenient.",
+    "after": "Projects and tasks move only through allowed transitions."
+   }
+  ]
  },
  {
   "id": "prms-procurement",
@@ -1407,7 +1587,52 @@
     "a": "No. During setup you choose which products your company uses, and your plan decides what is unlocked. You can start with the products you need today and switch on more as you grow."
    }
   ],
-  "audience": "Procurement and finance officers, IT and asset administrators, department heads who request purchases, and employees who file expense claims."
+  "audience": "Procurement and finance officers, IT and asset administrators, department heads who request purchases, and employees who file expense claims.",
+  "problemIntro": "Purchasing leaks when it runs on email approvals and a shared spreadsheet. Requests are approved in messages, invoices arrive without an order to match, and what the company owns or subscribes to is known only by whoever bought it.",
+  "problems": [
+   {
+    "title": "Approvals lost in threads",
+    "description": "A request is approved in a message, and later nobody can show who agreed or on what basis."
+   },
+   {
+    "title": "Spend without a budget view",
+    "description": "Purchases are made without anyone comparing them with what was set aside for the department or project."
+   },
+   {
+    "title": "Invoices that match nothing",
+    "description": "A vendor invoice arrives, and no one can easily confirm what was ordered or received."
+   },
+   {
+    "title": "Assets nobody tracks",
+    "description": "Equipment and licences are handed out without a record of who has what."
+   },
+   {
+    "title": "Renewals that surprise",
+    "description": "Subscriptions, contracts and services renew because the dates were never kept in one place."
+   },
+   {
+    "title": "Expense claims in a pile",
+    "description": "Employee claims arrive as photos and messages and wait for someone to sort them out."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "A purchase is approved in a message.",
+    "after": "Staff raise requisitions; a department manager approves, and a procurement review is added above a cost threshold."
+   },
+   {
+    "before": "Spend is checked against budget after the fact, if at all.",
+    "after": "Budgets can be set at company, department, project or category level, with spend shown against them."
+   },
+   {
+    "before": "Vendor invoices are paid on trust.",
+    "after": "Deliveries and vendor invoices are recorded and matched back to the purchase order."
+   },
+   {
+    "before": "Renewals are remembered by whoever bought the item.",
+    "after": "Contracts and software subscriptions sit in one register with their renewal dates."
+   }
+  ]
  },
  {
   "id": "tms-academy",
@@ -1671,7 +1896,52 @@
     "a": "No. During setup you choose which products your company uses, and your plan decides what is unlocked. You can start with the products you need today and switch on more as you grow."
    }
   ],
-  "audience": "Training directors, mentors, counsellors, placement cells and the students and interns themselves."
+  "audience": "Training directors, mentors, counsellors, placement cells and the students and interns themselves.",
+  "problemIntro": "A training programme is a long chain of small tasks: applications, batches, classes, assignments, payments, certificates and placements. When each lives in its own sheet, the programme runs on memory and the numbers you quote about it are hard to prove.",
+  "problems": [
+   {
+    "title": "Applications scattered",
+    "description": "Enquiries and applications arrive through several channels and are tracked in different files."
+   },
+   {
+    "title": "Batches managed in sheets",
+    "description": "Who is in which batch, and what is scheduled, depends on a spreadsheet someone keeps up to date."
+   },
+   {
+    "title": "Progress hard to see",
+    "description": "Assignments and submissions are chased by message, so mentors and students lose track."
+   },
+   {
+    "title": "Certificates that cannot be checked",
+    "description": "A certificate is just a file, so an employer has no easy way to confirm that it is genuine."
+   },
+   {
+    "title": "Placement claims without records",
+    "description": "Placement results quoted in marketing are reconstructed rather than recorded."
+   },
+   {
+    "title": "Fees tracked somewhere else",
+    "description": "Who has paid what lives apart from the student record."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Applicants are tracked in separate sheets.",
+    "after": "Applications are reviewed on a board, and approved applicants become students in a batch."
+   },
+   {
+    "before": "A certificate is a file anyone could edit.",
+    "after": "Certificates carry a verification code that anyone can check on a public page, and a certificate can be revoked with a reason."
+   },
+   {
+    "before": "Placement results are rebuilt from memory.",
+    "after": "Placements are recorded with company, role and package."
+   },
+   {
+    "before": "Fees are tracked away from the student.",
+    "after": "Payments sit on the student's profile next to program, batch and progress."
+   }
+  ]
  },
  {
   "id": "messenger-yashchat",
@@ -1928,7 +2198,52 @@
     "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
    }
   ],
-  "audience": "Every employee, project leads and managers, and anyone who needs to reach the whole company or one audience quickly."
+  "audience": "Every employee, project leads and managers, and anyone who needs to reach the whole company or one audience quickly.",
+  "problemIntro": "Conversation about work tends to happen far from the work. Teams run a separate chat tool, keep a second directory of people, and still lose decisions in threads that have no link to the project they concern.",
+  "problems": [
+   {
+    "title": "Chat apart from the project",
+    "description": "Decisions are made in a conversation that nobody can find from the project itself."
+   },
+   {
+    "title": "A second list of people",
+    "description": "Adding or removing someone means updating the chat tool as well as the company's own records."
+   },
+   {
+    "title": "Announcements that miss the audience",
+    "description": "Notices go to everyone, or to whoever remembers to forward them."
+   },
+   {
+    "title": "Files scattered across conversations",
+    "description": "Documents shared in chat are hard to find again."
+   },
+   {
+    "title": "Meetings arranged elsewhere",
+    "description": "Starting a call means leaving the conversation for another app."
+   },
+   {
+    "title": "Alerts in too many places",
+    "description": "Notifications from different tools arrive in different feeds."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Project discussion is kept apart from the project.",
+    "after": "Project channels are linked to projects, with membership that can mirror the real project team."
+   },
+   {
+    "before": "Announcements are forwarded by hand.",
+    "after": "Announcements are published to a chosen audience, with edit and reach controls."
+   },
+   {
+    "before": "A call means opening another app.",
+    "after": "A meeting room or a call can be started from the app."
+   },
+   {
+    "before": "Alerts arrive in a different feed for each tool.",
+    "after": "Alerts from the rest of the platform arrive in the shared notification feed."
+   }
+  ]
  },
  {
   "id": "lms-sales-crm",
@@ -2205,7 +2520,52 @@
     "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
    }
   ],
-  "audience": "Business development and sales teams, marketing teams, recruiters and training counsellors who need every enquiry tracked."
+  "audience": "Business development and sales teams, marketing teams, recruiters and training counsellors who need every enquiry tracked.",
+  "problemIntro": "Enquiries arrive from forms, chats, campaigns and referrals, and each channel tends to end up in its own inbox. Follow-up depends on whoever noticed, and marketing spend is hard to connect to the leads it actually produced.",
+  "problems": [
+   {
+    "title": "Enquiries in many inboxes",
+    "description": "Website forms, chats and applications land in different places, so some are answered late and some not at all."
+   },
+   {
+    "title": "One pipeline for everyone",
+    "description": "A client, a job applicant and a trainee are handled as the same kind of lead, though their journeys differ."
+   },
+   {
+    "title": "Marketing without proof",
+    "description": "It is hard to say which campaign produced which lead."
+   },
+   {
+    "title": "Visitors who cannot get an answer",
+    "description": "Website visitors who cannot find an answer quickly often simply leave."
+   },
+   {
+    "title": "Promotions run by hand",
+    "description": "Offers, coupons and referral rewards are tracked in separate sheets."
+   },
+   {
+    "title": "Status asked for, not shown",
+    "description": "People keep asking where their enquiry stands because they cannot see it."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Each channel has its own inbox.",
+    "after": "Website forms, chat, careers applications and offers feed one lead inbox, with the source and campaign recorded."
+   },
+   {
+    "before": "Every lead follows the same stages.",
+    "after": "Clients, job applicants, interns and trainees each follow their own stages."
+   },
+   {
+    "before": "Campaign results are guesswork.",
+    "after": "Imported advertising data shows which campaigns produce which leads."
+   },
+   {
+    "before": "Visitors wait for a reply.",
+    "after": "The website assistant answers from the knowledge base you manage, and conversations are logged for your team."
+   }
+  ]
  },
  {
   "id": "external-portal",
@@ -2465,7 +2825,52 @@
     "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
    }
   ],
-  "audience": "Your clients, job applicants, interns and students, and the client services, recruitment and training teams that serve them."
+  "audience": "Your clients, job applicants, interns and students, and the client services, recruitment and training teams that serve them.",
+  "problemIntro": "People outside the company need to know where they stand, but the usual answer is a message to someone inside. Clients ask for updates, applicants chase decisions and students ask for schedules, while sharing internal tools with them is not an option.",
+  "problems": [
+   {
+    "title": "Status questions on repeat",
+    "description": "Clients, applicants and students ask the same questions again and again."
+   },
+   {
+    "title": "Documents sent one at a time",
+    "description": "Files and invoices are emailed individually and go missing."
+   },
+   {
+    "title": "Internal tools opened to outsiders",
+    "description": "Giving an outsider an account in a staff system risks exposing more than intended."
+   },
+   {
+    "title": "No single view for a client",
+    "description": "Projects, milestones, invoices and meetings sit in different places."
+   },
+   {
+    "title": "Applicants kept waiting",
+    "description": "People applying for a role hear nothing until someone writes to them."
+   },
+   {
+    "title": "Students without a home",
+    "description": "Schedules, assignments and results reach students by message."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Clients ask for project updates by message.",
+    "after": "Clients see their projects, milestones, documents, meetings and invoices in one portal."
+   },
+   {
+    "before": "Invoices are emailed one at a time.",
+    "after": "Clients view and download invoices and see payment status."
+   },
+   {
+    "before": "Applicants wait to hear back.",
+    "after": "Applicants follow their application and interviews, and take their assigned tests inside the portal."
+   },
+   {
+    "before": "Outsiders are given staff accounts.",
+    "after": "The portal has its own sign-in, structurally separate from staff accounts, so an external account cannot reach internal tools."
+   }
+  ]
  },
  {
   "id": "seo-panel",
@@ -2721,7 +3126,52 @@
     "a": "No. During setup you choose which products your company uses, and your plan decides what is unlocked. You can start with the products you need today and switch on more as you grow."
    }
   ],
-  "audience": "SEO specialists, content strategists, growth leads and web teams."
+  "audience": "SEO specialists, content strategists, growth leads and web teams.",
+  "problemIntro": "Search visibility is made of many small details across a site, and most are invisible until someone looks. Fixes wait for a developer, changes are made without a record, and figures from different sources are hard to compare.",
+  "problems": [
+   {
+    "title": "Issues nobody has listed",
+    "description": "Technical and on-page problems go unnoticed because no one audits the whole site."
+   },
+   {
+    "title": "Fixes that wait for a release",
+    "description": "Changing a page title or a robots rule means asking a developer and waiting."
+   },
+   {
+    "title": "Risky edits",
+    "description": "A wrong robots rule or canonical link can hide pages from search without anyone noticing."
+   },
+   {
+    "title": "Findings without owners",
+    "description": "A report lists problems, but nobody is assigned and nobody checks that they were fixed."
+   },
+   {
+    "title": "Numbers of mixed quality",
+    "description": "Figures from different sources are presented as if they were equally reliable."
+   },
+   {
+    "title": "No history of changes",
+    "description": "When rankings move, nobody can see what was changed on the site."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Problems are found by chance.",
+    "after": "Audits score the site against more than 50 checks, with a recommendation for each finding."
+   },
+   {
+    "before": "Metadata changes wait for a developer.",
+    "after": "Titles, descriptions, canonicals, robots rules, the sitemap and structured data are edited here and go live without a code deploy."
+   },
+   {
+    "before": "Findings sit in a report.",
+    "after": "Findings become tasks you can assign, and the next audit confirms the fix."
+   },
+   {
+    "before": "Estimated and verified numbers look the same.",
+    "after": "Data from your connected search and analytics accounts and from the product's own crawl is verified, while keyword and competitor figures are labelled estimated."
+   }
+  ]
  },
  {
   "id": "dlms-digilocker",
@@ -2966,7 +3416,52 @@
     "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
    }
   ],
-  "audience": "IT administrators, account managers and security officers who hold credentials and documents on behalf of the company and its clients."
+  "audience": "IT administrators, account managers and security officers who hold credentials and documents on behalf of the company and its clients.",
+  "problemIntro": "Every company holds logins, domains, certificates and documents that matter far more than their place on a shared drive suggests. They are kept in messages, spreadsheets and people's heads, and are noticed only when something expires or someone leaves.",
+  "problems": [
+   {
+    "title": "Passwords in messages and sheets",
+    "description": "Shared logins end up in chats and documents where anyone can read them."
+   },
+   {
+    "title": "Expiries that surprise",
+    "description": "Domains, hosting, certificates and licences lapse because the dates were not tracked."
+   },
+   {
+    "title": "Client details scattered",
+    "description": "Each client's accounts, links and documents are spread across personal folders."
+   },
+   {
+    "title": "Everyone sees everything",
+    "description": "Without assignment, access is all or nothing."
+   },
+   {
+    "title": "No record of who looked",
+    "description": "When a credential is viewed or copied, nothing is written down."
+   },
+   {
+    "title": "Leavers who know too much",
+    "description": "When someone leaves, it is unclear what they could still reach."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Logins live in chats and spreadsheets.",
+    "after": "Credentials are stored with passwords encrypted and masked by default, and revealed or copied only by people with permission."
+   },
+   {
+    "before": "Renewals are discovered when something stops working.",
+    "after": "A daily expiry sweep flags expired and soon-to-expire domains, hosting, certificates and licences to the managers who renew them."
+   },
+   {
+    "before": "Client information is spread across personal folders.",
+    "after": "Every record belongs to the company vault or to exactly one client."
+   },
+   {
+    "before": "No one knows who opened what.",
+    "after": "The audit log records who revealed, created, changed or opened what."
+   }
+  ]
  },
  {
   "id": "aibots-studio",
@@ -3245,7 +3740,52 @@
     "a": "AI Assistants answer from the documents you upload. For live records, use AI Intelligence."
    }
   ],
-  "audience": "AI-minded teams in sales, support, HR, business analysis and engineering who want assistants grounded in their own documents."
+  "audience": "AI-minded teams in sales, support, HR, business analysis and engineering who want assistants grounded in their own documents.",
+  "problemIntro": "Teams already ask AI for help, but each person writes their own prompts and the answers depend on what they happen to paste in. Company knowledge sits in documents the assistant has never seen, and nobody knows how much it is used.",
+  "problems": [
+   {
+    "title": "Everyone prompts differently",
+    "description": "The same question gets different answers depending on who asks and how."
+   },
+   {
+    "title": "Answers that ignore your documents",
+    "description": "General answers do not reflect your policies, price lists or procedures."
+   },
+   {
+    "title": "Sensitive material with no boundary",
+    "description": "It is unclear who may use an assistant that has seen confidential files."
+   },
+   {
+    "title": "Usage with no visibility",
+    "description": "Nobody can say how much AI is being used or what it costs."
+   },
+   {
+    "title": "Assistants that need engineers",
+    "description": "Setting one up for a team turns into a development project."
+   },
+   {
+    "title": "No record of changes",
+    "description": "Changes to an assistant's instructions or files are not tracked."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Each person writes their own instructions.",
+    "after": "A bot captures its instructions and model once, so everyone gets consistent answers."
+   },
+   {
+    "before": "Answers come from general knowledge.",
+    "after": "Answers draw on passages found in the bot's own knowledge base, built from the files you upload."
+   },
+   {
+    "before": "Anyone with the link can use it.",
+    "after": "A sensitive assistant can be limited to specific people or roles, with manager oversight of all chats."
+   },
+   {
+    "before": "AI spend is a surprise.",
+    "after": "A usage ledger records executions, tokens, estimated cost and failures."
+   }
+  ]
  },
  {
   "id": "smms-social-engine",
@@ -3528,7 +4068,52 @@
     "a": "AI usage is metered against your company's plan."
    }
   ],
-  "audience": "Social media managers, growth marketers, content specialists and brand leads."
+  "audience": "Social media managers, growth marketers, content specialists and brand leads.",
+  "problemIntro": "Social media work is a stream of small deliverables: a strategy, posts for each platform, ad copy, images, schedules and approvals. Handled in documents and chat, it is slow, uneven in tone, and nobody is sure what was approved before it went out.",
+  "problems": [
+   {
+    "title": "A blank page every time",
+    "description": "Each campaign starts from scratch, and ideas take longer than they should."
+   },
+   {
+    "title": "One message, many formats",
+    "description": "A post that works on one platform has to be rewritten for each of the others within its limits."
+   },
+   {
+    "title": "Brand voice that drifts",
+    "description": "Different people describe the company, its services and its offers in different ways."
+   },
+   {
+    "title": "Approval by chat",
+    "description": "It is unclear whether a post was approved before it was published."
+   },
+   {
+    "title": "Creative assets scattered",
+    "description": "Images, videos and scripts live in personal folders."
+   },
+   {
+    "title": "Edits that cannot be undone",
+    "description": "Changes overwrite earlier versions, and the best wording is lost."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Campaign planning starts from a blank page.",
+    "after": "A campaign brief becomes positioning, key messages, a channel plan, audiences, keywords, hashtags and ad concepts."
+   },
+   {
+    "before": "Posts are rewritten by hand for each platform.",
+    "after": "One idea becomes a version for each selected platform, within its limits."
+   },
+   {
+    "before": "Approval happens in a chat thread.",
+    "after": "Schedules need approval from someone with publish permission, and editing withdraws the approval."
+   },
+   {
+    "before": "Edits overwrite the earlier wording.",
+    "after": "Every AI output and every edit is saved as a version you can restore."
+   }
+  ]
  },
  {
   "id": "ots-exam-engine",
@@ -3797,7 +4382,52 @@
     "a": "No. During setup you choose which products your company uses, and your plan decides what is unlocked. You can start with the products you need today and switch on more as you grow."
    }
   ],
-  "audience": "Recruiters, HR and compliance teams, trainers and instructors, and the candidates, employees and students who sit the tests."
+  "audience": "Recruiters, HR and compliance teams, trainers and instructors, and the candidates, employees and students who sit the tests.",
+  "problemIntro": "Tests for hiring, training and compliance are often built from forms and spreadsheets. Timing cannot be enforced, marking is manual and uneven, and there is little evidence of how a result was reached.",
+  "problems": [
+   {
+    "title": "Quizzes in forms and sheets",
+    "description": "Questions are copied between files, and nobody knows which test used which question."
+   },
+   {
+    "title": "Timing that cannot be enforced",
+    "description": "A timed test on a plain form depends on people honouring the clock."
+   },
+   {
+    "title": "Marking that varies",
+    "description": "Different evaluators mark the same kind of answer differently."
+   },
+   {
+    "title": "Assigning to the right people",
+    "description": "Working out who should take a test means building lists by hand."
+   },
+   {
+    "title": "Little evidence",
+    "description": "When a result is questioned, there is no record of how the test was taken."
+   },
+   {
+    "title": "Results hard to compare",
+    "description": "Scores sit in separate sheets, so patterns by person, department or question are hard to see."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Questions are copied between forms.",
+    "after": "One reusable question bank supports import and export, and shows which tests use each question."
+   },
+   {
+    "before": "The clock is on trust.",
+    "after": "Timing is enforced on the server, and exam security options include full screen, tab-switch detection and auto-submit after violations."
+   },
+   {
+    "before": "Everything is marked by hand.",
+    "after": "Objective answers are marked automatically, and the rest go to an evaluation queue."
+   },
+   {
+    "before": "Test lists are built manually.",
+    "after": "Tests are assigned by department, role, team, person, applicant, position, student, batch or course, resolved live."
+   }
+  ]
  },
  {
   "id": "web-portal",
@@ -4045,7 +4675,48 @@
     "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
    }
   ],
-  "audience": "Prospective clients and candidates on the outside; marketing, sales and recruitment teams on the inside."
+  "audience": "Prospective clients and candidates on the outside; marketing, sales and recruitment teams on the inside.",
+  "problemIntro": "A website often stands apart from the rest of the business. Enquiries arrive as emails someone must copy, job applications reach a shared inbox, and the pages say one thing while the team says another.",
+  "problems": [
+   {
+    "title": "Enquiries copied by hand",
+    "description": "A form submission becomes an email that someone has to turn into a record."
+   },
+   {
+    "title": "Applications in a shared inbox",
+    "description": "Job applications are mixed with everything else and wait for attention."
+   },
+   {
+    "title": "Content that goes stale",
+    "description": "Updating the site depends on a developer or an agency."
+   },
+   {
+    "title": "Visitors without answers",
+    "description": "Common questions go unanswered outside office hours."
+   },
+   {
+    "title": "Search details neglected",
+    "description": "Titles, descriptions and structured data are set once and forgotten."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Enquiries arrive as emails to be re-keyed.",
+    "after": "Enquiry forms create leads in CRM & Sales, with the source and campaign recorded."
+   },
+   {
+    "before": "Applications sit in an inbox.",
+    "after": "Applications arrive in the careers pipeline."
+   },
+   {
+    "before": "Visitors with questions leave.",
+    "after": "An AI assistant on the site answers from the knowledge base and website content you manage."
+   },
+   {
+    "before": "Search details are set once and forgotten.",
+    "after": "Titles, canonicals, the sitemap and structured data are managed from the SEO product."
+   }
+  ]
  },
  {
   "id": "fms-finance",
@@ -4305,7 +4976,52 @@
     "a": "No. Customers are the client records already kept in Projects."
    }
   ],
-  "audience": "Finance leads and accountants, founders who bill clients, and operations teams who approve expenses and pay vendors."
+  "audience": "Finance leads and accountants, founders who bill clients, and operations teams who approve expenses and pay vendors.",
+  "problemIntro": "Money work is where small disconnects become expensive. Invoices are typed again from project data, payments are matched by hand, and the books are assembled at the end of the period from files that disagree.",
+  "problems": [
+   {
+    "title": "Invoices rebuilt from other tools",
+    "description": "Client and project details are re-typed into invoices, so errors reach customers."
+   },
+   {
+    "title": "Not knowing who owes what",
+    "description": "Receivables and payables are scattered, so chasing is irregular."
+   },
+   {
+    "title": "Payments reconciled by hand",
+    "description": "Bank and cash movements are matched line by line, and late."
+   },
+   {
+    "title": "Books that lag operations",
+    "description": "Payroll, vendor bills and training fees reach the ledger long after they happen."
+   },
+   {
+    "title": "Approvals in an inbox",
+    "description": "Refunds and expense claims wait in email for someone to notice."
+   },
+   {
+    "title": "Reports built at period end",
+    "description": "Profit and loss, balance sheet and cash flow are compiled manually."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Invoice details are retyped from project files.",
+    "after": "Invoices are raised against the client and project records that Projects manages."
+   },
+   {
+    "before": "Payment follow-up is irregular.",
+    "after": "Payment links track partial and full payments, with receivables and payables in view."
+   },
+   {
+    "before": "The ledger is written up afterwards.",
+    "after": "Settled transactions post to a double-entry journal automatically, feeding the general ledger and trial balance."
+   },
+   {
+    "before": "Approvals wait in email.",
+    "after": "An approvals inbox lists pending transactions, refunds and employee expense claims in one place."
+   }
+  ]
  },
  {
   "id": "ai-intelligence",
@@ -4563,7 +5279,52 @@
     "a": "Yes, each person has an hourly question limit, and AI usage is metered against your company's plan."
    }
   ],
-  "audience": "Managers, finance and HR leads, project heads and founders who want answers from company data in plain language, without learning a reporting tool."
+  "audience": "Managers, finance and HR leads, project heads and founders who want answers from company data in plain language, without learning a reporting tool.",
+  "problemIntro": "Most business questions are simple, and most answers still take a request to someone with report access. People wait, or guess, or export data into files that are out of date by the time they are read.",
+  "problems": [
+   {
+    "title": "Reports on request",
+    "description": "Even simple questions wait for someone to build a report."
+   },
+   {
+    "title": "Data in many places",
+    "description": "Answering one question may need clients, projects, invoices and timesheets from different tools."
+   },
+   {
+    "title": "Exports that go stale",
+    "description": "Spreadsheets pulled for a meeting are out of date within days."
+   },
+   {
+    "title": "Wider access than intended",
+    "description": "Sharing a report often means sharing more than the reader should see."
+   },
+   {
+    "title": "AI that makes things up",
+    "description": "General AI tools can state figures with confidence that do not come from your data."
+   },
+   {
+    "title": "Sensitive fields exposed",
+    "description": "Giving a tool access to data risks revealing fields that should stay private."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "A question becomes a report request.",
+    "after": "Anyone with access asks in plain language and gets a table, chart, figure or list."
+   },
+   {
+    "before": "A general AI tool may invent the figures.",
+    "after": "The model names the query and the columns; the values come from the results themselves."
+   },
+   {
+    "before": "Reports carry whatever the exporter included.",
+    "after": "Every question is checked against the products in your plan and the person's own permissions before it runs."
+   },
+   {
+    "before": "Sensitive fields travel with the data.",
+    "after": "Fields marked sensitive are never offered to the AI or shown in answers."
+   }
+  ]
  },
  {
   "id": "sop-policies",
@@ -4803,7 +5564,52 @@
     "a": "No. During setup you choose which products your company uses, and your plan decides what is unlocked. You can start with the products you need today and switch on more as you grow."
    }
   ],
-  "audience": "Operations, HR, compliance and quality leads who own procedures, and every employee who must follow them."
+  "audience": "Operations, HR, compliance and quality leads who own procedures, and every employee who must follow them.",
+  "problemIntro": "A procedure only protects the company if the right people have read the latest version. Documents live in shared folders, old copies stay in circulation, and when a rule changes nobody can show who was told.",
+  "problems": [
+   {
+    "title": "Several versions in circulation",
+    "description": "Staff follow an out-of-date copy because they cannot tell which one is current."
+   },
+   {
+    "title": "No proof of reading",
+    "description": "When something goes wrong, the company cannot show that the person was told."
+   },
+   {
+    "title": "Everyone sees everything",
+    "description": "Confidential procedures are stored beside general ones."
+   },
+   {
+    "title": "Reviews forgotten",
+    "description": "Policies that should be reviewed on a schedule quietly go stale."
+   },
+   {
+    "title": "Procedures read once, not followed",
+    "description": "Long procedures are skimmed once and never worked through step by step."
+   },
+   {
+    "title": "Feedback with nowhere to go",
+    "description": "Staff notice gaps but have no route to tell the owner."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "Old copies of a policy keep circulating.",
+    "after": "Each SOP has a lifecycle and a version history, and any two versions can be compared side by side."
+   },
+   {
+    "before": "No one can show who was told.",
+    "after": "SOPs are assigned to people, reads and acknowledgements are tracked, and people are asked again when a new version is published."
+   },
+   {
+    "before": "Confidential and general documents sit together.",
+    "after": "Six confidentiality levels decide who may read each procedure."
+   },
+   {
+    "before": "Reviews are forgotten.",
+    "after": "Reminders go out before things expire, and reports show who has read what."
+   }
+  ]
  },
  {
   "id": "cms-website",
@@ -5046,6 +5852,51 @@
     "a": "Yes. Every company on the platform has its own workspace, and all reads and writes go through a company-scoped data layer, so one company can never see another company's records."
    }
   ],
-  "audience": "Marketing teams, founders and administrators who manage a company website."
+  "audience": "Marketing teams, founders and administrators who manage a company website.",
+  "problemIntro": "A company website changes constantly, but changes often have to wait for a developer. Content falls out of date, edits go live without review, and the site is cut off from the systems that handle the enquiries it produces.",
+  "problems": [
+   {
+    "title": "Every change is a request",
+    "description": "Small edits to a page, a menu or the footer wait for technical help."
+   },
+   {
+    "title": "Edits without a safety net",
+    "description": "Changes go live directly, and there is no easy way back."
+   },
+   {
+    "title": "Pages that drift off brand",
+    "description": "Colours and styles vary from page to page."
+   },
+   {
+    "title": "Disconnected forms",
+    "description": "Enquiries from the site are copied by hand into the sales system."
+   },
+   {
+    "title": "Lists kept in different places",
+    "description": "Blog posts, job openings and other lists are maintained separately from the pages that show them."
+   },
+   {
+    "title": "Search fields forgotten",
+    "description": "Titles, descriptions and social images are missing on many pages."
+   }
+  ],
+  "beforeAfter": [
+   {
+    "before": "A page edit is a ticket for a developer.",
+    "after": "Pages are composed from sections in a page builder, saved as drafts and previewed before publishing."
+   },
+   {
+    "before": "A bad change goes live and stays there.",
+    "after": "Publishing keeps a version history and is audit logged."
+   },
+   {
+    "before": "Styles drift between pages.",
+    "after": "The theme customiser sets colours and component styles, with a preview before you publish."
+   },
+   {
+    "before": "Form enquiries are copied into the sales system.",
+    "after": "Forms you control feed the CRM."
+   }
+  ]
  }
 ]

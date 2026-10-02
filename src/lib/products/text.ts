@@ -109,6 +109,9 @@ export const PRODUCTS_TEXT_DEFAULTS: Record<string, string> = {
   "products.detail.compare.description": "The same everyday work, before and after.",
   "products.detail.compare.before": "Without it",
   "products.detail.compare.after": "With it",
+  "products.detail.band.check1": "One sign-in for every product",
+  "products.detail.band.check2": "Workflow automations",
+  "products.detail.band.check3": "AI across the products",
   "products.detail.band.title": "Create your own automated workspace",
   "products.detail.band.description": "Register your company and set up {name} with the rest of the platform: one sign-in, shared roles and automations that connect your work.",
 

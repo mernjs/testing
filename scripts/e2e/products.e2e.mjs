@@ -37,7 +37,50 @@ async function check(name, fn) {
   }
 }
 
-const SECTIONS = ["problem", "overview", "features", "ai", "automation", "use-cases", "benefits", "audience", "integrations", "tour", "faqs", "related", "demo"];
+const SECTIONS = ["problem", "compare", "overview", "tour", "create-workspace", "features", "ai", "automation", "use-cases", "benefits", "audience", "integrations", "faqs", "related", "demo"];
+const FEATURED_TITLE = "Automate Your Business with Our AI-Powered Business Automation SaaS";
+
+/** The first <section> of a page (its hero) must carry a background image that really loaded. */
+async function assertHeroImage(p, label) {
+  const img = p.locator("section").first().locator("img").first();
+  await img.waitFor({ state: "attached", timeout: 15_000 });
+  const src = await img.getAttribute("src");
+  assert.ok(src, `${label}: hero image has no src`);
+  const res = await p.request.get(new URL(src, p.url()).toString());
+  assert.equal(res.status(), 200, `${label}: hero image request ${src}`);
+  assert.match(res.headers()["content-type"] ?? "", /^image\//, `${label}: hero image content-type`);
+  await p.waitForFunction((el) => el.complete && el.naturalWidth > 0, await img.elementHandle(), { timeout: 15_000 });
+}
+
+/** Lazy images: every image below the hero (except the priority featured card) is lazy and has an alt attribute. */
+async function assertImagesLazyWithAlt(p, label) {
+  const bad = await p.$$eval("div.min-h-screen > section:not(:first-of-type) img:not([data-products-featured] img)", (imgs) =>
+    imgs.filter((i) => i.getAttribute("alt") === null || i.getAttribute("loading") !== "lazy").map((i) => i.currentSrc || i.src));
+  assert.deepEqual(bad, [], `${label}: images without alt or lazy loading`);
+}
+
+/** What a header dropdown is made of: the classes of each layer, so two menus can be compared structurally. */
+const PANEL = 'header div[class*="max-w-5xl"][class*="-translate-x-1/2"]';
+const normalise = (c) => c.replace(/max-h-\[[^\]]+\]|overflow-y-auto|overscroll-contain/g, "").replace(/\s+/g, " ").trim();
+async function dropdownSignature(page, name) {
+  const nav = page.locator('header nav[aria-label="Global"]');
+  await nav.getByRole("link", { name, exact: true }).hover();
+  const panel = page.locator(PANEL).first();
+  await panel.waitFor({ state: "visible", timeout: 10_000 });
+  return panel.evaluate((el) => {
+    const cls = (n) => (n ? n.getAttribute("class") ?? "" : "");
+    const ring = el.querySelector(":scope > div > div.relative");
+    const grid = el.querySelector("div.grid.grid-cols-5");
+    const featured = grid?.children[0];
+    const featuredLink = featured?.querySelector(":scope > a");
+    const list = grid?.children[1];
+    const first = list?.querySelector("a");
+    return {
+      panel: cls(el), ring: cls(ring), accentBar: cls(ring?.children[0]), grid: cls(grid), featured: cls(featured), featuredLink: cls(featuredLink),
+      featuredImage: cls(featuredLink?.querySelector("img")), list: cls(list), item: cls(first), itemIcon: cls(first?.children[0]), itemText: cls(first?.children[1]), itemCount: list?.querySelectorAll("a").length ?? 0,
+    };
+  });
+}
 
 const browser = await chromium.launch({ channel: "chrome", headless: true });
 try {
@@ -68,61 +111,153 @@ try {
   await page.goto(`${OWNER}/`, { waitUntil: "domcontentloaded" });
 
   let slugs = [];
-  await check("/products lists every product with a working card link", async () => {
+  await check("/products: the featured business-automation card comes first, then the product cards (the site's listing card), each linking to its page", async () => {
     const res = await page.goto(`${OWNER}/products`, { waitUntil: "domcontentloaded" });
     assert.equal(res.status(), 200);
-    await page.waitForSelector("#products article");
-    const links = await page.$$eval("#products article h4 a, #products article h3 a", (as) => as.map((a) => a.getAttribute("href")));
+    await page.waitForSelector("[data-products-grid] a");
+    const links = await page.$$eval('[data-products-grid] a[href^="/products/"]', (as) => as.map((a) => a.getAttribute("href")));
     slugs = [...new Set(links.map((h) => h.replace("/products/", "")))];
     assert.ok(slugs.length >= 19, `expected the full catalogue, found ${slugs.length}`);
+    assert.equal(links.length, slugs.length, "one card per product");
     assert.ok(slugs.includes("ai-intelligence"), "AI Intelligence missing");
     for (const must of ["hrms-suite", "fms-finance", "sop-policies", "cms-website", "staff-hub"]) assert.ok(slugs.includes(must), `${must} missing`);
-    // every card is clickable as a whole (the title link covers it) and "Explore Product" is shown
-    assert.equal(await page.locator("#products article", { hasText: "Explore Product" }).count(), slugs.length);
-    // filter tabs narrow the grid and "All products" restores it
-    await page.getByRole("button", { name: "AI & Intelligence" }).click();
-    const some = await page.locator("#products article").count();
+    // featured card: exact title, before the grid, wider than one grid column
+    const featured = page.locator("[data-products-featured]");
+    assert.equal((await featured.getByRole("heading", { level: 2 }).innerText()).trim(), FEATURED_TITLE);
+    const order = await page.evaluate(() => document.querySelector("[data-products-featured]").compareDocumentPosition(document.querySelector("[data-products-grid]")) & Node.DOCUMENT_POSITION_FOLLOWING);
+    assert.ok(order, "the featured card must come before the product grid");
+    const fBox = await featured.boundingBox();
+    const cardBox = await page.locator('[data-products-grid] a[href^="/products/"]').first().boundingBox();
+    assert.ok(fBox.width > cardBox.width * 1.8, `featured card (${fBox.width}) should be much wider than a product card (${cardBox.width})`);
+    const cta = featured.getByRole("link", { name: "Start Automating Your Business" });
+    assert.equal(await cta.getAttribute("href"), "/signup");
+    assert.equal(await featured.getByRole("link", { name: "Explore the Platform" }).getAttribute("href"), "/products/staff-hub");
+    assert.ok((await featured.locator("span", { hasText: /Workflow automation|AI Intelligence|AI Assistants/ }).count()) >= 3, "capability chips");
+    // every card shows its call to action; the pills narrow the grid and "All products" restores it
+    assert.equal(await page.locator('[data-products-grid] a[aria-label$="Explore Product"]').count(), slugs.length);
+    await page.getByRole("button", { name: /^AI & Intelligence/ }).click();
+    const some = await page.locator("[data-products-grid] a").count();
     assert.ok(some >= 2 && some < slugs.length, `filter showed ${some}`);
-    await page.getByRole("button", { name: "All products" }).click();
-    assert.equal(await page.locator("#products article").count(), slugs.length);
+    await page.getByRole("button", { name: /^All products/ }).click();
+    assert.equal(await page.locator("[data-products-grid] a").count(), slugs.length);
   });
 
-  await check("/products has the hero CTAs, the connected-platform and AI sections and the demo form", async () => {
+  await check("/products: hero like the other listing heroes (background photo loaded, one h1), signup + demo CTAs, connected-platform and AI sections, demo form", async () => {
     await page.goto(`${OWNER}/products`, { waitUntil: "domcontentloaded" });
-    assert.equal(await page.getByRole("link", { name: "Get Started" }).first().getAttribute("href"), "/signup");
-    assert.equal(await page.getByRole("link", { name: "Request Demo" }).first().getAttribute("href"), "#demo");
+    assert.equal(await page.locator("h1").count(), 1);
+    assert.equal((await page.locator("h1").innerText()).trim(), "Our Products");
+    await assertHeroImage(page, "/products");
+    const hero = page.locator("section").first();
+    assert.equal(await hero.getByRole("link", { name: "Start Automating Your Business" }).getAttribute("href"), "/signup");
+    assert.equal(await hero.getByRole("link", { name: "Request Demo" }).getAttribute("href"), "#demo");
     assert.ok(await page.getByText("One connected platform").first().isVisible());
     assert.ok(await page.getByText("AI where the work happens").first().isVisible());
+    assert.equal(await page.locator("#demo-heading").count(), 1);
     assert.ok(await page.locator("#demo form").count());
-    assert.equal(await page.locator("h1").count(), 1);
+    assert.equal(await page.locator('#demo [data-signup-cta="final"]').getAttribute("href"), "/signup");
+    // the AI list never includes a product that says it has no AI of its own
+    assert.equal(await page.locator("section", { hasText: "AI where the work happens" }).getByText("No AI of its own").count(), 0);
+    await assertImagesLazyWithAlt(page, "/products");
+    // every explore-the-platform target resolves
+    assert.equal((await status(`${OWNER}/signup`)).status, 200);
   });
 
-  await check("header: the desktop Products menu lists the products (incl. AI Intelligence) under category headings", async () => {
+  await check("header: the Products dropdown is built exactly like the Services dropdown (same layers, classes, card, item markup)", async () => {
     await page.goto(`${OWNER}/`, { waitUntil: "domcontentloaded" });
-    const nav = page.locator('header nav[aria-label="Global"]');
-    const item = nav.getByRole("link", { name: "Products", exact: true });
-    await item.hover();
-    const menu = page.locator("header").getByRole("link", { name: /AI Intelligence/ }).first();
-    await menu.waitFor({ state: "visible", timeout: 10_000 });
-    assert.equal(await menu.getAttribute("href"), "/products/ai-intelligence");
-    assert.ok(await page.locator("header").getByText("AI & Intelligence", { exact: true }).first().isVisible(), "category heading missing");
-    assert.ok(await page.locator("header").getByRole("link", { name: /View all products/i }).first().isVisible());
-    const count = await page.locator('header a[href^="/products/"]').count();
-    assert.ok(count >= 19, `menu lists ${count} products`);
-    // Services and About are still there
-    for (const n of ["Services", "About"]) assert.ok(await nav.getByRole("link", { name: n, exact: true }).count(), `${n} nav item gone`);
+    const services = await dropdownSignature(page, "Services");
+    await page.mouse.move(5, 600);
+    await page.locator(PANEL).first().waitFor({ state: "detached", timeout: 5_000 });
+    const products = await dropdownSignature(page, "Products");
+    for (const layer of ["panel", "ring", "accentBar", "grid", "featured", "featuredLink", "featuredImage", "item", "itemIcon", "itemText"]) assert.equal(normalise(products[layer]), normalise(services[layer]), `layer "${layer}" differs from the Services dropdown`);
+    // the item list differs only by the scroll guard a long list needs
+    assert.equal(normalise(products.list), normalise(services.list));
+    assert.ok(products.itemCount >= 19, `menu lists ${products.itemCount} products`);
+    assert.ok(!/grid-cols-3/.test(products.list), "no custom 3-column layout");
+    // contents: AI Intelligence, the featured card, the signup call to action, View all
+    const panel = page.locator(PANEL).first();
+    assert.equal(await panel.getByRole("link", { name: /AI Intelligence/ }).first().getAttribute("href"), "/products/ai-intelligence");
+    assert.ok(await panel.getByText(FEATURED_TITLE).isVisible());
+    assert.equal(await panel.getByRole("link", { name: "Start Automating Your Business" }).getAttribute("href"), "/signup");
+    assert.equal(await panel.getByRole("link", { name: /View all Products/i }).getAttribute("href"), "/products");
+    assert.equal(await panel.locator("p", { hasText: /^(Executive & Operations|HR & Talent|AI & Intelligence)$/ }).count(), 0, "no category headings");
+    for (const n of ["Services", "Industries", "About"]) assert.ok(await page.locator('header nav[aria-label="Global"]').getByRole("link", { name: n, exact: true }).count(), `${n} nav item gone`);
   });
 
-  await check("header: the mobile menu has Products with the products listed", async () => {
+  await check("header: open/close behaviour is the same as Services (hover opens, leaving closes, focus/Escape do what they do there), and the list stays on screen", async () => {
+    const behaviour = async (name) => {
+      await page.goto(`${OWNER}/`, { waitUntil: "domcontentloaded" });
+      const link = page.locator('header nav[aria-label="Global"]').getByRole("link", { name, exact: true });
+      const open = () => page.locator(PANEL).count();
+      const r = {};
+      await link.focus();
+      await page.waitForTimeout(400);
+      r.opensOnFocus = (await open()) > 0;
+      await link.hover();
+      await page.locator(PANEL).first().waitFor({ state: "visible", timeout: 10_000 });
+      r.opensOnHover = true;
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(400);
+      r.escapeCloses = (await open()) === 0;
+      await page.mouse.move(5, 600);
+      await page.waitForTimeout(500);
+      r.closesOnLeave = (await open()) === 0;
+      return r;
+    };
+    const s = await behaviour("Services");
+    const pr = await behaviour("Products");
+    assert.deepEqual(pr, s, "Products must behave like Services");
+    assert.equal(pr.opensOnHover && pr.closesOnLeave, true);
+    // a long list is kept on screen: either it fits, or the item list scrolls inside the card
+    for (const vp of [{ width: 1440, height: 900 }, { width: 1280, height: 720 }, { width: 1280, height: 600 }]) {
+      const m = await newPage();
+      await m.setViewportSize(vp);
+      await m.goto(`${OWNER}/`, { waitUntil: "domcontentloaded" });
+      await m.locator('header nav[aria-label="Global"]').getByRole("link", { name: "Products", exact: true }).hover();
+      const panel = m.locator(PANEL).first();
+      await panel.waitFor({ state: "visible", timeout: 10_000 });
+      await m.waitForTimeout(400);
+      const box = await panel.boundingBox();
+      assert.ok(box.x >= 0 && box.x + box.width <= vp.width + 1, `${vp.width}x${vp.height}: dropdown leaves the screen sideways`);
+      const list = panel.locator("div.col-span-3").first();
+      const { sh, ch, oy } = await list.evaluate((el) => ({ sh: el.scrollHeight, ch: el.clientHeight, oy: getComputedStyle(el).overflowY }));
+      assert.ok(box.y + box.height <= vp.height + 1 || (sh > ch && oy === "auto"), `${vp.width}x${vp.height}: dropdown runs off the bottom without scrolling`);
+      assert.ok(box.y + box.height <= vp.height + 2, `${vp.width}x${vp.height}: dropdown bottom ${box.y + box.height} beyond ${vp.height}`);
+      await m.close();
+    }
+  });
+
+  await check("header: dark mode shows the same dropdown, readable", async () => {
+    const d = await newPage();
+    await d.goto(`${OWNER}/`, { waitUntil: "domcontentloaded" });
+    await d.locator('button[aria-label="Switch to dark mode"]:visible').first().click();
+    await d.waitForFunction(() => document.documentElement.classList.contains("dark"));
+    const sig = await dropdownSignature(d, "Products");
+    assert.ok(sig.itemCount >= 19);
+    const panel = d.locator(PANEL).first();
+    assert.ok(await panel.getByRole("link", { name: "Start Automating Your Business" }).isVisible());
+    const bg = await panel.locator("div.relative.overflow-hidden").first().evaluate((el) => getComputedStyle(el).backgroundColor);
+    assert.ok(bg && bg !== "rgba(0, 0, 0, 0)", `dropdown has a background in dark mode (${bg})`);
+    await d.close();
+  });
+
+  await check("header: the mobile menu is the same accordion as Services (same item markup), Products lists every product without headings", async () => {
     const m = await newPage();
     await m.setViewportSize({ width: 390, height: 844 });
     await m.goto(`${OWNER}/`, { waitUntil: "domcontentloaded" });
     await m.getByRole("button", { name: "Open main menu" }).click();
-    await m.getByRole("button", { name: "Products", exact: true }).click();
-    const link = m.getByRole("link", { name: "AI Intelligence" }).first();
-    await link.waitFor({ state: "visible", timeout: 10_000 });
-    assert.equal(await link.getAttribute("href"), "/products/ai-intelligence");
-    assert.ok(await m.getByRole("link", { name: /View All Products/i }).first().isVisible());
+    const itemClass = async (section, sample) => {
+      await m.getByRole("button", { name: section, exact: true }).click();
+      const link = m.getByRole("link", { name: sample }).first();
+      await link.waitFor({ state: "visible", timeout: 10_000 });
+      return { cls: normalise((await link.getAttribute("class")) ?? ""), expanded: await m.getByRole("button", { name: section, exact: true }).getAttribute("aria-expanded") };
+    };
+    const svc = await itemClass("Services", "Software Development");
+    const prod = await itemClass("Products", "AI Intelligence");
+    assert.equal(prod.cls.replace(/border-primary bg-primary\/5 font-semibold text-primary|border-transparent text-muted-foreground hover:bg-muted\/50 hover:text-primary/, ""), svc.cls.replace(/border-primary bg-primary\/5 font-semibold text-primary|border-transparent text-muted-foreground hover:bg-muted\/50 hover:text-primary/, ""), "mobile item markup differs");
+    assert.equal(prod.expanded, "true");
+    assert.equal(await m.locator('a[href^="/products/"]').count() >= 19, true);
+    assert.equal(await m.getByText(/^(Executive & Operations|Assessment & Security)$/).count(), 0, "no category headings in the mobile menu");
+    assert.equal(await m.getByRole("link", { name: /View All Products/i }).first().getAttribute("href"), "/products");
     await m.close();
   });
 
@@ -139,11 +274,26 @@ try {
         const missing = [];
         for (const id of SECTIONS) if (!(await p.locator(`#${id}`).count())) missing.push(id);
         assert.deepEqual(missing, [], `sections missing: ${missing.join(", ")}`);
-        // breadcrumb back to Products
-        assert.equal(await p.locator('nav[aria-label="Breadcrumb"] a[href="/products"]').count(), 1);
-        // CTAs: Get Started -> /signup, Request Demo -> the demo form, Start Using -> the workspace sign-in with next
+        // breadcrumb back to Products (in the hero)
         const hero = p.locator("section").first();
+        assert.equal(await hero.locator('a[href="/products"]').count(), 1);
+        // the hero has its background image, really loaded
+        await assertHeroImage(p, slug);
+        // the problem section: an introduction, 4-6 problem cards, and a without/with comparison
+        const cards = await p.locator("#problem [data-problem-card]").count();
+        assert.ok(cards >= 4 && cards <= 6, `${cards} problem cards`);
+        assert.ok((await p.locator("#problem p").nth(1).innerText()).length > 60, "problem introduction");
+        assert.ok((await p.locator("#compare [data-compare-row]").count()) >= 3, "before/after pairs");
+        assert.ok(await p.locator("#compare").getByText("Without it").first().isVisible());
+        assert.ok(await p.locator("#compare").getByText("With it").first().isVisible());
+        // the facts strip is in the hero
+        assert.ok((await hero.locator("[data-product-facts] > div").count()) >= 1, "facts strip");
+        // signup CTAs: hero (Get Started + Create Your Business Automation), the mid-page band, the final band
         assert.equal(await hero.getByRole("link", { name: "Get Started" }).getAttribute("href"), "/signup");
+        assert.equal(await hero.getByRole("link", { name: "Create Your Business Automation" }).getAttribute("href"), "/signup");
+        assert.equal(await p.locator("#create-workspace").getByRole("link", { name: "Create Your Business Automation" }).getAttribute("href"), "/signup");
+        assert.equal(await p.locator('#demo [data-signup-cta="final"]').getAttribute("href"), "/signup");
+        // CTAs: Request Demo -> the demo form, Start Using -> the workspace sign-in with next
         assert.equal(await hero.getByRole("link", { name: "Request Demo" }).getAttribute("href"), "#demo");
         const start = hero.getByRole("link", { name: "Start Using" });
         if (slug === "web-portal") assert.equal(await start.count(), 0, "the public website has no panel to sign in to");
@@ -169,6 +319,7 @@ try {
         await p.waitForTimeout(400);
         const broken = await p.$$eval("img", (imgs) => imgs.filter((i) => i.complete && i.naturalWidth === 0 && i.currentSrc).map((i) => i.currentSrc));
         assert.deepEqual(broken, [], "broken images");
+        await assertImagesLazyWithAlt(p, slug);
       } finally {
         await p.close();
       }
@@ -233,10 +384,10 @@ try {
     assert.equal((await status(`${OWNER}/services`)).status, 200);
   });
 
-  await check("390px: no horizontal scroll on /products and on a product page", async () => {
+  await check("390px: no horizontal scroll on /products and on every product page", async () => {
     const m = await newPage();
     await m.setViewportSize({ width: 390, height: 844 });
-    for (const url of [`${OWNER}/products`, `${OWNER}/products/hrms-suite`, `${OWNER}/products/ai-intelligence`]) {
+    for (const url of [`${OWNER}/products`, ...slugs.map((s) => `${OWNER}/products/${s}`)]) {
       await m.goto(url, { waitUntil: "networkidle" });
       const { sw, cw } = await m.evaluate(() => ({ sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }));
       assert.ok(sw <= cw + 1, `${url}: scrollWidth ${sw} > clientWidth ${cw}`);

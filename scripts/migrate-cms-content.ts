@@ -22,7 +22,9 @@
  *      · otherwise left alone.
  *  - Collection records (blog, jobs, engagement models, products): created +
  *    published in order; existing records keep their content (missing order
- *    is filled in).
+ *    is filled in). Products: any still-empty product-page field, including the
+ *    problem section's problemIntro / problems / beforeAfter, is filled from the
+ *    seed on an existing record (never an edited one).
  *  - Navigation, footer, contact-form fields: created when the CMS has none.
  *  - Site identity & contact: created, or missing fields filled in.
  * Uses the CMS's own create/publish functions, so versions, history and the

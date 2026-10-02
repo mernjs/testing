@@ -24,14 +24,15 @@ import { createFooterColumn, createFooterLink, getPublicFooter, listFooterColumn
 import { publishRecord, saveRecordDraft } from "@/lib/cms/collections/store";
 import { fillProductPageFields, loadSeedProducts, PRODUCT_PAGE_FIELDS, PRODUCTS_FOOTER_LINK, seedProductsNav } from "@/lib/products/seed";
 import {
-  buildProductsNav, capabilityChips, CATEGORY_ORDER, groupByCategory, isProductsHref, neighbours, pageContent,
-  relatedProducts, resolveCtas, startUsingHref, ctaTarget, type StoredProduct,
+  buildProductsNav, capabilityChips, CATEGORY_ORDER, detailSectionTones, groupByCategory, hasOwnAi, isProductsHref, neighbours, pageContent,
+  PRODUCTS_NAV_FEATURED, PRODUCTS_NAV_FEATURED_PREVIOUS, productHeroImage, relatedProducts, resolveCtas, SIGNUP_PATH, startUsingHref, ctaTarget, type StoredProduct,
 } from "@/lib/products/shared";
 import { fillText, PRODUCTS_TEXT_DEFAULTS, resolveProductsText } from "@/lib/products/text";
 import { listingJsonLd, listingMetadata, productJsonLd, productMetadata } from "@/lib/products/seo";
 import { loadProducts, requireProducts, withManifestScreenshots } from "@/lib/products/server";
 import { baseSitemap } from "@/app/sitemap";
 import { addProductsNav } from "./add-products-nav";
+import { deleteNavItem } from "@/lib/cms/nav";
 
 const uri = process.env.MONGODB_URI ?? "";
 if (!/^mongodb:\/\/(127\.0\.0\.1|localhost)(:\d+)?\/[\w-]*test[\w-]*$/i.test(uri)) {
@@ -113,6 +114,24 @@ async function main() {
     assert.equal(p.features, undefined);
     assert.equal(p.useCases, undefined);
   });
+  await check("round-2 problem fields: parsed and trimmed, bad entries dropped, old records stay valid and gain none", () => {
+    const p = productsCollection.parse({
+      slug: "t", name: "T", problemIntro: "  Intro  ",
+      problems: [{ title: "A", description: "d" }, { title: "", description: "x" }, "junk", { title: "B", description: "e", icon: "Zap" }],
+      beforeAfter: [{ before: "b", after: "a" }, { before: "", after: "x" }, { before: "y" }, null],
+    })!;
+    assert.equal(p.problemIntro, "Intro");
+    assert.deepEqual(p.problems, [{ title: "A", description: "d" }, { title: "B", description: "e", icon: "Zap" }]);
+    assert.deepEqual(p.beforeAfter, [{ before: "b", after: "a" }]);
+    const bad = productsCollection.parse({ slug: "t", name: "T", problemIntro: 5, problems: "x", beforeAfter: [1, 2] })!;
+    assert.equal(bad.problemIntro, undefined);
+    assert.equal(bad.problems, undefined);
+    assert.equal(bad.beforeAfter, undefined);
+    const old = productsCollection.parse(legacyOnly)!;
+    assert.equal(old.problems, undefined);
+    assert.deepEqual(pageContent(old as StoredProduct).problems, []);
+    assert.equal(pageContent(old as StoredProduct).problem, old.problemSolved);
+  });
   await check("the CMS form exposes every new field", () => {
     const keys = new Set(productsCollection.fields.map((f) => f.key));
     for (const k of [...PRODUCT_PAGE_FIELDS, "screenshots", "ctas"]) assert.ok(keys.has(k), `missing form field ${k}`);
@@ -161,7 +180,40 @@ async function main() {
       assert.ok(p.facts!.length >= 1, `${where}: facts`);
       assert.ok(p.screens.length >= 1, `${where}: screens`);
       assert.ok(p.targetDepartments.length > 0 && p.targetUsers.length > 0, `${where}: audience lists`);
+      // round 2: the problem section
+      assert.ok(p.problemIntro && p.problemIntro.length > 60, `${where}: problemIntro`);
+      assert.ok(p.problems!.length >= 4 && p.problems!.length <= 6, `${where}: problems (${p.problems?.length})`);
+      for (const pr of p.problems!) assert.ok(pr.title.length > 3 && pr.description.length > 30, `${where}: problem "${pr.title}"`);
+      assert.equal(new Set(p.problems!.map((x) => x.title)).size, p.problems!.length, `${where}: duplicate problem titles`);
+      assert.ok(p.beforeAfter!.length >= 3 && p.beforeAfter!.length <= 4, `${where}: beforeAfter (${p.beforeAfter?.length})`);
+      for (const ba of p.beforeAfter!) assert.ok(ba.before.length > 15 && ba.after.length > 15, `${where}: beforeAfter pair`);
     }
+  });
+  await check("round-2 text (problems, comparison, intro) makes no unverifiable claim and shows no internal identifier", () => {
+    const banned: [RegExp, string][] = [
+      [/\d\s?%/, "percentage"], [/[₹$€£]|\b(rs\.?|inr|usd|eur)\b/i, "currency"], [/\bSLA\b|uptime|24\/7|\bpercent\b/i, "SLA/uptime/percent"],
+      [/certified|certification|\bISO\b|\bSOC\b|GDPR|HIPAA|\bawards?\b|guarantee|trusted by/i, "certification/award/promise"],
+      [/\b(Razorpay\w*|OpenAI|Google|Meta|Instagram|Facebook|LinkedIn|YouTube|WhatsApp|Excel|Outlook|Gmail|Jira|Trello|Asana|Notion|Zoom|PayPal|Slack|Zoho|Zapier|Salesforce|HubSpot|Tally|QuickBooks|Stripe)\b/, "named third-party tool"],
+      [/\b[a-z]{2,}\.[a-z]{2,}(\.[a-z_]+)*\b/, "dotted identifier"], [/collection|maxTimeMS|_id\b|\bwebhook_|[a-z][A-Z][a-z]/, "internal identifier"],
+      [/\b\d+\s?(x|times|hours?|days?|minutes?|weeks?|seconds?|months?)\b/i, "timing/multiplier"],
+    ];
+    const hits: string[] = [];
+    for (const p of seed) {
+      const t = JSON.stringify([p.problemIntro, p.problems, p.beforeAfter], (k, v) => (k === "icon" ? undefined : v));
+      for (const [re, why] of banned) { const m = re.exec(t); if (m) hits.push(`${p.slug}: ${why} ("${m[0]}")`); }
+    }
+    assert.equal(hits.join("; "), "");
+  });
+  await check("every 'with it' line is grounded: it shares a distinctive word with the product's own features, AI, workflows or overview", () => {
+    // A cheap guard against a claim with nothing behind it: each after-text must reuse at least one significant word from the product's existing, verified content.
+    const stop = new Set("the a an and or of to in on for with is are be by as at from that this it its their your you can into one each every when where which who what they them than then also only any all more most such via per not no".split(" "));
+    const words = (s: string) => (s.toLowerCase().match(/[a-z]{5,}/g) ?? []).filter((w) => !stop.has(w));
+    const weak: string[] = [];
+    for (const p of seed) {
+      const known = new Set(words(JSON.stringify([p.features, p.aiFeatures, p.automationWorkflows, p.overview, p.keyFeatures, p.integrations, p.benefits, p.valueLine])));
+      for (const ba of p.beforeAfter!) if (!words(ba.after).some((w) => known.has(w))) weak.push(`${p.slug}: ${ba.after.slice(0, 50)}`);
+    }
+    assert.deepEqual(weak, []);
   });
   await check("every icon key (product, features, benefits, use cases, nav) exists in the icon map", () => {
     const keys = new Set(CMS_ICON_KEYS);
@@ -231,6 +283,13 @@ async function main() {
     }
   });
 
+  await check("hasOwnAi is true exactly for the products that have AI of their own (the AI badge and the suite list use it)", () => {
+    const real = new Set(["staff-hub", "ai-intelligence", "aibots-studio", "smms-social-engine", "lms-sales-crm", "web-portal", "cms-website", "admin-command-center", "hrms-suite", "pms-project-command", "fms-finance", "prms-procurement"]);
+    for (const p of seed) assert.equal(hasOwnAi(p), real.has(p.slug), p.slug);
+    assert.equal(hasOwnAi({ aiFeatures: undefined }), false);
+    assert.equal(hasOwnAi({ aiFeatures: [{ title: "No AI of its own", description: "x" }] }), false);
+  });
+
   // ── pure helpers ────────────────────────────────────────────────────────
   console.log("helpers");
   await check("groupByCategory keeps the category order and drops empty groups", () => {
@@ -283,6 +342,62 @@ async function main() {
     const seen: string[] = [];
     for (const i of nav.items) if (seen[seen.length - 1] !== i.group) { assert.ok(!seen.includes(i.group), `group ${i.group} split`); seen.push(i.group); }
   });
+  await check("detail sections: tones alternate over the sections a product actually has, and a round-1 record degrades gracefully", () => {
+    for (const p of seed) {
+      const tones = detailSectionTones(p, seed);
+      const order = ["problem", "compare", "overview", "features", "ai", "automation", "useCases", "benefits", "audience", "integrations", "faq", "related"] as const;
+      const present = order.filter((k) => tones[k]);
+      assert.equal(present.length, order.length, `${p.slug}: every section has content`);
+      present.forEach((k, i) => assert.equal(tones[k], i % 2 === 0 ? "muted" : "default", `${p.slug}:${k}`));
+    }
+    const round1 = productsCollection.parse(Object.fromEntries(Object.entries(raw.find((r) => r.slug === "hrms-suite")!).filter(([k]) => !["problemIntro", "problems", "beforeAfter"].includes(k))))! as StoredProduct;
+    const t = detailSectionTones(round1, seed);
+    assert.ok(t.problem, "the single problem statement still renders a section");
+    assert.equal(t.compare, undefined);
+    const c = pageContent(round1);
+    assert.deepEqual([c.problemIntro, c.problems, c.beforeAfter], ["", [], []]);
+    assert.ok(c.problem);
+    const bare = productsCollection.parse({ slug: "x", name: "X" }) as StoredProduct;
+    const tb = detailSectionTones(bare, [bare]);
+    assert.equal(tb.problem, undefined);
+    assert.equal(tb.related, undefined);
+  });
+  await check("the business-automation CTAs: text keys exist, the exact featured title is set, and every signup CTA goes to /signup", () => {
+    const t = resolveProductsText({});
+    assert.equal(t["products.featured.title"], "Automate Your Business with Our AI-Powered Business Automation SaaS");
+    assert.equal(t["products.cta.startAutomating"], "Start Automating Your Business");
+    assert.equal(t["products.cta.createAutomation"], "Create Your Business Automation");
+    assert.equal(t["products.cta.explorePlatform"], "Explore the Platform");
+    assert.equal(t["products.menu.cta"], "Start Automating Your Business");
+    assert.equal(SIGNUP_PATH, "/signup");
+    assert.deepEqual(ctaTarget("get-started", null), { href: "/signup", kind: "get-started" });
+    for (const k of ["chip1", "chip2", "chip3", "chip4"]) assert.ok(t[`products.featured.${k}`], k);
+    assert.equal(PRODUCTS_NAV_FEATURED.title, t["products.featured.title"]);
+    assert.notEqual(PRODUCTS_NAV_FEATURED.title, PRODUCTS_NAV_FEATURED_PREVIOUS.title);
+    // the featured pitch only mentions things the platform has
+    for (const w of ["sign-in", "roles", "automation", "AI"]) assert.ok(t["products.featured.description"].includes(w), w);
+    assert.ok(!/\d\s?%|guarantee|certified/i.test(t["products.featured.description"]));
+  });
+  await check("hero images: allowed remote host, AI visual for the AI category, editable through text keys", () => {
+    const t = resolveProductsText({});
+    const nextConfig = fs.readFileSync(path.join(ROOT, "next.config.ts"), "utf8");
+    assert.ok(nextConfig.includes("images.unsplash.com"));
+    for (const k of ["products.listing.heroImage", "products.hero.imageDefault", "products.hero.imageAi", "products.featured.image"]) assert.ok(t[k].startsWith("https://images.unsplash.com/photo-"), k);
+    assert.equal(productHeroImage({ category: "AI & Intelligence" }, t), t["products.hero.imageAi"]);
+    assert.equal(productHeroImage({ category: "HR & Talent" }, t), t["products.hero.imageDefault"]);
+    assert.equal(productHeroImage({ category: "HR & Talent" }, resolveProductsText({ "products.hero.imageDefault": "https://example.com/x.jpg" })), "https://example.com/x.jpg");
+  });
+  await check("the header Products menu is the standard dropdown (no custom grouped layout), the listing and detail pages sit on the shared section components", () => {
+    const header = fs.readFileSync(path.join(ROOT, "src/components/Header.tsx"), "utf8");
+    for (const gone of ["groupItems", "grid-cols-3 gap-x-6 gap-y-5", "bg-background dark:bg-card", "100vh-220px", "x.group"]) assert.ok(!header.includes(gone), `Header still has "${gone}"`);
+    assert.ok(header.includes("grid grid-cols-5 p-2") && header.includes("<FeaturedCard"), "standard dropdown markup");
+    const grid = fs.readFileSync(path.join(ROOT, "src/components/products/page/ProductsGrid.tsx"), "utf8");
+    for (const c of ["FeaturedListingCard", "ListingCard"]) assert.ok(grid.includes(`@/components/sections/${c}`), c);
+    assert.ok(fs.readFileSync(path.join(ROOT, "src/components/products/page/ProductsHero.tsx"), "utf8").includes("@/components/sections/ListingHero"));
+    assert.ok(fs.readFileSync(path.join(ROOT, "src/components/products/page/ProductDetailHero.tsx"), "utf8").includes("@/components/sections/PageHero"));
+    const detail = fs.readFileSync(path.join(ROOT, "src/app/(site)/products/[slug]/page.tsx"), "utf8");
+    assert.ok(detail.includes("@/components/sections/DetailCTA") && detail.includes("SIGNUP_PATH"));
+  });
   await check("isProductsHref", () => {
     assert.ok(isProductsHref("/products") && isProductsHref("/products/x") && isProductsHref("/products?x=1"));
     assert.ok(!isProductsHref("/productsx") && !isProductsHref("/services/our-saas-product") && !isProductsHref("/"));
@@ -297,6 +412,21 @@ async function main() {
     assert.deepEqual(out[0].items.map((i) => i.href), ["/services/our-saas-product"]);
     const f = withoutProductsLinks([{ title: "Services", viewAllHref: "/services", viewAllLabel: null, links: [{ label: "Products", href: "/products", emphasized: true }, { label: "Dev", href: "/software-development", emphasized: false }] }]);
     assert.deepEqual(f[0].links.map((l) => l.href), ["/software-development"]);
+  });
+  await check("upgrading round-1 product records: only the three new fields are filled, edits are never overwritten, a second run changes nothing", () => {
+    const rec = raw.find((r) => r.slug === "hrms-suite")!;
+    const round1 = Object.fromEntries(Object.entries(rec).filter(([k]) => !["problemIntro", "problems", "beforeAfter"].includes(k)));
+    const first = fillProductPageFields(round1, rec)!;
+    assert.ok(first);
+    for (const k of ["problemIntro", "problems", "beforeAfter"]) assert.deepEqual(first[k], rec[k], k);
+    for (const [k, v] of Object.entries(round1)) assert.deepEqual(first[k], v, `${k} must be untouched`);
+    assert.equal(fillProductPageFields(first, rec), null, "idempotent");
+    // an editor already wrote their own problem text: kept, the missing fields still filled
+    const edited = fillProductPageFields({ ...round1, problemIntro: "Our own words." }, rec)!;
+    assert.equal(edited.problemIntro, "Our own words.");
+    assert.deepEqual(edited.problems, rec.problems);
+    // an edited existing field (overview) is never replaced
+    assert.equal(fillProductPageFields({ ...round1, overview: "Edited overview" }, rec)!.overview, "Edited overview");
   });
   await check("fillProductPageFields fills only empty fields and never overwrites", () => {
     const s = { pitch: "seed pitch", faq: [{ q: "a", a: "b" }], overview: "seed overview" };
@@ -415,11 +545,42 @@ async function main() {
     assert.deepEqual(r2.created, []);
     assert.equal((await snapshot()).nav.filter((i) => !i.parentId && i.href === "/products").length, 1);
   });
+  await check("upgrading the round-1 menu: featured card replaced only while it is the round-1 text; dry run writes nothing; re-run is a no-op; other entries untouched", async () => {
+    const featuredOf = async () => (await snapshot()).nav.find((i) => !i.parentId && i.href === "/products")!;
+    const top = await featuredOf();
+    // the state a database has after the round-1 script
+    await as("owner", async () => {
+      const { updateNavItem } = await import("@/lib/cms/nav");
+      await updateNavItem(top._id, { featuredTitle: PRODUCTS_NAV_FEATURED_PREVIOUS.title, featuredDescription: "An editor's own description", featuredImage: PRODUCTS_NAV_FEATURED_PREVIOUS.image }, "test");
+    });
+    const round1State = await snapshot();
+    const dry = await as("owner", () => addProductsNav(false));
+    assert.equal(dry.updated.length, 1);
+    assert.deepEqual(await snapshot(), round1State, "dry run must write nothing");
+    const done = await as("owner", () => addProductsNav(true));
+    assert.equal(done.updated.length, 1);
+    assert.deepEqual(done.created, []);
+    const after = await featuredOf();
+    assert.equal(after.featuredTitle, PRODUCTS_NAV_FEATURED.title);
+    assert.equal(after.featuredImage, PRODUCTS_NAV_FEATURED.image);
+    assert.equal(after.featuredDescription, "An editor's own description", "an edited text is never replaced");
+    const now = await snapshot();
+    for (const old of round1State.nav) if (old._id !== top._id) assert.deepEqual(now.nav.find((i) => i._id === old._id), old, "other entries untouched");
+    const again = await as("owner", () => addProductsNav(true));
+    assert.deepEqual([again.created, again.updated], [[], []]);
+    assert.deepEqual(await snapshot(), now);
+    // a fully edited card is left alone
+    await as("owner", async () => { const { updateNavItem } = await import("@/lib/cms/nav"); await updateNavItem(top._id, { featuredTitle: "Mine", featuredDescription: "Mine too", featuredImage: "https://x/y.png" }, "test"); });
+    const kept = await snapshot();
+    const r = await as("owner", () => addProductsNav(true));
+    assert.deepEqual([r.created, r.updated], [[], []]);
+    assert.deepEqual(await snapshot(), kept);
+  });
   await check("a partially-present menu only gets the missing entries added", async () => {
     const s = await snapshot();
     const top = s.nav.find((i) => i.href === "/products")!;
     const victim = s.nav.find((i) => i.parentId === top._id && i.href === "/products/sop-policies")!;
-    await as("owner", async () => { const { deleteNavItem } = await import("@/lib/cms/nav"); await deleteNavItem(victim._id); });
+    await as("owner", () => deleteNavItem(victim._id));
     const r = await as("owner", () => addProductsNav(true));
     assert.deepEqual(r.created, ["header item /products/sop-policies (Executive & Operations)"]);
   });

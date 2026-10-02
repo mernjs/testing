@@ -48,7 +48,7 @@ export default async function ProductPage({ params }: Props) {
         description={fillText(text["products.detail.band.description"], { name: product.shortName || product.name })}
         ctaLabel={text["products.cta.createAutomation"]}
         ctaHref={SIGNUP_PATH}
-        checklist={[text["products.cta.bullet1"], text["products.cta.bullet2"], text["products.cta.bullet3"]]}
+        checklist={[text["products.detail.band.check1"], text["products.detail.band.check2"], text["products.detail.band.check3"]]}
       />
       <FeaturesSection product={product} text={text} tones={tones} />
       <AiSection product={product} text={text} tones={tones} />
