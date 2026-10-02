@@ -3,7 +3,7 @@ import Link from "next/link";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { describeVerification } from "@/lib/platform/email-verification";
-import VerifyForm from "./VerifyForm";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = { title: "Verify your email", robots: { index: false, follow: false } };
 
@@ -28,7 +28,12 @@ export default async function VerifyEmailPage({ searchParams }: { searchParams: 
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <VerifyForm token={token} />
+                <form method="post" action="/workspace/verify-email/confirm" className="space-y-3">
+                  <input type="hidden" name="token" value={token} />
+                  <Button type="submit" className="w-full">
+                    Verify my email
+                  </Button>
+                </form>
               </CardContent>
             </>
           ) : (

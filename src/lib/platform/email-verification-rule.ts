@@ -14,3 +14,20 @@ export function showVerifyStrip(f: { emailVerified: boolean; isPlatformOwnerComp
 export function verifyStripHiddenOn(pathname: string): boolean {
   return pathname.startsWith("/workspace/verify-email");
 }
+
+/**
+ * Same-origin check for the verification form POST (CSRF): a browser form post carries `Sec-Fetch-Site`
+ * (and `Origin`); anything cross-site is refused. Requests with neither header (non-browser clients) are allowed:
+ * they hold the secret token anyway and can't ride a victim's cookies.
+ */
+export function isSameOriginPost(h: { secFetchSite: string | null; origin: string | null; host: string | null }): boolean {
+  if (h.secFetchSite) return h.secFetchSite === "same-origin" || h.secFetchSite === "none";
+  if (h.origin) {
+    try {
+      return new URL(h.origin).host === h.host;
+    } catch {
+      return false;
+    }
+  }
+  return true;
+}

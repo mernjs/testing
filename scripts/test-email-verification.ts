@@ -14,6 +14,8 @@ import { startSignup } from "@/lib/platform/signup";
 import { setSignupMode } from "@/lib/platform/settings";
 import { acceptInvitation, inviteTeammate } from "@/lib/platform/invitations";
 import { consumeVerification, describeVerification, isEmailVerified, sendVerificationEmail, showVerifyStrip, verifyStripHiddenOn, MAX_SENDS_PER_HOUR } from "@/lib/platform/email-verification";
+import { isSameOriginPost } from "@/lib/platform/email-verification-rule";
+import fs from "node:fs";
 import { getDb } from "@/lib/mongodb";
 
 const uri = process.env.MONGODB_URI ?? "";
@@ -189,6 +191,28 @@ async function run() {
     assert.equal(verifyStripHiddenOn("/workspace/verify-email"), true);
     assert.equal(verifyStripHiddenOn("/workspace"), false);
     assert.equal(verifyStripHiddenOn("/workspace/settings"), false);
+  });
+
+  console.log("entry point (form POST to a route handler)");
+  await check("the verify page is a plain form POST to /workspace/verify-email/confirm (no server action / client router); the route exports POST only", () => {
+    const page = fs.readFileSync("src/app/workspace/verify-email/page.tsx", "utf8");
+    assert.ok(page.includes('method="post"') && page.includes('action="/workspace/verify-email/confirm"') && page.includes("Verify my email"));
+    const route = fs.readFileSync("src/app/workspace/verify-email/confirm/route.ts", "utf8");
+    assert.ok(/export async function POST/.test(route) && !/export async function GET/.test(route), "POST only: a GET never consumes");
+    assert.ok(route.includes("303") && route.includes("/workspace?emailVerified=1") && route.includes("requestOrigin()") && !route.includes("req.url"));
+    assert.ok(!fs.existsSync("src/app/workspace/verify-email/actions.ts"), "no server-action redirect");
+  });
+  await check("same-origin rule: cross-site posts are refused", () => {
+    assert.equal(isSameOriginPost({ secFetchSite: "same-origin", origin: null, host: "a.localhost" }), true);
+    assert.equal(isSameOriginPost({ secFetchSite: "cross-site", origin: "http://a.localhost", host: "a.localhost" }), false);
+    assert.equal(isSameOriginPost({ secFetchSite: null, origin: "http://a.localhost:3000", host: "a.localhost:3000" }), true);
+    assert.equal(isSameOriginPost({ secFetchSite: null, origin: "http://evil.test", host: "a.localhost:3000" }), false);
+    assert.equal(isSameOriginPost({ secFetchSite: null, origin: "garbage", host: "a.localhost" }), false);
+    assert.equal(isSameOriginPost({ secFetchSite: null, origin: null, host: "a.localhost" }), true);
+  });
+  await check("error path: a used/foreign token consumes nothing and the page falls back to the expired card", async () => {
+    assert.equal((await runAsCompany(alpha, () => consumeVerification("deadbeef"))).ok, false);
+    assert.equal(await runAsCompany(alpha, () => describeVerification(token)), null);
   });
 }
 
