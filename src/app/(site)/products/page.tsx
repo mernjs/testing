@@ -8,7 +8,6 @@ import { PRODUCTS_PATH } from "@/lib/products/shared";
 import ProductsHero from "@/components/products/page/ProductsHero";
 import ProductsGrid from "@/components/products/page/ProductsGrid";
 import { ProductsAiSuite, ProductsConnected, ProductsCtaBand } from "@/components/products/page/ProductsSections";
-import SectionHeader from "@/components/sections/SectionHeader";
 
 /**
  * /products — the platform owner's product portfolio. Products are the owner's own
@@ -31,13 +30,8 @@ export default async function ProductsPage() {
       {listingJsonLd(products, origin, text).map((ld, i) => (
         <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
       ))}
-      <ProductsHero products={products} text={text} />
-      <section id="products" className="relative bg-background py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <SectionHeader heading={text["products.listing.gridHeading"]} description={text["products.listing.gridDescription"]} />
-          <ProductsGrid products={products} text={text} />
-        </div>
-      </section>
+      <ProductsHero text={text} />
+      <ProductsGrid products={products} text={text} />
       <ProductsConnected products={products} text={text} />
       <ProductsAiSuite products={products} text={text} />
       <ProductsCtaBand products={products} text={text} title={text["products.listing.cta.title"]} description={text["products.listing.cta.description"]} source="products-page" />

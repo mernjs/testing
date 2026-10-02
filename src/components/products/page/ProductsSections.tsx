@@ -3,8 +3,9 @@ import { ArrowRight, ArrowRightLeft, Bot, Fingerprint, Network, ShieldCheck, Spa
 import SectionHeader from "@/components/sections/SectionHeader";
 import Reveal from "@/components/products/page/Reveal";
 import ProductDemoForm from "@/components/products/page/ProductDemoForm";
+import { BTN_PRIMARY } from "@/components/products/page/cta-styles";
 import { resolveIcon } from "@/lib/cms/icon-map";
-import { groupByCategory, label, productHref, type StoredProduct } from "@/lib/products/shared";
+import { groupByCategory, hasOwnAi, label, productHref, SIGNUP_PATH, type StoredProduct } from "@/lib/products/shared";
 
 type Text = Record<string, string>;
 
@@ -12,7 +13,7 @@ type Text = Record<string, string>;
 export function ProductsConnected({ products, text }: { products: StoredProduct[]; text: Text }) {
   const flows = [1, 2, 3, 4].map((n) => ({ title: text[`products.listing.connected.flow${n}.title`], body: text[`products.listing.connected.flow${n}.text`] })).filter((f) => f.title);
   return (
-    <section className="relative overflow-hidden bg-muted/10 py-24 sm:py-32">
+    <section id="platform" className="relative scroll-mt-24 overflow-hidden bg-muted/10 py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <SectionHeader category={text["products.listing.connected.badge"]} heading={text["products.listing.connected.title"]} description={text["products.listing.connected.description"]} />
         <div className="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-12">
@@ -67,7 +68,8 @@ export function ProductsConnected({ products, text }: { products: StoredProduct[
 
 /** "AI across the suite": built from the products' own AI features, so the list is exactly what exists. */
 export function ProductsAiSuite({ products, text }: { products: StoredProduct[]; text: Text }) {
-  const withAi = products.filter((p) => p.aiFeatures?.length);
+  // Only products with AI of their own: a product that says "No AI of its own" is not part of this list.
+  const withAi = products.filter(hasOwnAi);
   if (!withAi.length) return null;
   return (
     <section className="relative bg-background py-24 sm:py-32">
@@ -75,14 +77,15 @@ export function ProductsAiSuite({ products, text }: { products: StoredProduct[];
         <SectionHeader category={text["products.listing.ai.badge"]} heading={text["products.listing.ai.title"]} description={text["products.listing.ai.description"]} />
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {withAi.map((p, i) => {
-            const Icon = resolveIcon(p.aiFeatures![0].icon || p.iconName);
+            const feature = p.aiFeatures!.find((f) => !/^no ai of its own/i.test(f.title.trim()))!;
+            const Icon = resolveIcon(feature.icon || p.iconName);
             return (
               <Reveal key={p.slug} delay={(i % 3) * 0.08}>
                 <Link href={`${productHref(p.slug)}#ai`} className="group flex h-full flex-col rounded-2xl border border-border/50 bg-muted/20 p-6 transition-all hover:border-primary/40 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
                   <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10"><Icon className="h-5 w-5 text-primary" aria-hidden="true" /></span>
                   <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{label(p)}</p>
-                  <h3 className="mt-1 text-base font-bold text-foreground group-hover:text-primary">{p.aiFeatures![0].title}</h3>
-                  <p className="mt-2 line-clamp-4 text-sm leading-relaxed text-muted-foreground">{p.aiFeatures![0].description}</p>
+                  <h3 className="mt-1 text-base font-bold text-foreground group-hover:text-primary">{feature.title}</h3>
+                  <p className="mt-2 line-clamp-4 text-sm leading-relaxed text-muted-foreground">{feature.description}</p>
                   <span className="mt-auto inline-flex items-center gap-1.5 pt-4 text-sm font-semibold text-primary">
                     {text["products.card.explore"]} <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
                   </span>
@@ -107,8 +110,8 @@ export function ProductsCtaBand({ products, text, title, description, defaultPro
           <h2 id="demo-heading" className="mb-5 text-4xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-5xl">{title}</h2>
           <p className="mb-8 max-w-xl text-lg leading-relaxed text-muted-foreground">{description}</p>
           <div className="flex flex-wrap items-center gap-4">
-            <Link href="/signup" className="group inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-bold text-background shadow-lg shadow-foreground/10 transition-all hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background">
-              {text["products.cta.getStarted"]}
+            <Link href={SIGNUP_PATH} className={BTN_PRIMARY} data-signup-cta="final">
+              {text["products.cta.createAutomation"]}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
             </Link>
           </div>

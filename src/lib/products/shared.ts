@@ -160,3 +160,35 @@ export function pageContent(p: StoredProduct) {
     screenshots: p.screenshots ?? [],
   };
 }
+
+/** True when the product has AI of its own. A product whose AI entry says "No AI of its own" (it only has the suite's AI around it) does not. */
+export function hasOwnAi(p: Pick<StoredProduct, "aiFeatures">): boolean {
+  return Boolean(p.aiFeatures?.some((f) => !/^no ai of its own/i.test(f.title.trim())));
+}
+
+export type DetailSectionId = "problem" | "compare" | "overview" | "features" | "ai" | "automation" | "useCases" | "benefits" | "audience" | "integrations" | "faq" | "related";
+
+/**
+ * Which detail sections a product has content for, in page order, each with the background tone it gets
+ * (alternating, starting with the muted band right after the hero) so absent sections never leave two equal bands side by side.
+ */
+export function detailSectionTones(p: StoredProduct, all: StoredProduct[]): Partial<Record<DetailSectionId, "default" | "muted">> {
+  const c = pageContent(p);
+  const has: [DetailSectionId, boolean][] = [
+    ["problem", Boolean(c.problem || c.problems.length || c.problemIntro)],
+    ["compare", c.beforeAfter.length > 0],
+    ["overview", Boolean(c.overview || c.purpose || p.screens.length || c.screenshots.length)],
+    ["features", c.features.length > 0],
+    ["ai", c.ai.length > 0],
+    ["automation", c.workflows.length > 0],
+    ["useCases", c.useCases.length > 0 || c.scenarios.length > 0],
+    ["benefits", Boolean(c.benefits.length || c.outcome)],
+    ["audience", Boolean(c.audience || p.targetDepartments.length || p.targetUsers.length)],
+    ["integrations", c.integrations.length > 0],
+    ["faq", c.faq.length > 0],
+    ["related", relatedProducts(p, all, 1).length > 0],
+  ];
+  const out: Partial<Record<DetailSectionId, "default" | "muted">> = {};
+  has.filter(([, on]) => on).forEach(([id], i) => { out[id] = i % 2 === 0 ? "muted" : "default"; });
+  return out;
+}

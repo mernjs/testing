@@ -111,7 +111,6 @@ export const PRODUCTS_TEXT_DEFAULTS: Record<string, string> = {
   "products.detail.compare.after": "With it",
   "products.detail.band.title": "Create your own automated workspace",
   "products.detail.band.description": "Register your company and set up {name} with the rest of the platform: one sign-in, shared roles and automations that connect your work.",
-  "products.detail.nextStep": "Next step",
 
   // Demo form
   "products.demo.title": "Request a demo",
