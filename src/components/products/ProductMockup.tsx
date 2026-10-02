@@ -467,6 +467,37 @@ function MockupContent({ type }: { type: string }) {
         </div>
       );
 
+    case "automation-list":
+    case "automation-runs":
+      return (
+        <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-3">
+            <MetricWidget label="Trigger" value="A company event" change="Add conditions" icon={Zap} color="amber" />
+            <MetricWidget label="Actions" value="Email · Notify · Webhook" change="Up to five per rule" icon={Play} color="blue" />
+            <MetricWidget label="History" value="Every run" change="Result per action" icon={Clock} color="emerald" />
+          </div>
+          <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
+            <div className="flex items-center justify-between font-semibold text-foreground">
+              <span>{type === "automation-runs" ? "Run history" : "Automations"}</span>
+              <span className="text-muted-foreground text-[11px]">Sample data</span>
+            </div>
+            {type === "automation-runs" ? (
+              <>
+                <CandidateRow name="Invoice paid → email finance" role="Email" score="Success" status="Sent to finance" />
+                <CandidateRow name="New lead → notify sales" role="Notification" score="Success" status="Sales role notified" />
+                <CandidateRow name="Event → our system" role="Webhook" score="Failed" status="Endpoint not reachable" />
+              </>
+            ) : (
+              <>
+                <CandidateRow name="New lead → notify sales" role="When: Lead created" score="On" status="Last run: success" />
+                <CandidateRow name="Invoice paid → email finance" role="When: Invoice paid" score="On" status="Last run: success" />
+                <CandidateRow name="Task completed → notify project managers" role="When: Task completed" score="Off" status="Not run yet" />
+              </>
+            )}
+          </div>
+        </div>
+      );
+
     default:
       return (
         <div className="space-y-4">

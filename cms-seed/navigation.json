@@ -124,6 +124,13 @@
   },
   "items": [
    {
+    "name": "Business Automation",
+    "href": "/products/business-automation-saas",
+    "description": "Events in any product become emails, notifications and webhooks, on your rules",
+    "iconKey": "Workflow",
+    "group": "Executive & Operations"
+   },
+   {
     "name": "AI Assistants",
     "href": "/products/aibots-studio",
     "description": "Build assistants that answer from your own documents",
