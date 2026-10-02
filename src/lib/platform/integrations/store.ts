@@ -1,4 +1,5 @@
 import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
+import { productionRootDomain } from "@/lib/platform/tenancy/root-domain";
 import type { EncryptedValue } from "@/lib/platform/crypto";
 
 /**
@@ -88,12 +89,14 @@ export function bustIntegrationsCache(): void {
 
 /**
  * The root domain company subdomains live under, from the DB when set,
- * else `PLATFORM_ROOT_DOMAIN` (first entry), else `localhost`. Synchronous:
+ * else `PLATFORM_ROOT_DOMAIN` (first entry), else — on Vercel production only —
+ * the domain implied by the production URL (`www.yashorbit.com` → `yashorbit.com`),
+ * else `localhost` (development). Synchronous:
  * reads the cached document, which the proxy (every page request) and the
  * provisioning path load before use.
  */
 export function resolvedRootDomain(): string {
   const db = cachedIntegrationsDoc()?.domains?.rootDomain?.trim().toLowerCase();
   if (db) return db;
-  return (process.env.PLATFORM_ROOT_DOMAIN ?? "").split(",")[0].trim().toLowerCase() || "localhost";
+  return (process.env.PLATFORM_ROOT_DOMAIN ?? "").split(",")[0].trim().toLowerCase() || productionRootDomain() || "localhost";
 }

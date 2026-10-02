@@ -10,6 +10,7 @@ import { getPlatformSettings, reservedSlugError } from "@/lib/platform/settings"
 import { getDb } from "@/lib/mongodb";
 import { publishStarterWebsite } from "@/lib/platform/website/starter";
 import { startTrial } from "@/lib/platform/billing/subscription";
+import { isSubdomainOfRoot, rootDomainFromHost } from "@/lib/platform/tenancy/root-domain";
 
 /**
  * Creating a company (tenant): the one code path shared by self-serve sign-up
@@ -34,6 +35,14 @@ export function platformRootDomain(): string {
 }
 
 /** `<slug>.<root>` — every company's automatic address. */
+/**
+ * True when the hosting project has the wildcard domain `*.<root>` (`PLATFORM_WILDCARD_SUBDOMAINS=1`): company subdomains
+ * are then not attached one by one. See docs/deploy-vercel.md.
+ */
+export function wildcardSubdomainsEnabled(): boolean {
+  return /^(1|true|yes|on)$/i.test((process.env.PLATFORM_WILDCARD_SUBDOMAINS ?? "").trim());
+}
+
 export function companySubdomain(slug: string): string {
   return `${slug}.${platformRootDomain()}`;
 }
@@ -44,7 +53,16 @@ export function companySubdomain(slug: string): string {
  * `*.localhost` resolves to the same machine.
  */
 export function companyBaseUrl(slug: string, hostHint?: string | null): string {
-  const root = platformRootDomain();
+  let root = platformRootDomain();
+  if (root === "localhost" && process.env.NODE_ENV === "production") {
+    // Production with no root domain configured must never print a localhost address: derive it from the host the
+    // request came in on, and say so loudly — the real fix is PLATFORM_ROOT_DOMAIN (see docs/deploy-vercel.md).
+    const derived = rootDomainFromHost(hostHint);
+    if (derived) {
+      console.error(`[tenancy] PLATFORM_ROOT_DOMAIN is not set; using "${derived}" from the request host. Set PLATFORM_ROOT_DOMAIN=${derived} in the environment.`);
+      root = derived;
+    }
+  }
   if (root === "localhost") {
     const port = hostHint?.match(/:(\d+)$/)?.[1] ?? process.env.PORT ?? "3000";
     return `http://${slug}.localhost:${port}`;
@@ -159,6 +177,13 @@ export async function syncAtProvider(host: string, op: "add" | "status" | "verif
   const domains = platform.collection<CompanyDomain>(COMPANY_DOMAINS_COLLECTION);
   // A *.localhost address needs nothing attached anywhere.
   if (host.endsWith(".localhost")) return { providerId: "none", status: null, error: null };
+  // With a wildcard domain (*.<root>) on the hosting project, every automatic company address is already served with TLS:
+  // nothing is attached per company (which also keeps the project's domain count flat). Custom domains are never covered.
+  if (wildcardSubdomainsEnabled() && isSubdomainOfRoot(host, platformRootDomain())) {
+    const state: DomainStatus = { attached: true, verified: true, dnsConfigured: true, records: [] };
+    await domains.updateOne({ _id: host }, { $set: { provider: { id: "wildcard", ...state, error: null, checkedAt: new Date(), challenged: false } } });
+    return { providerId: "wildcard", status: state, error: null };
+  }
   const provider = await activeDomainProvider();
   let error: string | null = null;
   let status: DomainStatus | null = null;

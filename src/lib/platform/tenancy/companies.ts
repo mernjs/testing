@@ -2,6 +2,7 @@ import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import type { DnsRecord } from "@/lib/platform/domains/types";
 import { RESERVED_SLUGS } from "@/lib/platform/tenancy/slug";
 import { cachedIntegrationsDoc, loadIntegrationsDoc } from "@/lib/platform/integrations/store";
+import { productionRootDomain } from "@/lib/platform/tenancy/root-domain";
 
 /**
  * The company (tenant) registry and host → company routing. Both
@@ -83,13 +84,16 @@ export function normalizeHost(host: string | null | undefined): string | null {
 }
 
 function platformHosts(): Set<string> {
-  return new Set(["localhost", "127.0.0.1", ...envList("PLATFORM_HOSTS", "VERCEL_URL", "VERCEL_BRANCH_URL", "VERCEL_PROJECT_PRODUCTION_URL")]);
+  // The root domain itself and www.<root> (https://www.yashorbit.com) are the platform owner's own site: no env entry needed.
+  const roots = platformRootDomains().filter((r) => r !== "localhost");
+  return new Set(["localhost", "127.0.0.1", ...roots, ...roots.map((r) => `www.${r}`), ...envList("PLATFORM_HOSTS", "VERCEL_URL", "VERCEL_BRANCH_URL", "VERCEL_PROJECT_PRODUCTION_URL")]);
 }
 
 /** `localhost`, every `PLATFORM_ROOT_DOMAIN` entry, and the root domain saved in Platform Panel → Integrations. */
 function platformRootDomains(): string[] {
   const saved = normalizeHost(cachedIntegrationsDoc()?.domains?.rootDomain);
-  return ["localhost", ...envList("PLATFORM_ROOT_DOMAIN"), ...(saved ? [saved] : [])];
+  const derived = productionRootDomain();
+  return ["localhost", ...envList("PLATFORM_ROOT_DOMAIN"), ...(saved ? [saved] : []), ...(derived ? [derived] : [])];
 }
 
 /**
