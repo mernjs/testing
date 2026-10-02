@@ -9,6 +9,9 @@ import type { CurrentHubUser } from "@/lib/hub-auth";
 import type { ResolvedNav } from "@/lib/workspace/nav";
 import SetupBanner from "@/components/workspace/SetupBanner";
 import { setupStripNeeded } from "@/lib/platform/onboarding/state";
+import VerifyEmailBanner, { VerifiedNotice } from "@/components/workspace/VerifyEmailBanner";
+import { showVerifyStrip } from "@/lib/platform/email-verification-rule";
+import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 
 /**
  * The Workspace frame: sidebar, top bar, billing notice. One layout
@@ -17,10 +20,17 @@ import { setupStripNeeded } from "@/lib/platform/onboarding/state";
  * onboarding and upgrade — so the whole company-level area is one application.
  *
  * A company owner whose setup is not completed also gets the "Complete setup"
- * strip (`SetupBanner`) on every page except the wizard itself.
+ * strip (`SetupBanner`) on every page except the wizard itself; a user whose
+ * email isn't verified gets the "Verify email" strip (`VerifyEmailBanner`) above it.
+ * Neither blocks anything.
  */
 export default async function WorkspaceShell({ user, nav, children }: { user: CurrentHubUser; nav: ResolvedNav; children: React.ReactNode }) {
-  const [unread, setup] = await Promise.all([workspaceUnreadCount(user).catch(() => 0), setupStripNeeded(user.roles).catch(() => ({ show: false, done: 0, total: 0 }))]);
+  const [unread, setup, ownCompany] = await Promise.all([
+    workspaceUnreadCount(user).catch(() => 0),
+    setupStripNeeded(user.roles).catch(() => ({ show: false, done: 0, total: 0 })),
+    isPlatformOwnerContext().catch(() => false),
+  ]);
+  const verifyStrip = showVerifyStrip({ emailVerified: user.emailVerified !== false, isPlatformOwnerCompany: ownCompany });
 
   return (
     <TooltipProvider delay={200}>
@@ -38,6 +48,7 @@ export default async function WorkspaceShell({ user, nav, children }: { user: Cu
               <HubTopbar email={user.email} nav={nav.sections} unread={unread} />
             </div>
             <BillingNotice />
+            {verifyStrip && <VerifyEmailBanner email={user.email} />}
             {setup.show && <SetupBanner done={setup.done} total={setup.total} />}
             <main id="workspace-content" className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">
               {children}
@@ -45,6 +56,7 @@ export default async function WorkspaceShell({ user, nav, children }: { user: Cu
           </div>
         </div>
       </SidebarCollapseProvider>
+      <VerifiedNotice />
       <Toaster position="top-right" richColors closeButton />
     </TooltipProvider>
   );

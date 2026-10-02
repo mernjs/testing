@@ -198,6 +198,9 @@ export async function acceptInvitation(token: string, input: { name: string; pas
     permissionOverrides: {},
     employeeId: employee?._id ?? null,
     mustChangePassword: false,
+    // The invitation link was sent to this address, so it is verified by accepting.
+    emailVerified: true,
+    emailVerifiedAt: new Date(),
     failedLoginAttempts: 0,
     lockedUntil: null,
     createdAt: new Date(),

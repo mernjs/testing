@@ -73,7 +73,8 @@ export function companyBaseUrl(slug: string, hostHint?: string | null): string {
 export interface NewCompany {
   name: string;
   slug: string;
-  owner: { email: string; name: string; passwordHash: string; mustChangePassword: boolean };
+  /** `emailVerified` omitted = the field isn't written (counts as verified: scripts, seeders). Self-serve sign-up passes false. */
+  owner: { email: string; name: string; passwordHash: string; mustChangePassword: boolean; emailVerified?: boolean };
 }
 
 export type ProvisionResult = { ok: true; companyId: string; adminId: string; host: string; hostingError: string | null } | { ok: false; error: string };
@@ -124,6 +125,7 @@ export async function createCompanyWithOwner(input: NewCompany): Promise<Provisi
       notes: `Founding Super Admin of ${company.name}`,
       employeeId: null,
       mustChangePassword: input.owner.mustChangePassword,
+      ...(input.owner.emailVerified === undefined ? {} : { emailVerified: input.owner.emailVerified, ...(input.owner.emailVerified ? { emailVerifiedAt: now } : {}) }),
       failedLoginAttempts: 0,
       lockedUntil: null,
       createdAt: now,

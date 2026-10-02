@@ -70,7 +70,14 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
           </CardHeader>
           <CardContent>
             <dl className="grid gap-4 sm:grid-cols-3">
-              <Field label="Owner">{company.ownerEmail ?? "—"}</Field>
+              <Field label="Owner">
+                {company.ownerEmail ?? "—"}
+                {company.ownerEmail && !company.isPlatformOwner && (
+                  <Badge variant={company.ownerEmailVerified ? "secondary" : "outline"} className="ml-2 align-middle" id="owner-email-status">
+                    {company.ownerEmailVerified ? "Email verified" : "Email not verified"}
+                  </Badge>
+                )}
+              </Field>
               <Field label="Users">{company.userCount}</Field>
               <Field label="Last sign-in">{company.lastSignInAt ? formatDateTime(company.lastSignInAt) : "Never"}</Field>
               <Field label="Created">{formatDate(company.createdAt)}</Field>

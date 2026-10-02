@@ -34,6 +34,7 @@ interface HubUserDoc {
   roles?: string[];
   permissionOverrides?: Record<string, boolean>;
   mustChangePassword?: boolean;
+  emailVerified?: boolean;
 }
 
 interface HubSessionDoc {
@@ -53,6 +54,8 @@ export interface CurrentHubUser {
   /** The Super Admin's per-user capability overrides (`permission-overrides.ts`). */
   permissionOverrides?: Record<string, boolean>;
   mustChangePassword: boolean;
+  /** false only for a new sign-up that hasn't verified its email; a missing field counts as verified. */
+  emailVerified?: boolean;
   createdAt: Date;
   lastLoginAt: Date | null;
 }
@@ -153,6 +156,7 @@ export async function getSessionHubUser(token: string | undefined | null): Promi
     roles: user.roles ?? [],
     permissionOverrides: user.permissionOverrides ?? {},
     mustChangePassword: user.mustChangePassword === true,
+    emailVerified: user.emailVerified !== false,
     createdAt: user.createdAt,
     lastLoginAt: user.lastLoginAt,
   };

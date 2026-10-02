@@ -35,6 +35,8 @@ export interface CompanyRow {
   status: CompanyStatus;
   isPlatformOwner: boolean;
   ownerEmail: string | null;
+  /** false only when the owner signed up and hasn't verified their email yet (missing field = verified). */
+  ownerEmailVerified: boolean;
   userCount: number;
   domains: string[];
   onboarding: OnboardingProgress;
@@ -56,7 +58,7 @@ async function db() {
   return {
     companies: platform.collection<CompanyDoc>(COMPANIES_COLLECTION),
     domains: platform.collection<CompanyDomain>(COMPANY_DOMAINS_COLLECTION),
-    users: platform.collection<{ companyId: string; email: string; roles?: string[]; createdAt?: Date; lastLoginAt?: Date | null }>(USERS),
+    users: platform.collection<{ companyId: string; email: string; emailVerified?: boolean; roles?: string[]; createdAt?: Date; lastLoginAt?: Date | null }>(USERS),
   };
 }
 
@@ -73,13 +75,14 @@ async function companyFacts(ids: string[]) {
   const [counts, owners, domainRows] = await Promise.all([
     users.aggregate<{ _id: string; users: number; lastLoginAt: Date | null }>([{ $match: { companyId: { $in: ids } } }, { $group: { _id: "$companyId", users: { $sum: 1 }, lastLoginAt: { $max: "$lastLoginAt" } } }]).toArray(),
     users
-      .aggregate<{ _id: string; email: string }>([{ $match: { companyId: { $in: ids }, roles: "super_admin" } }, { $sort: { createdAt: 1, _id: 1 } }, { $group: { _id: "$companyId", email: { $first: "$email" } } }])
+      .aggregate<{ _id: string; email: string; verified: boolean }>([{ $match: { companyId: { $in: ids }, roles: "super_admin" } }, { $sort: { createdAt: 1, _id: 1 } }, { $group: { _id: "$companyId", email: { $first: "$email" }, verified: { $first: { $ne: ["$emailVerified", false] } } } }])
       .toArray(),
     domains.find({ companyId: { $in: ids } }).sort({ isPrimary: -1, _id: 1 }).toArray(),
   ]);
   return {
     count: new Map(counts.map((c) => [c._id, c])),
     owner: new Map(owners.map((o) => [o._id, o.email])),
+    ownerVerified: new Map(owners.map((o) => [o._id, o.verified])),
     domains: domainRows.reduce((m, d) => m.set(d.companyId, [...(m.get(d.companyId) ?? []), d]), new Map<string, CompanyDomain[]>()),
   };
 }
@@ -92,6 +95,7 @@ function toRow(c: CompanyDoc, facts: Awaited<ReturnType<typeof companyFacts>>): 
     status: c.status,
     isPlatformOwner: Boolean(c.isPlatformOwner),
     ownerEmail: facts.owner.get(c._id) ?? null,
+    ownerEmailVerified: facts.ownerVerified.get(c._id) ?? true,
     userCount: facts.count.get(c._id)?.users ?? 0,
     domains: (facts.domains.get(c._id) ?? []).map((d) => d._id),
     onboarding: progress(c.onboarding),
