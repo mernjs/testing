@@ -344,16 +344,16 @@
 }
 
 /* Dark mode of every theme except the default: a light, clearly visible gradient page built from the theme's own primary and
-   secondary, lifted with white so it is never near-black. Cards, headers and the sidebar sit on top of it. */
+   secondary, lifted with white so it is never near-black. Cards, headers and the sidebar sit on top of it.
+   (Each color-mix uses ONE percentage: two that sum below 100% would make the colour translucent over the dark page.) */
 html[data-ui="modern"].dark .bg-canvas,
 html[data-ui="modern"].dark body {
-  background-color: color-mix(in oklch, var(--primary) 40%, white 12%);
+  --g-primary: color-mix(in oklch, var(--primary) 58%, var(--background));
+  --g-secondary: color-mix(in oklch, color-mix(in oklch, var(--secondary) 55%, var(--primary)) 62%, var(--background));
+  background-color: var(--g-primary);
   background-image:
-    radial-gradient(70rem 40rem at 90% -10%, color-mix(in oklch, var(--primary) 55%, white 25%), transparent 62%),
-    radial-gradient(60rem 36rem at 0% 105%, color-mix(in oklch, var(--secondary) 60%, white 14%), transparent 64%),
-    linear-gradient(135deg,
-      color-mix(in oklch, var(--primary) 50%, white 14%),
-      color-mix(in oklch, var(--secondary) 62%, white 10%) 55%,
-      color-mix(in oklch, var(--primary) 42%, white 12%));
+    radial-gradient(70rem 40rem at 90% -10%, color-mix(in oklch, var(--primary) 78%, var(--background)), transparent 62%),
+    radial-gradient(60rem 36rem at 0% 105%, var(--g-secondary), transparent 64%),
+    linear-gradient(135deg, var(--g-primary), var(--g-secondary) 55%, var(--g-primary));
   background-attachment: fixed;
 }
