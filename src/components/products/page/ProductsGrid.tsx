@@ -11,11 +11,8 @@ import { resolveIcon } from "@/lib/cms/icon-map";
 import { fillText } from "@/lib/products/text";
 import { capabilityChips, groupByCategory, productHref, SIGNUP_PATH, type StoredProduct } from "@/lib/products/shared";
 
-/** Where "Explore the Platform" goes: the Workspace product page, else the connected-platform section further down. */
-const PLATFORM_PRODUCT = "staff-hub";
-
 /**
- * The /products listing, built like the site's other listing pages: a featured card on top (the business-automation SaaS),
+ * The /products listing, built like the site's other listing pages: a featured card on top (the whole connected automation platform),
  * then the filter pills of the careers board and the same `ListingCard` grid Services and Industries use.
  * Every product is in the server-rendered HTML; the pills only narrow the view.
  */
@@ -23,8 +20,9 @@ export default function ProductsGrid({ products, text }: { products: StoredProdu
   const groups = useMemo(() => groupByCategory(products), [products]);
   const [active, setActive] = useState<string>("");
   const shown = active ? products.filter((p) => p.category === active) : products;
-  const platformHref = products.some((p) => p.slug === PLATFORM_PRODUCT) ? productHref(PLATFORM_PRODUCT) : "#platform";
-  const chips = [1, 2, 3, 4].map((n) => text[`products.featured.chip${n}`]).filter(Boolean);
+  // Where "Explore the Platform" (and the card itself) goes: an editable text key.
+  const platformHref = text["products.featured.href"];
+  const chips = [1, 2, 3, 4].map((n) => text[`products.featured.point${n}`]).filter(Boolean);
   const pill = (value: string, label: string, count: number) => (
     <button
       key={value || "all"}
@@ -51,9 +49,9 @@ export default function ProductsGrid({ products, text }: { products: StoredProdu
             badgeIcon={Sparkles}
             title={text["products.featured.title"]}
             subtitle={text["products.featured.subtitle"]}
-            description={text["products.featured.description"]}
+            description={text["products.featured.pitch"]}
             highlights={chips}
-            href={SIGNUP_PATH}
+            href={platformHref}
             image={nextImageSrc(text["products.featured.image"])}
             actions={
               <div className="flex flex-wrap items-center gap-3">
