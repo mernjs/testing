@@ -23,6 +23,17 @@ interface PageHeroProps {
   image: string;
   /** Overrides the default "Start a Project" → /contact primary CTA. Set `external: true` for mailto/tel/off-site links. */
   primaryCta?: { label: string; href: string; external?: boolean };
+  /** Optional overrides used by pages that are not a service detail (the Products pages); omitted, the hero renders exactly as before. */
+  /** Replaces the Home › category › title breadcrumb. The last crumb is the current page. */
+  crumbs?: { label: string; href?: string }[];
+  /** Replaces the default CTA row. */
+  actions?: React.ReactNode;
+  /** Replaces the two floating badges over the image card. */
+  floatingBadges?: [{ title: string; text: string }, { title: string; text: string }];
+  /** A smaller, wrapping title for long names. */
+  longTitle?: boolean;
+  /** Rendered under the two columns inside the hero (e.g. a stat strip). */
+  children?: React.ReactNode;
 }
 
 export default function PageHero({
@@ -34,6 +45,11 @@ export default function PageHero({
   icon: Icon,
   image,
   primaryCta = { label: "Start a Project", href: "/contact", external: false },
+  crumbs,
+  actions,
+  floatingBadges,
+  longTitle = false,
+  children,
 }: PageHeroProps) {
   const l = useUiLabels();
   const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
@@ -92,17 +108,32 @@ export default function PageHero({
               initial="hidden"
               animate="visible"
               variants={fadeIn}
-              className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-6"
+              className="flex flex-wrap items-center gap-2 text-sm font-medium text-muted-foreground mb-6"
             >
-              <Link href="/" className="hover:text-primary transition-colors">
-                {l.breadcrumbHome}
-              </Link>
-              <ChevronRight className="w-4 h-4" />
-              <Link href={`/${category}`} className="hover:text-primary transition-colors capitalize">
-                {categoryLabel}
-              </Link>
-              <ChevronRight className="w-4 h-4" />
-              <span className="text-foreground">{title}</span>
+              {crumbs ? (
+                crumbs.map((c, i) => (
+                  <React.Fragment key={`${c.label}-${i}`}>
+                    {i > 0 && <ChevronRight className="w-4 h-4" />}
+                    {c.href && i < crumbs.length - 1 ? (
+                      <Link href={c.href} className="hover:text-primary transition-colors">{c.label}</Link>
+                    ) : (
+                      <span aria-current={i === crumbs.length - 1 ? "page" : undefined} className="text-foreground">{c.label}</span>
+                    )}
+                  </React.Fragment>
+                ))
+              ) : (
+                <>
+                <Link href="/" className="hover:text-primary transition-colors">
+                  {l.breadcrumbHome}
+                </Link>
+                <ChevronRight className="w-4 h-4" />
+                <Link href={`/${category}`} className="hover:text-primary transition-colors capitalize">
+                  {categoryLabel}
+                </Link>
+                <ChevronRight className="w-4 h-4" />
+                <span className="text-foreground">{title}</span>
+                </>
+              )}
             </motion.div>
 
             <motion.div initial="hidden" animate="visible" variants={stagger}>
@@ -115,7 +146,7 @@ export default function PageHero({
               </motion.div>
               <motion.h1
                 variants={fadeIn}
-                className="text-5xl font-black tracking-tight text-foreground sm:text-6xl mb-6 leading-[1.1]"
+                className={`${longTitle ? "text-4xl sm:text-5xl lg:text-6xl [overflow-wrap:anywhere]" : "text-5xl sm:text-6xl"} font-black tracking-tight text-foreground mb-6 leading-[1.1]`}
               >
                 {title}
               </motion.h1>
@@ -125,7 +156,9 @@ export default function PageHero({
               <motion.p variants={fadeIn} className="text-lg leading-relaxed text-muted-foreground max-w-xl mb-10">
                 {description}
               </motion.p>
-              <motion.div variants={fadeIn} className="flex flex-wrap items-center gap-4">
+              <motion.div variants={fadeIn} className={actions ? undefined : "flex flex-wrap items-center gap-4"}>
+                {actions ?? (
+                  <>
                 {primaryCta.external ? (
                   <a
                     href={primaryCta.href}
@@ -147,6 +180,8 @@ export default function PageHero({
                 >
                   View all {categoryLabel}
                 </Link>
+                  </>
+                )}
               </motion.div>
             </motion.div>
           </div>
@@ -178,8 +213,8 @@ export default function PageHero({
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold">{l.heroBadgeOneTitle}</div>
-                  <div className="text-xs text-muted-foreground">{l.heroBadgeOneText}</div>
+                  <div className="text-sm font-bold">{floatingBadges ? floatingBadges[0].title : l.heroBadgeOneTitle}</div>
+                  <div className="text-xs text-muted-foreground">{floatingBadges ? floatingBadges[0].text : l.heroBadgeOneText}</div>
                 </div>
               </motion.div>
 
@@ -192,13 +227,14 @@ export default function PageHero({
                   <Users className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold">{l.heroBadgeTwoTitle}</div>
-                  <div className="text-xs text-muted-foreground">{l.heroBadgeTwoText}</div>
+                  <div className="text-sm font-bold">{floatingBadges ? floatingBadges[1].title : l.heroBadgeTwoTitle}</div>
+                  <div className="text-xs text-muted-foreground">{floatingBadges ? floatingBadges[1].text : l.heroBadgeTwoText}</div>
                 </div>
               </motion.div>
             </div>
           </motion.div>
         </div>
+        {children}
       </div>
     </section>
   );

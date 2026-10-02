@@ -128,6 +128,17 @@ export const productsCollection: CollectionDef<StoredProduct, ProductItem> = {
       return src ? { src, alt: str(o.alt, 300), caption: str(o.caption, 300) } : null;
     }, 12);
     if (screenshots.length) p.screenshots = screenshots;
+    const problemIntro = str(r.problemIntro, 1000);
+    if (problemIntro) p.problemIntro = problemIntro;
+    const problems = pageItems(r.problems, 8);
+    if (problems.length) p.problems = problems;
+    const beforeAfter = objArr(r.beforeAfter, (x) => {
+      const o = record(x);
+      const before = str(o.before, 400);
+      const after = str(o.after, 400);
+      return before && after ? { before, after } : null;
+    }, 8);
+    if (beforeAfter.length) p.beforeAfter = beforeAfter;
     const ctas = record(r.ctas);
     const primary = ctaKind(ctas.primary);
     const secondary = ctaKind(ctas.secondary);
@@ -173,6 +184,9 @@ export const productsCollection: CollectionDef<StoredProduct, ProductItem> = {
     { key: "scenarios", label: "Page: supported business scenarios", kind: "list" },
     { key: "faq", label: "Page: FAQ", kind: "items", fields: [{ key: "q", label: "Question", kind: "text" }, { key: "a", label: "Answer", kind: "textarea" }] },
     { key: "audience", label: "Page: who it is for", kind: "textarea" },
+    { key: "problemIntro", label: "Page: the problem it solves — introduction (general operational challenges only)", kind: "textarea" },
+    { key: "problems", label: "Page: the problem it solves — problem cards (4-6)", kind: "items", fields: PAGE_ITEM },
+    { key: "beforeAfter", label: "Page: without it / with it — pairs (3-4); \"with it\" must be something the product really does", kind: "items", fields: [{ key: "before", label: "Without it", kind: "textarea" }, { key: "after", label: "With it", kind: "textarea" }] },
     { key: "screenshots", label: "Page: screenshots (optional — the interactive preview is always shown)", kind: "items", fields: [{ key: "src", label: "Image", kind: "image" }, { key: "alt", label: "Alt text", kind: "text" }, { key: "caption", label: "Caption", kind: "text" }] },
     { key: "ctas", label: "Page: call-to-action override", kind: "group", fields: [{ key: "primary", label: "Primary", kind: "select", options: [...CTA_KINDS] }, { key: "secondary", label: "Secondary", kind: "select", options: [...CTA_KINDS] }] },
   ],

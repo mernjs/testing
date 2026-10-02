@@ -194,6 +194,10 @@ export interface ProductItem {
   /** "Who it's for" paragraph. */
   audience?: string;
   screenshots?: ProductScreenshot[];
+  /** "The problem it solves": lead-in paragraph, then the cards and the without/with comparison. All optional: the section falls back to `problemSolved`. */
+  problemIntro?: string;
+  problems?: ProductProblem[];
+  beforeAfter?: ProductBeforeAfter[];
   /** Override which CTAs the page shows. */
   ctas?: { primary?: ProductCtaKind; secondary?: ProductCtaKind };
 }
@@ -203,6 +207,16 @@ export interface ProductPageItem {
   description: string;
   /** Icon-map key. */
   icon?: string;
+}
+export interface ProductProblem {
+  title: string;
+  description: string;
+  /** Icon-map key (optional; a default is picked by position). */
+  icon?: string;
+}
+export interface ProductBeforeAfter {
+  before: string;
+  after: string;
 }
 export interface ProductWorkflow {
   title: string;

@@ -14,6 +14,8 @@ import type { SiteInfo } from "@/lib/cms/site-info-shared";
 import { loadAndToggleTawk } from "@/lib/tawk";
 import { resolveIcon } from "@/lib/cms/icon-map";
 import type { PublicNavTop } from "@/lib/cms/nav";
+import { isProductsHref, SIGNUP_PATH } from "@/lib/products/shared";
+import { resolveProductsText } from "@/lib/products/text";
 
 function Logo({ className }: { className?: string }) {
   return (
@@ -65,21 +67,17 @@ interface NavColumn {
   name: string;
   href: string;
   featured: { title: string; description: string; image: string };
-  items: { name: string; href: string; description: string; group: string; icon: React.ComponentType<{ className?: string }> }[];
+  items: { name: string; href: string; description: string; icon: React.ComponentType<{ className?: string }> }[];
 }
 
-/** Items in first-appearance group order: [{ group, items }]. A menu with no groups is a single unnamed group. */
-function groupItems<T extends { group: string }>(items: T[]): { group: string; items: T[] }[] {
-  const out: { group: string; items: T[] }[] = [];
-  for (const it of items) {
-    const g = out.find((x) => x.group === it.group);
-    if (g) g.items.push(it);
-    else out.push({ group: it.group, items: [it] });
-  }
-  return out;
+/** A menu's featured card can carry one extra call to action (the Products menu: sign up for the business-automation SaaS). */
+interface FeaturedCta {
+  label: string;
+  href: string;
+  viewAllLabel: string;
 }
 
-function FeaturedCard({ item, featuredLabel }: { item: NavColumn; featuredLabel: string }) {
+function FeaturedCard({ item, featuredLabel, cta }: { item: NavColumn; featuredLabel: string; cta?: FeaturedCta }) {
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
   const springConfig = { stiffness: 200, damping: 20, mass: 0.5 };
@@ -101,7 +99,7 @@ function FeaturedCard({ item, featuredLabel }: { item: NavColumn; featuredLabel:
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ rotateX, rotateY, transformPerspective: 800 }}
-      className="col-span-2 group/card"
+      className="col-span-2 group/card relative"
     >
       <Link
         href={item.href}
@@ -128,19 +126,29 @@ function FeaturedCard({ item, featuredLabel }: { item: NavColumn; featuredLabel:
           {featuredLabel}
         </span>
 
-        <div className="relative z-10 h-full min-h-[200px] flex flex-col justify-end" style={{ transform: "translateZ(20px)" }}>
+        <div className={`relative z-10 h-full min-h-[200px] flex flex-col justify-end ${cta ? "pb-14" : ""}`} style={{ transform: "translateZ(20px)" }}>
           <h3 className="text-xl font-bold text-white mb-2 group-hover/card:translate-x-0.5 transition-transform duration-300">
             {item.featured.title}
           </h3>
           <p className="text-sm text-white/70 mb-4">{item.featured.description}</p>
           <span className="inline-flex items-center gap-2 text-sm font-semibold text-white">
-            View all {item.name}
+            {cta ? cta.viewAllLabel : `View all ${item.name}`}
             <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center group-hover/card:bg-primary transition-colors duration-300">
               <ArrowRight className="w-3.5 h-3.5 group-hover/card:translate-x-0.5 transition-transform" />
             </span>
           </span>
         </div>
       </Link>
+      {cta && (
+        // A sibling of the card's own link (links cannot nest), laid over its bottom edge.
+        <Link
+          href={cta.href}
+          className="absolute bottom-6 left-6 z-20 inline-flex max-w-[calc(100%-3rem)] items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold text-black shadow-lg transition-all hover:scale-105 hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+        >
+          <span className="truncate">{cta.label}</span>
+          <ArrowRight className="h-3.5 w-3.5 flex-none" />
+        </Link>
+      )}
     </motion.div>
   );
 }
@@ -154,7 +162,8 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
   const menuOnly = variant === "menu";
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   // Brand, CTA, contact details and social links: CMS → Site Identity.
-  const { brand, header, contact, social } = useSiteInfo();
+  const { brand, header, contact, social, text: siteText } = useSiteInfo();
+  const productsText = React.useMemo(() => resolveProductsText(siteText), [siteText]);
   const mobileContactLinks = React.useMemo(() => mobileContactLinksFor(header, contact.whatsappHref), [header, contact.whatsappHref]);
   const [activeMenu, setActiveMenu] = React.useState<string | null>(null);
   const [openMobileSection, setOpenMobileSection] = React.useState<string | null>(null);
@@ -174,7 +183,7 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
         name: top.name,
         href: top.href,
         featured: top.featured,
-        items: top.items.map((i) => ({ name: i.name, href: i.href, description: i.description ?? "", group: i.group ?? "", icon: resolveIcon(i.iconKey) })),
+        items: top.items.map((i) => ({ name: i.name, href: i.href, description: i.description ?? "", icon: resolveIcon(i.iconKey) })),
       })),
     [cmsNavigation]
   );
@@ -184,7 +193,7 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
         name: top.name,
         href: top.href,
         icon: resolveIcon(top.iconKey),
-        items: top.items.map((i) => ({ name: i.name, href: i.href, group: i.group ?? "", icon: resolveIcon(i.iconKey) })),
+        items: top.items.map((i) => ({ name: i.name, href: i.href, icon: resolveIcon(i.iconKey) })),
       })),
     [cmsNavigation]
   );
@@ -270,43 +279,16 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                       <div className="relative w-full flex-auto">
                         <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-primary/20 via-primary/0 to-secondary/20 blur-2xl pointer-events-none" />
 
-                        <div className={`relative w-full flex-auto overflow-hidden rounded-3xl backdrop-blur-2xl shadow-2xl ring-1 ring-border border border-border/50 ${
-                          // The large grouped menu (Products) sits over big hero text: keep it solid so the page behind never shows through.
-                          item.items.some((x) => x.group) ? "bg-background dark:bg-card" : "bg-background/95 dark:bg-muted/20"
-                        }`}>
+                        <div className="relative w-full flex-auto overflow-hidden rounded-3xl bg-background/95 dark:bg-muted/20 backdrop-blur-2xl shadow-2xl ring-1 ring-border border border-border/50">
                           <div className="h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
-                          {item.items.some((x) => x.group) ? (
-                            <div className="p-5">
-                              <div className="grid max-h-[calc(100vh-220px)] grid-cols-3 gap-x-6 gap-y-5 overflow-y-auto pr-1">
-                                {groupItems(item.items).map((g) => (
-                                  <div key={g.group || "_"} className="min-w-0">
-                                    {g.group && <p className="mb-1.5 px-2.5 text-[11px] font-bold uppercase tracking-wider text-primary">{g.group}</p>}
-                                    {g.items.map((subItem) => (
-                                      <Link key={subItem.href} href={subItem.href} className="group relative flex items-start gap-3 rounded-xl p-2.5 hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-colors">
-                                        <div className="flex h-9 w-9 flex-none items-center justify-center rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 border border-border/50 group-hover:from-primary group-hover:to-[#ff8e75] group-hover:border-primary transition-all duration-300">
-                                          <subItem.icon className="h-4 w-4 text-muted-foreground group-hover:text-white transition-colors duration-300" />
-                                        </div>
-                                        <div className="min-w-0 flex-1">
-                                          <div className="font-semibold text-foreground text-sm mb-0.5 group-hover:text-primary transition-colors truncate">{subItem.name}</div>
-                                          <p className="text-xs text-muted-foreground line-clamp-2">{subItem.description}</p>
-                                        </div>
-                                      </Link>
-                                    ))}
-                                  </div>
-                                ))}
-                              </div>
-                              <div className="mt-4 flex items-center justify-between border-t border-border/50 pt-4">
-                                <p className="text-xs text-muted-foreground">{item.featured.description}</p>
-                                <Link href={item.href} className="group inline-flex flex-none items-center gap-1.5 text-sm font-semibold text-primary">
-                                  View all {item.name.toLowerCase()}
-                                  <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
-                                </Link>
-                              </div>
-                            </div>
-                          ) : (
                           <div className="grid grid-cols-5 p-2">
-                            <FeaturedCard item={item} featuredLabel={header.featuredLabel} />
-                            <div className="col-span-3 p-5 grid grid-cols-2 gap-x-6 gap-y-2.5">
+                            <FeaturedCard
+                              item={item}
+                              featuredLabel={header.featuredLabel}
+                              cta={isProductsHref(item.href) ? { label: productsText["products.menu.cta"], href: SIGNUP_PATH, viewAllLabel: productsText["products.menu.viewAll"] } : undefined}
+                            />
+                            {/* A long list (Products has one entry per product) scrolls inside the card instead of running off short screens; shorter menus are unaffected. */}
+                            <div className={`col-span-3 p-5 grid grid-cols-2 gap-x-6 gap-y-2.5 ${item.items.length > 10 ? "max-h-[calc(100vh-9rem)] overflow-y-auto overscroll-contain" : ""}`}>
                               {item.items.map((subItem) => (
                                 <Link
                                   key={subItem.name}
@@ -326,7 +308,6 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                               ))}
                             </div>
                           </div>
-                          )}
                         </div>
                       </div>
                     </motion.div>
@@ -448,13 +429,11 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                               className="overflow-hidden"
                             >
                               <div className="pb-4 pl-[3.25rem] space-y-1">
-                                {section.items.map((item, idx) => {
+                                {section.items.map((item) => {
                                   const isItemActive = pathname === item.href;
-                                  const showGroup = item.group && item.group !== section.items[idx - 1]?.group;
                                   return (
-                                    <React.Fragment key={item.name}>
-                                    {showGroup && <p className="px-3 pt-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-primary">{item.group}</p>}
                                     <Link
+                                      key={item.name}
                                       href={item.href}
                                       onClick={() => setMobileMenuOpen(false)}
                                       className={`flex items-center gap-3 rounded-r-lg border-l-2 py-2.5 pl-3 pr-3 text-sm transition-colors ${
@@ -466,7 +445,6 @@ export default function Header({ cmsNavigation, variant = "default" }: { cmsNavi
                                       <item.icon className="h-4 w-4 flex-none" />
                                       {item.name}
                                     </Link>
-                                    </React.Fragment>
                                   );
                                 })}
                                 <Link

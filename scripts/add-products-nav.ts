@@ -14,8 +14,9 @@
  * (Without npm, pass the env file yourself: npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/add-products-nav.ts)
  *
  * Safe to re-run: items are matched by their link (/products, /products/<slug>), anything already there
- * is left exactly as it is (nothing is edited, reordered or removed), only missing entries are added, and
- * no other navigation entry is touched. Run `npm run db:migrate-cms-content -- --apply` first if the
+ * is left as it is (nothing is reordered or removed), only missing entries are added, and no other navigation
+ * entry is touched. The one upgrade: the Products menu's featured card (title, description, image) is switched to
+ * the business-automation card, each text only while it is empty or still the exact round-1 seed text. Run `npm run db:migrate-cms-content -- --apply` first if the
  * product records themselves are not in the CMS yet; the menu does not depend on them.
  */
 
@@ -26,16 +27,16 @@ import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import { runAsCompany } from "@/lib/platform/tenancy/context";
 import { COMPANIES_COLLECTION, type Company } from "@/lib/platform/tenancy/companies";
 import { PRODUCTS_FOOTER_LINK, seedProductsNav } from "@/lib/products/seed";
-import { PRODUCTS_PATH } from "@/lib/products/shared";
+import { PRODUCTS_NAV_FEATURED_PREVIOUS, PRODUCTS_PATH } from "@/lib/products/shared";
 
 const APPLY = process.argv.includes("--apply");
 const ACTOR = "system:products-nav";
 
-export interface NavResult { created: string[]; skipped: string[] }
+export interface NavResult { created: string[]; updated: string[]; skipped: string[] }
 
 /** The whole job, against whichever company is current. Exported so the unit test can run it on a scratch database. */
 export async function addProductsNav(apply: boolean): Promise<NavResult> {
-  const result: NavResult = { created: [], skipped: [] };
+  const result: NavResult = { created: [], updated: [], skipped: [] };
   const log = (kind: keyof NavResult, line: string) => {
     result[kind].push(line);
     console.log(`${kind.toUpperCase().padEnd(8)} ${line}${apply ? "" : " [dry run]"}`);
@@ -45,8 +46,24 @@ export async function addProductsNav(apply: boolean): Promise<NavResult> {
   // ── header ──
   const items = await listNavItems();
   let top = items.find((i) => !i.parentId && i.href === PRODUCTS_PATH);
-  if (top) log("skipped", `header menu "${top.label}" — already there`);
-  else {
+  if (top) {
+    log("skipped", `header menu "${top.label}" — already there`);
+    // Round 2 upgrade: the menu's featured card became the business-automation card. Each of its three texts is replaced only
+    // while it is empty or still exactly what round 1 seeded; an editor's own wording is never touched.
+    const patch: { featuredTitle?: string; featuredDescription?: string; featuredImage?: string } = {};
+    const upgrade = <K extends keyof typeof patch>(key: K, current: string | null, previous: string, next: string) => {
+      if ((current ?? "") === "" || current === previous) {
+        if (current !== next) patch[key] = next;
+      }
+    };
+    upgrade("featuredTitle", top.featuredTitle, PRODUCTS_NAV_FEATURED_PREVIOUS.title, plan.featured.title);
+    upgrade("featuredDescription", top.featuredDescription, PRODUCTS_NAV_FEATURED_PREVIOUS.description, plan.featured.description);
+    upgrade("featuredImage", top.featuredImage, PRODUCTS_NAV_FEATURED_PREVIOUS.image, plan.featured.image);
+    if (Object.keys(patch).length) {
+      log("updated", `header menu featured card (${Object.keys(patch).join(", ")}) — still the round-1 text, now the business-automation card`);
+      if (apply) await updateNavItem(top._id, patch, ACTOR);
+    }
+  } else {
     log("created", `header menu "${plan.name}" (${plan.items.length} products)`);
     if (apply) {
       top = await createNavItem({ parentId: null, label: plan.name, href: plan.href, iconKey: plan.iconKey, featuredTitle: plan.featured.title, featuredDescription: plan.featured.description, featuredImage: plan.featured.image }, ACTOR);
@@ -84,7 +101,7 @@ export async function addProductsNav(apply: boolean): Promise<NavResult> {
       }
     }
   }
-  if (apply && result.created.length) await recordAudit({ actorId: ACTOR, action: "create", entity: "nav", entityId: "products", entityLabel: "Products navigation", summary: "Added the Products menu and footer link" });
+  if (apply && (result.created.length || result.updated.length)) await recordAudit({ actorId: ACTOR, action: "create", entity: "nav", entityId: "products", entityLabel: "Products navigation", summary: "Added/updated the Products menu and footer link" });
   return result;
 }
 
@@ -104,7 +121,7 @@ if (process.argv[1]?.endsWith("add-products-nav.ts")) {
       return runAsCompany(company._id, () => addProductsNav(APPLY));
     })
     .then((r) => {
-      console.log(`\n${r.created.length} ${APPLY ? "created" : "to create"}, ${r.skipped.length} already there`);
+      console.log(`\n${r.created.length} ${APPLY ? "created" : "to create"}, ${r.updated.length} ${APPLY ? "updated" : "to update"}, ${r.skipped.length} already there`);
       process.exit(0);
     })
     .catch((err) => {

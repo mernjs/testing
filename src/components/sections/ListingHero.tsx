@@ -19,6 +19,8 @@ interface ListingHeroProps {
   description: string;
   icon: LucideIcon;
   image: string;
+  /** Optional extra content under the description (e.g. call-to-action buttons). Omitted, the hero is unchanged. */
+  children?: React.ReactNode;
 }
 
 // Renders the hero title as-is, except any brand-name mention gets the same
@@ -37,7 +39,7 @@ function renderTitle(title: string, brand: BrandName) {
   );
 }
 
-export default function ListingHero({ eyebrow, title, description, icon: Icon, image }: ListingHeroProps) {
+export default function ListingHero({ eyebrow, title, description, icon: Icon, image, children }: ListingHeroProps) {
   const { brand } = useSiteInfo();
   const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
 
@@ -106,6 +108,11 @@ export default function ListingHero({ eyebrow, title, description, icon: Icon, i
           <motion.p variants={fadeIn} className="mx-auto max-w-2xl text-xl leading-relaxed text-muted-foreground">
             {description}
           </motion.p>
+          {children && (
+            <motion.div variants={fadeIn} className="flex flex-wrap items-center justify-center gap-4 pt-2">
+              {children}
+            </motion.div>
+          )}
         </motion.div>
       </div>
     </section>

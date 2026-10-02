@@ -100,11 +100,25 @@ export interface ProductsNavTop {
 }
 
 export const PRODUCTS_NAV_LABEL = "Products";
-export const PRODUCTS_NAV_FEATURED = {
+/** Where "Start Automating Your Business" / "Create Your Business Automation" lead: the company registration. */
+export const SIGNUP_PATH = "/signup";
+
+/** What the header's Products featured card said in round 1. The upgrade script replaces a stored value only while it still equals this. */
+export const PRODUCTS_NAV_FEATURED_PREVIOUS = {
   title: "AI-powered business software",
   description: "One connected platform for HR, projects, finance, sales, AI and more.",
   image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop",
 };
+/** The header's Products featured card: the business-automation SaaS (a photo of a live analytics dashboard). */
+export const PRODUCTS_NAV_FEATURED = {
+  title: "Automate Your Business with Our AI-Powered Business Automation SaaS",
+  description: "One workspace for HR, projects, finance, CRM and AI, with workflow automation that connects them.",
+  image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop",
+};
+
+/** The hero background of a product page: an AI visual for the AI category, the connected-platform visual otherwise (both editable text keys). */
+export const productHeroImage = (p: Pick<StoredProduct, "category">, text: Record<string, string>): string =>
+  p.category === "AI & Intelligence" ? text["products.hero.imageAi"] : text["products.hero.imageDefault"];
 
 /** Menu entries for the given products: grouped by category, each with name, one-line value and icon. */
 export function buildProductsNav(products: StoredProduct[]): ProductsNavTop {
@@ -140,6 +154,9 @@ export function pageContent(p: StoredProduct) {
     scenarios: p.scenarios ?? [],
     faq: p.faq ?? [],
     audience: p.audience ?? "",
+    problemIntro: p.problemIntro ?? "",
+    problems: p.problems ?? [],
+    beforeAfter: p.beforeAfter ?? [],
     screenshots: p.screenshots ?? [],
   };
 }

@@ -21,6 +21,8 @@ export function loadSeedProducts(file = PRODUCTS_SEED_FILE): StoredProduct[] {
 export const PRODUCT_PAGE_FIELDS = [
   "shortName", "valueLine", "pitch", "overview", "outcome", "facts", "features", "aiFeatures", "benefits", "useCases",
   "automationWorkflows", "integrations", "scenarios", "faq", "audience",
+  // round 2: "The problem it solves"
+  "problemIntro", "problems", "beforeAfter",
 ] as const;
 
 const isEmpty = (v: unknown) => v === undefined || v === null || v === "" || (Array.isArray(v) && v.length === 0);
