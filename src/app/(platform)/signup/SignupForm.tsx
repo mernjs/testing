@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useId, useState } from "react";
+import { startTransition, useActionState, useEffect, useId, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, Eye, EyeOff, Loader2, Clock, X } from "lucide-react";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -10,21 +10,50 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { slugFormatError, slugFromName } from "@/lib/platform/tenancy/slug";
-import { checkSlugAction, startSignupAction, type SignupState } from "./actions";
+import { checkSlugAction, startSignupAction, validateSignupAction, type SignupState } from "./actions";
+import type { SignupFieldErrors } from "@/lib/platform/signup";
 import CreatingWorkspace from "./CreatingWorkspace";
 
 const initialState: SignupState = {};
 type SlugCheck = { for: string; state: "idle" | "checking" | "ok" | "bad"; message: string | null };
 
 export default function SignupForm({ rootDomain, approval = false }: { rootDomain: string; approval?: boolean }) {
-  const [state, formAction, pending] = useActionState(startSignupAction, initialState);
+  const [state, formAction] = useActionState(startSignupAction, initialState);
+  // Two phases: the server validates first (`checking`), and only then the creation starts and the progress replaces the form (`creating`).
+  const [checking, setChecking] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [errors, setErrors] = useState<SignupFieldErrors>({});
   const [companyName, setCompanyName] = useState("");
   const [slug, setSlug] = useState("");
   const [slugEdited, setSlugEdited] = useState(false);
   const [check, setCheck] = useState<SlugCheck>({ for: "", state: "idle", message: null });
   const [showPassword, setShowPassword] = useState(false);
-  const ids = { company: useId(), slug: useId(), name: useId(), email: useId(), password: useId(), terms: useId() };
-  const errors = state.errors ?? {};
+  const ids = { company: useId(), slug: useId(), email: useId(), password: useId(), terms: useId() };
+
+  // The creation answered with something to fix (rate limit, address taken a moment ago…): back to the form.
+  useEffect(() => {
+    if (state.errors) {
+      setErrors(state.errors);
+      setCreating(false);
+    }
+    if (state.awaitingApproval) setCreating(false);
+  }, [state]);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (checking || creating) return;
+    const data = new FormData(e.currentTarget);
+    setErrors({});
+    setChecking(true);
+    const pre = await validateSignupAction(data).catch((): { errors?: SignupFieldErrors } => ({ errors: { form: "Something went wrong. Please try again." } }));
+    setChecking(false);
+    if (pre.errors) {
+      setErrors(pre.errors);
+      return;
+    }
+    setCreating(true);
+    startTransition(() => formAction(data));
+  }
 
   // Live availability check (debounced). Format problems are answered locally without a round trip.
   useEffect(() => {
@@ -74,15 +103,15 @@ export default function SignupForm({ rootDomain, approval = false }: { rootDomai
   return (
     <>
       {/* While the workspace is being created the form is hidden (kept mounted, so the submission completes) and the progress is shown instead. */}
-      {pending && <CreatingWorkspace companyName={companyName} host={`${slug || "your-company"}.${rootDomain}`} approval={approval} />}
-    <motion.div hidden={pending} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-md">
+      {creating && <CreatingWorkspace companyName={companyName} host={`${slug || "your-company"}.${rootDomain}`} approval={approval} />}
+    <motion.div hidden={creating} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-md">
       <GlassCard>
         <CardHeader>
           <CardTitle className="text-xl">Create your workspace</CardTitle>
           <CardDescription>{approval ? "Free to start. New workspaces are approved by our team before they go live." : "Free to start. Set up takes about two minutes."}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={formAction} className="space-y-4" noValidate>
+          <form onSubmit={onSubmit} className="space-y-4" noValidate>
             <div className="space-y-1.5">
               <Label htmlFor={ids.company}>Company name</Label>
               <Input
@@ -127,17 +156,10 @@ export default function SignupForm({ rootDomain, approval = false }: { rootDomai
               </p>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label htmlFor={ids.name}>Your name</Label>
-                <Input key={`name:${state.values?.name ?? ""}`} id={ids.name} name="name" required autoComplete="name" defaultValue={state.values?.name} aria-invalid={!!errors.name || undefined} />
-                {fieldError(errors.name)}
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={ids.email}>Work email</Label>
-                <Input key={`email:${state.values?.email ?? ""}`} id={ids.email} name="email" type="email" required autoComplete="email" defaultValue={state.values?.email} aria-invalid={!!errors.email || undefined} />
-                {fieldError(errors.email)}
-              </div>
+            <div className="space-y-1.5">
+              <Label htmlFor={ids.email}>Work email</Label>
+              <Input id={ids.email} name="email" type="email" required autoComplete="email" aria-invalid={!!errors.email || undefined} />
+              {fieldError(errors.email)}
             </div>
 
             <div className="space-y-1.5">
@@ -164,8 +186,16 @@ export default function SignupForm({ rootDomain, approval = false }: { rootDomai
                 {errors.form}
               </p>
             )}
-            <Button type="submit" className="w-full" disabled={pending}>
-              {pending ? <Loader2 className="size-4 animate-spin" /> : approval ? "Request workspace" : "Create workspace"}
+            <Button type="submit" className="w-full" disabled={checking || creating}>
+              {checking ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" /> Checking…
+                </>
+              ) : approval ? (
+                "Request workspace"
+              ) : (
+                "Create workspace"
+              )}
             </Button>
             <p className="text-center text-xs text-muted-foreground">
               Already have a workspace? Sign in at <span className="font-medium text-foreground">your-company.{rootDomain}</span>

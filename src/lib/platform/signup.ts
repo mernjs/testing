@@ -103,6 +103,22 @@ export function validateSignup(input: SignupInput): SignupFieldErrors {
   return errors;
 }
 
+/**
+ * Everything the sign-up form can be rejected for on the server, WITHOUT creating anything or counting a rate-limit
+ * attempt: field rules, reserved and taken addresses, closed sign-ups. The form calls this first and only starts the
+ * "creating your workspace" progress once it passes; `startSignup` then does the real work (and re-checks).
+ */
+export async function precheckSignup(input: SignupInput): Promise<SignupFieldErrors> {
+  if ((await getSignupMode()) === "closed") return { form: "New sign-ups are paused right now. Please try again later." };
+  const errors = validateSignup(input);
+  if (!errors.slug) {
+    const reserved = await reservedSlugError(input.slug);
+    if (reserved) errors.slug = reserved;
+  }
+  if (!errors.slug && !(await isSlugAvailable(input.slug, input.email))) errors.slug = "That workspace address is taken.";
+  return errors;
+}
+
 /** Taken by a live company, or held by someone else's unexpired sign-up. */
 export async function isSlugAvailable(slug: string, forEmail?: string): Promise<boolean> {
   if (slugFormatError(slug) || (await reservedSlugError(slug))) return false;

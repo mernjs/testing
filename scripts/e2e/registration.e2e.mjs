@@ -69,14 +69,13 @@ try {
     await page.getByLabel("Company name").waitFor();
     // React's server-action plumbing adds hidden "$ACTION_*" inputs; they aren't form fields.
     const names = await page.locator("form [name]").evaluateAll((els) => els.map((e) => e.getAttribute("name")).filter((n) => n && !n.startsWith("$")).sort());
-    assert.deepEqual(names, ["acceptTerms", "companyName", "email", "name", "password", "slug"]);
+    assert.deepEqual(names, ["acceptTerms", "companyName", "email", "password", "slug"]);
     assert.equal(await page.getByRole("button", { name: /next|continue|step/i }).count(), 0, "no multi-step wizard on the form");
   });
 
   await step("submitting it creates the workspace at once (no e-mail confirmation) and lands on the onboarding wizard", async () => {
     await page.getByLabel("Company name").fill(COMPANY);
     await page.getByLabel("Workspace address").fill(SLUG);
-    await page.getByLabel("Your name").fill("Rita Registrant");
     await page.getByLabel("Work email").fill(EMAIL);
     await page.locator('input[name="password"]').fill(PASSWORD);
     await page.locator('input[name="acceptTerms"]').check();
