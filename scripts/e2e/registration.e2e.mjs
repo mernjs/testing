@@ -1,8 +1,8 @@
 /**
- * Browser test for the simple registration flow: public sign-up -> e-mail
- * confirmation -> the owner is signed in on the new company's host and lands in
- * the Workspace, whose FIRST screen is the onboarding wizard (/workspace/onboarding)
- * -> finish the wizard -> the dashboard. Against a RUNNING server (production
+ * Browser test for the simple registration flow: public sign-up (no e-mail gate)
+ * -> the owner is signed in on the new company's host and lands in the Workspace,
+ * whose FIRST screen is the onboarding wizard (/workspace/onboarding) -> the
+ * "Verify email" strip -> verification link -> finish the wizard -> the dashboard. Against a RUNNING server (production
  * build recommended) with EMAIL_PROVIDER=console and PLATFORM_ROOT_DOMAIN=localhost
  * (company hosts are <slug>.localhost):
  *
@@ -11,10 +11,10 @@
  *   node scripts/e2e/registration.e2e.mjs
  *
  * Needs a LOCAL "test" database (E2E_MONGODB_URI is refused otherwise): the
- * confirmation link is e-mailed by the server's console provider and only its
- * hash is stored, so the test reads the pending sign-up from the database and
- * swaps in a token it knows, exactly as scripts/e2e/console.e2e.mjs seeds its
- * approval request. Creates one throwaway company (slug printed at the end) and
+ * verification link is e-mailed by the server's console provider and only its
+ * hash is stored, so the test swaps in a token it knows (in the company's
+ * email_verifications collection), exactly as scripts/e2e/console.e2e.mjs seeds
+ * its approval request. Creates one throwaway company (slug printed at the end) and
  * sign-up mode must be "open" (Platform settings).
  */
 import assert from "node:assert/strict";
@@ -73,7 +73,7 @@ try {
     assert.equal(await page.getByRole("button", { name: /next|continue|step/i }).count(), 0, "no multi-step wizard on the form");
   });
 
-  await step("submitting it asks for e-mail confirmation and creates nothing yet", async () => {
+  await step("submitting it creates the workspace at once (no e-mail confirmation) and lands on the onboarding wizard", async () => {
     await page.getByLabel("Company name").fill(COMPANY);
     await page.getByLabel("Workspace address").fill(SLUG);
     await page.getByLabel("Your name").fill("Rita Registrant");
@@ -81,23 +81,15 @@ try {
     await page.locator('input[name="password"]').fill(PASSWORD);
     await page.locator('input[name="acceptTerms"]').check();
     await page.getByRole("button", { name: "Create workspace" }).click();
-    await page.getByText("Check your inbox").waitFor({ timeout: 30_000 });
-    assert.equal(await mongo.db().collection("companies").countDocuments({ slug: SLUG }), 0, "no company before confirmation");
-    const pending = await mongo.db().collection("pending_signups").findOne({ email: EMAIL, status: "pending" });
-    assert.ok(pending, "a pending sign-up exists");
-    // Only the hash of the e-mailed token is stored: swap in a token we know.
-    await mongo.db().collection("pending_signups").updateOne({ _id: pending._id }, { $set: { tokenHash: createHash("sha256").update(TOKEN).digest("hex") } });
-  });
-
-  await step("confirming signs the owner in on the new company's host and lands in the Workspace on the onboarding wizard", async () => {
-    await page.goto(`${BASE}/signup/verify?token=${TOKEN}`);
-    await page.getByRole("button", { name: "Create my workspace" }).click();
     await page.waitForURL((u) => u.hostname.startsWith(`${SLUG}.`) && u.pathname === "/workspace/onboarding", { timeout: 90_000 });
     await page.getByRole("heading", { name: `Set up ${COMPANY}` }).waitFor();
     // It is the Workspace frame, not a standalone page.
     await page.locator('aside nav[aria-label="Workspace"]').waitFor();
     assert.equal(await page.getByText("My Operational Panels").count(), 0, "the first screen after sign-up is onboarding, not the dashboard");
     assert.equal(await page.locator("#setup-banner").count(), 0, "no reminder banner on the wizard itself");
+    assert.equal(await mongo.db().collection("pending_signups").countDocuments({ email: EMAIL }), 0, "no pending sign-up step");
+    const owner = await mongo.db().collection("admin_users").findOne({ email: EMAIL });
+    assert.equal(owner?.emailVerified, false, "the owner starts unverified");
   });
 
   await step("/workspace is never redirected: it shows the dashboard with the \"Complete setup\" strip; deep links show the strip too", async () => {
@@ -116,6 +108,42 @@ try {
     const origin = new URL(page.url()).origin;
     await page.goto(`${origin}/onboarding`);
     assert.equal(pathOf(page), "/workspace/onboarding");
+  });
+
+  await step("the \"Verify email\" strip shows on the dashboard; clicking it sends the link and the strip says \"Check your inbox\"", async () => {
+    const origin = new URL(page.url()).origin;
+    await page.goto(`${origin}/workspace`);
+    await page.getByText("My Operational Panels").waitFor();
+    const strip = page.locator("#verify-banner");
+    await strip.waitFor();
+    assert.ok((await strip.textContent()).includes(EMAIL), "the strip shows the address");
+    await strip.getByRole("button", { name: "Verify email" }).click();
+    await strip.getByText("Check your inbox").waitFor({ timeout: 30_000 });
+    assert.ok(await page.locator("#verify-banner-resend").isVisible(), "a Resend option is offered");
+    // Still there on another page, and nothing is blocked.
+    await page.goto(`${origin}/workspace/settings/billing`);
+    await page.locator("#verify-banner").waitFor();
+  });
+
+  await step("the verification link shows a page and does NOT verify on load; the button verifies, the dashboard has no strip", async () => {
+    const company = await mongo.db().collection("companies").findOne({ slug: SLUG });
+    const doc = await mongo.db().collection("email_verifications").find({ companyId: company._id }).sort({ createdAt: -1 }).limit(1).next();
+    assert.ok(doc, "a verification token was stored");
+    assert.equal(doc.tokenHash.length, 64);
+    // Only the hash of the e-mailed token is stored: swap in a token we know.
+    await mongo.db().collection("email_verifications").updateOne({ _id: doc._id }, { $set: { tokenHash: createHash("sha256").update(TOKEN).digest("hex") } });
+    const origin = new URL(page.url()).origin;
+    await page.goto(`${origin}/workspace/verify-email?token=${TOKEN}`);
+    await page.getByRole("button", { name: "Verify my email" }).waitFor();
+    assert.equal(await page.locator("#verify-banner").count(), 0, "no strip on the verification page");
+    assert.equal((await mongo.db().collection("admin_users").findOne({ email: EMAIL })).emailVerified, false, "a bare GET does not verify");
+    await page.getByRole("button", { name: "Verify my email" }).click();
+    await page.waitForURL((u) => u.pathname === "/workspace", { timeout: 30_000 });
+    await page.getByText("My Operational Panels").waitFor();
+    assert.equal(await page.locator("#verify-banner").count(), 0, "the strip is gone after verifying");
+    assert.equal((await mongo.db().collection("admin_users").findOne({ email: EMAIL })).emailVerified, true);
+    await page.goto(`${origin}/workspace/verify-email?token=${TOKEN}`);
+    await page.getByText("This link has expired").waitFor();
   });
 
   await step("finishing the wizard (profile, departments, team, branding, panels) lands on the dashboard", async () => {

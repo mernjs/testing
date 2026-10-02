@@ -6,9 +6,9 @@
  *     npx --yes tsx --require ./scripts/lib/next-server-shims.cjs scripts/test-signup-onboarding-flow.ts
  *
  * Checks:
- *  - a fresh sign-up (start -> e-mailed link -> confirm) creates the company and
- *    hands the owner off to /workspace (not a setup wizard);
- *  - an admin approval path creates the same company with the same fresh setup state;
+ *  - a fresh sign-up in open mode (no e-mail gate) creates the company at once and
+ *    hands the owner off to /workspace (not a setup wizard); the owner starts unverified;
+ *  - approval mode stores the request straight away (no e-mail step); approving creates the same company with the same fresh setup state;
  *  - the sign-in landing (`postLoginTarget`, pure): an owner whose setup is
  *    neither completed nor skipped lands on /workspace/onboarding at sign-in
  *    (an explicit `next` wins); completed/skipped owners, invited employees and
@@ -24,7 +24,7 @@ import path from "node:path";
 import { clientPromise, getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import { COMPANIES_COLLECTION } from "@/lib/platform/tenancy/companies";
 import { runAsCompany } from "@/lib/platform/tenancy/context";
-import { approveSignup, confirmSignup, consumeHandoff, startSignup } from "@/lib/platform/signup";
+import { approveSignup, consumeHandoff, startSignup } from "@/lib/platform/signup";
 import { setSignupMode } from "@/lib/platform/settings";
 import { acceptInvitation, inviteTeammate } from "@/lib/platform/invitations";
 import { getOnboarding, markOnboardingStep, skipOnboarding } from "@/lib/platform/onboarding/state";
@@ -84,16 +84,11 @@ async function run() {
 
   console.log("fresh sign-up -> handoff -> /workspace");
   let freshCompanyId = "";
-  await check("confirming an e-mailed sign-up creates the company and a handoff whose next is /workspace", async () => {
-    const started = await startSignup({ companyName: "Fresh Co", slug: "freshco", name: "Fiona Founder", email: "fiona@fresh.test", password: "correct-horse-battery", acceptTerms: true }, { origin: "http://localhost:3000", clientKey: "t1" });
-    assert.ok(started.ok, JSON.stringify(started));
-    const mail = emailsTo("fiona@fresh.test")[0];
-    assert.ok(mail, "confirmation e-mail was sent");
-    const token = linkIn(mail, /signup\/verify\?token=([a-f0-9]+)/);
-    assert.ok(token, mail);
-    const res = await confirmSignup(token, { hostHint: "localhost:3000" });
-    assert.ok(res.ok && "redirectTo" in res, JSON.stringify(res));
-    const url = new URL((res as { redirectTo: string }).redirectTo);
+  await check("an open-mode sign-up creates the company at once and a handoff whose next is /workspace", async () => {
+    const started = await startSignup({ companyName: "Fresh Co", slug: "freshco", name: "Fiona Founder", email: "fiona@fresh.test", password: "correct-horse-battery", acceptTerms: true }, { hostHint: "localhost:3000", clientKey: "t1" });
+    assert.ok(started.ok && started.kind === "created", JSON.stringify(started));
+    assert.equal(await db.collection("pending_signups").countDocuments({ email: "fiona@fresh.test" }), 0, "no pending sign-up / confirmation step in open mode");
+    const url = new URL(started.redirectTo);
     assert.equal(url.host, "freshco.localhost:3000");
     assert.equal(url.pathname, "/workspace/handoff");
     const company = await db.collection(COMPANIES_COLLECTION).findOne({ slug: "freshco" });
@@ -103,9 +98,16 @@ async function run() {
     assert.equal(handoff!.next, "/workspace", "the handoff lands on the Workspace home, where onboarding takes over");
     assert.equal(await consumeHandoff(url.searchParams.get("token")!, freshCompanyId), null, "single use");
   });
+  await check("the same e-mail may sign up another company (user e-mail is unique per company); a taken address is refused", async () => {
+    const again = await startSignup({ companyName: "Fresh Two", slug: "freshco", name: "Other Person", email: "other@fresh.test", password: "correct-horse-battery", acceptTerms: true }, { hostHint: "localhost:3000", clientKey: "t1b" });
+    assert.ok(!again.ok && again.errors.slug, JSON.stringify(again));
+    const second = await startSignup({ companyName: "Fresh Two", slug: "freshtwo", name: "Fiona Founder", email: "fiona@fresh.test", password: "correct-horse-battery", acceptTerms: true }, { hostHint: "localhost:3000", clientKey: "t1c" });
+    assert.ok(second.ok && second.kind === "created");
+  });
   await check("the owner is a Super Admin and the new company's setup is open (nothing completed, not skipped)", async () => {
     const owner = await db.collection("admin_users").findOne({ companyId: freshCompanyId as never, email: "fiona@fresh.test" });
     assert.deepEqual(owner?.roles, ["super_admin"]);
+    assert.equal(owner?.emailVerified, false, "a new sign-up starts unverified");
     const { state, company } = await runAsCompany(freshCompanyId, () => getOnboarding());
     assert.equal(company.isPlatformOwner, false);
     assert.deepEqual(state, { completedSteps: [], completedAt: null, dismissedAt: null });
@@ -113,18 +115,20 @@ async function run() {
   });
 
   console.log("admin approval path");
-  await check("an approved request creates the same company with the same open setup state and a sign-in link to the Workspace", async () => {
+  await check("approval mode stores the request without any e-mail step; approving creates the same company with the same open setup state and a sign-in link to the Workspace", async () => {
     await setSignupMode("approval", "test");
-    const started = await startSignup({ companyName: "Approved Co", slug: "approvedco", name: "Ann Approved", email: "ann@approved.test", password: "correct-horse-battery", acceptTerms: true }, { origin: "http://localhost:3000", clientKey: "t2" });
-    assert.ok(started.ok);
-    const token = linkIn(emailsTo("ann@approved.test")[0], /signup\/verify\?token=([a-f0-9]+)/);
-    const parked = await confirmSignup(token, { hostHint: "localhost:3000" });
-    assert.ok(parked.ok && "awaitingApproval" in parked);
+    const started = await startSignup({ companyName: "Approved Co", slug: "approvedco", name: "Ann Approved", email: "ann@approved.test", password: "correct-horse-battery", acceptTerms: true }, { hostHint: "localhost:3000", clientKey: "t2" });
+    assert.ok(started.ok && started.kind === "awaiting_approval", JSON.stringify(started));
+    assert.equal(emailsTo("ann@approved.test").length, 0, "no confirmation e-mail before approval");
+    assert.equal(await db.collection("companies").countDocuments({ slug: "approvedco" }), 0, "nothing is created before approval");
     const pending = await db.collection("pending_signups").findOne({ slug: "approvedco", status: "awaiting_approval" });
+    assert.ok(pending, "the request waits in the queue");
     const res = await approveSignup(String(pending!._id), { hostHint: "localhost:3000" });
     assert.ok(res.ok, res.ok ? "" : res.error);
     const mail = emailsTo("ann@approved.test").find((m) => m.includes("/workspace/login"));
     assert.ok(mail, "the approval e-mail links to the Workspace sign-in");
+    const approvedOwner = await db.collection("admin_users").findOne({ companyId: (res as { companyId: string }).companyId as never, email: "ann@approved.test" });
+    assert.equal(approvedOwner?.emailVerified, false, "an approved owner starts unverified");
     const { state } = await runAsCompany((res as { companyId: string }).companyId, () => getOnboarding());
     assert.equal(setupIsOpen({ isOwner: true, isPlatformOwnerCompany: false, state }), true);
     assert.equal(landing({ state }), ONBOARDING_PATH, "signing in lands on the onboarding wizard");

@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useId, useState } from "react";
 import { motion } from "framer-motion";
-import { Check, Eye, EyeOff, Loader2, MailCheck, X } from "lucide-react";
+import { Check, Eye, EyeOff, Loader2, Clock, X } from "lucide-react";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ import { checkSlugAction, startSignupAction, type SignupState } from "./actions"
 const initialState: SignupState = {};
 type SlugCheck = { for: string; state: "idle" | "checking" | "ok" | "bad"; message: string | null };
 
-export default function SignupForm({ rootDomain }: { rootDomain: string }) {
+export default function SignupForm({ rootDomain, approval = false }: { rootDomain: string; approval?: boolean }) {
   const [state, formAction, pending] = useActionState(startSignupAction, initialState);
   const [companyName, setCompanyName] = useState("");
   const [slug, setSlug] = useState("");
@@ -46,20 +46,20 @@ export default function SignupForm({ rootDomain }: { rootDomain: string }) {
     };
   }, [slug]);
 
-  if (state.sentTo) {
+  if (state.awaitingApproval) {
     return (
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
         <GlassCard>
           <CardHeader>
             <div className="mb-2 flex size-12 items-center justify-center rounded-xl bg-primary/10">
-              <MailCheck className="size-6 text-primary" />
+              <Clock className="size-6 text-primary" />
             </div>
-            <CardTitle className="text-xl">Check your inbox</CardTitle>
+            <CardTitle className="text-xl">Awaiting approval</CardTitle>
             <CardDescription>
-              We sent a confirmation link to <strong className="text-foreground">{state.sentTo}</strong>. Open it to create your workspace — the link works for 24 hours.
+              Thanks — your workspace request is with our team. We&apos;ll email <strong className="text-foreground">{state.awaitingApproval}</strong> as soon as it&apos;s approved.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">Nothing there? Check spam, or submit the form again to get a new link.</CardContent>
+          <CardContent className="text-sm text-muted-foreground">Nothing yet? Approval is done by hand, so it can take a little while. Check spam too.</CardContent>
         </GlassCard>
       </motion.div>
     );
@@ -75,7 +75,7 @@ export default function SignupForm({ rootDomain }: { rootDomain: string }) {
       <GlassCard>
         <CardHeader>
           <CardTitle className="text-xl">Create your workspace</CardTitle>
-          <CardDescription>Free to start. Set up takes about two minutes.</CardDescription>
+          <CardDescription>{approval ? "Free to start. New workspaces are approved by our team before they go live." : "Free to start. Set up takes about two minutes."}</CardDescription>
         </CardHeader>
         <CardContent>
           <form action={formAction} className="space-y-4" noValidate>
@@ -161,7 +161,7 @@ export default function SignupForm({ rootDomain }: { rootDomain: string }) {
               </p>
             )}
             <Button type="submit" className="w-full" disabled={pending}>
-              {pending ? <Loader2 className="size-4 animate-spin" /> : "Create workspace"}
+              {pending ? <Loader2 className="size-4 animate-spin" /> : approval ? "Request workspace" : "Create workspace"}
             </Button>
             <p className="text-center text-xs text-muted-foreground">
               Already have a workspace? Sign in at <span className="font-medium text-foreground">your-company.{rootDomain}</span>

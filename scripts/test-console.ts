@@ -207,9 +207,11 @@ async function run() {
     forgetCompanyRouting();
     assert.equal(await resolveCompanyIdByHost("initech.localhost"), company?._id);
     assert.equal(await db.collection("pending_signups").countDocuments({ _id: initechId as never }), 0);
+    assert.equal(ownerUser?.emailVerified, false, "an approved owner starts with an unverified email");
     const mail = emailsTo("peter@initech.test");
-    assert.equal(mail.length, 1);
-    assert.ok(mail[0].includes("http://initech.localhost:3000/workspace/login"), mail[0]);
+    assert.equal(mail.length, 2, "the approval e-mail and the email-verification e-mail");
+    assert.ok(mail.some((m) => m.includes("http://initech.localhost:3000/workspace/login")), mail.join("\n"));
+    assert.ok(mail.some((m) => m.includes("http://initech.localhost:3000/workspace/verify-email?token=")));
   });
   await check("approving twice is refused (atomic claim)", async () => {
     const res = await approveSignup(initechId, { hostHint: null });

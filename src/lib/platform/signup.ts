@@ -6,19 +6,23 @@ import { getSignupMode, platformEmailIdentity, reservedSlugError } from "@/lib/p
 import { sendEmail } from "@/lib/platform/email";
 import { renderEmail } from "@/lib/platform/email/template";
 import { hashPassword } from "@/lib/lms-auth";
+import { runAsCompany } from "@/lib/platform/tenancy/context";
+import { sendVerificationEmail } from "@/lib/platform/email-verification";
 
 /**
- * Self-serve company sign-up:
- *  1. `startSignup` validates, rate-limits and stores a PENDING sign-up (the
- *     password is hashed immediately; nothing else is created) and emails a
- *     verification link.
- *  2. `confirmSignup` (from that link, behind an explicit button so mail
- *     scanners that pre-fetch links can't consume it) creates the company,
- *     its owner and its subdomain, then issues a one-time hand-off token.
- *  3. The hand-off (`consumeHandoff`) runs on the new company's own host —
- *     cookies can't cross domains — and signs the owner in there.
- * In `approval` mode step 2 parks the sign-up for a platform admin instead,
- * who approves (`approveSignup`) or rejects it from the platform console.
+ * Self-serve company sign-up. Email verification does NOT gate it:
+ *  - `open`: `startSignup` validates, rate-limits, creates the company, owner,
+ *    subdomain, trial and starter website at once (owner `emailVerified: false`),
+ *    emails a verification link (never blocking) and returns a one-time hand-off
+ *    URL on the new company's host. The hand-off (`consumeHandoff`) signs the
+ *    owner in there — cookies can't cross domains — and the Workspace shows the
+ *    "Verify email" strip until the link is used (`email-verification.ts`).
+ *  - `approval`: `startSignup` stores the request (password already hashed) for a
+ *    platform admin, who approves (`approveSignup`, which creates the company
+ *    exactly as open mode does) or rejects it from the platform console.
+ *  - `closed`: nothing is accepted.
+ * `confirmSignup` / `describePendingSignup` only serve links from the old
+ * "confirm by email first" flow that were already in someone's inbox.
  */
 
 const PENDING = "pending_signups";
@@ -118,10 +122,31 @@ async function rateLimited(keys: { key: string; max: number }[]): Promise<boolea
   return false;
 }
 
-export type StartSignupResult = { ok: true; email: string } | { ok: false; errors: SignupFieldErrors };
+export type StartSignupResult =
+  | { ok: true; kind: "created"; redirectTo: string }
+  | { ok: true; kind: "awaiting_approval"; email: string }
+  | { ok: false; errors: SignupFieldErrors };
 
-/** `origin` = the platform site's origin the verification link points back to. */
-export async function startSignup(input: SignupInput, ctx: { origin: string; clientKey: string }): Promise<StartSignupResult> {
+/** One-time sign-in token for the new owner, redeemed on the company's own host. */
+async function issueHandoff(created: { companyId: string; adminId: string }, base: string): Promise<string> {
+  const { handoffs } = await collections();
+  const handoff = randomBytes(32).toString("hex");
+  await handoffs.insertOne({ _id: sha256(handoff), companyId: created.companyId, adminId: created.adminId, next: "/workspace", expiresAt: new Date(Date.now() + HANDOFF_TTL_MS) });
+  return `${base}/workspace/handoff?token=${handoff}`;
+}
+
+/** Sends the verification link from the new company's context. Never throws and never fails the sign-up. */
+async function sendOwnerVerification(created: { companyId: string; adminId: string }, base: string) {
+  try {
+    const res = await runAsCompany(created.companyId, () => sendVerificationEmail(created.adminId, base));
+    if (!res.ok) console.error(`[signup] verification email not sent: ${res.error}`);
+  } catch (err) {
+    console.error("[signup] verification email failed", err);
+  }
+}
+
+/** `hostHint` = the Host the form was submitted on (only used to build the company's address on localhost). */
+export async function startSignup(input: SignupInput, ctx: { hostHint: string | null; clientKey: string }): Promise<StartSignupResult> {
   const mode = await getSignupMode();
   if (mode === "closed") return { ok: false, errors: { form: "New sign-ups are paused right now. Please try again later." } };
 
@@ -139,39 +164,37 @@ export async function startSignup(input: SignupInput, ctx: { origin: string; cli
   }
   if (!(await isSlugAvailable(input.slug, email))) return { ok: false, errors: { slug: "That workspace address is taken." } };
 
-  const { pending } = await collections();
-  const token = randomBytes(32).toString("hex");
-  const now = new Date();
-  // One pending sign-up per email: starting again replaces the previous one (and its link).
-  await pending.deleteMany({ email, status: "pending" });
-  await pending.insertOne({
-    _id: randomUUID(),
-    tokenHash: sha256(token),
-    email,
-    name: input.name.trim(),
-    companyName: input.companyName.trim(),
-    slug: input.slug,
-    passwordHash: hashPassword(input.password),
-    status: "pending",
-    createdAt: now,
-    expiresAt: new Date(now.getTime() + PENDING_TTL_MS),
-  });
+  const passwordHash = hashPassword(input.password);
+  const companyName = input.companyName.trim();
+  const name = input.name.trim();
 
-  const link = `${ctx.origin}/signup/verify?token=${token}`;
-  const platform = await platformEmailIdentity();
-  const { html, text } = renderEmail({
-    brand: platform.name,
-    heading: `Confirm your email to create ${input.companyName.trim()}`,
-    paragraphs: [`Hi ${input.name.trim()},`, "Confirm your email address and your workspace will be ready in seconds."],
-    action: { label: "Confirm email & create workspace", url: link },
-    footnote: ["This link expires in 24 hours. If you didn't sign up, ignore this email — nothing will be created.", platform.supportLine].filter(Boolean).join(" "),
-  });
-  const sent = await sendEmail({ to: email, subject: "Confirm your email to create your workspace", html, text });
-  if (!sent.ok) {
-    await pending.deleteMany({ email, status: "pending" });
-    return { ok: false, errors: { form: "We couldn't send the verification email. Please try again in a few minutes." } };
+  if (mode === "approval") {
+    const { pending } = await collections();
+    const now = new Date();
+    // One request per email: submitting again replaces the earlier one.
+    await pending.deleteMany({ email, status: "awaiting_approval" });
+    await pending.insertOne({
+      _id: randomUUID(),
+      tokenHash: sha256(randomBytes(32).toString("hex")), // no link exists for these; the unique index still needs a value
+      email,
+      name,
+      companyName,
+      slug: input.slug,
+      passwordHash,
+      status: "awaiting_approval",
+      createdAt: now,
+      expiresAt: new Date(now.getTime() + 30 * PENDING_TTL_MS),
+    });
+    return { ok: true, kind: "awaiting_approval", email };
   }
-  return { ok: true, email };
+
+  const created = await createCompanyWithOwner({ name: companyName, slug: input.slug, owner: { email, name, passwordHash, mustChangePassword: false, emailVerified: false } });
+  // "Address just taken" (two sign-ups racing for it) belongs on the address field.
+  if (!created.ok) return { ok: false, errors: /address/i.test(created.error) ? { slug: created.error } : { form: created.error } };
+
+  const base = companyBaseUrl(input.slug, ctx.hostHint);
+  await sendOwnerVerification(created, base);
+  return { ok: true, kind: "created", redirectTo: await issueHandoff(created, base) };
 }
 
 export async function describePendingSignup(token: string): Promise<{ companyName: string; slug: string; email: string } | null> {
@@ -183,7 +206,7 @@ export async function describePendingSignup(token: string): Promise<{ companyNam
 export type ConfirmResult = { ok: true; redirectTo: string } | { ok: true; awaitingApproval: true } | { ok: false; error: string };
 
 export async function confirmSignup(token: string, ctx: { hostHint: string | null }): Promise<ConfirmResult> {
-  const { pending, handoffs } = await collections();
+  const { pending } = await collections();
   // Claim atomically: a double-click (or two tabs) can only create one company.
   const doc = await pending.findOneAndDelete({ tokenHash: sha256(token), status: "pending", expiresAt: { $gt: new Date() } });
   if (!doc) return { ok: false, error: "This link has expired or was already used. Start again to get a new one." };
@@ -196,7 +219,7 @@ export async function confirmSignup(token: string, ctx: { hostHint: string | nul
   const created = await createCompanyWithOwner({
     name: doc.companyName,
     slug: doc.slug,
-    owner: { email: doc.email, name: doc.name, passwordHash: doc.passwordHash, mustChangePassword: false },
+    owner: { email: doc.email, name: doc.name, passwordHash: doc.passwordHash, mustChangePassword: false, emailVerified: true }, // confirmed through the emailed link
   });
   if (!created.ok) {
     // Put it back so the user can retry from the same link once they've been told why.
@@ -207,9 +230,7 @@ export async function confirmSignup(token: string, ctx: { hostHint: string | nul
   const base = companyBaseUrl(doc.slug, ctx.hostHint);
   void sendWorkspaceReadyEmail(doc, base);
 
-  const handoff = randomBytes(32).toString("hex");
-  await handoffs.insertOne({ _id: sha256(handoff), companyId: created.companyId, adminId: created.adminId, next: "/workspace", expiresAt: new Date(Date.now() + HANDOFF_TTL_MS) });
-  return { ok: true, redirectTo: `${base}/workspace/handoff?token=${handoff}` };
+  return { ok: true, redirectTo: await issueHandoff(created, base) };
 }
 
 async function sendWorkspaceReadyEmail(doc: PendingSignup, base: string, approved = false) {
@@ -271,13 +292,15 @@ export async function approveSignup(id: string, ctx: { hostHint: string | null }
   const created = await createCompanyWithOwner({
     name: doc.companyName,
     slug: doc.slug,
-    owner: { email: doc.email, name: doc.name, passwordHash: doc.passwordHash, mustChangePassword: false },
+    owner: { email: doc.email, name: doc.name, passwordHash: doc.passwordHash, mustChangePassword: false, emailVerified: false },
   });
   if (!created.ok) {
     await pending.insertOne(doc);
     return { ok: false, error: created.error };
   }
-  const sent = await sendWorkspaceReadyEmail(doc, companyBaseUrl(doc.slug, ctx.hostHint), true);
+  const base = companyBaseUrl(doc.slug, ctx.hostHint);
+  await sendOwnerVerification(created, base);
+  const sent = await sendWorkspaceReadyEmail(doc, base, true);
   return { ok: true, companyId: created.companyId, host: created.host, emailed: sent.ok };
 }
 

@@ -22,7 +22,8 @@ export async function checkSlugAction(slug: string): Promise<{ available: boolea
 
 export interface SignupState {
   errors?: SignupFieldErrors;
-  sentTo?: string;
+  /** Approval mode: the request is stored and waits for a platform admin. */
+  awaitingApproval?: string;
   /** What was submitted (never the password), so a rejected form keeps the user's typing. */
   values?: { name: string; email: string };
 }
@@ -30,7 +31,7 @@ export interface SignupState {
 export async function startSignupAction(_prev: SignupState, formData: FormData): Promise<SignupState> {
   await requirePlatformSite();
   const field = (k: string) => String(formData.get(k) ?? "");
-  const { origin } = await requestOrigin();
+  const { host } = await requestOrigin();
   const result = await startSignup(
     {
       companyName: field("companyName"),
@@ -40,9 +41,12 @@ export async function startSignupAction(_prev: SignupState, formData: FormData):
       password: field("password"),
       acceptTerms: formData.get("acceptTerms") === "on",
     },
-    { origin, clientKey: await clientKey() },
+    { hostHint: host, clientKey: await clientKey() },
   );
-  return result.ok ? { sentTo: result.email } : { errors: result.errors, values: { name: field("name"), email: field("email") } };
+  if (!result.ok) return { errors: result.errors, values: { name: field("name"), email: field("email") } };
+  // Open mode: the company exists already; the one-time hand-off signs the owner in on its own host.
+  if (result.kind === "created") redirect(result.redirectTo);
+  return { awaitingApproval: result.email };
 }
 
 export interface ConfirmState {

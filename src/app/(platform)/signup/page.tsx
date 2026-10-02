@@ -56,7 +56,7 @@ export default async function SignupPage() {
         {mode === "closed" ? (
           <p className="max-w-sm text-center text-muted-foreground">New sign-ups are paused right now. Please check back soon.</p>
         ) : (
-          <SignupForm rootDomain={platformRootDomain()} />
+          <SignupForm rootDomain={platformRootDomain()} approval={mode === "approval"} />
         )}
       </div>
     </div>
