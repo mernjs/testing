@@ -3,6 +3,7 @@
  *
  *   1. the "Our SaaS Product" item in the Services list now links to /products (the Products page);
  *   2. the Services menu's featured card links to /services/our-saas-product (the old SaaS product page, which was that item's link);
+ *   (and the featured card's text now describes the SaaS instead of "Digital Transformation & SaaS Platform")
  *   3. what the featured card used to link to — the Services overview, /services — is added to the Services list as "All Services".
  *
  *   npm run db:update-services-nav            # dry run — prints the plan, writes nothing
@@ -24,6 +25,9 @@ const ACTOR = "system:services-nav";
 const SERVICES = "/services";
 const SAAS_OLD = "/services/our-saas-product";
 const PRODUCTS = "/products";
+// The featured card's text before this change; replaced only while it is still exactly this (an editor's own wording is kept).
+const PREVIOUS_FEATURED = { title: "Digital Transformation & SaaS Platform", description: "End-to-end tech solutions and SaaS products." };
+const NEW_FEATURED = { title: "Our AI-Powered Business Automation SaaS", description: "One workspace for HR, projects, finance, CRM and AI, with workflow automation that connects them." };
 
 export interface ServicesNavResult { updated: string[]; created: string[]; skipped: string[] }
 
@@ -49,6 +53,15 @@ export async function updateServicesNav(apply: boolean): Promise<ServicesNavResu
     if (apply) await updateNavItem(top._id, { featuredHref: SAAS_OLD }, ACTOR);
   } else log("skipped", `"${top.label}" featured card already links to ${top.featuredHref}`);
 
+  // 2b. featured card text → about the SaaS (only while it is still the previous seed text)
+  const textPatch: { featuredTitle?: string; featuredDescription?: string } = {};
+  if (top.featuredTitle === PREVIOUS_FEATURED.title) textPatch.featuredTitle = NEW_FEATURED.title;
+  if (top.featuredDescription === PREVIOUS_FEATURED.description) textPatch.featuredDescription = NEW_FEATURED.description;
+  if (Object.keys(textPatch).length) {
+    log("updated", `"${top.label}" featured card text now describes the SaaS (${Object.keys(textPatch).join(", ")})`);
+    if (apply) await updateNavItem(top._id, textPatch, ACTOR);
+  } else log("skipped", `"${top.label}" featured card text was edited or already changed — left as it is`);
+
   // 1. the SaaS item → Products
   const saas = children.find((c) => c.href === SAAS_OLD);
   if (saas) {
@@ -63,7 +76,7 @@ export async function updateServicesNav(apply: boolean): Promise<ServicesNavResu
     if (apply) {
       const first = children[0]?.orderKey ?? 1024;
       const created = await createNavItem(
-        { parentId: top._id, label: "All Services", href: SERVICES, description: top.featuredDescription || "End-to-end tech solutions and SaaS products", iconKey: top.iconKey || "Layers" },
+        { parentId: top._id, label: "All Services", href: SERVICES, description: PREVIOUS_FEATURED.description.replace(/\.$/, ""), iconKey: top.iconKey || "Layers" },
         ACTOR
       );
       await updateNavItem(created._id, { orderKey: first - 1024 }, ACTOR);

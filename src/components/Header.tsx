@@ -132,7 +132,7 @@ function FeaturedCard({ item, featuredLabel, cta }: { item: NavColumn; featuredL
           </h3>
           <p className="text-sm text-white/70 mb-4">{item.featured.description}</p>
           <span className="inline-flex items-center gap-2 text-sm font-semibold text-white">
-            {cta ? cta.viewAllLabel : `View all ${item.name}`}
+            {cta ? cta.viewAllLabel : item.featured.href && item.featured.href !== item.href ? `Explore ${item.featured.title}` : `View all ${item.name}`}
             <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center group-hover/card:bg-primary transition-colors duration-300">
               <ArrowRight className="w-3.5 h-3.5 group-hover/card:translate-x-0.5 transition-transform" />
             </span>
