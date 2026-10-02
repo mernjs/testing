@@ -7,9 +7,11 @@
  *     grouped by category, each with its icon and one-line value;
  *   - a "Products" link at the top of the footer's Services column.
  *
- *   npx --yes tsx --require ./scripts/lib/next-server-shims.cjs scripts/add-products-nav.ts            # dry run — prints the plan, writes nothing
- *   npx --yes tsx --require ./scripts/lib/next-server-shims.cjs scripts/add-products-nav.ts --apply    # writes to the database in MONGODB_URI
- *   ... --company <slug>   a company other than the platform owner — refused: Products is the owner's own content
+ *   npm run db:add-products-nav            # dry run — prints the plan, writes nothing
+ *   npm run db:add-products-nav -- --apply # writes to the database in MONGODB_URI (read from .env)
+ *   ... -- --company <slug>                # a company other than the platform owner — refused: Products is the owner's own content
+ *
+ * (Without npm, pass the env file yourself: npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/add-products-nav.ts)
  *
  * Safe to re-run: items are matched by their link (/products, /products/<slug>), anything already there
  * is left exactly as it is (nothing is edited, reordered or removed), only missing entries are added, and
