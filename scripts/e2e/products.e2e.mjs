@@ -199,8 +199,8 @@ try {
       await page.waitForTimeout(400);
       r.escapeCloses = (await open()) === 0;
       await page.mouse.move(5, 600);
-      await page.waitForTimeout(500);
-      r.closesOnLeave = (await open()) === 0;
+      // The menu closes after a short delay plus its exit animation: wait for it to leave the DOM rather than a fixed time.
+      r.closesOnLeave = await page.locator(PANEL).first().waitFor({ state: "detached", timeout: 4000 }).then(() => true).catch(() => false);
       return r;
     };
     const s = await behaviour("Services");
