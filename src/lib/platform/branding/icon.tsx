@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { getCompanyBrand } from "@/lib/platform/branding";
 import { getActiveThemeState } from "@/lib/cms/theme";
 import { brandInitials } from "@/lib/platform/branding/types";
-import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
+import { LOGO_ROUTE, readCompanyLogo } from "@/lib/platform/branding/logo";
 
 /**
  * The browser-tab / home-screen icon of the CURRENT company: its own logo when
@@ -10,7 +10,13 @@ import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
  */
 export async function renderCompanyIcon(size: number): Promise<ImageResponse> {
   const [brand, { tokens }] = await Promise.all([getCompanyBrand(), getActiveThemeState()]);
-  const logo = brand.logoUrl ? new URL(brand.logoUrl, await companySiteUrl()).toString() : null;
+  // Read the stored file directly and inline it: fetching our own public URL fails in dev / behind a proxy and
+  // makes the renderer reject the response ("Unsupported image type").
+  let logo: string | null = null;
+  if (brand.logoUrl?.startsWith(LOGO_ROUTE)) {
+    const file = await readCompanyLogo(brand.logoUrl.slice(LOGO_ROUTE.length)).catch(() => null);
+    if (file && file.contentType !== "image/webp") logo = `data:${file.contentType};base64,${file.body.toString("base64")}`;
+  }
   const c = tokens.colors;
   return new ImageResponse(
     logo ? (

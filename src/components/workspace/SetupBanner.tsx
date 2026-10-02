@@ -18,7 +18,7 @@ export default function SetupBanner({ done, total }: { done: number; total: numb
       id="setup-banner"
       role="status"
       title="Company profile, departments, team invites, branding and panels"
-      className="inline-flex max-w-full shrink-0 items-center gap-2.5 rounded-full border border-amber-500/30 bg-amber-500/10 py-1 pl-3 pr-1 text-xs backdrop-blur-md"
+      className="inline-flex max-w-full shrink-0 items-center gap-2.5 rounded-full border border-amber-500/30 bg-amber-500/10 dark:border-border dark:bg-card py-1 pl-3 pr-1 text-xs backdrop-blur-md"
     >
       <span className="font-semibold text-foreground">Finish setup</span>
       <span className="flex items-center gap-1.5 text-muted-foreground">

@@ -46,7 +46,7 @@ export default function VerifyEmailBanner({ email }: { email: string }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
       title={sent ? "The link stays valid for 24 hours. Check spam too." : "One click keeps your account secure."}
-      className={`inline-flex max-w-full shrink-0 items-center gap-2 rounded-full border py-1 pl-3 pr-1 text-xs transition-colors ${sent ? "border-emerald-500/30 bg-emerald-500/10" : "border-amber-500/30 bg-amber-500/10"}`}
+      className={`inline-flex max-w-full shrink-0 items-center gap-2 rounded-full border py-1 pl-3 pr-1 text-xs transition-colors ${sent ? "border-emerald-500/30 bg-emerald-500/10 dark:border-border dark:bg-card" : "border-amber-500/30 bg-amber-500/10 dark:border-border dark:bg-card"}`}
     >
       {sent ? <MailCheck className="size-3.5 shrink-0 text-emerald-600" /> : <Mail className="size-3.5 shrink-0 text-amber-600" />}
       <span role="status" aria-live="polite" className="flex min-w-0 items-center gap-1.5">

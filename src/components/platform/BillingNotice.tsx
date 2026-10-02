@@ -30,9 +30,9 @@ function copy(n: BillingNoticeInfo): { title: string; body: string; cta: string;
 }
 
 const TONES = {
-  info: "border-primary/25 bg-primary/10 text-foreground [&_svg.notice-icon]:text-primary",
-  warn: "border-amber-500/30 bg-amber-500/10 text-foreground [&_svg.notice-icon]:text-amber-600 dark:[&_svg.notice-icon]:text-amber-400",
-  danger: "border-rose-500/30 bg-rose-500/10 text-foreground [&_svg.notice-icon]:text-rose-600 dark:[&_svg.notice-icon]:text-rose-400",
+  info: "border-primary/25 bg-primary/10 dark:border-border dark:bg-card text-foreground [&_svg.notice-icon]:text-primary",
+  warn: "border-amber-500/30 bg-amber-500/10 dark:border-border dark:bg-card text-foreground [&_svg.notice-icon]:text-amber-600 dark:[&_svg.notice-icon]:text-amber-400",
+  danger: "border-rose-500/30 bg-rose-500/10 dark:border-border dark:bg-card text-foreground [&_svg.notice-icon]:text-rose-600 dark:[&_svg.notice-icon]:text-rose-400",
 };
 
 export default async function BillingNotice({ className }: { className?: string }) {
@@ -52,7 +52,7 @@ export default async function BillingNotice({ className }: { className?: string 
     <div id="billing-notice" role="status" data-status={notice.status} title={c.body} className={cn("inline-flex max-w-full shrink-0 items-center gap-2 self-start rounded-full border py-1 pl-3 pr-1 text-xs backdrop-blur-md", TONES[c.tone], className)}>
       <Icon className="notice-icon size-3.5 shrink-0" aria-hidden />
       <span className="min-w-0 truncate font-semibold">{c.title}</span>
-      <Link href={BILLING_SETTINGS_PATH} className="inline-flex shrink-0 items-center gap-1 rounded-full bg-background/70 px-2.5 py-1 font-semibold text-primary transition-colors hover:bg-background">
+      <Link href={BILLING_SETTINGS_PATH} className="inline-flex shrink-0 items-center gap-1 rounded-full bg-background/70 dark:bg-background dark:hover:bg-muted px-2.5 py-1 font-semibold text-primary transition-colors hover:bg-background">
         {c.cta}
         <ArrowRight className="size-3" />
       </Link>

@@ -64,31 +64,6 @@ export function isDefaultTokens(tokens: ThemeTokens): boolean {
   );
 }
 
-/**
- * Dark mode for every theme EXCEPT the default: the original site's black-and-primary look — near-black surfaces
- * carrying a whisper of the theme's primary, lifted cards and popovers, soft neutral text. Dark mode only: light mode
- * is left exactly as it is.
- */
-function modernSurfaceCss(): string {
-  // One colour family: a true near-black (#09090b, the Vercel/Linear-style base) carries a whisper of the theme's own primary, and every
-  // surface, fill and hairline is derived from that same pair — so the dark UI reads as one palette, not black plus an accent.
-  // `--chrome` is a clearly deeper layer for headers (top bar, sidebar, table + card headers).
-  return (
-    `.dark{` +
-    `--background:color-mix(in oklab,#09090b 95%,var(--primary) 5%);` +
-    `--card:color-mix(in oklab,var(--background) 94%,white);` +
-    `--popover:color-mix(in oklab,var(--background) 91%,white);` +
-    `--muted:color-mix(in oklab,var(--background) 90%,var(--primary) 10%);` +
-    `--accent:color-mix(in oklab,var(--background) 87%,var(--primary) 13%);` +
-    `--muted-foreground:color-mix(in oklab,var(--foreground) 64%,var(--background));` +
-    `--canvas:var(--background);` +
-    `--chrome:color-mix(in oklab,var(--background) 55%,black);` +
-    // The top bar and sidebar: near-black, a shade deeper than the page, with only a trace of the theme colour.
-    `--bar:color-mix(in oklab,#030304 94%,var(--primary) 6%);` +
-    `}`
-  );
-}
-
 export const DEFAULT_TYPOGRAPHY: ThemeTypography = { bodyFont: "geist", headingFont: "geist", scale: 100 };
 export const DEFAULT_BRAND: ThemeBrand = { gradient: "#ff8e75", deep: "#1D428A" };
 
@@ -211,11 +186,16 @@ export function themeCssBlock(tokens: ThemeTokens): string {
   const fontsUrl = typo ? googleFontsUrl([typo.bodyFont, typo.headingFont]) : null;
   let css = fontsUrl ? `@import url("${fontsUrl}");` : "";
 
-  const brand = tokens.brand ?? DEFAULT_BRAND;
+  // A theme without its own brand pair derives the gradient end-colours from ITS primary — never the default theme's coral/blue.
+  const brand = tokens.brand ?? (isDefaultTokens(tokens)
+    ? DEFAULT_BRAND
+    : { gradient: "color-mix(in oklch,var(--primary) 72%,white)", deep: "color-mix(in oklch,var(--primary) 50%,black)" });
   const brandVars = `--brand-gradient:${brand.gradient};--brand-deep:${brand.deep};`;
-  css += `:root{${colorVars(tokens.colors)}--radius:${tokens.radius};${brandVars}}.dark{${colorVars(tokens.colorsDark)}}`;
+  // Non-default themes: lift the dark page colour (the theme's own, pulled toward its primary and a touch of white) so cards,
+  // gradients and borders stay readable instead of sinking into near-black. The default theme is left exactly as it is.
+  const liftDark = isDefaultTokens(tokens) ? "" : `--background:color-mix(in oklch,color-mix(in oklch,${tokens.colorsDark.background} 52%,var(--primary) 48%) 78%,white);`;
+  css += `:root{${colorVars(tokens.colors)}--radius:${tokens.radius};${brandVars}}.dark{${colorVars(tokens.colorsDark)}${liftDark}}`;
 
-  if (!isDefaultTokens(tokens)) css += modernSurfaceCss();
 
   if (typo) {
     // next/font sets --font-geist-sans with a class on <html>; `html:root` out-ranks it.
