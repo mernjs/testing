@@ -217,11 +217,16 @@ try {
       const m = await newPage();
       await m.setViewportSize(vp);
       await m.goto(`${OWNER}/`, { waitUntil: "domcontentloaded" });
-      await m.locator('header nav[aria-label="Global"]').getByRole("link", { name: "Products", exact: true }).hover();
       const panel = m.locator(PANEL).first();
-      await panel.waitFor({ state: "visible", timeout: 10_000 });
-      await m.waitForTimeout(400);
-      const box = await panel.boundingBox();
+      // Measure once the open animation has settled; a loaded machine can drop the hover, so open it again if it closed.
+      let box = null;
+      for (let attempt = 0; attempt < 3 && !box; attempt++) {
+        await m.locator('header nav[aria-label="Global"]').getByRole("link", { name: "Products", exact: true }).hover();
+        await panel.waitFor({ state: "visible", timeout: 10_000 });
+        await m.waitForTimeout(500);
+        box = await panel.boundingBox();
+      }
+      assert.ok(box, `${vp.width}x${vp.height}: the dropdown did not stay open to be measured`);
       assert.ok(box.x >= 0 && box.x + box.width <= vp.width + 1, `${vp.width}x${vp.height}: dropdown leaves the screen sideways`);
       const list = panel.locator("div.col-span-3").first();
       const { sh, ch, oy } = await list.evaluate((el) => ({ sh: el.scrollHeight, ch: el.clientHeight, oy: getComputedStyle(el).overflowY }));
