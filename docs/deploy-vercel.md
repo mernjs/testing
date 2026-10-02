@@ -25,6 +25,21 @@ production. **Still set it explicitly (step 3)**; the fallbacks are a safety net
    on your plan.
    **Before changing nameservers, copy every existing DNS record of yashorbit.com into Vercel's DNS** (especially `MX`, SPF/DKIM
    `TXT` and any verification records). Records you forget stop working — email first.
+### Domain bought at GoDaddy, hosted on Vercel
+
+Two ways; **A is recommended** (every new company's address works instantly, nothing to attach per company):
+
+**A. Move the DNS to Vercel (wildcard).**
+1. GoDaddy → My Products → Domains → `yashorbit.com` → **DNS**. Write down (or screenshot) EVERY record: `A`, `CNAME`, `MX`, `TXT` (SPF/DKIM/verification). If you use e-mail on this domain (GoDaddy/Microsoft 365/Google), these must be recreated in Vercel.
+2. Vercel → Domains → `yashorbit.com` → **DNS Records**: add those same records (skip the `A`/`CNAME` that Vercel manages for your project).
+3. GoDaddy → the domain → **Nameservers → Change → "I'll use my own nameservers"**: `ns1.vercel-dns.com` and `ns2.vercel-dns.com`. If GoDaddy blocks the change, turn off DNSSEC for the domain first. Propagation can take from minutes to 48 hours.
+4. In Vercel the three domains show "Valid Configuration" → set `PLATFORM_WILDCARD_SUBDOMAINS=1` and redeploy.
+
+**B. Keep GoDaddy DNS (no wildcard certificate).**
+1. GoDaddy DNS → add a record: Type `CNAME`, Host `*`, Value = the CNAME Vercel shows for your project (Vercel → Domains → `www.yashorbit.com`; `cname.vercel-dns.com` also works).
+2. Leave `PLATFORM_WILDCARD_SUBDOMAINS` unset and set `DOMAIN_PROVIDER=vercel`, `VERCEL_API_TOKEN`, `VERCEL_PROJECT_ID` (+ `VERCEL_TEAM_ID`): each new company's subdomain is then added to the project through the API when it registers.
+3. Caveats: Vercel issues each certificate after the domain is added, so a brand-new workspace can show a certificate warning for a short while; each company counts toward the project's domain limit on your plan; an unknown `nope.yashorbit.com` shows a certificate error instead of "No workspace here".
+
 3. Confirm: `https://anything.yashorbit.com` shows the platform's "No workspace here" page over HTTPS (not a certificate
    error). That means the wildcard works.
 
