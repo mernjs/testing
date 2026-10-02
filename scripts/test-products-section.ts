@@ -404,8 +404,8 @@ async function main() {
   });
   await check("withoutProducts / withoutProductsLinks remove only Products entries", () => {
     const nav: PublicNavTop[] = [
-      { name: "Services", href: "/services", iconKey: "Layers", featured: { title: "", description: "", image: "" }, items: [{ name: "Our SaaS Product", href: "/services/our-saas-product", description: null, iconKey: "Sparkles", group: null }, { name: "X", href: "/products/x", description: null, iconKey: "Sparkles", group: null }] },
-      { name: "Products", href: "/products", iconKey: "Boxes", featured: { title: "", description: "", image: "" }, items: [] },
+      { name: "Services", href: "/services", iconKey: "Layers", featured: { title: "", description: "", image: "", href: null }, items: [{ name: "Our SaaS Product", href: "/services/our-saas-product", description: null, iconKey: "Sparkles", group: null }, { name: "X", href: "/products/x", description: null, iconKey: "Sparkles", group: null }] },
+      { name: "Products", href: "/products", iconKey: "Boxes", featured: { title: "", description: "", image: "", href: null }, items: [] },
     ];
     const out = withoutProducts(nav);
     assert.deepEqual(out.map((t) => t.name), ["Services"]);
