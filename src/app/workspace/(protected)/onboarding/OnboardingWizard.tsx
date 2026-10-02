@@ -3,7 +3,8 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Check, Loader2, Plus, Trash2, X } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowLeft, ArrowRight, Building2, Check, Clock, CreditCard, Globe, LayoutGrid, Loader2, Network, Palette, Plus, Sparkles, Trash2, UserPlus, Users, X } from "lucide-react";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { Input } from "@/components/ui/input";
@@ -27,7 +28,7 @@ import type { ProfileInput } from "@/lib/platform/onboarding/state";
 import type { StoredBranding } from "@/lib/platform/branding/types";
 import BrandingForm from "@/components/platform/BrandingForm";
 import { saveBrandingAction, uploadLogoAction } from "../settings/branding/actions";
-import { applyStructureAction, finishTeamStepAction, inviteAction, revokeInviteAction, saveModulesAction, saveProfileAction, skipOnboardingAction, type InviteRow } from "./actions";
+import { applyStructureAction, finishTeamStepAction, inviteAction, revokeInviteAction, saveModulesAction, saveProfileAction, skipOnboardingAction, skipStepAction, type InviteRow } from "./actions";
 
 const selectClass =
   "h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30";
@@ -43,20 +44,35 @@ interface Props {
   branding: StoredBranding;
 }
 
+const STEP_META: Record<string, { icon: React.ComponentType<{ className?: string }>; hint: string; why: string }> = {
+  profile: { icon: Building2, hint: "About your company", why: "Printed on invoices, payslips, letters and your website." },
+  structure: { icon: Network, hint: "Departments", why: "Gives every person a place in the company and drives reporting lines." },
+  team: { icon: UserPlus, hint: "Invite people", why: "Teammates get an email and see only the panels their role allows." },
+  branding: { icon: Palette, hint: "Logo & colours", why: "Your name and colours appear on every panel, email and PDF." },
+  modules: { icon: LayoutGrid, hint: "Pick panels", why: "Switch on what you use; the rest stays out of everyone's way." },
+};
+
 export default function OnboardingWizard(props: Props) {
   const firstOpen = ONBOARDING_STEPS.findIndex((s) => !props.completedSteps.includes(s.key));
   const [step, setStep] = useState(firstOpen === -1 ? ONBOARDING_STEPS.length : firstOpen);
   const [industry, setIndustry] = useState<Industry | "">((props.profile.industry as Industry) || "");
-  const done = step >= ONBOARDING_STEPS.length;
+  const [skipping, startSkip] = useTransition();
+  const total = ONBOARDING_STEPS.length;
+  const done = step >= total;
   const next = () => setStep((s) => s + 1);
+  const finished = ONBOARDING_STEPS.filter((s, i) => i < step || props.completedSteps.includes(s.key)).length;
+  const percent = done ? 100 : Math.round((Math.min(finished, total) / total) * 100);
+  const currentKey = ONBOARDING_STEPS[step]?.key;
+  const meta = currentKey ? STEP_META[currentKey] : null;
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10">
-      <div className="mx-auto max-w-3xl">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <div className="relative min-h-screen overflow-hidden bg-background px-4 py-8 sm:py-12">
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-primary/10 via-primary/5 to-transparent" />
+      <div className="relative mx-auto max-w-3xl">
+        <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-black tracking-tight">Set up {props.companyName}</h1>
-            <p className="text-sm text-muted-foreground">A few quick steps — everything can be changed later.</p>
+            <h1 className="text-2xl font-black tracking-tight sm:text-3xl">Set up {props.companyName}</h1>
+            <p className="mt-1 text-sm text-muted-foreground">A few quick steps to make it yours — everything can be changed later.</p>
           </div>
           {!done && (
             <form action={skipOnboardingAction}>
@@ -67,37 +83,104 @@ export default function OnboardingWizard(props: Props) {
           )}
         </div>
 
-        <ol className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-5" aria-label="Setup steps">
-          {ONBOARDING_STEPS.map((s, i) => (
-            <li key={s.key}>
-              <button
-                type="button"
-                onClick={() => setStep(i)}
-                aria-current={i === step ? "step" : undefined}
-                className={cn(
-                  "flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors",
-                  i === step ? "border-primary bg-primary/5 font-semibold" : "border-border text-muted-foreground hover:bg-muted/50",
-                )}
-              >
-                <span className={cn("flex size-5 shrink-0 items-center justify-center rounded-full text-xs", i < step || props.completedSteps.includes(s.key) ? "bg-primary text-primary-foreground" : "bg-muted")}>
-                  {i < step || props.completedSteps.includes(s.key) ? <Check className="size-3" /> : i + 1}
-                </span>
-                {s.label}
-              </button>
-            </li>
-          ))}
-        </ol>
+        <div className="mb-6 rounded-2xl border border-border/60 bg-card/70 p-4 shadow-sm backdrop-blur sm:p-5">
+          <div className="mb-3 flex items-center justify-between gap-3 text-xs">
+            <span className="font-semibold text-foreground">{done ? "Setup complete" : `Step ${step + 1} of ${total}`}</span>
+            <span className="flex items-center gap-1 text-muted-foreground">
+              {done ? (
+                <>
+                  <Sparkles className="size-3" /> All set
+                </>
+              ) : (
+                <>
+                  <Clock className="size-3" /> About {Math.max(1, total - step)} min left
+                </>
+              )}
+            </span>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Setup progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}>
+            <motion.div className="h-full rounded-full bg-gradient-to-r from-primary to-secondary" initial={false} animate={{ width: `${percent}%` }} transition={{ type: "spring", stiffness: 110, damping: 20 }} />
+          </div>
 
-        {step === 0 && <ProfileStep initial={props.profile} timezones={props.timezones} onIndustry={setIndustry} onDone={next} />}
-        {step === 1 && <StructureStep industry={industry || "software_services"} existing={props.existingDepartments} onDone={next} />}
-        {step === 2 && <TeamStep departments={props.existingDepartments} invitations={props.invitations} onDone={next} />}
-        {step === 3 && (
-          <StepCard title="Branding" description="Your logo, name and colour — shown across every panel, sign-in page, email and PDF.">
-            <BrandingForm initial={props.branding} companyName={props.companyName} actions={{ save: saveBrandingAction, uploadLogo: uploadLogoAction }} submitLabel="Save & continue" onSaved={next} />
-          </StepCard>
+          <ol className="mt-4 grid grid-cols-5 gap-1 sm:gap-2" aria-label="Setup steps">
+            {ONBOARDING_STEPS.map((s, i) => {
+              const Icon = STEP_META[s.key]?.icon ?? Building2;
+              const complete = i < step || props.completedSteps.includes(s.key);
+              const active = i === step;
+              return (
+                <li key={s.key} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setStep(i)}
+                    aria-current={active ? "step" : undefined}
+                    className="group flex w-full flex-col items-center gap-1.5 rounded-xl px-1 py-2 text-center outline-none transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring/50"
+                  >
+                    <span
+                      className={cn(
+                        "flex size-9 items-center justify-center rounded-full border text-sm transition-all",
+                        complete && "border-primary bg-primary text-primary-foreground",
+                        active && !complete && "border-primary bg-primary/10 text-primary ring-4 ring-primary/15",
+                        !active && !complete && "border-border bg-muted/60 text-muted-foreground",
+                      )}
+                    >
+                      {complete ? <Check className="size-4" /> : <Icon className="size-4" />}
+                    </span>
+                    <span className={cn("text-[11px] leading-tight sm:text-xs", active ? "font-semibold text-foreground" : "text-muted-foreground", !active && "hidden sm:block")}>{s.label}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+
+        <motion.div key={step} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+          {meta && (
+            <p className="mb-3 flex items-center gap-2 px-1 text-sm text-muted-foreground">
+              <Sparkles className="size-4 shrink-0 text-primary" />
+              <span>
+                <span className="font-medium text-foreground">Why this matters:</span> {meta.why}
+              </span>
+            </p>
+          )}
+          {step === 0 && <ProfileStep initial={props.profile} timezones={props.timezones} onIndustry={setIndustry} onDone={next} />}
+          {step === 1 && <StructureStep industry={industry || "software_services"} existing={props.existingDepartments} onDone={next} />}
+          {step === 2 && <TeamStep departments={props.existingDepartments} invitations={props.invitations} onDone={next} />}
+          {step === 3 && (
+            <StepCard title="Branding" description="Your logo, name and colour — shown across every panel, sign-in page, email and PDF.">
+              <BrandingForm initial={props.branding} companyName={props.companyName} actions={{ save: saveBrandingAction, uploadLogo: uploadLogoAction }} submitLabel="Save & continue" onSaved={next} />
+            </StepCard>
+          )}
+          {step === 4 && <ModulesStep industry={industry || "software_services"} enabled={props.enabledModules} onDone={next} />}
+          {done && <DoneStep />}
+        </motion.div>
+
+        {!done && (
+          <div className="mt-4 flex items-center justify-between">
+            {step > 0 ? (
+              <Button type="button" variant="ghost" size="sm" onClick={() => setStep((s) => Math.max(0, s - 1))}>
+                <ArrowLeft className="size-4" /> Back
+              </Button>
+            ) : (
+              <span />
+            )}
+            {currentKey && currentKey !== "profile" && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                disabled={skipping}
+                onClick={() =>
+                  startSkip(async () => {
+                    await skipStepAction(currentKey);
+                    next();
+                  })
+                }
+              >
+                {skipping ? <Loader2 className="size-4 animate-spin" /> : "Skip this step"}
+              </Button>
+            )}
+          </div>
         )}
-        {step === 4 && <ModulesStep industry={industry || "software_services"} enabled={props.enabledModules} onDone={next} />}
-        {done && <DoneStep />}
       </div>
     </div>
   );
@@ -107,8 +190,8 @@ function StepCard({ title, description, children }: { title: string; description
   return (
     <GlassCard>
       <CardHeader>
-        <CardTitle className="text-lg">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardTitle className="text-xl font-bold tracking-tight">{title}</CardTitle>
+        <CardDescription className="text-sm leading-relaxed">{description}</CardDescription>
       </CardHeader>
       <CardContent>{children}</CardContent>
     </GlassCard>
@@ -243,7 +326,10 @@ function StructureStep({ industry, existing, onDone }: { industry: Industry; exi
           <Plus className="size-4" /> Add department
         </Button>
       </div>
-      <div className="mt-4 flex justify-end">
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <span className="text-xs text-muted-foreground">
+          {rows.filter((r) => r.selected && r.name.trim()).length} of {rows.length} departments selected
+        </span>
         <Button
           disabled={pending}
           onClick={() =>
@@ -391,8 +477,20 @@ function ModulesStep({ industry, enabled, onDone }: { industry: Industry; enable
       return n;
     });
 
+  const recommended = useMemo(() => new Set<string>(DEFAULT_MODULES[industry]), [industry]);
+  const count = MODULES.filter((m) => m.core || selected.has(m.key)).length;
+
   return (
     <StepCard title="Choose your panels" description="Turn on what your company uses. Everything else stays out of your team's way — switch panels on or off any time.">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <Button type="button" variant="outline" size="xs" onClick={() => setSelected(new Set<string>(DEFAULT_MODULES[industry]))}>
+          <Sparkles className="size-3" /> Use recommended
+        </Button>
+        <Button type="button" variant="ghost" size="xs" onClick={() => setSelected(new Set<string>(MODULES.map((m) => m.key)))}>
+          Select all
+        </Button>
+        <span className="ml-auto text-xs text-muted-foreground">{count} panels on</span>
+      </div>
       <div className="grid gap-2 sm:grid-cols-2">
         {MODULES.map((m) => {
           const on = m.core || selected.has(m.key);
@@ -402,6 +500,7 @@ function ModulesStep({ industry, enabled, onDone }: { industry: Industry; enable
               <span>
                 <span className="block text-sm font-semibold">
                   {m.label} {m.core && <span className="text-xs font-normal text-muted-foreground">· always on</span>}
+                  {!m.core && recommended.has(m.key) && <span className="ml-1 rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">Recommended</span>}
                 </span>
                 <span className="block text-xs text-muted-foreground">{m.description}</span>
               </span>
@@ -427,11 +526,39 @@ function ModulesStep({ industry, enabled, onDone }: { industry: Industry; enable
 }
 
 function DoneStep() {
+  const nextSteps = [
+    { href: "/workspace/users", icon: Users, title: "Add your team", text: "Create or invite people and set their roles." },
+    { href: "/workspace/settings/domains", icon: Globe, title: "Use your own domain", text: "Optional: connect www.yourcompany.com." },
+    { href: "/workspace/settings/billing", icon: CreditCard, title: "Plan & billing", text: "See your trial and pick a plan." },
+  ];
   return (
-    <StepCard title="You're all set" description="Your workspace is ready. Invited teammates will appear as they accept.">
-      <Button render={<Link href="/workspace" />} nativeButton={false}>
-        Go to your workspace <ArrowRight className="size-4" />
-      </Button>
-    </StepCard>
+    <GlassCard>
+      <CardHeader className="items-center text-center">
+        <motion.div initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 260, damping: 16 }} className="mb-2 flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-lg shadow-primary/25">
+          <Check className="size-8" strokeWidth={3} />
+        </motion.div>
+        <CardTitle className="text-2xl font-black tracking-tight">You&apos;re all set</CardTitle>
+        <CardDescription className="max-w-md text-sm leading-relaxed">Your workspace is ready. Invited teammates will appear as they accept.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className="mb-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">What&apos;s next</p>
+        <ul className="grid gap-2 sm:grid-cols-3">
+          {nextSteps.map((n) => (
+            <li key={n.href}>
+              <Link href={n.href} className="group flex h-full flex-col gap-1 rounded-xl border border-border/60 p-3 transition-colors hover:border-primary/40 hover:bg-primary/5">
+                <n.icon className="size-4 text-primary" />
+                <span className="text-sm font-semibold">{n.title}</span>
+                <span className="text-xs text-muted-foreground">{n.text}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-5 flex justify-center">
+          <Button render={<Link href="/workspace" />} nativeButton={false} size="lg">
+            Go to your workspace <ArrowRight className="size-4" />
+          </Button>
+        </div>
+      </CardContent>
+    </GlassCard>
   );
 }

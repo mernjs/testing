@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { slugFormatError, slugFromName } from "@/lib/platform/tenancy/slug";
 import { checkSlugAction, startSignupAction, type SignupState } from "./actions";
+import CreatingWorkspace from "./CreatingWorkspace";
 
 const initialState: SignupState = {};
 type SlugCheck = { for: string; state: "idle" | "checking" | "ok" | "bad"; message: string | null };
@@ -71,7 +72,10 @@ export default function SignupForm({ rootDomain, approval = false }: { rootDomai
   const slugMessage = errors.slug ?? (current.state === "bad" ? current.message : null);
 
   return (
-    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-md">
+    <>
+      {/* While the workspace is being created the form is hidden (kept mounted, so the submission completes) and the progress is shown instead. */}
+      {pending && <CreatingWorkspace companyName={companyName} host={`${slug || "your-company"}.${rootDomain}`} approval={approval} />}
+    <motion.div hidden={pending} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-md">
       <GlassCard>
         <CardHeader>
           <CardTitle className="text-xl">Create your workspace</CardTitle>
@@ -170,5 +174,6 @@ export default function SignupForm({ rootDomain, approval = false }: { rootDomai
         </CardContent>
       </GlassCard>
     </motion.div>
+    </>
   );
 }

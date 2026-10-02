@@ -3,7 +3,8 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getCurrentHubUser } from "@/lib/hub-auth";
-import { applyStructure, completeTeamStep, saveModules, saveProfile, skipOnboarding, type ProfileInput, type StepResult } from "@/lib/platform/onboarding/state";
+import { applyStructure, completeTeamStep, markOnboardingStep, saveModules, saveProfile, skipOnboarding, type ProfileInput, type StepResult } from "@/lib/platform/onboarding/state";
+import { ONBOARDING_STEPS, type OnboardingStep } from "@/lib/platform/onboarding/catalog";
 import { inviteTeammate, revokeInvitation } from "@/lib/platform/invitations";
 import { requestOrigin } from "@/lib/platform/request";
 import type { DepartmentTemplate } from "@/lib/platform/onboarding/catalog";
@@ -78,4 +79,13 @@ export async function skipOnboardingAction(): Promise<void> {
   await skipOnboarding();
   revalidatePath("/workspace", "layout");
   redirect("/workspace");
+}
+
+/** "Skip this step": the step counts as done (it can be revisited any time from Company setup), so setup can still complete. */
+export async function skipStepAction(step: string): Promise<void> {
+  await requireOwner();
+  const known = ONBOARDING_STEPS.find((s) => s.key === step);
+  if (!known) return;
+  await markOnboardingStep(known.key as OnboardingStep);
+  revalidatePath("/workspace", "layout");
 }

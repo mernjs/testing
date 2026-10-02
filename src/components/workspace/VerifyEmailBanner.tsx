@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { usePathname } from "next/navigation";
-import { Loader2, MailCheck } from "lucide-react";
+import { motion } from "framer-motion";
+import { Loader2, Mail, MailCheck } from "lucide-react";
 import { toast } from "sonner";
 import { verifyStripHiddenOn } from "@/lib/platform/email-verification-rule";
 import { sendVerificationEmailAction, type VerifyEmailSendState } from "@/app/workspace/(protected)/actions";
@@ -36,26 +37,44 @@ export default function VerifyEmailBanner({ email }: { email: string }) {
       if (res.status === "sent") setCooldown(RESEND_COOLDOWN_S);
     });
 
-  const button = "inline-flex items-center gap-1 rounded-xl bg-primary px-3.5 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60";
+  const sent = state.status === "sent";
+  const button = "inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 disabled:opacity-60";
   return (
-    <div id="verify-banner" className="flex shrink-0 flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-5 py-3 text-sm">
-      <div role="status" aria-live="polite" className="min-w-0">
-        {state.status === "sent" ? (
-          <>
-            <span className="inline-flex items-center gap-1.5 font-semibold text-foreground">
-              <MailCheck className="size-4" /> Check your inbox
-            </span>
-            <span className="text-muted-foreground"> — we sent a link to <span className="break-all font-medium text-foreground">{state.email}</span>.</span>
-          </>
-        ) : (
-          <>
-            <span className="font-semibold text-foreground">Your email address isn&apos;t verified</span>
-            <span className="text-muted-foreground"> — <span className="break-all">{email}</span>. Verify it to keep your account secure.</span>
-          </>
-        )}
-        {state.status === "error" && <span id="verify-banner-error" className="mt-1 block text-destructive">{state.error}</span>}
+    <motion.div
+      id="verify-banner"
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className={`flex shrink-0 flex-wrap items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-sm transition-colors ${sent ? "border-emerald-500/40 bg-emerald-500/10" : "border-amber-500/40 bg-amber-500/10"}`}
+    >
+      <div className="flex min-w-0 items-center gap-3">
+        <span className={`flex size-9 shrink-0 items-center justify-center rounded-full ${sent ? "bg-emerald-500/20 text-emerald-600" : "bg-amber-500/20 text-amber-600"}`}>
+          {sent ? <MailCheck className="size-4.5" /> : <Mail className="size-4.5" />}
+        </span>
+        <div role="status" aria-live="polite" className="min-w-0">
+          {sent ? (
+            <>
+              <p className="font-semibold text-foreground">Check your inbox</p>
+              <p className="text-xs text-muted-foreground">
+                We sent a link to <span className="break-all font-medium text-foreground">{state.email}</span>. It stays valid for 24 hours — check spam too.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="font-semibold text-foreground">Verify your email address</p>
+              <p className="text-xs text-muted-foreground">
+                <span className="break-all">{email}</span> isn&apos;t verified yet. It takes one click and keeps your account secure.
+              </p>
+            </>
+          )}
+          {state.status === "error" && (
+            <p id="verify-banner-error" className="mt-1 text-xs text-destructive">
+              {state.error}
+            </p>
+          )}
+        </div>
       </div>
-      {state.status === "sent" ? (
+      {sent ? (
         <button type="button" id="verify-banner-resend" onClick={send} disabled={pending || cooldown > 0} className={button}>
           {pending && <Loader2 className="size-3.5 animate-spin" />}
           {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend"}
@@ -66,7 +85,7 @@ export default function VerifyEmailBanner({ email }: { email: string }) {
           Verify email
         </button>
       )}
-    </div>
+    </motion.div>
   );
 }
 
@@ -75,7 +94,7 @@ export function VerifiedNotice() {
   useEffect(() => {
     const url = new URL(window.location.href);
     if (url.searchParams.get("emailVerified") !== "1") return;
-    toast.success("Email verified. Thank you!");
+    toast.success("Email verified", { description: "Thank you — your account is now more secure." });
     url.searchParams.delete("emailVerified");
     window.history.replaceState(null, "", url.pathname + url.search + url.hash);
   }, []);
