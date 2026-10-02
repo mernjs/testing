@@ -439,3 +439,16 @@ MONGODB_URI="mongodb+srv://…/yashorbit_prod?…" npm run db:migrate-cms-conten
 
 
 npm run db:migrate-cms-content -- --apply
+
+
+Before you push or deploy
+Migrate the production database: npm run db:migrate-tenancy -- --apply against yashorbit_prod.
+Add PLATFORM_ENCRYPTION_KEY, RAZORPAY_BILLING_WEBHOOK_SECRET and CRON_SECRET to Vercel.
+After deploy, run scripts/backfill-subscription-events.ts so revenue analytics aren't empty. It is a dry run unless you pass --apply.
+Enter your Razorpay test keys in Platform Panel → Payments & Razorpay
+
+
+npm run db:migrate-cms-content
+npm run db:migrate-cms-content -- --apply
+npm run db:add-products-nav
+npm run db:add-products-nav -- --apply

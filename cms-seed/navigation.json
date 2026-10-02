@@ -40,9 +40,9 @@
     "iconKey": "Newspaper"
    },
    {
-    "name": "Our SaaS Product",
-    "href": "/services/our-saas-product",
-    "description": "15-application AI platform",
+    "name": "Our Teams",
+    "href": "/about/our-teams",
+    "description": "Meet the people behind our success",
     "iconKey": "Sparkles"
    },
    {
@@ -71,13 +71,7 @@
   },
   "items": [
    {
-    "name": "All Services",
-    "href": "/services",
-    "description": "End-to-end tech solutions and SaaS products",
-    "iconKey": "Layers"
-   },
-   {
-    "name": "Our SaaS Product",
+    "name": "Our SaaS Products",
     "href": "/products",
     "description": "15-application integrated AI SaaS ecosystem",
     "iconKey": "Sparkles"
@@ -131,34 +125,6 @@
   },
   "items": [
    {
-    "name": "Command Center",
-    "href": "/products/admin-command-center",
-    "description": "Company dashboard, users, roles and audit in one place",
-    "iconKey": "ShieldCheck",
-    "group": "Executive & Operations"
-   },
-   {
-    "name": "Workspace",
-    "href": "/products/staff-hub",
-    "description": "One sign-in and one home for every product and every person",
-    "iconKey": "LayoutDashboard",
-    "group": "Executive & Operations"
-   },
-   {
-    "name": "Team Chat",
-    "href": "/products/messenger-yashchat",
-    "description": "Team messaging tied to your projects and people",
-    "iconKey": "MessageSquare",
-    "group": "Executive & Operations"
-   },
-   {
-    "name": "SOPs & Policies",
-    "href": "/products/sop-policies",
-    "description": "Write, version, assign and track acknowledgement of procedures",
-    "iconKey": "ClipboardCheck",
-    "group": "Executive & Operations"
-   },
-   {
     "name": "AI Assistants",
     "href": "/products/aibots-studio",
     "description": "Build assistants that answer from your own documents",
@@ -177,13 +143,6 @@
     "href": "/products/hrms-suite",
     "description": "Employees, attendance, leave, payroll and recruitment",
     "iconKey": "Users",
-    "group": "HR & Talent"
-   },
-   {
-    "name": "Training",
-    "href": "/products/tms-academy",
-    "description": "Programs, batches, students, certificates and placements",
-    "iconKey": "GraduationCap",
     "group": "HR & Talent"
    },
    {
@@ -215,53 +174,11 @@
     "group": "Sales & Marketing"
    },
    {
-    "name": "SEO",
-    "href": "/products/seo-panel",
-    "description": "Audit your site, fix issues and publish metadata without a deploy",
-    "iconKey": "Search",
-    "group": "Sales & Marketing"
-   },
-   {
-    "name": "Social Media",
-    "href": "/products/smms-social-engine",
-    "description": "AI-assisted campaigns, posts and ads with human approval",
-    "iconKey": "Megaphone",
-    "group": "Sales & Marketing"
-   },
-   {
-    "name": "Public Website",
-    "href": "/products/web-portal",
-    "description": "A brand site that feeds enquiries straight into your CRM",
-    "iconKey": "Laptop",
-    "group": "Sales & Marketing"
-   },
-   {
     "name": "Website & CMS",
     "href": "/products/cms-website",
     "description": "Build and edit your public website without a developer",
     "iconKey": "LayoutTemplate",
     "group": "Sales & Marketing"
-   },
-   {
-    "name": "Client Portal",
-    "href": "/products/external-portal",
-    "description": "A separate, secure portal for clients, applicants and students",
-    "iconKey": "Globe",
-    "group": "Assessment & Security"
-   },
-   {
-    "name": "Digi Locker",
-    "href": "/products/dlms-digilocker",
-    "description": "A secure vault for credentials, documents and expiries",
-    "iconKey": "KeyRound",
-    "group": "Assessment & Security"
-   },
-   {
-    "name": "Online Tests",
-    "href": "/products/ots-exam-engine",
-    "description": "One test engine for hiring, training and compliance exams",
-    "iconKey": "FileQuestion",
-    "group": "Assessment & Security"
    }
   ]
  },
