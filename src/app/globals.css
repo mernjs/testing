@@ -365,14 +365,18 @@ html[data-ui="modern"].dark .lms-shell {
 }
 html[data-ui="modern"].dark .bg-canvas,
 html[data-ui="modern"].dark body {
-  --g-primary: color-mix(in oklch, color-mix(in oklch, var(--primary) 80%, var(--background)) 88%, white);
-  --g-secondary: color-mix(in oklch, color-mix(in oklch, var(--secondary) 55%, var(--primary)) 82%, var(--background));
-  background-color: var(--g-primary);
+  /* The same gradient the buttons wear (primary → brand accent), a touch deeper so light text stays readable on it. */
+  background-color: color-mix(in oklch, var(--primary) 88%, black);
   background-image:
-    radial-gradient(70rem 42rem at 90% -10%, color-mix(in oklch, color-mix(in oklch, var(--primary) 92%, var(--background)) 82%, white), transparent 62%),
-    radial-gradient(60rem 40rem at 0% 105%, color-mix(in oklch, var(--g-secondary) 84%, white), transparent 64%),
-    linear-gradient(135deg, var(--g-primary), var(--g-secondary) 55%, var(--g-primary));
+    radial-gradient(60rem 34rem at 92% -8%, color-mix(in oklch, white 14%, transparent), transparent 60%),
+    linear-gradient(135deg, color-mix(in oklch, var(--primary) 88%, black), color-mix(in oklch, var(--color-brand-accent) 88%, black));
   background-attachment: fixed;
+}
+/* Page headings and their descriptions sit straight on the gradient: pure foreground colour plus a soft shadow so they never wash out. */
+html[data-ui="modern"].dark .bg-canvas main :is(h1, h2, h3):not([data-slot] *),
+html[data-ui="modern"].dark .bg-canvas main :is(h1, h2) + p {
+  color: var(--foreground);
+  text-shadow: 0 1px 14px color-mix(in oklch, black 45%, transparent);
 }
 /* Cards, KPI tiles, tables */
 html[data-ui="modern"].dark [data-slot="card"],
