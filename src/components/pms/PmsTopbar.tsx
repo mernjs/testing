@@ -2,6 +2,7 @@
 
 import PmsMobileSidebar from "@/components/pms/PmsMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import PanelSearch from "@/components/platform/PanelSearch";
 import PmsNotificationsBell, { type BellItem } from "@/components/pms/PmsNotificationsBell";
 import { primaryPmsRoleLabel, type PmsRole } from "@/lib/pms-roles";
 
@@ -26,7 +27,10 @@ export default function PmsTopbar({
         <p className="truncate text-sm font-semibold text-foreground">Project Management</p>
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryPmsRoleLabel(roles)}</p>
       </div>
-      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+      <div className="flex min-w-0 flex-1 justify-center">
+        <PanelSearch />
+      </div>
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         <ThemeToggle />
         <PmsNotificationsBell items={notifications} unread={unread} />
       </div>

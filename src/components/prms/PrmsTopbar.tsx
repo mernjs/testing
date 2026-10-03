@@ -2,6 +2,7 @@
 
 import PrmsMobileSidebar from "@/components/prms/PrmsMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import PanelSearch from "@/components/platform/PanelSearch";
 import PrmsNotificationsBell, { type BellItem } from "@/components/prms/PrmsNotificationsBell";
 import { primaryPrmsRoleLabel, type PrmsRole } from "@/lib/prms-roles";
 
@@ -24,7 +25,10 @@ export default function PrmsTopbar({
         <p className="truncate text-sm font-semibold text-foreground">Procurement &amp; Expense</p>
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryPrmsRoleLabel(roles)}</p>
       </div>
-      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+      <div className="flex min-w-0 flex-1 justify-center">
+        <PanelSearch />
+      </div>
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         <ThemeToggle />
         <PrmsNotificationsBell items={notifications} unread={unread} />
       </div>

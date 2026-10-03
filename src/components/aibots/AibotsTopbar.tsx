@@ -3,6 +3,7 @@
 import AibotsMobileSidebar from "@/components/aibots/AibotsMobileSidebar";
 import AibotsNotificationsBell from "@/components/aibots/AibotsNotificationsBell";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import PanelSearch from "@/components/platform/PanelSearch";
 import { primaryAibotsRoleLabel } from "@/lib/aibots-roles";
 import type { AibotsNavFlags, SidebarBot } from "@/components/aibots/AibotsSidebar";
 import type { AibotsBellItem } from "@/lib/aibots/notifications";
@@ -27,7 +28,10 @@ export default function AibotsTopbar({
         <p className="truncate text-sm font-semibold text-foreground">AI Bots</p>
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryAibotsRoleLabel(roles)}</p>
       </div>
-      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+      <div className="flex min-w-0 flex-1 justify-center">
+        <PanelSearch />
+      </div>
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         <ThemeToggle />
         <AibotsNotificationsBell items={notifications} unread={unread} />
       </div>

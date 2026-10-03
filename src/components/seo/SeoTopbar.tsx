@@ -3,6 +3,7 @@
 import SeoMobileSidebar from "@/components/seo/SeoMobileSidebar";
 import SeoNotificationsBell from "@/components/seo/SeoNotificationsBell";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import PanelSearch from "@/components/platform/PanelSearch";
 import { primarySeoRoleLabel } from "@/lib/seo-roles";
 import type { SeoNavFlags } from "@/components/seo/SeoSidebar";
 import type { SeoBellItem } from "@/lib/seo-panel/notifications";
@@ -25,7 +26,10 @@ export default function SeoTopbar({
         <p className="truncate text-sm font-semibold text-foreground">Search Engine Optimization</p>
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {primarySeoRoleLabel(roles)}</p>
       </div>
-      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+      <div className="flex min-w-0 flex-1 justify-center">
+        <PanelSearch />
+      </div>
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         <ThemeToggle />
         <SeoNotificationsBell items={notifications} unread={unread} />
       </div>

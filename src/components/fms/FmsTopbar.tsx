@@ -2,6 +2,7 @@
 
 import FmsMobileSidebar from "@/components/fms/FmsMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import PanelSearch from "@/components/platform/PanelSearch";
 import { primaryFmsRoleLabel, type FmsRole } from "@/lib/fms-roles";
 
 export default function FmsTopbar({
@@ -18,7 +19,10 @@ export default function FmsTopbar({
         <p className="truncate text-sm font-semibold text-foreground">Finance Management</p>
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryFmsRoleLabel(roles)}</p>
       </div>
-      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+      <div className="flex min-w-0 flex-1 justify-center">
+        <PanelSearch />
+      </div>
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         <ThemeToggle />
       </div>
     </header>

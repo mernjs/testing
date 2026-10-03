@@ -4,6 +4,7 @@ import MessengerMobileSidebar from "@/components/messenger/MessengerMobileSideba
 import MessengerNotificationsBell, { type BellItem } from "@/components/messenger/MessengerNotificationsBell";
 import { ConnectionPill } from "@/components/messenger/ConnectionPill";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import PanelSearch from "@/components/platform/PanelSearch";
 import { primaryChatRoleLabel, type ChatRole } from "@/lib/messenger-roles";
 
 export default function MessengerTopbar({
@@ -33,7 +34,10 @@ export default function MessengerTopbar({
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryChatRoleLabel(roles)}</p>
       </div>
 
-      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+      <div className="flex min-w-0 flex-1 justify-center">
+        <PanelSearch />
+      </div>
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         <ConnectionPill />
         <MessengerNotificationsBell items={notifications} unread={unread} />
         <ThemeToggle />

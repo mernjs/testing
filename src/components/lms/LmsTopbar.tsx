@@ -3,6 +3,7 @@
 import MobileSidebar from "@/components/lms/MobileSidebar";
 import NotificationsBell from "@/components/lms/NotificationsBell";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import PanelSearch from "@/components/platform/PanelSearch";
 import type { SerializedLead, SerializedCareerApplication } from "@/components/lms/types";
 
 export default function LmsTopbar({
@@ -30,7 +31,10 @@ export default function LmsTopbar({
         <p className="truncate text-sm font-semibold text-foreground">Lead Management</p>
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {userEmail}</p>
       </div>
-      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+      <div className="flex min-w-0 flex-1 justify-center">
+        <PanelSearch />
+      </div>
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         <ThemeToggle />
         <NotificationsBell
           staleLeads={staleLeads}

@@ -3,6 +3,7 @@
 import OtsMobileSidebar from "@/components/ots/OtsMobileSidebar";
 import OtsNotificationsBell from "@/components/ots/OtsNotificationsBell";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import PanelSearch from "@/components/platform/PanelSearch";
 import { primaryOtsRoleLabel } from "@/lib/ots-roles";
 import type { OtsNavFlags } from "@/components/ots/OtsSidebar";
 import type { OtsBellItem } from "@/lib/ots/notifications";
@@ -15,7 +16,10 @@ export default function OtsTopbar({ roles, flags, notifications, unread }: { rol
         <p className="truncate text-sm font-semibold text-foreground">Online Test System</p>
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryOtsRoleLabel(roles)}</p>
       </div>
-      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+      <div className="flex min-w-0 flex-1 justify-center">
+        <PanelSearch />
+      </div>
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         <ThemeToggle />
         <OtsNotificationsBell items={notifications} unread={unread} />
       </div>

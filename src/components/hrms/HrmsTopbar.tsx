@@ -2,6 +2,7 @@
 
 import HrmsMobileSidebar from "@/components/hrms/HrmsMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import PanelSearch from "@/components/platform/PanelSearch";
 import HrmsNotificationsBell, { type BellItem } from "@/components/hrms/HrmsNotificationsBell";
 import type { HrmsRole } from "@/lib/hrms-roles";
 import { primaryRoleLabel } from "@/lib/hrms-roles";
@@ -27,7 +28,10 @@ export default function HrmsTopbar({
         <p className="truncate text-sm font-semibold text-foreground">Human Resources</p>
         <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryRoleLabel(roles)}</p>
       </div>
-      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+      <div className="flex min-w-0 flex-1 justify-center">
+        <PanelSearch />
+      </div>
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         <ThemeToggle />
         <HrmsNotificationsBell items={notifications} unread={unread} basePath="/hrms/notifications" />
       </div>
