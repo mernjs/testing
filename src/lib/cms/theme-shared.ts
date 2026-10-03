@@ -191,10 +191,7 @@ export function themeCssBlock(tokens: ThemeTokens): string {
     ? DEFAULT_BRAND
     : { gradient: "color-mix(in oklch,var(--primary) 72%,white)", deep: "color-mix(in oklch,var(--primary) 50%,black)" });
   const brandVars = `--brand-gradient:${brand.gradient};--brand-deep:${brand.deep};`;
-  // Non-default themes: lift the dark page colour (the theme's own, pulled toward its primary and a touch of white) so cards,
-  // gradients and borders stay readable instead of sinking into near-black. The default theme is left exactly as it is.
-  const liftDark = isDefaultTokens(tokens) ? "" : `--background:color-mix(in oklch,color-mix(in oklch,${tokens.colorsDark.background} 52%,var(--primary) 48%) 78%,white);`;
-  css += `:root{${colorVars(tokens.colors)}--radius:${tokens.radius};${brandVars}}.dark{${colorVars(tokens.colorsDark)}${liftDark}}`;
+  css += `:root{${colorVars(tokens.colors)}--radius:${tokens.radius};${brandVars}}.dark{${colorVars(tokens.colorsDark)}}`;
 
 
   if (typo) {

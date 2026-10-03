@@ -343,17 +343,55 @@
   }
 }
 
-/* Dark mode of every theme except the default: a light, clearly visible gradient page built from the theme's own primary and
-   secondary, lifted with white so it is never near-black. Cards, headers and the sidebar sit on top of it.
-   (Each color-mix uses ONE percentage: two that sum below 100% would make the colour translucent over the dark page.) */
+/* Dark mode of every theme except the default (data-ui="modern"; the default theme and light mode are untouched).
+   The page is a light, theme-coloured gradient; everything that sits on it — cards, KPI tiles, tables, sidebar, top bar,
+   headers — is a clearly darker layer of the same theme, so content reads as dark panels floating on the gradient.
+   (Every color-mix uses ONE percentage: percentages summing below 100% would make the colour translucent.) */
+html[data-ui="modern"].dark {
+  --surface: color-mix(in oklch, color-mix(in oklch, var(--background) 84%, var(--secondary)) 80%, black);
+  --card: var(--surface);
+  --popover: color-mix(in oklch, var(--surface) 94%, white);
+  --chrome: color-mix(in oklch, var(--surface) 66%, black);
+  --bar: color-mix(in oklch, var(--surface) 58%, black);
+  --muted: color-mix(in oklch, var(--surface) 82%, var(--primary));
+  --border: color-mix(in oklch, color-mix(in oklch, var(--surface) 80%, white) 88%, var(--primary));
+  --input: var(--border);
+}
+html[data-ui="modern"].dark .lms-shell {
+  --card: var(--surface);
+  --popover: color-mix(in oklch, var(--surface) 94%, white);
+}
 html[data-ui="modern"].dark .bg-canvas,
 html[data-ui="modern"].dark body {
-  --g-primary: color-mix(in oklch, var(--primary) 58%, var(--background));
-  --g-secondary: color-mix(in oklch, color-mix(in oklch, var(--secondary) 55%, var(--primary)) 62%, var(--background));
+  --g-primary: color-mix(in oklch, var(--primary) 52%, var(--background));
+  --g-secondary: color-mix(in oklch, color-mix(in oklch, var(--secondary) 55%, var(--primary)) 58%, var(--background));
   background-color: var(--g-primary);
   background-image:
-    radial-gradient(70rem 40rem at 90% -10%, color-mix(in oklch, var(--primary) 78%, var(--background)), transparent 62%),
+    radial-gradient(70rem 40rem at 90% -10%, color-mix(in oklch, var(--primary) 74%, var(--background)), transparent 62%),
     radial-gradient(60rem 36rem at 0% 105%, var(--g-secondary), transparent 64%),
     linear-gradient(135deg, var(--g-primary), var(--g-secondary) 55%, var(--g-primary));
   background-attachment: fixed;
+}
+/* Cards, KPI tiles, tables */
+html[data-ui="modern"].dark [data-slot="card"],
+html[data-ui="modern"].dark .lms-surface {
+  background-color: var(--surface);
+  background-image: linear-gradient(150deg, color-mix(in oklch, white 5%, transparent), transparent 55%);
+  border-color: color-mix(in oklch, var(--primary) 20%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in oklch, white 6%, transparent), 0 18px 40px -22px black;
+}
+html[data-ui="modern"].dark [data-slot="table-container"],
+html[data-ui="modern"].dark table {
+  background-color: var(--surface);
+}
+html[data-ui="modern"].dark [data-slot="table-header"],
+html[data-ui="modern"].dark [data-slot="table-header"] [data-slot="table-row"],
+html[data-ui="modern"].dark [data-slot="card-header"] {
+  background-color: var(--chrome);
+}
+/* Sidebar + top bar: the deepest layer */
+html[data-ui="modern"].dark .lms-surface.shrink-0,
+html[data-ui="modern"].dark .lms-surface:has(> header) {
+  background-color: var(--bar);
+  border-color: color-mix(in oklch, var(--primary) 24%, transparent);
 }
