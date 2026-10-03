@@ -348,11 +348,11 @@
    headers — is a clearly darker layer of the same theme, so content reads as dark panels floating on the gradient.
    (Every color-mix uses ONE percentage: percentages summing below 100% would make the colour translucent.) */
 html[data-ui="modern"].dark {
-  --surface: color-mix(in oklch, color-mix(in oklch, var(--background) 84%, var(--secondary)) 80%, black);
+  --surface: color-mix(in oklch, color-mix(in oklch, var(--background) 84%, var(--secondary)) 64%, black);
   --card: var(--surface);
   --popover: color-mix(in oklch, var(--surface) 94%, white);
-  --chrome: color-mix(in oklch, var(--surface) 66%, black);
-  --bar: color-mix(in oklch, var(--surface) 58%, black);
+  --chrome: color-mix(in oklch, var(--surface) 58%, black);
+  --bar: color-mix(in oklch, var(--surface) 46%, black);
   --muted: color-mix(in oklch, var(--surface) 82%, var(--primary));
   --border: color-mix(in oklch, color-mix(in oklch, var(--surface) 80%, white) 88%, var(--primary));
   --input: var(--border);
@@ -363,11 +363,11 @@ html[data-ui="modern"].dark .lms-shell {
 }
 html[data-ui="modern"].dark .bg-canvas,
 html[data-ui="modern"].dark body {
-  --g-primary: color-mix(in oklch, var(--primary) 52%, var(--background));
-  --g-secondary: color-mix(in oklch, color-mix(in oklch, var(--secondary) 55%, var(--primary)) 58%, var(--background));
+  --g-primary: color-mix(in oklch, var(--primary) 66%, var(--background));
+  --g-secondary: color-mix(in oklch, color-mix(in oklch, var(--secondary) 55%, var(--primary)) 70%, var(--background));
   background-color: var(--g-primary);
   background-image:
-    radial-gradient(70rem 40rem at 90% -10%, color-mix(in oklch, var(--primary) 74%, var(--background)), transparent 62%),
+    radial-gradient(70rem 40rem at 90% -10%, color-mix(in oklch, var(--primary) 86%, var(--background)), transparent 62%),
     radial-gradient(60rem 36rem at 0% 105%, var(--g-secondary), transparent 64%),
     linear-gradient(135deg, var(--g-primary), var(--g-secondary) 55%, var(--g-primary));
   background-attachment: fixed;
@@ -387,11 +387,22 @@ html[data-ui="modern"].dark table {
 html[data-ui="modern"].dark [data-slot="table-header"],
 html[data-ui="modern"].dark [data-slot="table-header"] [data-slot="table-row"],
 html[data-ui="modern"].dark [data-slot="card-header"] {
-  background-color: var(--chrome);
+  background-color: transparent;
 }
 /* Sidebar + top bar: the deepest layer */
 html[data-ui="modern"].dark .lms-surface.shrink-0,
 html[data-ui="modern"].dark .lms-surface:has(> header) {
+  background-color: var(--bar);
+  border-color: color-mix(in oklch, var(--primary) 24%, transparent);
+}
+
+/* The public website, same treatment: sections that paint a solid page colour let the gradient through; header and footer are the deepest layer. */
+html[data-ui="modern"].dark body > main section.bg-background,
+html[data-ui="modern"].dark body > main > div.bg-background {
+  background-color: transparent;
+}
+html[data-ui="modern"].dark body > header,
+html[data-ui="modern"].dark body > footer:not(.bg-foreground) {
   background-color: var(--bar);
   border-color: color-mix(in oklch, var(--primary) 24%, transparent);
 }
