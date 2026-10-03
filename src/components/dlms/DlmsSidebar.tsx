@@ -96,11 +96,6 @@ export default function DlmsSidebar({ flags, onNavigate, collapsed = false }: { 
       {nav({ href: "/dlms/documents", label: "Document Vault", icon: Files })}
       {nav({ href: "/dlms/urls", label: "URLs & Accounts", icon: Link2 })}
       {nav({ href: "/dlms/notes", label: "Notes", icon: StickyNote })}
-
-      <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      {nav({ href: "/dlms/expiry", label: "Expiry & Alerts", icon: CalendarClock, badge: flags.expired })}
-      {flags.audit && nav({ href: "/dlms/audit-logs", label: "Activity Logs", icon: ScrollText })}
-      {flags.settings && nav({ href: "/dlms/settings", label: "Settings", icon: Settings })}
     </nav>
   );
 }

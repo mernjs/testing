@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Menu, Sparkles, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -8,6 +9,7 @@ import ThemeToggle from "@/components/lms/ThemeToggle";
 import BrandMark from "@/components/BrandMark";
 import { BrandName } from "@/components/platform/BrandProvider";
 import PlatformSidebar, { type PlatformNavFlags } from "@/components/platform/panel/PlatformSidebar";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 
 export default function PlatformTopbar({ flags }: { flags: PlatformNavFlags }) {
   const [open, setOpen] = useState(false);
@@ -47,17 +49,23 @@ export default function PlatformTopbar({ flags }: { flags: PlatformNavFlags }) {
         >
           <Sparkles className="size-4" />
         </button>
-        <button
-          type="button"
-          onClick={() => setBellOpen(!bellOpen)}
+        <Link
+          href="/platform/notifications"
           title="Notifications"
           aria-label="Notifications"
           className="flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
         >
           <Bell className="size-4" />
-        </button>
+        </Link>
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="platform"
+        panelTitle="Platform Administration"
+        panelDescription="Every company, plan and setting of the SaaS platform"
+      />
     </header>
   );
 }

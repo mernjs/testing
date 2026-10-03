@@ -77,7 +77,7 @@ export default function MessengerNotificationsBell({ items, unread }: { items: B
           <Button type="button" variant="ghost" size="icon" aria-label={`Notifications${liveUnread > 0 ? ` (${liveUnread} unread)` : ""}`} className="relative">
             <Bell className="size-4.5" />
             {liveUnread > 0 && (
-              <span className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
+              <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
                 {liveUnread > 9 ? "9+" : liveUnread}
               </span>
             )}

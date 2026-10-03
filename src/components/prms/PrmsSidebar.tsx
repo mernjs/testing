@@ -11,18 +11,11 @@ import {
   Boxes,
   Cloud,
   ClipboardList,
-  BarChart3,
-  ScrollText,
-  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { PrmsRole } from "@/lib/prms-roles";
-import {
-  hasPrmsStaffRole,
-  canViewAuditLog,
-  canManageSettings,
-} from "@/lib/prms-roles";
+import { hasPrmsStaffRole } from "@/lib/prms-roles";
 
 function NavLink({
   href,
@@ -100,7 +93,6 @@ export default function PrmsSidebar({
   onNavigate?: () => void;
   collapsed?: boolean;
 }) {
-  const roleCtx = { roles, permissionOverrides };
   const nav = (props: {
     href: string;
     label: string;
@@ -138,13 +130,6 @@ export default function PrmsSidebar({
       <SectionLabel collapsed={collapsed}>Company Assets</SectionLabel>
       {nav({ href: "/prms/assets", label: "Hardware & Assets", icon: Boxes })}
       {nav({ href: "/prms/subscriptions", label: "Subscriptions", icon: Cloud })}
-
-      {/* ── Governance ── */}
-      <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      {nav({ href: "/prms/analytics", label: "Analytics", icon: BarChart3 })}
-      {canManageSettings(roleCtx) && nav({ href: "/prms/settings", label: "Settings", icon: Settings })}
-      {canViewAuditLog(roleCtx) && nav({ href: "/prms/activity", label: "Audit Log", icon: ScrollText })}
-
     </nav>
   );
 }

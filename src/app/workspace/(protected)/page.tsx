@@ -89,7 +89,7 @@ export default async function HubDashboardPage({
           title="Whole Dashboard Search & Filter"
           fields={[
             { key: "q", label: "Search panels", type: "text", placeholder: "Search any panel, e.g. finance, leads, SEO…" },
-            { key: "panel", label: "Panel", type: "select", options: visibleKeys.map((k) => ({ label: PANEL_CONFIGS[k].label, value: k })) },
+            { key: "panel", label: "Panel", type: "select", options: panelKeys.map((k) => ({ label: PANEL_CONFIGS[k].label, value: k })) },
           ]}
         />
         <PanelPerformanceMatrix modules={executive?.modules} stats={headline} panels={matrixPanels} locked={matrixLocked} />

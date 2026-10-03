@@ -40,6 +40,7 @@ import {
   MessagesSquare,
   LayoutDashboard,
   Lock,
+  FileText,
 } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -50,7 +51,7 @@ import CategoryBarChart from "@/components/lms/CategoryBarChart";
 import ExecutiveSection from "@/components/workspace/ExecutiveSection";
 import { AnalyticsFilterBar } from "@/components/workspace/AnalyticsFilterBar";
 import type { CommandCenterStats } from "@/lib/workspace/command-center";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, cn } from "@/lib/utils";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Panel status grid config
@@ -184,6 +185,14 @@ const PANEL_GRID = [
     analyticsHref: "/workspace/analytics/sop",
     panelHref: "/sop",
     color: "from-primary to-brand-deep",
+  },
+  {
+    key: "lpms",
+    label: "Legal & Documents",
+    icon: <FileText className="size-5" />,
+    analyticsHref: "/workspace/analytics/lpms",
+    panelHref: "/lpms",
+    color: "from-brand-deep to-brand-accent",
   },
 ];
 
@@ -352,7 +361,7 @@ export function PanelPerformanceMatrix({
 }) {
   const moduleStats = { ...Object.fromEntries((modules ?? []).map((m) => [m.key, m.stats])), ...Object.fromEntries(Object.entries(stats ?? {}).filter(([, v]) => v.length > 0)) };
   const q = query?.trim().toLowerCase();
-  const grid = PANEL_GRID.filter((p) => (!panels || panels.includes(p.key) || locked?.includes(p.key)) && (!q || p.label.toLowerCase().includes(q) || p.key.includes(q)));
+  const grid = PANEL_GRID.filter((p) => !q || p.label.toLowerCase().includes(q) || p.key.includes(q));
   return (
       <ExecutiveSection
         title="Panel Performance Matrix"
@@ -361,7 +370,8 @@ export function PanelPerformanceMatrix({
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {grid.map((panel) => {
             const mStats = moduleStats[panel.key] ?? [];
-            const isLocked = locked?.includes(panel.key) ?? false;
+            const isAllowed = panels ? panels.includes(panel.key) : true;
+            const isLocked = !isAllowed || (locked?.includes(panel.key) ?? false);
             return (
               <GlassCard key={panel.key} className="h-full">
                 <CardHeader className="flex-row items-center gap-3 space-y-0 pb-2">
@@ -389,7 +399,7 @@ export function PanelPerformanceMatrix({
                   </dl>
                   <div className="flex items-center gap-2 pt-1">
                     <Link
-                      href={panel.analyticsHref}
+                      href={isLocked ? `/workspace/upgrade?module=${panel.key}` : panel.analyticsHref}
                       className="inline-flex flex-1 items-center justify-center gap-1 rounded-lg border border-border/50 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-primary/8 hover:border-primary/40 hover:text-primary"
                     >
                       <Activity className="size-3" />
@@ -397,7 +407,12 @@ export function PanelPerformanceMatrix({
                     </Link>
                     <Link
                       href={isLocked ? `/workspace/upgrade?module=${panel.key}` : panel.panelHref}
-                      className="inline-flex flex-1 items-center justify-center gap-1 rounded-lg bg-gradient-to-r from-primary/90 to-[var(--color-brand-accent)] px-3 py-1.5 text-xs font-medium text-white transition-all hover:opacity-90"
+                      className={cn(
+                        "inline-flex flex-1 items-center justify-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
+                        isLocked
+                          ? "bg-amber-600/90 hover:bg-amber-700 text-white shadow-sm"
+                          : "bg-gradient-to-r from-primary/90 to-[var(--color-brand-accent)] text-white hover:opacity-90"
+                      )}
                     >
                       {isLocked ? "Upgrade" : "Open"}
                       <ArrowUpRight className="size-3" />

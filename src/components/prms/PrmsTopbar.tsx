@@ -6,6 +6,7 @@ import PrmsMobileSidebar from "@/components/prms/PrmsMobileSidebar";
 import PrmsNotificationsBell, { type BellItem } from "@/components/prms/PrmsNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { PrmsRole } from "@/lib/prms-roles";
 
 export default function PrmsTopbar({
@@ -44,6 +45,14 @@ export default function PrmsTopbar({
         <PrmsNotificationsBell items={notifications} unread={unread} />
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="prms"
+        panelTitle="Procurement Management"
+        panelDescription="Purchase orders, vendors & expense reports"
+        roles={roles}
+      />
     </header>
   );
 }

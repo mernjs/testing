@@ -6,6 +6,7 @@ import AibotsMobileSidebar from "@/components/aibots/AibotsMobileSidebar";
 import AibotsNotificationsBell from "@/components/aibots/AibotsNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { AibotsNavFlags, SidebarBot } from "@/components/aibots/AibotsSidebar";
 import type { AibotsBellItem } from "@/lib/aibots/notifications";
 
@@ -46,6 +47,14 @@ export default function AibotsTopbar({
         <AibotsNotificationsBell items={notifications} unread={unread} />
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="aibots"
+        panelTitle="AI Bots Management"
+        panelDescription="Build, train & deploy AI-powered chatbots"
+        roles={roles}
+      />
     </header>
   );
 }

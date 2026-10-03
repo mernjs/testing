@@ -6,6 +6,7 @@ import DlmsMobileSidebar from "@/components/dlms/DlmsMobileSidebar";
 import DlmsNotificationsBell from "@/components/dlms/DlmsNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { DlmsNavFlags } from "@/components/dlms/DlmsSidebar";
 import type { DlmsBellItem } from "@/lib/dlms/notifications";
 
@@ -44,6 +45,14 @@ export default function DlmsTopbar({
         <DlmsNotificationsBell items={notifications} unread={unread} />
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="dlms"
+        panelTitle="Document Lifecycle Management"
+        panelDescription="Securely store & manage digital documents"
+        roles={roles}
+      />
     </header>
   );
 }

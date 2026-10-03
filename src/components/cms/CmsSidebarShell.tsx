@@ -63,7 +63,7 @@ export default function CmsSidebarShell({
         <CmsSidebar flags={flags} collapsed={collapsed} />
       </div>
 
-      <CmsProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      <CmsProfileMenu email={email} roles={roles} flags={flags} createdAt={createdAt} lastLoginAt={lastLoginAt} />
     </motion.aside>
   );
 }

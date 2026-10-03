@@ -6,6 +6,7 @@ import PmsMobileSidebar from "@/components/pms/PmsMobileSidebar";
 import PmsNotificationsBell, { type BellItem } from "@/components/pms/PmsNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { PmsRole } from "@/lib/pms-roles";
 
 export default function PmsTopbar({
@@ -46,6 +47,14 @@ export default function PmsTopbar({
         <PmsNotificationsBell items={notifications} unread={unread} />
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="pms"
+        panelTitle="Project Management System"
+        panelDescription="Plan projects, tasks & team performance"
+        roles={roles}
+      />
     </header>
   );
 }

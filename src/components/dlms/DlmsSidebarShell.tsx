@@ -63,7 +63,7 @@ export default function DlmsSidebarShell({
         <DlmsSidebar flags={flags} collapsed={collapsed} />
       </div>
 
-      <DlmsProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      <DlmsProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} flags={flags} />
     </motion.aside>
   );
 }

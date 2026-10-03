@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen, ScrollText, Settings } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import LpmsSidebar from "@/components/lpms/LpmsSidebar";
+import UnifiedProfileMenu from "@/components/platform/panel/UnifiedProfileMenu";
 import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import type { LpmsNavFlags } from "@/components/lpms/LpmsSidebar";
@@ -11,34 +12,6 @@ import { BrandName } from "@/components/platform/BrandProvider";
 
 const EXPANDED_WIDTH = 244;
 const COLLAPSED_WIDTH = 68;
-
-function LpmsProfileMenu({
-  email,
-  roles,
-}: {
-  email: string;
-  roles: string[];
-}) {
-  return (
-    <div className="shrink-0 border-t border-border/60 p-3">
-      <div className="flex items-center gap-2 rounded-lg px-2 py-1.5">
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-          {email[0]?.toUpperCase()}
-        </div>
-        <div className="min-w-0 flex-1 overflow-hidden">
-          <p className="truncate text-xs font-medium text-foreground">{email}</p>
-          <p className="truncate text-[10px] text-muted-foreground">LPMS</p>
-        </div>
-      </div>
-      <a
-        href="/workspace"
-        className="mt-1 flex items-center gap-2 rounded-lg px-2 py-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
-      >
-        ← Back to Workspace
-      </a>
-    </div>
-  );
-}
 
 export default function LpmsSidebarShell({
   email,
@@ -54,6 +27,11 @@ export default function LpmsSidebarShell({
   lastLoginAt: string | null;
 }) {
   const { collapsed, toggle, hydrated } = useSidebarCollapse();
+
+  const governanceItems = [
+    ...(flags.canViewAudit ? [{ label: "Audit Logs", href: "/lpms/audit-logs", icon: ScrollText }] : []),
+    ...(flags.canSettings ? [{ label: "Settings", href: "/lpms/settings", icon: Settings }] : []),
+  ];
 
   return (
     <motion.aside
@@ -90,7 +68,18 @@ export default function LpmsSidebarShell({
         <LpmsSidebar flags={flags} collapsed={collapsed} />
       </div>
 
-      {!collapsed && <LpmsProfileMenu email={email} roles={roles} />}
+      <UnifiedProfileMenu
+        email={email}
+        roleLabel={roles[0] ?? "User"}
+        roles={roles}
+        createdAt={createdAt}
+        lastLoginAt={lastLoginAt}
+        governanceItems={governanceItems}
+        onLogout={() => {
+          window.location.href = "/lpms/login";
+        }}
+        panelName="Legal & Process Management"
+      />
     </motion.aside>
   );
 }

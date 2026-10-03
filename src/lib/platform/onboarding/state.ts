@@ -196,7 +196,10 @@ export async function saveModules(keys: string[]): Promise<void> {
  */
 export async function enabledModules(): Promise<Set<string> | null> {
   const doc = await (await companies()).findOne({ _id: await currentCompanyId() }, { projection: { enabledModules: 1 } });
-  return doc?.enabledModules ? new Set(doc.enabledModules) : null;
+  if (!doc?.enabledModules) return null;
+  const set = new Set(doc.enabledModules);
+  set.add("lpms");
+  return set;
 }
 
 /** Landing path after a sign-in (see `gate.ts`), for the signed-in company's own data. Fails soft to the dashboard. */

@@ -22,8 +22,6 @@ import {
   TriangleAlert,
   ListChecks,
   BarChart3,
-  Settings,
-  ScrollText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -133,11 +131,7 @@ export default function SeoSidebar({ flags, onNavigate, collapsed = false }: { f
       <SectionLabel collapsed={collapsed}>Work</SectionLabel>
       {nav({ href: "/seo/issues", label: "SEO Issues", icon: TriangleAlert, badge: flags.critical })}
       {nav({ href: "/seo/tasks", label: "SEO Tasks", icon: ListChecks, badge: flags.myTasks })}
-
-      <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
       {nav({ href: "/seo/reports", label: "Reports", icon: BarChart3 })}
-      {flags.settings && nav({ href: "/seo/settings", label: "SEO Settings", icon: Settings })}
-      {flags.audit && nav({ href: "/seo/audit-logs", label: "Audit Logs", icon: ScrollText })}
     </nav>
   );
 }

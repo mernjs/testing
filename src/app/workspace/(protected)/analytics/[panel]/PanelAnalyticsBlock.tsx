@@ -50,6 +50,7 @@ import {
   Megaphone,
   SearchCheck,
   PanelsTopLeft,
+  FileText,
 } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { checkWorkspaceAccess } from "@/lib/workspace/access";
@@ -83,6 +84,7 @@ import {
   getSmmsAnalytics,
   getSeoAnalytics,
   getCmsAnalytics,
+  getLpmsAnalytics,
   type PanelKey,
   type PanelAnalyticsFilters,
 } from "@/lib/workspace/panel-analytics";
@@ -97,6 +99,7 @@ const PANEL_FILTER_FIELDS: Record<PanelKey, FilterField[]> = {
   aibots: [],
   cms: [],
   dlms: [],
+  lpms: [],
   seo: [],
   smms: [],
   sop: [],
@@ -308,6 +311,7 @@ const PANEL_ICONS: Record<PanelKey, React.ReactNode> = {
   aibots: <Bot className="size-5" />,
   cms: <PanelsTopLeft className="size-5" />,
   dlms: <Vault className="size-5" />,
+  lpms: <FileText className="size-5" />,
   ots: <FileCheck2 className="size-5" />,
   seo: <SearchCheck className="size-5" />,
   smms: <Megaphone className="size-5" />,
@@ -1117,8 +1121,30 @@ export async function PanelAnalyticsBlock({
           {panel === "smms"      && <SmmsView filters={filters} />}
           {panel === "seo"       && <SeoView filters={filters} />}
           {panel === "cms"       && <CmsView filters={filters} />}
+          {panel === "lpms"      && <LpmsView filters={filters} />}
         </>
       )}
     </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+   LPMS View
+──────────────────────────────────────────────────────── */
+async function LpmsView({ filters }: { filters?: PanelAnalyticsFilters }) {
+  const d = await getLpmsAnalytics(filters);
+  return (
+    <>
+      <AlertBanner alerts={d.alerts} />
+      <ExecutiveSection title="Legal & Documents KPIs">
+        <KpiGrid>
+          <KpiCard label="Total Documents" value={d.kpis.totalDocuments} accent icon={<FileText className="size-4" />} />
+          <KpiCard label="Active Documents" value={d.kpis.activeDocuments} tone="up" icon={<CheckCircle2 className="size-4" />} />
+          <KpiCard label="Draft Documents" value={d.kpis.draftDocuments} icon={<Clock className="size-4" />} />
+          <KpiCard label="Pending Approvals" value={d.kpis.pendingApprovals} tone={d.kpis.pendingApprovals > 0 ? "down" : undefined} icon={<AlertTriangle className="size-4" />} />
+          <KpiCard label="AI Generated" value={d.kpis.aiGenerated} icon={<Bot className="size-4" />} />
+        </KpiGrid>
+      </ExecutiveSection>
+    </>
   );
 }

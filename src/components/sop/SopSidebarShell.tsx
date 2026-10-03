@@ -63,7 +63,7 @@ export default function SopSidebarShell({
         <SopSidebar flags={flags} collapsed={collapsed} />
       </div>
 
-      <SopProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      <SopProfileMenu email={email} roles={roles} flags={flags} createdAt={createdAt} lastLoginAt={lastLoginAt} />
     </motion.aside>
   );
 }

@@ -6,6 +6,7 @@ import OtsMobileSidebar from "@/components/ots/OtsMobileSidebar";
 import OtsNotificationsBell from "@/components/ots/OtsNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { OtsNavFlags } from "@/components/ots/OtsSidebar";
 import type { OtsBellItem } from "@/lib/ots/notifications";
 
@@ -44,6 +45,14 @@ export default function OtsTopbar({
         <OtsNotificationsBell items={notifications} unread={unread} />
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="ots"
+        panelTitle="Online Test System"
+        panelDescription="Create exams, quizzes & evaluate candidates"
+        roles={roles}
+      />
     </header>
   );
 }

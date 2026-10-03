@@ -1,0 +1,167 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { BellOff, CheckCheck, ArrowLeft, Sparkles, ShieldAlert, Clock } from "lucide-react";
+import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import GlassCard from "@/components/lms/GlassCard";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+export interface PanelNotificationItem {
+  id: string;
+  title: string;
+  body: string;
+  createdAt: string;
+  read: boolean;
+  priority?: "normal" | "high";
+  link?: string;
+}
+
+export default function GenericPanelNotificationsPage({
+  panelName,
+  shortCode,
+  description,
+  initialNotifications,
+}: {
+  panelName: string;
+  shortCode: string;
+  description: string;
+  initialNotifications?: PanelNotificationItem[];
+}) {
+  const defaultItems: PanelNotificationItem[] = [
+    {
+      id: "notif-1",
+      title: `${shortCode} System Update & Security Audit Complete`,
+      body: `Automated maintenance run completed successfully for ${panelName}. All signals normal.`,
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+      read: false,
+      priority: "high",
+    },
+    {
+      id: "notif-2",
+      title: `Daily Summary Report Generated for ${shortCode}`,
+      body: `Operational metrics and automated summary details are now ready for review.`,
+      createdAt: new Date(Date.now() - 14400000).toISOString(),
+      read: false,
+      priority: "normal",
+    },
+    {
+      id: "notif-3",
+      title: `Workspace Integration Sync Verified`,
+      body: `Cross-module sync between ${shortCode} and Workspace Hub is active.`,
+      createdAt: new Date(Date.now() - 86400000).toISOString(),
+      read: true,
+      priority: "normal",
+    },
+  ];
+
+  const [items, setItems] = useState<PanelNotificationItem[]>(
+    initialNotifications && initialNotifications.length > 0 ? initialNotifications : defaultItems
+  );
+
+  const unreadCount = items.filter((n) => !n.read).length;
+
+  const markAllRead = () => {
+    setItems((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
+
+  const toggleRead = (id: string) => {
+    setItems((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+  };
+
+  return (
+    <div className="mx-auto max-w-3xl space-y-4">
+      {/* Top Header & GlassCard */}
+      <GlassCard interactive={false}>
+        <CardHeader className="flex flex-row items-start justify-between gap-4 pb-4 border-b border-border/40">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-bold text-primary">
+                ⚡ {shortCode}
+              </span>
+              <CardTitle className="text-xl font-bold">{panelName} Notifications</CardTitle>
+            </div>
+            <CardDescription className="text-xs text-muted-foreground">
+              {description || `Updates, alerts and automations for ${panelName}`}
+            </CardDescription>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {unreadCount > 0 && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={markAllRead}
+                className="h-8 gap-1.5 text-xs"
+              >
+                <CheckCheck className="size-3.5 text-primary" /> Mark all read
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+
+        <CardContent className="pt-4 space-y-3">
+          {/* Unread Counter Bar */}
+          <div className="flex items-center justify-between text-xs font-medium text-muted-foreground mb-2 px-1">
+            <span>
+              {unreadCount === 0 ? "All caught up" : `${unreadCount} unread notification${unreadCount > 1 ? "s" : ""}`}
+            </span>
+            <span>Showing recent {items.length} items</span>
+          </div>
+
+          {items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/60 p-8 text-center text-xs text-muted-foreground">
+              <BellOff className="size-6 text-muted-foreground/60" />
+              <p className="font-semibold text-foreground">No notifications yet</p>
+              <p>You have no pending alerts or notifications for {panelName}.</p>
+            </div>
+          ) : (
+            <ul className="divide-y divide-border/40 overflow-hidden rounded-xl border border-border/60 bg-card/50">
+              {items.map((n) => (
+                <li key={n.id}>
+                  <button
+                    type="button"
+                    onClick={() => toggleRead(n.id)}
+                    className={cn(
+                      "flex w-full items-start gap-3 p-3.5 text-left transition-colors hover:bg-muted/50",
+                      !n.read && "bg-primary/5 dark:bg-primary/10"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "mt-1.5 size-2 shrink-0 rounded-full",
+                        n.read ? "bg-transparent" : "bg-primary animate-pulse"
+                      )}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className={cn("text-xs font-semibold break-words", !n.read ? "text-foreground font-bold" : "text-muted-foreground")}>
+                          {n.title}
+                        </span>
+                        {n.priority === "high" && (
+                          <span className="rounded-full bg-destructive/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-destructive">
+                            High Priority
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-0.5 text-xs text-muted-foreground break-words leading-relaxed">
+                        {n.body}
+                      </p>
+                      <div className="mt-1.5 flex items-center gap-1 text-[10px] text-muted-foreground/80">
+                        <Clock className="size-3" />
+                        {new Date(n.createdAt).toLocaleString()}
+                      </div>
+                    </div>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </GlassCard>
+    </div>
+  );
+}

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ExternalLink, Sparkles, Bell } from "lucide-react";
 import CmsMobileSidebar from "@/components/cms/CmsMobileSidebar";
 import CmsCommandSearch from "@/components/cms/CmsCommandSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { CmsNavFlags } from "@/components/cms/CmsSidebar";
 
 export default function CmsTopbar({ roles: _roles, flags }: { roles: string[]; flags: CmsNavFlags }) {
@@ -30,15 +32,14 @@ export default function CmsTopbar({ roles: _roles, flags }: { roles: string[]; f
         >
           <Sparkles className="size-4" />
         </button>
-        <button
-          type="button"
-          onClick={() => setBellOpen(!bellOpen)}
+        <Link
+          href="/cms/notifications"
           title="Notifications"
           aria-label="Notifications"
           className="flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
         >
           <Bell className="size-4" />
-        </button>
+        </Link>
         <a
           href="/"
           target="_blank"
@@ -49,6 +50,14 @@ export default function CmsTopbar({ roles: _roles, flags }: { roles: string[]; f
         </a>
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="cms"
+        panelTitle="Content Management System"
+        panelDescription="Pages, blogs & website content"
+        roles={_roles}
+      />
     </header>
   );
 }

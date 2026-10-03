@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Bell, CheckCheck } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverTitle } from "@/components/ui/popover";
@@ -44,7 +45,7 @@ export default function DlmsNotificationsBell({ items, unread }: { items: DlmsBe
           <button type="button" aria-label={`Notifications${unread > 0 ? ` (${unread} unread)` : ""}`} className="relative flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary">
             <Bell className="size-4.5" />
             {unread > 0 && (
-              <span className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
+              <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
                 {unread > 9 ? "9+" : unread}
               </span>
             )}
@@ -83,6 +84,11 @@ export default function DlmsNotificationsBell({ items, unread }: { items: DlmsBe
             ))}
           </ul>
         )}
+        <div className="border-t border-border/60 p-2">
+          <Link href="/dlms/notifications" onClick={() => setOpen(false)} className="block rounded-md px-2 py-1.5 text-center text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground">
+            See all notifications
+          </Link>
+        </div>
       </PopoverContent>
     </Popover>
   );

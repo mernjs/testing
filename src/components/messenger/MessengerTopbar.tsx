@@ -7,6 +7,7 @@ import MessengerNotificationsBell, { type BellItem } from "@/components/messenge
 import { ConnectionPill } from "@/components/messenger/ConnectionPill";
 import ThemeToggle from "@/components/lms/ThemeToggle";
 import PanelSearch from "@/components/platform/PanelSearch";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { ChatRole } from "@/lib/messenger-roles";
 
 export default function MessengerTopbar({
@@ -53,6 +54,14 @@ export default function MessengerTopbar({
         <MessengerNotificationsBell items={notifications} unread={unread} />
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="messenger"
+        panelTitle="Team Messenger"
+        panelDescription="Messages, channels & team collaboration"
+        roles={roles}
+      />
     </header>
   );
 }

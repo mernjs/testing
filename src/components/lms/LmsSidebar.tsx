@@ -128,11 +128,6 @@ export default function LmsSidebar({ onNavigate, collapsed = false }: { onNaviga
       <NavLink href="/lms/chatbot/voice" label="Voice Dashboard" icon={AudioLines} exact collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/chatbot/voice/conversations" label="Voice Conversations" icon={Mic} collapsed={collapsed} onNavigate={onNavigate} />
       <NavLink href="/lms/chatbot/voice/config" label="ElevenLabs Config" icon={Settings2} collapsed={collapsed} onNavigate={onNavigate} />
-
-      <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      <NavLink href="/lms" label="Analytics" icon={BarChart3} exact collapsed={collapsed} onNavigate={onNavigate} />
-      <NavLink href="/lms/chatbot/config" label="Settings" icon={Settings} collapsed={collapsed} onNavigate={onNavigate} />
-      <NavLink href="/lms/chatbot/conversations" label="Audit Log" icon={ScrollText} collapsed={collapsed} onNavigate={onNavigate} />
     </nav>
   );
 }

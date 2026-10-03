@@ -48,7 +48,7 @@ export const DEFAULT_PLANS: PlanSeed[] = [
     currency: "INR",
     priceMonthly: 199_900,
     priceYearly: 1_999_000,
-    modules: ["hrms", "pms", "lms", "fms", "prms", "sop", "dlms", "cms", "seo", "portal", "ots", "intelligence"],
+    modules: ["hrms", "pms", "lms", "fms", "prms", "sop", "lpms", "dlms", "cms", "seo", "portal", "ots", "intelligence"],
     limits: { seats: 50, aiTokensPerMonth: 1_000_000, storageMb: 25_000 },
     trialDays: DEFAULT_TRIAL_DAYS,
     active: true,

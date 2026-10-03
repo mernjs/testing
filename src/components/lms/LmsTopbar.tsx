@@ -6,9 +6,11 @@ import MobileSidebar from "@/components/lms/MobileSidebar";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
 import NotificationsBell from "@/components/lms/NotificationsBell";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { SerializedLead, SerializedCareerApplication } from "@/components/lms/types";
 
 export default function LmsTopbar({
+  roles,
   staleLeads,
   staleLeadsCount = 0,
   staleApplications,
@@ -56,6 +58,14 @@ export default function LmsTopbar({
         />
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="lms"
+        panelTitle="Lead Management System"
+        panelDescription="Track leads, pipeline & career applications"
+        roles={roles}
+      />
     </header>
   );
 }

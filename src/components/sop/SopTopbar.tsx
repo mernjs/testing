@@ -6,6 +6,7 @@ import SopMobileSidebar from "@/components/sop/SopMobileSidebar";
 import SopNotificationsBell from "@/components/sop/SopNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { SopNavFlags } from "@/components/sop/SopSidebar";
 import type { SopBellItem } from "@/lib/sop/notifications";
 
@@ -44,6 +45,14 @@ export default function SopTopbar({
         <SopNotificationsBell items={notifications} unread={unread} />
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="sop"
+        panelTitle="Standard Operating Procedures"
+        panelDescription="Create, review & publish SOPs and workflows"
+        roles={_roles}
+      />
     </header>
   );
 }

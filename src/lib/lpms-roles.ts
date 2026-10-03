@@ -140,6 +140,9 @@ export function normalizeLpmsRoles(value: unknown): LpmsRole[] {
 /** HRMS roles imply an LPMS tier — employees get viewer access, managers get manager access. */
 function impliedFromHrms(roles: readonly string[]): LpmsRole[] {
   const out: LpmsRole[] = [];
+  if (roles.some((r) => r === 'super_admin' || r === 'admin' || r === 'workspace_admin' || r === 'owner')) {
+    out.push('super_admin');
+  }
   if (roles.includes('employee')) out.push('lpms_viewer');
   if (roles.includes('manager') || roles.includes('hr')) out.push('lpms_manager');
   return out;
@@ -153,7 +156,9 @@ export function effectiveLpmsRoles(roles: readonly string[] | undefined | null):
 
 /** Can open the LPMS panel at /lpms/*. */
 export function hasLpmsAccess(roles: readonly string[] | undefined | null): boolean {
-  return effectiveLpmsRoles(roles).length > 0;
+  const raw = roles ?? [];
+  if (raw.some((r) => r === 'super_admin' || r === 'admin' || r === 'workspace_admin' || r === 'owner')) return true;
+  return effectiveLpmsRoles(raw).length > 0;
 }
 
 export function isLpmsAdmin(user: RoleContext): boolean {

@@ -63,7 +63,7 @@ export default function SeoSidebarShell({
         <SeoSidebar flags={flags} collapsed={collapsed} />
       </div>
 
-      <SeoProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      <SeoProfileMenu email={email} roles={roles} flags={flags} createdAt={createdAt} lastLoginAt={lastLoginAt} />
     </motion.aside>
   );
 }

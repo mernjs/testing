@@ -44,7 +44,7 @@ export default function PortalNotificationsBell({ items, unread }: { items: Bell
           <Button type="button" variant="ghost" size="icon" aria-label={`Notifications${unread ? ` (${unread})` : ""}`} className="relative">
             <Bell className="size-4.5" />
             {unread > 0 && (
-              <span className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
+              <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
                 {unread > 9 ? "9+" : unread}
               </span>
             )}

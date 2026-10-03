@@ -139,12 +139,6 @@ export default function FmsSidebar({
       {nav({ href: "/fms/payouts", label: "Payouts", icon: Send })}
       {nav({ href: "/fms/beneficiaries", label: "Bank Directory", icon: Building2 })}
       {nav({ href: "/fms/transactions", label: "Transactions", icon: ArrowLeftRight })}
-
-      {/* ── GOVERNANCE ── */}
-      <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      {nav({ href: "/fms/reports/financial-summary", label: "Analytics", icon: BarChart3 })}
-      {canManageAccounts(roleCtx) && nav({ href: "/fms/settings/accounts", label: "Settings", icon: Settings })}
-      {canViewAuditLog(roleCtx) && nav({ href: "/fms/audit-logs", label: "Audit Log", icon: ScrollText })}
     </nav>
   );
 }

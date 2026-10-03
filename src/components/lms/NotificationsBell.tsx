@@ -79,7 +79,6 @@ export default function NotificationsBell({
 }) {
   const attentionTotal = staleLeadsCount + staleApplicationsCount;
   const hasRecent = recentLeads.length > 0 || recentApplications.length > 0;
-
   return (
     <Popover>
       <PopoverTrigger
@@ -87,7 +86,7 @@ export default function NotificationsBell({
           <button type="button" aria-label={`Notifications${attentionTotal > 0 ? ` (${attentionTotal} pending)` : ""}`} className="relative flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary">
             <Bell className="size-4.5" />
             {attentionTotal > 0 && (
-              <span className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
+              <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
                 {attentionTotal > 9 ? "9+" : attentionTotal}
               </span>
             )}

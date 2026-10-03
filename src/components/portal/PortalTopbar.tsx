@@ -6,6 +6,7 @@ import PortalMobileSidebar from "@/components/portal/PortalMobileSidebar";
 import PortalNotificationsBell, { type BellItem } from "@/components/portal/PortalNotificationsBell";
 import LeadSwitcher, { type LeadSummary } from "@/components/portal/LeadSwitcher";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import { PORTAL_ROLE_META, type PortalRole } from "@/lib/portal-roles";
 
 export default function PortalTopbar({
@@ -43,6 +44,14 @@ export default function PortalTopbar({
         <PortalNotificationsBell items={notifications} unread={unread} />
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="portal"
+        panelTitle="Client Portal"
+        panelDescription={`Welcome, ${displayName}`}
+        roles={[role]}
+      />
     </header>
   );
 }

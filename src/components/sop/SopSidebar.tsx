@@ -110,12 +110,6 @@ export default function SopSidebar({ flags, onNavigate, collapsed = false }: { f
       {nav({ href: "/sop/departments", label: "Departments", icon: Building2 })}
       {nav({ href: "/sop/categories", label: "Categories", icon: Tags })}
       {flags.templates && nav({ href: "/sop/templates", label: "Templates", icon: LayoutTemplate })}
-
-      {(flags.compliance || flags.reports || flags.audit || flags.settings) && <SectionLabel collapsed={collapsed}>Governance</SectionLabel>}
-      {flags.compliance && nav({ href: "/sop/compliance", label: "Compliance", icon: ShieldCheck })}
-      {flags.reports && nav({ href: "/sop/reports", label: "Reports & Analytics", icon: BarChart3 })}
-      {flags.audit && nav({ href: "/sop/audit-logs", label: "Audit Logs", icon: ScrollText })}
-      {flags.settings && nav({ href: "/sop/settings", label: "Settings", icon: Settings })}
     </nav>
   );
 }

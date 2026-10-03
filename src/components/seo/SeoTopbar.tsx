@@ -6,6 +6,7 @@ import SeoMobileSidebar from "@/components/seo/SeoMobileSidebar";
 import SeoNotificationsBell from "@/components/seo/SeoNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { SeoNavFlags } from "@/components/seo/SeoSidebar";
 import type { SeoBellItem } from "@/lib/seo-panel/notifications";
 
@@ -44,6 +45,14 @@ export default function SeoTopbar({
         <SeoNotificationsBell items={notifications} unread={unread} />
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="seo"
+        panelTitle="Search Engine Optimization"
+        panelDescription="Keywords, rankings & website visibility"
+        roles={roles}
+      />
     </header>
   );
 }

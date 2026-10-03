@@ -171,11 +171,6 @@ export default function HrmsSidebar({
       {nav({ href: "/hrms/holidays", label: "Holidays", icon: CalendarCheck })}
       {canRunPayroll(roleCtx) && nav({ href: "/hrms/payroll", label: "Payroll", icon: Wallet })}
 
-      <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      {nav({ href: "/hrms/analytics", label: "Analytics", icon: BarChart3 })}
-      {canManageSettings(roleCtx) && nav({ href: "/hrms/settings", label: "Settings", icon: Settings })}
-      {canViewAuditLog(roleCtx) && nav({ href: "/hrms/audit", label: "Audit Log", icon: ScrollText })}
-
       {employeeId && (
         <>
           <SectionLabel collapsed={collapsed}>Me</SectionLabel>

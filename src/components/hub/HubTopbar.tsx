@@ -7,6 +7,7 @@ import HubMobileSidebar from "@/components/hub/HubMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
 import HubSearch from "@/components/platform/hub/HubSearch";
 import NotificationBell from "@/components/platform/hub/NotificationBell";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 
 export default function HubTopbar({ email, nav, unread = 0 }: { email: string; nav: NavSection[]; unread?: number }) {
   const [aiOpen, setAiOpen] = useState(false);
@@ -33,6 +34,13 @@ export default function HubTopbar({ email, nav, unread = 0 }: { email: string; n
         <NotificationBell initial={unread} />
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="hub"
+        panelTitle="Workspace Hub"
+        panelDescription="Your panels, analytics & settings"
+      />
     </header>
   );
 }

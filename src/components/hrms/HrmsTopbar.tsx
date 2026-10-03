@@ -6,6 +6,7 @@ import HrmsMobileSidebar from "@/components/hrms/HrmsMobileSidebar";
 import HrmsNotificationsBell, { type BellItem } from "@/components/hrms/HrmsNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { HrmsRole } from "@/lib/hrms-roles";
 
 export default function HrmsTopbar({
@@ -46,6 +47,14 @@ export default function HrmsTopbar({
         <HrmsNotificationsBell items={notifications} unread={unread} basePath="/hrms" />
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="hrms"
+        panelTitle="Human Resource Management"
+        panelDescription="Manage employees, attendance & payroll"
+        roles={roles}
+      />
     </header>
   );
 }

@@ -37,6 +37,9 @@ import type { CollectionKey as CmsCollectionKey } from "@/lib/cms/collections/ty
 import { COLLECTIONS as CMS_COLLECTIONS } from "@/lib/cms/db";
 import { SITE_AREAS as CMS_SITE_AREAS, areaOf as cmsAreaOf } from "@/lib/cms/site-areas";
 import { seoIssues as cmsSeoIssues } from "@/lib/cms/seo-checks";
+import { getLpmsDashboard } from "@/lib/lpms/analytics";
+import { currentCompanyId } from "@/lib/platform/tenancy/context";
+import type { LpmsViewer } from "@/lib/lpms/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared helpers
@@ -947,6 +950,44 @@ export async function getCmsAnalytics(_filters?: PanelAnalyticsFilters) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// LPMS (Legal & Documents) Analytics
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type LpmsAnalytics = Awaited<ReturnType<typeof getLpmsAnalytics>>;
+
+export async function getLpmsAnalytics(_filters?: PanelAnalyticsFilters) {
+  const viewer: LpmsViewer = {
+    userId: COMPANY_VIEWER_ID,
+    email: "",
+    roles: COMPANY_ROLES as any,
+    overrides: {},
+    lpmsRoles: COMPANY_ROLES as any,
+    employeeId: null,
+    companyId: (await currentCompanyId()) ?? "",
+  };
+  const d = await soft(() => getLpmsDashboard(viewer));
+
+  const alerts: PanelAlert[] = [];
+  if ((d?.kpis.pendingApprovals ?? 0) > 0)
+    alerts.push({ type: "warning", message: `${d?.kpis.pendingApprovals} document(s) pending approval` });
+
+  return {
+    kpis: {
+      totalDocuments: d?.kpis.totalDocuments ?? 0,
+      activeDocuments: d?.kpis.activeDocuments ?? 0,
+      draftDocuments: d?.kpis.draftDocuments ?? 0,
+      pendingApprovals: d?.kpis.pendingApprovals ?? 0,
+      aiGenerated: d?.kpis.aiGenerated ?? 0,
+    },
+    charts: {
+      byStatus: (d?.byStatus ?? []).map((x) => ({ label: x.label, value: x.value })),
+      byCategory: (d?.byCategory ?? []).map((x) => ({ label: x.label, value: x.value })),
+    },
+    alerts,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Panel-key → aggregator mapping
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -986,6 +1027,12 @@ export const PANEL_CONFIGS = {
     description: "Lead pipeline, conversion funnel, source breakdown, stale leads, and campaign performance from the Lead Management System.",
     href: "/lms",
     ctaLabel: "Open LMS Panel",
+  },
+  lpms: {
+    label: "LPMS – Legal & Documents Analytics",
+    description: "Legal agreements, policy documents, maker types, approval workflows and digital signatures.",
+    href: "/lpms",
+    ctaLabel: "Open Legal & Documents",
   },
   messenger: {
     label: "Messenger – Messenger Analytics",
@@ -1063,7 +1110,7 @@ export function isPanelKey(val: unknown): val is PanelKey {
 export async function getPanelHeadlineStats(panel: PanelKey, filters?: PanelAnalyticsFilters): Promise<{ label: string; value: number }[]> {
   const getters: Record<PanelKey, (f?: PanelAnalyticsFilters) => Promise<{ kpis?: unknown }>> = {
     aibots: getAibotsAnalytics, cms: getCmsAnalytics, dlms: getDlmsAnalytics, fms: getFmsAnalytics, hrms: getHrmsAnalytics,
-    lms: getLmsAnalytics, messenger: getMessengerAnalytics, ots: getOtsAnalytics, pms: getPmsAnalytics, portal: getPortalAnalytics,
+    lms: getLmsAnalytics, lpms: getLpmsAnalytics, messenger: getMessengerAnalytics, ots: getOtsAnalytics, pms: getPmsAnalytics, portal: getPortalAnalytics,
     prms: getPrmsAnalytics, seo: getSeoAnalytics, smms: getSmmsAnalytics, sop: getSopAnalytics, tms: getTmsAnalytics,
     workspace: getWorkspaceAnalytics,
   };

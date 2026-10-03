@@ -12,11 +12,8 @@ import {
   Megaphone,
   FolderOpen,
   Video,
-  Settings,
   Search,
   Lock,
-  BarChart3,
-  ScrollText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -133,11 +130,6 @@ export default function MessengerSidebar({
       {nav({ href: "/messenger/announcements", label: "Announcements", icon: Megaphone })}
       {nav({ href: "/messenger/files", label: "Shared Files", icon: FolderOpen })}
       {nav({ href: "/messenger/meetings", label: "Meetings", icon: Video })}
-
-      <SectionLabel collapsed={collapsed}>Governance</SectionLabel>
-      {nav({ href: "/messenger", label: "Analytics", icon: BarChart3, exact: true })}
-      {nav({ href: "/messenger/settings", label: "Settings", icon: Settings })}
-      {nav({ href: "/messenger/announcements", label: "Audit Log", icon: ScrollText })}
     </nav>
   );
 }

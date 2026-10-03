@@ -6,6 +6,7 @@ import SmmsMobileSidebar from "@/components/smms/SmmsMobileSidebar";
 import SmmsNotificationsBell from "@/components/smms/SmmsNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { SmmsNavFlags } from "@/components/smms/SmmsSidebar";
 import type { SmmsBellItem } from "@/lib/smms/notifications";
 
@@ -44,6 +45,14 @@ export default function SmmsTopbar({
         <SmmsNotificationsBell items={notifications} unread={unread} />
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="smms"
+        panelTitle="Social Media Management"
+        panelDescription="Schedule posts, analytics & campaign management"
+        roles={roles}
+      />
     </header>
   );
 }

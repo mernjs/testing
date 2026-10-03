@@ -165,11 +165,19 @@ export default function HubSidebar({
   return (
     <nav aria-label="Workspace" className="flex h-full flex-col gap-1 p-3 overflow-y-auto">
       {nav.filter((section) => section.sidebar).map((section) => {
+        const filteredItems = section.items.filter(
+          (item) =>
+            item.group !== "Security & logs" &&
+            item.key !== "company.audit" &&
+            item.key !== "company.security" &&
+            item.key !== "company.payments" &&
+            item.label !== "Payment account"
+        );
         const links = (
           <>
-            {section.items.map((item, i) => (
+            {filteredItems.map((item, i) => (
               <div key={item.key} className="contents">
-                {item.group && item.group !== section.items[i - 1]?.group && (
+                {item.group && item.group !== filteredItems[i - 1]?.group && (
                   // A category is a heading in its own right — same look as a section heading, not clickable, not collapsible.
                   collapsed ? <div className="mt-4 mb-1 border-t border-border/50" /> : (
                     <div className="mt-4 mb-1 flex items-center gap-1 px-3">
@@ -191,7 +199,7 @@ export default function HubSidebar({
           </>
         );
         // Sections whose items carry categories show those as the headings instead of one umbrella heading.
-        if (!section.label || section.items.some((item) => item.group)) return <div key={section.key} className="contents">{links}</div>;
+        if (!section.label || filteredItems.some((item) => item.group)) return <div key={section.key} className="contents">{links}</div>;
 
         // The icon-only sidebar has no room for a section header: show a divider and the open sections' icons.
         if (collapsed) {

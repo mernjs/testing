@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Sparkles, Bell } from "lucide-react";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { LpmsNavFlags } from "@/components/lpms/LpmsSidebar";
 
 export default function LpmsTopbar({
@@ -34,17 +36,24 @@ export default function LpmsTopbar({
         >
           <Sparkles className="size-4" />
         </button>
-        <button
-          type="button"
-          onClick={() => setBellOpen(!bellOpen)}
+        <Link
+          href="/lpms/notifications"
           title="Notifications"
           aria-label="Notifications"
           className="flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
         >
           <Bell className="size-4" />
-        </button>
+        </Link>
         <ThemeToggle />
       </div>
+      <AskAiDrawer
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        panelId="lpms"
+        panelTitle="Legal & Process Management"
+        panelDescription="Policies, agreements & document workflows"
+        roles={_roles}
+      />
     </header>
   );
 }
