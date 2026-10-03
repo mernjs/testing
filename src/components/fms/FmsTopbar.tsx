@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
+import { Sparkles, Bell } from "lucide-react";
 import FmsMobileSidebar from "@/components/fms/FmsMobileSidebar";
-import ThemeToggle from "@/components/lms/ThemeToggle";
 import PanelSearch from "@/components/platform/PanelSearch";
-import { primaryFmsRoleLabel, type FmsRole } from "@/lib/fms-roles";
+import ThemeToggle from "@/components/lms/ThemeToggle";
+import type { FmsRole } from "@/lib/fms-roles";
 
 export default function FmsTopbar({
   roles,
@@ -12,17 +14,37 @@ export default function FmsTopbar({
   roles: FmsRole[];
   permissionOverrides?: Record<string, boolean>;
 }) {
+  const [aiOpen, setAiOpen] = useState(false);
+  const [bellOpen, setBellOpen] = useState(false);
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <FmsMobileSidebar roles={roles} permissionOverrides={permissionOverrides} />
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold text-foreground">Finance Management</p>
-        <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryFmsRoleLabel(roles)}</p>
+        <p className="truncate text-[11px] text-muted-foreground">Budgets, invoices, expenses &amp; financial reports</p>
       </div>
       <div className="flex min-w-0 flex-1 justify-center">
         <PanelSearch />
       </div>
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <button
+          type="button"
+          onClick={() => setAiOpen(!aiOpen)}
+          title="Ask AI Assistant"
+          aria-label="Ask AI Assistant"
+          className="flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+        >
+          <Sparkles className="size-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => setBellOpen(!bellOpen)}
+          title="Notifications"
+          aria-label="Notifications"
+          className="flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+        >
+          <Bell className="size-4" />
+        </button>
         <ThemeToggle />
       </div>
     </header>

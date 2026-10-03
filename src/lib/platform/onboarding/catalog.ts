@@ -99,6 +99,7 @@ export const MODULES = [
   { key: "tms", label: "Training", description: "Programs, batches, students, certificates", core: false },
   { key: "ots", label: "Online Tests", description: "Assessments for hiring and training", core: false },
   { key: "sop", label: "SOPs & Policies", description: "Processes and acknowledgements", core: false },
+  { key: 'lpms', label: 'Legal & Documents', description: 'Policies, agreements, certificates and document automation', core: false },
   { key: "dlms", label: "Digi Locker", description: "Company & client documents and credentials", core: false },
   { key: "cms", label: "Website", description: "Your public website and pages", core: false },
   { key: "seo", label: "SEO", description: "Search visibility and audits", core: false },
@@ -111,10 +112,10 @@ export type ModuleKey = (typeof MODULES)[number]["key"];
 
 /** Sensible default selection per industry (core modules are implied). */
 export const DEFAULT_MODULES: Record<Industry, ModuleKey[]> = {
-  software_services: ["hrms", "pms", "lms", "fms", "prms", "sop", "dlms", "cms", "portal"],
-  saas_product: ["hrms", "pms", "lms", "fms", "sop", "dlms", "cms", "seo", "smms", "aibots"],
+  software_services: ["hrms", "pms", "lms", "fms", "prms", "sop", "lpms", "dlms", "cms", "portal"],
+  saas_product: ["hrms", "pms", "lms", "fms", "sop", "lpms", "dlms", "cms", "seo", "smms", "aibots"],
   digital_agency: ["hrms", "pms", "lms", "fms", "cms", "seo", "smms", "portal"],
-  ai_data: ["hrms", "pms", "lms", "fms", "sop", "dlms", "cms", "aibots", "portal"],
+  ai_data: ["hrms", "pms", "lms", "fms", "sop", "lpms", "dlms", "cms", "aibots", "portal"],
   it_consulting: ["hrms", "pms", "lms", "fms", "prms", "ots", "dlms", "portal"],
   training: ["hrms", "tms", "ots", "lms", "fms", "cms", "portal"],
 };

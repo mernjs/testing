@@ -1,4 +1,5 @@
 import Header, { type HeaderVariant } from "@/components/Header";
+import FloatingContactButtons from "@/components/FloatingContactButtons";
 import SiteFooter from "@/components/footer/SiteFooter";
 import { layoutCss } from "@/lib/cms/component-variants";
 import { ThemeVariantsProvider } from "@/components/cms/ThemeVariantsContext";
@@ -59,6 +60,8 @@ export default async function SiteLayout({
       {preview && <ThemePreviewBridge themeName={preview.name} />}
       {/* Signed-in CMS users only (client-side; visitors never request it). */}
       <CmsAdminToolbar />
+      {/* Floating contact buttons — website only, never shown in panels. */}
+      <FloatingContactButtons />
     </OfferClaimProvider>
   );
 }

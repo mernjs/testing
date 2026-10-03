@@ -26,6 +26,7 @@ import { SMMS_PERMISSIONS, SMMS_PERMISSION_KEY, SMMS_PERMISSION_META } from "@/l
 import { OTS_PERMISSIONS, OTS_PERMISSION_KEY, OTS_PERMISSION_META } from "@/lib/ots-roles";
 import { SEO_PERMISSIONS, SEO_PERMISSION_KEY, SEO_PERMISSION_META } from "@/lib/seo-roles";
 import { CMS_PERMISSIONS, CMS_PERMISSION_KEY, CMS_PERMISSION_META } from "@/lib/cms-roles";
+import { LPMS_PERMISSIONS, LPMS_PERMISSION_KEY, LPMS_PERMISSION_META } from "@/lib/lpms-roles";
 
 export interface PermissionOption {
   key: string;
@@ -494,6 +495,14 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       { key: "workspace.manageCareers", label: "Manage job applicants", description: "Applicants register, statuses and resumes." },
       { key: "workspace.manageChatbot", label: "Manage chatbot conversations", description: "Website chatbot and voice conversation transcripts." },
     ],
+  },
+  {
+    module: 'LPMS (Legal & Documents)',
+    permissions: LPMS_PERMISSIONS.map((p) => ({
+      key: LPMS_PERMISSION_KEY[p],
+      label: LPMS_PERMISSION_META[p].label,
+      description: LPMS_PERMISSION_META[p].description,
+    })),
   },
 ];
 

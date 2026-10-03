@@ -1,24 +1,44 @@
 "use client";
 
-import { ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { ExternalLink, Sparkles, Bell } from "lucide-react";
 import CmsMobileSidebar from "@/components/cms/CmsMobileSidebar";
 import CmsCommandSearch from "@/components/cms/CmsCommandSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
-import { primaryCmsRoleLabel } from "@/lib/cms-roles";
 import type { CmsNavFlags } from "@/components/cms/CmsSidebar";
 
-export default function CmsTopbar({ roles, flags }: { roles: string[]; flags: CmsNavFlags }) {
+export default function CmsTopbar({ roles: _roles, flags }: { roles: string[]; flags: CmsNavFlags }) {
+  const [aiOpen, setAiOpen] = useState(false);
+  const [bellOpen, setBellOpen] = useState(false);
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <CmsMobileSidebar flags={flags} />
       <div className="hidden min-w-0 lg:block">
         <p className="truncate text-sm font-semibold text-foreground">Website CMS</p>
-        <p className="truncate text-[11px] text-muted-foreground">Signed in as {primaryCmsRoleLabel(roles)}</p>
+        <p className="truncate text-[11px] text-muted-foreground">Pages, blogs &amp; website content</p>
       </div>
       <div className="flex min-w-0 flex-1 justify-center">
         <CmsCommandSearch />
       </div>
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <button
+          type="button"
+          onClick={() => setAiOpen(!aiOpen)}
+          title="Ask AI Assistant"
+          aria-label="Ask AI Assistant"
+          className="flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+        >
+          <Sparkles className="size-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => setBellOpen(!bellOpen)}
+          title="Notifications"
+          aria-label="Notifications"
+          className="flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+        >
+          <Bell className="size-4" />
+        </button>
         <a
           href="/"
           target="_blank"

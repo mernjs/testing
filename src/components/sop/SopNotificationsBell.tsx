@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Bell, CheckCheck } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverTitle } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { markNotificationsReadAction } from "@/app/sop/(protected)/actions";
 import type { SopBellItem } from "@/lib/sop/notifications";
@@ -42,14 +41,14 @@ export default function SopNotificationsBell({ items, unread }: { items: SopBell
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         render={
-          <Button type="button" variant="ghost" size="icon" aria-label={`Notifications${unread > 0 ? ` (${unread} unread)` : ""}`} className="relative">
+          <button type="button" aria-label={`Notifications${unread > 0 ? ` (${unread} unread)` : ""}`} className="relative flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary">
             <Bell className="size-4.5" />
             {unread > 0 && (
               <span className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
                 {unread > 9 ? "9+" : unread}
               </span>
             )}
-          </Button>
+          </button>
         }
       />
       <PopoverContent align="end" className="max-h-[30rem] w-80 overflow-y-auto p-0">

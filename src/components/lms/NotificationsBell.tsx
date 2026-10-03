@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Bell, AlertTriangle, Sparkles } from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverTitle } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
 import StatusBadge from "@/components/lms/StatusBadge";
 import CareerStatusBadge from "@/components/lms/CareerStatusBadge";
 import { getCategoryLabel, type CategorySlug } from "@/lib/categories";
@@ -85,14 +84,14 @@ export default function NotificationsBell({
     <Popover>
       <PopoverTrigger
         render={
-          <Button type="button" variant="ghost" size="icon" aria-label={`Notifications${attentionTotal > 0 ? ` (${attentionTotal} pending)` : ""}`} className="relative">
+          <button type="button" aria-label={`Notifications${attentionTotal > 0 ? ` (${attentionTotal} pending)` : ""}`} className="relative flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary">
             <Bell className="size-4.5" />
             {attentionTotal > 0 && (
               <span className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
                 {attentionTotal > 9 ? "9+" : attentionTotal}
               </span>
             )}
-          </Button>
+          </button>
         }
       />
       <PopoverContent align="end" className="max-h-[28rem] w-80 overflow-y-auto">

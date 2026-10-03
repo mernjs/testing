@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Menu } from "lucide-react";
+import { Menu, Sparkles, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import ThemeToggle from "@/components/lms/ThemeToggle";
@@ -11,6 +11,8 @@ import PlatformSidebar, { type PlatformNavFlags } from "@/components/platform/pa
 
 export default function PlatformTopbar({ flags }: { flags: PlatformNavFlags }) {
   const [open, setOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
+  const [bellOpen, setBellOpen] = useState(false);
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <Button type="button" variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen(true)} aria-label="Open navigation menu">
@@ -36,6 +38,24 @@ export default function PlatformTopbar({ flags }: { flags: PlatformNavFlags }) {
         <p className="truncate text-[11px] text-muted-foreground">Every company, plan and setting of the SaaS platform</p>
       </div>
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <button
+          type="button"
+          onClick={() => setAiOpen(!aiOpen)}
+          title="Ask AI Assistant"
+          aria-label="Ask AI Assistant"
+          className="flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+        >
+          <Sparkles className="size-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => setBellOpen(!bellOpen)}
+          title="Notifications"
+          aria-label="Notifications"
+          className="flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+        >
+          <Bell className="size-4" />
+        </button>
         <ThemeToggle />
       </div>
     </header>

@@ -3,7 +3,7 @@ import { jsonForScript } from "@/lib/security/json-script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import FloatingContactButtons from "@/components/FloatingContactButtons";
+
 import { SiteInfoProvider } from "@/components/cms/SiteInfoContext";
 import { getSiteInfo } from "@/lib/cms/site-info";
 import { parseSiteInfo } from "@/lib/cms/site-info-shared";
@@ -90,7 +90,7 @@ export default async function RootLayout({
           <BrandProvider brand={brand}>
             <SiteInfoProvider value={{ ...siteInfo, liveChatId }}>
               {children}
-              <FloatingContactButtons />
+
               {notice && <PlatformNoticeBanner message={notice} />}
             </SiteInfoProvider>
           </BrandProvider>

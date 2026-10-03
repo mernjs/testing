@@ -1,17 +1,18 @@
 "use client";
 
+import { useState } from "react";
+import { Sparkles } from "lucide-react";
 import MobileSidebar from "@/components/lms/MobileSidebar";
-import NotificationsBell from "@/components/lms/NotificationsBell";
-import ThemeToggle from "@/components/lms/ThemeToggle";
 import PanelSearch from "@/components/platform/PanelSearch";
+import ThemeToggle from "@/components/lms/ThemeToggle";
+import NotificationsBell from "@/components/lms/NotificationsBell";
 import type { SerializedLead, SerializedCareerApplication } from "@/components/lms/types";
 
 export default function LmsTopbar({
-  userEmail,
   staleLeads,
-  staleLeadsCount,
+  staleLeadsCount = 0,
   staleApplications,
-  staleApplicationsCount,
+  staleApplicationsCount = 0,
   recentLeads,
   recentApplications,
 }: {
@@ -24,18 +25,27 @@ export default function LmsTopbar({
   recentLeads: SerializedLead[];
   recentApplications: SerializedCareerApplication[];
 }) {
+  const [aiOpen, setAiOpen] = useState(false);
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <MobileSidebar />
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold text-foreground">Lead Management</p>
-        <p className="truncate text-[11px] text-muted-foreground">Signed in as {userEmail}</p>
+        <p className="truncate text-[11px] text-muted-foreground">Track leads, pipeline &amp; career applications</p>
       </div>
       <div className="flex min-w-0 flex-1 justify-center">
         <PanelSearch />
       </div>
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-        <ThemeToggle />
+        <button
+          type="button"
+          onClick={() => setAiOpen(!aiOpen)}
+          title="Ask AI Assistant"
+          aria-label="Ask AI Assistant"
+          className="flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+        >
+          <Sparkles className="size-4" />
+        </button>
         <NotificationsBell
           staleLeads={staleLeads}
           staleLeadsCount={staleLeadsCount}
@@ -44,6 +54,7 @@ export default function LmsTopbar({
           recentLeads={recentLeads}
           recentApplications={recentApplications}
         />
+        <ThemeToggle />
       </div>
     </header>
   );

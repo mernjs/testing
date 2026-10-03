@@ -1,27 +1,48 @@
 "use client";
 
+import { useState } from "react";
+import { Sparkles } from "lucide-react";
 import SmmsMobileSidebar from "@/components/smms/SmmsMobileSidebar";
 import SmmsNotificationsBell from "@/components/smms/SmmsNotificationsBell";
-import ThemeToggle from "@/components/lms/ThemeToggle";
 import PanelSearch from "@/components/platform/PanelSearch";
-import { primarySmmsRoleLabel } from "@/lib/smms-roles";
+import ThemeToggle from "@/components/lms/ThemeToggle";
 import type { SmmsNavFlags } from "@/components/smms/SmmsSidebar";
 import type { SmmsBellItem } from "@/lib/smms/notifications";
 
-export default function SmmsTopbar({ roles, flags, notifications, unread }: { roles: string[]; flags: SmmsNavFlags; notifications: SmmsBellItem[]; unread: number }) {
+export default function SmmsTopbar({
+  roles,
+  flags,
+  notifications,
+  unread,
+}: {
+  roles: string[];
+  flags: SmmsNavFlags;
+  notifications: SmmsBellItem[];
+  unread: number;
+}) {
+  const [aiOpen, setAiOpen] = useState(false);
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <SmmsMobileSidebar flags={flags} />
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold text-foreground">Social Media Marketing</p>
-        <p className="truncate text-[11px] text-muted-foreground">Signed in as {primarySmmsRoleLabel(roles)}</p>
+        <p className="truncate text-[11px] text-muted-foreground">Schedule posts, analytics &amp; campaign management</p>
       </div>
       <div className="flex min-w-0 flex-1 justify-center">
         <PanelSearch />
       </div>
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-        <ThemeToggle />
+        <button
+          type="button"
+          onClick={() => setAiOpen(!aiOpen)}
+          title="Ask AI Assistant"
+          aria-label="Ask AI Assistant"
+          className="flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+        >
+          <Sparkles className="size-4" />
+        </button>
         <SmmsNotificationsBell items={notifications} unread={unread} />
+        <ThemeToggle />
       </div>
     </header>
   );

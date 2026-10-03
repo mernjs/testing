@@ -22,6 +22,7 @@ import { normalizeFmsRoles } from "@/lib/fms-roles";
 import { normalizeChatRoles } from "@/lib/messenger-roles";
 import { hasAdminAccess } from "@/lib/admin-roles";
 import { hasSopAccess, sopCan } from "@/lib/sop-roles";
+import { hasLpmsAccess, isLpmsManagerTier, lpmsCan } from "@/lib/lpms-roles";
 import { hasSeoAccess, seoCan } from "@/lib/seo-roles";
 import { hasDlmsAccess, isDlmsManagerTier } from "@/lib/dlms-roles";
 import { hasAibotsAccess, isAibotsManagerTier } from "@/lib/aibots-roles";
@@ -108,6 +109,7 @@ const PANELS: NavItemDef[] = (
     ["tms", "Training", "training", has(normalizeTmsRoles)],
     ["messenger", "Team Chat", "chat", has(normalizeChatRoles)],
     ["sop", "SOP Library", "book", (u) => hasSopAccess(u.roles)],
+    ["lpms", "Legal & Documents", "file", (u) => hasLpmsAccess(u.roles)],
     ["dlms", "Digi Locker", "vault", (u) => hasDlmsAccess(u.roles)],
     ["ots", "Online Tests", "test", (u) => hasOtsAccess(u.roles)],
     ["aibots", "AI Bots", "bot", (u) => hasAibotsAccess(u.roles)],
@@ -139,6 +141,7 @@ const ANALYTICS: NavItemDef[] = (
     ["seo", "SEO Analytics", "search", (u) => hasSeoAccess(u.roles) && seoCan(u, "VIEW")],
     ["smms", "Social Media Analytics", "megaphone", (u) => hasSmmsAccess(u.roles) && smmsCan(u, "VIEW_ANALYTICS")],
     ["sop", "SOP Analytics", "book", (u) => hasSopAccess(u.roles) && sopCan(u, "EXPORT")],
+    ['lpms', 'LPMS Analytics', 'file', (u) => hasLpmsAccess(u.roles) && isLpmsManagerTier(u)],
     ["tms", "Training Analytics", "training", orAdmin(has(normalizeTmsRoles))],
     ["workspace", "Workspace Analytics", "chart", canViewWorkspaceAnalytics],
   ] as [string, string, NavIcon, NavItemDef["allow"]][]
