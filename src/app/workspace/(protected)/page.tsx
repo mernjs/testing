@@ -59,7 +59,7 @@ export default async function HubDashboardPage({
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   return (
-    <div className="relative space-y-8">
+    <div className="relative space-y-10">
       {/* ── Welcome ── */}
       <div className="flex flex-col gap-3 rounded-2xl border border-border/40 bg-gradient-to-r from-primary/10 via-card to-card p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -84,7 +84,7 @@ export default async function HubDashboardPage({
       </div>
 
       {/* ── Section 1: whole-dashboard search & filter + panel performance matrix ── */}
-      <section id="dashboard-overview" data-section="overview" className="space-y-6">
+      <section id="dashboard-overview" data-section="overview" className="space-y-6 rounded-3xl border border-border/60 border-t-2 border-t-primary/60 bg-background dark:bg-[color-mix(in_oklch,var(--background)_82%,black)] p-5 shadow-sm sm:p-6">
         <AnalyticsFilterBar
           title="Whole Dashboard Search & Filter"
           fields={[
@@ -105,7 +105,7 @@ export default async function HubDashboardPage({
         </ExecutiveSection>
       ) : (
         sections.map((k) => (
-          <div key={k} className="rounded-3xl border border-border/40 bg-card/40 p-5 shadow-sm sm:p-6">
+          <div key={k} className="rounded-3xl border border-border/60 border-t-2 border-t-primary/60 bg-background dark:bg-[color-mix(in_oklch,var(--background)_82%,black)] p-5 shadow-sm sm:p-6">
             <PanelAnalyticsBlock panel={k} user={user} sp={sp} prefix={k} compact />
           </div>
         ))
