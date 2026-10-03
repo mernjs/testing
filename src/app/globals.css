@@ -366,10 +366,10 @@ html[data-ui="modern"].dark .lms-shell {
 html[data-ui="modern"].dark .bg-canvas,
 html[data-ui="modern"].dark body {
   /* The same gradient the buttons wear (primary → brand accent), a touch deeper so light text stays readable on it. */
-  background-color: color-mix(in oklch, var(--primary) 88%, black);
+  background-color: color-mix(in oklch, var(--primary) 42%, black);
   background-image:
-    radial-gradient(60rem 34rem at 92% -8%, color-mix(in oklch, white 14%, transparent), transparent 60%),
-    linear-gradient(135deg, color-mix(in oklch, var(--primary) 88%, black), color-mix(in oklch, var(--color-brand-accent) 88%, black));
+    radial-gradient(60rem 34rem at 92% -8%, color-mix(in oklch, white 5%, transparent), transparent 60%),
+    linear-gradient(135deg, color-mix(in oklch, var(--primary) 42%, black), color-mix(in oklch, var(--color-brand-accent) 42%, black));
   background-attachment: fixed;
 }
 /* Page headings and their descriptions sit straight on the gradient: pure foreground colour plus a soft shadow so they never wash out. */
@@ -413,3 +413,8 @@ html[data-ui="modern"].dark body > footer:not(.bg-foreground) {
   border-color: color-mix(in oklch, var(--primary) 24%, transparent);
 }
 
+
+/* Sidebar: the selected item gets a slightly stronger left-to-right fade of the theme colour (text stays as it was). */
+html[data-ui="modern"].dark aside span[class*="from-primary/15"] {
+  background-image: linear-gradient(90deg, color-mix(in oklch, var(--primary) 38%, transparent), color-mix(in oklch, var(--color-brand-accent) 8%, transparent));
+}
