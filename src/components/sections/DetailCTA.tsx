@@ -46,7 +46,7 @@ export default function DetailCTA({
       ? `/contact?category=${encodeURIComponent(category)}${subService ? `&subService=${encodeURIComponent(subService)}` : ""}`
       : "/contact");
   return (
-    <section id={id} className="relative overflow-hidden border-t border-border/50 py-24 sm:py-28 bg-primary/5">
+    <section id={id} data-site-cta className="relative overflow-hidden border-t border-border/50 py-24 sm:py-28 bg-primary/5">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
       <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col items-center text-center relative z-10">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn} className="max-w-2xl">

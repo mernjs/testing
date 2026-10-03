@@ -89,7 +89,7 @@ export default function HomeFinalCta({
   }
 
   return (
-    <section className="relative overflow-hidden border-t border-border/50 py-24 sm:py-32">
+    <section data-site-cta className="relative overflow-hidden border-t border-border/50 py-24 sm:py-32">
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/5 to-transparent"></div>
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
       <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background pointer-events-none"></div>

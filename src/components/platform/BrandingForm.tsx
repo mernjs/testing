@@ -41,6 +41,7 @@ export default function BrandingForm({
   return (
     <div className="grid gap-6 md:grid-cols-[1fr_260px]">
       <form
+        id="branding-form"
         className="space-y-5"
         onSubmit={(e) => {
           e.preventDefault();
@@ -112,12 +113,6 @@ export default function BrandingForm({
         {extra}
 
         {errors.form && <p className="text-sm text-destructive">{errors.form}</p>}
-        <div className="flex items-center gap-3">
-          <Button type="submit" disabled={saving || uploading}>
-            {saving ? <Loader2 className="size-4 animate-spin" /> : submitLabel}
-          </Button>
-          {saved && <span className="text-sm text-emerald-600" aria-live="polite">Saved — your theme now applies to the website and every panel.</span>}
-        </div>
       </form>
 
       {/* Live preview */}
@@ -138,6 +133,14 @@ export default function BrandingForm({
           </span>
         </div>
         <span className="inline-block rounded-md bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground">Primary button</span>
+      </div>
+
+      {/* The save button sits at the far right of the whole card (under both columns), wired to the form by id. */}
+      <div className="flex items-center justify-end gap-3 md:col-span-2">
+        {saved && <span className="text-sm text-emerald-600" aria-live="polite">Saved — your theme now applies to the website and every panel.</span>}
+        <Button type="submit" form="branding-form" disabled={saving || uploading}>
+          {saving ? <Loader2 className="size-4 animate-spin" /> : submitLabel}
+        </Button>
       </div>
     </div>
   );

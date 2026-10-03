@@ -536,8 +536,8 @@ function DoneStep() {
   ];
   return (
     <GlassCard>
-      <CardHeader className="items-center text-center">
-        <motion.div initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 260, damping: 16 }} className="mb-2 flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-lg shadow-primary/25">
+      <CardHeader className="items-center justify-items-center text-center">
+        <motion.div initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", stiffness: 260, damping: 16 }} className="mx-auto mb-2 flex size-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary text-primary-foreground shadow-lg shadow-primary/25">
           <Check className="size-8" strokeWidth={3} />
         </motion.div>
         <CardTitle className="text-2xl font-black tracking-tight">You&apos;re all set</CardTitle>
@@ -556,7 +556,7 @@ function DoneStep() {
             </li>
           ))}
         </ul>
-        <div className="mt-5 flex justify-center">
+        <div className="mt-5 flex justify-end">
           <Button render={<Link href="/workspace" />} nativeButton={false} size="lg">
             Go to your workspace <ArrowRight className="size-4" />
           </Button>

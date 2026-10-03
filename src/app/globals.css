@@ -402,7 +402,20 @@ html[data-ui="modern"].dark .lms-surface:has(> header) {
   border-color: color-mix(in oklch, var(--primary) 24%, transparent);
 }
 
-/* The public website, same treatment: sections that paint a solid page colour let the gradient through; header and footer are the deepest layer. */
+/* The public website, same treatment as the panels (every theme except the default).
+   Dark: the gradient page shows between sections; everything card-like is the same dark section tone; header and footer match. */
+html[data-ui="modern"].dark body > main :is(.bg-card, [class*="bg-card/"], .bg-background, [class*="bg-background/"], [data-slot="card"]):not(section) {
+  background-color: var(--section-bg);
+  border-color: color-mix(in oklch, var(--primary) 20%, transparent);
+}
+html[data-ui="modern"].dark body > main :is(.bg-card, [class*="bg-card/"], [data-slot="card"]) {
+  background-image: linear-gradient(150deg, color-mix(in oklch, white 5%, transparent), transparent 55%);
+  box-shadow: inset 0 1px 0 color-mix(in oklch, white 6%, transparent), 0 18px 40px -22px black;
+}
+html[data-ui="modern"].dark body > main :is(h1, h2, h3):not(:is(.bg-card, [class*="bg-card/"], [data-slot="card"]) *),
+html[data-ui="modern"].dark body > main :is(h1, h2) + p {
+  text-shadow: 0 1px 14px color-mix(in oklch, black 45%, transparent);
+}
 html[data-ui="modern"].dark body > main section.bg-background,
 html[data-ui="modern"].dark body > main > div.bg-background {
   background-color: transparent;
@@ -412,9 +425,24 @@ html[data-ui="modern"].dark body > footer:not(.bg-foreground) {
   background-color: var(--section-bg);
   border-color: color-mix(in oklch, var(--primary) 24%, transparent);
 }
-
+/* Light: a soft light-gray page, with white sections letting it show and white cards on top. */
+html[data-ui="modern"]:not(.dark) body {
+  background-color: var(--canvas);
+}
+html[data-ui="modern"]:not(.dark) body > main section.bg-background,
+html[data-ui="modern"]:not(.dark) body > main > div.bg-background {
+  background-color: transparent;
+}
 
 /* Sidebar: the selected item gets a slightly stronger left-to-right fade of the theme colour (text stays as it was). */
 html[data-ui="modern"].dark aside span[class*="from-primary/15"] {
   background-image: linear-gradient(90deg, color-mix(in oklch, var(--primary) 38%, transparent), color-mix(in oklch, var(--color-brand-accent) 8%, transparent));
+}
+
+/* Website: the FAQ and the closing "Have a project in mind?" call-to-action sit on a slightly deeper band than the page around them. */
+html[data-ui="modern"]:not(.dark) body > main :is(#faqs, [data-site-cta]) {
+  background-color: color-mix(in oklch, var(--canvas) 90%, black);
+}
+html[data-ui="modern"].dark body > main :is(#faqs, [data-site-cta]) {
+  background-color: color-mix(in oklch, var(--section-bg) 82%, black);
 }
