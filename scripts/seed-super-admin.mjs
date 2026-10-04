@@ -19,8 +19,8 @@ async function seedSuperAdmin() {
   }
 
   const args = process.argv.slice(2);
-  let adminEmail = "info@yashorbit.com";
-  let adminPassword = "YashOrbit#2026";
+  let adminEmail = "admin@example.com";
+  let adminPassword = "Admin#2026pw";
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--email" && args[i + 1]) {

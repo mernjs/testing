@@ -1,15 +1,15 @@
 // Demo content for the AI Bots seeder: each bot's knowledge documents and a set of realistic chats.
-// Everything here is fictional demo material about YashOrbit — clients, numbers and case studies are illustrative only.
+// Everything here is fictional demo material about Demo Company — clients, numbers and case studies are illustrative only.
 
 const DOC = (title, category, description, body) => ({ title, category, description, filename: `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}.md`, body });
 
 const COMPANY_PROFILE = DOC(
   "Company Profile",
   "Company Profile",
-  "Who YashOrbit is, what it does and how it works (demo).",
-  `# YashOrbit — Company Profile (demo)
+  "Who Demo Company is, what it does and how it works (demo).",
+  `# Demo Company — Company Profile (demo)
 
-YashOrbit Technologies Pvt Ltd is a software development company that designs, builds and scales web, mobile and AI/ML products for growing businesses — from MVPs to production-grade systems.
+Demo Company Pvt Ltd is a software development company that designs, builds and scales web, mobile and AI/ML products for growing businesses — from MVPs to production-grade systems.
 
 ## At a glance
 - Founded: 2019 · Headquarters: Bengaluru, India
@@ -210,7 +210,7 @@ const SOW_TEMPLATE = DOC(
 3. Scope of work (in scope / out of scope)
 4. Deliverables and acceptance criteria
 5. Milestones and timeline
-6. Roles and responsibilities (YashOrbit / client)
+6. Roles and responsibilities (Demo Company / client)
 7. Assumptions and dependencies
 8. Change control process
 9. Commercials and payment milestones
@@ -243,9 +243,9 @@ export const CHATS = [
         "Draft an executive summary for a proposal to ABC Clinics — they run 25 outpatient clinics and want an appointment booking app with reminders.",
         `## Executive summary — ABC Clinics
 
-ABC Clinics wants to make booking an appointment as easy as sending a message, and to stop losing revenue to missed visits. YashOrbit proposes a patient app (iOS and Android), a clinic web console and automated WhatsApp/SMS reminders, delivered in **about 16 weeks** by a dedicated pod.
+ABC Clinics wants to make booking an appointment as easy as sending a message, and to stop losing revenue to missed visits. Demo Company proposes a patient app (iOS and Android), a clinic web console and automated WhatsApp/SMS reminders, delivered in **about 16 weeks** by a dedicated pod.
 
-**Why YashOrbit:** we delivered almost exactly this for **MedBook**, a 40-clinic chain, where no-shows fell **31%** and front-desk calls fell **45%** in the first quarter.
+**Why Demo Company:** we delivered almost exactly this for **MedBook**, a 40-clinic chain, where no-shows fell **31%** and front-desk calls fell **45%** in the first quarter.
 
 **How we'll work:** a 2-week paid discovery sprint (USD 4,500) produces the BRD, a clickable prototype and a fixed estimate, followed by 2-week build sprints with a demo every week and 90 days of warranty support after launch.
 
@@ -481,7 +481,7 @@ If the timing has changed on your side, just let me know — happy to adjust.
 
 Best regards,
 [Your name]
-YashOrbit`,
+Demo Company`,
       ],
     ],
   },

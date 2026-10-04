@@ -1,5 +1,5 @@
 import "server-only";
-import { currentCompanyId, isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { currentCompanyId } from "@/lib/platform/tenancy/context";
 import { pickStarterPack } from "@/lib/platform/website/starter-packs";
 import { getActiveThemeKey, installThemePreset, listThemes, setActiveTheme } from "@/lib/cms/theme";
 import { THEME_PRESETS, getThemePreset } from "@/lib/cms/theme-presets";
@@ -19,11 +19,8 @@ export interface ThemeOption {
 /** `activeKey` = the theme shown as selected; `appliedKey` = the one actually saved as live ("" when the company is still on the owner-only default and is being shown a library theme instead). */
 export async function listThemeOptions(): Promise<{ options: ThemeOption[]; activeKey: string; appliedKey: string }> {
   const [installed, persistedKey] = await Promise.all([listThemes(), getActiveThemeKey()]);
-  // Only the platform owner can be on the built-in default; everyone else has a library theme.
-  const owner = await isPlatformOwnerContext();
-  const remapped = persistedKey === "default" && !owner;
-  const appliedKey = remapped ? "" : persistedKey;
-  const activeKey = remapped ? pickStarterPack(await currentCompanyId()).themePreset : persistedKey;
+  const appliedKey = persistedKey;
+  const activeKey = persistedKey;
   const options: ThemeOption[] = installed
     .filter((t) => t.publishedAt)
     .map((t) => ({ key: t._id, name: t.name, category: t.presetId ? (getThemePreset(t.presetId)?.category ?? "Custom") : t.builtIn ? "Original" : "Custom", tokens: t.tokens, components: t.components ?? {} }));

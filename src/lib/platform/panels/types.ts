@@ -61,7 +61,7 @@ const ALIASES: Record<string, string[]> = {
   tms: ["TMS", "Training Management System"],
   fms: ["FMS", "Financial Management System", "Finance Management"],
   lms: ["LMS", "Lead Management System", "Lead Management"],
-  messenger: ["YashChat", "Team Messenger", "Team Communication"],
+  messenger: ["Team Chat", "Team Messenger", "Team Communication"],
   sop: ["Standard Operating Procedures"],
   lpms: ["LPMS", "Legal & Document Automation"],
   dlms: ["DLMS"],
@@ -111,7 +111,7 @@ export const DEFAULT_PANELS: PanelRecord[] = [
   P("seo", "SEO", "SEO", "Search visibility, audits and rankings", "search", 150),
   P("cms", "Website", "Website", "Your public website, pages and content", "website", 160),
   P("portal", "Client & Student Portal", "Portal", "External portal for clients, students and applicants", "globe", 170),
-  P("support", "Help & Support", "Support", "AI help, guides and requests to YashOrbit", "help", 180),
+  P("support", "Help & Support", "Support", "AI help, guides and requests to the platform support team", "help", 180),
   // The public website each company publishes (switching it off takes that company's public pages offline).
   { ...P("website", "Public Website", "Website", "Your company's public website, served at your domain", "globe", 190), route: "/" },
 ];

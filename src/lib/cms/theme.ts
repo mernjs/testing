@@ -6,8 +6,6 @@ import { normalizeSelections, type ThemeComponentSelections } from "@/lib/cms/co
 import { FALLBACK_THEME, sanitizeTokens, type ThemeTokens } from "@/lib/cms/theme-shared";
 import { getThemePreset } from "@/lib/cms/theme-presets";
 import { unstable_rethrow } from "next/navigation";
-import { currentCompanyId, isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
-import { pickStarterPack } from "@/lib/platform/website/starter-packs";
 
 export {
   FALLBACK_THEME, themeCssBlock, themeCssVars, sanitizeTokens,
@@ -99,16 +97,12 @@ function normalize(doc: CmsThemeDoc): CmsThemeDoc {
 export async function listThemes(): Promise<CmsThemeDoc[]> {
   const c = await col();
   const all = await c.find({}, { sort: { createdAt: 1 } }).toArray();
-  // The built-in default theme is the platform owner's own look — no other company is offered it.
-  const owner = await isPlatformOwnerContext();
-  const themes = owner ? all : all.filter((t) => t._id !== DEFAULT_THEME_KEY);
   if (all.length > 0) {
     // Default first, regardless of creation order.
-    return themes.map(normalize).sort((a, b) => (a._id === DEFAULT_THEME_KEY ? -1 : b._id === DEFAULT_THEME_KEY ? 1 : 0));
+    return all.map(normalize).sort((a, b) => (a._id === DEFAULT_THEME_KEY ? -1 : b._id === DEFAULT_THEME_KEY ? 1 : 0));
   }
   // First-ever read: seed the default theme so the list is never empty.
-  const fresh = await getTheme(DEFAULT_THEME_KEY);
-  return owner ? [fresh] : [];
+  return [await getTheme(DEFAULT_THEME_KEY)];
 }
 
 export async function getTheme(key: string): Promise<CmsThemeDoc> {
@@ -237,7 +231,6 @@ export async function getActiveThemeKey(): Promise<string> {
 }
 
 export async function setActiveTheme(key: string, actorId: string): Promise<Result> {
-  if (key === DEFAULT_THEME_KEY && !(await isPlatformOwnerContext())) return { ok: false, error: "That theme isn't available. Choose a theme from the library." };
   const theme = await getTheme(key).catch(() => null);
   if (!theme) return { ok: false, error: "Theme not found." };
   if (!theme.publishedAt) return { ok: false, error: "Publish this theme's tokens before activating it." };
@@ -249,12 +242,6 @@ export async function setActiveTheme(key: string, actorId: string): Promise<Resu
 
 async function loadActiveTheme(): Promise<{ tokens: ThemeTokens; components: Required<ThemeComponentSelections> }> {
   const key = await loadActiveThemeKey();
-  // The built-in default theme belongs to the platform owner. A company that was never given (or never picked) a theme
-  // of its own gets one of the library themes — the same stable one its starter website would have been given.
-  if (key === DEFAULT_THEME_KEY && !(await isPlatformOwnerContext())) {
-    const preset = getThemePreset(pickStarterPack(await currentCompanyId()).themePreset);
-    if (preset) return { tokens: preset.tokens, components: normalizeSelections(preset.components) };
-  }
   const doc = await getTheme(key).catch(() => null);
   return { tokens: doc?.tokens ?? FALLBACK_THEME, components: normalizeSelections(doc?.components) };
 }

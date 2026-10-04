@@ -38,9 +38,29 @@ export interface ThemeTokens {
   customCss?: string;
 }
 
-// Copied verbatim from src/app/globals.css's :root / .dark blocks (also duplicated, necessarily,
-// in scripts/demo/cms.mjs — a plain JS seed script can't import this TS module).
+// The platform's default theme (the one a company without a chosen theme falls back to), also written to
+// src/app/globals.css's :root / .dark blocks.
 export const FALLBACK_THEME: ThemeTokens = {
+  colors: {
+    background: "#ffffff", foreground: "#0b1020", card: "#ffffff", cardForeground: "#0b1020",
+    popover: "#ffffff", popoverForeground: "#0b1020", primary: "#4338ca", primaryForeground: "#ffffff",
+    secondary: "#eef0ff", secondaryForeground: "#312e81", muted: "#f3f4fa", mutedForeground: "#5b6478",
+    accent: "#e6f8f1", accentForeground: "#0b6b4f", destructive: "#dc2626", border: "#e4e7f0", input: "#e4e7f0", ring: "#4338ca",
+  },
+  colorsDark: {
+    background: "#0b1020", foreground: "#eef0ff", card: "#111833", cardForeground: "#eef0ff",
+    popover: "#111833", popoverForeground: "#eef0ff", primary: "#7c75f5", primaryForeground: "#0b1020",
+    secondary: "#1d2350", secondaryForeground: "#eef0ff", muted: "#1a2142", mutedForeground: "#a3acc9",
+    accent: "#0f3a31", accentForeground: "#a7f3d0", destructive: "#f87171", border: "#27305a", input: "#27305a", ring: "#7c75f5",
+  },
+  radius: "0.75rem",
+};
+
+/**
+ * The "classic" look: the coral-and-navy palette the panels were first designed with. Companies whose theme has exactly
+ * these tokens keep the original (non-"modern") panel treatment; every other theme gets the modern one.
+ */
+export const CLASSIC_THEME: ThemeTokens = {
   colors: {
     background: "#ffffff", foreground: "#1b1a1a", card: "#ffffff", cardForeground: "#1b1a1a",
     popover: "#ffffff", popoverForeground: "#1b1a1a", primary: "#E56043", primaryForeground: "#1b1a1a",
@@ -56,11 +76,11 @@ export const FALLBACK_THEME: ThemeTokens = {
   radius: "0.625rem",
 };
 
-/** True for the built-in default theme's own tokens — the original site/panel look, kept byte-for-byte. */
+/** True for the classic theme's own tokens (`CLASSIC_THEME`) — the original panel look, kept byte-for-byte. */
 export function isDefaultTokens(tokens: ThemeTokens): boolean {
   return (
     !tokens.typography && !tokens.brand && !tokens.customCss &&
-    JSON.stringify([tokens.colors, tokens.colorsDark, tokens.radius]) === JSON.stringify([FALLBACK_THEME.colors, FALLBACK_THEME.colorsDark, FALLBACK_THEME.radius])
+    JSON.stringify([tokens.colors, tokens.colorsDark, tokens.radius]) === JSON.stringify([CLASSIC_THEME.colors, CLASSIC_THEME.colorsDark, CLASSIC_THEME.radius])
   );
 }
 

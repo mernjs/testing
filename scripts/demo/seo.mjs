@@ -9,10 +9,10 @@ const PASSWORD = "Demo@12345";
 const D = "demo-seo-";
 
 export const SEO_DEMO_ACCOUNTS = [
-  { email: "demo.seo.admin@yashorbit.com", label: "SEO Admin", roles: ["seo_admin"] },
-  { email: "demo.seo.manager@yashorbit.com", label: "SEO Manager", roles: ["seo_manager"] },
-  { email: "demo.seo.specialist@yashorbit.com", label: "SEO Specialist", roles: ["seo_specialist"] },
-  { email: "demo.seo.employee@yashorbit.com", label: "SEO Executive", roles: ["seo_employee"] },
+  { email: "demo.seo.admin@example.com", label: "SEO Admin", roles: ["seo_admin"] },
+  { email: "demo.seo.manager@example.com", label: "SEO Manager", roles: ["seo_manager"] },
+  { email: "demo.seo.specialist@example.com", label: "SEO Specialist", roles: ["seo_specialist"] },
+  { email: "demo.seo.employee@example.com", label: "SEO Executive", roles: ["seo_employee"] },
 ];
 
 const GROUPS = [
@@ -35,7 +35,7 @@ const KEYWORDS = [
   ["6 week industrial training", 2, "/industrial-training", "commercial", 2900, 38, "critical", "industrial training", [11, 13, 10, 12]],
   ["hire dedicated developers india", 3, "/resource-augmentation", "transactional", 1900, 63, "high", "staff augmentation", [null, null, 88, 71]],
   ["it staff augmentation services", 3, "/resource-augmentation", "commercial", 1000, 55, "medium", "staff augmentation", [41, 38, 36, 33]],
-  ["yashorbit", 0, "/", "navigational", 90, 5, "critical", "brand", [1, 1, 1, 1]],
+  ["demo", 0, "/", "navigational", 90, 5, "critical", "brand", [1, 1, 1, 1]],
 ];
 
 export async function seedSeo(db) {
@@ -81,8 +81,8 @@ export async function seedSeo(db) {
   // Real, public pages that link to lots of sites — "Verify all" will genuinely report them as lost (they don't link to us).
   const backlinks = [
     ["https://en.wikipedia.org/wiki/Software_development", "/software-development", "software development partner", "nofollow", 92],
-    ["https://github.com/topics/chatbot", "/ai-automations", "YashOrbit", "follow", 95],
-    ["https://news.ycombinator.com/", "/", "yashorbit.com", "nofollow", 90],
+    ["https://github.com/topics/chatbot", "/ai-automations", "Demo Company", "follow", 95],
+    ["https://news.ycombinator.com/", "/", "example.com", "nofollow", 90],
   ].map(([sourceUrl, targetPath, anchor, rel, dr], i) => ({
     _id: `${D}bl-${i}`, sourceUrl, sourceDomain: new URL(sourceUrl).hostname.replace(/^www\./, ""), targetPath, anchor, rel, status: "unverified", firstSeen: dayAgo(90 - i * 30),
     lastSeenLiveAt: null, lastCheckedAt: null, lostAt: null, checkNote: null, domainRating: dr, source: "demo", notes: "Demo row — verify to see the real status.", ...audit(ago(90 - i * 30), users.seo_specialist),

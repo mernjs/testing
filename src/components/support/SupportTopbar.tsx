@@ -14,7 +14,7 @@ export default function SupportTopbar({ openRequests, unread }: { openRequests: 
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <SupportMobileSidebar openRequests={openRequests} />
-      <PanelHeading panel="support" fallbackTitle="Help & Support" fallbackDescription="AI help, guides & requests to YashOrbit" />
+      <PanelHeading panel="support" fallbackTitle="Help & Support" fallbackDescription="AI help, guides & requests to SelfRun Business" />
       <div className="flex min-w-0 flex-1 justify-center">
         <PanelSearch />
       </div>

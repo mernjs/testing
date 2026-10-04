@@ -3,10 +3,10 @@
  * origin (`companySiteUrl()`): /sitemap.xml, /robots.txt, and a page's
  * <link rel="canonical"> / og:url.
  *
- *   OWNER_BASE_URL=https://yashorbit.com \
- *   OWNER_SITE_URL=https://yashorbit.com \
- *   TENANT_BASE_URL=https://acme.yashorbit.com \
- *   TENANT_SITE_URL=https://acme.yashorbit.com \
+ *   OWNER_BASE_URL=https://example.com \
+ *   OWNER_SITE_URL=https://example.com \
+ *   TENANT_BASE_URL=https://acme.example.com \
+ *   TENANT_SITE_URL=https://acme.example.com \
  *   PAGE_PATH=/offers \
  *     node scripts/e2e/site-url.e2e.mjs
  *

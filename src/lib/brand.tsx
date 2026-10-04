@@ -32,7 +32,7 @@ export function brandify(text: string, brand: BrandName = { namePrimary: "", nam
   return parts.map((part, i) => (part === name ? wordmark(brand, i) : part));
 }
 
-/** How CMS text marks a brand-styled mention (a plain brand name stays plain). `[[YashOrbit]]` is the older spelling. */
+/** How CMS text marks a brand-styled mention (a plain brand name stays plain). an older spelling used the brand name itself. */
 export const BRAND_TOKEN = "[[brand]]";
 const TOKEN_RE = /(\[\[[^\]\n]{1,40}\]\])/g;
 

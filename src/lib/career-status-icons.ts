@@ -13,7 +13,7 @@ export const CAREER_STATUS_ICONS: Record<CareerApplicationStatus, LucideIcon> = 
 
 /** Chart accent per status — brand coral + blue, with green kept for the two
  * "won" stages and destructive red for rejected. Intermediate stages are
- * blue/coral tints so charts stay on the YashOrbit palette. */
+ * blue/coral tints so charts stay on the brand palette. */
 export const CAREER_STATUS_COLORS: Record<CareerApplicationStatus, string> = {
   new: "var(--brand-deep)",
   under_review: "color-mix(in srgb, var(--brand-deep) 65%, white)",

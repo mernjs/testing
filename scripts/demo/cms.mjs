@@ -18,9 +18,9 @@ import { hashPassword } from "./lib.mjs";
 const PASSWORD = "Demo@12345";
 
 export const CMS_DEMO_ACCOUNTS = [
-  { email: "demo.cms.admin@yashorbit.com", label: "CMS Admin", roles: ["cms_admin"] },
-  { email: "demo.cms.editor@yashorbit.com", label: "CMS Editor", roles: ["cms_editor"] },
-  { email: "demo.cms.viewer@yashorbit.com", label: "CMS Viewer", roles: ["cms_viewer"] },
+  { email: "demo.cms.admin@example.com", label: "CMS Admin", roles: ["cms_admin"] },
+  { email: "demo.cms.editor@example.com", label: "CMS Editor", roles: ["cms_editor"] },
+  { email: "demo.cms.viewer@example.com", label: "CMS Viewer", roles: ["cms_viewer"] },
 ];
 
 // Copied verbatim from src/app/globals.css's :root / .dark blocks — activating the theme

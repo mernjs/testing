@@ -239,7 +239,7 @@ async function run(db: import("mongodb").Db) {
 
   await check("general settings have sensible defaults", async () => {
     const s = await settings.getPlatformSettings();
-    assert.equal(s.platformName, "YashOrbit");
+    assert.equal(s.platformName, "Demo Company");
     assert.equal(s.defaultTimezone, "Asia/Kolkata");
     assert.equal(s.defaultLocale, "en-IN");
     assert.equal(s.maintenanceBanner, "");

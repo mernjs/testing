@@ -15,7 +15,7 @@ import { createCipheriv, createHmac, randomBytes } from "node:crypto";
 
 // Env first: modules read it lazily, but set it before anything is imported.
 process.env.PLATFORM_ENCRYPTION_KEY = randomBytes(32).toString("base64");
-process.env.PLATFORM_ROOT_DOMAIN = "yashorbit.test";
+process.env.PLATFORM_ROOT_DOMAIN = "demo.test";
 delete process.env.PLATFORM_HOSTS;
 // The platform owner's legacy env account.
 process.env.RAZORPAY_KEY_ID = "rzp_test_ENVOWNER0001";
@@ -195,8 +195,8 @@ async function run(db: import("mongodb").Db) {
   });
   await check("webhook URLs carry the company id on its automatic subdomain", async () => {
     const view = await as(A, () => pay.getPaymentAccountView());
-    assert.equal(view.webhookUrls.payments, `https://alpha.yashorbit.test/api/fms/webhooks/razorpay/${A}`);
-    assert.equal(view.webhookUrls.payouts, `https://alpha.yashorbit.test/api/hrms/payroll/webhook/${A}`);
+    assert.equal(view.webhookUrls.payments, `https://alpha.demo.test/api/fms/webhooks/razorpay/${A}`);
+    assert.equal(view.webhookUrls.payouts, `https://alpha.demo.test/api/hrms/payroll/webhook/${A}`);
   });
   await check("blank secret on save keeps the stored one; new key id requires a new secret", async () => {
     const keep = await save(A, { keyId: ACCT_A.keyId, payoutsEnabled: true });
@@ -345,7 +345,7 @@ async function run(db: import("mongodb").Db) {
   });
   await check("per-company route: A's secret on A's URL marks A's intent paid; duplicate event ignored", async () => {
     const body = capturedBody();
-    const req = () => new Request(`https://alpha.yashorbit.test/api/fms/webhooks/razorpay/${A}`, { method: "POST", body, headers: { "x-razorpay-signature": sign(ACCT_A.webhookSecret, body), "x-razorpay-event-id": "evt_A_1" } });
+    const req = () => new Request(`https://alpha.demo.test/api/fms/webhooks/razorpay/${A}`, { method: "POST", body, headers: { "x-razorpay-signature": sign(ACCT_A.webhookSecret, body), "x-razorpay-event-id": "evt_A_1" } });
     const res = await fmsRoute.POST(req(), { params: Promise.resolve({ provider: "razorpay", companyId: A }) });
     assert.equal(res.status, 200, await res.clone().text());
     assert.equal((await as(A, () => getPaymentIntent(intentA)))?.status, "SUCCESS");

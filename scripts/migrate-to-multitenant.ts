@@ -7,9 +7,9 @@
  *   npm run db:migrate-tenancy -- --apply      # writes to the database in MONGODB_URI
  *
  * Options:
- *   --name "YashOrbit"                          platform-owner company name (first run only)
- *   --slug yashorbit                            its slug / platform subdomain (first run only)
- *   --domains yashorbit.com,www.yashorbit.com   verified custom domains to attach to it
+ *   --name "Demo Company"                          platform-owner company name (first run only)
+ *   --slug demo                            its slug / platform subdomain (first run only)
+ *   --domains example.com,www.example.com   verified custom domains to attach to it
  *
  * Steps (idempotent, safe to re-run — e.g. after a demo seeder that writes
  * straight to Mongo has added documents without a company):
@@ -52,8 +52,8 @@ async function ensureOwner(): Promise<string> {
   const now = new Date();
   const owner: Company = {
     _id: randomUUID(),
-    slug: arg("slug", "yashorbit"),
-    name: arg("name", "YashOrbit"),
+    slug: arg("slug", "demo"),
+    name: arg("name", "Demo Company"),
     status: "active",
     isPlatformOwner: true,
     createdAt: now,
@@ -71,7 +71,7 @@ async function attachDomains(companyId: string): Promise<void> {
   const db = await getPlatformDb();
   const domains = db.collection<CompanyDomain>(COMPANY_DOMAINS_COLLECTION);
   if (APPLY) await domains.createIndex({ companyId: 1 });
-  const list = arg("domains", "yashorbit.com,www.yashorbit.com")
+  const list = arg("domains", "example.com,www.example.com")
     .split(",")
     .map((d) => normalizeHost(d))
     .filter((d): d is string => Boolean(d));

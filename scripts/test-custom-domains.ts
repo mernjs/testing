@@ -4,7 +4,7 @@
  * mocked (injected TXT resolver) and the hosting provider is the manual one,
  * so nothing touches the network.
  *
- *   MONGODB_URI=mongodb://127.0.0.1:27017/yashorbit_domains_test_$(date +%s) \
+ *   MONGODB_URI=mongodb://127.0.0.1:27017/demo_domains_test_$(date +%s) \
  *     npx --yes tsx --require ./scripts/lib/next-server-shims.cjs scripts/test-custom-domains.ts
  *
  * Never point MONGODB_URI at a real database: the script drops it.
@@ -12,7 +12,7 @@
 
 import assert from "node:assert/strict";
 
-process.env.PLATFORM_ROOT_DOMAIN = "yashorbit.test";
+process.env.PLATFORM_ROOT_DOMAIN = "demo.test";
 process.env.DOMAIN_PROVIDER = "manual";
 delete process.env.PLATFORM_HOSTS;
 
@@ -59,8 +59,8 @@ async function run(db: import("mongodb").Db) {
     { _id: B, slug: "beta", name: "Beta", status: "active", isPlatformOwner: false, createdAt: now, updatedAt: now },
   ] as never[]);
   await domains.insertMany([
-    { _id: "alpha.yashorbit.test", companyId: A, status: "verified", verificationToken: "t", isPrimary: true, kind: "subdomain", createdAt: now, verifiedAt: now },
-    { _id: "beta.yashorbit.test", companyId: B, status: "verified", verificationToken: "t", isPrimary: true, kind: "subdomain", createdAt: now, verifiedAt: now },
+    { _id: "alpha.demo.test", companyId: A, status: "verified", verificationToken: "t", isPrimary: true, kind: "subdomain", createdAt: now, verifiedAt: now },
+    { _id: "beta.demo.test", companyId: B, status: "verified", verificationToken: "t", isPrimary: true, kind: "subdomain", createdAt: now, verifiedAt: now },
   ] as never[]);
 
   const asA = <T>(fn: () => Promise<T>) => runAsCompany(A, fn);
@@ -84,10 +84,10 @@ async function run(db: import("mongodb").Db) {
     assert.deepEqual(parseCustomDomain("münchen.de"), { ok: true, host: "xn--mnchen-3ya.de" });
   });
   await check("rejects the platform root domain and anything under it", async () => {
-    assert.equal(parseCustomDomain("yashorbit.test").ok, false);
-    assert.equal(parseCustomDomain("alpha.yashorbit.test").ok, false);
-    assert.equal(parseCustomDomain("www.beta.yashorbit.test").ok, false);
-    const res = await asA(() => addCustomDomain("gamma.yashorbit.test"));
+    assert.equal(parseCustomDomain("demo.test").ok, false);
+    assert.equal(parseCustomDomain("alpha.demo.test").ok, false);
+    assert.equal(parseCustomDomain("www.beta.demo.test").ok, false);
+    const res = await asA(() => addCustomDomain("gamma.demo.test"));
     assert.equal(res.ok, false);
   });
 
@@ -104,8 +104,8 @@ async function run(db: import("mongodb").Db) {
     assert.equal((d as unknown as { provider?: { id: string; attached: boolean } }).provider?.id, "manual");
     const view = res.domains.find((x) => x.host === "www.alpha-shop.com")!;
     assert.deepEqual(view.records.map((r) => r.type), ["TXT", "CNAME"]);
-    assert.equal(view.records[0].name, "_yashorbit-verify.www.alpha-shop.com");
-    assert.equal(view.records[0].value, `yashorbit-verify=${d?.verificationToken}`);
+    assert.equal(view.records[0].name, "_selfrun-verify.www.alpha-shop.com");
+    assert.equal(view.records[0].value, `demo-verify=${d?.verificationToken}`);
     assert.equal(view.records[1].value, "cname.vercel-dns.com");
   });
   await check("apex domains get the A record fallback", async () => {
@@ -156,7 +156,7 @@ async function run(db: import("mongodb").Db) {
     assert.equal(view.records[0].state, "missing");
   });
   await check("a TXT record with the wrong value is reported as a mismatch", async () => {
-    const res = await asA(() => verifyCustomDomain("www.alpha-shop.com", txtFor("www.alpha-shop.com", "yashorbit-verify=nope")));
+    const res = await asA(() => verifyCustomDomain("www.alpha-shop.com", txtFor("www.alpha-shop.com", "demo-verify=nope")));
     assert.equal(res.ok, false);
     assert.match(!res.ok ? res.error : "", /doesn't match/);
     const view = (await asA(() => listCompanyDomains())).find((x) => x.host === "www.alpha-shop.com")!;
@@ -168,12 +168,12 @@ async function run(db: import("mongodb").Db) {
     assert.match(!res.ok ? res.error : "", /ETIMEOUT/);
   });
   await check("another company can't verify it", async () => {
-    const res = await asB(() => verifyCustomDomain("www.alpha-shop.com", txtFor("www.alpha-shop.com", `yashorbit-verify=${"x"}`)));
+    const res = await asB(() => verifyCustomDomain("www.alpha-shop.com", txtFor("www.alpha-shop.com", `demo-verify=${"x"}`)));
     assert.equal(res.ok, false);
   });
   await check("the right TXT record (split into chunks) verifies it and it routes", async () => {
     const host = "www.alpha-shop.com";
-    const res = await asA(async () => verifyCustomDomain(host, txtFor(host, `yashorbit-verify=${await token(host)}`)));
+    const res = await asA(async () => verifyCustomDomain(host, txtFor(host, `demo-verify=${await token(host)}`)));
     assert.ok(res.ok, !res.ok ? res.error : "");
     const d = await domains.findOne({ _id: host });
     assert.equal(d?.status, "verified");
@@ -195,14 +195,14 @@ async function run(db: import("mongodb").Db) {
     const primaries = await domains.find({ companyId: A, isPrimary: true }).toArray();
     assert.deepEqual(primaries.map((p) => p._id), ["www.alpha-shop.com"]);
     // B's primary untouched.
-    assert.equal((await domains.findOne({ _id: "beta.yashorbit.test" }))?.isPrimary, true);
+    assert.equal((await domains.findOne({ _id: "beta.demo.test" }))?.isPrimary, true);
   });
   await check("another company can't make it primary", async () => {
     assert.equal((await asB(() => setPrimaryDomain("www.alpha-shop.com"))).ok, false);
   });
   await check("the list puts the automatic address first", async () => {
     const list = await asA(() => listCompanyDomains());
-    assert.equal(list[0].host, "alpha.yashorbit.test");
+    assert.equal(list[0].host, "alpha.demo.test");
     assert.equal(list[0].kind, "subdomain");
     assert.equal(list[0].removable, false);
     assert.equal(list[1].host, "www.alpha-shop.com");
@@ -211,9 +211,9 @@ async function run(db: import("mongodb").Db) {
 
   console.log("Removing");
   await check("the automatic subdomain can't be removed", async () => {
-    const res = await asA(() => removeCustomDomain("alpha.yashorbit.test"));
+    const res = await asA(() => removeCustomDomain("alpha.demo.test"));
     assert.equal(res.ok, false);
-    assert.ok(await domains.findOne({ _id: "alpha.yashorbit.test" }));
+    assert.ok(await domains.findOne({ _id: "alpha.demo.test" }));
   });
   await check("another company can't remove it", async () => {
     assert.equal((await asB(() => removeCustomDomain("www.alpha-shop.com"))).ok, false);
@@ -223,7 +223,7 @@ async function run(db: import("mongodb").Db) {
     const res = await asA(() => removeCustomDomain("www.alpha-shop.com"));
     assert.ok(res.ok);
     assert.equal(await domains.findOne({ _id: "www.alpha-shop.com" }), null);
-    assert.equal((await domains.findOne({ _id: "alpha.yashorbit.test" }))?.isPrimary, true);
+    assert.equal((await domains.findOne({ _id: "alpha.demo.test" }))?.isPrimary, true);
     assert.equal(await domains.countDocuments({ companyId: A, isPrimary: true }), 1);
     assert.equal(await resolveCompanyIdByHost("www.alpha-shop.com"), null);
   });
@@ -234,7 +234,7 @@ async function run(db: import("mongodb").Db) {
   console.log("Daily re-check");
   await check("recheckPendingDomains verifies domains whose TXT record appeared", async () => {
     const host = "www.beta-shop.com";
-    const expected = `yashorbit-verify=${await token(host)}`;
+    const expected = `demo-verify=${await token(host)}`;
     const results = await recheckPendingDomains(async (name) => (name === `${VERIFY_LABEL}.${host}` ? [[expected]] : Promise.reject(Object.assign(new Error("none"), { code: "ENODATA" }))));
     const b = results.find((r) => r.companyId === B);
     assert.ok(b?.ok);
@@ -282,7 +282,7 @@ async function run(db: import("mongodb").Db) {
       const view = res.domains.find((x) => x.host === "contested.com")!;
       assert.deepEqual(
         view.records.map((r) => `${r.type} ${r.name}`),
-        ["TXT _yashorbit-verify.contested.com", "TXT _vercel.contested.com", "A @"],
+        ["TXT _selfrun-verify.contested.com", "TXT _vercel.contested.com", "A @"],
       );
       assert.equal((await asA(() => verifyCustomDomain("contested.com", notFound))).ok, false);
     });

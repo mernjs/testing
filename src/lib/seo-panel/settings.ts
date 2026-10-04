@@ -53,8 +53,8 @@ export interface SeoSettings {
   updatedBy: string | null;
 }
 
-/** The platform owner's (YashOrbit's) defaults — see `defaultSettings()` for everyone else. */
-const OWNER_DEFAULT_SETTINGS: SeoSettings = {
+/** The platform owner's (operator's) defaults — see `defaultSettings()` for everyone else. */
+export const OWNER_DEFAULT_SETTINGS: SeoSettings = {
   _id: "global",
   siteOrigin: siteUrl,
   crawl: {

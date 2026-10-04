@@ -454,7 +454,7 @@ function round2(val: number): number {
 // ----------------------------------------------------------------------------
 
 export interface CentralActivityInput {
-  module: "prms" | "pms" | "yashchat" | "tms" | "hrms" | "portal" | "fms" | "lms" | "admin" | "workspace";
+  module: "prms" | "pms" | "teamchat" | "tms" | "hrms" | "portal" | "fms" | "lms" | "admin" | "workspace";
   actorId: string;
   actorEmail: string;
   action: string;
@@ -482,7 +482,7 @@ export async function logCentralActivityEvent(event: CentralActivityInput): Prom
   const collectionMap: Record<string, string> = {
     prms: "prms_activity_logs",
     pms: "pms_activity_logs",
-    yashchat: "chat_activity_logs",
+    teamchat: "chat_activity_logs",
     tms: "training_audit_logs",
     hrms: "hrms_audit_logs",
     portal: "portal_activity_logs",

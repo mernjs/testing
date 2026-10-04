@@ -37,7 +37,7 @@ export function WelcomeScreen({
       </div>
 
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">{tx("chat.welcomeScreen.yashorbit-ai-assistant")}</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">{tx("chat.welcomeScreen.brand-ai-assistant")}</h1>
         <p className="text-[15px] leading-relaxed text-muted-foreground">{welcomeMessage}</p>
       </div>
 

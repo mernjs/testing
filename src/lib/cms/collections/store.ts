@@ -66,7 +66,10 @@ const cachedPublished = companyCache(loadPublished, ["cms-records-v2"], { tags: 
 
 /** JSON-safe published records for one collection, in display order. */
 export async function getRecords(key: CollectionKey): Promise<{ slug: string }[]> {
-  return cachedPublished(key);
+  const cached = await cachedPublished(key);
+  // An empty list is re-read from the database: records written outside the CMS (an import) must show up at once instead
+  // of after the cache expires. Non-empty lists stay cached.
+  return cached.length > 0 ? cached : loadPublished(key);
 }
 
 /** Runtime objects (icons resolved) — the shape the components take. */

@@ -14,7 +14,7 @@ const TASKS = ["Set up repository & CI", "Design database schema", "Implement au
 export async function seedProcurement(db, pms) {
   const wipe = (name) => db.collection(name).deleteMany({ _id: /^demo-/ });
   const employees = await db.collection("hrms_employees").find({ _id: /^demo-emp-/ }).project({ _id: 1, firstName: 1, lastName: 1, workEmail: 1, adminUserId: 1 }).limit(60).toArray();
-  const emp = employees.length ? employees : [{ _id: "demo-emp-1", firstName: "Admin", lastName: "User", workEmail: "info@yashorbit.com", adminUserId: "demo" }];
+  const emp = employees.length ? employees : [{ _id: "demo-emp-1", firstName: "Admin", lastName: "User", workEmail: "admin@example.com", adminUserId: "demo" }];
   const depts = await db.collection("hrms_departments").find({ _id: /^demo-dept-/ }).toArray();
 
   const vendors = VENDORS.map(([name, category], i) => ({
@@ -56,7 +56,7 @@ export async function seedProcurement(db, pms) {
       orders.push({
         _id: poId, poNumber: `PO-2026-${String(orders.length + 1).padStart(4, "0")}`, vendorId: vendor._id, vendorName: vendor.companyName, requisitionId: reqDoc._id, rfqId: null, departmentId: dept._id, departmentName: dept.name, projectId: null, projectName: null,
         items: [{ description: item, hsn: "8471", quantity: qty, uom: "pcs", unitPrice: unit, gstRate, lineTotal, gstAmount: gst, receivedQty: received }], subtotal: lineTotal, discount: 0, taxableAmount: lineTotal, gstAmount: gst, totalAmount: lineTotal + gst, currency: "INR",
-        deliveryAddress: "YashOrbit HQ, Noida", deliveryDate: dayAhead(rint(-20, 20)), paymentTerms: "Net 30", notes: null, status: poStatus, issuedAt: new Date(created.getTime() + 3 * 86400000), ...audit(new Date(created.getTime() + 3 * 86400000)),
+        deliveryAddress: "Demo Company HQ, Noida", deliveryDate: dayAhead(rint(-20, 20)), paymentTerms: "Net 30", notes: null, status: poStatus, issuedAt: new Date(created.getTime() + 3 * 86400000), ...audit(new Date(created.getTime() + 3 * 86400000)),
       });
       if (cat === "hardware" && received > 0) {
         for (let k = 0; k < Math.min(received, 3); k++) {

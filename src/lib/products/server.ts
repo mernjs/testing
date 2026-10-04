@@ -1,45 +1,40 @@
 import "server-only";
 import { notFound } from "next/navigation";
 import { getRecords } from "@/lib/cms/collections/store";
-import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { cache } from "react";
 import { getSiteInfo } from "@/lib/cms/site-info";
 import { getPublicPage } from "@/lib/cms/public";
 import { resolveProductsText } from "@/lib/products/text";
 import { isProductsHref, type StoredProduct } from "@/lib/products/shared";
-import screenshotManifest from "../../../public/products/manifest.json";
 
 /**
- * Products are the platform owner's OWN marketing content: they exist only on
- * the owner's site. Every public entry point goes through `requireProductsSite()`
- * / `loadProducts()`, so a tenant's host gets a 404 and never reads (or leaks
- * through a fallback) any YashOrbit product data.
+ * Products are a CMS collection any company can fill in. A company that has published products gets the Products pages
+ * (catalogue, product pages, navigation links); one that has none gets 404s and no links, and never reads another
+ * company's data — the records are company-scoped like every other CMS collection.
  */
+const publishedProducts = cache(async (): Promise<StoredProduct[]> => (await getRecords("products")) as StoredProduct[]);
 
-/** 404 unless this request is on the platform owner's site. */
+/** Whether this company has published products (and so a Products section). */
+export async function hasProductCatalog(): Promise<boolean> {
+  return (await publishedProducts()).length > 0;
+}
+
+/** 404 unless this company has published products. */
 export async function requireProductsSite(): Promise<void> {
-  if (!(await isPlatformOwnerContext())) notFound();
+  if ((await publishedProducts()).length === 0) notFound();
 }
 
-/** Real screenshots written by scripts/capture-product-screenshots.mjs: { [slug]: [{ src, alt, caption }] }. */
-const MANIFEST = screenshotManifest as Record<string, { src: string; alt: string; caption: string }[]>;
-
-/** Adds captured screenshots to products that have none authored in the CMS. Pure, exported for tests. */
-export function withManifestScreenshots(products: StoredProduct[], manifest: Record<string, { src: string; alt: string; caption: string }[]> = MANIFEST): StoredProduct[] {
-  return products.map((p) => (p.screenshots?.length || !manifest[p.slug]?.length ? p : { ...p, screenshots: manifest[p.slug] }));
-}
 
 /**
- * The published products, in catalogue order. Returns `null` (not an empty
- * list) off the owner's site, so callers cannot mistake "not available here"
- * for "no products".
+ * The company's published products, in catalogue order. Returns `null` (not an empty list) when it has none, so callers
+ * cannot mistake "no product catalogue here" for "an empty one".
  */
 export async function loadProducts(): Promise<StoredProduct[] | null> {
-  if (!(await isPlatformOwnerContext())) return null;
-  const records = (await getRecords("products")) as StoredProduct[];
-  return withManifestScreenshots(records);
+  const all = await publishedProducts();
+  return all.length > 0 ? all : null;
 }
 
-/** Like `loadProducts()` but a 404 off the owner's site. */
+/** Like `loadProducts()` but a 404 when the company has no products. */
 export async function requireProducts(): Promise<StoredProduct[]> {
   const products = await loadProducts();
   if (!products) notFound();
@@ -58,9 +53,9 @@ export async function getProductsText(): Promise<Record<string, string>> {
   return resolveProductsText((await getSiteInfo()).text);
 }
 
-/** Removes Products items from a header/footer list unless this is the owner's site (defence in depth for migrated/copied navigation). */
+/** Removes Products items from a header/footer list when the company has no products (links that would lead to a 404). */
 export async function dropProductsLinks<T extends { href: string }>(items: T[]): Promise<T[]> {
-  return (await isPlatformOwnerContext()) ? items : items.filter((i) => !isProductsHref(i.href));
+  return (await publishedProducts()).length > 0 ? items : items.filter((i) => !isProductsHref(i.href));
 }
 
 /**

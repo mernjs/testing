@@ -10,6 +10,7 @@ import { getSavedConnection } from "@/lib/platform/connections/store";
  *     env-configured deployment keeps working
  *  3. else nothing. No company ever falls back to another company's or the platform's keys.
  */
+export const ENV_CONNECTION_PROVIDERS = (): string[] => Object.keys(ENV);
 const ENV: Record<string, Record<string, string[]>> = {
   openai: { apiKey: ["OPENAI_API_KEY"] },
   elevenlabs: { apiKey: ["ELEVENLABS_API_KEY"] },
@@ -21,7 +22,8 @@ const ENV: Record<string, Record<string, string[]>> = {
   linkedin: { clientId: ["LINKEDIN_CLIENT_ID"], clientSecret: ["LINKEDIN_CLIENT_SECRET"] },
 };
 
-function fromEnv(provider: string): Record<string, string> | null {
+/** The credentials a deployment's environment holds for `provider` (null when none) — used by the platform operator, and by the operator-separation migration. */
+export function fromEnv(provider: string): Record<string, string> | null {
   const map = ENV[provider];
   if (!map) return null;
   const out: Record<string, string> = {};

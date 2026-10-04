@@ -48,8 +48,6 @@ import CopyButton from "@/components/fms/CopyButton";
 import { getCurrentFmsUser } from "@/lib/fms-auth";
 import { getFmsDashboardStats } from "@/lib/fms/dashboard";
 import { searchTransactions } from "@/lib/fms/transactions";
-import { seedFmsRealisticData } from "@/lib/fms/seed-realistic-data";
-import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 import { isValidDateRangePreset, resolveDateRangePreset, type DateRangePreset } from "@/lib/date-ranges";
 import { sourceModuleLabel } from "@/lib/fms/constants";
 import type { DashboardGranularity } from "@/lib/granularity";
@@ -63,7 +61,7 @@ function parseDateParam(value: string | undefined, endOfDay = false): Date | und
   return Number.isNaN(d.getTime()) ? undefined : d;
 }
 
-/** Uniform thin progress bar styled using YashOrbit tokens */
+/** Uniform thin progress bar styled using the theme tokens */
 function ProgressBar({ value, max, colorClass = "bg-primary" }: { value: number; max: number; colorClass?: string }) {
   const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
   return (
@@ -73,7 +71,7 @@ function ProgressBar({ value, max, colorClass = "bg-primary" }: { value: number;
   );
 }
 
-/** Uniform Section Header across the YashOrbit FMS module */
+/** Uniform Section Header across the FMS module */
 function SectionHeader({
   icon,
   title,
@@ -130,10 +128,6 @@ export default async function FmsDashboardPage({
 
   const sourceModuleFilter = sp.sourceModule || undefined;
   const typeFilter = sp.type === "income" || sp.type === "expense" ? sp.type : undefined;
-
-  // Demo finance data (fixed ids, fake bank accounts) — the platform owner's own
-  // workspace only; a customer's books must never get invented entries.
-  if (await isPlatformOwnerContext()) await seedFmsRealisticData(user?.id || "system");
 
   const [stats, recentTxnsResult] = await Promise.all([
     getFmsDashboardStats({ dateFrom, dateTo, granularity }),

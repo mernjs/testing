@@ -12,7 +12,7 @@ export type { ActivityLogModule };
  * its own append-only audit collection with a near-identical shape
  * (`{ actorId, actorEmail?, action, entity, entityId, entityLabel?, summary,
  * metadata?, createdAt }`) — PRMS (`prms_activity_logs`), PMS
- * (`pms_activity_logs`), YashChat (`chat_activity_logs`), TMS
+ * (`pms_activity_logs`), Team Chat (`chat_activity_logs`), TMS
  * (`training_audit_logs`), HRMS (`hrms_audit_logs`), and Portal
  * (`portal_activity_logs`, narrower — no `actorEmail`/`metadata`). Unions them
  * with `$unionWith` (same technique as `crm-leads.ts`'s `searchAllLeads()`) so
@@ -26,7 +26,7 @@ export type { ActivityLogModule };
 const SOURCES: { module: ActivityLogModule; collection: string }[] = [
   { module: "prms", collection: "prms_activity_logs" },
   { module: "pms", collection: "pms_activity_logs" },
-  { module: "yashchat", collection: "chat_activity_logs" },
+  { module: "teamchat", collection: "chat_activity_logs" },
   { module: "tms", collection: "training_audit_logs" },
   { module: "hrms", collection: "hrms_audit_logs" },
   { module: "portal", collection: "portal_activity_logs" },

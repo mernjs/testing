@@ -90,7 +90,7 @@ export function bustIntegrationsCache(): void {
 /**
  * The root domain company subdomains live under, from the DB when set,
  * else `PLATFORM_ROOT_DOMAIN` (first entry), else — on Vercel production only —
- * the domain implied by the production URL (`www.yashorbit.com` → `yashorbit.com`),
+ * the domain implied by the production URL (`www.example.com` → `example.com`),
  * else `localhost` (development). Synchronous:
  * reads the cached document, which the proxy (every page request) and the
  * provisioning path load before use.

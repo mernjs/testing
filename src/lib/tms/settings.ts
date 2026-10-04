@@ -8,7 +8,6 @@ import {
   DEFAULT_CERTIFICATE_NUMBER_FORMAT,
 } from "@/lib/tms/constants";
 import { getCompanyBrand } from "@/lib/platform/branding";
-import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 
 /**
  * TMS-wide configuration (single document). Editable program categories,

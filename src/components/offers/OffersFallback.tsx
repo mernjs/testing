@@ -10,7 +10,7 @@ import OffersFaqSection from "@/components/offers/OffersFaqSection";
 import { formatDate } from "@/lib/utils";
 import { useText } from "@/components/cms/TextContext";
 
-/** State: no live and no scheduled campaign. Never an empty page — a lead-capture hero plus everything that is always true about YashOrbit. */
+/** State: no live and no scheduled campaign. Never an empty page — a lead-capture hero plus everything that is always true about the company. */
 export default function OffersFallback({
   serverTime,
   lastEnded,

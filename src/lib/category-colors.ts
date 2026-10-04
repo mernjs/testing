@@ -6,7 +6,7 @@ export interface ThemedColor {
 }
 
 /**
- * Fixed-order categorical ramp built only from the YashOrbit brand palette —
+ * Fixed-order categorical ramp built only from the brand palette —
  * blue -> coral -> coral-light -> blue-light -> slate — so category-comparison
  * charts match the rest of the admin panel. Distinct enough to read apart at a
  * glance; single-series charts keep the plain brand-coral treatment.

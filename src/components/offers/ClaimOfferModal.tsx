@@ -197,7 +197,7 @@ export default function ClaimOfferModal({
                       <span className="text-muted-foreground line-through">{formatCurrency(pricing.originalPrice, pricing.currency)}</span>
                       <span className="text-xl font-black text-primary">{formatCurrency(pricing.finalPrice, pricing.currency)}</span>
                     </div>
-                    {pricing.walletAmountApplied ? <p className="mt-1 text-xs text-muted-foreground">{tx("offers.claimOfferModal.includes")}{formatCurrency(pricing.walletAmountApplied, pricing.currency)}{tx("offers.claimOfferModal.of-yashorbit-credits")}</p> : null}
+                    {pricing.walletAmountApplied ? <p className="mt-1 text-xs text-muted-foreground">{tx("offers.claimOfferModal.includes")}{formatCurrency(pricing.walletAmountApplied, pricing.currency)}{tx("offers.claimOfferModal.of-brand-credits")}</p> : null}
                   </div>
                 )}
                 <div className="flex flex-col gap-2">
@@ -313,7 +313,7 @@ export default function ClaimOfferModal({
                   <label className="flex items-center gap-2 rounded-xl border border-border/60 p-3 text-sm">
                     <input type="checkbox" checked={useWallet} onChange={(e) => setUseWallet(e.target.checked)} />
                     <span>
-                      {tx("offers.claimOfferModal.use-my-yashorbit-credits")}{wallet.available.toLocaleString("en-IN")}{tx("offers.claimOfferModal.available")}<span className="block text-[11px] text-muted-foreground">{tx("offers.claimOfferModal.applied-only-if-the-offer-has-a-price-an")}</span>
+                      {tx("offers.claimOfferModal.use-my-brand-credits")}{wallet.available.toLocaleString("en-IN")}{tx("offers.claimOfferModal.available")}<span className="block text-[11px] text-muted-foreground">{tx("offers.claimOfferModal.applied-only-if-the-offer-has-a-price-an")}</span>
                     </span>
                   </label>
                 )}

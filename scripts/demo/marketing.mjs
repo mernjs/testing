@@ -6,7 +6,7 @@ const FILES = {
 };
 
 export async function seedMarketing(db) {
-  const admin = await db.collection("admin_users").findOne({ email: "info@yashorbit.com" });
+  const admin = await db.collection("admin_users").findOne({ email: "admin@example.com" });
   if (!admin) return;
   await db.collection("campaign_imports").deleteMany({ _demo: true });
   const imports = [];

@@ -23,7 +23,7 @@ const GROUPS: { group: Group; title: string; fields: FieldDef[] }[] = [
     group: "brand",
     title: "Brand",
     fields: [
-      { key: "namePrimary", label: "Wordmark — first part", help: "Shown in the text colour (\"Yash\")." },
+      { key: "namePrimary", label: "Wordmark — first part", help: "Shown in the text colour." },
       { key: "nameAccent", label: "Wordmark — accent part", help: "Shown in the brand colour (for example the second half of your name)." },
       { key: "subtitle", label: "Subtitle under the wordmark" },
     ],

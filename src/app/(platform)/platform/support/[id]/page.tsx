@@ -59,7 +59,7 @@ export default async function SupportRequestPage({ params }: { params: Promise<{
           {r.chat.length > 0 && (
             <GlassCard interactive={false} className="p-5">
               <p className="mb-2 text-sm font-semibold text-foreground">AI chat before this request</p>
-              <div className="space-y-1.5 text-xs">{r.chat.map((t, i) => <p key={i}><span className="font-semibold text-muted-foreground">{t.role === "user" ? "User" : "YASH"}:</span> <span className="whitespace-pre-wrap text-foreground/90">{t.text}</span></p>)}</div>
+              <div className="space-y-1.5 text-xs">{r.chat.map((t, i) => <p key={i}><span className="font-semibold text-muted-foreground">{t.role === "user" ? "User" : "Assistant"}:</span> <span className="whitespace-pre-wrap text-foreground/90">{t.text}</span></p>)}</div>
             </GlassCard>
           )}
 

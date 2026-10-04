@@ -45,7 +45,7 @@ export default function FinalCtaSection({
               href="/contact"
               className="inline-flex items-center justify-center gap-2 rounded-full border border-border px-8 py-4 text-sm font-semibold text-foreground hover:border-primary hover:text-primary transition-all w-full sm:w-auto"
             >
-              {tx("offers.finalCtaSection.talk-to-yashorbit")}</a>
+              {tx("offers.finalCtaSection.talk-to-brand")}</a>
             <a
               href={contact.whatsappHref}
               target="_blank"

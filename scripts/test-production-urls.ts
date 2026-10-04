@@ -1,6 +1,6 @@
 /**
  * Production addressing: the workspace address must never come out as `localhost` on a deployed server, the platform's own
- * hosts (yashorbit.com, www.yashorbit.com) must route to the platform owner, every company's `<slug>.<root>` must route to
+ * hosts (example.com, www.example.com) must route to the platform owner, every company's `<slug>.<root>` must route to
  * that company only, and with a wildcard domain nothing is attached per company. Runs against a throwaway LOCAL database
  * (dropped at the end); the hosting provider is never called.
  *
@@ -49,41 +49,41 @@ async function main() {
   const now = new Date();
 
   console.log("root domain from the Vercel production URL");
-  await check("www.yashorbit.com → yashorbit.com; only on Vercel production; never a *.vercel.app address", () => {
-    assert.equal(productionRootDomain({ VERCEL_ENV: "production", VERCEL_PROJECT_PRODUCTION_URL: "www.yashorbit.com" }), "yashorbit.com");
-    assert.equal(productionRootDomain({ VERCEL_ENV: "production", VERCEL_PROJECT_PRODUCTION_URL: "https://yashorbit.com/" }), "yashorbit.com");
-    assert.equal(productionRootDomain({ VERCEL_ENV: "preview", VERCEL_PROJECT_PRODUCTION_URL: "www.yashorbit.com" }), null);
+  await check("www.example.com → example.com; only on Vercel production; never a *.vercel.app address", () => {
+    assert.equal(productionRootDomain({ VERCEL_ENV: "production", VERCEL_PROJECT_PRODUCTION_URL: "www.example.com" }), "example.com");
+    assert.equal(productionRootDomain({ VERCEL_ENV: "production", VERCEL_PROJECT_PRODUCTION_URL: "https://example.com/" }), "example.com");
+    assert.equal(productionRootDomain({ VERCEL_ENV: "preview", VERCEL_PROJECT_PRODUCTION_URL: "www.example.com" }), null);
     assert.equal(productionRootDomain({ VERCEL_ENV: "production", VERCEL_PROJECT_PRODUCTION_URL: "site-abc.vercel.app" }), null);
     assert.equal(productionRootDomain({}), null);
   });
   await check("a last-resort guess from the request host", () => {
-    assert.equal(rootDomainFromHost("www.yashorbit.com"), "yashorbit.com");
-    assert.equal(rootDomainFromHost("yashorbit.com:443"), "yashorbit.com");
+    assert.equal(rootDomainFromHost("www.example.com"), "example.com");
+    assert.equal(rootDomainFromHost("example.com:443"), "example.com");
     assert.equal(rootDomainFromHost("app.example.co.in"), "example.co.in");
     for (const h of ["localhost:3000", "127.0.0.1", "acme.localhost:3001", "x-y.vercel.app", "", null, undefined]) assert.equal(rootDomainFromHost(h as string), null, String(h));
   });
   await check("isSubdomainOfRoot: exactly one label under the root", () => {
-    assert.equal(isSubdomainOfRoot("acme.yashorbit.com", "yashorbit.com"), true);
-    for (const h of ["yashorbit.com", "a.b.yashorbit.com", "acme.com", "notyashorbit.com"]) assert.equal(isSubdomainOfRoot(h, "yashorbit.com"), false, h);
+    assert.equal(isSubdomainOfRoot("acme.example.com", "example.com"), true);
+    for (const h of ["example.com", "a.b.example.com", "acme.com", "notexample.com"]) assert.equal(isSubdomainOfRoot(h, "example.com"), false, h);
     assert.equal(isSubdomainOfRoot("acme.localhost", "localhost"), false);
   });
 
   console.log("workspace addresses are never localhost in production");
   await check("PLATFORM_ROOT_DOMAIN set → https://<slug>.<root>", () => {
-    setEnv({ PLATFORM_ROOT_DOMAIN: "yashorbit.com", NODE_ENV: "production" });
-    assert.equal(platformRootDomain(), "yashorbit.com");
-    assert.equal(companySubdomain("acme"), "acme.yashorbit.com");
-    assert.equal(companyBaseUrl("acme", "www.yashorbit.com"), "https://acme.yashorbit.com");
+    setEnv({ PLATFORM_ROOT_DOMAIN: "example.com", NODE_ENV: "production" });
+    assert.equal(platformRootDomain(), "example.com");
+    assert.equal(companySubdomain("acme"), "acme.example.com");
+    assert.equal(companyBaseUrl("acme", "www.example.com"), "https://acme.example.com");
   });
   await check("nothing configured on Vercel production → the root still comes from the production URL", () => {
-    setEnv({ VERCEL_ENV: "production", VERCEL_PROJECT_PRODUCTION_URL: "www.yashorbit.com", NODE_ENV: "production" });
-    assert.equal(platformRootDomain(), "yashorbit.com");
-    assert.equal(companyBaseUrl("acme", "www.yashorbit.com"), "https://acme.yashorbit.com");
+    setEnv({ VERCEL_ENV: "production", VERCEL_PROJECT_PRODUCTION_URL: "www.example.com", NODE_ENV: "production" });
+    assert.equal(platformRootDomain(), "example.com");
+    assert.equal(companyBaseUrl("acme", "www.example.com"), "https://acme.example.com");
   });
   await check("nothing configured at all in production → derived from the request host, never http://…localhost", () => {
     setEnv({ NODE_ENV: "production" });
-    const url = companyBaseUrl("acme", "www.yashorbit.com");
-    assert.equal(url, "https://acme.yashorbit.com");
+    const url = companyBaseUrl("acme", "www.example.com");
+    assert.equal(url, "https://acme.example.com");
     assert.ok(!url.includes("localhost"));
   });
   await check("development keeps *.localhost with the request's port", () => {
@@ -97,40 +97,40 @@ async function main() {
   const beta = randomUUID();
   const suspended = randomUUID();
   await db.collection<Company>(COMPANIES_COLLECTION).insertMany([
-    { _id: owner, slug: "yashorbit", name: "YashOrbit", status: "active", isPlatformOwner: true, createdAt: now, updatedAt: now },
+    { _id: owner, slug: "demo", name: "Demo Company", status: "active", isPlatformOwner: true, createdAt: now, updatedAt: now },
     { _id: acme, slug: "acme", name: "Acme", status: "active", isPlatformOwner: false, createdAt: now, updatedAt: now },
     { _id: beta, slug: "beta", name: "Beta", status: "active", isPlatformOwner: false, createdAt: now, updatedAt: now },
     { _id: suspended, slug: "gone", name: "Gone", status: "suspended", isPlatformOwner: false, createdAt: now, updatedAt: now },
   ]);
   await db.collection<CompanyDomain>(COMPANY_DOMAINS_COLLECTION).insertOne({ _id: "acme-corp.com", companyId: acme, status: "verified", verificationToken: "t", isPrimary: false, kind: "custom", createdAt: now, verifiedAt: now });
   await check("with only the root domain configured (no PLATFORM_HOSTS): apex and www → platform owner; <slug>.root → that company only", async () => {
-    setEnv({ PLATFORM_ROOT_DOMAIN: "yashorbit.com", NODE_ENV: "production" });
-    assert.equal(await resolveCompanyIdByHost("yashorbit.com"), owner);
-    assert.equal(await resolveCompanyIdByHost("www.yashorbit.com"), owner);
-    assert.equal(await resolveCompanyIdByHost("acme.yashorbit.com"), acme);
-    assert.equal(await resolveCompanyIdByHost("BETA.yashorbit.com:443"), beta);
+    setEnv({ PLATFORM_ROOT_DOMAIN: "example.com", NODE_ENV: "production" });
+    assert.equal(await resolveCompanyIdByHost("example.com"), owner);
+    assert.equal(await resolveCompanyIdByHost("www.example.com"), owner);
+    assert.equal(await resolveCompanyIdByHost("acme.example.com"), acme);
+    assert.equal(await resolveCompanyIdByHost("BETA.example.com:443"), beta);
   });
   await check("same on Vercel production with only the production URL set", async () => {
-    setEnv({ VERCEL_ENV: "production", VERCEL_PROJECT_PRODUCTION_URL: "www.yashorbit.com", NODE_ENV: "production" });
-    assert.equal(await resolveCompanyIdByHost("www.yashorbit.com"), owner);
-    assert.equal(await resolveCompanyIdByHost("acme.yashorbit.com"), acme);
+    setEnv({ VERCEL_ENV: "production", VERCEL_PROJECT_PRODUCTION_URL: "www.example.com", NODE_ENV: "production" });
+    assert.equal(await resolveCompanyIdByHost("www.example.com"), owner);
+    assert.equal(await resolveCompanyIdByHost("acme.example.com"), acme);
   });
   await check("a verified custom domain → its company (with or without www)", async () => {
-    setEnv({ PLATFORM_ROOT_DOMAIN: "yashorbit.com", NODE_ENV: "production" });
+    setEnv({ PLATFORM_ROOT_DOMAIN: "example.com", NODE_ENV: "production" });
     assert.equal(await resolveCompanyIdByHost("acme-corp.com"), acme);
     assert.equal(await resolveCompanyIdByHost("www.acme-corp.com"), acme);
   });
   await check("no fallback: unknown, reserved, nested, suspended and foreign hosts resolve to no company", async () => {
-    setEnv({ PLATFORM_ROOT_DOMAIN: "yashorbit.com", NODE_ENV: "production" });
-    for (const h of ["nobody.yashorbit.com", "api.yashorbit.com", "a.b.yashorbit.com", "gone.yashorbit.com", "evil.com", "yashorbit.com.evil.com", "acme.evil.com"]) {
+    setEnv({ PLATFORM_ROOT_DOMAIN: "example.com", NODE_ENV: "production" });
+    for (const h of ["nobody.example.com", "api.example.com", "a.b.example.com", "gone.example.com", "evil.com", "example.com.evil.com", "acme.evil.com"]) {
       assert.equal(await resolveCompanyIdByHost(h), null, h);
     }
   });
   await check("the root and www.<root> count as platform hosts (never a company's own domain)", () => {
-    setEnv({ PLATFORM_ROOT_DOMAIN: "yashorbit.com", NODE_ENV: "production" });
-    assert.equal(isPlatformHost("yashorbit.com"), true);
-    assert.equal(isPlatformHost("www.yashorbit.com"), true);
-    assert.equal(isPlatformHost("acme.yashorbit.com"), true);
+    setEnv({ PLATFORM_ROOT_DOMAIN: "example.com", NODE_ENV: "production" });
+    assert.equal(isPlatformHost("example.com"), true);
+    assert.equal(isPlatformHost("www.example.com"), true);
+    assert.equal(isPlatformHost("acme.example.com"), true);
     assert.equal(isPlatformHost("acme-corp.com"), false);
   });
 
@@ -138,29 +138,29 @@ async function main() {
   const owner2 = { email: "o@wild.test", name: "Owner", passwordHash: "x", mustChangePassword: false };
   await check("wildcard on: the subdomain is recorded and verified, the hosting provider is never called, no error", async () => {
     // A Vercel provider with credentials: if it were called it would hit the network and fail.
-    setEnv({ PLATFORM_ROOT_DOMAIN: "yashorbit.com", NODE_ENV: "production", DOMAIN_PROVIDER: "vercel", VERCEL_API_TOKEN: "tok_test", VERCEL_PROJECT_ID: "prj_test", PLATFORM_WILDCARD_SUBDOMAINS: "1" });
+    setEnv({ PLATFORM_ROOT_DOMAIN: "example.com", NODE_ENV: "production", DOMAIN_PROVIDER: "vercel", VERCEL_API_TOKEN: "tok_test", VERCEL_PROJECT_ID: "prj_test", PLATFORM_WILDCARD_SUBDOMAINS: "1" });
     assert.equal(wildcardSubdomainsEnabled(), true);
     const res = await createCompanyWithOwner({ name: "Wild Co", slug: "wildco", owner: owner2 });
     assert.ok(res.ok, res.ok ? "" : res.error);
     if (!res.ok) return;
-    assert.equal(res.host, "wildco.yashorbit.com");
+    assert.equal(res.host, "wildco.example.com");
     assert.equal(res.hostingError, null);
-    const rec = await db.collection<CompanyDomain>(COMPANY_DOMAINS_COLLECTION).findOne({ _id: "wildco.yashorbit.com" });
+    const rec = await db.collection<CompanyDomain>(COMPANY_DOMAINS_COLLECTION).findOne({ _id: "wildco.example.com" });
     assert.equal(rec?.status, "verified");
     assert.equal(rec?.kind, "subdomain");
     assert.equal(rec?.provider?.id, "wildcard");
     assert.equal(rec?.provider?.attached, true);
-    assert.equal(await resolveCompanyIdByHost("wildco.yashorbit.com"), res.companyId, "routes right after registration");
+    assert.equal(await resolveCompanyIdByHost("wildco.example.com"), res.companyId, "routes right after registration");
   });
   await check("wildcard off: the manual provider records the address, routing still works", async () => {
-    setEnv({ PLATFORM_ROOT_DOMAIN: "yashorbit.com", NODE_ENV: "production", DOMAIN_PROVIDER: "manual" });
+    setEnv({ PLATFORM_ROOT_DOMAIN: "example.com", NODE_ENV: "production", DOMAIN_PROVIDER: "manual" });
     assert.equal(wildcardSubdomainsEnabled(), false);
     const res = await createCompanyWithOwner({ name: "Manual Co", slug: "manualco", owner: { ...owner2, email: "o@manual.test" } });
     assert.ok(res.ok, res.ok ? "" : res.error);
     if (!res.ok) return;
-    const rec = await db.collection<CompanyDomain>(COMPANY_DOMAINS_COLLECTION).findOne({ _id: "manualco.yashorbit.com" });
+    const rec = await db.collection<CompanyDomain>(COMPANY_DOMAINS_COLLECTION).findOne({ _id: "manualco.example.com" });
     assert.equal(rec?.provider?.id, "manual");
-    assert.equal(await resolveCompanyIdByHost("manualco.yashorbit.com"), res.companyId);
+    assert.equal(await resolveCompanyIdByHost("manualco.example.com"), res.companyId);
   });
 }
 

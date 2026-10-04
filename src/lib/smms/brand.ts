@@ -83,7 +83,7 @@ export async function getBrandSnapshot(): Promise<BrandSnapshot> {
 
 /**
  * The brand block of every prompt. When `clientId` is set the content is for
- * that client, so YashOrbit's own voice, services and offers are left out.
+ * that client, so the operator's own voice, services and offers are left out.
  */
 export async function brandPrompt(opts: { clientId?: string | null; offerId?: string | null } = {}): Promise<string> {
   if (opts.clientId) {

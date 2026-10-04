@@ -64,7 +64,7 @@ export default function ProductMockup({
           </div>
           <div className="hidden sm:flex items-center gap-1.5 ml-4 rounded-md bg-background/60 border border-border/50 px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
             <Lock className="w-3 h-3 text-emerald-500" />
-            <span className="truncate max-w-[200px]">{tx("catalog.productMockup.yashorbit-com")}{product.panelPath}</span>
+            <span className="truncate max-w-[200px]">{tx("catalog.productMockup.brand-com")}{product.panelPath}</span>
           </div>
         </div>
 
@@ -262,7 +262,7 @@ function MockupContent({ type }: { type: string }) {
             </div>
             <div className="space-y-1.5 text-xs">
               <ChatBubble sender="Prospect" text={tx("catalog.productMockup.hi-we-need-an-ai-powered-hrms-and-assess")} align="left" />
-              <ChatBubble sender="AI Assistant" text={tx("catalog.productMockup.great-yashorbit-offers-integrated-hrms-w")} align="right" ai />
+              <ChatBubble sender="AI Assistant" text={tx("catalog.productMockup.great-brand-offers-integrated-hrms-w")} align="right" ai />
               <ChatBubble sender="Prospect" text={tx("catalog.productMockup.sure-alex-enterprise-com-we-have-200-emp")} align="left" />
             </div>
           </div>
@@ -311,7 +311,7 @@ function MockupContent({ type }: { type: string }) {
             <div className="bg-background/80 p-3 rounded-lg border border-border/50 font-mono space-y-1 text-[11px]">
               <p className="text-muted-foreground"><strong className="text-primary">{tx("catalog.productMockup.hook-0-3s")}</strong>{tx("catalog.productMockup.stop-using-10-separate-saas-tools-for-yo")}</p>
               <p className="text-muted-foreground"><strong className="text-foreground">{tx("catalog.productMockup.scene-1-3-8s")}</strong>{tx("catalog.productMockup.show-unified-staff-hub-sso-launcher-with")}</p>
-              <p className="text-muted-foreground"><strong className="text-foreground">{tx("catalog.productMockup.cta-8-15s")}</strong>{tx("catalog.productMockup.visit-yashorbit-com-to-explore-the-compl")}</p>
+              <p className="text-muted-foreground"><strong className="text-foreground">{tx("catalog.productMockup.cta-8-15s")}</strong>{tx("catalog.productMockup.visit-brand-com-to-explore-the-compl")}</p>
             </div>
           </div>
         </div>
@@ -357,7 +357,7 @@ function MockupContent({ type }: { type: string }) {
             </div>
             <div className="space-y-1.5 font-mono text-[11px]">
               <div className="p-2 rounded bg-background border border-border/40 flex justify-between">
-                <span className="text-foreground">{tx("catalog.productMockup.page-title-yashorbit-ai-powered-software")}</span>
+                <span className="text-foreground">{tx("catalog.productMockup.page-title-brand-ai-powered-software")}</span>
                 <span className="text-primary">{tx("catalog.productMockup.published")}</span>
               </div>
               <div className="p-2 rounded bg-background border border-border/40 flex justify-between">
@@ -508,7 +508,7 @@ function MockupContent({ type }: { type: string }) {
           </div>
           <div className="rounded-xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
             <div className="flex items-center justify-between font-semibold text-foreground">
-              <span>{tx("catalog.productMockup.yashorbit-enterprise-ecosystem-control")}</span>
+              <span>{tx("catalog.productMockup.brand-enterprise-ecosystem-control")}</span>
               <span className="text-primary font-mono text-[11px]">{tx("catalog.productMockup.active-suite")}</span>
             </div>
             <p className="text-muted-foreground text-[11px] leading-relaxed">

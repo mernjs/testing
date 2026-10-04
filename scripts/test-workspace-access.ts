@@ -357,7 +357,7 @@ async function main() {
   console.log("moved pages, actions and APIs are guarded with their own nav key");
   const ROOT = path.join(process.cwd(), "src/app");
   const walk = (dir: string): string[] => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(dir, e.name)) : [path.join(dir, e.name)]));
-  const MOVED = ["users", "account", "crm", "pms", "prms", "tms", "yashchat", "portal", "careers", "chatbot"];
+  const MOVED = ["users", "account", "crm", "pms", "prms", "tms", "teamchat", "portal", "careers", "chatbot"];
   const keyOf = (rel: string) => {
     const [a, b] = rel.split(path.sep);
     if (a === "users") return "company.users";
@@ -415,7 +415,7 @@ async function main() {
     for (const k of ["manage.prms.vendors", "manage.tms.students", "manage.portal.users"]) assert.equal(await runAsCompany(small, () => checkWorkspaceAccess(smallAdmin.user, k)), false, k);
     await db.collection("companies").updateOne({ _id: beta as never }, { $set: { enabledModules: ["workspace", "admin", "messenger", "hrms"] } });
     assert.equal(await runAsCompany(beta, () => checkWorkspaceAccess(betaAdmin.user, "manage.pms.projects")), false);
-    assert.equal(await runAsCompany(beta, () => checkWorkspaceAccess(betaAdmin.user, "manage.yashchat.channels")), true, "core panel");
+    assert.equal(await runAsCompany(beta, () => checkWorkspaceAccess(betaAdmin.user, "manage.teamchat.channels")), true, "core panel");
     await db.collection("companies").updateOne({ _id: beta as never }, { $unset: { enabledModules: "" } });
   });
   await check("the Command Center permission opens the full analytics of every panel in the plan", async () => {

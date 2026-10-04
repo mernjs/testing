@@ -30,7 +30,7 @@ export default async function PanelUnavailablePage({ searchParams }: { searchPar
           <PowerOff className="size-7 text-primary" />
         </div>
         <h1 className="mb-3 text-3xl font-black tracking-tight text-foreground">{record ? `${record.name} isn’t available` : "This panel isn’t available"}</h1>
-        <p className="mb-6 text-base leading-relaxed text-muted-foreground">It has been switched off for your workspace. If you need it, ask your company admin to contact YashOrbit.</p>
+        <p className="mb-6 text-base leading-relaxed text-muted-foreground">It has been switched off for your workspace. If you need it, ask your company admin to contact the platform administrator.</p>
         <Link href="/workspace" className={buttonVariants()}>
           <LayoutGrid className="size-4" data-icon="inline-start" /> Back to Workspace
         </Link>

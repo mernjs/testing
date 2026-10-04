@@ -35,7 +35,7 @@ export function PanelName({ panel, fallback }: { panel: string; fallback: string
 }
 
 /** Older module keys some logs and records still carry, mapped to their Panel Registry key. */
-const KEY_ALIASES: Record<string, string> = { yashchat: "messenger", admin: "workspace" };
+const KEY_ALIASES: Record<string, string> = { teamchat: "messenger", admin: "workspace" };
 
 /**
  * A function that turns a panel / module key into its registry name, falling back to the label the caller already has.

@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import { rint, pick, chance, weighted, ago, insertAll } from "./lib.mjs";
 
 const QUESTIONS = [
-  ["What services does YashOrbit offer?", "We build custom software, AI & automation solutions, run industrial training and internship programs, and provide dedicated developers (resource augmentation)."],
+  ["What services does Demo Company offer?", "We build custom software, AI & automation solutions, run industrial training and internship programs, and provide dedicated developers (resource augmentation)."],
   ["How much does a mobile app cost?", "It depends on scope — an MVP typically starts around ₹6 lakh. Share your requirements and we'll send a detailed quote within 24 hours."],
   ["Do you offer internships for students?", "Yes — 6–8 week live-project internships in MERN, Generative AI, Computer Vision and QA. Fees start at ₹9,000 and include a certificate."],
   ["Is there any festival offer running?", "Yes! Check the Offers page for the live campaign — you can also stack a coupon code and use your YO credits."],

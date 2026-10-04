@@ -1,7 +1,7 @@
 import "server-only";
 import { companyCache } from "@/lib/platform/tenancy/cache";
 import { getDb } from "@/lib/mongodb";
-import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { hasProductCatalog } from "@/lib/products/server";
 import { isProductsHref } from "@/lib/products/shared";
 import { COLLECTIONS, CMS_SITE_TAG, expireSiteCache, newId, createStamp, updateStamp, type Stamps } from "@/lib/cms/db";
 
@@ -139,5 +139,5 @@ export function withoutProducts(nav: PublicNavTop[]): PublicNavTop[] {
 }
 
 async function dropProductsNav(nav: PublicNavTop[]): Promise<PublicNavTop[]> {
-  return (await isPlatformOwnerContext()) ? nav : withoutProducts(nav);
+  return (await hasProductCatalog()) ? nav : withoutProducts(nav);
 }

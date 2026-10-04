@@ -87,7 +87,7 @@ export default function EcosystemVisualizer() {
       products: [
         { name: tx("catalog.ecosystemVisualizer.smart-project-operations"), tag: "PMS", icon: Kanban },
         { name: tx("catalog.ecosystemVisualizer.enterprise-spend-vault"), tag: "PRMS", icon: ShoppingCart },
-        { name: tx("catalog.ecosystemVisualizer.yashchat-enterprise-comms"), tag: "Chat", icon: MessageSquare },
+        { name: tx("catalog.ecosystemVisualizer.teamchat-enterprise-comms"), tag: "Chat", icon: MessageSquare },
       ],
     },
     {
@@ -169,7 +169,7 @@ export default function EcosystemVisualizer() {
           {/* Central Platform Engine Node */}
           <div className="p-4 rounded-xl border border-primary/30 bg-primary/5 text-center space-y-1 backdrop-blur-md">
             <div className="text-xs font-bold text-primary uppercase tracking-wider flex items-center justify-center gap-2">
-              <Sparkles className="w-3.5 h-3.5" />{tx("catalog.ecosystemVisualizer.yashorbit-platform-core-engine")}</div>
+              <Sparkles className="w-3.5 h-3.5" />{tx("catalog.ecosystemVisualizer.brand-platform-core-engine")}</div>
             <p className="text-[11px] text-muted-foreground">
               {tx("catalog.ecosystemVisualizer.single-sign-on-identity-central-rbac-gov")}</p>
           </div>

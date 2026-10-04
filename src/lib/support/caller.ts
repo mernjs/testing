@@ -20,7 +20,7 @@ export async function getCompanyCaller(): Promise<CompanyCaller | null> {
 
 const AI_PER_HOUR = 60;
 
-/** Every AI call spends YashOrbit's OpenAI budget, so each person gets a modest hourly allowance. */
+/** Every AI call spends the platform's OpenAI budget, so each person gets a modest hourly allowance. */
 export async function takeAiAllowance(userId: string): Promise<boolean> {
   const bucket = new Date().toISOString().slice(0, 13);
   const _id = `ai:${userId}:${bucket}`;

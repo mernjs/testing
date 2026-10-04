@@ -50,7 +50,7 @@ export async function replyRequestAction(id: string, body: string, attachments: 
   return res;
 }
 
-/** The active request types and options for the request form (read at use time, so YashOrbit's changes show at once). */
+/** The active request types and options for the request form (read at use time, so the platform team's changes show at once). */
 export async function getRequestFormConfigAction() {
   const caller = await getCompanyCaller();
   if (!caller) return null;

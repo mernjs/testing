@@ -12,7 +12,7 @@ import assert from "node:assert/strict";
 import { MongoClient, type Db } from "mongodb";
 import { scopeDb, TenantScopeError } from "@/lib/platform/tenancy/scoped-db";
 
-const TEST_DB = `yashorbit_mtunit_${Date.now()}`;
+const TEST_DB = `demo_mtunit_${Date.now()}`;
 const A = "company-a";
 const B = "company-b";
 

@@ -1,5 +1,7 @@
 import { getSeoSiteState } from "@/lib/seo-panel/public";
 import { defaultRobots } from "@/lib/seo-panel/robots-store";
+import { onSaasHost, saasOrigin } from "@/lib/saas/request";
+import { saasRobots } from "@/lib/saas/seo";
 
 /**
  * robots.txt is managed in the SEO panel (/seo/robots), per company. Until a
@@ -9,6 +11,8 @@ import { defaultRobots } from "@/lib/seo-panel/robots-store";
  * the panel reaches the live file without a deploy.
  */
 export async function GET() {
+  // The SaaS product's own host serves the product's robots.txt, never a customer's.
+  if (await onSaasHost()) return new Response(saasRobots(await saasOrigin()), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
   const { robotsTxt } = await getSeoSiteState();
   return new Response(robotsTxt ?? (await defaultRobots()), {
     headers: { "Content-Type": "text/plain; charset=utf-8" },

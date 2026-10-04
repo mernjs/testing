@@ -6,7 +6,7 @@ import { getPlatformAccessForUser, listPlatformUsers } from "@/lib/platform/cons
 import { hasPermission } from "@/lib/platform/console/permissions";
 
 /**
- * Tells YashOrbit's support staff about activity. The staff are platform users in the owner company, so the
+ * Tells the platform's support staff about activity. The staff are platform users in the owner company, so the
  * notification is written inside that company's scope. Never throws: a failed notification must not fail the request.
  */
 export async function notifySupportStaff(input: { requestId: string; number: number; title: string; companyName: string; kind: "new" | "reply"; assigneeId?: string | null }): Promise<void> {

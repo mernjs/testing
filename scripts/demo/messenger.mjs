@@ -1,4 +1,4 @@
-// Messenger (YashChat) — direct conversations + messages, project & group channels, announcements, meetings, shared files.
+// Messenger (Team Chat) — direct conversations + messages, project & group channels, announcements, meetings, shared files.
 // The base seeder's DM / announcement docs used a different shape (they crash /messenger/dm and never appeared in the announcements hub).
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -22,7 +22,7 @@ export async function seedMessenger(db, pms) {
     console.log("  ⚠ Messenger: no chat users found — run the base seeder first (npm run db:seed-demo). Skipped.");
     return;
   }
-  const adminUser = await db.collection("chat_users").findOne({ email: "info@yashorbit.com" }, { projection: { _id: 1, displayName: 1 } });
+  const adminUser = await db.collection("chat_users").findOne({ email: "admin@example.com" }, { projection: { _id: 1, displayName: 1 } });
   if (adminUser && !users.some((u) => String(u._id) === String(adminUser._id))) users.unshift(adminUser);
   const ids = [...(adminUser ? [String(adminUser._id)] : []), ...users.map((u) => String(u._id)).filter((x) => !adminUser || x !== String(adminUser._id))];
   const nameOf = new Map(users.map((u) => [String(u._id), u.displayName ?? "Team member"]));

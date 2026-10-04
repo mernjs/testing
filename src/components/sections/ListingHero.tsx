@@ -24,7 +24,7 @@ interface ListingHeroProps {
 }
 
 // Renders the hero title as-is, except any brand-name mention gets the same
-// two-tone brand treatment used in Header/Footer (Yash in the page color, Orbit in coral).
+// two-tone brand treatment used in Header/Footer (the first part in the page colour, the second in the accent colour).
 function renderTitle(title: string, brand: BrandName) {
   const name = brand.namePrimary + brand.nameAccent;
   const idx = name ? title.indexOf(name) : -1;

@@ -137,7 +137,7 @@ export function useChat(): ChatContextValue {
 const DEFAULT_CONFIG = (tx: (key: string) => string): ChatPublicConfig => ({
   available: true,
   demo: false,
-  welcomeMessage: tx("chat.chatProvider.hi-ask-me-anything-about-yashorbit"),
+  welcomeMessage: tx("chat.chatProvider.hi-ask-me-anything-about-brand"),
   suggestedQuestions: [],
   maxMessageChars: 2000,
   preChat: DEFAULT_PRECHAT(tx),

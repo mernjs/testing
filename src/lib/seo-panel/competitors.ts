@@ -13,7 +13,7 @@ import type { SeoPage } from "@/lib/seo-panel/types";
  *   - metrics / top pages / keyword positions → ESTIMATED (entered or imported
  *     from a third-party SEO tool; `source` records which);
  *   - their sitemap snapshot → MEASURED by our own fetcher (public files only).
- * Our side of every comparison comes from verified YashOrbit data (tracked
+ * Our side of every comparison comes from verified company data (tracked
  * keywords + Search Console). Visibility is computed the same way for us and
  * for each competitor over the SAME tracked keyword set, so it's comparable.
  */

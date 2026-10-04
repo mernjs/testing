@@ -37,16 +37,16 @@ const stamp = (d, by = null) => ({ createdAt: d, updatedAt: d, createdBy: by, up
 const r2 = (n) => Math.round(n * 100) / 100;
 
 export const OTS_DEMO_ACCOUNTS = [
-  { email: "demo.ots.admin@yashorbit.com", label: "OTS Admin (everything)", roles: ["ots_admin"], dept: null },
-  { email: "demo.ots.manager@yashorbit.com", label: "OTS Manager (publish / assign / results)", roles: ["ots_manager", "employee"], dept: "Engineering" },
-  { email: "demo.ots.author@yashorbit.com", label: "OTS Author (tests + question bank)", roles: ["ots_author", "employee"], dept: "Engineering" },
-  { email: "demo.ots.evaluator@yashorbit.com", label: "OTS Evaluator (marks subjective answers)", roles: ["ots_evaluator", "employee"], dept: "Engineering" },
-  { email: "demo.ots.employee@yashorbit.com", label: "Employee — Engineering (takes tests)", roles: ["employee"], dept: "Engineering" },
-  { email: "demo.ots.sales@yashorbit.com", label: "Employee — Sales (takes tests)", roles: ["employee"], dept: "Sales" },
+  { email: "demo.ots.admin@example.com", label: "OTS Admin (everything)", roles: ["ots_admin"], dept: null },
+  { email: "demo.ots.manager@example.com", label: "OTS Manager (publish / assign / results)", roles: ["ots_manager", "employee"], dept: "Engineering" },
+  { email: "demo.ots.author@example.com", label: "OTS Author (tests + question bank)", roles: ["ots_author", "employee"], dept: "Engineering" },
+  { email: "demo.ots.evaluator@example.com", label: "OTS Evaluator (marks subjective answers)", roles: ["ots_evaluator", "employee"], dept: "Engineering" },
+  { email: "demo.ots.employee@example.com", label: "Employee — Engineering (takes tests)", roles: ["employee"], dept: "Engineering" },
+  { email: "demo.ots.sales@example.com", label: "Employee — Sales (takes tests)", roles: ["employee"], dept: "Sales" },
 ];
 export const OTS_PORTAL_ACCOUNTS = [
-  { email: "demo.ots.applicant@yashorbit.com", label: "Job applicant (Portal → Assessments)", role: "job_applicant" },
-  { email: "demo.ots.student@yashorbit.com", label: "Trainee student (Portal → Tests & Exams)", role: "trainee" },
+  { email: "demo.ots.applicant@example.com", label: "Job applicant (Portal → Assessments)", role: "job_applicant" },
+  { email: "demo.ots.student@example.com", label: "Trainee student (Portal → Tests & Exams)", role: "trainee" },
 ];
 
 // ── Question bank ───────────────────────────────────────────────────────────
@@ -631,7 +631,7 @@ export async function seedOts(db) {
       const issuedOn = new Date(submittedAt.getTime() + 120000);
       const validUntil = new Date(issuedOn);
       validUntil.setMonth(validUntil.getMonth() + (test.certificate.validityMonths ?? 24));
-      certs.push({ _id: `${D}cert-${certSeq}`, certificateNumber: `OTS-${issuedOn.getFullYear()}-D${String(certSeq).padStart(3, "0")}`, verificationCode: `demoOts${certSeq}Verify`, assignmentId: a._id, attemptId: a.result.attemptId, testId: test._id, candidate: a.candidate, candidateKey: a.candidateKey, candidateName: a.candidateLabel, testName: test.name, title: test.certificate.title, score: a.result.score, totalMarks: a.result.total, percentage: a.result.percentage, organization: "YashOrbit", issuedOn, validUntil, revoked: false, revokedAt: null, revokedReason: null, issuedBy: null, ...stamp(issuedOn, "system") });
+      certs.push({ _id: `${D}cert-${certSeq}`, certificateNumber: `OTS-${issuedOn.getFullYear()}-D${String(certSeq).padStart(3, "0")}`, verificationCode: `demoOts${certSeq}Verify`, assignmentId: a._id, attemptId: a.result.attemptId, testId: test._id, candidate: a.candidate, candidateKey: a.candidateKey, candidateName: a.candidateLabel, testName: test.name, title: test.certificate.title, score: a.result.score, totalMarks: a.result.total, percentage: a.result.percentage, organization: "Demo Company", issuedOn, validUntil, revoked: false, revokedAt: null, revokedReason: null, issuedBy: null, ...stamp(issuedOn, "system") });
       log(issuedOn, "certificate_generated", "certificate", `${D}cert-${certSeq}`, `OTS-D${certSeq} · ${a.candidateLabel}`, test._id, `${test.name}: ${a.result.percentage}%`, null);
     }
     return att;

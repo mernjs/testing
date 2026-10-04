@@ -1,18 +1,18 @@
-# YashOrbit Platform — Panels Overview
+# SelfRun Business Platform — Panels Overview
 
-This document explains what YashOrbit actually is: one integrated suite of
+This document explains what SelfRun Business actually is: one integrated suite of
 internal and external panels, rather than a single app. It covers what each
 panel does, why it exists, and the concrete benefits it delivers. For setup
 and local-development instructions, see [README.md](./README.md).
 
 ## Why one platform instead of many separate tools
 
-A growing company like YashOrbit typically ends up stitching together a pile
+A growing company like SelfRun Business typically ends up stitching together a pile
 of separate SaaS products — an HR system, a project tool, a procurement
 system, an LMS, a chat app, a CRM, a client portal — each with its own login,
 its own billing, its own data silo, and none of them talking to each other.
 
-YashOrbit was built the other way around: **one shared identity, one design
+SelfRun Business was built the other way around: **one shared identity, one design
 system, nine purpose-built panels.** Every internal employee account lives in
 a single `admin_users` collection; logging into any one panel automatically
 provisions real sessions in every other panel that account actually has a
@@ -25,14 +25,14 @@ between them feels like one product, not seven.
 
 The result: lower cost than a pile of SaaS subscriptions, full ownership of
 the data, and — because it's purpose-built — every panel fits exactly how
-YashOrbit actually works instead of forcing YashOrbit's process into a
+SelfRun Business actually works instead of forcing SelfRun Business's process into a
 generic tool's assumptions.
 
 ---
 
 ## Public Website (`/`)
 
-**What it is**: YashOrbit's public marketing site — company profile, service
+**What it is**: SelfRun Business's public marketing site — company profile, service
 listings, portfolio/case studies, blog, and a careers page.
 
 **Why it exists**: it's the front door. Prospective clients and job
@@ -117,8 +117,8 @@ searchable, permission-gated system of record.
 costing/profitability for every delivery team.
 
 **Why it exists**: generic project tools (Trello, Jira) don't know what a
-project *costs* YashOrbit or what it should *bill*. PMS was built around
-YashOrbit's own client/billing model from day one.
+project *costs* SelfRun Business or what it should *bill*. PMS was built around
+SelfRun Business's own client/billing model from day one.
 
 **Benefits**:
 - Real project profitability visibility — estimated vs. actual cost and
@@ -150,12 +150,12 @@ trail — not an email chain and a shared spreadsheet nobody trusts.
 
 ## TMS — Training Management System (`/tms`)
 
-**What it is**: manages YashOrbit's own paid training and internship
+**What it is**: manages SelfRun Business's own paid training and internship
 programs — programs, batches, student enrollment and applications, classes,
 mentors, project assignments, placements, certificates, and payments.
 
 **Why it exists**: training/internship is a real business line for
-YashOrbit, with its own lifecycle (apply → enroll → learn → placement →
+SelfRun Business, with its own lifecycle (apply → enroll → learn → placement →
 certify) that has nothing to do with internal HR headcount.
 
 **Benefits**:
@@ -168,7 +168,7 @@ certify) that has nothing to do with internal HR headcount.
 
 ---
 
-## Messenger — YashChat (`/messenger`)
+## Messenger — Team Chat (`/messenger`)
 
 **What it is**: internal team communication — direct messages, team and
 project-linked channels, group chats, announcements, meetings, and file
@@ -176,7 +176,7 @@ sharing.
 
 **Why it exists**: to keep internal comms tied directly into real company
 context (a project's own channel, an employee's real identity) instead of
-depending on an external chat SaaS that knows nothing about YashOrbit's data.
+depending on an external chat SaaS that knows nothing about SelfRun Business's data.
 
 **Benefits**:
 - No per-seat licensing cost for an external chat tool.
@@ -189,7 +189,7 @@ depending on an external chat SaaS that knows nothing about YashOrbit's data.
 
 ## LMS — Lead Management System (`/lms`)
 
-**What it is**: despite the internal name, this is YashOrbit's marketing CRM
+**What it is**: despite the internal name, this is SelfRun Business's marketing CRM
 — inbound leads, clients, campaign analytics, career applicants, and an AI
 chatbot + voice assistant that qualifies and responds to inbound interest
 around the clock.
@@ -229,7 +229,7 @@ given, access to internal systems to get that.
 
 ## SEO Panel (`/seo`)
 
-**What it is**: the single place YashOrbit's search presence is managed —
+**What it is**: the single place SelfRun Business's search presence is managed —
 automated website audits, technical and on-page SEO, keywords and rank
 tracking, content SEO, internal links, backlinks, competitors, the sitemap,
 robots.txt and structured data, plus the issue and task queue that gets
@@ -257,7 +257,7 @@ inclusion, robots.txt and JSON-LD edited here go live without a deploy.
 ## Digi Locker — DLMS (`/dlms`)
 
 **What it is**: the secure vault for the logins, documents, URLs, accounts and
-notes that belong either to YashOrbit itself (the **Company Vault**) or to one
+notes that belong either to SelfRun Business itself (the **Company Vault**) or to one
 specific client. Every record is owned by *Company* or by exactly one client.
 
 **Why it exists**: shared logins, registrar and hosting accounts, agreements,
@@ -409,16 +409,16 @@ could be reused, timed, marked consistently or compared.
 
 ---
 
-## Help & Support — YASH (`/support`)
+## Help & Support (`/support`)
 
-YashOrbit's own help desk for every company on the platform. Companies get an **AI Help Chatbot** (also one click away from every panel's top bar, aware of the panel and page the user is on), a searchable **Help Center**, and **My Requests** for support requests, bug reports, feature requests, improvements and feedback. The chatbot answers only from help articles YashOrbit publishes and offers to turn an unresolved chat into a request the user reviews before sending. Bug reports capture panel, page, route, browser, OS and device automatically.
+SelfRun Business's own help desk for every company on the platform. Companies get an **AI Help Chatbot** (also one click away from every panel's top bar, aware of the panel and page the user is on), a searchable **Help Center**, and **My Requests** for support requests, bug reports, feature requests, improvements and feedback. The chatbot answers only from help articles SelfRun Business publishes and offers to turn an unresolved chat into a request the user reviews before sending. Bug reports capture panel, page, route, browser, OS and device automatically.
 
-All requests are received centrally: the data lives in platform-level collections (`support_*`), every row carries its `companyId`, and company-facing queries are always pinned to the caller's company. YashOrbit staff work them in the Platform Panel (**Support requests**, **Help content**, **Support settings**; permissions `support.read` / `support.manage`): assign, prioritise, reply, add internal notes, and use AI triage (summary, category/priority/team suggestions, duplicates, suggested reply). Request types and their form fields, categories, priorities, severities, teams and the status workflow are configuration, not code.
+All requests are received centrally: the data lives in platform-level collections (`support_*`), every row carries its `companyId`, and company-facing queries are always pinned to the caller's company. SelfRun Business staff work them in the Platform Panel (**Support requests**, **Help content**, **Support settings**; permissions `support.read` / `support.manage`): assign, prioritise, reply, add internal notes, and use AI triage (summary, category/priority/team suggestions, duplicates, suggested reply). Request types and their form fields, categories, priorities, severities, teams and the status workflow are configuration, not code.
 
 ## The common thread
 
 Every panel above is real, in active use, and built specifically around how
-YashOrbit works — not a generic template. What ties them together isn't just
+SelfRun Business works — not a generic template. What ties them together isn't just
 shared visual design: it's one identity store, one login experience via the
 Staff Hub, one granular permission system a Super Admin can actually see and
 control, and one executive dashboard that can honestly say it's showing real

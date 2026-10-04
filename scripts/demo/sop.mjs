@@ -9,12 +9,12 @@ const PASSWORD = "Demo@12345";
 const D = "demo-sop-";
 
 export const SOP_DEMO_ACCOUNTS = [
-  { email: "demo.sop.admin@yashorbit.com", label: "SOP Admin (all departments)", roles: ["sop_admin"], dept: null },
-  { email: "demo.sop.manager@yashorbit.com", label: "SOP Manager — Engineering head", roles: ["sop_manager"], dept: "Engineering", head: true },
-  { email: "demo.sop.author@yashorbit.com", label: "SOP Author — Engineering", roles: ["sop_author"], dept: "Engineering" },
-  { email: "demo.sop.employee@yashorbit.com", label: "Employee — Engineering (reader)", roles: ["employee"], dept: "Engineering" },
-  { email: "demo.sop.hr@yashorbit.com", label: "Employee — HR (reader)", roles: ["employee"], dept: "HR" },
-  { email: "demo.sop.finance@yashorbit.com", label: "Employee — Finance (reader)", roles: ["employee"], dept: "Finance" },
+  { email: "demo.sop.admin@example.com", label: "SOP Admin (all departments)", roles: ["sop_admin"], dept: null },
+  { email: "demo.sop.manager@example.com", label: "SOP Manager — Engineering head", roles: ["sop_manager"], dept: "Engineering", head: true },
+  { email: "demo.sop.author@example.com", label: "SOP Author — Engineering", roles: ["sop_author"], dept: "Engineering" },
+  { email: "demo.sop.employee@example.com", label: "Employee — Engineering (reader)", roles: ["employee"], dept: "Engineering" },
+  { email: "demo.sop.hr@example.com", label: "Employee — HR (reader)", roles: ["employee"], dept: "HR" },
+  { email: "demo.sop.finance@example.com", label: "Employee — Finance (reader)", roles: ["employee"], dept: "Finance" },
 ];
 
 const DEFAULT_DEPTS = [["Management", "MGT"], ["HR", "HR"], ["Recruitment", "REC"], ["Finance", "FIN"], ["Accounts", "ACC"], ["Sales", "SAL"], ["Business Development", "BD"], ["Marketing", "MKT"], ["Customer Support", "CS"], ["Project Management", "PM"], ["Product", "PRD"], ["Engineering", "ENG"], ["Frontend", "FE"], ["Backend", "BE"], ["Mobile", "MOB"], ["QA", "QA"], ["DevOps", "DEV"], ["Cloud", "CLD"], ["AI/ML", "AI"], ["IT", "IT"], ["Security", "SEC"], ["Procurement", "PRC"], ["Operations", "OPS"], ["Administration", "ADM"], ["Training", "TRN"], ["TMS", "TMS"], ["LMS", "LMS"], ["Legal", "LEG"], ["Compliance", "CMP"], ["Facilities", "FAC"], ["Internal Audit", "IA"], ["Risk Management", "RSK"]];
@@ -249,7 +249,7 @@ export async function seedSop(db) {
     { _id: `${D}fb-1`, sopId: deploy._id, sopCode: deploy.code, sopTitle: "Production Deployment Procedure", kind: "change_request", message: "Step 4 should mention the canary dashboard link.", userId: users.employee.id, userName: users.employee.name, version: "1.2", status: "open", resolvedBy: null, resolvedAt: null, resolutionNote: null, createdAt: ago(3) },
     { _id: `${D}fb-2`, sopId: deploy._id, sopCode: deploy.code, sopTitle: "Production Deployment Procedure", kind: "feedback", message: "The validation table is really helpful.", userId: users.author.id, userName: users.author.name, version: "1.1", status: "resolved", resolvedBy: mgr.id, resolvedAt: ago(20), resolutionNote: "Thanks!", createdAt: ago(25) },
   ]);
-  const log = (n, actor, action, entity, sop, summary, days) => ({ _id: `${D}al-${n}`, actorId: actor.id, actorEmail: Object.entries(users).find(([, u]) => u.id === actor.id) ? `demo.sop.${Object.entries(users).find(([, u]) => u.id === actor.id)[0]}@yashorbit.com` : actor.id, action, entity, entityId: sop._id, entityLabel: `${sop.code}`, sopId: sop._id, summary, metadata: null, createdAt: ago(days) });
+  const log = (n, actor, action, entity, sop, summary, days) => ({ _id: `${D}al-${n}`, actorId: actor.id, actorEmail: Object.entries(users).find(([, u]) => u.id === actor.id) ? `demo.sop.${Object.entries(users).find(([, u]) => u.id === actor.id)[0]}@example.com` : actor.id, action, entity, entityId: sop._id, entityLabel: `${sop.code}`, sopId: sop._id, summary, metadata: null, createdAt: ago(days) });
   await db.collection("sop_activity_logs").insertMany([
     log(1, mgr, "create", "sop", deploy, "Created draft in Engineering", 120),
     log(2, mgr, "publish", "sop", deploy, "Published v1.0 — Initial release", 120),

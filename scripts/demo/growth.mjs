@@ -50,7 +50,7 @@ export async function seedGrowth(db, tms, pms, people) {
   const campaigns = campaignDefs.map((c, i) => ({
     _id: `demo-camp-${c.key}`, name: c.name, slug: `demo-${c.key}`, campaignType: c.type, themePreset: c.preset, theme: { primaryColor: "#E56043", accentColor: "#1D428A", bannerHeadline: c.head, bannerSubheadline: c.sub },
     startDate: fromNow(c.start), endDate: fromNow(c.end), status: c.status, priority: c.priority, targetAudience: ["ALL"], isFeatured: c.featured,
-    faqs: [{ question: "Can I combine a coupon with the offer?", answer: "Yes — coupon discounts stack with the offer discount, capped at the original price." }, { question: "How do I use my YashOrbit credits?", answer: "Sign in with the same email and tick 'Use my credits' in the claim form." }, { question: "Until when is the offer valid?", answer: "Until the campaign end date shown in the countdown." }],
+    faqs: [{ question: "Can I combine a coupon with the offer?", answer: "Yes — coupon discounts stack with the offer discount, capped at the original price." }, { question: "How do I use my Demo Company credits?", answer: "Sign in with the same email and tick 'Use my credits' in the claim form." }, { question: "Until when is the offer valid?", answer: "Until the campaign end date shown in the countdown." }],
     display: { strip: stripCfg(`${c.name} is live`, i === 0 ? "UP TO 30% OFF" : "", c.status === "active"), popup: popupCfg(c.status === "active", pick(["festival", "student", "client"])), pageTargeting: { mode: "all", pages: [] } }, ...audit(fromNow(c.start - 5)),
   }));
 
@@ -88,7 +88,7 @@ export async function seedGrowth(db, tms, pms, people) {
     M("Fixed-Price MVP in 6 Weeks", "software-development", "flat", 350000, 40000, ["project", "client", "business", "limited_time"], { hours: 22, slots: 6, kind: "slots" }),
     M("Managed Support Plan", "software-development", "percentage", 20000, 25, ["subscription", "business", "client"], { unit: "month", cta: "Start my plan" }),
     M("Annual Cloud Care Plan", "software-development", "percentage", 240000, 30, ["subscription", "business", "limited_time"], { unit: "year", hours: 60 }),
-    M("Refer & Earn — 500 Credits Each", "software-development", "custom_quote", null, null, ["referral"], { aud: ["ALL"], cta: "Get my referral link", label: "500 credits per referral", linked: { kind: "product", label: "YashOrbit Rewards", href: "/rewards" } }),
+    M("Refer & Earn — 500 Credits Each", "software-development", "custom_quote", null, null, ["referral"], { aud: ["ALL"], cta: "Get my referral link", label: "500 credits per referral", linked: { kind: "product", label: "Demo Company Rewards", href: "/rewards" } }),
     M("Welcome Offer — 10% Off Your First Project", "software-development", "percentage", 50000, 10, ["first_time", "client"], { segment: "new_user" }),
     M("Your First Course — ₹1,000 Off", "industrial-training", "flat", 3999, 1000, ["first_time", "student", "course"], { segment: "new_user", cta: "Claim welcome offer" }),
     M("Loyalty Upgrade — 20% Off Dedicated Team", "resource-augmentation", "percentage", 480000, 20, ["renewal", "hiring", "business"], { segment: "existing_user", unit: "month" }),

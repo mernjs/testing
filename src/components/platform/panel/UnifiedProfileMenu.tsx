@@ -39,7 +39,7 @@ export interface UnifiedProfileMenuProps {
 }
 
 function nameFromEmail(email: string): string {
-  const local = email.split("@")[0] ?? email;
+  const local = email.split("@")[0] || "user";
   const words = local.replace(/[._-]+/g, " ").replace(/\d+/g, " ").trim().split(/\s+/).filter(Boolean);
   if (words.length === 0) return "Info";
   return words.map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
@@ -51,7 +51,7 @@ function initialsFor(emailOrName: string) {
 }
 
 export default function UnifiedProfileMenu({
-  email = "info@yashorbit.com",
+  email = "",
   name,
   roleLabel = "Administrator",
   roles = ["admin"],

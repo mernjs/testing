@@ -1,7 +1,7 @@
 import "server-only";
 import { getDb } from "@/lib/mongodb";
 import { updateStamp } from "@/lib/hrms/db";
-import { currentCompanyId, isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { currentCompanyId } from "@/lib/platform/tenancy/context";
 import { getCompany } from "@/lib/platform/tenancy/companies";
 
 /**

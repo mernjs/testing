@@ -72,7 +72,7 @@ export function ChatComposer({
             disabled={disabled}
             maxLength={maxChars}
             aria-label={`Type your message to ${brand.name}`}
-            placeholder={tx("chat.chatComposer.ask-about-yashorbit")}
+            placeholder={tx("chat.chatComposer.ask-about-brand")}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {

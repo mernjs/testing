@@ -41,7 +41,7 @@ export interface PermissionGroup {
 
 export const PERMISSION_GROUPS: PermissionGroup[] = [
   {
-    module: "YashChat",
+    module: "Team Chat",
     permissions: [
       {
         key: "messenger.hasChatStaffRole",
@@ -71,7 +71,7 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
       {
         key: "messenger.canViewAuditLog",
         label: "View audit log",
-        description: "Read the YashChat audit trail.",
+        description: "Read the Team Chat audit trail.",
       },
     ],
   },

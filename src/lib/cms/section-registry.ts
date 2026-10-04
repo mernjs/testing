@@ -117,7 +117,7 @@ interface PageHeroConfig extends Record<string, unknown> {
   primaryCtaLabel?: string;
   primaryCtaHref?: string;
   primaryCtaExternal?: boolean;
-  /** Style "YashOrbit" in the description with the two-tone brand treatment. */
+  /** Style the brand name in the description with the two-tone brand treatment. */
   brandDescription?: boolean;
 }
 
@@ -177,7 +177,7 @@ interface CourseOverviewConfig extends Record<string, unknown> {
   paragraphs: string[];
   stats: StatItemConfig[];
   tone: "default" | "muted";
-  /** Style "YashOrbit" in the paragraphs with the two-tone brand treatment. */
+  /** Style the brand name in the paragraphs with the two-tone brand treatment. */
   brandParagraphs?: boolean;
 }
 
@@ -537,7 +537,7 @@ interface FAQAccordionConfig extends Record<string, unknown> {
   tone: "default" | "muted";
   icon?: string;
   category?: string;
-  /** Render "YashOrbit" in questions with the two-tone brand treatment (homepage FAQ). Opt-in so other pages' FAQs are unchanged. */
+  /** Render the brand name in questions with the two-tone brand treatment (homepage FAQ). Opt-in so other pages' FAQs are unchanged. */
   brandQuestions?: boolean;
 }
 

@@ -23,17 +23,17 @@ const DAY = 86400000;
 const NOW = Date.now();
 
 export const AIBOTS_DEMO_ACCOUNTS = [
-  { email: "demo.aibots.admin@yashorbit.com", label: "AI Bots Admin (everything)", roles: ["aibots_admin"] },
-  { email: "demo.aibots.manager@yashorbit.com", label: "AI Bots Manager (build bots, review chats)", roles: ["aibots_manager"] },
-  { email: "demo.aibots.user@yashorbit.com", label: "AI Bots User (sales — sees sales bots)", roles: ["aibots_user", "lms_agent"] },
-  { email: "demo.aibots.limited@yashorbit.com", label: "AI Bots User (only open bots)", roles: ["aibots_user"] },
+  { email: "demo.aibots.admin@example.com", label: "AI Bots Admin (everything)", roles: ["aibots_admin"] },
+  { email: "demo.aibots.manager@example.com", label: "AI Bots Manager (build bots, review chats)", roles: ["aibots_manager"] },
+  { email: "demo.aibots.user@example.com", label: "AI Bots User (sales — sees sales bots)", roles: ["aibots_user", "lms_agent"] },
+  { email: "demo.aibots.limited@example.com", label: "AI Bots User (only open bots)", roles: ["aibots_user"] },
 ];
 
 const BOTS = [
   {
     key: "discovery", name: "Discovery Call AI", icon: "phone", color: "sky", category: "Pre-sales",
     description: "Prepares discovery-call agendas and questions, then turns call notes into a structured summary.",
-    instructions: "You are Discovery Call AI for YashOrbit. Help the sales team prepare for and follow up on client discovery calls.\n- Before a call: produce an agenda and 10–15 probing questions tailored to the client's industry, drawing on the discovery question bank.\n- After a call: turn raw notes into Summary, Pain points, Goals, Budget/Timeline signals, Risks and Next steps.\n- Ask for missing context (client, industry, call goal) before guessing.",
+    instructions: "You are Discovery Call AI for Demo Company. Help the sales team prepare for and follow up on client discovery calls.\n- Before a call: produce an agenda and 10–15 probing questions tailored to the client's industry, drawing on the discovery question bank.\n- After a call: turn raw notes into Summary, Pain points, Goals, Budget/Timeline signals, Risks and Next steps.\n- Ask for missing context (client, industry, call goal) before guessing.",
     starterPrompts: ["Prepare a discovery call for a mid-size logistics company", "Summarise these call notes into next steps"],
   },
   {
@@ -44,8 +44,8 @@ const BOTS = [
   },
   {
     key: "proposal", name: "ProposalGPT", icon: "file-text", color: "indigo", category: "Sales", allowAttachments: true,
-    description: "Drafts client proposals from YashOrbit's company profile, services, case studies and pricing.",
-    instructions: "You are ProposalGPT, YashOrbit's proposal writer. Use the knowledge base (company profile, services, case studies, pricing) as the source of truth.\nStructure: Executive summary, Understanding of requirements, Proposed solution, Approach & timeline, Team, Commercials, Why YashOrbit.\nNever invent prices or case studies that aren't in the knowledge base — say what is missing.",
+    description: "Drafts client proposals from Demo Company's company profile, services, case studies and pricing.",
+    instructions: "You are ProposalGPT, Demo Company's proposal writer. Use the knowledge base (company profile, services, case studies, pricing) as the source of truth.\nStructure: Executive summary, Understanding of requirements, Proposed solution, Approach & timeline, Team, Commercials, Why Demo Company.\nNever invent prices or case studies that aren't in the knowledge base — say what is missing.",
     starterPrompts: ["Draft a proposal for a healthcare appointment app", "Which case studies fit a fintech client?"],
     access: { mode: "restricted", roles: ["lms_agent", "lms_manager"], userIds: [] },
   },
@@ -164,7 +164,7 @@ export async function seedAibots(db, { openai = null, log = () => {} } = {}) {
       const docs = KNOWLEDGE[b.key] ?? [];
       if (docs.length === 0) continue;
       const id = botId(b.key);
-      const store = await openai.vectorStores.create({ name: `YashOrbit AI Bot · ${b.name}`.slice(0, 120), metadata: { app: "yashorbit-aibots", bot_id: id, demo: "true" } });
+      const store = await openai.vectorStores.create({ name: `Demo Company AI Bot · ${b.name}`.slice(0, 120), metadata: { app: "demo-aibots", bot_id: id, demo: "true" } });
       await db.collection("aibots_bots").updateOne({ _id: id }, { $set: { vectorStoreId: store.id } });
       for (const doc of docs) {
         const _id = `${D}file-${++f}`;
@@ -201,7 +201,7 @@ export async function seedAibots(db, { openai = null, log = () => {} } = {}) {
         { type: "message", role: "user", content: q },
         { type: "message", role: "assistant", content: ans },
       ]);
-      const conv = await openai.conversations.create({ items: items.slice(0, 20), metadata: { app: "yashorbit-aibots", bot_id: id, user_id: users[chat.user], demo: "true" } });
+      const conv = await openai.conversations.create({ items: items.slice(0, 20), metadata: { app: "demo-aibots", bot_id: id, user_id: users[chat.user], demo: "true" } });
       conversationId = conv.id;
       transcripts++;
     }

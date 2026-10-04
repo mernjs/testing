@@ -42,51 +42,51 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #1b1a1a;
+  --foreground: #0b1020;
   --card: #ffffff;
-  --card-foreground: #1b1a1a;
+  --card-foreground: #0b1020;
   --popover: #ffffff;
-  --popover-foreground: #1b1a1a;
-  --primary: #E56043;
-  --primary-foreground: #1b1a1a;
-  --secondary: #ECF2FD;
-  --secondary-foreground: #1D428A;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #ECF2FD;
-  --accent-foreground: #1D428A;
-  --destructive: #ef4444;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #E56043;
-  --radius: 0.625rem;
-  /* Supporting colours + the panels' page canvas. These are the default theme's exact values; every other theme
+  --popover-foreground: #0b1020;
+  --primary: #4338ca;
+  --primary-foreground: #ffffff;
+  --secondary: #eef0ff;
+  --secondary-foreground: #312e81;
+  --muted: #f3f4fa;
+  --muted-foreground: #5b6478;
+  --accent: #e6f8f1;
+  --accent-foreground: #0b6b4f;
+  --destructive: #dc2626;
+  --border: #e4e7f0;
+  --input: #e4e7f0;
+  --ring: #4338ca;
+  --radius: 0.75rem;
+  /* Supporting colours + the panels' page canvas. These are the default theme's values; every other theme
      sets its own through the theme CSS (themeCssBlock). */
-  --brand-gradient: #ff8e75;
-  --brand-deep: #1D428A;
+  --brand-gradient: color-mix(in oklch, var(--primary) 72%, white);
+  --brand-deep: color-mix(in oklch, var(--primary) 50%, black);
   --canvas: #e9ebee;
 }
 
 .dark {
   --canvas: var(--background);
-  --background: #1b1a1a;
-  --foreground: #ECF2FD;
-  --card: #1b1a1a;
-  --card-foreground: #ECF2FD;
-  --popover: #1b1a1a;
-  --popover-foreground: #ECF2FD;
-  --primary: #E56043;
-  --primary-foreground: #1b1a1a;
-  --secondary: #1D428A;
-  --secondary-foreground: #ECF2FD;
-  --muted: #1D428A;
-  --muted-foreground: #94a3b8;
-  --accent: #1D428A;
-  --accent-foreground: #ECF2FD;
-  --destructive: #ef4444;
-  --border: #334155;
-  --input: #334155;
-  --ring: #E56043;
+  --background: #0b1020;
+  --foreground: #eef0ff;
+  --card: #111833;
+  --card-foreground: #eef0ff;
+  --popover: #111833;
+  --popover-foreground: #eef0ff;
+  --primary: #7c75f5;
+  --primary-foreground: #0b1020;
+  --secondary: #1d2350;
+  --secondary-foreground: #eef0ff;
+  --muted: #1a2142;
+  --muted-foreground: #a3acc9;
+  --accent: #0f3a31;
+  --accent-foreground: #a7f3d0;
+  --destructive: #f87171;
+  --border: #27305a;
+  --input: #27305a;
+  --ring: #7c75f5;
 }
 
 /* LMS panel only: dark mode's --card/--popover otherwise equal --background

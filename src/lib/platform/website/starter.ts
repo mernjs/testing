@@ -1,6 +1,5 @@
 import "server-only";
-import seedSiteInfo from "../../../../cms-seed/site-info.json";
-import seedContactFields from "../../../../cms-seed/contact-form-fields.json";
+import { STARTER_CONTACT_FIELDS, STARTER_SITE_INFO_DEFAULTS } from "@/lib/platform/website/starter-defaults";
 import { getDb } from "@/lib/mongodb";
 import { COLLECTIONS } from "@/lib/cms/db";
 import { createPage, getPageByPath, publishPage } from "@/lib/cms/pages";
@@ -26,24 +25,9 @@ import { DEFAULT_DISPLAY } from "@/lib/cms/site-info-shared";
 
 const ACTOR = "system:starter-website";
 
-/**
- * Replaces the seed dataset's brand name (`from`) in text VALUES with this company's name (never in keys —
- * `text` keys are lookup ids). A link to the seed's own site/assets can't be renamed into this company's — it is dropped.
- */
-function rebrand<T>(value: T, name: string, from: string): T {
-  if (typeof value === "string") {
-    if (from && value.toLowerCase().includes(`${from.toLowerCase()}.com`)) return "" as T;
-    return (from ? value.replaceAll(from, name) : value) as T;
-  }
-  if (Array.isArray(value)) return value.map((v) => rebrand(v, name, from)) as T;
-  if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, rebrand(v, name, from)])) as T;
-  return value;
-}
-
 async function starterSiteInfo(name: string, namePrimary: string, nameAccent: string, pack: StarterPack): Promise<SiteInfo> {
-  const base = parseSiteInfo(seedSiteInfo);
-  const seedName = base.brand.namePrimary + base.brand.nameAccent;
-  return rebrand(
+  const base = parseSiteInfo(STARTER_SITE_INFO_DEFAULTS);
+  return (
     {
       ...base,
       brand: { namePrimary, nameAccent, subtitle: "", logoUrl: "", logoDarkUrl: "" },
@@ -72,9 +56,7 @@ async function starterSiteInfo(name: string, namePrimary: string, nameAccent: st
         compactLinks: [{ label: "Privacy Policy", href: "/privacy-policy" }],
       },
       shareImage: { alt: name, tag: "", headline: `${name} — Software Development & IT Services`, subline: "Web, mobile, cloud and AI — built around your business.", domain: "", badges: [] },
-    },
-    name,
-    seedName,
+    }
   );
 }
 
@@ -140,7 +122,7 @@ export async function publishStarterWebsite(): Promise<StarterResult> {
 
   const forms = (await getDb()).collection<{ _id: string; fields?: unknown[] }>(COLLECTIONS.forms);
   if (!(await forms.findOne({ _id: "contact" }))?.fields?.length) {
-    await saveFormFields("contact", seedContactFields as Parameters<typeof saveFormFields>[1], ACTOR);
+    await saveFormFields("contact", STARTER_CONTACT_FIELDS as Parameters<typeof saveFormFields>[1], ACTOR);
     result.contactForm = true;
   }
 

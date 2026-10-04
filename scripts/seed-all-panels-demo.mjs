@@ -12,7 +12,7 @@
  *  4. PRMS
  *  5. TMS
  *  6. FMS
- *  7. Messenger / YashChat
+ *  7. Messenger / Team Chat
  *  8. LMS / CRM
  *  9. External Portal
  * 10. Workspace
@@ -112,7 +112,7 @@ async function runMegaSeeder() {
       },
     });
     const db = new Proxy(rawDb, { get: (t, k) => (k === "collection" ? (n, o) => tolerant(t.collection(n, o)) : typeof t[k] === "function" ? t[k].bind(t) : t[k]) });
-    const defaultPasswordHash = hashPassword("YashOrbit#2026");
+    const defaultPasswordHash = hashPassword("Admin#2026pw");
 
     // =========================================================================
     // 1. CENTRAL IDENTITY ROSTER & HRMS PANEL (23 Collections, 150 Employees)
@@ -181,10 +181,10 @@ async function runMegaSeeder() {
 
     // Teams
     const teams = [
-      { teamId: "TEAM-CORE", name: "Core Platform Team", leaderEmail: "rajesh.kumar@yashorbit.com" },
-      { teamId: "TEAM-AI", name: "GenAI & LLM Systems Lab", leaderEmail: "rohan.das@yashorbit.com" },
-      { teamId: "TEAM-FIN", name: "Corporate Financial Ops", leaderEmail: "priya.patel@yashorbit.com" },
-      { teamId: "TEAM-QA", name: "Automation & Security QA", leaderEmail: "anita.sharma@yashorbit.com" },
+      { teamId: "TEAM-CORE", name: "Core Platform Team", leaderEmail: "rajesh.kumar@example.com" },
+      { teamId: "TEAM-AI", name: "GenAI & LLM Systems Lab", leaderEmail: "rohan.das@example.com" },
+      { teamId: "TEAM-FIN", name: "Corporate Financial Ops", leaderEmail: "priya.patel@example.com" },
+      { teamId: "TEAM-QA", name: "Automation & Security QA", leaderEmail: "anita.sharma@example.com" },
     ];
     for (const t of teams) {
       await hrmsTeamCol.updateOne({ teamId: t.teamId }, { $set: t }, { upsert: true });
@@ -192,14 +192,14 @@ async function runMegaSeeder() {
 
     // Core leadership seeded first (indices 0–7)
     const coreLeadership = [
-      { name: "System Super Admin", email: "info@yashorbit.com", role: "super_admin", dept: "DEPT-ENG", title: "Chief Executive Officer" },
-      { name: "Anita Sharma", email: "anita.sharma@yashorbit.com", role: "hr", dept: "DEPT-HR", title: "VP of Human Resources" },
-      { name: "Rajesh Kumar", email: "rajesh.kumar@yashorbit.com", role: "pms_admin", dept: "DEPT-ENG", title: "Lead Systems Architect" },
-      { name: "Priya Patel", email: "priya.patel@yashorbit.com", role: "fms_admin", dept: "DEPT-FIN", title: "Chief Financial Officer" },
-      { name: "Vikram Malhotra", email: "vikram.m@yashorbit.com", role: "prms_admin", dept: "DEPT-PROC", title: "Head of Procurement" },
-      { name: "Siddharth Verma", email: "siddharth.v@yashorbit.com", role: "tms_admin", dept: "DEPT-EDU", title: "Director of Training" },
-      { name: "Neha Gupta", email: "neha.gupta@yashorbit.com", role: "lms_admin", dept: "DEPT-SLS", title: "Business Development Manager" },
-      { name: "Rohan Das", email: "rohan.das@yashorbit.com", role: "workspace_admin", dept: "DEPT-ENG", title: "Senior Fullstack Engineer" },
+      { name: "System Super Admin", email: "admin@example.com", role: "super_admin", dept: "DEPT-ENG", title: "Chief Executive Officer" },
+      { name: "Anita Sharma", email: "anita.sharma@example.com", role: "hr", dept: "DEPT-HR", title: "VP of Human Resources" },
+      { name: "Rajesh Kumar", email: "rajesh.kumar@example.com", role: "pms_admin", dept: "DEPT-ENG", title: "Lead Systems Architect" },
+      { name: "Priya Patel", email: "priya.patel@example.com", role: "fms_admin", dept: "DEPT-FIN", title: "Chief Financial Officer" },
+      { name: "Vikram Malhotra", email: "vikram.m@example.com", role: "prms_admin", dept: "DEPT-PROC", title: "Head of Procurement" },
+      { name: "Siddharth Verma", email: "siddharth.v@example.com", role: "tms_admin", dept: "DEPT-EDU", title: "Director of Training" },
+      { name: "Neha Gupta", email: "neha.gupta@example.com", role: "lms_admin", dept: "DEPT-SLS", title: "Business Development Manager" },
+      { name: "Rohan Das", email: "rohan.das@example.com", role: "workspace_admin", dept: "DEPT-ENG", title: "Senior Fullstack Engineer" },
     ];
 
     const teamEmployees = [];
@@ -214,7 +214,7 @@ async function runMegaSeeder() {
         const slug = name.toLowerCase().replace(/\s+/g, ".");
         u = {
           name,
-          email: `${slug}.${i}@yashorbit.com`,
+          email: `${slug}.${i}@example.com`,
           role: choice(["employee", "pms_employee", "prms_employee", "tms_coordinator", "lms_agent", "fms_accountant"]),
           dept: choice(departments).deptId,
           title: choice(designations).title,
@@ -420,7 +420,7 @@ async function runMegaSeeder() {
     // Company Config & HRMS Settings
     await hrmsCompCol.updateOne(
       { companyId: "COMP-MAIN" },
-      { $set: { companyId: "COMP-MAIN", name: "YashOrbit Enterprise Solutions Pvt Ltd", taxId: "GSTIN09AAACY1234F1Z", website: "https://yashorbit.com", updatedAt: new Date() } },
+      { $set: { companyId: "COMP-MAIN", name: "Demo Company Enterprise Solutions Pvt Ltd", taxId: "GSTIN09AAACY1234F1Z", website: "https://example.com", updatedAt: new Date() } },
       { upsert: true }
     );
     await hrmsSettingsCol.updateOne(
@@ -434,7 +434,7 @@ async function runMegaSeeder() {
     for (let a = 1; a <= 300; a++) {
       hrmsAudits.push({
         action: choice(["employee.create", "leave.approve", "payroll.process", "salary.revise", "document.upload"]),
-        actor: "anita.sharma@yashorbit.com",
+        actor: "anita.sharma@example.com",
         details: `HRMS Operation event #${a}`,
         timestamp: dateDaysAgo(randInt(1, 90)),
       });
@@ -517,8 +517,8 @@ async function runMegaSeeder() {
         deletedAt: null,
         createdAt, // always a valid Date
         updatedAt: new Date(),
-        createdBy: "info@yashorbit.com",
-        updatedBy: "info@yashorbit.com",
+        createdBy: "admin@example.com",
+        updatedBy: "admin@example.com",
       };
 
       await projectCol.updateOne({ projectCode: prjObj.projectCode }, { $set: prjObj }, { upsert: true });
@@ -597,7 +597,7 @@ async function runMegaSeeder() {
     // PMS Documents & Notifications
     for (let d = 1; d <= 30; d++) {
       const prj = choice(projectsDemo);
-      await docCol.insertOne({ docId: `PDOC-${d}`, projectId: prj._id, title: `Project Document ${d}`, url: `/docs/prj/${d}.pdf`, uploadedBy: "rajesh.kumar@yashorbit.com", createdAt: dateDaysAgo(d) });
+      await docCol.insertOne({ docId: `PDOC-${d}`, projectId: prj._id, title: `Project Document ${d}`, url: `/docs/prj/${d}.pdf`, uploadedBy: "rajesh.kumar@example.com", createdAt: dateDaysAgo(d) });
     }
     for (let n = 1; n <= 50; n++) {
       const emp = choice(teamEmployees);
@@ -653,7 +653,7 @@ async function runMegaSeeder() {
       const amount = randInt(60, 800) * 1000;
       await reqCol.updateOne(
         { reqCode },
-        { $set: { reqCode, title: `Procurement Requisition ${r} - ${vendor.category}`, vendorId: vendor.vendorId, vendorName: vendor.name, amount, status: choice(["approved", "pending", "issued", "fulfilled"]), requestedBy: "vikram.m@yashorbit.com", updatedAt: new Date() } },
+        { $set: { reqCode, title: `Procurement Requisition ${r} - ${vendor.category}`, vendorId: vendor.vendorId, vendorName: vendor.name, amount, status: choice(["approved", "pending", "issued", "fulfilled"]), requestedBy: "vikram.m@example.com", updatedAt: new Date() } },
         { upsert: true }
       );
 
@@ -719,7 +719,7 @@ async function runMegaSeeder() {
 
     const prmsAudits = [];
     for (let a = 1; a <= 200; a++) {
-      prmsAudits.push({ action: choice(["vendor.approve", "po.issue", "asset.assign", "invoice.pay"]), actor: "vikram.m@yashorbit.com", details: `PRMS event #${a}`, timestamp: dateDaysAgo(randInt(1, 90)) });
+      prmsAudits.push({ action: choice(["vendor.approve", "po.issue", "asset.assign", "invoice.pay"]), actor: "vikram.m@example.com", details: `PRMS event #${a}`, timestamp: dateDaysAgo(randInt(1, 90)) });
     }
     await prmsAuditCol.insertMany(prmsAudits);
     console.log("  ✓ PRMS Suite: 30 Vendors, 80 POs/GRNs/Invoices/Payments, 100 Assets, 50 Inventory, 15 Subscriptions, 200 Audits.");
@@ -754,7 +754,7 @@ async function runMegaSeeder() {
         const batchCode = `BATCH-${prg.code.replace("PROG-", "")}-2026-B${b}`;
         await batchCol.updateOne(
           { batchCode },
-          { $set: { batchCode, programCode: prg.code, title: `${prg.title} - Batch ${b}`, startDate: dateDaysAgo(20 * b), capacity: 40, enrolled: 35, instructorEmail: "siddharth.v@yashorbit.com", status: "in_progress", updatedAt: new Date() } },
+          { $set: { batchCode, programCode: prg.code, title: `${prg.title} - Batch ${b}`, startDate: dateDaysAgo(20 * b), capacity: 40, enrolled: 35, instructorEmail: "siddharth.v@example.com", status: "in_progress", updatedAt: new Date() } },
           { upsert: true }
         );
         await schedCol.updateOne({ scheduleId: `SCHED-${batchCode}` }, { $set: { scheduleId: `SCHED-${batchCode}`, batchCode, topic: "Advanced Systems Architecture", classTime: "10:00 AM - 01:00 PM", status: "scheduled", updatedAt: new Date() } }, { upsert: true });
@@ -778,7 +778,7 @@ async function runMegaSeeder() {
       submissionDocs.push({ assignmentId: `ASG-${batchCode}`, studentId, studentName: sName, submissionUrl: `https://github.com/student/${studentId}/project`, score: randInt(80, 98), status: "graded" });
       if (s <= 100) {
         await certCol.updateOne({ certId: `CRT-${studentId}` }, { $set: { certId: `CRT-${studentId}`, studentId, studentName: sName, programCode: prg.code, issueDate: dateDaysAgo(randInt(1, 30)), updatedAt: new Date() } }, { upsert: true });
-        await placeCol.updateOne({ placementId: `PLC-${studentId}` }, { $set: { placementId: `PLC-${studentId}`, studentId, studentName: sName, companyName: choice(["Microsoft", "Google", "Amazon", "TCS", "Infosys", "YashOrbit"]), package: `${randInt(8, 24)} LPA`, status: "placed", updatedAt: new Date() } }, { upsert: true });
+        await placeCol.updateOne({ placementId: `PLC-${studentId}` }, { $set: { placementId: `PLC-${studentId}`, studentId, studentName: sName, companyName: choice(["Microsoft", "Google", "Amazon", "TCS", "Infosys", "Demo Company"]), package: `${randInt(8, 24)} LPA`, status: "placed", updatedAt: new Date() } }, { upsert: true });
       }
     }
     // TMS Applications (50)
@@ -858,7 +858,7 @@ async function runMegaSeeder() {
     console.log("  ✓ FMS Suite: 6 Accounts, 2 Banks, 100 Invoices, 400 Txns, Receipts, Journals, 24 Fiscal Periods.");
 
     // =========================================================================
-    // 6. MESSENGER / YASHCHAT — SCHEMA-ALIGNED WITH APP CODE
+    // 6. MESSENGER / TEAM CHAT — SCHEMA-ALIGNED WITH APP CODE
     //    Collections: chat_users, chat_channels, channel_members,
     //    channel_messages, direct_conversations, direct_messages,
     //    chat_sessions, chat_visitors, voice_conversations
@@ -952,8 +952,8 @@ async function runMegaSeeder() {
           deletedAt: null,
           createdAt: dateDaysAgo(180),
           updatedAt: now,
-          createdBy: "info@yashorbit.com",
-          updatedBy: "info@yashorbit.com",
+          createdBy: "admin@example.com",
+          updatedBy: "admin@example.com",
         });
       }
       channelIds[ch.slug] = finalId;
@@ -1062,7 +1062,7 @@ async function runMegaSeeder() {
     for (let a = 1; a <= 10; a++) {
       await messengerAnnouncCol.updateOne(
         { announcementId: `ANN-${a}` },
-        { $set: { announcementId: `ANN-${a}`, title: `Company Announcement #${a}`, body: `Important update regarding Q${randInt(1, 4)} 2026 operations and goals.`, postedBy: "info@yashorbit.com", createdAt: dateDaysAgo(a * 5), updatedAt: new Date() } },
+        { $set: { announcementId: `ANN-${a}`, title: `Company Announcement #${a}`, body: `Important update regarding Q${randInt(1, 4)} 2026 operations and goals.`, postedBy: "admin@example.com", createdAt: dateDaysAgo(a * 5), updatedAt: new Date() } },
         { upsert: true }
       );
     }
@@ -1196,7 +1196,7 @@ async function runMegaSeeder() {
             candidateName: candName,
             candidateEmail: candEmail,
             positionTitle: j.title,
-            interviewerEmail: "anita.sharma@yashorbit.com",
+            interviewerEmail: "anita.sharma@example.com",
             scheduledTime: dateDaysAgo(-randInt(1, 15)),
             status: "scheduled",
             createdAt: dateDaysAgo(2),
@@ -1220,7 +1220,7 @@ async function runMegaSeeder() {
       const title = `Workspace Team Board #${b}`;
       await boardCol.updateOne(
         { boardId },
-        { $set: { boardId, title, visibility: "team", createdBy: "rohan.das@yashorbit.com", members: teamEmployees.slice(0, 5).map(e => e.userId), updatedAt: new Date() } },
+        { $set: { boardId, title, visibility: "team", createdBy: "rohan.das@example.com", members: teamEmployees.slice(0, 5).map(e => e.userId), updatedAt: new Date() } },
         { upsert: true }
       );
       await livePrjCol.updateOne(
@@ -1254,7 +1254,7 @@ async function runMegaSeeder() {
         module: mod,
         action: `${mod}.${act}`,
         actor: user.name,
-        actorEmail: user.name.toLowerCase().replace(/\s+/g, ".") + "@yashorbit.com",
+        actorEmail: user.name.toLowerCase().replace(/\s+/g, ".") + "@example.com",
         details: `Executed ${act} operation on ${mod} resource record #${i}`,
         ipAddress: `192.168.1.${randInt(10, 250)}`,
         timestamp: dateDaysAgo(randInt(0, 90)),

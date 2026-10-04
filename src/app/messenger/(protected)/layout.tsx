@@ -27,7 +27,7 @@ export default async function ProtectedMessengerLayout({ children }: { children:
   // capability predicate (see `messenger-roles.ts`) — deliberately NOT Super-
   // Admin-permission-override-aware. An override can only add/remove capability
   // for a user who already clears this gate via a real role; it can never let
-  // a logged-in identity with zero YashChat roles into the panel at all.
+  // a logged-in identity with zero Team Chat roles into the panel at all.
   if (!hasMessengerAccess(user.roles)) redirect("/messenger/login");
 
   await ensureChatUser(user);

@@ -6,13 +6,13 @@
  * touches the database — safe to import from client components.
  */
 
-export const ACTIVITY_LOG_MODULES = ["prms", "pms", "yashchat", "tms", "hrms", "portal", "ots"] as const;
+export const ACTIVITY_LOG_MODULES = ["prms", "pms", "teamchat", "tms", "hrms", "portal", "ots"] as const;
 export type ActivityLogModule = (typeof ACTIVITY_LOG_MODULES)[number];
 
 const MODULE_LABELS: Record<ActivityLogModule, string> = {
   prms: "Procurement",
   pms: "Project Management",
-  yashchat: "YashChat",
+  teamchat: "Team Chat",
   tms: "Training",
   hrms: "HRMS",
   portal: "External Portal",

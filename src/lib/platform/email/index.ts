@@ -44,7 +44,7 @@ async function workspaceEmail(): Promise<{ provider: EmailProvider; from: string
   return null;
 }
 
-/** The platform's default sender, e.g. `YashOrbit <no-reply@yashorbit.com>`. */
+/** The platform's default sender, e.g. `SelfRun Business <no-reply@selfrunbusiness.ai>`. */
 export async function defaultFrom(): Promise<string> {
   return (await resolveEmailConfig()).from;
 }

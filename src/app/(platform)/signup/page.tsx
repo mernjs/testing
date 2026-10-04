@@ -9,14 +9,15 @@ import SignupForm from "./SignupForm";
 import { BrandName } from "@/components/platform/BrandProvider";
 
 export const metadata: Metadata = {
-  title: "Create your workspace",
-  description: "Run your whole IT company — CRM, projects, HR, finance, training and more — from one workspace.",
+  title: "Start your free trial",
+  description: "Create your SelfRun Business workspace and run sales, HR, finance, projects and your website from one AI-powered platform.",
 };
 
 const POINTS = [
-  "CRM, projects, HR, payroll, finance, procurement and training in one place",
+  "CRM, HR, finance, projects, procurement and training in one platform",
+  "AI that answers from your data, and automations that run on their own",
   "Your own workspace address, website and client portal",
-  "Invite your team — one login for every panel",
+  "Invite your team — one login for every module",
 ];
 
 export default async function SignupPage() {
@@ -37,8 +38,8 @@ export default async function SignupPage() {
         </div>
         <div className="relative z-10 max-w-md">
           <h1 className="text-4xl font-black tracking-tight text-foreground">
-            Your whole company,{" "}
-            <span className="bg-gradient-to-r from-primary to-brand-accent bg-clip-text text-transparent">one workspace.</span>
+            The business that{" "}
+            <span className="bg-gradient-to-r from-primary to-brand-accent bg-clip-text text-transparent">runs itself.</span>
           </h1>
           <ul className="mt-6 space-y-3">
             {POINTS.map((p) => (

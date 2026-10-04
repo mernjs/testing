@@ -5,7 +5,7 @@ import { notifyMany, NOTIFICATIONS_COLLECTION, type ChatNotification } from "@/l
 /**
  * SEO notifications ride the platform's per-user notification store
  * (`chat_notifications`, owned by Messenger), exactly like SOP: they show in
- * YashChat's bell and in the SEO panel's own bell (filtered to `seo_*`).
+ * Team Chat's bell and in the SEO panel's own bell (filtered to `seo_*`).
  * Delivery is best-effort and never blocks the action that triggered it.
  */
 

@@ -23,8 +23,8 @@ try {
   const db = client.db(process.env.SEED_DB || undefined);
   await assertSingleCompany(db);
   console.log(`🌱 OTS careers screening seeder (database: ${db.databaseName})`);
-  const actor = await db.collection("admin_users").findOne({ email: "demo.ots.manager@yashorbit.com" }, { projection: { _id: 1 } });
-  const evaluator = await db.collection("admin_users").findOne({ email: "demo.ots.evaluator@yashorbit.com" }, { projection: { _id: 1 } });
+  const actor = await db.collection("admin_users").findOne({ email: "demo.ots.manager@example.com" }, { projection: { _id: 1 } });
+  const evaluator = await db.collection("admin_users").findOne({ email: "demo.ots.evaluator@example.com" }, { projection: { _id: 1 } });
   const r = await seedOtsCareers(db, { actorId: actor?._id.toString() ?? null, evaluatorId: evaluator?._id.toString() ?? null });
   console.log(`   ${r.tests} role screening tests, ${r.questions} questions`);
   console.log(`   ${r.rolesWithApplicants} roles have applicants → ${r.assignments} assignments, ${r.attempts} attempts (${r.pendingEvaluation} awaiting evaluation)`);

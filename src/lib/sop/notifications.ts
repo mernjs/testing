@@ -5,7 +5,7 @@ import { notifyMany, NOTIFICATIONS_COLLECTION, type ChatNotification } from "@/l
 /**
  * SOP notifications ride the platform's existing per-user notification store
  * (`chat_notifications`, owned by Messenger) instead of a parallel one: they
- * show in YashChat's bell for anyone with Messenger access AND in the SOP
+ * show in Team Chat's bell for anyone with Messenger access AND in the SOP
  * panel's own bell (filtered to `sop_*` types). Delivery is best-effort and
  * never blocks the action that triggered it.
  */

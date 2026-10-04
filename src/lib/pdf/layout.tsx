@@ -53,7 +53,7 @@ const st = lazyStyles(() => ({
 }));
 
 /**
- * Icon + two-tone "YashOrbit" wordmark + "TECHNOLOGIES PVT. LTD." caps line.
+ * Icon + two-tone company wordmark + caps line.
  * Faithful to `public/brand/lockup-horizontal-full.svg`, built from the PNG
  * icon + native text (react-pdf's SVG text / web-font support is unreliable).
  */

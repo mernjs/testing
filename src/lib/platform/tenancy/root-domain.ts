@@ -13,8 +13,8 @@ function isLocalOrVercelHost(host: string): boolean {
 }
 
 /**
- * The root domain implied by the Vercel production domain (`VERCEL_PROJECT_PRODUCTION_URL`, e.g. `www.yashorbit.com` →
- * `yashorbit.com`). Null outside Vercel production, and when the production address is only a `*.vercel.app` one (subdomains
+ * The root domain implied by the Vercel production domain (`VERCEL_PROJECT_PRODUCTION_URL`, e.g. `www.example.com` →
+ * `example.com`). Null outside Vercel production, and when the production address is only a `*.vercel.app` one (subdomains
  * of vercel.app are not ours to use).
  */
 export function productionRootDomain(env: Env = process.env): string | null {
@@ -27,7 +27,7 @@ export function productionRootDomain(env: Env = process.env): string | null {
 const SECOND_LEVEL = new Set(["co", "com", "org", "net", "gov", "ac", "edu"]);
 
 /**
- * A last-resort guess of the root domain from a request host (`www.yashorbit.com` → `yashorbit.com`,
+ * A last-resort guess of the root domain from a request host (`www.example.com` → `example.com`,
  * `app.example.co.in` → `example.co.in`). Null for local, IP and `*.vercel.app` hosts. Only used to avoid ever printing a
  * `localhost` address in production when nothing is configured; configuring `PLATFORM_ROOT_DOMAIN` is the real fix.
  */
@@ -39,7 +39,7 @@ export function rootDomainFromHost(rawHost: string | null | undefined): string |
   return labels.slice(-keep).join(".");
 }
 
-/** Whether `host` is exactly one label under `root` (`acme.yashorbit.com` under `yashorbit.com`) — the shape of an automatic company address. */
+/** Whether `host` is exactly one label under `root` (`acme.example.com` under `example.com`) — the shape of an automatic company address. */
 export function isSubdomainOfRoot(host: string, root: string): boolean {
   if (!root || root === "localhost" || !host.endsWith(`.${root}`)) return false;
   const label = host.slice(0, -(root.length + 1));

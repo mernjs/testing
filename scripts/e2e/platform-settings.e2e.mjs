@@ -114,7 +114,7 @@ try {
     await page.goto(`${BASE}/platform/integrations`);
     await page.locator("#int-root-domain").fill("not a domain");
     await page.locator("#int-save").click();
-    await page.getByText("Enter a domain, e.g. yashorbit.com.").waitFor({ timeout: 30_000 });
+    await page.getByText("Enter a domain, e.g. example.com.").waitFor({ timeout: 30_000 });
   });
 
   await step("platform settings: sign-up mode lives here and saves", async () => {

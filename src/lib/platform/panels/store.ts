@@ -189,8 +189,14 @@ export async function seedPanels(opts: { reset?: boolean } = {}): Promise<{ inse
   for (const p of DEFAULT_PANELS) {
     const exists = await c.findOne({ _id: p.key }, { projection: { _id: 1, deleted: 1 } });
     if (!exists) {
-      await c.insertOne({ _id: p.key, ...p });
-      inserted++;
+      try {
+        await c.insertOne({ _id: p.key, ...p });
+        inserted++;
+      } catch (err) {
+        // Another instance seeding at the same moment wrote it first.
+        if ((err as { code?: number }).code !== 11000) throw err;
+        kept++;
+      }
     } else if (opts.reset || (exists as { deleted?: boolean }).deleted) {
       // "Restore defaults" / re-seeding also brings back a default panel that had been deleted.
       await c.replaceOne({ _id: p.key }, { ...p });
@@ -201,7 +207,7 @@ export async function seedPanels(opts: { reset?: boolean } = {}): Promise<{ inse
   return { inserted, reset, kept };
 }
 
-const KEY_ALIASES: Record<string, string> = { yashchat: "messenger", admin: "workspace" };
+const KEY_ALIASES: Record<string, string> = { teamchat: "messenger", admin: "workspace" };
 
 /** Registry names by key (plus the older aliases some records carry) — for server code that builds a label. */
 export async function panelNameMap(): Promise<(key: string, fallback?: string) => string> {

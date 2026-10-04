@@ -26,14 +26,14 @@ async function main() {
       const page = await getPageByPath(path);
       assert.ok(page?.live, `${path} published`);
       const text = JSON.stringify(page.live);
-      assert.ok(!/yashorbit/i.test(text), `${path} mentions YashOrbit`);
+      assert.ok(!/demo/i.test(text), `${path} mentions Demo Company`);
     }
     assert.ok(JSON.stringify((await getPageByPath("/"))!.live).includes("Initech Labs"), "home uses the company name");
     const info = await getSiteInfoForEdit();
     assert.equal(info.brand.namePrimary, "Initech Labs");
     assert.equal(info.contact.email, "", "no contact guessed");
-    assert.ok(!/yashorbit/i.test(JSON.stringify({ ...info, text: undefined })), "site identity mentions YashOrbit");
-    assert.ok(!/yashorbit/i.test(Object.values(info.text).join(" ")), "text values mention YashOrbit");
+    assert.ok(!/demo/i.test(JSON.stringify({ ...info, text: undefined })), "site identity mentions Demo Company");
+    assert.ok(!/demo/i.test(Object.values(info.text).join(" ")), "text values mention Demo Company");
     assert.equal((await listNavItems()).filter((n) => !n.parentId).length, 2, "two top-level menus");
     // Idempotent: a second run creates nothing new.
     const again = await publishStarterWebsite();

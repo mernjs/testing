@@ -127,7 +127,7 @@ export default function Workbench({ request, config, me, canManage }: { request:
       {canManage && (
         <form onSubmit={send} className="space-y-2 rounded-2xl border border-border/50 bg-card p-4">
           <p className="text-sm font-semibold text-foreground">{internal ? "Internal note" : "Reply to company"}</p>
-          <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={5} maxLength={5000} placeholder={internal ? "Only YashOrbit staff can see this." : "The company sees this reply."} className={INPUT} />
+          <textarea value={body} onChange={(e) => setBody(e.target.value)} rows={5} maxLength={5000} placeholder={internal ? "Only support staff can see this." : "The company sees this reply."} className={INPUT} />
           <div className="flex flex-wrap items-center justify-between gap-2">
             <label className="flex items-center gap-2 text-xs text-muted-foreground"><input type="checkbox" checked={internal} onChange={(e) => setInternal(e.target.checked)} /> Internal note (hidden from the company)</label>
             <Button type="submit" size="sm" disabled={pending || !body.trim()}>{pending ? <Loader2 className="size-3.5 animate-spin" /> : <Send className="size-3.5" />} {internal ? "Add note" : "Send reply"}</Button>

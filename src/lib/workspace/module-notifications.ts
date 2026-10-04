@@ -62,7 +62,7 @@ export const MODULE_LABELS: Record<NotificationModule, string> = {
   pms: "PMS",
   prms: "Procurement",
   tms: "Training",
-  messenger: "YashChat",
+  messenger: "Team Chat",
 };
 
 export type NotificationPriority = "high" | "medium" | "low";

@@ -1,4 +1,4 @@
-# YashOrbit Platform
+# SelfRun Business Platform
 
 One integrated suite of public, internal and external-user panels built on a
 single Next.js app, a single MongoDB database, one shared identity and one
@@ -13,8 +13,91 @@ file covers setup, running, seeding demo data, configuration and deployment.
 
 ---
 
+## SaaS setup — step by step
+
+SelfRun Business runs as one SaaS: the product website, sign-up and the Platform Panel on the SaaS host, and every
+customer (including your own company) as an ordinary tenant on its own address. Everything below runs from the project
+folder.
+
+### 1. Environment (`.env`)
+
+| Variable | Value |
+| --- | --- |
+| `MONGODB_URI` | a NEW, empty database for the SaaS (e.g. `…mongodb.net/selfrun`) |
+| `SAAS_ADMIN_EMAIL` | the platform staff login, e.g. `info@selfrunbusiness.ai` |
+| `SAAS_ADMIN_PASSWORD` | optional; omitted = a temporary password is printed once in the server log |
+| `SAAS_HOSTS` | production only: `selfrunbusiness.ai` (in development `localhost` is a SaaS host automatically) |
+| `PLATFORM_ROOT_DOMAIN` | production only: `selfrunbusiness.ai` (customers get `<slug>.selfrunbusiness.ai`) |
+
+Keep the encryption keys and storage tokens (`PLATFORM_ENCRYPTION_KEY`, `HRMS_ENCRYPTION_KEY`, `FMS_ENCRYPTION_KEY`,
+`DLMS_ENCRYPTION_KEY`, `SMMS_ENCRYPTION_KEY`, `BLOB_READ_WRITE_TOKEN` …) identical to the deployment you import data from.
+
+### 2. First run
+
+```bash
+npm install
+npm run dev
+```
+
+On the first start the server creates the platform operator and your staff account from `SAAS_ADMIN_EMAIL` and prints
+`[saas] Platform operator … created`. `http://localhost:3000` is the product website; staff sign in at
+`/workspace/login` and manage plans, prices and companies at `/platform`.
+
+(Manual alternative: `npm run db:init-saas -- --email you@company.com`.)
+
+### 3. Register a company
+
+Open `http://localhost:3000/signup`, fill in company name, workspace address (the slug), work email, password, business
+categories and accept the terms. The company's workspace is `http://<slug>.localhost:3000` in development and
+`https://<slug>.<PLATFORM_ROOT_DOMAIN>` in production; the sign-up creates its Super Admin account.
+
+### 4. Import an existing business (one time)
+
+To bring a business that already runs on an older database onto the SaaS, register it first (step 3), then:
+
+```bash
+# dry run — shows what would be copied, writes nothing
+SOURCE_MONGODB_URI='mongodb+srv://<user>:<password>@<cluster>/<old_database>' \
+  npm run db:import-company -- --to-company <slug>
+
+# copy it
+SOURCE_MONGODB_URI='mongodb+srv://<user>:<password>@<cluster>/<old_database>' \
+  npm run db:import-company -- --to-company <slug> --apply
+```
+
+Options: `--from-company <id|slug>` (which company of the old database; default the one flagged as owner),
+`--only a,b,c` (just these collections; each is replaced, so it is safe to re-run), `--keep-script`.
+
+- The old database is only read.
+- Documents keep their `_id`s; settings, counters and themes are re-keyed for the new company.
+- The target's own starter content in the imported collections is replaced; users are merged by email, so the account
+  created at sign-up is kept.
+- Every failure is printed (`✗ <collection>: … FAILED — <reason>`). The script deletes itself and its npm command only
+  after a fully successful `--apply`.
+
+Afterwards check `http://<slug>.localhost:3000` (website, products, offers), sign in at `/workspace/login` with an old
+user's credentials, and set the company's two-tone wordmark in Settings → Branding if needed. Rotate the credentials you
+used for `SOURCE_MONGODB_URI`.
+
+### 5. Production (Vercel)
+
+1. Make `selfrunbusiness.ai` the project's production domain; add each customer's own domain as a custom domain.
+2. Set `MONGODB_URI` (the new database), `SAAS_ADMIN_EMAIL`, `SAAS_ADMIN_PASSWORD`, `SAAS_HOSTS`,
+   `PLATFORM_ROOT_DOMAIN` and the keys/tokens from step 1, then deploy. The first start creates the operator.
+3. Register the company at `https://selfrunbusiness.ai/signup`; import with the same commands, with `MONGODB_URI` pointing
+   at the production SaaS database.
+4. Verify each customer's domain in Settings → Domains.
+
+A local-only copy of these steps with your real values lives in `SETUP.local.md` (git-ignored).
+
+More detail: [docs/saas-product-separation.md](./docs/saas-product-separation.md) and
+[docs/deploy-vercel.md](./docs/deploy-vercel.md).
+
+---
+
 ## Table of contents
 
+0. [SaaS setup — step by step](#saas-setup--step-by-step)
 1. [Tech stack](#tech-stack)
 2. [Panels and routes](#panels-and-routes)
 3. [Quick start](#quick-start)
@@ -195,7 +278,7 @@ npm run db:seed-demo-portal   # large demo layer
 The demo layer supports an override so your main database stays untouched:
 
 ```bash
-SEED_DB=yashorbit_seedtest node --env-file=.env scripts/seed-demo-portal.mjs
+SEED_DB=demo_seedtest node --env-file=.env scripts/seed-demo-portal.mjs
 ```
 
 (This applies to the demo layer only. Truncate and base seed always use the
@@ -240,12 +323,12 @@ After `npm run db:reset-demo`:
 
 | Account | Email | Password |
 | --- | --- | --- |
-| Super admin (all panels) | `info@yashorbit.com` | `YashOrbit#2026` |
-| Student portal | `demo.student@yashorbit.com` | `Demo@12345` |
-| Intern portal | `demo.intern@yashorbit.com` | `Demo@12345` |
-| Client portal | `demo.client@yashorbit.com` | `Demo@12345` |
-| Business portal | `demo.business@yashorbit.com` | `Demo@12345` |
-| Hiring portal | `demo.hiring@yashorbit.com` | `Demo@12345` |
+| Super admin (all panels) | `admin@example.com` | `Admin#2026pw` |
+| Student portal | `demo.student@example.com` | `Demo@12345` |
+| Intern portal | `demo.intern@example.com` | `Demo@12345` |
+| Client portal | `demo.client@example.com` | `Demo@12345` |
+| Business portal | `demo.business@example.com` | `Demo@12345` |
+| Hiring portal | `demo.hiring@example.com` | `Demo@12345` |
 
 Login URLs: `/admin/login`, `/hrms/login`, `/pms/login`, `/prms/login`,
 `/tms/login`, `/fms/login`, `/messenger/login`, `/lms/login`,
@@ -307,8 +390,8 @@ AGENTS.md / CLAUDE.md  Instructions for AI coding agents
   WebRTC (mesh) for calls with signaling over SSE.
 - **Design system:** plain glass cards, centered `max-w-*` page wrappers, no
   custom per-page hover shadows. Match the existing panels when adding UI.
-- **Brand wordmark:** use `brandify()` from `src/lib/brand.tsx` so "YashOrbit"
-  renders with "Yash" in the normal color and "Orbit" in orange.
+- **Brand wordmark:** use `brandify()` from `src/lib/brand.tsx` so the brand name
+  renders with its first part in the normal colour and its second in the accent colour.
 
 ---
 
@@ -337,7 +420,7 @@ A centralized wallet gives every portal user credits that can be earned and spen
 
 ## AI chatbot and knowledge base
 
-- Public "Ask YashOrbit" assistant using the OpenAI Responses API with hosted
+- Public "Ask SelfRun Business" assistant using the OpenAI Responses API with hosted
   vector-store file search. Optional voice mode via ElevenLabs.
 - Index the site into the vector store:
 
@@ -416,11 +499,11 @@ Run a scheduler that calls `/api/wallet/expiry-sweep` daily with the cron bearer
 ==========================================================================
 ✨ Done. Portal demo logins (password for all: Demo@12345) — sign in at /login
 ==========================================================================
-  • Student (industrial training)      demo.student@yashorbit.com
-  • Intern                             demo.intern@yashorbit.com
-  • Client                             demo.client@yashorbit.com
-  • Business (hiring + services)       demo.business@yashorbit.com
-  • Hiring (job applicant)             demo.hiring@yashorbit.com
+  • Student (industrial training)      demo.student@example.com
+  • Intern                             demo.intern@example.com
+  • Client                             demo.client@example.com
+  • Business (hiring + services)       demo.business@example.com
+  • Hiring (job applicant)             demo.hiring@example.com
 
 
 Needed in Vercel before going live
@@ -428,21 +511,21 @@ Needed in Vercel before going live
 SMMS_ENCRYPTION_KEY (your local .env already has one).
 CRON_SECRET.
 For publishing: META_APP_ID/META_APP_SECRET, GOOGLE_OAUTH_CLIENT_ID/GOOGLE_OAUTH_CLIENT_SECRET, LINKEDIN_CLIENT_ID/LINKEDIN_CLIENT_SECRET.
-For demo data, run npm run db:seed-smms. It creates the logins demo.smms.{admin,manager,specialist,employee}@yashorbit.com (password Demo@12345). Testing used a scratch database, which I dropped afterwards.
+For demo data, run npm run db:seed-smms. It creates the logins demo.smms.{admin,manager,specialist,employee}@example.com (password Demo@12345). Testing used a scratch database, which I dropped afterwards.
 
-# yashorbit (the database in .env)
+# demo (the database in .env)
 npm run db:migrate-cms-content                 # dry run: prints the database name and what it will create
 npm run db:migrate-cms-content -- --apply
 
-# yashorbit_prod: same cluster connection string, database name changed
-MONGODB_URI="mongodb+srv://…/yashorbit_prod?…" npm run db:migrate-cms-content -- --apply
+# platform: same cluster connection string, database name changed
+MONGODB_URI="mongodb+srv://…/platform?…" npm run db:migrate-cms-content -- --apply
 
 
 npm run db:migrate-cms-content -- --apply
 
 
 Before you push or deploy
-Migrate the production database: npm run db:migrate-tenancy -- --apply against yashorbit_prod.
+Migrate the production database: npm run db:migrate-tenancy -- --apply against platform.
 Add PLATFORM_ENCRYPTION_KEY, RAZORPAY_BILLING_WEBHOOK_SECRET and CRON_SECRET to Vercel.
 After deploy, run scripts/backfill-subscription-events.ts so revenue analytics aren't empty. It is a dry run unless you pass --apply.
 Enter your Razorpay test keys in Platform Panel → Payments & Razorpay

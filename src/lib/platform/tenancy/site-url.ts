@@ -18,8 +18,8 @@ import { loadIntegrationsDoc } from "@/lib/platform/integrations/store";
  *  1. the company's primary VERIFIED domain (custom domain or its subdomain)
  *  2. else its automatic subdomain `<slug>.<PLATFORM_ROOT_DOMAIN>`
  *
- * The platform owner (YashOrbit) keeps `siteUrl` from `src/lib/seo.ts` unless
- * it has a verified primary custom domain (normally yashorbit.com itself,
+ * The platform operator keeps `siteUrl` from `src/lib/seo.ts` unless
+ * it has a verified primary custom domain (normally the company's own domain,
  * which gives the same string) — so its URLs never change.
  *
  * Works inside a request (company from the Host header) and inside
@@ -57,7 +57,7 @@ async function resolveSiteUrl(companyId: string, hostHint: string | null): Promi
   if (company.isPlatformOwner) {
     // Only a custom domain replaces the owner's long-standing site URL.
     if (!primary || primary.kind === "subdomain" || primary._id === companySubdomain(company.slug)) return PLATFORM_OWNER_SITE_URL;
-    // yashorbit.com → "https://yashorbit.com", i.e. exactly `siteUrl`.
+    // e.g. example.com → "https://example.com", i.e. exactly `siteUrl`.
     return originOf(primary, company.slug, hostHint);
   }
   return primary ? originOf(primary, company.slug, hostHint) : companyBaseUrl(company.slug, hostHint);

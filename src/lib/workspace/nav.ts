@@ -219,9 +219,9 @@ const MANAGE_PAGES: [group: string, path: string, label: string, icon: NavIcon, 
   ["Training", "tms/students", "Students", "training", P.training, "tms"],
   ["Training", "tms/certificates", "Certificates", "training", P.training, "tms"],
   ["Training", "tms/payments", "Fee payments", "training", P.training, "tms"],
-  ["Team chat", "yashchat/channels", "Channels", "chat", P.chat, "messenger"],
-  ["Team chat", "yashchat/direct-messages", "Direct messages", "chat", P.chat, "messenger"],
-  ["Team chat", "yashchat/meetings", "Meetings", "chat", P.chat, "messenger"],
+  ["Team chat", "teamchat/channels", "Channels", "chat", P.chat, "messenger"],
+  ["Team chat", "teamchat/direct-messages", "Direct messages", "chat", P.chat, "messenger"],
+  ["Team chat", "teamchat/meetings", "Meetings", "chat", P.chat, "messenger"],
   ["People", "portal/users", "Portal users", "users", P.portalUsers, "portal"],
   ["People", "careers/applicants", "Job applicants", "users", P.careers],
   ["Website chatbot", "chatbot/conversations", "Conversations", "bot", P.chatbot],
@@ -274,7 +274,7 @@ const COMPANY: NavItemDef[] = [
 const NAV_ITEMS: NavItemDef[] = [
   { key: "dashboard", section: "dashboard", label: "Dashboard", href: "/workspace", icon: "dashboard", allow: anyone },
   ...PANELS,
-  // Help & Support is YashOrbit's own service for every company: no role gate and no plan module.
+  // Help & Support is the platform's own service for every company: no role gate and no plan module.
   { key: "panel.support", section: "panels", label: "Help & Support", href: "/support", icon: "help", panel: "support", allow: anyone },
   // The external portal and the company's public website are panels in the registry too, so they are listed like the rest.
   { key: "panel.portal", section: "panels", label: "Client & Student Portal", href: "/portal", icon: "globe", module: "portal", allow: (u: RoleContext) => resolvePermission(u, "portal.isPortalAdmin", () => u.roles.includes("portal_admin")) },

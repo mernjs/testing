@@ -3,6 +3,8 @@ import type { NextRequest } from "next/server";
 import { isMaintenanceOn, isPublicSitePath } from "@/lib/cms/maintenance-gate";
 import { resolveCompanyIdByHost } from "@/lib/platform/tenancy/companies";
 import { listPanels, unavailablePanelKeys } from "@/lib/platform/panels/store";
+import { isSaasHost } from "@/lib/saas/hosts";
+import { isSaasPagePath } from "@/lib/saas/routes";
 
 /**
  * First-touch referral capture, server side. A `?ref=CODE` on any page view
@@ -58,6 +60,13 @@ export async function proxy(request: NextRequest) {
       apiCompany = undefined;
     }
     return (await panelGate(request, apiCompany)) ?? NextResponse.next();
+  }
+
+  // The SaaS product's own website: its public pages live under /saas and need no company.
+  if (isSaasHost(request.headers.get("host")) && isSaasPagePath(request.nextUrl.pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/saas${request.nextUrl.pathname === "/" ? "" : request.nextUrl.pathname.replace(/\/+$/, "")}`;
+    return NextResponse.rewrite(url);
   }
 
   // Every page belongs to the company whose domain it was requested on. A

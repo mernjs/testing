@@ -11,7 +11,7 @@ const SAAS = [
 const INFRA = [
   ["Production cluster (ap-south-1)", "AWS", "Cloud Hosting", "Mumbai", 96000, "monthly"], ["Staging environment", "AWS", "Cloud Hosting", "Mumbai", 24000, "monthly"], ["MongoDB Atlas M30", "MongoDB", "Database Hosting", "Mumbai", 38000, "monthly"],
   ["Azure DevOps agents", "Microsoft Azure", "Cloud Hosting", "Central India", 18500, "monthly"], ["Cloudflare Business", "Cloudflare", "CDN", "Global", 15000, "monthly"], ["Backup storage (S3 Glacier)", "AWS", "Backup Storage", "Mumbai", 7200, "monthly"],
-  ["DigitalOcean droplets", "DigitalOcean", "VPS", "Bengaluru", 11000, "monthly"], ["yashorbit.com domain + SSL", "GoDaddy", "Domain", "Global", 18000, "annual"], ["Office leased line (1 Gbps)", "Airtel Business", "Internet", "Noida", 36000, "monthly"], ["Dedicated GPU server", "E2E Networks", "Dedicated Servers", "Delhi", 54000, "monthly"],
+  ["DigitalOcean droplets", "DigitalOcean", "VPS", "Bengaluru", 11000, "monthly"], ["example.com domain + SSL", "GoDaddy", "Domain", "Global", 18000, "annual"], ["Office leased line (1 Gbps)", "Airtel Business", "Internet", "Noida", 36000, "monthly"], ["Dedicated GPU server", "E2E Networks", "Dedicated Servers", "Delhi", 54000, "monthly"],
 ];
 const EXPENSES = [
   ["office_operations", ["Rent", "Electricity", "Internet", "Water", "Telephone"], 8000, 180000], ["infrastructure", ["Cloud Hosting", "Servers", "Domain", "CDN", "Backup Storage"], 6000, 110000],
@@ -27,7 +27,7 @@ export async function seedPrmsOps(db, pms) {
   const vendors = await db.collection("prms_vendors").find({ _id: /^demo-vendor-/ }).toArray();
   const depts = await db.collection("hrms_departments").find({ _id: /^demo-dept-/ }).toArray();
   const emps = await db.collection("hrms_employees").find({ _id: /^demo-emp-/ }).project({ _id: 1, firstName: 1, lastName: 1, workEmail: 1, adminUserId: 1 }).limit(40).toArray();
-  const pool = emps.length ? emps : [{ _id: "demo-emp-1", firstName: "Admin", lastName: "User", workEmail: "info@yashorbit.com", adminUserId: "demo" }];
+  const pool = emps.length ? emps : [{ _id: "demo-emp-1", firstName: "Admin", lastName: "User", workEmail: "admin@example.com", adminUserId: "demo" }];
   const deptList = depts.length ? depts : [{ _id: "demo-dept-ENG", name: "Engineering & Technology" }];
   const empName = (e) => `${e.firstName} ${e.lastName}`;
 
@@ -51,7 +51,7 @@ export async function seedPrmsOps(db, pms) {
         departmentId: dept._id, departmentName: dept.name, projectId: null, projectName: null, amount, gstRate, gstAmount, totalAmount: amount + gstAmount, currency: "INR", paymentMethod: pick(METHODS),
         invoiceNumber: chance(0.7) ? `INV-${rint(10000, 99999)}` : null, invoiceStorageKey: null, invoiceFilename: null, expenseDate: at, description: null, expenseType: recurring ? "recurring" : "one_time",
         recurrence: recurring ? { interval: pick(["monthly", "quarterly"]), nextRunDate: dayAhead(rint(5, 60)), active: true } : null, parentExpenseId: null, approvalStatus: status,
-        approvedBy: status === "approved" || status === "reimbursed" ? "info@yashorbit.com" : null, approvedAt: status === "approved" || status === "reimbursed" ? new Date(at.getTime() + 86400000) : null,
+        approvedBy: status === "approved" || status === "reimbursed" ? "admin@example.com" : null, approvedAt: status === "approved" || status === "reimbursed" ? new Date(at.getTime() + 86400000) : null,
         rejectionReason: status === "rejected" ? "Not covered by the approved budget." : null, raisedByUserId: raiser.adminUserId ?? raiser._id, raisedByName: empName(raiser), ...audit(at),
       });
     }
@@ -81,7 +81,7 @@ export async function seedPrmsOps(db, pms) {
     _id: `demo-budget-${budgets.length + 1}`, budgetCode: `BUD-${y}-${String(budgets.length + 1).padStart(3, "0")}`, name, level, scopeId, scopeName, period: "yearly", periodStart: yStart, periodEnd: yEnd, allocatedAmount: allocated, consumedAmount: consumed, currency: "INR", notes: null, ...audit(ago(rint(150, 260))),
   });
   const totalYear = yearSpend(() => true);
-  addBudget(`Company operating budget ${y}`, "company", null, "YashOrbit", Math.round(totalYear * 1.6 / 100000) * 100000 + 500000, totalYear);
+  addBudget(`Company operating budget ${y}`, "company", null, "Demo Company", Math.round(totalYear * 1.6 / 100000) * 100000 + 500000, totalYear);
   for (const d of deptList.slice(0, 6)) {
     const spent = yearSpend((e) => e.departmentId === d._id);
     addBudget(`${d.name} budget ${y}`, "department", d._id, d.name, Math.round(spent * 1.5 / 50000) * 50000 + 200000, spent);
@@ -159,8 +159,8 @@ export async function seedPrmsOps(db, pms) {
     for (const c of ["pms_tasks", "pms_milestones", "pms_project_members", "pms_timesheets", "pms_documents", "pms_activity_logs"]) await db.collection(c).deleteMany({ projectId: { $in: orphans } });
   }
   // Messenger sync maps project team -> chat users through employeeId; link the super admin so they stay in project channels
-  await db.collection("admin_users").updateOne({ email: "info@yashorbit.com" }, { $set: { employeeId: "demo-emp-1" } });
-  await db.collection("chat_users").updateOne({ email: "info@yashorbit.com" }, { $set: { employeeId: "demo-emp-1" } });
+  await db.collection("admin_users").updateOne({ email: "admin@example.com" }, { $set: { employeeId: "demo-emp-1" } });
+  await db.collection("chat_users").updateOne({ email: "admin@example.com" }, { $set: { employeeId: "demo-emp-1" } });
   await db.collection("chat_meta").deleteMany({ _id: /project/i });
   await insertAll(db.collection("prms_expenses"), expenses);
   await insertAll(db.collection("prms_software_subscriptions"), subscriptions);

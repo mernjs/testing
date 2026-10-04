@@ -21,7 +21,7 @@ export function ChatPanel({ onClose }: { onClose?: () => void }) {
             <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-background bg-emerald-500" aria-hidden />
           </div>
           <div className="leading-tight">
-            <p className="text-sm font-bold text-foreground">{tx("chat.chatPanel.ask-yashorbit")}</p>
+            <p className="text-sm font-bold text-foreground">{tx("chat.chatPanel.ask-brand")}</p>
             <p className="text-[11px] text-muted-foreground">{tx("chat.chatPanel.ai-assistant-answers-from-our-knowledge-")}</p>
           </div>
         </div>

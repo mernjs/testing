@@ -39,7 +39,7 @@ export function ChatWorkspace() {
               <Bot className="size-3.5" aria-hidden />
             </div>
             <span className="text-sm font-bold text-foreground">
-              {tx("chat.chatWorkspace.ask")}<span className="text-primary">{tx("chat.chatWorkspace.yashorbit")}</span>
+              {tx("chat.chatWorkspace.ask")}<span className="text-primary">{tx("chat.chatWorkspace.brand")}</span>
             </span>
           </div>
           <div className="min-h-0 flex-1">
@@ -72,7 +72,7 @@ export function ChatWorkspace() {
                 <Bot className="size-3.5" aria-hidden />
               </div>
               <span className="text-sm font-bold text-foreground">
-                {tx("chat.chatWorkspace.ask")}<span className="text-primary">{tx("chat.chatWorkspace.yashorbit")}</span>
+                {tx("chat.chatWorkspace.ask")}<span className="text-primary">{tx("chat.chatWorkspace.brand")}</span>
               </span>
             </div>
             <span className="hidden text-sm font-semibold text-muted-foreground lg:inline">{tx("chat.chatWorkspace.conversation")}</span>

@@ -85,7 +85,7 @@ export const SOP_MODULES = [
   { value: "fms", label: "FMS (Finance)", href: "/fms" },
   { value: "tms", label: "TMS (Training)", href: "/tms" },
   { value: "lms", label: "LMS (Sales & CRM)", href: "/lms" },
-  { value: "messenger", label: "YashChat", href: "/messenger" },
+  { value: "messenger", label: "Team Chat", href: "/messenger" },
 ] as const;
 export type SopModule = (typeof SOP_MODULES)[number]["value"];
 export function isSopModule(v: unknown): v is SopModule {

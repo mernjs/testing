@@ -98,7 +98,7 @@ export default function PersonalizedOffers({
           <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 px-5 py-4">
             <Wallet className="size-5 text-primary" />
             <p className="text-sm text-foreground">
-              {viewer.firstName ? `${viewer.firstName}, you` : "You"}{tx("offers.personalizedOffers.have")}<span className="font-bold text-primary">{viewer.credits.toLocaleString("en-IN")}{tx("offers.personalizedOffers.yashorbit-credits")}</span>{tx("offers.personalizedOffers.apply-them-on-top-of-any-offer-while-cla")}</p>
+              {viewer.firstName ? `${viewer.firstName}, you` : "You"}{tx("offers.personalizedOffers.have")}<span className="font-bold text-primary">{viewer.credits.toLocaleString("en-IN")}{tx("offers.personalizedOffers.brand-credits")}</span>{tx("offers.personalizedOffers.apply-them-on-top-of-any-offer-while-cla")}</p>
           </div>
         )}
 

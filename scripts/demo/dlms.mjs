@@ -10,10 +10,10 @@ const PASSWORD = "Demo@12345";
 const D = "demo-dlms-";
 
 export const DLMS_DEMO_ACCOUNTS = [
-  { email: "demo.dlms.admin@yashorbit.com", label: "DLMS Admin (everything)", roles: ["dlms_admin"] },
-  { email: "demo.dlms.manager@yashorbit.com", label: "DLMS Manager (all scopes, no settings)", roles: ["dlms_manager"] },
-  { email: "demo.dlms.employee@yashorbit.com", label: "DLMS Employee — 2 clients + company vault", roles: ["dlms_employee"], clients: 2, company: true },
-  { email: "demo.dlms.limited@yashorbit.com", label: "DLMS Employee — 1 client only", roles: ["dlms_employee"], clients: 1, company: false },
+  { email: "demo.dlms.admin@example.com", label: "DLMS Admin (everything)", roles: ["dlms_admin"] },
+  { email: "demo.dlms.manager@example.com", label: "DLMS Manager (all scopes, no settings)", roles: ["dlms_manager"] },
+  { email: "demo.dlms.employee@example.com", label: "DLMS Employee — 2 clients + company vault", roles: ["dlms_employee"], clients: 2, company: true },
+  { email: "demo.dlms.limited@example.com", label: "DLMS Employee — 1 client only", roles: ["dlms_employee"], clients: 1, company: false },
 ];
 
 function encrypt(plain, recordId) {
@@ -81,16 +81,16 @@ export async function seedDlms(db) {
   };
 
   // ── Company vault
-  const hosting = cred("company", null, "AWS root account", "cloud", "aws-root@yashorbit.com", "https://console.aws.amazon.com", "Demo-Aws!2026-x9", dayAhead(120), "MFA device is in the safe.");
-  cred("company", null, "GoDaddy — domain registrar", "domain", "domains@yashorbit.com", "https://sso.godaddy.com", "Demo-Gd!Reg-77", dayAhead(9), "Auto-renew is OFF — renew manually.");
-  cred("company", null, "Google Workspace super admin", "email", "admin@yashorbit.com", "https://admin.google.com", "Demo-Gw#Admin-31", null);
+  const hosting = cred("company", null, "AWS root account", "cloud", "aws-root@example.com", "https://console.aws.amazon.com", "Demo-Aws!2026-x9", dayAhead(120), "MFA device is in the safe.");
+  cred("company", null, "GoDaddy — domain registrar", "domain", "domains@example.com", "https://sso.godaddy.com", "Demo-Gd!Reg-77", dayAhead(9), "Auto-renew is OFF — renew manually.");
+  cred("company", null, "Google Workspace super admin", "email", "admin@example.com", "https://admin.google.com", "Demo-Gw#Admin-31", null);
   cred("company", null, "GST portal", "government", "27AAAAA0000A1Z5", "https://www.gst.gov.in", "Demo-Gst$Port-19", dayAgo(4), "Password rotation overdue.");
   cred("company", null, "Razorpay API secret", "api", "rzp_live_demo", "https://dashboard.razorpay.com", "Demo-Rzp*Secret-55", dayAhead(200));
-  cred("company", null, "Company LinkedIn page", "social", "social@yashorbit.com", "https://www.linkedin.com", null, null);
-  link("company", null, "Company website", "website", "https://yashorbit.com", "yashorbit.com", null, null);
-  link("company", null, "Primary domain", "domain", "https://sso.godaddy.com", "yashorbit.com", null, dayAhead(9), "Renewal due soon.");
+  cred("company", null, "Company LinkedIn page", "social", "social@example.com", "https://www.linkedin.com", null, null);
+  link("company", null, "Company website", "website", "https://example.com", "example.com", null, null);
+  link("company", null, "Primary domain", "domain", "https://sso.godaddy.com", "example.com", null, dayAhead(9), "Renewal due soon.");
   link("company", null, "AWS console", "cloud", "https://console.aws.amazon.com", "Account 4821-…", hosting, null);
-  link("company", null, "Main Git organisation", "git", "https://github.com/yashorbit", "yashorbit", null, null);
+  link("company", null, "Main Git organisation", "git", "https://github.com/demo", "demo", null, null);
   note("company", null, "Where the company secrets live", "general", "Every shared login belongs in the Credential Vault, not in chat or docs. Ask a DLMS manager to grant access.");
   note("company", null, "Incident access procedure", "access_instructions", "In an outage: (1) page the on-call, (2) request break-glass access from a DLMS manager, (3) every reveal is logged.");
   doc("company", null, "Certificate of Incorporation", "company_documents", "Company registration", null);
@@ -116,8 +116,8 @@ export async function seedDlms(db) {
     if (list.length) await db.collection(col).insertMany(list);
   }
   const auditRows = [
-    { _id: `${D}au-1`, actorId: users.manager, actorEmail: "demo.dlms.manager@yashorbit.com", action: "create", entity: "credential", entityId: rows.credentials[0]._id, entityLabel: rows.credentials[0].name, scope: "company", clientId: null, summary: `Created credential "${rows.credentials[0].name}" (password stored)`, metadata: null, createdAt: ago(40) },
-    { _id: `${D}au-2`, actorId: users.employee, actorEmail: "demo.dlms.employee@yashorbit.com", action: "reveal", entity: "credential", entityId: rows.credentials[6]._id, entityLabel: rows.credentials[6].name, scope: "client", clientId: rows.credentials[6].clientId, summary: `Revealed the password of "${rows.credentials[6].name}"`, metadata: null, createdAt: ago(2) },
+    { _id: `${D}au-1`, actorId: users.manager, actorEmail: "demo.dlms.manager@example.com", action: "create", entity: "credential", entityId: rows.credentials[0]._id, entityLabel: rows.credentials[0].name, scope: "company", clientId: null, summary: `Created credential "${rows.credentials[0].name}" (password stored)`, metadata: null, createdAt: ago(40) },
+    { _id: `${D}au-2`, actorId: users.employee, actorEmail: "demo.dlms.employee@example.com", action: "reveal", entity: "credential", entityId: rows.credentials[6]._id, entityLabel: rows.credentials[6].name, scope: "client", clientId: rows.credentials[6].clientId, summary: `Revealed the password of "${rows.credentials[6].name}"`, metadata: null, createdAt: ago(2) },
   ];
   await db.collection("dlms_activity_logs").insertMany(auditRows);
   return { credentials: rows.credentials.length, documents: rows.documents.length, links: rows.links.length, notes: rows.notes.length, encrypted: Boolean(process.env.DLMS_ENCRYPTION_KEY) };

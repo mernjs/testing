@@ -8,7 +8,7 @@ import { rolesUseSeat, seatBlockReason } from "@/lib/platform/billing/enforce";
 
 /**
  * Super Admin management of the shared `admin_users` collection — the
- * identity store every internal panel (HRMS/PMS/PRMS/TMS/YashChat/LMS/Admin)
+ * identity store every internal panel (HRMS/PMS/PRMS/TMS/Team Chat/LMS/Admin)
  * reads its login and `roles` array from. There is no existing in-app
  * surface for this anywhere: role grants are currently CLI-only
  * (`scripts/grant-*-role.mjs`). This is the first — treat it carefully:

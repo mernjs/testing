@@ -20,10 +20,10 @@ const at = (days, hour = 10) => {
 };
 
 export const SMMS_DEMO_ACCOUNTS = [
-  { email: "demo.smms.admin@yashorbit.com", label: "Social Media Admin (everything)", roles: ["smms_admin"] },
-  { email: "demo.smms.manager@yashorbit.com", label: "Social Media Manager (publish/approve)", roles: ["smms_manager"] },
-  { email: "demo.smms.specialist@yashorbit.com", label: "Social Media Specialist (campaigns)", roles: ["smms_specialist"] },
-  { email: "demo.smms.employee@yashorbit.com", label: "Social Media Employee (posts)", roles: ["smms_employee"] },
+  { email: "demo.smms.admin@example.com", label: "Social Media Admin (everything)", roles: ["smms_admin"] },
+  { email: "demo.smms.manager@example.com", label: "Social Media Manager (publish/approve)", roles: ["smms_manager"] },
+  { email: "demo.smms.specialist@example.com", label: "Social Media Specialist (campaigns)", roles: ["smms_specialist"] },
+  { email: "demo.smms.employee@example.com", label: "Social Media Employee (posts)", roles: ["smms_employee"] },
 ];
 
 const EMPTY_PUBLISH = { state: "pending", method: null, externalId: null, url: null, error: null, at: null, by: null };
@@ -33,7 +33,7 @@ const EMPTY_CREATIVE = { imageConcept: "", imagePrompt: "", videoConcept: "", ho
 const stamp = (d, by) => ({ createdAt: d, updatedAt: d, createdBy: by, updatedBy: by, deletedAt: null });
 
 const CAMPAIGN_AI = {
-  summary: "Position YashOrbit as the practical AI-automation partner for mid-size Indian businesses. Lead with a pain most operations teams feel (manual document and data entry), prove it with a concrete before/after, and convert through a free 30-minute automation audit. LinkedIn carries decision-maker reach, Meta retargets site visitors with short proof videos, and Google Ads captures active search intent.",
+  summary: "Position Demo Company as the practical AI-automation partner for mid-size Indian businesses. Lead with a pain most operations teams feel (manual document and data entry), prove it with a concrete before/after, and convert through a free 30-minute automation audit. LinkedIn carries decision-maker reach, Meta retargets site visitors with short proof videos, and Google Ads captures active search intent.",
   positioning: "Automation that pays for itself in a quarter — built around your existing tools, not a platform migration.",
   keyMessages: ["Cut manual data entry by automating the documents you already process", "Works with the tools you already use", "Free 30-minute automation audit — a concrete plan, no obligation"],
   channelPlan: [
@@ -53,7 +53,7 @@ const CAMPAIGN_AI = {
     { name: "Website retargeting", description: "Visitors to AI & Automations pages in the last 30 days.", interests: [] },
   ],
   keywords: ["document automation", "invoice processing automation", "rpa services india", "ai workflow automation"],
-  hashtags: ["#AIAutomation", "#DigitalTransformation", "#YashOrbit", "#Productivity"],
+  hashtags: ["#AIAutomation", "#DigitalTransformation", "#Demo Company", "#Productivity"],
   adConcepts: [
     { title: "Before / after invoice flow", platform: "linkedin", format: "image", angle: "Split-screen: stack of invoices vs. a clean dashboard.", headline: "4 hours of invoice entry → 10 minutes", primaryText: "Your team shouldn't be retyping PDFs. We automate document-heavy workflows around the tools you already use.", description: "Free 30-minute automation audit", cta: "Book Now" },
     { title: "20-second Reel", platform: "instagram", format: "video", angle: "Time-lapse of a manual process replaced by a bot.", headline: "Watch a week of data entry disappear", primaryText: "Automation that pays for itself in a quarter.", description: "", cta: "Learn More" },
@@ -88,7 +88,7 @@ const AD_REEL = {
   description: "",
   cta: "Learn More",
   caption: "A week of data entry, gone in 20 seconds ⚡️",
-  hashtags: ["#AIAutomation", "#WorkSmarter", "#YashOrbit"],
+  hashtags: ["#AIAutomation", "#WorkSmarter", "#Demo Company"],
   keywords: [],
   audienceSuggestions: ["Retarget: video viewers 50%+", "Lookalike: site visitors"],
   image: EMPTY_IMAGE,
@@ -101,7 +101,7 @@ const AD_REEL = {
       { scene: "Scene 3 — Turn", duration: "8–15s", visual: "One click — invoices fly into a dashboard", onScreenText: "Automated in minutes", voiceover: "Or… automate it." },
       { scene: "Scene 4 — CTA", duration: "15–20s", visual: "Logo + audit offer", onScreenText: "Free automation audit", voiceover: "Book your free automation audit." },
     ],
-    voiceoverScript: "This is a week of data entry. Every single week. Or… automate it. Book your free automation audit with YashOrbit.",
+    voiceoverScript: "This is a week of data entry. Every single week. Or… automate it. Book your free automation audit with Demo Company.",
     onScreenText: ["40 hours of data entry", "Every. Single. Week.", "Automated in minutes", "Free automation audit"],
     thumbnailConcept: "Surprised employee behind a tower of files, bold text “40 HRS”.",
     durationSec: 20,
@@ -140,16 +140,16 @@ export async function seedSmms(db) {
     {
       $setOnInsert: {
         brand: {
-          about: "YashOrbit builds custom software and practical AI automation for growing businesses, and trains developers in modern stacks and applied AI.",
+          about: "Demo Company builds custom software and practical AI automation for growing businesses, and trains developers in modern stacks and applied AI.",
           services: ["Software Development", "AI & Automations", "Industrial Training", "Resource Augmentation"],
           products: [],
           tone: "Confident, practical and friendly — plain language, no hype",
           targetAudience: "Founders, CXOs and operations/IT heads at Indian SMBs and mid-size companies; engineering students and early-career developers for training",
           messaging: "Tech solutions built around your business — delivered by a team that ships.",
-          websiteInfo: "yashorbit.com — service pages, case studies, free consultation form, training batches and offers.",
+          websiteInfo: "example.com — service pages, case studies, free consultation form, training batches and offers.",
           sellingPoints: ["Built around your existing tools", "Fixed-scope pilots before big commitments", "Hands-on, project-based training"],
           avoid: ["guaranteed results", "#1 in India"],
-          brandHashtags: ["#YashOrbit"],
+          brandHashtags: ["#Demo Company"],
           includeOffers: true,
         },
         updatedAt: at(30),
@@ -165,14 +165,14 @@ export async function seedSmms(db) {
     {
       _id: `${D}c1`, name: "AI Automation Audit — Q4", objective: "Lead generation", platforms: ["linkedin", "facebook", "instagram", "google_ads"],
       targetAudience: "Operations and finance heads at 50–500 employee companies", industry: "Professional Services", location: "India — Delhi NCR, Bengaluru, Mumbai, Pune",
-      budget: 300000, currency: "INR", startDate: at(-3, 0), endDate: at(-45, 0), cta: "Book Now", landingPage: "https://yashorbit.com/services/ai-automations", offerService: "AI & Automations — Document Intelligence",
+      budget: 300000, currency: "INR", startDate: at(-3, 0), endDate: at(-45, 0), cta: "Book Now", landingPage: "https://example.com/services/ai-automations", offerService: "AI & Automations — Document Intelligence",
       offerId: null, clientId: null, brandInfo: "", keywords: ["document automation", "rpa", "ai workflow"], tone: "Confident", language: "English",
       status: "scheduled", ai: CAMPAIGN_AI, lmsCampaignKeys: [], launchedAt: null, launchedBy: null, archivedFrom: null, ...stamp(at(6), users.specialist.id),
     },
     {
       _id: `${D}c2`, name: "Agentic AI Training — October batch", objective: "Event registrations", platforms: ["instagram", "youtube", "linkedin"],
       targetAudience: "Final-year engineering students and developers with 0–3 years' experience", industry: "Education & Training", location: "India",
-      budget: 80000, currency: "INR", startDate: at(20, 0), endDate: at(-10, 0), cta: "Register", landingPage: "https://yashorbit.com/industrial-training/agentic-ai", offerService: "Industrial Training — Agentic AI",
+      budget: 80000, currency: "INR", startDate: at(20, 0), endDate: at(-10, 0), cta: "Register", landingPage: "https://example.com/industrial-training/agentic-ai", offerService: "Industrial Training — Agentic AI",
       offerId: null, clientId: null, brandInfo: "Weekend batch, live projects, placement support.", keywords: ["agentic ai course", "ai training india"], tone: "Inspirational", language: "English",
       status: "published", ai: { ...CAMPAIGN_AI, summary: "Drive registrations for the weekend Agentic AI batch with project showcases on Instagram/YouTube and credibility on LinkedIn.", adConcepts: [] },
       lmsCampaignKeys: lms ? [lms.nameKey] : [], launchedAt: at(19), launchedBy: users.manager.id, archivedFrom: null, ...stamp(at(25), users.specialist.id),
@@ -203,13 +203,13 @@ export async function seedSmms(db) {
 
   const P = (id, title, platforms, contentType, status, variants, extra = {}) => ({
     _id: `${D}${id}`, title, topic: title, serviceProduct: "", audience: "", tone: "", language: "English", objective: "Engagement", contentType, platforms,
-    link: "https://yashorbit.com", plannedAt: null, campaignId: null, offerId: null, clientId: null, notes: "",
+    link: "https://example.com", plannedAt: null, campaignId: null, offerId: null, clientId: null, notes: "",
     status, idea: variants.length ? `${title} — one idea adapted per platform.` : "", creative: EMPTY_CREATIVE, variants, mediaIds: [], thumbnailId: null,
     scheduledAt: null, scheduledBy: null, approvedBy: null, approvedAt: null, publishedAt: null, archivedFrom: null, ...stamp(at(3), users.employee.id), ...extra,
   });
-  const liBody = (t) => ({ title: t, content: `${t}\n\nMost teams lose hours every week to work a small automation could handle. Here's the 3-step approach we use with clients:\n1. Map the repetitive steps\n2. Automate the highest-volume one first\n3. Measure hours saved, then scale.\n\nWhat's the most repetitive task in your week?`, cta: "Learn More", hashtags: ["#AIAutomation", "#Productivity", "#YashOrbit"], keywords: ["automation"] });
-  const igBody = (t) => ({ content: `${t} ⚡️\n\nSave this for your next planning session.`, caption: `${t} ⚡️`, cta: "Link in bio", hashtags: ["#AIAutomation", "#WorkSmarter", "#TechTips", "#YashOrbit"] });
-  const fbBody = (t) => ({ title: t, content: `${t} — here's how we approach it, step by step.`, cta: "Learn More", hashtags: ["#YashOrbit"] });
+  const liBody = (t) => ({ title: t, content: `${t}\n\nMost teams lose hours every week to work a small automation could handle. Here's the 3-step approach we use with clients:\n1. Map the repetitive steps\n2. Automate the highest-volume one first\n3. Measure hours saved, then scale.\n\nWhat's the most repetitive task in your week?`, cta: "Learn More", hashtags: ["#AIAutomation", "#Productivity", "#Demo Company"], keywords: ["automation"] });
+  const igBody = (t) => ({ content: `${t} ⚡️\n\nSave this for your next planning session.`, caption: `${t} ⚡️`, cta: "Link in bio", hashtags: ["#AIAutomation", "#WorkSmarter", "#TechTips", "#Demo Company"] });
+  const fbBody = (t) => ({ title: t, content: `${t} — here's how we approach it, step by step.`, cta: "Learn More", hashtags: ["#Demo Company"] });
   const posts = [
     P("p1", "3 automations every finance team should try", ["linkedin", "instagram", "facebook"], "image", "published",
       [variant("linkedin", liBody("3 automations every finance team should try"), published(12, users.manager.id, "https://www.linkedin.com/feed/update/demo1"), metrics({ impressions: 8420, reach: 6130, engagements: 412, likes: 318, comments: 41, shares: 53, clicks: 187, conversions: 6 }, users.manager.id, 5)),
@@ -250,7 +250,7 @@ export async function seedSmms(db) {
     gen(4, "ad", `${D}a2`, "video_ad", "20-second Reel · Instagram", "ai", 5, users.specialist, AD_REEL, "instagram"),
     gen(5, "post", `${D}p1`, "post", posts[0].title, "ai", 14, users.employee, { idea: posts[0].idea }),
     gen(6, "post", `${D}p6`, "post", posts[5].title, "ai", 1, users.employee, { idea: posts[5].idea }),
-    gen(7, "workspace", `${D}w1`, "captions", "Captions for the Diwali automation audit", "ai", 2, users.employee, { input: { type: "captions", platform: "instagram", brief: "Diwali automation audit" }, output: { summary: "Festive, light captions that lead to the audit.", items: [{ heading: "Festive", platform: "instagram", body: "Light up Diwali, not your inbox 🪔 Free automation audit — link in bio.", cta: "Book Now", hashtags: ["#Diwali", "#YashOrbit"] }] } }, "instagram"),
+    gen(7, "workspace", `${D}w1`, "captions", "Captions for the Diwali automation audit", "ai", 2, users.employee, { input: { type: "captions", platform: "instagram", brief: "Diwali automation audit" }, output: { summary: "Festive, light captions that lead to the audit.", items: [{ heading: "Festive", platform: "instagram", body: "Light up Diwali, not your inbox 🪔 Free automation audit — link in bio.", cta: "Book Now", hashtags: ["#Diwali", "#Demo Company"] }] } }, "instagram"),
   ];
   await db.collection("smms_generations").insertMany(gens);
 

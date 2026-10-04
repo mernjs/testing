@@ -77,7 +77,7 @@ async function getPagesCollection(): Promise<Collection<KbWebsitePage>> {
 
 /**
  * `CHATBOT_CRAWL_BASE_URL` is one platform-wide env var (for crawling a
- * staging/local copy of YashOrbit's own site), so only the platform owner
+ * staging/local copy of the company's own site), so only the platform owner
  * honours it — any other company always crawls its own site.
  */
 export async function chatbotCrawlBaseOverride(): Promise<string | null> {

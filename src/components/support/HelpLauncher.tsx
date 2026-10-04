@@ -55,8 +55,8 @@ export default function HelpLauncher() {
                       <LifeBuoy className="size-4" />
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-bold text-foreground">YASH · {supportName}</p>
-                      <p className="truncate text-[11px] text-muted-foreground">AI help from the YashOrbit team</p>
+                      <p className="truncate text-sm font-bold text-foreground">SelfRun Assistant · {supportName}</p>
+                      <p className="truncate text-[11px] text-muted-foreground">AI help from the SelfRun Business team</p>
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-1">

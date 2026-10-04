@@ -3,7 +3,6 @@ import { getDb } from "@/lib/mongodb";
 import { updateStamp } from "@/lib/prms/db";
 import { DEFAULT_CURRENCY, SUPPORTED_CURRENCIES } from "@/lib/prms/constants";
 import { getCompanyBrand } from "@/lib/platform/branding";
-import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
 
 /**
  * PRMS-wide configuration (single document). Company identity used on Purchase

@@ -114,7 +114,7 @@ interface ListingGridConfig extends Record<string, unknown> {
   sectionLabel: string;
   ctaLabel?: string;
   items: ListingItem[];
-  /** Style "YashOrbit" in item descriptions with the two-tone brand treatment (the About hub). */
+  /** Style the brand name in item descriptions with the two-tone brand treatment (the About hub). */
   brandDescriptions?: boolean;
 }
 

@@ -88,7 +88,7 @@ async function run() {
   const users = db.collection("admin_users");
 
   // The platform owner, provisioned like any company and then flagged (as the migration does).
-  const owner = await provision("YashOrbit", "yashorbit", "root@yashorbit.test");
+  const owner = await provision("Demo Company", "demo", "root@demo.test");
   await db.collection(COMPANIES_COLLECTION).updateOne({ _id: owner.companyId as never }, { $set: { isPlatformOwner: true, createdAt: new Date(Date.now() - 90 * 86400_000) } });
   const acme = await provision("Acme Labs", "acme", "founder@acme.test");
   const globex = await provision("Globex", "globex", "boss@globex.test");
@@ -108,7 +108,7 @@ async function run() {
   await check("lists all three companies, newest first", async () => {
     const res = await listCompanies();
     assert.equal(res.total, 3);
-    assert.deepEqual(res.rows.map((r) => r.slug), ["globex", "acme", "yashorbit"]);
+    assert.deepEqual(res.rows.map((r) => r.slug), ["globex", "acme", "demo"]);
   });
   await check("per-company owner, user count, domains, onboarding progress", async () => {
     const { rows } = await listCompanies();
@@ -121,7 +121,7 @@ async function run() {
     const g = rows.find((r) => r.slug === "globex")!;
     assert.equal(g.userCount, 1);
     assert.equal(g.onboarding.done, 0);
-    assert.equal(rows.find((r) => r.slug === "yashorbit")!.isPlatformOwner, true);
+    assert.equal(rows.find((r) => r.slug === "demo")!.isPlatformOwner, true);
   });
   await check("search by name, slug and owner email (case-insensitive)", async () => {
     assert.deepEqual((await listCompanies({ q: "ACME lab" })).rows.map((r) => r.slug), ["acme"]);
@@ -137,7 +137,7 @@ async function run() {
     assert.equal(p1.totalPages, 2);
     assert.equal(p1.rows.length, 2);
     assert.equal(p2.rows.length, 1);
-    assert.equal(p2.rows[0].slug, "yashorbit");
+    assert.equal(p2.rows[0].slug, "demo");
     assert.equal((await listCompanies({ pageSize: 2, page: 99 })).page, 2, "page is clamped");
   });
 

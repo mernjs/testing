@@ -82,7 +82,7 @@ export default function NotifyMeForm({
         <CheckCircle2 className="mx-auto size-10 text-primary" />
         <p className="mt-3 text-lg font-bold text-foreground">{tx("offers.notifyMeForm.you-re-on-the-list")}</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          {campaignName ? `We'll let you know the moment “${campaignName}” goes live.` : "We'll reach out as soon as the next offers are ready."}{tx("offers.notifyMeForm.if-you-have-a-yashorbit-portal-account-y")}</p>
+          {campaignName ? `We'll let you know the moment “${campaignName}” goes live.` : "We'll reach out as soon as the next offers are ready."}{tx("offers.notifyMeForm.if-you-have-a-brand-portal-account-y")}</p>
       </div>
     );
   }

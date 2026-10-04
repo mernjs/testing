@@ -3,7 +3,7 @@ import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import type { AiAnalysis, Attachment, ChatTurn, RequestContext } from "@/lib/support/types";
 
 /**
- * The Help & Support Center is YashOrbit's own service, so its data is NOT company-scoped: it lives in platform-level
+ * The Help & Support Center is the platform's own service, so its data is NOT company-scoped: it lives in platform-level
  * collections (raw DB) and every row carries the `companyId` it belongs to. Every company-facing read in `requests.ts`
  * is built from `companyScope()` so one company can never see another's rows; only the Platform Panel (staff) queries
  * across companies.

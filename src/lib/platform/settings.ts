@@ -1,3 +1,4 @@
+import { SAAS_BRAND } from "@/lib/saas/brand";
 import "server-only";
 import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import { recordPlatformAudit } from "@/lib/platform/audit";
@@ -70,7 +71,7 @@ export interface PlatformGeneralSettings {
 export type PlatformGeneralInput = Omit<PlatformGeneralSettings, "updatedAt" | "updatedBy">;
 
 export const PLATFORM_SETTINGS_DEFAULTS: PlatformGeneralInput = {
-  platformName: "Business OS",
+  platformName: SAAS_BRAND.name,
   supportEmail: "",
   supportUrl: "",
   defaultLocale: "en-IN",

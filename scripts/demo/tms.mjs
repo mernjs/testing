@@ -62,7 +62,7 @@ export async function seedTms(db) {
       const cls = {
         _id: `demo-class-${b._id.slice(11)}-${c + 1}`, batchId: b._id, programId: program._id, mentorId: null, topic: TOPICS[c % TOPICS.length],
         date: dayAgo(daysOffset), startTime: pick(["10:00", "18:30", "19:00", "11:00"]), durationMinutes: pick([90, 120, 120, 150]),
-        meetingLink: "https://meet.google.com/demo-yashorbit", recordingUrl: isPast && chance(0.6) ? "https://example.com/recording" : null, notes: null,
+        meetingLink: "https://meet.google.com/demo-demo", recordingUrl: isPast && chance(0.6) ? "https://example.com/recording" : null, notes: null,
         status: isPast ? "completed" : "scheduled", ...audit(ago(daysOffset + 5)),
       };
       batchClasses.push(cls);
@@ -153,7 +153,7 @@ export async function seedTms(db) {
     liveProjects.push({
       _id: `demo-lp-${i + 1}`, projectCode: `LP-2026-${String(i + 1).padStart(3, "0")}`, title: pick(["Smart Attendance Portal", "AI Support Copilot", "Inventory Analytics Dashboard", "Job Match Engine", "Expense Tracker PWA", "Learning Analytics Suite"]) + ` #${i + 1}`,
       description: "Team project built on a realistic brief, reviewed weekly by the mentor.", programId: b.programId, batchId: b._id, mentorId: null, studentIds: ss.map((s) => s._id), milestones: ms,
-      repoUrl: "https://github.com/yashorbit-demo/live-project", demoUrl: done ? "https://demo.yashorbit.com/project" : null, status: done ? "completed" : pick(["in_progress", "review", "in_progress"]), progressPercent: done ? 100 : Math.round((ms.filter((m) => m.done).length / ms.length) * 100), startDate: b.startDate, dueDate: dayAhead(20), ...audit(ago(40)),
+      repoUrl: "https://github.com/demo-demo/live-project", demoUrl: done ? "https://demo.example.com/project" : null, status: done ? "completed" : pick(["in_progress", "review", "in_progress"]), progressPercent: done ? 100 : Math.round((ms.filter((m) => m.done).length / ms.length) * 100), startDate: b.startDate, dueDate: dayAhead(20), ...audit(ago(40)),
     });
   });
 

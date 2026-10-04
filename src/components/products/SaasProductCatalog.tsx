@@ -427,7 +427,7 @@ export default function SaasProductCatalog({ categories }: { categories: string[
                   </div>
                   <div className="flex items-center gap-2 bg-background/70 border border-border/50 px-3 py-1 rounded-full">
                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-[11px] font-bold text-foreground">{tx("catalog.saasProductCatalog.yashorbit-enterprise-live")}</span>
+                    <span className="text-[11px] font-bold text-foreground">{tx("catalog.saasProductCatalog.brand-enterprise-live")}</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground">
                     <Cpu className="w-3 h-3 text-primary" />{tx("catalog.saasProductCatalog.ai-active")}</div>
@@ -534,7 +534,7 @@ export default function SaasProductCatalog({ categories }: { categories: string[
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-muted/40 border border-border/50 text-xs font-semibold text-foreground mb-3 shadow-sm">
               <Sparkles className="w-3.5 h-3.5 text-primary" />{tx("catalog.saasProductCatalog.high-impact-saas-benefits")}</span>
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">
-              {tx("catalog.saasProductCatalog.why-adopting-yashorbit-saas-automates-yo")}</h2>
+              {tx("catalog.saasProductCatalog.why-adopting-brand-saas-automates-yo")}</h2>
             <p className="text-sm text-muted-foreground mt-3">
               {tx("catalog.saasProductCatalog.eliminate-manual-tasks-cut-software-subs")}</p>
           </div>
@@ -864,7 +864,7 @@ export default function SaasProductCatalog({ categories }: { categories: string[
                 <Sparkles className="w-3.5 h-3.5 text-primary" />{tx("catalog.saasProductCatalog.ready-for-next-gen-tech")}</span>
 
               <h2 className="text-4xl font-black tracking-tight text-foreground sm:text-6xl leading-[1.1]">
-                {tx("catalog.saasProductCatalog.transform-your-enterprise-with-yashorbit")}</h2>
+                {tx("catalog.saasProductCatalog.transform-your-enterprise-with-brand")}</h2>
 
               <p className="text-xl leading-8 text-muted-foreground max-w-lg">
                 {tx("catalog.saasProductCatalog.schedule-a-live-demonstration-of-our-15-")}</p>

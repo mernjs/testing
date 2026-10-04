@@ -61,7 +61,7 @@ export const ROLE_GROUPS: RoleGroup[] = [
   group("PMS (Projects)", PMS_ROLES, PMS_ROLE_META, "pms"),
   group("Procurement (PRMS)", PRMS_ROLES, PRMS_ROLE_META, "prms"),
   group("Training (TMS)", TMS_ROLES, TMS_ROLE_META, "tms"),
-  group("YashChat (Messenger)", CHAT_ROLES, CHAT_ROLE_META, "messenger"),
+  group("Team Chat (Messenger)", CHAT_ROLES, CHAT_ROLE_META, "messenger"),
   group("Finance (FMS)", FMS_ROLES, FMS_ROLE_META, "fms"),
   group("SOP Panel", SOP_ROLES, SOP_ROLE_META, "sop"),
   group("SEO Panel", SEO_ROLES, SEO_ROLE_META, "seo"),

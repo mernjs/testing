@@ -70,7 +70,7 @@ export async function currentCompanyIdOrNull(): Promise<string | null> {
 
 /**
  * Whether the current request belongs to the company that runs the platform
- * (YashOrbit). Gates things that are genuinely YashOrbit's own and must not
+ * (the operator). Gates things that are genuinely the operator's own and must not
  * leak into other workspaces: its analytics tags, and integrations still
  * configured by platform-wide env credentials (payment/payout providers).
  */

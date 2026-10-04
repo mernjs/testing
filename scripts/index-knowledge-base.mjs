@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Kick off a knowledge-base website re-index against a running YashOrbit server
+// Kick off a knowledge-base website re-index against a running Demo Company server
 // and stream progress until it finishes. Run with:
 //
 //   node --env-file=.env scripts/index-knowledge-base.mjs [options]

@@ -1,7 +1,7 @@
 import "server-only";
 import { companyCache } from "@/lib/platform/tenancy/cache";
 import { getDb } from "@/lib/mongodb";
-import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { hasProductCatalog } from "@/lib/products/server";
 import { isProductsHref } from "@/lib/products/shared";
 import { COLLECTIONS, CMS_SITE_TAG, expireSiteCache, newId, createStamp, updateStamp, type Stamps } from "@/lib/cms/db";
 
@@ -120,7 +120,7 @@ const cachedFooter = companyCache(loadFooter, ["cms-footer-v1"], { tags: [CMS_SI
 export async function getPublicFooter(): Promise<PublicFooterColumn[]> {
   const columns = await cachedFooter();
   // Products links are the platform owner's own; never show them on another company's site.
-  return (await isPlatformOwnerContext()) ? columns : withoutProductsLinks(columns);
+  return (await hasProductCatalog()) ? columns : withoutProductsLinks(columns);
 }
 
 /** The footer without links into /products. Pure; exported for tests. */

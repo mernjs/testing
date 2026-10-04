@@ -111,8 +111,8 @@ try {
     await r.getByText("Pending verification").waitFor();
     await r.getByText("Custom domain").waitFor();
     const records = r.getByRole("list", { name: `DNS records for ${DOMAIN}` });
-    await records.getByText(`_yashorbit-verify.${DOMAIN}`).waitFor();
-    await records.getByText(/^yashorbit-verify=[0-9a-f]{32}$/).waitFor();
+    await records.getByText(`_selfrun-verify.${DOMAIN}`).waitFor();
+    await records.getByText(/^demo-verify=[0-9a-f]{32}$/).waitFor();
     // Routing record: CNAME for a subdomain like this one (or whatever the provider asked for).
     await records.getByText(/^(CNAME|A)$/).first().waitFor();
     assert.equal(await r.getByRole("button", { name: `Make ${DOMAIN} primary` }).count(), 0, "pending domain offered as primary");

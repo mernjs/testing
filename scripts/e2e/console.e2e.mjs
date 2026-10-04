@@ -4,7 +4,7 @@
  * reactivates a company and approves a sign-up.
  *
  *   CONSOLE_BASE_URL=http://localhost:3000 \
- *   OWNER_EMAIL=root@yashorbit.test OWNER_PASSWORD=... \
+ *   OWNER_EMAIL=root@demo.test OWNER_PASSWORD=... \
  *   TEST_COMPANY_SLUG=acme \
  *   [TEST_COMPANY_URL=http://acme.localhost:3000] \
  *   [E2E_MONGODB_URI=mongodb://127.0.0.1:27099/some_test_db] \

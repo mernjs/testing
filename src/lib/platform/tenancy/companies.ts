@@ -4,6 +4,7 @@ import type { DnsRecord } from "@/lib/platform/domains/types";
 import { RESERVED_SLUGS } from "@/lib/platform/tenancy/slug";
 import { cachedIntegrationsDoc, loadIntegrationsDoc } from "@/lib/platform/integrations/store";
 import { productionRootDomain } from "@/lib/platform/tenancy/root-domain";
+import { saasHosts } from "@/lib/saas/hosts";
 
 /**
  * The company (tenant) registry and host → company routing. Both
@@ -30,7 +31,7 @@ export interface Company {
   slug: string;
   name: string;
   status: CompanyStatus;
-  /** The company that owns and runs the platform itself (YashOrbit). Exactly one. */
+  /** The company that owns and runs the platform itself (the platform operator). Exactly one. */
   isPlatformOwner: boolean;
   /** Defaults from Platform settings at creation (BCP 47 locale, IANA time zone); onboarding can change the time zone. */
   locale?: string;
@@ -48,7 +49,7 @@ export interface CompanyDomain {
   _id: string;
   companyId: string;
   status: "pending" | "verified";
-  /** Value the owner publishes in a `_yashorbit-verify.<domain>` TXT record. */
+  /** Value the owner publishes in a `_selfrun-verify.<domain>` TXT record. */
   verificationToken: string;
   isPrimary: boolean;
   /** `subdomain` = the automatic `<slug>.<root>` address; `custom` = the company's own domain. */
@@ -89,7 +90,7 @@ export function normalizeHost(host: string | null | undefined): string | null {
 }
 
 function platformHosts(): Set<string> {
-  // The root domain itself and www.<root> (https://www.yashorbit.com) are the platform owner's own site: no env entry needed.
+  // The root domain itself and www.<root> (https://www.example.com) are the platform owner's own site: no env entry needed.
   const roots = platformRootDomains().filter((r) => r !== "localhost");
   return new Set(["localhost", "127.0.0.1", ...roots, ...roots.map((r) => `www.${r}`), ...envList("PLATFORM_HOSTS", "VERCEL_URL", "VERCEL_BRANCH_URL", "VERCEL_PROJECT_PRODUCTION_URL")]);
 }
@@ -97,8 +98,10 @@ function platformHosts(): Set<string> {
 /** `localhost`, every `PLATFORM_ROOT_DOMAIN` entry, and the root domain saved in Platform Panel → Integrations. */
 function platformRootDomains(): string[] {
   const saved = normalizeHost(cachedIntegrationsDoc()?.domains?.rootDomain);
-  const derived = productionRootDomain();
-  return ["localhost", ...envList("PLATFORM_ROOT_DOMAIN"), ...(saved ? [saved] : []), ...(derived ? [derived] : [])];
+  const configured = [...envList("PLATFORM_ROOT_DOMAIN"), ...(saved ? [saved] : [])];
+  // The deployment's production URL is only a guess at the root domain: once one is configured, it is not consulted.
+  const derived = configured.length === 0 ? productionRootDomain() : null;
+  return ["localhost", ...configured, ...(derived ? [derived] : [])];
 }
 
 /**
@@ -106,7 +109,7 @@ function platformRootDomains(): string[] {
  * domain, or any address under one — and so can never be a company's own domain.
  */
 export function isPlatformHost(host: string): boolean {
-  if (platformHosts().has(host)) return true;
+  if (platformHosts().has(host) || saasHosts().has(host)) return true;
   return platformRootDomains().some((root) => host === root || host.endsWith(`.${root}`));
 }
 
@@ -163,11 +166,14 @@ export async function getPlatformOwnerCompanyId(): Promise<string | null> {
 
 async function lookupHost(host: string): Promise<string | null> {
   const bare = host.startsWith("www.") ? host.slice(4) : host;
-  if (platformHosts().has(host) || platformHosts().has(bare)) return getPlatformOwnerCompanyId();
+  // The SaaS product's own host serves its sign-up and Platform Panel, which run in the platform operator's company scope.
+  if (saasHosts().has(host)) return getPlatformOwnerCompanyId();
 
   const db = await getPlatformDb();
   const companies = db.collection<Company>(COMPANIES_COLLECTION);
 
+  // A company's own verified domain wins over the generic platform hosts, so a customer can be served on a domain that
+  // used to be the platform's (a deployment's production URL) without any special case.
   const domain = await db
     .collection<CompanyDomain>(COMPANY_DOMAINS_COLLECTION)
     .findOne({ _id: { $in: [host, bare] }, status: "verified" }, { projection: { companyId: 1 } });
@@ -175,6 +181,8 @@ async function lookupHost(host: string): Promise<string | null> {
     const company = await companies.findOne({ _id: domain.companyId, status: "active" }, { projection: { _id: 1 } });
     return company?._id ?? null;
   }
+
+  if (platformHosts().has(host) || platformHosts().has(bare)) return getPlatformOwnerCompanyId();
 
   for (const root of platformRootDomains()) {
     if (!host.endsWith(`.${root}`)) continue;

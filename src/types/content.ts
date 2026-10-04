@@ -187,7 +187,7 @@ export interface ProductItem {
   benefits?: ProductPageItem[];
   useCases?: ProductPageItem[];
   automationWorkflows?: ProductWorkflow[];
-  /** Other YashOrbit products and real integration points only. */
+  /** Other products and real integration points only. */
   integrations?: { name: string; description: string; href?: string }[];
   scenarios?: string[];
   faq?: { q: string; a: string }[];

@@ -22,6 +22,9 @@ import { panelMetaFor } from "@/lib/platform/panels/store";
 import PlatformNoticeBanner from "@/components/platform/PlatformNoticeBanner";
 import { getTracking, type TrackingSettings } from "@/lib/cms/tracking";
 import { getPlatformSettings } from "@/lib/platform/settings";
+import { onSaasHost, saasOrigin } from "@/lib/saas/request";
+import { SAAS_BRAND } from "@/lib/saas/brand";
+import { SAAS_THEME } from "@/lib/saas/theme";
 
 function verificationMetadata(t: TrackingSettings): Metadata["verification"] {
   const other: Record<string, string[]> = {};
@@ -43,6 +46,18 @@ const geistMono = Geist_Mono({
 
 /** Site-wide SEO defaults every page inherits — CMS → Settings (see lib/cms/site-seo.ts). */
 export async function generateMetadata(): Promise<Metadata> {
+  // The SaaS product's own website carries the product's identity, never a customer's.
+  if (await onSaasHost()) {
+    return {
+      metadataBase: new URL(await saasOrigin()),
+      title: { default: `${SAAS_BRAND.name} — ${SAAS_BRAND.tagline}`, template: `%s | ${SAAS_BRAND.name}` },
+      description: SAAS_BRAND.description,
+      applicationName: SAAS_BRAND.name,
+      icons: { icon: [{ url: SAAS_BRAND.assets.favicon, type: "image/svg+xml" }], apple: SAAS_BRAND.assets.mark },
+      openGraph: { type: "website", siteName: SAAS_BRAND.name, title: `${SAAS_BRAND.name} — ${SAAS_BRAND.tagline}`, description: SAAS_BRAND.description, images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: SAAS_BRAND.name }] },
+      twitter: { card: "summary_large_image", title: `${SAAS_BRAND.name} — ${SAAS_BRAND.tagline}`, description: SAAS_BRAND.description },
+    };
+  }
   // metadataBase = this company's own public site, so relative canonical / OG URLs resolve to it.
   const hasCompany = (await currentCompanyIdOrNull()) !== null;
   const [seo, origin] = hasCompany ? await Promise.all([getSiteSeo(), companySiteUrl()]) : [parseSiteSeo(null), siteUrl];
@@ -60,7 +75,9 @@ export default async function RootLayout({
 }>) {
   // Brand, contact details and social links (CMS → Site Identity); site-wide structured data (CMS → Settings).
   // No company owns this host (the proxy is showing /workspace-not-found): render the bare shell.
-  const companyId = await currentCompanyIdOrNull();
+  // On the SaaS product's host the page chrome is the product's own (bare shell + SaaS brand), not the owner company's.
+  const saasHost = await onSaasHost();
+  const companyId = saasHost ? null : await currentCompanyIdOrNull();
   const hasCompany = companyId !== null;
   // The Panel Registry (names, descriptions, what is switched on) as it applies to this company; never fails the page.
   const panels = hasCompany ? await panelMetaFor(companyId).catch(() => ({})) : {};
@@ -71,9 +88,9 @@ export default async function RootLayout({
   // for the public website AND every panel. A CMS user previewing a theme sees that one instead. Never fails the page.
   const liveChatId = hasCompany ? (await getTracking()).tawkId : "";
   const themeTokens = hasCompany ? ((await resolveSiteThemeState().catch(() => null))?.tokens ?? FALLBACK_THEME) : FALLBACK_THEME;
-  const themeCss = hasCompany ? themeCssBlock(themeTokens) : "";
+  const themeCss = saasHost ? themeCssBlock(SAAS_THEME) : hasCompany ? themeCssBlock(themeTokens) : "";
   // Every theme but the original default gets the modern panel treatment (see globals.css `[data-ui="modern"]`).
-  const modernUi = hasCompany && !isDefaultTokens(themeTokens);
+  const modernUi = saasHost || (hasCompany && !isDefaultTokens(themeTokens));
   // Platform Panel → Platform settings: a maintenance message for every company's panels (cached; never fails the page).
   const notice = hasCompany ? ((await getPlatformSettings().catch(() => null))?.maintenanceBanner ?? "") : "";
 
@@ -93,7 +110,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <BrandProvider brand={brand}>
+          <BrandProvider brand={saasHost ? { ...NEUTRAL_BRAND, name: SAAS_BRAND.name, namePrimary: SAAS_BRAND.namePrimary, nameAccent: SAAS_BRAND.nameAccent, logoUrl: SAAS_BRAND.assets.mark } : brand}>
             <PanelsProvider panels={panels}>
               <PanelTextSync />
               <SiteInfoProvider value={{ ...siteInfo, liveChatId }}>

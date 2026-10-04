@@ -11,8 +11,8 @@ import ProductsGrid from "@/components/products/page/ProductsGrid";
 import { ProductsAiSuite, ProductsConnected, ProductsCtaBand } from "@/components/products/page/ProductsSections";
 
 /**
- * /products — the platform owner's product portfolio. Products are the owner's own
- * marketing content, so on any other company's site this is a 404 (`requireProducts`).
+ * /products — the company's product portfolio, from its published product records. A company without any gets a 404
+ * (`requireProducts`).
  * It renders per request, like the CMS catch-all: the same path is a different site per host.
  */
 export const dynamic = "force-dynamic";

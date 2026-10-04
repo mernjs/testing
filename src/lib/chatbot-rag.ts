@@ -109,7 +109,7 @@ function collectFileCitations(response: OpenAI.Responses.Response): RawFileCitat
   return [...seen.values()];
 }
 
-/** Resolves OpenAI file ids back to public YashOrbit pages / KB documents. */
+/** Resolves OpenAI file ids back to public site pages / KB documents. */
 export async function resolveCitations(
   response: OpenAI.Responses.Response
 ): Promise<ChatCitation[]> {

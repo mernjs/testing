@@ -3,7 +3,7 @@ import { checkPlatformPermission } from "@/lib/platform/console/access";
 import { attachmentOwnerCompany, getObject, saveAttachment } from "@/lib/support/attachments";
 import { getCompanyCaller } from "@/lib/support/caller";
 
-/** Upload (company users) and download (the company that owns the request, or YashOrbit support staff) of request attachments. */
+/** Upload (company users) and download (the company that owns the request, or platform support staff) of request attachments. */
 
 export async function POST(req: NextRequest) {
   const caller = await getCompanyCaller();

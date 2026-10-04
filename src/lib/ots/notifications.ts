@@ -9,7 +9,7 @@ import type { CandidateRef } from "@/lib/ots/constants";
  * OTS reuses the platform's two existing notification stores instead of a
  * new engine:
  *   - staff logins → Messenger's `chat_notifications` (types `ots_*`), shown in
- *     YashChat's bell and the OTS panel bell;
+ *     Team Chat's bell and the OTS panel bell;
  *   - applicants / students → the External Portal's `external_notifications`,
  *     shown in the portal bell.
  * Delivery is best-effort and never blocks the action that triggered it.
