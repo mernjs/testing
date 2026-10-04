@@ -15,7 +15,7 @@ interface Entry {
 }
 
 const PANEL_NAMES: Record<string, string> = {
-  workspace: "Workspace", aibots: "AI Bots", dlms: "Digi Locker", fms: "Finance", hrms: "HR", intelligence: "Intelligence", lms: "Leads / CRM", messenger: "Messenger",
+  workspace: "Workspace", portal: "Portal", platform: "Platform", aibots: "AI Bots", dlms: "Digi Locker", fms: "Finance", hrms: "HR", intelligence: "Intelligence", lms: "Leads / CRM", messenger: "Messenger",
   ots: "Online Tests", pms: "Projects", prms: "Procurement", seo: "SEO", smms: "Social Media", sop: "SOPs", tms: "Training",
 };
 
@@ -23,7 +23,7 @@ const PANEL_NAMES: Record<string, string> = {
  * ⌘K / Ctrl+K search for the panel you are in: every page in its sidebar (so exactly what this person may open) plus
  * the records that live in this panel (leads, clients, projects, tasks, people, invoices) when the Workspace can find them.
  */
-export default function PanelSearch() {
+export default function PanelSearch({ variant = "pill" }: { variant?: "pill" | "field" }) {
   const router = useRouter();
   const pathname = usePathname();
   const panel = pathname.split("/")[1] ?? "";
@@ -128,7 +128,10 @@ export default function PanelSearch() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label={`Search ${name}`}
-        className="flex h-9 w-full max-w-sm items-center gap-2 rounded-full border border-border/60 bg-muted/40 px-3 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+        className={cn(
+          "flex h-9 w-full items-center gap-2 rounded-full border border-border/60 bg-muted/40 px-3 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground",
+          variant === "pill" ? "max-w-sm" : "h-10 rounded-xl bg-background sm:w-80 sm:max-w-full",
+        )}
       >
         <Search className="size-4 shrink-0" />
         <span className="truncate">Search {name} pages, records…</span>

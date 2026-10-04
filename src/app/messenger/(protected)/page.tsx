@@ -1,3 +1,4 @@
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import {
   Users,
   UserCheck,
@@ -62,22 +63,17 @@ export default async function MessengerDashboardPage({
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="relative mx-auto max-w-6xl space-y-4 p-4 sm:p-6">
-        <Breadcrumbs items={[{ label: "Messenger" }, { label: "Chat Dashboard" }]} />
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Chat Dashboard</h1>
-            <p className="text-sm text-muted-foreground">
-              Welcome back, {user.displayName.split(" ")[0]}. Workspace communication at a glance.
-            </p>
-          </div>
-        </div>
-
-        <MessengerDashboardFilters
-          range={rangeParam}
-          dateFrom={from.toISOString().slice(0, 10)}
-          dateTo={to.toISOString().slice(0, 10)}
-          hasActiveFilters={hasActiveFilters}
+      <div className="relative space-y-4">
+        <PanelDashboardHeader
+          breadcrumbs={[{ label: "Messenger", href: "/messenger" }, { label: "Chat Dashboard" }]}
+          title="Team Communication Overview"
+          description={<>Welcome back, {user.displayName.split(" ")[0]}. Follow conversations, channels, meetings and team activity at a glance.</>}
+          filters={<MessengerDashboardFilters
+                  range={rangeParam}
+                  dateFrom={from.toISOString().slice(0, 10)}
+                  dateTo={to.toISOString().slice(0, 10)}
+                  hasActiveFilters={hasActiveFilters}
+                />}
         />
 
         {upcomingMeetings.length > 0 && (

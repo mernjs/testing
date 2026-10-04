@@ -1,3 +1,5 @@
+import PanelFilterBar from "@/components/platform/panel/PanelFilterBar";
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
 import {
   Files, Image as ImageIcon, Menu as MenuIcon, Palette, ArrowRight, FileCheck2, Activity, Plus, Upload,
@@ -27,9 +29,10 @@ import { CheckCircle2, AlertTriangle, HeartPulse, Paintbrush, ExternalLink, Spar
 
 const COLLECTION_ICON: Record<CollectionKey, React.ComponentType<{ className?: string }>> = { blog: Newspaper, jobs: Briefcase, engagement: Users, products: Boxes };
 
-export default async function CmsDashboardPage() {
+export default async function CmsDashboardPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
+  const sp = await searchParams;
   const keys = Object.keys(COLLECTIONS) as CollectionKey[];
-  const [viewer, pages, themes, activeKey, settings, media, nav, audit, collections] = await Promise.all([
+  const [viewer, allPages, themes, activeKey, settings, media, nav, audit, collections] = await Promise.all([
     getViewer(),
     listPages(),
     listThemes(),
@@ -41,6 +44,9 @@ export default async function CmsDashboardPage() {
     Promise.all(keys.map(async (k) => ({ key: k, rows: await listAdminRecords(k) }))),
   ]);
 
+  // The search box narrows the page counts and lists to pages whose title or URL contains the text.
+  const needle = sp.q?.trim().toLowerCase();
+  const pages = needle ? allPages.filter((p) => p.title.toLowerCase().includes(needle) || p.path.toLowerCase().includes(needle)) : allPages;
   const count = (status: string) => pages.filter((p) => p.status === status).length;
   const published = count("published");
   const drafts = count("draft");
@@ -247,11 +253,16 @@ export default async function CmsDashboardPage() {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
-      <CmsPageHeader
-        icon={LayoutDashboard}
-        title="Dashboard"
-        description="An overview of the website's content, what's waiting to be published and recent activity."
+    <div className="space-y-4">
+      <PanelDashboardHeader
+        filters={
+          <PanelFilterBar
+            fields={[{ key: "q", label: "Search", type: "search", placeholder: "Search pages by title or URL…" }]}
+          />
+        }
+        breadcrumbs={[{ label: "CMS", href: "/cms" }, { label: "Dashboard" }]}
+        title="Website Content Overview"
+        description="Manage your website content in one place: track published pages, review pending changes and keep an eye on site health and recent activity."
         actions={quick.map((q) => (
           <Link key={q.href + q.label} href={q.href} className={buttonVariants({ variant: q.label === "New page" ? "default" : "outline", size: "sm" })}>
             <q.icon className="size-3.5" /> {q.label}

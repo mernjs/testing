@@ -1,3 +1,4 @@
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
 import { Users, UserCheck, UserPlus, Building2, Clock3, CalendarOff, AlarmClock, MailQuestion } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -77,24 +78,21 @@ export default async function HrmsDashboardPage({
 
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS" }, { label: "Dashboard" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">HR Dashboard</h1>
-          <p className="text-sm text-muted-foreground">
-            Welcome back{user ? `, ${user.email.split("@")[0]}` : ""}. Real-time workforce overview.
-          </p>
-        </div>
-        <Link href="/hrms/employees/new" className="text-sm font-medium text-primary hover:underline">
-          + Add Employee
-        </Link>
-      </div>
-
-      <HrmsDashboardFilters
-        range={rangeParam}
-        dateFrom={(dateFrom ?? new Date()).toISOString().slice(0, 10)}
-        dateTo={(dateTo ?? new Date()).toISOString().slice(0, 10)}
-        hasActiveFilters={hasActiveFilters}
+      <PanelDashboardHeader
+        breadcrumbs={[{ label: "HRMS", href: "/hrms" }, { label: "Dashboard" }]}
+        title="Workforce Overview"
+        description={<>Welcome back{user ? `, ${user.email.split("@")[0]}` : ""}. Monitor headcount, hiring, attendance and leave across the organization.</>}
+        actions={
+          <Link href="/hrms/employees/new" className="text-sm font-medium text-primary hover:underline">
+            + Add Employee
+          </Link>
+        }
+        filters={<HrmsDashboardFilters
+              range={rangeParam}
+              dateFrom={(dateFrom ?? new Date()).toISOString().slice(0, 10)}
+              dateTo={(dateTo ?? new Date()).toISOString().slice(0, 10)}
+              hasActiveFilters={hasActiveFilters}
+            />}
       />
 
       {/* Workforce KPIs */}

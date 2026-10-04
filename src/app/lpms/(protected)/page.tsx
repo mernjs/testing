@@ -1,3 +1,5 @@
+import PanelFilterBar from "@/components/platform/panel/PanelFilterBar";
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import {
@@ -44,11 +46,12 @@ function ChartCard({
   );
 }
 
-export default async function LpmsDashboardPage() {
+export default async function LpmsDashboardPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
+  const sp = await searchParams;
   const viewer = await getViewer();
   if (!viewer) redirect('/lpms/login');
 
-  const d = await getLpmsDashboard(viewer);
+  const d = await getLpmsDashboard(viewer, { q: sp.q, from: sp.from, to: sp.to });
   const k = d.kpis;
 
   const ctx = { roles: viewer.roles, permissionOverrides: viewer.overrides };
@@ -57,24 +60,27 @@ export default async function LpmsDashboardPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: 'LPMS', href: '/lpms' }, { label: 'Dashboard' }]} />
-
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Legal &amp; Document Automation
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Documents, templates, and approval workflows you can access. Click any tile or chart to open the matching list.
-          </p>
-        </div>
-        {canCreate && (
-          <Link href="/lpms/documents/new" className={buttonVariants({ size: 'sm' })}>
-            <Plus className="size-3.5" data-icon="inline-start" />
-            New Document
-          </Link>
-        )}
-      </div>
+      <PanelDashboardHeader
+        filters={<PanelFilterBar
+          presets
+          fields={[
+            { key: "q", label: "Search", type: "search", placeholder: "Search documents by title…" },
+            { key: "from", label: "From", type: "date" },
+            { key: "to", label: "To", type: "date" },
+          ]}
+        />}
+        breadcrumbs={[{ label: 'LPMS', href: '/lpms' }, { label: 'Dashboard' }]}
+        title="Legal Documents Overview"
+        description="Monitor legal documents, templates and approval workflows, and act quickly on items that need review."
+        actions={
+          canCreate && (
+            <Link href="/lpms/documents/new" className={buttonVariants({ size: 'sm' })}>
+              <Plus className="size-3.5" data-icon="inline-start" />
+              New Document
+            </Link>
+          )
+        }
+      />
 
       {/* Pending approvals action banner */}
       {k.pendingApprovals > 0 && canApprove && (

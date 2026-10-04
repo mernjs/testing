@@ -1,3 +1,4 @@
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
 import { Inbox, Megaphone, TrendingUp, BarChart3, ArrowRight } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -162,34 +163,26 @@ export default async function LmsDashboardPage({
   return (
     <div className="relative space-y-6">
       <DashboardAutoRefresh />
-      <Breadcrumbs items={[{ label: "Dashboard & Analytics" }]} />
-      
-      {/* ── Page Header ── */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground flex items-center gap-2">
-            <BarChart3 className="size-7 text-primary" />
-            Lead & Campaign Advance Analytics
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Unified analytics for lead pipeline, marketing campaign spend, ROI, and conversion funnel.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {lmsUser && <SavedFiltersMenu initialFilters={savedFilters.map((f) => ({ id: String(f._id), name: f.name, params: f.params }))} currentParams={currentParams} />}
-          <ExportButton params={exportParams} />
-        </div>
-      </div>
-
-      <DashboardFilters
-        category={category ?? ""}
-        status={status ?? ""}
-        source={source ?? ""}
-        search={search ?? ""}
-        range={rangeParam}
-        dateFrom={dateFrom.toISOString().slice(0, 10)}
-        dateTo={dateTo.toISOString().slice(0, 10)}
-        hasActiveFilters={hasActiveFilters}
+      <PanelDashboardHeader
+        breadcrumbs={[{ label: "LMS", href: "/lms" }, { label: "Dashboard & Analytics" }]}
+        title="Lead & Campaign Analytics"
+        description="Measure lead pipeline health, campaign spend, ROI and conversion performance from one unified view."
+        actions={
+          <>
+            {lmsUser && <SavedFiltersMenu initialFilters={savedFilters.map((f) => ({ id: String(f._id), name: f.name, params: f.params }))} currentParams={currentParams} />}
+            <ExportButton params={exportParams} />
+          </>
+        }
+        filters={<DashboardFilters
+              category={category ?? ""}
+              status={status ?? ""}
+              source={source ?? ""}
+              search={search ?? ""}
+              range={rangeParam}
+              dateFrom={dateFrom.toISOString().slice(0, 10)}
+              dateTo={dateTo.toISOString().slice(0, 10)}
+              hasActiveFilters={hasActiveFilters}
+            />}
       />
 
       {/* Overview KPIs */}

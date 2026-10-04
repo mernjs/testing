@@ -10,7 +10,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import type { SerializedLead, SerializedCareerApplication } from "@/components/lms/types";
 import { requireModule } from "@/lib/platform/billing/enforce";
 import PanelBackBar from "@/components/hub/PanelBackBar";
-import BillingNotice from "@/components/platform/BillingNotice";
 
 function serializeLead(lead: Lead): SerializedLead {
   return {
@@ -98,7 +97,6 @@ export default async function ProtectedLmsLayout({ children }: { children: React
                 behind every translucent panel at any scroll depth — no
                 per-page blobs needed on top of it. */}
             <PanelBackBar />
-            <BillingNotice />
             <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">{children}</main>
           </div>
         </div>

@@ -8,7 +8,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { listNotifications, unreadCount, runNotificationSweep } from "@/lib/hrms/notifications";
 import { requireModule } from "@/lib/platform/billing/enforce";
 import PanelBackBar from "@/components/hub/PanelBackBar";
-import BillingNotice from "@/components/platform/BillingNotice";
 
 export default async function ProtectedHrmsLayout({ children }: { children: React.ReactNode }) {
   await requireModule("hrms");
@@ -62,7 +61,6 @@ export default async function ProtectedHrmsLayout({ children }: { children: Reac
               />
             </div>
             <PanelBackBar />
-            <BillingNotice />
             <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">{children}</main>
           </div>
         </div>

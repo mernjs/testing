@@ -1,5 +1,6 @@
 "use client";
 
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import {
@@ -8,8 +9,7 @@ import {
 } from "lucide-react";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
-import { PortalPageHeader } from "@/components/portal/widgets";
+import { brandify } from "@/lib/brand";
 import ChartCard from "@/components/portal/dashboard/DashboardCharts";
 import DataTableCard from "@/components/portal/dashboard/DataTableCard";
 import { RANGES, formatValue, timeAgo, formatDate, type RangeId } from "@/components/portal/dashboard/format";
@@ -162,12 +162,11 @@ export default function DashboardView({ model }: { model: DashboardModel }) {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal" }, { label: "Dashboard" }]} />
-      <PortalPageHeader
-        title={model.title}
-        subtitle={`${model.subtitle}${model.badge ? ` · ${model.badge}` : ""}`}
-        action={
-          <div className="flex flex-wrap items-center gap-2">
+      <PanelDashboardHeader
+        breadcrumbs={[{ label: "Portal", href: "/portal" }, { label: "Dashboard" }]}
+        title={brandify(model.title)}
+        description={`${model.subtitle}${model.badge ? ` · ${model.badge}` : ""}`}
+        filters={
             <div role="group" aria-label="Date range" className="inline-flex rounded-xl border border-border p-0.5 text-xs font-medium">
               {RANGES.map((r) => (
                 <button key={r.id} type="button" onClick={() => setRange(r.id)} aria-pressed={range === r.id} className={cn("rounded-lg px-2.5 py-1 transition-colors", range === r.id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
@@ -175,10 +174,11 @@ export default function DashboardView({ model }: { model: DashboardModel }) {
                 </button>
               ))}
             </div>
+        }
+        actions={
             <button type="button" onClick={() => setCustomize((v) => !v)} aria-expanded={customize} className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-1.5 text-xs font-medium hover:border-primary">
               <Settings2 className="size-3.5" /> Customize
             </button>
-          </div>
         }
       />
 

@@ -41,7 +41,7 @@ export default function HubSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              <BrandName /> <span className="text-foreground">Workspace</span>
+              <BrandName />
             </span>
           )}
         </div>

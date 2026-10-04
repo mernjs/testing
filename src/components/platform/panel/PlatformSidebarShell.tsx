@@ -28,7 +28,7 @@ export default function PlatformSidebarShell({ email, flags }: { email: string; 
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              <BrandName /> <span className="text-foreground">Platform</span>
+              <BrandName />
             </span>
           )}
         </div>

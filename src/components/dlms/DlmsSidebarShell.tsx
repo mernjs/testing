@@ -45,7 +45,7 @@ export default function DlmsSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              <BrandName /> <span className="text-foreground">DLMS</span>
+              <BrandName />
             </span>
           )}
         </div>

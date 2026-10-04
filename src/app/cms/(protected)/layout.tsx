@@ -16,7 +16,6 @@ import CmsNotices from "@/components/cms/CmsNotices";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 import { requireModule } from "@/lib/platform/billing/enforce";
 import PanelBackBar from "@/components/hub/PanelBackBar";
-import BillingNotice from "@/components/platform/BillingNotice";
 
 export const generateMetadata = () => brandedMetadata("{brand} CMS", { robots: { index: false, follow: false } });
 
@@ -60,7 +59,6 @@ export default async function ProtectedCmsLayout({ children }: { children: React
               <CmsTopbar roles={user.roles} flags={flags} />
             </div>
             <PanelBackBar />
-            <BillingNotice />
             <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">
               <CmsNotices maintenance={maintenance.enabled} />
               {children}

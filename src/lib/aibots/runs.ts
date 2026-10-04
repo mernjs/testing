@@ -82,13 +82,19 @@ export interface DashboardData {
 }
 
 /** Manager tier sees platform-wide numbers; everyone else sees their own usage. */
-export async function getDashboard(viewer: AibotsViewer): Promise<DashboardData> {
+export async function getDashboard(viewer: AibotsViewer, filters: { from?: string; to?: string } = {}): Promise<DashboardData> {
   const mine = !viewer.seesAll;
   // Day buckets use the server's timezone on both sides (Mongo defaults to UTC).
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
   const who = mine ? { userId: viewer.userId } : {};
-  const since = new Date(Date.now() - 29 * 86400000);
+  // Default window is the last 30 days; the dashboard's From / To filters override it (capped at a year).
+  const validDate = (v?: string) => (v && !Number.isNaN(Date.parse(v)) ? new Date(`${v}T00:00:00`) : null);
+  const until = validDate(filters.to);
+  if (until) until.setHours(23, 59, 59, 999);
+  const since = validDate(filters.from) ?? new Date((until ?? new Date()).getTime() - 29 * 86400000);
   since.setHours(0, 0, 0, 0);
+  const dayCount = Math.min(366, Math.max(1, Math.round(((until ?? new Date()).getTime() - since.getTime()) / 86400000) + 1));
+  const window = { $gte: since, ...(until ? { $lte: until } : {}) };
   const [bots, chats, runs] = await Promise.all([botsCollection(), chatsCollection(), runsCollection()]);
 
   const [allBots, usable, totalChats, chatsToday, totals, daily, top, recent, failures] = await Promise.all([
@@ -99,13 +105,13 @@ export async function getDashboard(viewer: AibotsViewer): Promise<DashboardData>
     chats.countDocuments({ ...notDeleted, ...who, createdAt: { $gte: startOfToday() } }),
     runs
       .aggregate<{ runs: number; failed: number; inT: number; outT: number; cost: number }>([
-        { $match: { ...who, createdAt: { $gte: since } } },
+        { $match: { ...who, createdAt: window } },
         { $group: { _id: null, runs: { $sum: 1 }, failed: { $sum: { $cond: [{ $eq: ["$status", "failed"] }, 1, 0] } }, inT: { $sum: "$inputTokens" }, outT: { $sum: "$outputTokens" }, cost: { $sum: "$costUsd" } } },
       ])
       .toArray(),
     runs
       .aggregate<{ _id: string; runs: number; tokens: number; cost: number; failed: number }>([
-        { $match: { ...who, createdAt: { $gte: since } } },
+        { $match: { ...who, createdAt: window } },
         {
           $group: {
             _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt", timezone: tz } },
@@ -119,7 +125,7 @@ export async function getDashboard(viewer: AibotsViewer): Promise<DashboardData>
       .toArray(),
     runs
       .aggregate<{ _id: string; runs: number; tokens: number; cost: number }>([
-        { $match: { ...who, createdAt: { $gte: since } } },
+        { $match: { ...who, createdAt: window } },
         { $group: { _id: "$botId", runs: { $sum: 1 }, tokens: { $sum: { $add: ["$inputTokens", "$outputTokens"] } }, cost: { $sum: "$costUsd" } } },
         { $sort: { runs: -1 } },
         { $limit: 6 },
@@ -133,7 +139,7 @@ export async function getDashboard(viewer: AibotsViewer): Promise<DashboardData>
   botById.set(GENERAL_BOT_ID, { name: GENERAL_BOT_NAME, icon: "sparkles", color: "indigo" });
   const byDay = new Map(daily.map((d) => [d._id, d]));
   const days: DashboardData["daily"] = [];
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < dayCount; i++) {
     const d = new Date(since);
     d.setDate(since.getDate() + i);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;

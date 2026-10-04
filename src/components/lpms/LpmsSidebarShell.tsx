@@ -50,7 +50,7 @@ export default function LpmsSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              <BrandName /> <span className="text-foreground">Legal</span>
+              <BrandName />
             </span>
           )}
         </div>

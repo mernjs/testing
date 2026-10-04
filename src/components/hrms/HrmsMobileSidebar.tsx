@@ -33,7 +33,7 @@ export default function HrmsMobileSidebar({
           <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border/60 px-4">
             <BrandMark className="size-6 shrink-0" />
             <span className="text-sm font-bold">
-              <BrandName /> <span className="text-foreground">HRMS</span>
+              <BrandName />
             </span>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">

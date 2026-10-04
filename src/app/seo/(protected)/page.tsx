@@ -1,4 +1,6 @@
+import PanelFilterBar from "@/components/platform/panel/PanelFilterBar";
 import Link from "next/link";
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import { redirect } from "next/navigation";
 import {
   Gauge,
@@ -31,22 +33,28 @@ import { getDashboard } from "@/lib/seo-panel/analytics";
 import { companySiteHost } from "@/lib/platform/tenancy/site-url";
 import { formatDateTime } from "@/lib/utils";
 
-export default async function SeoDashboardPage() {
+export default async function SeoDashboardPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
+  const sp = await searchParams;
   const viewer = await getViewer();
   if (!viewer) redirect("/seo/login");
-  const [d, siteHost] = await Promise.all([getDashboard(viewer.userId), companySiteHost()]);
+  const [d, siteHost] = await Promise.all([getDashboard(viewer.userId, { q: sp.q }), companySiteHost()]);
   const sc = d.scores;
   const gsc = d.search.connected;
   const noGsc = <span className="text-sm text-muted-foreground">Connect GSC</span>;
 
   return (
     <div className="space-y-4">
-      <PageHeader
-        title="SEO Dashboard"
-        crumbs={[{ label: "Dashboard" }]}
+      <PanelDashboardHeader
+        filters={<PanelFilterBar
+          fields={[
+            { key: "q", label: "Search", type: "search", placeholder: "Filter pages by URL…" },
+          ]}
+        />}
+        title="SEO Performance Overview"
+        breadcrumbs={[{ label: "SEO", href: "/seo" }, { label: "Dashboard" }]}
         description={
           <>
-            Health, visibility and workload for {siteHost}. Every tile and chart opens the matching detail view.
+            Monitor technical health, search visibility and team workload for {siteHost}.
             {d.run && <span className="ml-1">Last audit {formatDateTime(d.run.startedAt)}.</span>}
             {d.search.range && <span className="ml-1">Search data {d.search.range}.</span>}
           </>

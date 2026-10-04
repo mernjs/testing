@@ -11,7 +11,6 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { brandedMetadata } from '@/lib/platform/branding/metadata';
 import { requireModule } from '@/lib/platform/billing/enforce';
 import PanelBackBar from '@/components/hub/PanelBackBar';
-import BillingNotice from '@/components/platform/BillingNotice';
 import { getLpmsDashboard } from '@/lib/lpms/analytics';
 
 export const generateMetadata = () => brandedMetadata('{brand} Legal & Documents', { robots: { index: false, follow: false } });
@@ -67,7 +66,6 @@ export default async function ProtectedLpmsLayout({ children }: { children: Reac
               <LpmsTopbar roles={user.roles} flags={flags} />
             </div>
             <PanelBackBar />
-            <BillingNotice />
             <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">{children}</main>
           </div>
         </div>

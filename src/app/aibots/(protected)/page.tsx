@@ -1,4 +1,6 @@
+import PanelFilterBar from "@/components/platform/panel/PanelFilterBar";
 import Link from "next/link";
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import { redirect } from "next/navigation";
 import { Bot, Power, MessagesSquare, CalendarDays, Activity, Coins, Cpu, TriangleAlert, MessageSquarePlus } from "lucide-react";
 import KpiGrid from "@/components/lms/KpiGrid";
@@ -15,19 +17,27 @@ import { formatCompact, formatDateTime } from "@/lib/utils";
 
 const usd = (n: number) => (n > 0 && n < 0.01 ? "< $0.01" : `$${n.toFixed(2)}`);
 
-export default async function AibotsDashboardPage() {
+export default async function AibotsDashboardPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
+  const sp = await searchParams;
   const viewer = await getViewer();
   if (!viewer) redirect("/aibots/login");
-  const d = await getDashboard(viewer);
+  const d = await getDashboard(viewer, { from: sp.from, to: sp.to });
   const mine = d.scope === "mine";
   const tokens = d.inputTokens30 + d.outputTokens30;
 
   return (
     <div className="space-y-4">
-      <PageHeader
-        title="AI Bots"
-        crumbs={[{ label: "Dashboard" }]}
-        description={mine ? "Your AI bot usage over the last 30 days." : "Every bot, chat and OpenAI execution across the company — last 30 days."}
+      <PanelDashboardHeader
+        filters={<PanelFilterBar
+          presets
+          fields={[
+            { key: "from", label: "From", type: "date" },
+            { key: "to", label: "To", type: "date" },
+          ]}
+        />}
+        title="AI Bots Overview"
+        breadcrumbs={[{ label: "AI Bots", href: "/aibots" }, { label: "Dashboard" }]}
+        description={mine ? "Track your bots, conversations and AI usage, with cost and reliability for the selected period." : "Monitor every bot, conversation and OpenAI execution across the company, with usage, cost and failure insights for the selected period."}
         actions={
           <Button nativeButton={false} render={<Link href={`/aibots/b/${GENERAL_BOT_ID}`} />}>
             <MessageSquarePlus className="size-4" /> Start New Chat

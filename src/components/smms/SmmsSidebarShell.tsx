@@ -45,7 +45,7 @@ export default function SmmsSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              <BrandName /> <span className="text-foreground">Social Media</span>
+              <BrandName />
             </span>
           )}
         </div>
@@ -64,7 +64,7 @@ export default function SmmsSidebarShell({
       </div>
 
       <SidebarProfileSlot>
-      <SmmsProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      <SmmsProfileMenu email={email} roles={roles} flags={flags} createdAt={createdAt} lastLoginAt={lastLoginAt} />
       </SidebarProfileSlot>
     </motion.aside>
   );

@@ -71,8 +71,8 @@ export async function paidPerformance(opts: { campaignId?: string; from?: Date; 
   };
 }
 
-async function countByStatus(col: Awaited<ReturnType<typeof postsCollection>> | Awaited<ReturnType<typeof campaignsCollection>> | Awaited<ReturnType<typeof adsCollection>>): Promise<Record<ContentStatus, number>> {
-  const rows = await (col as Awaited<ReturnType<typeof postsCollection>>).aggregate<{ _id: ContentStatus; n: number }>([{ $match: notDeleted }, { $group: { _id: "$status", n: { $sum: 1 } } }]).toArray();
+async function countByStatus(scope: Record<string, unknown>, col: Awaited<ReturnType<typeof postsCollection>> | Awaited<ReturnType<typeof campaignsCollection>> | Awaited<ReturnType<typeof adsCollection>>): Promise<Record<ContentStatus, number>> {
+  const rows = await (col as Awaited<ReturnType<typeof postsCollection>>).aggregate<{ _id: ContentStatus; n: number }>([{ $match: scope }, { $group: { _id: "$status", n: { $sum: 1 } } }]).toArray();
   const out = Object.fromEntries(CONTENT_STATUSES.map((s) => [s, 0])) as Record<ContentStatus, number>;
   for (const r of rows) if (r._id in out) out[r._id] = r.n;
   return out;
@@ -123,18 +123,23 @@ export interface DashboardData {
   hasLmsData: boolean;
 }
 
-export async function getDashboard(): Promise<DashboardData> {
+export async function getDashboard(filters: { from?: string; to?: string } = {}): Promise<DashboardData> {
+  // From / To limit the content counts and charts to items created in that window.
+  const created: { $gte?: Date; $lte?: Date } = {};
+  if (filters.from && !Number.isNaN(Date.parse(filters.from))) created.$gte = new Date(`${filters.from}T00:00:00`);
+  if (filters.to && !Number.isNaN(Date.parse(filters.to))) created.$lte = new Date(`${filters.to}T23:59:59.999`);
+  const scope = created.$gte || created.$lte ? { ...notDeleted, createdAt: created } : notDeleted;
   const [campaigns, ads, posts, media, gens] = await Promise.all([campaignsCollection(), adsCollection(), postsCollection(), mediaCollection(), generationsCollection()]);
   const since = new Date(Date.now() - 30 * 86400000);
   const [cS, pS, aS, postPlat, adPlat, postKinds, adKinds, mediaKinds, recent, ai, upcoming, byPlatform, paid] = await Promise.all([
-    countByStatus(campaigns),
-    countByStatus(posts),
-    countByStatus(ads),
-    posts.aggregate<{ _id: string; n: number }>([{ $match: { ...notDeleted, status: { $ne: "archived" } } }, { $unwind: "$platforms" }, { $group: { _id: "$platforms", n: { $sum: 1 } } }]).toArray(),
-    ads.aggregate<{ _id: string; n: number }>([{ $match: { ...notDeleted, status: { $ne: "archived" } } }, { $group: { _id: "$platform", n: { $sum: 1 } } }]).toArray(),
-    posts.aggregate<{ _id: string; n: number }>([{ $match: { ...notDeleted, status: { $ne: "archived" } } }, { $group: { _id: "$contentType", n: { $sum: 1 } } }]).toArray(),
-    ads.aggregate<{ _id: string; n: number }>([{ $match: { ...notDeleted, status: { $ne: "archived" } } }, { $group: { _id: "$format", n: { $sum: 1 } } }]).toArray(),
-    media.aggregate<{ _id: string; n: number }>([{ $match: notDeleted }, { $group: { _id: "$kind", n: { $sum: 1 } } }]).toArray(),
+    countByStatus(scope, campaigns),
+    countByStatus(scope, posts),
+    countByStatus(scope, ads),
+    posts.aggregate<{ _id: string; n: number }>([{ $match: { ...scope, status: { $ne: "archived" } } }, { $unwind: "$platforms" }, { $group: { _id: "$platforms", n: { $sum: 1 } } }]).toArray(),
+    ads.aggregate<{ _id: string; n: number }>([{ $match: { ...scope, status: { $ne: "archived" } } }, { $group: { _id: "$platform", n: { $sum: 1 } } }]).toArray(),
+    posts.aggregate<{ _id: string; n: number }>([{ $match: { ...scope, status: { $ne: "archived" } } }, { $group: { _id: "$contentType", n: { $sum: 1 } } }]).toArray(),
+    ads.aggregate<{ _id: string; n: number }>([{ $match: { ...scope, status: { $ne: "archived" } } }, { $group: { _id: "$format", n: { $sum: 1 } } }]).toArray(),
+    media.aggregate<{ _id: string; n: number }>([{ $match: scope }, { $group: { _id: "$kind", n: { $sum: 1 } } }]).toArray(),
     recentAiGenerations(8),
     gens.aggregate<{ runs: number; images: number; cost: number }>([{ $match: { source: "ai", createdAt: { $gte: since } } }, { $group: { _id: null, runs: { $sum: 1 }, images: { $sum: { $cond: [{ $eq: ["$kind", "image"] }, 1, 0] } }, cost: { $sum: "$costUsd" } } }]).toArray(),
     posts.find({ ...notDeleted, status: "scheduled", scheduledAt: { $gte: new Date() } }, { projection: { title: 1, scheduledAt: 1, platforms: 1, approvedBy: 1 } }).sort({ scheduledAt: 1 }).limit(6).toArray(),

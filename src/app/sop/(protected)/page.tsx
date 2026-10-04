@@ -1,3 +1,5 @@
+import PanelFilterBar from "@/components/platform/panel/PanelFilterBar";
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
@@ -23,6 +25,7 @@ import KpiLink from "@/components/sop/KpiLink";
 import { BarsChart, ColumnsChart, DonutChart, TrendChart } from "@/components/sop/SopCharts";
 import { getViewer } from "@/lib/sop/viewer";
 import { getDashboard } from "@/lib/sop/analytics";
+import { getTaxonomy } from "@/lib/sop/taxonomy";
 import { creatableDepartmentIds } from "@/lib/sop/access";
 import { formatIsoDate } from "@/lib/sop/constants";
 
@@ -38,31 +41,37 @@ function ChartCard({ title, description, children, className }: { title: string;
   );
 }
 
-export default async function SopDashboardPage() {
+export default async function SopDashboardPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
+  const sp = await searchParams;
+  const tax = await getTaxonomy();
   const viewer = await getViewer();
   if (!viewer) redirect("/sop/login");
-  const d = await getDashboard(viewer);
+  const d = await getDashboard(viewer, { q: sp.q, departmentId: sp.departmentId });
   const k = d.kpis;
   const canCreate = creatableDepartmentIds(viewer)?.length !== 0;
   const needsAction = d.mine.pending + d.mine.overdue;
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "Dashboard" }]} />
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">SOP Dashboard</h1>
-          <p className="text-sm text-muted-foreground">
-            Standard operating procedures you can access. Click any tile or chart to open the matching list.
-          </p>
-        </div>
-        {canCreate && (
-          <Link href="/sop/library/new" className={buttonVariants({ size: "sm" })}>
-            <Plus className="size-3.5" data-icon="inline-start" />
-            New SOP
-          </Link>
-        )}
-      </div>
+      <PanelDashboardHeader
+        filters={<PanelFilterBar
+          fields={[
+            { key: "q", label: "Search", type: "search", placeholder: "Search SOPs by title or code…" },
+            { key: "departmentId", label: "Department", type: "select", options: tax.departments.filter((d) => d.active).map((d) => ({ value: d._id, label: d.name })), allLabel: "All departments" },
+          ]}
+        />}
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "Dashboard" }]}
+        title="Process Compliance Overview"
+        description="Keep standard operating procedures current: track reviews, acknowledgements and expiring documents across departments."
+        actions={
+          canCreate && (
+            <Link href="/sop/library/new" className={buttonVariants({ size: "sm" })}>
+              <Plus className="size-3.5" data-icon="inline-start" />
+              New SOP
+            </Link>
+          )
+        }
+      />
 
       {needsAction > 0 && (
         <Link

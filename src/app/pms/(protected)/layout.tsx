@@ -9,7 +9,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { listNotifications, unreadCount, runDeadlineSweep } from "@/lib/pms/notifications";
 import { requireModule } from "@/lib/platform/billing/enforce";
 import PanelBackBar from "@/components/hub/PanelBackBar";
-import BillingNotice from "@/components/platform/BillingNotice";
 
 export default async function ProtectedPmsLayout({ children }: { children: React.ReactNode }) {
   await requireModule("pms");
@@ -63,7 +62,6 @@ export default async function ProtectedPmsLayout({ children }: { children: React
               />
             </div>
             <PanelBackBar />
-            <BillingNotice />
             <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto rounded-2xl">{children}</main>
           </div>
         </div>

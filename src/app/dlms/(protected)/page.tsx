@@ -1,10 +1,11 @@
 import Link from "next/link";
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import { redirect } from "next/navigation";
 import { Building2, Users, KeyRound, FileText, Link2, CalendarClock, TriangleAlert } from "lucide-react";
 import KpiGrid from "@/components/lms/KpiGrid";
 import KpiLink from "@/components/sop/KpiLink";
 import { PageHeader, SectionCard, Notice } from "@/components/dlms/DlmsUi";
-import DlmsFilterBar, { type FilterField } from "@/components/dlms/DlmsFilterBar";
+import PanelFilterBar, { type PanelFilterField as FilterField } from "@/components/platform/panel/PanelFilterBar";
 import FeedList from "@/components/dlms/FeedList";
 import { getViewer, can } from "@/lib/dlms/viewer";
 import { getDashboard, type OverviewFilters } from "@/lib/dlms/overview";
@@ -43,9 +44,10 @@ export default async function DlmsDashboardPage({ searchParams }: { searchParams
 
   return (
     <div className="space-y-4">
-      <PageHeader title="Digi Locker" crumbs={[{ label: "Dashboard" }]} description="Every company and client credential, document, URL and note in one secure place." />
-
-      <DlmsFilterBar fields={fields} values={{ scope: sp.scope ?? "", client: sp.client ?? "", type: sp.type ?? "", category: sp.category ?? "", expiry: sp.expiry ?? "", status: sp.status ?? "" }} />
+      <PanelDashboardHeader
+        title="Digi Locker Overview" breadcrumbs={[{ label: "Digi Locker", href: "/dlms" }, { label: "Dashboard" }]} description="Securely manage company and client credentials, documents, links and notes, and stay ahead of expiring records and access changes."
+        filters={<PanelFilterBar fields={fields} />}
+      />
 
       {viewer.seesAll ? null : (
         <Notice tone="info">

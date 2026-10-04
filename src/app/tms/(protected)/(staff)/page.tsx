@@ -1,3 +1,4 @@
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import {
   Users,
   Briefcase,
@@ -78,24 +79,19 @@ export default async function TmsDashboardPage({
 
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "TMS" }, { label: "Dashboard" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Training Dashboard</h1>
-          <p className="text-sm text-muted-foreground">
-            Welcome back{user ? `, ${user.email.split("@")[0]}` : ""}. Real-time training operations overview.
-          </p>
-        </div>
-      </div>
-
-      <TmsDashboardFilters
-        range={rangeParam}
-        dateFrom={(dateFrom ?? new Date()).toISOString().slice(0, 10)}
-        dateTo={(dateTo ?? new Date()).toISOString().slice(0, 10)}
-        programId={sp.programId ?? ""}
-        mode={sp.mode ?? ""}
-        programs={programs.map((p) => ({ _id: p._id, name: p.name }))}
-        hasActiveFilters={hasActiveFilters}
+      <PanelDashboardHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Dashboard" }]}
+        title="Training Operations Overview"
+        description={<>Welcome back{user ? `, ${user.email.split("@")[0]}` : ""}. Monitor enrolments, batches, attendance and fee collection across your programs.</>}
+        filters={<TmsDashboardFilters
+              range={rangeParam}
+              dateFrom={(dateFrom ?? new Date()).toISOString().slice(0, 10)}
+              dateTo={(dateTo ?? new Date()).toISOString().slice(0, 10)}
+              programId={sp.programId ?? ""}
+              mode={sp.mode ?? ""}
+              programs={programs.map((p) => ({ _id: p._id, name: p.name }))}
+              hasActiveFilters={hasActiveFilters}
+            />}
       />
 
       {/* Enrolment KPIs */}

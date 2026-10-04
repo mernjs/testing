@@ -24,8 +24,8 @@ export interface Point {
 
 const pct = (a: number, b: number) => (b ? Math.round(((a - b) / b) * 1000) / 10 : null);
 
-export async function getDashboard(viewerId: string) {
-  const [run, issues, keywords, backlinks, daily, settings, pagesDocs, runs, tasks] = await Promise.all([
+export async function getDashboard(viewerId: string, filters: { q?: string } = {}) {
+  const [run, issues, keywords, backlinks, daily, settings, allPagesDocs, runs, tasks] = await Promise.all([
     latestCompletedRun(),
     issueStats(),
     allActiveKeywords(),
@@ -36,6 +36,9 @@ export async function getDashboard(viewerId: string) {
     (await seoCollection<CrawlRun>(COLLECTIONS.runs)).find({ status: "completed" }).sort({ startedAt: 1 }).limit(60).toArray(),
     taskStats(viewerId),
   ]);
+  // The search box narrows the page-level numbers (indexing, scores) to URLs containing the text.
+  const needle = filters.q?.trim().toLowerCase();
+  const pagesDocs = needle ? allPagesDocs.filter((p) => p.path.toLowerCase().includes(needle)) : allPagesDocs;
   const traffic = await trafficDaily(addDaysIso(todayIso(), -120));
 
   // Search Console: last 28 days vs the 28 before.

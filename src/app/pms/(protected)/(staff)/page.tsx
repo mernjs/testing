@@ -1,3 +1,4 @@
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
 import {
   FolderKanban,
@@ -109,51 +110,39 @@ export default async function PmsDashboardPage({
   return (
     <div className="relative space-y-5">
 
-      {/* Breadcrumbs */}
-      <Breadcrumbs items={[{ label: "PMS" }, { label: "Dashboard" }]} />
-
-      {/* ── HRMS-style heading row ── */}
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Project Dashboard
-          </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            {displayName
-              ? `Welcome back, ${displayName}. `
-              : ""}
-            Real-time overview of your project portfolio, team capacity &amp; billing health.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link href="/pms/projects/new">
-            <Button size="sm" className="gap-1.5 shadow-xs">
-              <Plus className="size-4" />
-              <span>New Project</span>
-            </Button>
-          </Link>
-          <Link href="/pms/analytics">
-            <Button size="sm" variant="outline" className="gap-1.5 shadow-xs">
-              <BarChart3 className="size-4" />
-              <span>Analytics</span>
-            </Button>
-          </Link>
-        </div>
-      </div>
-
-      {/* ── Multi-Filter Panel ── */}
-      <PmsDashboardFilters
-        range={rangeParam}
-        dateFrom={(dateFrom ?? new Date()).toISOString().slice(0, 10)}
-        dateTo={(dateTo ?? new Date()).toISOString().slice(0, 10)}
-        clientId={sp.clientId ?? ""}
-        status={sp.status ?? ""}
-        priority={sp.priority ?? ""}
-        granularity={granularity}
-        billingModel={sp.billingModel ?? ""}
-        overdue={sp.overdue ?? ""}
-        clients={clients}
-        hasActiveFilters={hasActiveFilters}
+      <PanelDashboardHeader
+        breadcrumbs={[{ label: "PMS", href: "/pms" }, { label: "Dashboard" }]}
+        title="Project Portfolio Overview"
+        description={<>{displayName ? `Welcome back, ${displayName}. ` : ""}Track delivery progress, team capacity and billing health across your projects.</>}
+        actions={
+          <>
+            <Link href="/pms/projects/new">
+              <Button size="sm" className="gap-1.5 shadow-xs">
+                <Plus className="size-4" />
+                <span>New Project</span>
+              </Button>
+            </Link>
+            <Link href="/pms/analytics">
+              <Button size="sm" variant="outline" className="gap-1.5 shadow-xs">
+                <BarChart3 className="size-4" />
+                <span>Analytics</span>
+              </Button>
+            </Link>
+          </>
+        }
+        filters={<PmsDashboardFilters
+              range={rangeParam}
+              dateFrom={(dateFrom ?? new Date()).toISOString().slice(0, 10)}
+              dateTo={(dateTo ?? new Date()).toISOString().slice(0, 10)}
+              clientId={sp.clientId ?? ""}
+              status={sp.status ?? ""}
+              priority={sp.priority ?? ""}
+              granularity={granularity}
+              billingModel={sp.billingModel ?? ""}
+              overdue={sp.overdue ?? ""}
+              clients={clients}
+              hasActiveFilters={hasActiveFilters}
+            />}
       />
 
       {/* ── Portfolio KPIs ── */}

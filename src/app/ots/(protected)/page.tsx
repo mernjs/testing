@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import { redirect } from "next/navigation";
 import {
   FileCheck2,
@@ -34,7 +35,7 @@ import KpiGrid from "@/components/lms/KpiGrid";
 import KpiCard from "@/components/lms/KpiCard";
 import KpiLink from "@/components/sop/KpiLink";
 import { Button } from "@/components/ui/button";
-import SmmsFilterBar from "@/components/smms/SmmsFilterBar";
+import PanelFilterBar from "@/components/platform/panel/PanelFilterBar";
 import { BarsChart, DonutChart } from "@/components/sop/SopCharts";
 import { AttemptTrendChart, DistributionChart, PassFailChart } from "@/components/ots/OtsCharts";
 import { PageHeader, SectionCard, Chip } from "@/components/ots/OtsUi";
@@ -62,10 +63,25 @@ export default async function OtsDashboardPage({ searchParams }: { searchParams:
 
   return (
     <div className="space-y-4">
-      <PageHeader
-        title="Online Test Dashboard"
-        crumbs={[{ label: "Dashboard" }]}
-        description="Tests, assignments and results across employees, applicants and students. Click any tile or chart to open the matching list."
+      <PanelDashboardHeader
+        title="Assessment Overview"
+        breadcrumbs={[{ label: "Online Tests", href: "/ots" }, { label: "Dashboard" }]}
+        description="Track tests, assignments and results across employees, applicants and students, and spot who needs evaluation or follow-up."
+        filters={reports && (
+          <PanelFilterBar
+          presets
+          fields={[
+            { key: "from", label: "From", type: "date" },
+            { key: "to", label: "To", type: "date" },
+            { key: "departmentId", label: "Department", type: "select", options: dir.departments },
+            { key: "designationId", label: "Role", type: "select", options: dir.designations },
+            { key: "testId", label: "Test", type: "select", options: tests },
+            { key: "kind", label: "User type", type: "select", options: CANDIDATE_KINDS.map((k) => ({ value: k.value, label: k.label })) },
+            { key: "categoryId", label: "Test category", type: "select", options: cats.map((c) => ({ value: c._id, label: c.name })) },
+            { key: "status", label: "Status", type: "select", options: ASSIGNMENT_STATUSES.map((s) => ({ value: s.value, label: s.label })) },
+          ]}
+        />
+        )}
         actions={
           <>
             {can(viewer, "CREATE_TEST") && (
@@ -99,22 +115,6 @@ export default async function OtsDashboardPage({ searchParams }: { searchParams:
             </Link>
           )}
         </div>
-      )}
-
-      {reports && (
-        <SmmsFilterBar
-          values={{ from: sp.from ?? "", to: sp.to ?? "", departmentId: sp.departmentId ?? "", designationId: sp.designationId ?? "", testId: sp.testId ?? "", kind: sp.kind ?? "", categoryId: sp.categoryId ?? "", status: sp.status ?? "" }}
-          fields={[
-            { key: "from", label: "From", type: "date" },
-            { key: "to", label: "To", type: "date" },
-            { key: "departmentId", label: "Department", type: "select", options: dir.departments },
-            { key: "designationId", label: "Role", type: "select", options: dir.designations },
-            { key: "testId", label: "Test", type: "select", options: tests },
-            { key: "kind", label: "User type", type: "select", options: CANDIDATE_KINDS.map((k) => ({ value: k.value, label: k.label })) },
-            { key: "categoryId", label: "Test category", type: "select", options: cats.map((c) => ({ value: c._id, label: c.name })) },
-            { key: "status", label: "Status", type: "select", options: ASSIGNMENT_STATUSES.map((s) => ({ value: s.value, label: s.label })) },
-          ]}
-        />
       )}
 
       <SectionCard title="Tests" description="Draft → Published → Active → Completed/Closed → Archived">

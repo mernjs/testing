@@ -1,3 +1,4 @@
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
 import {
   Coins,
@@ -214,38 +215,21 @@ export default async function FmsDashboardPage({
 
   return (
     <div className="relative space-y-4">
-      {/* Breadcrumbs */}
-      <Breadcrumbs items={[{ label: "FMS" }, { label: "Dashboard" }]} />
-
-      {/* ── Page Hero Header ── */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2 mb-0.5">
-            <div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-[color:var(--color-brand-accent)] text-white shadow-xs">
-              <BarChart3 className="size-3.5" />
-            </div>
-            <Badge variant="outline" className="text-[9px] font-bold bg-primary/10 text-primary border-primary/25 uppercase tracking-wider py-0 px-1.5">
-              Finance OS
-            </Badge>
-          </div>
-          <h1 className="text-xl font-extrabold tracking-tight text-foreground sm:text-2xl">Financial Management Hub</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Welcome back{user?.email ? `, ${user.email.split("@")[0]}` : ""}. Real-time treasury, cash flow, receivables, and payables across all panels.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelDashboardHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Dashboard" }]}
+        title="Financial Overview"
+        description={<>Welcome back{user?.email ? `, ${user.email.split("@")[0]}` : ""}. Track treasury, cash flow, receivables and payables across every panel in real time.</>}
+        actions={
           <GranularityToggle value={granularity} />
-        </div>
-      </div>
-
-      {/* ── Dashboard Filter Bar ── */}
-      <FmsDashboardFilters
-        range={rangeParam}
-        dateFrom={(dateFrom ?? new Date()).toISOString().slice(0, 10)}
-        dateTo={(dateTo ?? new Date()).toISOString().slice(0, 10)}
-        sourceModule={sp.sourceModule ?? ""}
-        type={sp.type ?? ""}
-        hasActiveFilters={hasActiveFilters}
+        }
+        filters={<FmsDashboardFilters
+              range={rangeParam}
+              dateFrom={(dateFrom ?? new Date()).toISOString().slice(0, 10)}
+              dateTo={(dateTo ?? new Date()).toISOString().slice(0, 10)}
+              sourceModule={sp.sourceModule ?? ""}
+              type={sp.type ?? ""}
+              hasActiveFilters={hasActiveFilters}
+            />}
       />
 
       {/* ── §1: Top Executive KPI Grid ── */}

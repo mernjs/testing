@@ -47,7 +47,7 @@ export default function TmsSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              <BrandName /> <span className="text-foreground">TMS</span>
+              <BrandName />
             </span>
           )}
         </div>

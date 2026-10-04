@@ -1,3 +1,4 @@
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
 import {
   Wallet,
@@ -101,50 +102,40 @@ export default async function PrmsDashboardPage({
   return (
     <div className="relative space-y-6">
 
-      {/* Breadcrumbs */}
-      <Breadcrumbs items={[{ label: "PRMS" }, { label: "Dashboard" }]} />
-
-      {/* ── Heading ── */}
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Procurement Dashboard
-          </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            {displayName ? `Welcome back, ${displayName}. ` : ""}
-            Real-time analytics for spend, requisitions, vendor orders, and company assets.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Link href="/prms/requisitions">
-            <Button size="sm" className="gap-1.5 shadow-xs">
-              <ClipboardList className="size-4" />
-              <span>New Request</span>
-            </Button>
-          </Link>
-          <Link href="/prms/expenses">
-            <Button size="sm" variant="outline" className="gap-1.5 shadow-xs">
-              <Receipt className="size-4" />
-              <span>Log Expense</span>
-            </Button>
-          </Link>
-        </div>
-      </div>
-
-      {/* ── Filter Panel ── */}
-      <PrmsDashboardFilters
-        range={rangeParam}
-        dateFrom={(dateFrom ?? new Date()).toISOString().slice(0, 10)}
-        dateTo={(dateTo ?? new Date()).toISOString().slice(0, 10)}
-        departmentId={sp.departmentId ?? ""}
-        projectId={sp.projectId ?? ""}
-        vendorId={sp.vendorId ?? ""}
-        category={sp.category ?? ""}
-        expenseType={sp.expenseType ?? ""}
-        departments={departments.map((d) => ({ _id: d._id, name: d.name }))}
-        projects={projects.map((p) => ({ _id: p._id, name: p.name }))}
-        vendors={vendors.map((v) => ({ _id: v._id, companyName: v.companyName }))}
-        hasActiveFilters={hasActiveFilters}
+      <PanelDashboardHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Dashboard" }]}
+        title="Procurement Overview"
+        description={<>{displayName ? `Welcome back, ${displayName}. ` : ""}Analyze spend, requisitions, vendor orders and company assets to keep purchasing on budget.</>}
+        actions={
+          <>
+            <Link href="/prms/requisitions">
+              <Button size="sm" className="gap-1.5 shadow-xs">
+                <ClipboardList className="size-4" />
+                <span>New Request</span>
+              </Button>
+            </Link>
+            <Link href="/prms/expenses">
+              <Button size="sm" variant="outline" className="gap-1.5 shadow-xs">
+                <Receipt className="size-4" />
+                <span>Log Expense</span>
+              </Button>
+            </Link>
+          </>
+        }
+        filters={<PrmsDashboardFilters
+              range={rangeParam}
+              dateFrom={(dateFrom ?? new Date()).toISOString().slice(0, 10)}
+              dateTo={(dateTo ?? new Date()).toISOString().slice(0, 10)}
+              departmentId={sp.departmentId ?? ""}
+              projectId={sp.projectId ?? ""}
+              vendorId={sp.vendorId ?? ""}
+              category={sp.category ?? ""}
+              expenseType={sp.expenseType ?? ""}
+              departments={departments.map((d) => ({ _id: d._id, name: d.name }))}
+              projects={projects.map((p) => ({ _id: p._id, name: p.name }))}
+              vendors={vendors.map((v) => ({ _id: v._id, companyName: v.companyName }))}
+              hasActiveFilters={hasActiveFilters}
+            />}
       />
 
       {/* ── Procurement Overview KPIs ── */}

@@ -113,8 +113,13 @@ export interface DashboardData {
   expiringSoonDays: number;
 }
 
-export async function getDashboard(v: SopViewer): Promise<DashboardData> {
-  const [summaries, tax, settings] = await Promise.all([listVisibleSummaries(v), getTaxonomy(), getSettings()]);
+export async function getDashboard(v: SopViewer, filters: { q?: string; departmentId?: string } = {}): Promise<DashboardData> {
+  const [visible, tax, settings] = await Promise.all([listVisibleSummaries(v), getTaxonomy(), getSettings()]);
+  // Search & department filters narrow every number and chart on the dashboard.
+  const needle = filters.q?.trim().toLowerCase();
+  const summaries = visible.filter(
+    (s) => (!filters.departmentId || s.departmentId === filters.departmentId) && (!needle || s.title.toLowerCase().includes(needle) || s.code.toLowerCase().includes(needle)),
+  );
   const today = todayIso();
   const byId = new Map(summaries.map((s) => [s._id, s]));
   const deptName = new Map(tax.departments.map((d) => [d._id, d.name]));

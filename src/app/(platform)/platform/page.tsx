@@ -1,3 +1,4 @@
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle, Building2, CalendarClock, CalendarPlus, CircleCheck, CirclePause, Clock, CreditCard, Gauge, Hourglass, IndianRupee, ShieldAlert, Sparkles, Timer, TrendingUp } from "lucide-react";
@@ -22,7 +23,7 @@ export default async function PlatformDashboardPage({ searchParams }: { searchPa
 
   return (
     <div className="space-y-6 p-1">
-      <PlatformPageHeader title="Dashboard" description="The whole SaaS platform at a glance — tenants, subscriptions and what needs attention." />
+      <PanelDashboardHeader breadcrumbs={[{ label: "Platform", href: "/platform" }, { label: "Dashboard" }]} title="Platform Overview" description="Monitor tenants, subscriptions and revenue across the platform, and see what needs your attention." />
       {denied && (
         <p role="alert" className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-300">
           Your platform role doesn&apos;t include access to that page. Ask a Platform Owner if you need it.

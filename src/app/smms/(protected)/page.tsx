@@ -1,4 +1,6 @@
+import PanelFilterBar from "@/components/platform/panel/PanelFilterBar";
 import Link from "next/link";
+import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import { redirect } from "next/navigation";
 import { Megaphone, FilePen, CalendarClock, Send, LayoutGrid, Eye, MousePointerClick, Users, Target, Heart, Sparkles, Plus } from "lucide-react";
 import KpiGrid from "@/components/lms/KpiGrid";
@@ -22,10 +24,11 @@ function genHref(g: { targetType: string; targetId: string }) {
   return null;
 }
 
-export default async function SmmsDashboardPage() {
+export default async function SmmsDashboardPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
+  const sp = await searchParams;
   const viewer = await getViewer();
   if (!viewer) redirect("/smms/login");
-  const d = await getDashboard();
+  const d = await getDashboard({ from: sp.from, to: sp.to });
   const active = d.campaigns.published + d.campaigns.scheduled;
   const drafts = d.campaigns.draft + d.campaigns.generated + d.campaigns.edited;
   const maxPlat = Math.max(1, ...d.platformContent.map((p) => p.posts + p.ads));
@@ -33,10 +36,17 @@ export default async function SmmsDashboardPage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader
-        title="Social Media Marketing"
-        crumbs={[{ label: "Dashboard" }]}
-        description="Campaigns, ads and posts across Instagram, Facebook, YouTube, LinkedIn and Google."
+      <PanelDashboardHeader
+        filters={<PanelFilterBar
+          presets
+          fields={[
+            { key: "from", label: "From", type: "date" },
+            { key: "to", label: "To", type: "date" },
+          ]}
+        />}
+        title="Social Media Overview"
+        breadcrumbs={[{ label: "Social Media", href: "/smms" }, { label: "Dashboard" }]}
+        description="Plan, publish and measure campaigns, ads and posts across Instagram, Facebook, YouTube, LinkedIn and Google."
         actions={
           <>
             {can(viewer, "MANAGE_POSTS") && (

@@ -45,7 +45,7 @@ export default function FmsSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              <BrandName /> <span className="text-foreground">FMS</span>
+              <BrandName />
             </span>
           )}
         </div>

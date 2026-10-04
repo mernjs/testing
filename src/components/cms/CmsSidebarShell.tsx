@@ -45,7 +45,7 @@ export default function CmsSidebarShell({
           <BrandMark className="size-6 shrink-0" />
           {!collapsed && (
             <span className="truncate text-sm font-bold">
-              <BrandName /> <span className="text-foreground">CMS</span>
+              <BrandName />
             </span>
           )}
         </div>
