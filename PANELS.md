@@ -409,6 +409,12 @@ could be reused, timed, marked consistently or compared.
 
 ---
 
+## Help & Support — YASH (`/support`)
+
+YashOrbit's own help desk for every company on the platform. Companies get an **AI Help Chatbot** (also one click away from every panel's top bar, aware of the panel and page the user is on), a searchable **Help Center**, and **My Requests** for support requests, bug reports, feature requests, improvements and feedback. The chatbot answers only from help articles YashOrbit publishes and offers to turn an unresolved chat into a request the user reviews before sending. Bug reports capture panel, page, route, browser, OS and device automatically.
+
+All requests are received centrally: the data lives in platform-level collections (`support_*`), every row carries its `companyId`, and company-facing queries are always pinned to the caller's company. YashOrbit staff work them in the Platform Panel (**Support requests**, **Help content**, **Support settings**; permissions `support.read` / `support.manage`): assign, prioritise, reply, add internal notes, and use AI triage (summary, category/priority/team suggestions, duplicates, suggested reply). Request types and their form fields, categories, priorities, severities, teams and the status workflow are configuration, not code.
+
 ## The common thread
 
 Every panel above is real, in active use, and built specifically around how

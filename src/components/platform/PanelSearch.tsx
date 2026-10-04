@@ -15,7 +15,7 @@ interface Entry {
 }
 
 const PANEL_NAMES: Record<string, string> = {
-  workspace: "Workspace", portal: "Portal", platform: "Platform", aibots: "AI Bots", dlms: "Digi Locker", fms: "Finance", hrms: "HR", intelligence: "Intelligence", lms: "Leads / CRM", messenger: "Messenger",
+  workspace: "Workspace", support: "Help & Support", portal: "Portal", platform: "Platform", aibots: "AI Bots", dlms: "Digi Locker", fms: "Finance", hrms: "HR", intelligence: "Intelligence", lms: "Leads / CRM", messenger: "Messenger",
   ots: "Online Tests", pms: "Projects", prms: "Procurement", seo: "SEO", smms: "Social Media", sop: "SOPs", tms: "Training",
 };
 

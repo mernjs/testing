@@ -6,7 +6,7 @@ import { ArrowLeft, ChevronRight } from "lucide-react";
 
 const NAMES: Record<string, string> = {
   aibots: "AI Bots", cms: "Website CMS", dlms: "Digi Locker", fms: "Finance", hrms: "HR", intelligence: "Intelligence", lms: "Leads / CRM",
-  messenger: "Messenger", ots: "Online Tests", pms: "Projects", prms: "Procurement", seo: "SEO", smms: "Social Media", sop: "SOPs", tms: "Training",
+  messenger: "Messenger", ots: "Online Tests", pms: "Projects", prms: "Procurement", seo: "SEO", smms: "Social Media", sop: "SOPs", support: "Help & Support", tms: "Training",
 };
 
 export default function PanelBackLink() {

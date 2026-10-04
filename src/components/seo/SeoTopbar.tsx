@@ -1,5 +1,6 @@
 "use client";
 
+import HelpLauncher from "@/components/support/HelpLauncher";
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import SeoMobileSidebar from "@/components/seo/SeoMobileSidebar";
@@ -34,6 +35,7 @@ export default function SeoTopbar({
         <PanelSearch />
       </div>
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <HelpLauncher />
         <button
           type="button"
           onClick={() => setAiOpen(!aiOpen)}

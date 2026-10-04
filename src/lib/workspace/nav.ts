@@ -69,7 +69,8 @@ export type NavIcon =
   | "bell"
   | "key"
   | "file"
-  | "platform";
+  | "platform"
+  | "help";
 
 interface NavItemDef {
   key: string;
@@ -268,6 +269,8 @@ const COMPANY: NavItemDef[] = [
 const NAV_ITEMS: NavItemDef[] = [
   { key: "dashboard", section: "dashboard", label: "Dashboard", href: "/workspace", icon: "dashboard", allow: anyone },
   ...PANELS,
+  // Help & Support is YashOrbit's own service for every company: no role gate and no plan module.
+  { key: "panel.support", section: "panels", label: "Help & Support", href: "/support", icon: "help", allow: anyone },
   ...ANALYTICS,
   ...MANAGE,
   ...COMPANY,

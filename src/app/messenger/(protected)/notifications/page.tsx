@@ -1,6 +1,6 @@
 import GenericPanelNotificationsPage from "@/components/platform/panel/GenericPanelNotificationsPage";
 import { getCurrentChatUser } from "@/lib/messenger-auth";
-import { listNotifications, markRead, markAllRead } from "@/lib/messenger/notifications";
+import { listNotifications, markRead as markChatRead, markAllRead } from "@/lib/messenger/notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +12,7 @@ export default async function Page() {
   async function markRead(entries: { id: string }[]) {
     "use server";
     const u = await getCurrentChatUser();
-    if (u) await markRead(entries.map((e) => e.id), u.id);
+    if (u) await markChatRead(entries.map((e) => e.id), u.id);
   }
   async function markAll() {
     "use server";

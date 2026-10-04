@@ -38,12 +38,14 @@ import {
   Lock,
   Bell,
   FileText,
+  LifeBuoy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { NavIcon, NavSection } from "@/lib/workspace/nav";
 
 const ICONS: Record<NavIcon, React.ComponentType<{ className?: string }>> = {
+  help: LifeBuoy,
   dashboard: LayoutDashboard,
   users: Users,
   projects: FolderKanban,

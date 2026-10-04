@@ -47,6 +47,13 @@ export const PERMISSION_GROUPS = [
     ],
   },
   {
+    area: "Support",
+    permissions: [
+      { key: "support.read", label: "View Help & Support requests from all companies" },
+      { key: "support.manage", label: "Reply to, assign and resolve requests; manage help content and support settings" },
+    ],
+  },
+  {
     area: "Administration",
     permissions: [
       { key: "users.read", label: "View platform users & roles" },
@@ -113,6 +120,9 @@ export const ROUTE_PERMISSIONS: Record<string, PlatformPermission | null> = {
   "/platform/settings/billing": "tax.read",
   "/platform/revenue": "revenue.read",
   "/platform/usage": "usage.read",
+  "/platform/support": "support.read",
+  "/platform/support/help": "support.read",
+  "/platform/support/settings": "support.read",
   "/platform/users": "users.read",
   "/platform/integrations": "integrations.read",
   "/platform/audit": "audit.read",

@@ -1,5 +1,6 @@
 "use client";
 
+import HelpLauncher from "@/components/support/HelpLauncher";
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import type { NavSection } from "@/lib/workspace/nav";
@@ -23,6 +24,7 @@ export default function HubTopbar({ email, nav, unread = 0 }: { email: string; n
         <PanelSearch />
       </div>
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <HelpLauncher />
         <button
           type="button"
           onClick={() => setAiOpen(!aiOpen)}

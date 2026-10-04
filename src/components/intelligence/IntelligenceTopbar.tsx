@@ -1,5 +1,6 @@
 "use client";
 
+import HelpLauncher from "@/components/support/HelpLauncher";
 import { useState } from "react";
 import Link from "next/link";
 import { Sparkles, Bell } from "lucide-react";
@@ -23,6 +24,7 @@ export default function IntelligenceTopbar({ roles: _roles }: { roles: string[] 
         <PanelSearch />
       </div>
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <HelpLauncher />
         <button
           type="button"
           onClick={() => setAiOpen(!aiOpen)}

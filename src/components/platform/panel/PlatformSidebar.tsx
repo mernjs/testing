@@ -21,6 +21,9 @@ import {
   Plug,
   ScrollText,
   Settings2,
+  LifeBuoy,
+  BookOpen,
+  SlidersHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -28,6 +31,8 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip
 /** Live counts shown as badges — computed on the server. */
 export interface PlatformNavFlags {
   pendingApprovals: number;
+  /** Unread notifications for the signed-in platform user (shown on the top-bar bell). */
+  unreadNotifications?: number;
   /** Routes the signed-in user has no permission to view — left out of the menu. */
   hidden?: string[];
 }
@@ -66,6 +71,14 @@ const SECTIONS: { label: string; items: { href: string; label: string; icon: Ico
     items: [
       { href: "/platform/revenue", label: "Revenue & subscriptions", icon: LineChart },
       { href: "/platform/usage", label: "Usage & limits", icon: Gauge },
+    ],
+  },
+  {
+    label: "Support",
+    items: [
+      { href: "/platform/support", label: "Support requests", icon: LifeBuoy, exact: true },
+      { href: "/platform/support/help", label: "Help content", icon: BookOpen },
+      { href: "/platform/support/settings", label: "Support settings", icon: SlidersHorizontal },
     ],
   },
   {
