@@ -18,7 +18,7 @@ export default async function BrandingSettingsPage() {
   const [stored, brand, { options: themes, activeKey, appliedKey }] = await Promise.all([getStoredBranding(), getCompanyBrand(), listThemeOptions()]);
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10">
+    <div className="min-h-screen bg-muted/70 px-4 py-10 dark:bg-background">
       <div className="mx-auto max-w-4xl space-y-4">
         <Link href="/workspace/settings" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" /> Company settings

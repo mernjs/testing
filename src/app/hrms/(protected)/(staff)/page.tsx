@@ -1,3 +1,4 @@
+import DashboardSection from "@/components/platform/panel/DashboardSection";
 import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
 import { Users, UserCheck, UserPlus, Building2, Clock3, CalendarOff, AlarmClock, MailQuestion } from "lucide-react";
@@ -96,7 +97,7 @@ export default async function HrmsDashboardPage({
       />
 
       {/* Workforce KPIs */}
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Workforce</h2>
         <KpiGrid>
           <KpiCard label="Total Employees" value={stats.totalEmployees} accent icon={<Users className="size-4" />} />
@@ -109,10 +110,10 @@ export default async function HrmsDashboardPage({
           />
           <KpiCard label="Departments" value={stats.departments} icon={<Building2 className="size-4" />} />
         </KpiGrid>
-      </div>
+      </DashboardSection>
 
       {/* Attendance & Leave KPIs */}
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Today &amp; Pending</h2>
         <KpiGrid>
           <KpiCard label="Present Today" value={ops.presentToday} icon={<Clock3 className="size-4" />} />
@@ -120,10 +121,10 @@ export default async function HrmsDashboardPage({
           <KpiCard label="Late Check-ins" value={ops.lateToday} icon={<AlarmClock className="size-4" />} />
           <KpiCard label="Pending Leave Requests" value={ops.pendingLeaveRequests} icon={<MailQuestion className="size-4" />} />
         </KpiGrid>
-      </div>
+      </DashboardSection>
 
       {/* Operations analytics */}
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Attendance &amp; Leave</h2>
         <GlassCard>
           <CardHeader><CardTitle>Attendance Overview</CardTitle></CardHeader>
@@ -139,10 +140,10 @@ export default async function HrmsDashboardPage({
             <CardContent><TimeSeriesChart data={ops.leaveAnalytics.byMonth} /></CardContent>
           </GlassCard>
         </div>
-      </div>
+      </DashboardSection>
 
       {/* Trends */}
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Trends</h2>
         <GlassCard>
           <CardHeader className="flex-row items-center justify-between space-y-0">
@@ -171,10 +172,10 @@ export default async function HrmsDashboardPage({
             </CardContent>
           </GlassCard>
         </div>
-      </div>
+      </DashboardSection>
 
       {/* Distribution */}
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Distribution</h2>
         <div className="grid gap-4 lg:grid-cols-2">
           <GlassCard>
@@ -218,7 +219,7 @@ export default async function HrmsDashboardPage({
             </CardContent>
           </GlassCard>
         </div>
-      </div>
+      </DashboardSection>
 
       <GlassCard>
         <CardHeader>

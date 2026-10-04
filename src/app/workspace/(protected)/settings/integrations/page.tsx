@@ -46,7 +46,7 @@ export default async function IntegrationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10">
+    <div className="min-h-screen bg-muted/70 px-4 py-10 dark:bg-background">
       <div className="mx-auto max-w-5xl space-y-6">
         <Link href="/workspace/settings" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4" /> Company settings

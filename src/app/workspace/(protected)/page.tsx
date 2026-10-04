@@ -86,7 +86,7 @@ export default async function HubDashboardPage({
       />
 
       {/* ── Section 1: whole-dashboard search & filter + panel performance matrix ── */}
-      <section id="dashboard-overview" data-section="overview" className="space-y-6 rounded-3xl border border-border/60 border-t-2 border-t-primary/60 bg-background dark:bg-[color-mix(in_oklch,var(--background)_82%,black)] p-5 shadow-sm sm:p-6">
+      <section id="dashboard-overview" data-section="overview" className="space-y-6 rounded-3xl border border-border/60 border-t-2 border-t-primary/60 bg-muted/70 dark:bg-[color-mix(in_oklch,var(--background)_82%,black)] p-5 shadow-sm sm:p-6">
         <PanelPerformanceMatrix modules={executive?.modules} stats={headline} panels={matrixPanels} locked={matrixLocked} />
       </section>
 
@@ -100,7 +100,7 @@ export default async function HubDashboardPage({
         </ExecutiveSection>
       ) : (
         sections.map((k) => (
-          <div key={k} className="rounded-3xl border border-border/60 border-t-2 border-t-primary/60 bg-background dark:bg-[color-mix(in_oklch,var(--background)_82%,black)] p-5 shadow-sm sm:p-6">
+          <div key={k} className="rounded-3xl border border-border/60 border-t-2 border-t-primary/60 bg-muted/70 dark:bg-[color-mix(in_oklch,var(--background)_82%,black)] p-5 shadow-sm sm:p-6">
             <PanelAnalyticsBlock panel={k} user={user} sp={sp} prefix={k} compact />
           </div>
         ))

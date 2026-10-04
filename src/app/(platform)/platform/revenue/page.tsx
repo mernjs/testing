@@ -113,7 +113,7 @@ export default async function PlatformRevenuePage({ searchParams }: { searchPara
       />
 
       {/* ── Now ── */}
-      <section aria-labelledby="rev-now" className="space-y-3">
+      <section aria-labelledby="rev-now" className="space-y-3 rounded-3xl border border-border/50 bg-muted/70 p-5 sm:p-6 dark:border-border/40 dark:bg-transparent">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 id="rev-now" className="text-sm font-semibold">
             Right now
@@ -135,7 +135,7 @@ export default async function PlatformRevenuePage({ searchParams }: { searchPara
       </section>
 
       {/* ── Range ── */}
-      <section aria-labelledby="rev-range" className="space-y-3">
+      <section aria-labelledby="rev-range" className="space-y-3 rounded-3xl border border-border/50 bg-muted/70 p-5 sm:p-6 dark:border-border/40 dark:bg-transparent">
         <div className="flex flex-col gap-2">
           <h2 id="rev-range" className="text-sm font-semibold">
             <span data-testid="revenue-range-label">{d.range.label}</span>

@@ -60,7 +60,7 @@ export default function ConnectionsHub({ providers, encryptionReady }: { provide
         const items = shown.filter((p) => p.group === group);
         if (items.length === 0) return null;
         return (
-          <section key={group} className="space-y-3">
+          <section key={group} className="space-y-3 rounded-3xl border border-border/50 bg-muted/70 p-5 sm:p-6 dark:border-border/40 dark:bg-transparent">
             <div>
               <h2 className="text-base font-semibold">{GROUP_LABELS[group].title}</h2>
               <p className="text-sm text-muted-foreground">{GROUP_LABELS[group].description}</p>

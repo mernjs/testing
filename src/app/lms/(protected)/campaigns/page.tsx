@@ -1,3 +1,4 @@
+import DashboardSection from "@/components/platform/panel/DashboardSection";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -113,7 +114,7 @@ export default async function CampaignAnalyticsPage({
             </GlassCard>
           </div>
 
-          <div className="space-y-2">
+          <DashboardSection className="space-y-2">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-foreground">Campaign Performance</h2>
               <Link href="/lms/campaigns/leads" className="flex items-center gap-1 text-sm text-primary hover:underline">
@@ -121,7 +122,7 @@ export default async function CampaignAnalyticsPage({
               </Link>
             </div>
             <CampaignPerformanceTable rows={analytics.campaigns} currency={analytics.currency} />
-          </div>
+          </DashboardSection>
         </>
       )}
 

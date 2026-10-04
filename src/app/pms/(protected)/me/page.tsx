@@ -1,3 +1,4 @@
+import DashboardSection from "@/components/platform/panel/DashboardSection";
 import Link from "next/link";
 import {
   FolderKanban,
@@ -75,7 +76,7 @@ export default async function EmployeeDashboardPage({
         hasActiveFilters={Boolean(sp.range || sp.dateFrom || sp.dateTo)}
       />
 
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Work</h2>
         <KpiGrid>
           <KpiCard label="Assigned Projects" value={d.assignedProjects} accent icon={<FolderKanban className="size-4" />} />
@@ -83,9 +84,9 @@ export default async function EmployeeDashboardPage({
           <KpiCard label="Completed Tasks" value={d.completedTasks} icon={<CheckCircle2 className="size-4" />} />
           <KpiCard label="Pending Tasks" value={d.pendingTasks} icon={<Clock3 className="size-4" />} />
         </KpiGrid>
-      </div>
+      </DashboardSection>
 
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Hours</h2>
         <KpiGrid>
           <KpiCard label="Today" value={d.todayHours} suffix="h" icon={<Clock className="size-4" />} />
@@ -93,7 +94,7 @@ export default async function EmployeeDashboardPage({
           <KpiCard label="This Month" value={d.monthHours} suffix="h" icon={<CalendarDays className="size-4" />} />
           <KpiCard label="Productivity" value={d.productivity} suffix="%" icon={<Gauge className="size-4" />} />
         </KpiGrid>
-      </div>
+      </DashboardSection>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <GlassCard>

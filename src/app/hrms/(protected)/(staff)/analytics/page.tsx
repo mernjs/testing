@@ -1,3 +1,4 @@
+import DashboardSection from "@/components/platform/panel/DashboardSection";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
@@ -151,7 +152,7 @@ export default async function HrmsAdvanceAnalyticsPage({
       />
 
       {/* ── Workforce KPIs ── */}
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground flex items-center gap-2">
           <Users className="size-4 text-primary" />
           Workforce & Headcount KPIs
@@ -169,10 +170,10 @@ export default async function HrmsAdvanceAnalyticsPage({
           <KpiCard label="Present Today" value={ops.presentToday} icon={<Clock3 className="size-4" />} />
           <KpiCard label="On Leave Today" value={ops.onLeaveToday} icon={<CalendarOff className="size-4" />} />
         </KpiGrid>
-      </div>
+      </DashboardSection>
 
       {/* ── Headcount Growth Trend ── */}
-      <div className="space-y-3">
+      <DashboardSection className="space-y-3">
         <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
           <TrendingUp className="size-4 text-primary" />
           Headcount & Hiring Growth
@@ -189,7 +190,7 @@ export default async function HrmsAdvanceAnalyticsPage({
             <TimeSeriesChart data={stats.headcountTimeSeries} />
           </CardContent>
         </GlassCard>
-      </div>
+      </DashboardSection>
 
       {/* ── Hiring vs Attrition Dual Grid ── */}
       <div className="grid gap-5 lg:grid-cols-2">
@@ -221,7 +222,7 @@ export default async function HrmsAdvanceAnalyticsPage({
       </div>
 
       {/* ── Distribution Charts Grid ── */}
-      <div className="space-y-3">
+      <DashboardSection className="space-y-3">
         <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
           <PieChartIcon className="size-4 text-primary" />
           Workforce Demographics & Department Distribution
@@ -286,10 +287,10 @@ export default async function HrmsAdvanceAnalyticsPage({
           </GlassCard>
 
         </div>
-      </div>
+      </DashboardSection>
 
       {/* ── Attendance & Leave Overview ── */}
-      <div className="space-y-3">
+      <DashboardSection className="space-y-3">
         <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
           <Clock3 className="size-4 text-primary" />
           Attendance & Operational Performance
@@ -303,7 +304,7 @@ export default async function HrmsAdvanceAnalyticsPage({
             <AttendanceOverviewChart data={ops.attendanceOverview} />
           </CardContent>
         </GlassCard>
-      </div>
+      </DashboardSection>
 
     </div>
   );

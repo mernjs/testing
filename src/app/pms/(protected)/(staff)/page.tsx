@@ -1,3 +1,4 @@
+import DashboardSection from "@/components/platform/panel/DashboardSection";
 import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
 import {
@@ -146,7 +147,7 @@ export default async function PmsDashboardPage({
       />
 
       {/* ── Portfolio KPIs ── */}
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Portfolio Overview</h2>
         <KpiGrid>
           <KpiCard label="Total Projects" value={stats.totalProjects} accent icon={<FolderKanban className="size-4" />} />
@@ -154,10 +155,10 @@ export default async function PmsDashboardPage({
           <KpiCard label="Completed" value={stats.completedProjects} icon={<CheckCircle2 className="size-4" />} />
           <KpiCard label="On Hold" value={stats.onHoldProjects} icon={<PauseCircle className="size-4" />} />
         </KpiGrid>
-      </div>
+      </DashboardSection>
 
       {/* ── Capacity & Milestones KPIs ── */}
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Capacity &amp; Health</h2>
         <KpiGrid>
           <KpiCard label="Overdue Projects" value={stats.overdueProjects} tone={stats.overdueProjects > 0 ? "down" : undefined} icon={<AlarmClock className="size-4" />} />
@@ -166,10 +167,10 @@ export default async function PmsDashboardPage({
           <KpiCard label="Overall Completion" value={stats.overallCompletion} suffix="%" icon={<Gauge className="size-4" />} />
           {scoped && <KpiCard label="New This Period" value={stats.newProjects} trend={stats.newProjectsGrowth} icon={<FolderKanban className="size-4" />} />}
         </KpiGrid>
-      </div>
+      </DashboardSection>
 
       {/* ── Distribution & Workload Charts ── */}
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Distribution &amp; Workload</h2>
         <div className="grid gap-4 lg:grid-cols-2">
           <GlassCard>
@@ -194,10 +195,10 @@ export default async function PmsDashboardPage({
             <CardContent><CategoryBarChart data={stats.deadlineBuckets} /></CardContent>
           </GlassCard>
         </div>
-      </div>
+      </DashboardSection>
 
       {/* ── Trends & Progress ── */}
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Trends &amp; Progress</h2>
         <GlassCard>
           <CardHeader className="flex-row items-center justify-between space-y-0">
@@ -210,7 +211,7 @@ export default async function PmsDashboardPage({
           <CardHeader><CardTitle className="text-sm font-bold">Average Progress Trend</CardTitle></CardHeader>
           <CardContent><TimeSeriesChart data={stats.progressTrend} /></CardContent>
         </GlassCard>
-      </div>
+      </DashboardSection>
 
       {/* ── Status Board & Recent Projects ── */}
       <div className="grid gap-4 lg:grid-cols-2">

@@ -1,3 +1,4 @@
+import DashboardSection from "@/components/platform/panel/DashboardSection";
 import { Clock, CalendarClock, CalendarDays, Coins } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -125,10 +126,10 @@ export default async function MyTimesheetPage({
         </GlassCard>
       </div>
 
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Entries</h2>
         <TimesheetTable entries={rows} projects={projectOptions} />
-      </div>
+      </DashboardSection>
     </div>
   );
 }

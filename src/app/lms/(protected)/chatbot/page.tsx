@@ -1,3 +1,4 @@
+import DashboardSection from "@/components/platform/panel/DashboardSection";
 import Link from "next/link";
 import { MessageSquare, Users, Activity, Bot, Clock, TriangleAlert, ShieldAlert, Gauge, UserCheck } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -103,7 +104,7 @@ export default async function ChatbotDashboardPage({
         hasActiveFilters={hasActiveFilters}
       />
 
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Overview</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           <KpiCard label="Chat Sessions" value={stats.totalSessions} accent trend={stats.growth.sessions} icon={<MessageSquare className="size-4" />} />
@@ -116,9 +117,9 @@ export default async function ChatbotDashboardPage({
           <KpiCard label="Error Rate" value={stats.errorRate} suffix="%" icon={<TriangleAlert className="size-4" />} />
           <KpiCard label="Flagged" value={stats.flaggedCount} icon={<ShieldAlert className="size-4" />} />
         </div>
-      </div>
+      </DashboardSection>
 
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Trends</h2>
         <GlassCard>
           <CardHeader className="flex-row items-center justify-between space-y-0">
@@ -137,7 +138,7 @@ export default async function ChatbotDashboardPage({
             <TimeSeriesChart data={stats.messagesSeries} />
           </CardContent>
         </GlassCard>
-      </div>
+      </DashboardSection>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <GlassCard>

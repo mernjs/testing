@@ -1,3 +1,4 @@
+import DashboardSection from "@/components/platform/panel/DashboardSection";
 import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import {
   Users,
@@ -95,7 +96,7 @@ export default async function TmsDashboardPage({
       />
 
       {/* Enrolment KPIs */}
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Enrolment</h2>
         <KpiGrid>
           <KpiCard label="Total Students" value={stats.totalStudents} accent icon={<Users className="size-4" />} />
@@ -103,10 +104,10 @@ export default async function TmsDashboardPage({
           <KpiCard label="Internship Students" value={stats.internshipStudents} icon={<Briefcase className="size-4" />} />
           <KpiCard label="New This Period" value={stats.newStudents} trend={stats.newStudentsGrowth} icon={<Rocket className="size-4" />} />
         </KpiGrid>
-      </div>
+      </DashboardSection>
 
       {/* Delivery KPIs */}
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Delivery</h2>
         <KpiGrid>
           <KpiCard label="Active Batches" value={stats.activeBatches} icon={<Layers className="size-4" />} />
@@ -114,20 +115,20 @@ export default async function TmsDashboardPage({
           <KpiCard label="Completed Programs" value={stats.completedPrograms} icon={<CheckCircle2 className="size-4" />} />
           <KpiCard label="Pending Applications" value={stats.pendingApplications} tone={stats.pendingApplications > 0 ? "down" : undefined} icon={<Inbox className="size-4" />} />
         </KpiGrid>
-      </div>
+      </DashboardSection>
 
       {/* Outcomes KPIs */}
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Outcomes</h2>
         <KpiGrid>
           <KpiCard label="Placement Success Rate" value={stats.placementSuccessRate} suffix="%" icon={<Target className="size-4" />} />
           <KpiCard label="Total Revenue" value={stats.totalRevenue} format="currency" accent icon={<IndianRupee className="size-4" />} />
           <KpiCard label="Certificates Issued" value={stats.certificatesIssued} icon={<BadgeCheck className="size-4" />} />
         </KpiGrid>
-      </div>
+      </DashboardSection>
 
       {/* Distribution */}
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Distribution</h2>
         <div className="grid gap-4 lg:grid-cols-2">
           <GlassCard>
@@ -149,10 +150,10 @@ export default async function TmsDashboardPage({
             <CardContent><CategoryBarChart data={stats.completionRate} /></CardContent>
           </GlassCard>
         </div>
-      </div>
+      </DashboardSection>
 
       {/* Trends */}
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Trends</h2>
         <GlassCard>
           <CardHeader className="flex-row items-center justify-between space-y-0">
@@ -173,7 +174,7 @@ export default async function TmsDashboardPage({
           <CardHeader><CardTitle>Placement Analytics</CardTitle></CardHeader>
           <CardContent><TimeSeriesChart data={stats.placementTrend} /></CardContent>
         </GlassCard>
-      </div>
+      </DashboardSection>
     </div>
   );
 }

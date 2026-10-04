@@ -1,3 +1,4 @@
+import DashboardSection from "@/components/platform/panel/DashboardSection";
 import Link from "next/link";
 import { Inbox, Percent } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -127,7 +128,7 @@ export default async function CareersDashboardPage({
       />
 
       {/* Overview */}
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Overview</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           <KpiCard label="Total" value={stats.total} accent trend={stats.growthPercent} icon={<Inbox className="size-4" />} />
@@ -145,10 +146,10 @@ export default async function CareersDashboardPage({
           })}
           <KpiCard label="Conversion Rate" value={stats.hiringConversionRate} suffix="%" icon={<Percent className="size-4" />} />
         </div>
-      </div>
+      </DashboardSection>
 
       {/* Trends */}
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Trends</h2>
         <GlassCard>
           <CardHeader className="flex-row items-center justify-between space-y-0">
@@ -161,10 +162,10 @@ export default async function CareersDashboardPage({
           <CardHeader><CardTitle>Monthly Hiring Trends</CardTitle></CardHeader>
           <CardContent><TimeSeriesChart data={stats.hiredTimeSeries} /></CardContent>
         </GlassCard>
-      </div>
+      </DashboardSection>
 
       {/* Positions & Experience */}
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Positions &amp; Experience</h2>
         <div className="grid gap-4 lg:grid-cols-2">
           <GlassCard>
@@ -183,10 +184,10 @@ export default async function CareersDashboardPage({
           <CardHeader><CardTitle>Top Hiring Positions</CardTitle></CardHeader>
           <CardContent><TopPositions data={stats.topHiringPositions} /></CardContent>
         </GlassCard>
-      </div>
+      </DashboardSection>
 
       {/* Status & Funnel */}
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Status &amp; Funnel</h2>
         <div className="grid gap-4 lg:grid-cols-2">
           <GlassCard>
@@ -200,7 +201,7 @@ export default async function CareersDashboardPage({
             </CardContent>
           </GlassCard>
         </div>
-      </div>
+      </DashboardSection>
 
       <GlassCard>
         <CardHeader><CardTitle>Recent Applications</CardTitle></CardHeader>

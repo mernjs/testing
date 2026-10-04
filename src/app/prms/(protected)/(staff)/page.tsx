@@ -1,3 +1,4 @@
+import DashboardSection from "@/components/platform/panel/DashboardSection";
 import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
 import {
@@ -139,7 +140,7 @@ export default async function PrmsDashboardPage({
       />
 
       {/* ── Procurement Overview KPIs ── */}
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground flex items-center gap-2">
           <Layers className="size-4 text-primary" />
           Procurement & Asset Summary
@@ -157,10 +158,10 @@ export default async function PrmsDashboardPage({
           <KpiCard label="Hardware & Devices" value={stats.totalOfficeAssets} icon={<Boxes className="size-4" />} />
           <KpiCard label="Software Subscriptions" value={stats.activeSubscriptions} icon={<Cloud className="size-4" />} />
         </KpiGrid>
-      </div>
+      </DashboardSection>
 
       {/* ── Monthly Spend Trend Chart ── */}
-      <div className="space-y-3">
+      <DashboardSection className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <TrendingUp className="size-4 text-primary" />
@@ -177,10 +178,10 @@ export default async function PrmsDashboardPage({
           </CardHeader>
           <CardContent><TimeSeriesChart data={stats.monthlyExpenseTrend} /></CardContent>
         </GlassCard>
-      </div>
+      </DashboardSection>
 
       {/* ── Charts Grid ── */}
-      <div className="space-y-3">
+      <DashboardSection className="space-y-3">
         <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
           <PieChartIcon className="size-4 text-primary" />
           Spend Breakdown & Analytics
@@ -234,10 +235,10 @@ export default async function PrmsDashboardPage({
           </GlassCard>
 
         </div>
-      </div>
+      </DashboardSection>
 
       {/* ── Asset Acquisition Growth Trend ── */}
-      <div className="space-y-3">
+      <DashboardSection className="space-y-3">
         <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
           <BarChart3 className="size-4 text-primary" />
           Asset & Device Growth Timeline
@@ -251,7 +252,7 @@ export default async function PrmsDashboardPage({
             <TimeSeriesChart data={stats.assetAcquisitionTrend} />
           </CardContent>
         </GlassCard>
-      </div>
+      </DashboardSection>
 
       {/* ── Recent Activity Table Card ── */}
       <GlassCard className="p-4 sm:p-6">

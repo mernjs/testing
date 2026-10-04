@@ -42,7 +42,7 @@ export default async function CompanySettingsPage() {
   const sections = (session?.nav.sections ?? []).filter((s) => s.key === "company" || s.key === "platform").flatMap((s) => s.items);
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10">
+    <div className="min-h-screen bg-muted/70 px-4 py-10 dark:bg-background">
       <div className="mx-auto max-w-4xl space-y-6">
         <div>
           <h1 className="text-2xl font-black tracking-tight">{brand.name} settings</h1>

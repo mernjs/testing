@@ -1,3 +1,4 @@
+import DashboardSection from "@/components/platform/panel/DashboardSection";
 import Link from "next/link";
 import { AudioLines, MessageSquare, Clock, Gauge, Activity, Users, Radio } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -125,7 +126,7 @@ export default async function VoiceDashboardPage({
         hasActiveFilters={hasActiveFilters}
       />
 
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Overview</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           <KpiCard label="Voice Conversations" value={stats.totalConversations} accent trend={stats.growth.conversations} icon={<AudioLines className="size-4" />} />
@@ -135,9 +136,9 @@ export default async function VoiceDashboardPage({
           <KpiCard label="Voice Share" value={stats.voiceSharePercent} suffix="%" icon={<Radio className="size-4" />} />
           <KpiCard label="Active Voice Now" value={stats.activeVoiceSessions} icon={<Activity className="size-4" />} />
         </div>
-      </div>
+      </DashboardSection>
 
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Trends</h2>
         <GlassCard>
           <CardHeader className="flex-row items-center justify-between space-y-0">
@@ -148,7 +149,7 @@ export default async function VoiceDashboardPage({
             <TimeSeriesChart data={stats.conversationsSeries} />
           </CardContent>
         </GlassCard>
-      </div>
+      </DashboardSection>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <GlassCard>

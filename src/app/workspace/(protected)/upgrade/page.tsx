@@ -19,7 +19,7 @@ export default async function UpgradePage({ searchParams }: { searchParams: Prom
   const label = mod?.label ?? "this panel";
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
+    <div className="flex min-h-screen items-center justify-center bg-muted/70 px-4 py-10 dark:bg-background">
       <div className="w-full max-w-md text-center">
         <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-2xl bg-primary/10">
           {unlocked ? <LockOpen className="size-7 text-primary" /> : <Lock className="size-7 text-primary" />}

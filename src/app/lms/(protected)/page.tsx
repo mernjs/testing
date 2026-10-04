@@ -1,3 +1,4 @@
+import DashboardSection from "@/components/platform/panel/DashboardSection";
 import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
 import { Inbox, Megaphone, TrendingUp, BarChart3, ArrowRight } from "lucide-react";
@@ -186,7 +187,7 @@ export default async function LmsDashboardPage({
       />
 
       {/* Overview KPIs */}
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground flex items-center gap-2">
           <Inbox className="size-4 text-primary" />
           Lead Pipeline Overview
@@ -198,11 +199,11 @@ export default async function LmsDashboardPage({
             return <KpiCard key={s.value} label={s.label} value={stats.byStatus[s.value] ?? 0} icon={<Icon className="size-4" />} />;
           })}
         </div>
-      </div>
+      </DashboardSection>
 
       {/* ── Integrated Marketing Campaign Analytics ── */}
       {campaignAnalytics.hasData && (
-        <div className="space-y-4">
+        <DashboardSection className="space-y-4">
           <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
             <Megaphone className="size-4 text-primary" />
             Marketing Campaign Performance &amp; ROI
@@ -245,11 +246,11 @@ export default async function LmsDashboardPage({
               <CampaignPerformanceTable rows={campaignAnalytics.campaigns} currency={campaignAnalytics.currency} />
             </div>
           )}
-        </div>
+        </DashboardSection>
       )}
 
       {/* Attention Needed */}
-      <div>
+      <DashboardSection>
         <h2 className="mb-3 text-lg font-semibold text-foreground">Attention Needed</h2>
         <div className="grid gap-4 lg:grid-cols-2">
           <GlassCard>
@@ -263,10 +264,10 @@ export default async function LmsDashboardPage({
             </CardContent>
           </GlassCard>
         </div>
-      </div>
+      </DashboardSection>
 
       {/* Trends */}
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
           <TrendingUp className="size-4 text-primary" />
           Submission & Volume Trends
@@ -289,10 +290,10 @@ export default async function LmsDashboardPage({
           </CardHeader>
           <CardContent><TimeSeriesChart data={stats.timeSeries} /></CardContent>
         </GlassCard>
-      </div>
+      </DashboardSection>
 
       {/* Category Performance */}
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Category Performance</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {perCategoryStats.map((cat) => {
@@ -322,10 +323,10 @@ export default async function LmsDashboardPage({
             <CardContent><StackedCategoryStatusChart data={stackedCategoryData} /></CardContent>
           </GlassCard>
         )}
-      </div>
+      </DashboardSection>
 
       {/* Status & Conversion */}
-      <div className="space-y-4">
+      <DashboardSection className="space-y-4">
         <h2 className="text-lg font-semibold text-foreground">Status &amp; Conversion</h2>
         <div className="grid gap-4 lg:grid-cols-2">
           <GlassCard>
@@ -343,7 +344,7 @@ export default async function LmsDashboardPage({
           <CardHeader><CardTitle>Top Categories</CardTitle></CardHeader>
           <CardContent><TopCategories data={stats.topCategories} /></CardContent>
         </GlassCard>
-      </div>
+      </DashboardSection>
 
       {/* Recent Submissions */}
       <GlassCard>

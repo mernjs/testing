@@ -90,7 +90,7 @@ function useHidden(kind: string): [Set<string>, (id: string) => void] {
 
 function Section({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
   return (
-    <section className="space-y-3">
+    <section className="space-y-3 rounded-3xl border border-border/50 bg-muted/70 p-5 sm:p-6 dark:border-border/40 dark:bg-transparent">
       <div className="flex items-baseline justify-between gap-2">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">{title}</h2>
         {hint && <span className="text-xs text-muted-foreground">{hint}</span>}

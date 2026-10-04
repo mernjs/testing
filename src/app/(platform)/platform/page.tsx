@@ -46,7 +46,7 @@ export default async function PlatformDashboardPage({ searchParams }: { searchPa
         <KpiCard label="Suspended / ended" value={subs.counts.suspended + subs.counts.canceled} icon={<Clock className="size-4" />} />
       </KpiGrid>
 
-      <section aria-label="Revenue" className="space-y-2">
+      <section aria-label="Revenue" className="space-y-2 rounded-3xl border border-border/50 bg-muted/70 p-5 sm:p-6 dark:border-border/40 dark:bg-transparent">
         <div className="flex items-baseline justify-between gap-3">
           <h2 className="text-sm font-semibold text-foreground">Revenue</h2>
           <Link href="/platform/revenue" className="text-xs font-medium text-primary hover:underline" data-testid="dashboard-revenue-link">

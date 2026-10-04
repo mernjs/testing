@@ -1,3 +1,4 @@
+import DashboardSection from "@/components/platform/panel/DashboardSection";
 import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
 import {
@@ -233,7 +234,7 @@ export default async function FmsDashboardPage({
       />
 
       {/* ── §1: Top Executive KPI Grid ── */}
-      <div>
+      <DashboardSection>
         <KpiGrid>
           <KpiCard
             label="Net Profit Balance"
@@ -265,10 +266,10 @@ export default async function FmsDashboardPage({
             icon={<Landmark className="size-3.5" />}
           />
         </KpiGrid>
-      </div>
+      </DashboardSection>
 
       {/* ── §2: Quick Operations Desk ── */}
-      <div>
+      <DashboardSection>
         <GlassCard className="p-3">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5">
@@ -301,10 +302,10 @@ export default async function FmsDashboardPage({
             ))}
           </div>
         </GlassCard>
-      </div>
+      </DashboardSection>
 
       {/* ── §3: Module Financial Breakdown Cards ── */}
-      <div>
+      <DashboardSection>
         <SectionHeader
           icon={<Target className="size-3.5" />}
           title="Panel Financial Overview"
@@ -344,10 +345,10 @@ export default async function FmsDashboardPage({
             </Link>
           ))}
         </div>
-      </div>
+      </DashboardSection>
 
       {/* ── §4: Money Coming In (Inflow) ── */}
-      <div>
+      <DashboardSection>
         <SectionHeader
           icon={<ArrowDownLeft className="size-3.5 text-emerald-500" />}
           title="Money Coming In (Inflow)"
@@ -359,10 +360,10 @@ export default async function FmsDashboardPage({
           <KpiCard label="Pending Collections" value={stats.pendingReceivables} format="currency" icon={<Clock className="size-3.5" />} />
           <KpiCard label="Overdue Invoices" value={stats.overdueInvoices} tone={stats.overdueInvoices > 0 ? "down" : undefined} icon={<FileWarning className="size-3.5" />} />
         </KpiGrid>
-      </div>
+      </DashboardSection>
 
       {/* ── §5: Money Going Out (Outflow) ── */}
-      <div>
+      <DashboardSection>
         <SectionHeader
           icon={<ArrowUpRight className="size-3.5 text-rose-500" />}
           title="Money Going Out (Outflow)"
@@ -374,10 +375,10 @@ export default async function FmsDashboardPage({
           <KpiCard label="Pending Approvals" value={stats.pendingApprovals} icon={<CheckSquare className="size-3.5" />} />
           <KpiCard label="Upcoming Payouts" value={stats.upcomingPayments} icon={<Clock className="size-3.5" />} />
         </KpiGrid>
-      </div>
+      </DashboardSection>
 
       {/* ── §6: Period Trend Comparison & Profit ── */}
-      <div>
+      <DashboardSection>
         <SectionHeader
           icon={<BarChart3 className="size-3.5" />}
           title="Revenue vs Expense Analysis"
@@ -420,10 +421,10 @@ export default async function FmsDashboardPage({
             </div>
           </GlassCard>
         </div>
-      </div>
+      </DashboardSection>
 
       {/* ── §7: Revenue Source & Expense Category Distribution ── */}
-      <div>
+      <DashboardSection>
         <SectionHeader
           icon={<PiggyBank className="size-3.5" />}
           title="Revenue & Expense Distribution"
@@ -496,10 +497,10 @@ export default async function FmsDashboardPage({
             </CardContent>
           </GlassCard>
         </div>
-      </div>
+      </DashboardSection>
 
       {/* ── §8: Aging Analysis (Receivables & Payables) ── */}
-      <div>
+      <DashboardSection>
         <SectionHeader
           icon={<AlertTriangle className="size-3.5" />}
           title="Outstanding Aging Analysis"
@@ -582,10 +583,10 @@ export default async function FmsDashboardPage({
             </CardContent>
           </GlassCard>
         </div>
-      </div>
+      </DashboardSection>
 
       {/* ── §9: Time Series (Revenue & Expense Timeline) ── */}
-      <div>
+      <DashboardSection>
         <SectionHeader
           icon={<TrendingUp className="size-3.5" />}
           title="Revenue & Expense Timelines"
@@ -612,10 +613,10 @@ export default async function FmsDashboardPage({
             </CardContent>
           </GlassCard>
         </div>
-      </div>
+      </DashboardSection>
 
       {/* ── §10: Project Profitability & Treasury Summary ── */}
-      <div>
+      <DashboardSection>
         <div className="grid gap-4 lg:grid-cols-5">
           {/* Project Profitability */}
           <div className="lg:col-span-2 flex flex-col">
@@ -668,10 +669,10 @@ export default async function FmsDashboardPage({
             </KpiGrid>
           </div>
         </div>
-      </div>
+      </DashboardSection>
 
       {/* ── §11: Recent Activity & Financial Transactions Table ── */}
-      <div>
+      <DashboardSection>
         <SectionHeader
           icon={<Receipt className="size-3.5 text-primary" />}
           title="Recent Financial Transactions"
@@ -774,7 +775,7 @@ export default async function FmsDashboardPage({
             </table>
           </div>
         </GlassCard>
-      </div>
+      </DashboardSection>
     </div>
   );
 }

@@ -48,7 +48,7 @@ const PUNCTUALITY_COLORS: Record<string, string> = { on_time: "#22c55e", late: "
 
 function Section({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
   return (
-    <section className="space-y-4">
+    <section className="space-y-4 rounded-3xl border border-border/50 bg-muted/70 p-5 sm:p-6 dark:border-border/40 dark:bg-transparent">
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="text-lg font-semibold text-foreground">{title}</h2>
         {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
