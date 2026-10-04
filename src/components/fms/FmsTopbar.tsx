@@ -6,6 +6,7 @@ import { Sparkles, Bell } from "lucide-react";
 import FmsMobileSidebar from "@/components/fms/FmsMobileSidebar";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import { useAskAiOpen } from "@/lib/ai/use-ask-ai-open";
 import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { FmsRole } from "@/lib/fms-roles";
 
@@ -16,7 +17,7 @@ export default function FmsTopbar({
   roles: FmsRole[];
   permissionOverrides?: Record<string, boolean>;
 }) {
-  const [aiOpen, setAiOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useAskAiOpen();
   const [bellOpen, setBellOpen] = useState(false);
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">

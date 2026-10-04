@@ -15,7 +15,7 @@ interface Entry {
 }
 
 const PANEL_NAMES: Record<string, string> = {
-  aibots: "AI Bots", dlms: "Digi Locker", fms: "Finance", hrms: "HR", intelligence: "Intelligence", lms: "Leads / CRM", messenger: "Messenger",
+  workspace: "Workspace", aibots: "AI Bots", dlms: "Digi Locker", fms: "Finance", hrms: "HR", intelligence: "Intelligence", lms: "Leads / CRM", messenger: "Messenger",
   ots: "Online Tests", pms: "Projects", prms: "Procurement", seo: "SEO", smms: "Social Media", sop: "SOPs", tms: "Training",
 };
 
@@ -57,7 +57,7 @@ export default function PanelSearch() {
     if (!open) return;
     const seen = new Set<string>();
     const found: Entry[] = [];
-    document.querySelectorAll<HTMLAnchorElement>(`aside a[href^="/${panel}"]`).forEach((a) => {
+    document.querySelectorAll<HTMLAnchorElement>(panel === "workspace" ? `aside a[href^="/"]` : `aside a[href^="/${panel}"]`).forEach((a) => {
       const href = a.getAttribute("href") ?? "";
       const title = a.textContent?.replace(/\s+/g, " ").trim() ?? "";
       if (!title || seen.has(href)) return;
@@ -85,7 +85,7 @@ export default function PanelSearch() {
         if (ticket !== latest.current) return;
         setRecords(
           hits
-            .filter((h) => h.url.startsWith(`/${panel}`))
+            .filter((h) => panel === "workspace" || h.url.startsWith(`/${panel}`))
             .map((h) => ({ kind: "record" as const, title: h.title, subtitle: `${h.type[0].toUpperCase()}${h.type.slice(1)}${h.subtitle ? ` · ${h.subtitle}` : ""}`, href: h.url })),
         );
       } catch {

@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import IntelligenceSidebar from "@/components/intelligence/IntelligenceSidebar";
 import IntelligenceProfileMenu from "@/components/intelligence/IntelligenceProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import { BrandName } from "@/components/platform/BrandProvider";
 
@@ -40,7 +40,9 @@ export default function IntelligenceSidebarShell({ email, roles, createdAt, last
         <IntelligenceSidebar collapsed={collapsed} />
       </div>
 
+      <SidebarProfileSlot>
       <IntelligenceProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

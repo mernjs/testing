@@ -7,6 +7,7 @@ import MessengerNotificationsBell, { type BellItem } from "@/components/messenge
 import { ConnectionPill } from "@/components/messenger/ConnectionPill";
 import ThemeToggle from "@/components/lms/ThemeToggle";
 import PanelSearch from "@/components/platform/PanelSearch";
+import { useAskAiOpen } from "@/lib/ai/use-ask-ai-open";
 import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { ChatRole } from "@/lib/messenger-roles";
 
@@ -24,7 +25,7 @@ export default function MessengerTopbar({
   unreadDms: number;
   unreadChannels: number;
 }) {
-  const [aiOpen, setAiOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useAskAiOpen();
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <MessengerMobileSidebar

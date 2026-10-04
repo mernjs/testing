@@ -48,13 +48,37 @@ export default function AskAiDrawer({
   const [flowState, setFlowState] = useState<AgenticFlowState | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const storageKey = `askai:chat:${panelId}`;
+  const [restored, setRestored] = useState(false);
+
+  // Restore this tab's conversation so it survives page changes and panel switches.
   useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(storageKey);
+      if (raw) {
+        const saved = JSON.parse(raw) as { messages?: MessageItem[]; flowState?: AgenticFlowState | null };
+        if (saved.messages?.length) setMessages(saved.messages);
+        if (saved.flowState) setFlowState(saved.flowState);
+      }
+    } catch {
+      /* ignore unreadable storage */
+    }
+    setRestored(true);
     setMounted(true);
-  }, []);
+  }, [storageKey]);
+
+  useEffect(() => {
+    if (!restored) return;
+    try {
+      sessionStorage.setItem(storageKey, JSON.stringify({ messages, flowState }));
+    } catch {
+      /* storage full or unavailable */
+    }
+  }, [restored, storageKey, messages, flowState]);
 
   // Initialize initial greeting when drawer opens
   useEffect(() => {
-    if (open && messages.length === 0) {
+    if (open && restored && messages.length === 0) {
       setMessages([
         {
           id: "welcome-msg",
@@ -64,7 +88,7 @@ export default function AskAiDrawer({
         },
       ]);
     }
-  }, [open, panel, messages.length]);
+  }, [open, restored, panel, messages.length]);
 
   // Auto-scroll on new message
   useEffect(() => {
@@ -123,16 +147,6 @@ export default function AskAiDrawer({
     <AnimatePresence>
       {open && (
         <>
-          {/* Backdrop Overlay */}
-          <motion.div
-            key="ask-ai-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm transition-opacity"
-          />
-
           {/* Right-Side AI Chat Panel Drawer */}
           <motion.div
             key="ask-ai-drawer"

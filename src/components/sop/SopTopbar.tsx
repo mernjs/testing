@@ -6,6 +6,7 @@ import SopMobileSidebar from "@/components/sop/SopMobileSidebar";
 import SopNotificationsBell from "@/components/sop/SopNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import { useAskAiOpen } from "@/lib/ai/use-ask-ai-open";
 import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { SopNavFlags } from "@/components/sop/SopSidebar";
 import type { SopBellItem } from "@/lib/sop/notifications";
@@ -21,7 +22,7 @@ export default function SopTopbar({
   notifications: SopBellItem[];
   unread: number;
 }) {
-  const [aiOpen, setAiOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useAskAiOpen();
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <SopMobileSidebar flags={flags} />

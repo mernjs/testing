@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import MessengerSidebar from "@/components/messenger/MessengerSidebar";
 import MessengerProfileMenu from "@/components/messenger/MessengerProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import type { ChatRole } from "@/lib/messenger-roles";
 import { BrandName } from "@/components/platform/BrandProvider";
@@ -78,6 +78,7 @@ export default function MessengerSidebarShell({
         />
       </div>
 
+      <SidebarProfileSlot>
       <MessengerProfileMenu
         email={email}
         displayName={displayName}
@@ -85,6 +86,7 @@ export default function MessengerSidebarShell({
         createdAt={createdAt}
         lastLoginAt={lastLoginAt}
       />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import SmmsSidebar from "@/components/smms/SmmsSidebar";
 import SmmsProfileMenu from "@/components/smms/SmmsProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import type { SmmsNavFlags } from "@/components/smms/SmmsSidebar";
 import { BrandName } from "@/components/platform/BrandProvider";
@@ -63,7 +63,9 @@ export default function SmmsSidebarShell({
         <SmmsSidebar flags={flags} collapsed={collapsed} />
       </div>
 
+      <SidebarProfileSlot>
       <SmmsProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

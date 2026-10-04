@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import TmsSidebar from "@/components/tms/TmsSidebar";
 import TmsProfileMenu from "@/components/tms/TmsProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import type { TmsRole } from "@/lib/tms-roles";
 import { BrandName } from "@/components/platform/BrandProvider";
@@ -65,7 +65,9 @@ export default function TmsSidebarShell({
         <TmsSidebar roles={roles} permissionOverrides={permissionOverrides} studentId={studentId} collapsed={collapsed} />
       </div>
 
+      <SidebarProfileSlot>
       <TmsProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

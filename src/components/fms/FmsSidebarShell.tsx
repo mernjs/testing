@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import FmsSidebar from "@/components/fms/FmsSidebar";
 import FmsProfileMenu from "@/components/fms/FmsProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import type { FmsRole } from "@/lib/fms-roles";
 import { BrandName } from "@/components/platform/BrandProvider";
@@ -63,7 +63,9 @@ export default function FmsSidebarShell({
         <FmsSidebar roles={roles} permissionOverrides={permissionOverrides} collapsed={collapsed} />
       </div>
 
+      <SidebarProfileSlot>
       <FmsProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

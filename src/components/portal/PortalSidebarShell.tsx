@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import PortalSidebar from "@/components/portal/PortalSidebar";
 import PortalProfileMenu from "@/components/portal/PortalProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import type { PortalRole } from "@/lib/portal-roles";
 import { BrandName } from "@/components/platform/BrandProvider";
@@ -59,7 +59,9 @@ export default function PortalSidebarShell({
         <PortalSidebar role={role} collapsed={collapsed} />
       </div>
 
+      <SidebarProfileSlot>
       <PortalProfileMenu displayName={displayName} email={email} role={role} />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

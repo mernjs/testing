@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { BellOff, CheckCheck, ArrowLeft, Sparkles, ShieldAlert, Clock } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { BellOff, CheckCheck, Clock } from "lucide-react";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { Button } from "@/components/ui/button";
@@ -16,20 +16,36 @@ export interface PanelNotificationItem {
   read: boolean;
   priority?: "normal" | "high";
   link?: string;
+  /** Opaque value handed back to `onMarkRead` (e.g. which store the row came from). */
+  meta?: string;
 }
+
+type MarkRead = (items: { id: string; meta?: string }[]) => Promise<unknown>;
 
 export default function GenericPanelNotificationsPage({
   panelName,
   shortCode,
   description,
   initialNotifications,
+  live = false,
+  onMarkRead,
+  onMarkAllRead,
+  unreadEvent,
 }: {
   panelName: string;
   shortCode: string;
   description: string;
   initialNotifications?: PanelNotificationItem[];
+  /** Real data from the panel: an empty list shows the empty state instead of sample notifications. */
+  live?: boolean;
+  /** Server actions that persist read state; without them read state is local to the page. */
+  onMarkRead?: MarkRead;
+  onMarkAllRead?: () => Promise<unknown>;
+  /** window event fired with the new unread count so a bell elsewhere on the page can follow. */
+  unreadEvent?: string;
 }) {
-  const defaultItems: PanelNotificationItem[] = [
+  const router = useRouter();
+  const defaultItems: PanelNotificationItem[] = live ? [] : [
     {
       id: "notif-1",
       title: `${shortCode} System Update & Security Audit Complete`,
@@ -57,19 +73,30 @@ export default function GenericPanelNotificationsPage({
   ];
 
   const [items, setItems] = useState<PanelNotificationItem[]>(
-    initialNotifications && initialNotifications.length > 0 ? initialNotifications : defaultItems
+    live || (initialNotifications && initialNotifications.length > 0) ? (initialNotifications ?? []) : defaultItems
   );
 
   const unreadCount = items.filter((n) => !n.read).length;
 
-  const markAllRead = () => {
-    setItems((prev) => prev.map((n) => ({ ...n, read: true })));
+  const announce = (list: PanelNotificationItem[]) => {
+    if (unreadEvent) window.dispatchEvent(new CustomEvent(unreadEvent, { detail: list.filter((n) => !n.read).length }));
   };
 
-  const toggleRead = (id: string) => {
-    setItems((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+  const markAllRead = () => {
+    const next = items.map((n) => ({ ...n, read: true }));
+    setItems(next);
+    announce(next);
+    void onMarkAllRead?.()?.catch(() => {});
+  };
+
+  const openItem = (n: PanelNotificationItem) => {
+    if (!n.read) {
+      const next = items.map((x) => (x.id === n.id ? { ...x, read: true } : x));
+      setItems(next);
+      announce(next);
+      void onMarkRead?.([{ id: n.id, meta: n.meta }])?.catch(() => {});
+    }
+    if (n.link) router.push(n.link);
   };
 
   return (
@@ -124,7 +151,7 @@ export default function GenericPanelNotificationsPage({
                 <li key={n.id}>
                   <button
                     type="button"
-                    onClick={() => toggleRead(n.id)}
+                    onClick={() => openItem(n)}
                     className={cn(
                       "flex w-full items-start gap-3 p-3.5 text-left transition-colors hover:bg-muted/50",
                       !n.read && "bg-primary/5 dark:bg-primary/10"

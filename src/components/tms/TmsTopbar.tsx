@@ -6,6 +6,7 @@ import TmsMobileSidebar from "@/components/tms/TmsMobileSidebar";
 import TmsNotificationsBell, { type BellItem } from "@/components/tms/TmsNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import { useAskAiOpen } from "@/lib/ai/use-ask-ai-open";
 import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { TmsRole } from "@/lib/tms-roles";
 
@@ -23,7 +24,7 @@ export default function TmsTopbar({
   notifications: BellItem[];
   unread: number;
 }) {
-  const [aiOpen, setAiOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useAskAiOpen();
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <TmsMobileSidebar roles={roles} permissionOverrides={permissionOverrides} studentId={studentId} />

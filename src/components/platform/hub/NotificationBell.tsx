@@ -38,11 +38,12 @@ export default function NotificationBell({ initial }: { initial: number }) {
       id="hub-bell"
       data-unread={count}
       aria-label={count > 0 ? `Notifications, ${count} unread` : "Notifications"}
-      className="relative inline-flex size-8 items-center justify-center rounded-lg text-foreground transition-colors hover:bg-muted"
+      title="Notifications"
+      className="relative flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
     >
-      <Bell className="size-4.5" />
+      <Bell className="size-4" />
       {count > 0 && (
-        <span id="hub-bell-count" className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+        <span id="hub-bell-count" className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-destructive-foreground">
           {count > 99 ? "99+" : count}
         </span>
       )}

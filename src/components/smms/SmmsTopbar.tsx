@@ -6,6 +6,7 @@ import SmmsMobileSidebar from "@/components/smms/SmmsMobileSidebar";
 import SmmsNotificationsBell from "@/components/smms/SmmsNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import { useAskAiOpen } from "@/lib/ai/use-ask-ai-open";
 import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { SmmsNavFlags } from "@/components/smms/SmmsSidebar";
 import type { SmmsBellItem } from "@/lib/smms/notifications";
@@ -21,7 +22,7 @@ export default function SmmsTopbar({
   notifications: SmmsBellItem[];
   unread: number;
 }) {
-  const [aiOpen, setAiOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useAskAiOpen();
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <SmmsMobileSidebar flags={flags} />

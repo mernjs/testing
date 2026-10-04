@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen, ScrollText, Settings } from "lucide-reac
 import BrandMark from "@/components/BrandMark";
 import LpmsSidebar from "@/components/lpms/LpmsSidebar";
 import UnifiedProfileMenu from "@/components/platform/panel/UnifiedProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import type { LpmsNavFlags } from "@/components/lpms/LpmsSidebar";
 import { BrandName } from "@/components/platform/BrandProvider";
@@ -68,6 +68,7 @@ export default function LpmsSidebarShell({
         <LpmsSidebar flags={flags} collapsed={collapsed} />
       </div>
 
+      <SidebarProfileSlot>
       <UnifiedProfileMenu
         email={email}
         roleLabel={roles[0] ?? "User"}
@@ -80,6 +81,7 @@ export default function LpmsSidebarShell({
         }}
         panelName="Legal & Process Management"
       />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

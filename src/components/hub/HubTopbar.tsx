@@ -5,12 +5,13 @@ import { Sparkles } from "lucide-react";
 import type { NavSection } from "@/lib/workspace/nav";
 import HubMobileSidebar from "@/components/hub/HubMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
-import HubSearch from "@/components/platform/hub/HubSearch";
+import PanelSearch from "@/components/platform/PanelSearch";
 import NotificationBell from "@/components/platform/hub/NotificationBell";
+import { useAskAiOpen } from "@/lib/ai/use-ask-ai-open";
 import AskAiDrawer from "@/components/platform/AskAiDrawer";
 
 export default function HubTopbar({ email, nav, unread = 0 }: { email: string; nav: NavSection[]; unread?: number }) {
-  const [aiOpen, setAiOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useAskAiOpen();
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <HubMobileSidebar nav={nav} />
@@ -19,7 +20,7 @@ export default function HubTopbar({ email, nav, unread = 0 }: { email: string; n
         <p className="truncate text-[11px] text-muted-foreground">Your panels, analytics &amp; settings</p>
       </div>
       <div className="flex min-w-0 flex-1 justify-center">
-        <HubSearch />
+        <PanelSearch />
       </div>
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
         <button

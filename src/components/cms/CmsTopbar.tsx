@@ -6,11 +6,12 @@ import { ExternalLink, Sparkles, Bell } from "lucide-react";
 import CmsMobileSidebar from "@/components/cms/CmsMobileSidebar";
 import CmsCommandSearch from "@/components/cms/CmsCommandSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import { useAskAiOpen } from "@/lib/ai/use-ask-ai-open";
 import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { CmsNavFlags } from "@/components/cms/CmsSidebar";
 
 export default function CmsTopbar({ roles: _roles, flags }: { roles: string[]; flags: CmsNavFlags }) {
-  const [aiOpen, setAiOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useAskAiOpen();
   const [bellOpen, setBellOpen] = useState(false);
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">

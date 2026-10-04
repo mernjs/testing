@@ -1,28 +1,31 @@
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
-import NotificationList from "@/components/hrms/NotificationList";
+import GenericPanelNotificationsPage from "@/components/platform/panel/GenericPanelNotificationsPage";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 import { listNotifications } from "@/lib/hrms/notifications";
+import { markNotificationsReadAction, markAllNotificationsReadAction } from "../../notifications-actions";
 
-export default async function NotificationsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+export const dynamic = "force-dynamic";
+
+export default async function Page() {
   const user = (await getCurrentHrmsUser())!;
-  const sp = await searchParams;
-  const page = Math.max(Number(sp.page) || 1, 1);
-  const { items, totalPages } = await listNotifications(user, { page, pageSize: 30 });
+  const { items } = await listNotifications(user, { page: 1, pageSize: 100 });
 
+  async function markRead(entries: { id: string }[]) {
+    "use server";
+    await markNotificationsReadAction(entries.map((e) => e.id));
+  }
+  async function markAll() {
+    "use server";
+    await markAllNotificationsReadAction();
+  }
   return (
-    <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Notifications" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Notifications</h1>
-        <p className="text-sm text-muted-foreground">Leave requests, new joiners, document expiry, birthdays and probation reminders.</p>
-      </div>
-
-      <NotificationList
-        items={items.map((n) => ({ _id: n._id, title: n.title, body: n.body, link: n.link, createdAt: n.createdAt, read: n.read }))}
-        page={page}
-        totalPages={totalPages}
-        basePath="/hrms/notifications"
-      />
-    </div>
+    <GenericPanelNotificationsPage
+      live
+      panelName="Human Resource Management System"
+      shortCode="HRMS"
+      description="Leave requests, new joiners, document expiry, birthdays and probation reminders."
+      initialNotifications={items.map((n) => ({ id: n._id, title: n.title, body: n.body ?? "", createdAt: new Date(n.createdAt).toISOString(), read: n.read, link: n.link ?? undefined }))}
+      onMarkRead={markRead}
+      onMarkAllRead={markAll}
+    />
   );
 }

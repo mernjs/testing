@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Dev only: Next's gzip stream gets one 'drain' listener per concurrent response, and the Workspace/panel pages fire many
+  // parallel RSC requests, which trips Node's MaxListenersExceededWarning. Production (Vercel) compresses at the edge.
+  compress: process.env.NODE_ENV === "production",
   // Node-only libs used inside route handlers — keep them out of the bundler.
   serverExternalPackages: ["exceljs"],
   images: {

@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import SopSidebar from "@/components/sop/SopSidebar";
 import SopProfileMenu from "@/components/sop/SopProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import type { SopNavFlags } from "@/components/sop/SopSidebar";
 import { BrandName } from "@/components/platform/BrandProvider";
@@ -63,7 +63,9 @@ export default function SopSidebarShell({
         <SopSidebar flags={flags} collapsed={collapsed} />
       </div>
 
+      <SidebarProfileSlot>
       <SopProfileMenu email={email} roles={roles} flags={flags} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

@@ -6,6 +6,7 @@ import PortalMobileSidebar from "@/components/portal/PortalMobileSidebar";
 import PortalNotificationsBell, { type BellItem } from "@/components/portal/PortalNotificationsBell";
 import LeadSwitcher, { type LeadSummary } from "@/components/portal/LeadSwitcher";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import { useAskAiOpen } from "@/lib/ai/use-ask-ai-open";
 import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import { PORTAL_ROLE_META, type PortalRole } from "@/lib/portal-roles";
 
@@ -22,7 +23,7 @@ export default function PortalTopbar({
   unread: number;
   leads?: LeadSummary[];
 }) {
-  const [aiOpen, setAiOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useAskAiOpen();
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <PortalMobileSidebar role={role} />

@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import LmsSidebar from "@/components/lms/LmsSidebar";
 import SidebarProfileMenu from "@/components/lms/SidebarProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import { BrandName } from "@/components/platform/BrandProvider";
 
@@ -58,7 +58,9 @@ export default function LmsSidebarShell({
         <LmsSidebar collapsed={collapsed} />
       </div>
 
+      <SidebarProfileSlot>
       <SidebarProfileMenu userEmail={userEmail} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

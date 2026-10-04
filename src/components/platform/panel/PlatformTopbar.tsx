@@ -9,11 +9,12 @@ import ThemeToggle from "@/components/lms/ThemeToggle";
 import BrandMark from "@/components/BrandMark";
 import { BrandName } from "@/components/platform/BrandProvider";
 import PlatformSidebar, { type PlatformNavFlags } from "@/components/platform/panel/PlatformSidebar";
+import { useAskAiOpen } from "@/lib/ai/use-ask-ai-open";
 import AskAiDrawer from "@/components/platform/AskAiDrawer";
 
 export default function PlatformTopbar({ flags }: { flags: PlatformNavFlags }) {
   const [open, setOpen] = useState(false);
-  const [aiOpen, setAiOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useAskAiOpen();
   const [bellOpen, setBellOpen] = useState(false);
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">

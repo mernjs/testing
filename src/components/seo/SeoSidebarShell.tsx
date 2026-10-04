@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import SeoSidebar from "@/components/seo/SeoSidebar";
 import SeoProfileMenu from "@/components/seo/SeoProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import type { SeoNavFlags } from "@/components/seo/SeoSidebar";
 import { BrandName } from "@/components/platform/BrandProvider";
@@ -63,7 +63,9 @@ export default function SeoSidebarShell({
         <SeoSidebar flags={flags} collapsed={collapsed} />
       </div>
 
+      <SidebarProfileSlot>
       <SeoProfileMenu email={email} roles={roles} flags={flags} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

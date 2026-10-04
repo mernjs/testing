@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import CmsSidebar from "@/components/cms/CmsSidebar";
 import CmsProfileMenu from "@/components/cms/CmsProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import type { CmsNavFlags } from "@/components/cms/CmsSidebar";
 import { BrandName } from "@/components/platform/BrandProvider";
@@ -63,7 +63,9 @@ export default function CmsSidebarShell({
         <CmsSidebar flags={flags} collapsed={collapsed} />
       </div>
 
+      <SidebarProfileSlot>
       <CmsProfileMenu email={email} roles={roles} flags={flags} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

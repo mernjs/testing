@@ -6,6 +6,7 @@ import DlmsMobileSidebar from "@/components/dlms/DlmsMobileSidebar";
 import DlmsNotificationsBell from "@/components/dlms/DlmsNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import { useAskAiOpen } from "@/lib/ai/use-ask-ai-open";
 import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { DlmsNavFlags } from "@/components/dlms/DlmsSidebar";
 import type { DlmsBellItem } from "@/lib/dlms/notifications";
@@ -21,7 +22,7 @@ export default function DlmsTopbar({
   notifications: DlmsBellItem[];
   unread: number;
 }) {
-  const [aiOpen, setAiOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useAskAiOpen();
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <DlmsMobileSidebar flags={flags} />

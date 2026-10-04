@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import AibotsSidebar from "@/components/aibots/AibotsSidebar";
 import AibotsProfileMenu from "@/components/aibots/AibotsProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import type { AibotsNavFlags, SidebarBot } from "@/components/aibots/AibotsSidebar";
 import { BrandName } from "@/components/platform/BrandProvider";
@@ -65,7 +65,9 @@ export default function AibotsSidebarShell({
         <AibotsSidebar flags={flags} bots={bots} collapsed={collapsed} />
       </div>
 
+      <SidebarProfileSlot>
       <AibotsProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

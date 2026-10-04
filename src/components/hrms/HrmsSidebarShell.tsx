@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import HrmsSidebar from "@/components/hrms/HrmsSidebar";
 import HrmsProfileMenu from "@/components/hrms/HrmsProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import type { HrmsRole } from "@/lib/hrms-roles";
 import { BrandName } from "@/components/platform/BrandProvider";
@@ -65,7 +65,9 @@ export default function HrmsSidebarShell({
         <HrmsSidebar roles={roles} permissionOverrides={permissionOverrides} employeeId={employeeId} collapsed={collapsed} />
       </div>
 
+      <SidebarProfileSlot>
       <HrmsProfileMenu email={email} roles={roles} createdAt={createdAt} lastLoginAt={lastLoginAt} />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

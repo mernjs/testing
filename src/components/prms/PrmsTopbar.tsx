@@ -6,6 +6,7 @@ import PrmsMobileSidebar from "@/components/prms/PrmsMobileSidebar";
 import PrmsNotificationsBell, { type BellItem } from "@/components/prms/PrmsNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import { useAskAiOpen } from "@/lib/ai/use-ask-ai-open";
 import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { PrmsRole } from "@/lib/prms-roles";
 
@@ -21,7 +22,7 @@ export default function PrmsTopbar({
   notifications: BellItem[];
   unread: number;
 }) {
-  const [aiOpen, setAiOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useAskAiOpen();
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <PrmsMobileSidebar roles={roles} permissionOverrides={permissionOverrides} />

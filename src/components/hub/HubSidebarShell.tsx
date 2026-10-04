@@ -6,7 +6,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import HubSidebar from "@/components/hub/HubSidebar";
 import HubProfileMenu from "@/components/hub/HubProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import { BrandName } from "@/components/platform/BrandProvider";
 
@@ -59,11 +59,13 @@ export default function HubSidebarShell({
         <HubSidebar collapsed={collapsed} nav={nav} />
       </div>
 
+      <SidebarProfileSlot>
       <HubProfileMenu
         email={email}
         lastLoginAt={lastLoginAt}
         links={nav.filter((section) => section.key === "account" || section.key === "platform").flatMap((section) => section.items).filter((item) => item.href !== "/workspace/change-password").map((item) => ({ href: item.href, label: item.label }))}
       />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

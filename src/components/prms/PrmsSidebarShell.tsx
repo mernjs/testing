@@ -5,7 +5,7 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import PrmsSidebar from "@/components/prms/PrmsSidebar";
 import PrmsProfileMenu from "@/components/prms/PrmsProfileMenu";
-import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
+import { useSidebarCollapse, SidebarProfileSlot } from "@/components/lms/SidebarCollapseContext";
 import { cn } from "@/lib/utils";
 import type { PrmsRole } from "@/lib/prms-roles";
 import { BrandName } from "@/components/platform/BrandProvider";
@@ -63,6 +63,7 @@ export default function PrmsSidebarShell({
         <PrmsSidebar roles={roles} permissionOverrides={permissionOverrides} collapsed={collapsed} />
       </div>
 
+      <SidebarProfileSlot>
       <PrmsProfileMenu
         email={email}
         roles={roles}
@@ -70,6 +71,7 @@ export default function PrmsSidebarShell({
         createdAt={createdAt}
         lastLoginAt={lastLoginAt}
       />
+      </SidebarProfileSlot>
     </motion.aside>
   );
 }

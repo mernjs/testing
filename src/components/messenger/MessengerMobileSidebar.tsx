@@ -1,5 +1,6 @@
 "use client";
 
+import { MobileSidebarProfile } from "@/components/lms/SidebarCollapseContext";
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,22 +29,25 @@ export default function MessengerMobileSidebar({
         <Menu className="size-5" />
       </Button>
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="left" className="w-72 p-0 sm:max-w-72">
+        <SheetContent side="left" className="flex w-72 flex-col p-0 sm:max-w-72">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
           <SheetDescription className="sr-only">Messenger panel navigation menu</SheetDescription>
-          <div className="flex h-14 items-center gap-2 border-b border-border/60 px-4">
+          <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border/60 px-4">
             <BrandMark className="size-6 shrink-0" />
             <span className="text-sm font-bold">
               <BrandName /> <span className="text-foreground">Messenger</span>
             </span>
           </div>
-          <MessengerSidebar
-            roles={roles}
-            onNavigate={() => setOpen(false)}
-            unreadDms={unreadDms}
-            unreadChannels={unreadChannels}
-            unreadNotifications={unreadNotifications}
-          />
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <MessengerSidebar
+              roles={roles}
+              onNavigate={() => setOpen(false)}
+              unreadDms={unreadDms}
+              unreadChannels={unreadChannels}
+              unreadNotifications={unreadNotifications}
+            />
+          </div>
+          <MobileSidebarProfile />
         </SheetContent>
       </Sheet>
     </>

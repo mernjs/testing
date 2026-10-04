@@ -6,10 +6,11 @@ import { Sparkles, Bell } from "lucide-react";
 import IntelligenceMobileSidebar from "@/components/intelligence/IntelligenceMobileSidebar";
 import ThemeToggle from "@/components/lms/ThemeToggle";
 import PanelSearch from "@/components/platform/PanelSearch";
+import { useAskAiOpen } from "@/lib/ai/use-ask-ai-open";
 import AskAiDrawer from "@/components/platform/AskAiDrawer";
 
 export default function IntelligenceTopbar({ roles: _roles }: { roles: string[] }) {
-  const [aiOpen, setAiOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useAskAiOpen();
   const [bellOpen, setBellOpen] = useState(false);
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">

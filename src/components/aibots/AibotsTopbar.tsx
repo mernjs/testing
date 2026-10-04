@@ -6,6 +6,7 @@ import AibotsMobileSidebar from "@/components/aibots/AibotsMobileSidebar";
 import AibotsNotificationsBell from "@/components/aibots/AibotsNotificationsBell";
 import PanelSearch from "@/components/platform/PanelSearch";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import { useAskAiOpen } from "@/lib/ai/use-ask-ai-open";
 import AskAiDrawer from "@/components/platform/AskAiDrawer";
 import type { AibotsNavFlags, SidebarBot } from "@/components/aibots/AibotsSidebar";
 import type { AibotsBellItem } from "@/lib/aibots/notifications";
@@ -23,7 +24,7 @@ export default function AibotsTopbar({
   notifications: AibotsBellItem[];
   unread: number;
 }) {
-  const [aiOpen, setAiOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useAskAiOpen();
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <AibotsMobileSidebar flags={flags} bots={bots} />
