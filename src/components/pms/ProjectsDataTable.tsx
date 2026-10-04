@@ -101,7 +101,7 @@ export default function ProjectsDataTable({
               <FolderKanban className="size-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold tracking-tight text-foreground">Project Filters</h3>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
               <p className="text-xs text-muted-foreground">Search and filter your active projects</p>
             </div>
           </div>

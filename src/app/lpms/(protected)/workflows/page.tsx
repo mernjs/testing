@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Plus, GitBranch } from "lucide-react";
@@ -20,24 +22,18 @@ export default async function WorkflowsPage() {
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "LPMS", href: "/lpms" }, { label: "Workflows" }]} />
-
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Approval Workflows
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Configure multi-step approval workflows for document types.
-          </p>
-        </div>
-        <Link href="/lpms/workflows/new" className={buttonVariants({ size: "sm" })}>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "LPMS", href: "/lpms" }, { label: "Workflows" }]}
+        title={<>Approval Workflows</>}
+        description={<>Configure multi-step approval workflows for document types.</>}
+        actions={<><Link href="/lpms/workflows/new" className={buttonVariants({ size: "sm" })}>
           <Plus className="size-3.5" />
           New Workflow
-        </Link>
-      </div>
+        </Link></>}
+      />
 
-      {workflows.length === 0 ? (
+      <PanelListFilters>
+{workflows.length === 0 ? (
         <GlassCard interactive={false}>
           <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
             <GitBranch className="size-10 text-muted-foreground/40" />
@@ -77,6 +73,7 @@ export default async function WorkflowsPage() {
           ))}
         </div>
       )}
+</PanelListFilters>
     </div>
   );
 }

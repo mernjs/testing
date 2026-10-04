@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import {
@@ -6,7 +7,6 @@ import {
 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getViewer } from "@/lib/lpms/viewer";
 import { lpmsCan } from "@/lib/lpms-roles";
@@ -38,19 +38,12 @@ export default async function LpmsDocumentPage({
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Breadcrumbs
-        items={[
-          { label: "LPMS", href: "/lpms" },
-          { label: "Documents", href: "/lpms/documents" },
-          { label: (doc as any).title },
-        ]}
-      />
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight text-foreground">{(doc as any).title}</h1>
-          </div>
+          <PanelPageHeader
+            title={<>{(doc as any).title}</>}
+          />
           <div className="mt-1 flex items-center gap-3">
             <span className="text-sm text-muted-foreground">{(doc as any).documentNumber}</span>
             <span

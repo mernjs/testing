@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Plus, Users, GraduationCap, CheckCircle2, UserMinus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,13 +36,11 @@ export default async function StudentsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Students" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Students</h1>
-          <p className="text-sm text-muted-foreground">{total} student{total === 1 ? "" : "s"} in the CRM.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Students" }]}
+        title={<>Students</>}
+        description={<>{total} student{total === 1 ? "" : "s"} in the CRM.</>}
+        actions={<>{canManage && (
           <StudentForm
             trigger={
               <Button type="button" size="sm">
@@ -50,8 +49,8 @@ export default async function StudentsPage({
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Students" value={total} accent icon={<Users className="size-4" />} />

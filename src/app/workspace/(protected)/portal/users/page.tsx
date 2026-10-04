@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchPortalUsers } from "@/lib/workspace/portal-users";
@@ -51,15 +52,13 @@ export default async function AdminPortalUsersPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Portal", panel: "portal" }, { label: "Users" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">External Portal Users</h1>
-        <p className="text-sm text-muted-foreground">
-          {total} account{total === 1 ? "" : "s"}. Active Sessions counts real, unexpired logins; Notifications
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "Portal", panel: "portal" }, { label: "Users" }]}
+        title={<>External Portal Users</>}
+        description={<>{total} account{total === 1 ? "" : "s"}. Active Sessions counts real, unexpired logins; Notifications
           counts real unread portal notifications. No delete here — an external login is tied to a real
-          applicant/student/client record, so Suspend is the control, not removal.
-        </p>
-      </div>
+          applicant/student/client record, so Suspend is the control, not removal.</>}
+      />
 
       <PortalUsersGrid
         rows={rows}

@@ -1,7 +1,7 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { FolderKanban, ExternalLink, GitBranch } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import ProgressBar from "@/components/pms/ProgressBar";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getLearnerOverview } from "@/lib/portal/student";
@@ -21,9 +21,9 @@ export default async function ProjectsPage() {
     if (!data) return <EmptyPortalState title="No projects yet" body="Your projects appear here once they're set up." />;
     return (
       <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
-        <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "My Projects" }]} />
         <PortalPageHeader title="My Projects" subtitle={`${data.projects.length} project${data.projects.length === 1 ? "" : "s"} · ${data.overallProgress}% overall`} />
-        <div className="grid gap-4 sm:grid-cols-2">
+        <PanelListFilters>
+<div className="grid gap-4 sm:grid-cols-2">
           {data.projects.map(({ project, milestones }) => {
             const done = milestones.filter((m) => m.status === "completed").length;
             return (
@@ -48,6 +48,7 @@ export default async function ProjectsPage() {
             );
           })}
         </div>
+</PanelListFilters>
       </div>
     );
   }
@@ -57,7 +58,6 @@ export default async function ProjectsPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Projects" }]} />
       <PortalPageHeader title="Live Projects" subtitle={`${data.projects.length} assigned`} />
       {data.projects.length === 0 && (
         <GlassCard>

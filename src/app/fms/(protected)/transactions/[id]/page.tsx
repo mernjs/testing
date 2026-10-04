@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Paperclip, Download } from "lucide-react";
@@ -43,20 +44,13 @@ export default async function TransactionDetailPage({ params }: { params: Promis
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Transactions", href: "/fms/transactions" }, { label: t.transactionNumber }]} />
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="flex items-center gap-2 text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            {t.transactionNumber}
-            <TransactionTypeBadge type={t.type} />
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {formatMoney(t.amount, t.currency)} · {formatDate(t.transactionDate)}
-          </p>
-        </div>
-        <TransactionStatusBadge status={t.status} />
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Transactions", href: "/fms/transactions" }, { label: t.transactionNumber }]}
+        title={<>{t.transactionNumber}
+            <TransactionTypeBadge type={t.type} /></>}
+        description={<>{formatMoney(t.amount, t.currency)} · {formatDate(t.transactionDate)}</>}
+        actions={<><TransactionStatusBadge status={t.status} /></>}
+      />
 
       {(canApprove || canManage) && (
         <GlassCard>

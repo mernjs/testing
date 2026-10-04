@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Plus } from "lucide-react";
@@ -35,7 +36,9 @@ export default async function PlatformCouponsPage() {
           </Link>
         }
       />
-      <CouponsGrid rows={rows} currency={settings.billing.currency} />
+      <PanelListFilters>
+<CouponsGrid rows={rows} currency={settings.billing.currency} />
+</PanelListFilters>
     </div>
   );
 }

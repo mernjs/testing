@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -19,10 +20,13 @@ export default async function AdminUserWalletPage({ params }: { params: Promise<
   const [wallet, txs] = await Promise.all([getWallet(userId), listWalletTransactions({ userId, pageSize: 50 })]);
   const b = wallet?.balances;
   return (
-    <div className="relative mx-auto max-w-4xl space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet", href: "/lms/wallet" }, { label: user.displayName }]} />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{user.displayName}</h1>
-      <p className="text-sm text-muted-foreground">{user.email} · {user.role.replace("_", " ")} · wallet {wallet?.status ?? "not created yet"}</p>
+    <div className="space-y-4">
+<PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet", href: "/lms/wallet" }, { label: user.displayName }]}
+        title={<>{user.displayName}</>}
+        description={<>{user.email} · {user.role.replace("_", " ")} · wallet {wallet?.status ?? "not created yet"}</>}
+      />
+<div className="relative mx-auto max-w-4xl space-y-4">
       <div className="grid gap-3 sm:grid-cols-4">
         {[["Available", b?.available ?? 0], ["Locked", b?.locked ?? 0], ["Earned", b?.lifetimeEarned ?? 0], ["Used", b?.lifetimeRedeemed ?? 0]].map(([l, v]) => (
           <GlassCard key={String(l)} interactive={false}><CardContent className="py-4"><p className="text-xs text-muted-foreground">{l}</p><p className="text-xl font-black">{formatCredits(Number(v))}</p></CardContent></GlassCard>
@@ -53,5 +57,6 @@ export default async function AdminUserWalletPage({ params }: { params: Promise<
         </CardContent>
       </GlassCard>
     </div>
+</div>
   );
 }

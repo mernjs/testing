@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchConversations } from "@/lib/chat-conversations";
@@ -64,11 +65,11 @@ export default async function AdminChatbotConversationsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "AI Chatbot" }, { label: "Conversations" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Chatbot Conversations</h1>
-        <p className="text-sm text-muted-foreground">{total} conversation{total === 1 ? "" : "s"}.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "AI Chatbot" }, { label: "Conversations" }]}
+        title={<>Chatbot Conversations</>}
+        description={<>{total} conversation{total === 1 ? "" : "s"}.</>}
+      />
 
       <ConversationsGrid
         rows={rows}

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { BadgeCheck, Ban, ExternalLink } from "lucide-react";
@@ -23,29 +24,21 @@ export default async function CertificateDetailPage({ params }: { params: Promis
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Certificates", href: "/tms/certificates" }, { label: cert.certificateNumber }]} />
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{cert.typeLabel}</h1>
-            {cert.revoked ? (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Certificates", href: "/tms/certificates" }, { label: cert.certificateNumber }]}
+        title={<><span className="inline-flex flex-wrap items-center gap-2">{cert.typeLabel}{cert.revoked ? (
               <span className="inline-flex items-center gap-1 rounded-md bg-destructive/15 px-2 py-0.5 text-xs font-medium text-destructive">
-                <Ban className="size-3" /> Revoked
+                 Revoked
               </span>
             ) : (
               <span className="inline-flex items-center gap-1 rounded-md bg-green-500/15 px-2 py-0.5 text-xs font-medium text-green-600 dark:text-green-400">
-                <BadgeCheck className="size-3" /> Valid
+                 Valid
               </span>
-            )}
-          </div>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{cert.certificateNumber}</span>
-            {cert.reissuedFromId ? " · reissued" : ""}
-          </p>
-        </div>
-        {canManage && <CertificateActions certificateId={cert._id} revoked={cert.revoked} />}
-      </div>
+            )}</span></>}
+        description={<><span className="font-mono">{cert.certificateNumber}</span>
+            {cert.reissuedFromId ? " · reissued" : ""}</>}
+        actions={<>{canManage && <CertificateActions certificateId={cert._id} revoked={cert.revoked} />}</>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <GlassCard className="lg:col-span-2">

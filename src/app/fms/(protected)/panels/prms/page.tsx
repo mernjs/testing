@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { panelNameMap } from "@/lib/platform/panels/store";
 import Link from "next/link";
 import {
@@ -13,7 +15,6 @@ import {
 import GlassCard from "@/components/lms/GlassCard";
 import KpiCard from "@/components/lms/KpiCard";
 import KpiGrid from "@/components/lms/KpiGrid";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { getDb } from "@/lib/mongodb";
 import { Badge } from "@/components/ui/badge";
 import DirectPayoutDialog from "@/components/fms/DirectPayoutDialog";
@@ -43,21 +44,14 @@ export default async function PrmsFinancePage({
 
   return (
     <div className="relative space-y-6">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Panel Finance" }, { label: "PRMS", panel: "prms" }]} />
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-brand-accent text-white shadow-sm">
-            <ShoppingBag className="size-5" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{panelName("prms", "PRMS Procurement")} Finance</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              Vendor purchase orders flow from PRMS → FMS for approval &amp; bank payout.
-            </p>
-          </div>
-        </div>
-      </div>
+      <PanelPageHeader
+        title={<>{panelName("prms", "PRMS Procurement")} Finance</>}
+        description={<>Purchase orders and vendor bills flow from PRMS → FMS for approval, payment and reconciliation.</>}
+      />
+
+
+      <PanelListFilters>
 
       {/* Flow */}
       <GlassCard className="p-4 bg-card/60 border-border/40 backdrop-blur-md">
@@ -199,6 +193,7 @@ export default async function PrmsFinancePage({
           </table>
         </div>
       </GlassCard>
+      </PanelListFilters>
     </div>
   );
 }

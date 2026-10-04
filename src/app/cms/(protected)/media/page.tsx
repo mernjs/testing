@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { redirect } from "next/navigation";
 import { getViewer, can } from "@/lib/cms/viewer";
 import { listMedia } from "@/lib/cms/media";
@@ -19,7 +20,9 @@ export default async function CmsMediaPage() {
         title="Media Library"
         description={<>Every image used across the website. Click a file to edit its title and alt text, copy its URL or delete it.</>}
       />
-      <MediaLibraryGrid initialItems={items} canUpload={can(viewer, "MEDIA_UPLOAD")} canDelete={can(viewer, "MEDIA_DELETE")} />
+      <PanelListFilters>
+<MediaLibraryGrid initialItems={items} canUpload={can(viewer, "MEDIA_UPLOAD")} canDelete={can(viewer, "MEDIA_DELETE")} />
+</PanelListFilters>
     </div>
   );
 }

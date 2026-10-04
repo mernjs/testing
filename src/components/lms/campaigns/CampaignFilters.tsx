@@ -67,7 +67,7 @@ export default function CampaignFilters({
             <Megaphone className="size-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold tracking-tight text-foreground">Campaign Filters</h3>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
             <p className="text-xs text-muted-foreground">Narrow attributed leads by platform, campaign, source, and date</p>
           </div>
         </div>

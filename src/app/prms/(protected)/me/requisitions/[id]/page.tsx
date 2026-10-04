@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound, redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import RequisitionSummary from "@/components/prms/RequisitionSummary";
@@ -23,14 +24,14 @@ export default async function MyRequisitionDetailPage({ params }: { params: Prom
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "PRMS", href: "/prms/me" },
           { label: "My Requisitions", href: "/prms/me/requisitions" },
           { label: r.prCode },
         ]}
+        title={<>{r.itemName}</>}
       />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{r.itemName}</h1>
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <RequisitionSummary requisition={r} vendorName={vendor?.companyName ?? null} />

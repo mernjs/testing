@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -19,12 +21,13 @@ export default async function WalletLedgerPage({ searchParams }: { searchParams:
   const res = await listWalletTransactions({ page: pageNum, pageSize: 50 });
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet", href: "/lms/wallet" }, { label: "Ledger" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Wallet ledger</h1>
-        <a href="/api/lms/wallet/export?kind=ledger" className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary">Export CSV</a>
-      </div>
-      <p className="text-sm text-muted-foreground">Immutable, append-only record of every promotional-credit movement. Promotional credits — not accounting balances.</p>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet", href: "/lms/wallet" }, { label: "Ledger" }]}
+        title={<>Wallet ledger</>}
+        actions={<><a href="/api/lms/wallet/export?kind=ledger" className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary">Export CSV</a></>}
+      />
+      <PanelListFilters>
+<p className="text-sm text-muted-foreground">Immutable, append-only record of every promotional-credit movement. Promotional credits — not accounting balances.</p>
       <GlassCard>
         <CardContent className="overflow-x-auto py-3">
           <table className="w-full min-w-[980px] text-sm">
@@ -60,6 +63,7 @@ export default async function WalletLedgerPage({ searchParams }: { searchParams:
           )}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

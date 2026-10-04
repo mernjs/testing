@@ -1,7 +1,7 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { buttonVariants } from "@/components/ui/button";
 import { getViewer } from "@/lib/lpms/viewer";
 import { lpmsCan } from "@/lib/lpms-roles";
@@ -25,21 +25,14 @@ export default async function MakerTypePage({
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Breadcrumbs
-        items={[
-          { label: "LPMS", href: "/lpms" },
-          { label: "Maker Types", href: "/lpms/makers" },
-          { label: maker ? (maker as any).name : "New Maker Type" },
-        ]}
-      />
 
       <div className="flex items-center gap-3">
         <Link href="/lpms/makers" className={buttonVariants({ variant: "ghost", size: "sm" })}>
           <ArrowLeft className="size-4" />
         </Link>
-        <h1 className="text-2xl font-black tracking-tight text-foreground">
-          {maker ? `Edit: ${(maker as any).name}` : "New Maker Type"}
-        </h1>
+        <PanelPageHeader
+          title={<>{maker ? `Edit: ${(maker as any).name}` : "New Maker Type"}</>}
+        />
       </div>
 
       <MakerTypeForm maker={maker} />

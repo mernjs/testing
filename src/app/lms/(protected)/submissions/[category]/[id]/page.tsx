@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import { Mail, Phone, Calendar, Tag, Download } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -26,17 +27,15 @@ export default async function SubmissionDetailPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: getCategoryLabel(category), href: `/lms/submissions/${category}` },
           { label: lead.name },
         ]}
+        title={<>{lead.name}</>}
+        actions={<><StatusBadge status={lead.status} /></>}
       />
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">{lead.name}</h1>
-        <StatusBadge status={lead.status} />
-      </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <GlassCard className="lg:col-span-2">

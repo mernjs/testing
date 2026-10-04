@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Link as LinkIcon, Plus, Copy, CheckCircle, Clock } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import KpiCard from "@/components/lms/KpiCard";
@@ -33,19 +34,12 @@ export default async function PaymentLinksPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Payment Links" }]} />
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Payment Links
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Generate secure public payment links (`/pay/[token]`) for direct payment collection.
-          </p>
-        </div>
-        <PaymentLinkCreateDialog />
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Payment Links" }]}
+        title={<>Payment Links</>}
+        description={<>Generate secure public payment links (`/pay/[token]`) for direct payment collection.</>}
+        actions={<><PaymentLinkCreateDialog /></>}
+      />
 
       <KpiGrid>
         <KpiCard

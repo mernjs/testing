@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -12,25 +14,22 @@ export default async function BudgetVsActualPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Budget vs Actual" }]} />
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Budget vs Actual</h1>
-          <p className="text-sm text-muted-foreground">
-            PRMS&apos;s real budget allocations against FMS&apos;s own settled ledger spend — the actual figure here is
-            Finance&apos;s own money, not PRMS&apos;s expense+PO consumption estimate.
-          </p>
-        </div>
-        <div className="flex items-center gap-3 text-sm">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Budget vs Actual" }]}
+        title={<>Budget vs Actual</>}
+        description={<>PRMS&apos;s real budget allocations against FMS&apos;s own settled ledger spend — the actual figure here is
+            Finance&apos;s own money, not PRMS&apos;s expense+PO consumption estimate.</>}
+        actions={<><div className="flex items-center gap-3 text-sm">
           {(["csv", "xlsx", "pdf"] as const).map((fmt) => (
             <Link key={fmt} href={`/api/fms/reports/budget-vs-actual?format=${fmt}`} className="text-primary hover:underline">
               Export {fmt.toUpperCase()}
             </Link>
           ))}
-        </div>
-      </div>
+        </div></>}
+      />
 
-      <GlassCard interactive={false}>
+      <PanelListFilters>
+<GlassCard interactive={false}>
         <CardHeader><CardTitle>Company &amp; Project Budgets</CardTitle></CardHeader>
         <CardContent className="p-0">
           <Table>
@@ -109,6 +108,7 @@ export default async function BudgetVsActualPage() {
         Budget allocations are owned by PRMS. Create or edit a budget at{" "}
         <Link href="/prms/budgets" className="text-primary hover:underline">/prms/budgets</Link>.
       </p>
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, Receipt, Clock, Repeat, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -53,13 +54,11 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Expenses" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Expenses</h1>
-          <p className="text-sm text-muted-foreground">Track and approve company expenses, reimbursements &amp; vendor payments. {total} record{total === 1 ? "" : "s"} total.</p>
-        </div>
-        <ExpenseForm
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Expenses" }]}
+        title={<>Expenses</>}
+        description={<>Track and approve company expenses, reimbursements &amp; vendor payments. {total} record{total === 1 ? "" : "s"} total.</>}
+        actions={<><ExpenseForm
           vendors={vOpts}
           departments={dOpts}
           projects={pOpts}
@@ -70,8 +69,8 @@ export default async function ExpensesPage({ searchParams }: { searchParams: Pro
               New Expense
             </Button>
           }
-        />
-      </div>
+        /></>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Expenses" value={total} accent icon={<Receipt className="size-4" />} />

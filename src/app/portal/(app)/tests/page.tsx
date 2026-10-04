@@ -1,4 +1,4 @@
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import CandidateTests from "@/components/ots/CandidateTests";
 import PortalTestsNav from "@/components/ots/PortalTestsNav";
@@ -20,10 +20,11 @@ export default async function PortalTestsPage() {
   const cards = taker ? await candidateCards(taker) : [];
   return (
     <div className="mx-auto max-w-6xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Tests" }]} />
       <PortalPageHeader title={user.role === "job_applicant" ? "Assessments" : "Tests & Exams"} subtitle={user.role === "job_applicant" ? "Screening and technical tests for your application." : "Course, chapter, practice, mock and final exams."} />
-      <PortalTestsNav active="tests" />
+      <PanelListFilters>
+<PortalTestsNav active="tests" />
       <CandidateTests cards={cards} channel="portal" paths={basePath("portal")} emptyHint={user.role === "job_applicant" ? "If the hiring team asks you to take a test, it will appear here." : "Tests from your program will appear here."} />
+</PanelListFilters>
     </div>
   );
 }

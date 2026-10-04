@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import { CalendarDays, CheckCircle2, Percent } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
@@ -26,10 +28,13 @@ export default async function MySchedulePage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms/me" }, { label: "Class Schedule" }]} />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Class Schedule</h1>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms/me" }, { label: "Class Schedule" }]}
+        title={<>Class Schedule</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Upcoming Classes" value={upcoming.length} accent icon={<CalendarDays className="size-4" />} />
         <KpiCard label="Classes Attended" value={attendance.attended} icon={<CheckCircle2 className="size-4" />} />
         <KpiCard label="Attendance Rate" value={attendance.ratePercent} suffix="%" icon={<Percent className="size-4" />} />
@@ -62,6 +67,7 @@ export default async function MySchedulePage() {
           )}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -47,19 +48,17 @@ export default async function IntegrationsPage() {
 
   return (
     <div className="min-h-screen bg-muted/70 px-4 py-10 dark:bg-background">
-      <div className="mx-auto max-w-5xl space-y-6">
-        <Link href="/workspace/settings" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4" /> Company settings
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Integrations</h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Connect your own accounts once — email, SMS, AI, social, Google and more. Every panel and automation in your workspace uses these connections, so there is nothing to set up again inside each panel.
-            Keys are encrypted and are never shown again.
-          </p>
-        </div>
+      <div className="space-y-4">
+<PanelPageHeader
+          breadcrumbs={[{ label: "Company settings", href: "/workspace/settings" }, { label: "Integrations" }]}
+          title={<>Integrations</>}
+          description={<>Connect your own accounts once — email, SMS, AI, social, Google and more. Every panel and automation in your workspace uses these connections, so there is nothing to set up again inside each panel.
+            Keys are encrypted and are never shown again.</>}
+        />
+<div className="space-y-6">
         <ConnectionsHub providers={providers} encryptionReady={isPlatformEncryptionConfigured()} />
       </div>
+</div>
     </div>
   );
 }

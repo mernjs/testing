@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Plus, FileText, Clock, CheckCircle, Archive, AlertCircle } from "lucide-react";
@@ -46,24 +47,17 @@ export default async function LpmsDocumentsPage({
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "LPMS", href: "/lpms" }, { label: "Document Library" }]} />
-
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Document Library
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {total} document{total !== 1 ? "s" : ""} in your workspace
-          </p>
-        </div>
-        {canCreate && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "LPMS", href: "/lpms" }, { label: "Document Library" }]}
+        title={<>Document Library</>}
+        description={<>{total} document{total !== 1 ? "s" : ""} in your workspace</>}
+        actions={<>{canCreate && (
           <Link href="/lpms/new" className={buttonVariants({ size: "sm" })}>
             <Plus className="size-3.5" />
             New Document
           </Link>
-        )}
-      </div>
+        )}</>}
+      />
 
       {/* Status filter pills */}
       <div className="flex flex-wrap gap-2">

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import { ClipboardList, Send, CheckCircle2, AlarmClock } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
@@ -24,10 +26,13 @@ export default async function MyAssignmentsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms/me" }, { label: "Assignments" }]} />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Assignments</h1>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms/me" }, { label: "Assignments" }]}
+        title={<>Assignments</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Total" value={items.length} accent icon={<ClipboardList className="size-4" />} />
         <KpiCard label="Submitted" value={submitted} icon={<Send className="size-4" />} />
         <KpiCard label="Reviewed" value={reviewed} icon={<CheckCircle2 className="size-4" />} />
@@ -45,6 +50,7 @@ export default async function MyAssignmentsPage() {
           ))}
         </div>
       )}
+</PanelListFilters>
     </div>
   );
 }

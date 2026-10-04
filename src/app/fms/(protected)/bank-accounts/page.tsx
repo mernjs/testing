@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Plus, Landmark, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,13 +25,11 @@ export default async function BankAccountsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Bank Accounts" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Bank Accounts</h1>
-          <p className="text-sm text-muted-foreground">{accounts.length} account{accounts.length === 1 ? "" : "s"}.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Bank Accounts" }]}
+        title={<>Bank Accounts</>}
+        description={<>{accounts.length} account{accounts.length === 1 ? "" : "s"}.</>}
+        actions={<>{canManage && (
           <BankAccountForm
             trigger={
               <Button type="button" size="sm">
@@ -38,10 +38,11 @@ export default async function BankAccountsPage() {
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Total Accounts" value={accounts.length} accent icon={<Landmark className="size-4" />} />
         <KpiCard label="Total Bank Balance" value={<span>{formatMoney(total)}</span>} icon={<Coins className="size-4" />} />
       </KpiGrid>
@@ -79,6 +80,7 @@ export default async function BankAccountsPage() {
           </Table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

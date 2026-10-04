@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchAllMilestones } from "@/lib/workspace/pms-work-items";
@@ -45,11 +46,11 @@ export default async function AdminMilestonesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "PMS", panel: "pms" }, { label: "Milestones" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Milestones</h1>
-        <p className="text-sm text-muted-foreground">{total} milestone{total === 1 ? "" : "s"} across every project.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "PMS", panel: "pms" }, { label: "Milestones" }]}
+        title={<>Milestones</>}
+        description={<>{total} milestone{total === 1 ? "" : "s"} across every project.</>}
+      />
 
       <MilestonesGrid
         rows={rows}

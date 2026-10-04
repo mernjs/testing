@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight } from "lucide-react";
@@ -35,7 +36,8 @@ export default async function OverviewPage() {
     <div className="space-y-4">
       <PageHeader title="SEO Overview" crumbs={[{ label: "SEO Overview" }]} description="Where the site stands, what to fix first, and how fresh each data source is." />
 
-      <SectionCard title="SEO health" description={d.run ? `From the audit of ${formatDateTime(d.run.startedAt)} · ${d.run.passedChecks}/${d.run.totalChecks} checks passed` : "Run a website audit to score the site."}>
+      <PanelListFilters>
+<SectionCard title="SEO health" description={d.run ? `From the audit of ${formatDateTime(d.run.startedAt)} · ${d.run.passedChecks}/${d.run.totalChecks} checks passed` : "Run a website audit to score the site."}>
         <div className="flex flex-wrap items-center justify-around gap-6 py-2">
           <Link href="/seo/pages?sortBy=score"><ScoreRing score={d.scores?.overall ?? null} label="Overall" size={128} /></Link>
           <Link href="/seo/technical"><ScoreRing score={d.scores?.technical ?? null} label="Technical" /></Link>
@@ -122,6 +124,7 @@ export default async function OverviewPage() {
           Integration settings <ArrowRight className="size-3" />
         </Link>
       </SectionCard>
+</PanelListFilters>
     </div>
   );
 }

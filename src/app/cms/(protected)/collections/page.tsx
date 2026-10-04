@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Newspaper, Briefcase, UserPlus, Boxes, ArrowRight } from "lucide-react";
@@ -34,7 +35,8 @@ export default async function CmsCollectionsPage() {
         title="Collections"
         description={<>Records that several pages share. Edit one here and every page, listing and search result that shows it updates when you publish.</>}
       />
-      <div className="grid gap-4 sm:grid-cols-2">
+      <PanelListFilters>
+<div className="grid gap-4 sm:grid-cols-2">
         {keys.map((k, i) => {
           const Icon = ICONS[k];
           return (
@@ -54,6 +56,7 @@ export default async function CmsCollectionsPage() {
           );
         })}
       </div>
+</PanelListFilters>
     </div>
   );
 }

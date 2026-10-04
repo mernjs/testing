@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import ConversationsDataTable from "@/components/lms/ConversationsDataTable";
 import { searchConversations, getConversationSourcePages } from "@/lib/chat-conversations";
@@ -48,19 +49,15 @@ export default async function ConversationsListPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "AI Chatbot", href: "/lms/chatbot" },
           { label: "Conversations" },
         ]}
+        title={<>Conversations</>}
+        description={<>{total} conversation{total === 1 ? "" : "s"} · click a row for the full transcript</>}
       />
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Conversations</h1>
-        <p className="text-sm text-muted-foreground">
-          {total} conversation{total === 1 ? "" : "s"} · click a row for the full transcript
-        </p>
-      </div>
 
       <ConversationsDataTable
         items={items}

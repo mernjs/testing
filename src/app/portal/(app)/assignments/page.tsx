@@ -1,7 +1,7 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { ClipboardList, ExternalLink } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getLearnerOverview } from "@/lib/portal/student";
 import { PortalPageHeader } from "@/components/portal/widgets";
@@ -30,10 +30,10 @@ export default async function AssignmentsPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Assignments" }]} />
       <PortalPageHeader title="Assignments" subtitle={`${pending.length} to do · ${submitted.length} submitted`} />
 
-      {rows.length === 0 && (
+      <PanelListFilters>
+{rows.length === 0 && (
         <GlassCard>
           <CardContent className="py-10 text-center text-sm text-muted-foreground">No assignments posted yet.</CardContent>
         </GlassCard>
@@ -85,6 +85,7 @@ export default async function AssignmentsPage() {
             </CardContent>
           </GlassCard>
         ))}
+</PanelListFilters>
     </div>
   );
 }

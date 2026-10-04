@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CalendarDays, Award, Send, CheckCircle2, ExternalLink } from "lucide-react";
@@ -36,25 +37,20 @@ export default async function AssignmentDetailPage({ params }: { params: Promise
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Assignments", href: "/tms/assignments" }, { label: a.title }]} />
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{a.title}</h1>
-          <p className="text-sm text-muted-foreground">
-            {batch ? (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Assignments", href: "/tms/assignments" }, { label: a.title }]}
+        title={<>{a.title}</>}
+        description={<>{batch ? (
               <Link href={`/tms/batches/${batch._id}`} className="text-primary hover:underline">{batch.name}</Link>
             ) : "Unknown batch"}
-            {program ? ` · ${program.name}` : ""}
-          </p>
-        </div>
-        {canManage && (
+            {program ? ` · ${program.name}` : ""}</>}
+        actions={<>{canManage && (
           <AssignmentActions
             assignment={a}
             batches={batches.map((b) => ({ _id: b._id, name: b.name, programName: b.programName }))}
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Due Date" value={a.dueDate ? formatDate(a.dueDate) : "—"} accent icon={<CalendarDays className="size-4" />} />

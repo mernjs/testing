@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -43,11 +44,12 @@ export default async function CompanySettingsPage() {
 
   return (
     <div className="min-h-screen bg-muted/70 px-4 py-10 dark:bg-background">
-      <div className="mx-auto max-w-4xl space-y-6">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight">{brand.name} settings</h1>
-          <p className="text-sm text-muted-foreground">Company-wide configuration. Only Super Admins see this.</p>
-        </div>
+      <div className="space-y-4">
+<PanelPageHeader
+          title={<>{brand.name} settings</>}
+          description={<>Company-wide configuration. Only Super Admins see this.</>}
+        />
+<div className="space-y-6">
         <div className="grid gap-3 sm:grid-cols-2">
           {sections.map(({ key, href, title, description }) => {
             const Icon = ICONS[key] ?? Building2;
@@ -68,6 +70,7 @@ export default async function CompanySettingsPage() {
           })}
         </div>
       </div>
+</div>
     </div>
   );
 }

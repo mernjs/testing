@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -16,24 +17,23 @@ export default async function EditCouponPage({ params }: { params: Promise<{ id:
   if (!coupon) notFound();
 
   return (
-    <div className="relative mx-auto max-w-2xl space-y-4">
-      <Breadcrumbs
-        items={[
+    <div className="space-y-4">
+<PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "Festival Offers", href: "/lms/offers" },
           { label: "Coupons", href: "/lms/offers/coupons" },
           { label: coupon.code },
         ]}
-      />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl font-mono">{coupon.code}</h1>
-        <DeleteEntityButton
+        title={<>{coupon.code}</>}
+        actions={<><DeleteEntityButton
           label="coupon"
           confirmText="Visitors will no longer be able to apply this code. This can't be undone."
           onDelete={deleteCouponAction.bind(null, id)}
           redirectTo="/lms/offers/coupons"
-        />
-      </div>
+        /></>}
+      />
+<div className="relative mx-auto max-w-2xl space-y-4">
       <GlassCard>
         <CardHeader>
           <CardTitle className="text-base">Details</CardTitle>
@@ -43,5 +43,6 @@ export default async function EditCouponPage({ params }: { params: Promise<{ id:
         </CardContent>
       </GlassCard>
     </div>
+</div>
   );
 }

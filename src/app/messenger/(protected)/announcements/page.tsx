@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Megaphone, Plus, Clock, FileEdit } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -27,20 +29,20 @@ export default async function AnnouncementsPage({ searchParams }: { searchParams
 
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6">
-      <div className="mx-auto max-w-3xl space-y-5">
-        <Breadcrumbs items={[{ label: "Messenger", href: "/messenger" }, { label: "Announcements" }]} />
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Announcements</h1>
-            <p className="text-sm text-muted-foreground">Broadcast updates from leadership and HR.</p>
-          </div>
-          {isAuthor && (
+      <div className="space-y-4">
+<PanelPageHeader
+          breadcrumbs={[{ label: "Messenger", href: "/messenger" }, { label: "Announcements" }]}
+          title={<>Announcements</>}
+          description={<>Broadcast updates from leadership and HR.</>}
+          actions={<>{isAuthor && (
             <Button render={<Link href="/messenger/announcements/new" />} size="sm">
               <Plus className="size-3.5" data-icon="inline-start" />
               New announcement
             </Button>
-          )}
-        </div>
+          )}</>}
+        />
+<PanelListFilters>
+<div className="space-y-5">
 
         {drafts.length > 0 && (
           <div className="space-y-2">
@@ -122,6 +124,8 @@ export default async function AnnouncementsPage({ searchParams }: { searchParams
           </div>
         )}
       </div>
+</PanelListFilters>
+</div>
     </div>
   );
 }

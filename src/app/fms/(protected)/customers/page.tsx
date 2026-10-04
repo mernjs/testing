@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Users, Receipt, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -27,13 +28,11 @@ export default async function CustomersPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Customers" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Customers</h1>
-        <p className="text-sm text-muted-foreground">
-          Financial view over PMS&apos;s client records — {result.total} customer{result.total === 1 ? "" : "s"}.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Customers" }]}
+        title={<>Customers</>}
+        description={<>Financial view over PMS&apos;s client records — {result.total} customer{result.total === 1 ? "" : "s"}.</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Customers" value={result.total} accent icon={<Users className="size-4" />} />

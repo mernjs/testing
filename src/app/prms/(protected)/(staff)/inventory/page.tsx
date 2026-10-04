@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, Package, AlertTriangle, Coins } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,13 +33,11 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Inventory & Stationery" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Inventory &amp; Stationery</h1>
-          <p className="text-sm text-muted-foreground">{total} consumable item{total === 1 ? "" : "s"}.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Inventory & Stationery" }]}
+        title={<>Inventory &amp; Stationery</>}
+        description={<>{total} consumable item{total === 1 ? "" : "s"}.</>}
+        actions={<>{canManage && (
           <InventoryItemForm
             vendors={vendors.map((v) => ({ _id: v._id, companyName: v.companyName }))}
             trigger={
@@ -48,8 +47,8 @@ export default async function InventoryPage({ searchParams }: { searchParams: Pr
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Items" value={total} accent icon={<Package className="size-4" />} />

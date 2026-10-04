@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Construction } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -14,11 +15,11 @@ export default async function FmsComingSoonPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: section }, { label: item }]} />
+      <PanelPageHeader breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: section }, { label: item }]} title={<>{item}</>} description={<>Coming soon to the finance panel.</>} />
       <GlassCard>
         <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
           <Construction className="size-10 text-muted-foreground/60" />
-          <h1 className="text-xl font-semibold text-foreground">{item} is coming soon</h1>
+          <p className="text-base font-semibold text-foreground">{item} is coming soon</p>
           <p className="max-w-md text-sm text-muted-foreground">
             {section} is on the FMS roadmap but hasn&apos;t shipped yet. Phase 1 covers the finance dashboard,
             transactions, customers, vendors, the chart of accounts and the audit log — everything else lights up

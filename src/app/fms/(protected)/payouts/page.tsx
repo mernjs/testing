@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -14,7 +16,6 @@ import {
 import GlassCard from "@/components/lms/GlassCard";
 import KpiCard from "@/components/lms/KpiCard";
 import KpiGrid from "@/components/lms/KpiGrid";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { getDb } from "@/lib/mongodb";
 import { listBeneficiaries } from "@/lib/fms/beneficiaries";
 import { listBankAccounts } from "@/lib/fms/bank-accounts";
@@ -101,30 +102,19 @@ export default async function LivePayoutsPage({
 
   return (
     <div className="relative space-y-6">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Payments" }, { label: "Live Payout Desk" }]} />
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-brand-accent text-white shadow-sm">
-              <Send className="size-5" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Live Bank Payout Desk</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                Pay Vendors (PRMS), Employee Salaries (HRMS), or Student Refunds (TMS) directly from your Company Current Bank Account.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="px-3 py-1.5 text-xs font-semibold bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+      <PanelPageHeader
+        title={<>Live Bank Payout Desk</>}
+        description={<>Pay Vendors (PRMS), Employee Salaries (HRMS), or Student Refunds (TMS) directly from your Company Current Bank Account.</>}
+        actions={
+            <Badge variant="outline" className="px-3 py-1.5 text-xs font-semibold bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
             <ShieldCheck className="size-3.5 mr-1" />
             Production Ready · Live Banking Ledger Active
           </Badge>
-        </div>
-      </div>
+          }
+        />
+
+      <PanelListFilters>
 
       {/* Corporate Bank Balance Cards */}
       <KpiGrid>
@@ -338,6 +328,7 @@ export default async function LivePayoutsPage({
           </table>
         </div>
       </GlassCard>
+      </PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarDays, CircleDollarSign, Layers, Building2, ListChecks } from "lucide-react";
@@ -50,23 +51,15 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "PMS", href: "/pms" },
           { label: "Projects", href: "/pms/projects" },
           { label: project.name },
         ]}
-      />
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{project.name}</h1>
-            <PriorityBadge priority={project.priority} />
-            <ProjectHealthBadge health={serialized.health} />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{project.projectCode}</span>
+        title={<><span className="inline-flex flex-wrap items-center gap-2">{project.name}<PriorityBadge priority={project.priority} />
+            <ProjectHealthBadge health={serialized.health} /></span></>}
+        description={<><span className="font-mono">{project.projectCode}</span>
             {client ? (
               <>
                 {" · "}
@@ -75,10 +68,8 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                 </Link>
               </>
             ) : null}
-            {project.category ? ` · ${project.category}` : ""}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
+            {project.category ? ` · ${project.category}` : ""}</>}
+        actions={<><div className="flex flex-wrap items-center gap-2">
           {canManage ? (
             <ProjectStatusControl projectId={id} status={project.status} />
           ) : (
@@ -95,8 +86,8 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             </Link>
           )}
           {canManage && <ProjectActions projectId={id} projectName={project.name} />}
-        </div>
-      </div>
+        </div></>}
+      />
 
       <ProjectTabs projectId={id} />
 

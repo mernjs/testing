@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
@@ -44,15 +45,11 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Asset Management", href: "/prms/assets" }, { label: a.assetCode }]} />
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{a.name}</h1>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{a.assetCode}</span> · {a.category} · <AssetStatusBadge status={a.status} />
-          </p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Asset Management", href: "/prms/assets" }, { label: a.assetCode }]}
+        title={<>{a.name}</>}
+        description={<><span className="font-mono">{a.assetCode}</span> · {a.category} · <AssetStatusBadge status={a.status} /></>}
+        actions={<>{canManage && (
           <AssetForm
             asset={a}
             vendors={vendors.map((v) => ({ _id: v._id, companyName: v.companyName }))}
@@ -63,8 +60,8 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-4">

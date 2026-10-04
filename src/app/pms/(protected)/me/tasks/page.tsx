@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import MyTasksView from "@/components/pms/MyTasksView";
 import { getCurrentPmsUser } from "@/lib/pms-auth";
@@ -12,13 +14,14 @@ export default async function MyTasksPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PMS", href: "/pms/me" }, { label: "My Tasks" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">My Tasks</h1>
-        <p className="text-sm text-muted-foreground">Every task assigned to you, across all projects. Open one to update it.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PMS", href: "/pms/me" }, { label: "My Tasks" }]}
+        title={<>My Tasks</>}
+        description={<>Every task assigned to you, across all projects. Open one to update it.</>}
+      />
 
-      <MyTasksView
+      <PanelListFilters>
+<MyTasksView
         tasks={rows.map((t) => ({
           _id: t._id,
           taskCode: t.taskCode,
@@ -32,6 +35,7 @@ export default async function MyTasksPage() {
         }))}
         projects={projects}
       />
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import { IndianRupee, Wallet, AlarmClock, Download } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -23,10 +25,13 @@ export default async function MyPaymentsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms/me" }, { label: "Payments" }]} />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Payments</h1>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms/me" }, { label: "Payments" }]}
+        title={<>Payments</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Total Fees" value={billed} format="currency" accent icon={<IndianRupee className="size-4" />} />
         <KpiCard label="Paid" value={paid} format="currency" icon={<Wallet className="size-4" />} />
         <KpiCard label="Pending" value={pending} format="currency" tone={pending > 0 ? "down" : undefined} icon={<AlarmClock className="size-4" />} />
@@ -79,6 +84,7 @@ export default async function MyPaymentsPage() {
           })}
         </div>
       )}
+</PanelListFilters>
     </div>
   );
 }

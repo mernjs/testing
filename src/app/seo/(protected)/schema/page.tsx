@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
@@ -38,7 +39,8 @@ export default async function SchemaPage() {
         description="Create, validate and publish JSON-LD (Organization, LocalBusiness, Website, WebPage, Article, BlogPosting, Breadcrumb, FAQ, Product, Service, Event, JobPosting, Course, Review) and see what the site already emits."
         actions={can(viewer, "MANAGE_SCHEMA") && <Link href="/seo/schema/new" className={buttonVariants({ size: "sm" })}><Plus className="size-3.5" data-icon="inline-start" />New schema</Link>}
       />
-      <SectionCard title={`Managed schema (${schemas.length})`} description="JSON-LD maintained in this panel. Published items are live on their target page(s).">
+      <PanelListFilters>
+<SectionCard title={`Managed schema (${schemas.length})`} description="JSON-LD maintained in this panel. Published items are live on their target page(s).">
         {schemas.length === 0 ? <EmptyState title="No managed schema yet">Start from a template for any of the 14 supported types.</EmptyState> : (
           <Table>
             <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Type</TableHead><TableHead>Applies to</TableHead><TableHead>Status</TableHead><TableHead>Validation</TableHead><TableHead>Updated</TableHead><TableHead /></TableRow></TableHeader>
@@ -76,6 +78,7 @@ export default async function SchemaPage() {
           )}
         </SectionCard>
       </div>
+</PanelListFilters>
     </div>
   );
 }

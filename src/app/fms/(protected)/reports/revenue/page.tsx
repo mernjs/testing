@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { CalendarRange } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -43,11 +44,11 @@ export default async function RevenueReportPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Revenue" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Revenue Report</h1>
-        <p className="text-sm text-muted-foreground">Income by account and by customer for the selected range, from posted journal entries and settled transactions.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Revenue" }]}
+        title={<>Revenue Report</>}
+        description={<>Income by account and by customer for the selected range, from posted journal entries and settled transactions.</>}
+      />
 
       <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
         <div className="flex items-center gap-3 border-b border-border/40 pb-4">

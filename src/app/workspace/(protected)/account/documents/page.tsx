@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchDocuments, DOCUMENT_MODULES, type DocumentModule } from "@/lib/workspace/documents";
@@ -31,13 +32,11 @@ export default async function AdminDocumentsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Account" }, { label: "Documents" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Documents</h1>
-        <p className="text-sm text-muted-foreground">
-          {total} document{total === 1 ? "" : "s"} across Project Management, HRMS, and the External Portal.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "Account" }, { label: "Documents" }]}
+        title={<>Documents</>}
+        description={<>{total} document{total === 1 ? "" : "s"} across Project Management, HRMS, and the External Portal.</>}
+      />
 
       <DocumentsGrid
         rows={items}

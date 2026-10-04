@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Download, RotateCcw } from "lucide-react";
@@ -29,13 +30,11 @@ export default async function ReceiptDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Payment Receipts", href: "/fms/receipts" }, { label: receipt.receiptNumber }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{receipt.receiptNumber}</h1>
-          <p className="text-sm text-muted-foreground">{receipt.customerName} · {formatMoney(receipt.amount, receipt.currency)}</p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Payment Receipts", href: "/fms/receipts" }, { label: receipt.receiptNumber }]}
+        title={<>{receipt.receiptNumber}</>}
+        description={<>{receipt.customerName} · {formatMoney(receipt.amount, receipt.currency)}</>}
+        actions={<><div className="flex items-center gap-2">
           <Badge className={receipt.status === "voided" ? "bg-muted text-muted-foreground" : "bg-green-500/15 text-green-600 dark:text-green-400"}>
             {receipt.status === "voided" ? "Voided" : "Completed"}
           </Badge>
@@ -43,8 +42,8 @@ export default async function ReceiptDetailPage({ params }: { params: Promise<{ 
             <Download className="size-3.5" data-icon="inline-start" />
             PDF
           </a>
-        </div>
-      </div>
+        </div></>}
+      />
 
       {canManage && receipt.status === "completed" && (
         <GlassCard>

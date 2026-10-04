@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Receipt, Clock } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import KpiCard from "@/components/lms/KpiCard";
@@ -22,13 +23,11 @@ export default async function EmployeeExpensesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Employee Expenses" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Employee Expenses</h1>
-        <p className="text-sm text-muted-foreground">
-          Financial view over PRMS&apos;s personal expense claims — {result.total} claim{result.total === 1 ? "" : "s"}.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Employee Expenses" }]}
+        title={<>Employee Expenses</>}
+        description={<>Financial view over PRMS&apos;s personal expense claims — {result.total} claim{result.total === 1 ? "" : "s"}.</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Claims" value={result.total} accent icon={<Receipt className="size-4" />} />

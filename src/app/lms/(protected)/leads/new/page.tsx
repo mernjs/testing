@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -7,19 +8,18 @@ export const metadata = { title: "New lead · Lead Management" };
 
 export default function NewLeadPage() {
   return (
-    <div className="relative mx-auto max-w-xl space-y-4">
-      <Breadcrumbs
-        items={[
+    <div className="space-y-4">
+<PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "Lead Management", href: "/lms/leads" },
           { label: "New lead" },
         ]}
+        title={<>New lead</>}
+        description={<>Creates a lead and a portal account (with a temporary password). Use for phone/walk-in enquiries that never hit a
+        website form.</>}
       />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">New lead</h1>
-      <p className="text-sm text-muted-foreground">
-        Creates a lead and a portal account (with a temporary password). Use for phone/walk-in enquiries that never hit a
-        website form.
-      </p>
+<div className="relative mx-auto max-w-xl space-y-4">
       <GlassCard>
         <CardHeader>
           <CardTitle className="text-base">Details</CardTitle>
@@ -29,5 +29,6 @@ export default function NewLeadPage() {
         </CardContent>
       </GlassCard>
     </div>
+</div>
   );
 }

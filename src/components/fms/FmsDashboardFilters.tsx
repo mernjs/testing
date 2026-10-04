@@ -71,7 +71,7 @@ export default function FmsDashboardFilters({
             <SlidersHorizontal className="size-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold tracking-tight text-foreground">Finance Filters</h3>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
             <p className="text-xs text-muted-foreground">Slice financial activity by date, source panel, and flow type</p>
           </div>
         </div>

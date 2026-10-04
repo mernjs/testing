@@ -1,6 +1,6 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getActivePortalLead } from "@/lib/portal/lead";
 import { HiringTimeline, PortalPageHeader } from "@/components/portal/widgets";
@@ -18,13 +18,13 @@ export default async function JourneyPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "My Journey" }]} />
       <PortalPageHeader
         title="My Journey"
         subtitle={`${view.lead.code} · currently: ${view.currentStagePortalLabel}`}
       />
 
-      <GlassCard>
+      <PanelListFilters>
+<GlassCard>
         <CardHeader>
           <CardTitle className="text-base">Progress</CardTitle>
         </CardHeader>
@@ -41,6 +41,7 @@ export default async function JourneyPage() {
           <LeadJourney events={view.events} />
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

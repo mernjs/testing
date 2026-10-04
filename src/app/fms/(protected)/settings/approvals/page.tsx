@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -16,14 +17,12 @@ import { TRANSACTION_TRANSITIONS, TRANSACTION_STATUSES } from "@/lib/fms/constan
 export default function ApprovalsSettingsPage() {
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Settings" }, { label: "Approvals" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Approval Configuration</h1>
-        <p className="text-sm text-muted-foreground">
-          The current, real approval model — who can approve, and the controlled state transitions every
-          transaction follows. Not a configurable rules engine.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Settings" }, { label: "Approvals" }]}
+        title={<>Approval Configuration</>}
+        description={<>The current, real approval model — who can approve, and the controlled state transitions every
+          transaction follows. Not a configurable rules engine.</>}
+      />
 
       <GlassCard interactive={false}>
         <CardHeader><CardTitle>Who Can Approve</CardTitle></CardHeader>

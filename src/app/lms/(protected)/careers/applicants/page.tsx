@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import CareerApplicationsDataTable from "@/components/lms/CareerApplicationsDataTable";
 import CareersExportButton from "@/components/lms/CareersExportButton";
@@ -66,13 +67,11 @@ export default async function ApplicantsListPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Applicants" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Applicants</h1>
-          <p className="text-sm text-muted-foreground">{total} application{total === 1 ? "" : "s"}</p>
-        </div>
-        <CareersExportButton
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Applicants" }]}
+        title={<>Applicants</>}
+        description={<>{total} application{total === 1 ? "" : "s"}</>}
+        actions={<><CareersExportButton
           params={{
             search: sp.search,
             status,
@@ -82,8 +81,8 @@ export default async function ApplicantsListPage({
             sortBy,
             sortDir,
           }}
-        />
-      </div>
+        /></>}
+      />
 
       <CareerApplicationsDataTable
         items={serializedItems}

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound, redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import ExpenseSummary from "@/components/prms/ExpenseSummary";
@@ -20,8 +21,10 @@ export default async function MyExpenseDetailPage({ params }: { params: Promise<
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms/me" }, { label: "My Expenses", href: "/prms/me/expenses" }, { label: e.expenseCode }]} />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{e.expenseCode}</h1>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms/me" }, { label: "My Expenses", href: "/prms/me/expenses" }, { label: e.expenseCode }]}
+        title={<>{e.expenseCode}</>}
+      />
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <ExpenseSummary expense={e} />
         <ExpenseWorkflow expense={e} isOwner={isOwner} canApprove={false} backPath="/prms/me/expenses" />

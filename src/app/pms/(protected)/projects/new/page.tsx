@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import ProjectForm from "@/components/pms/ProjectForm";
@@ -24,11 +25,11 @@ export default async function NewProjectPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PMS", href: "/pms" }, { label: "Projects", href: "/pms/projects" }, { label: "New" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">New Project</h1>
-        <p className="text-sm text-muted-foreground">The project ID is generated automatically on save.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PMS", href: "/pms" }, { label: "Projects", href: "/pms/projects" }, { label: "New" }]}
+        title={<>New Project</>}
+        description={<>The project ID is generated automatically on save.</>}
+      />
 
       {clients.length === 0 ? (
         <p className="text-sm text-muted-foreground">

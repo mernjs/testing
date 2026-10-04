@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,14 +26,12 @@ export default async function AdvanceDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Advances", href: "/fms/advances" }, { label: advance.advanceNumber }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{advance.advanceNumber}</h1>
-          <p className="text-sm text-muted-foreground">{advance.employeeName} · {formatMoney(advance.amount)}</p>
-        </div>
-        <AdvanceStatusBadge status={advance.status} />
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Advances", href: "/fms/advances" }, { label: advance.advanceNumber }]}
+        title={<>{advance.advanceNumber}</>}
+        description={<>{advance.employeeName} · {formatMoney(advance.amount)}</>}
+        actions={<><AdvanceStatusBadge status={advance.status} /></>}
+      />
 
       {(canAct || (canManage && advance.status === "disbursed")) && (
         <GlassCard>

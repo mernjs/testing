@@ -1,7 +1,7 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { CalendarClock, MapPin, Video, Phone, Users } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getApplicantOverview } from "@/lib/portal/applicant";
 import { PortalPageHeader } from "@/components/portal/widgets";
@@ -41,10 +41,10 @@ export default async function InterviewsPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Interview Schedule" }]} />
       <PortalPageHeader title="Interview Schedule" subtitle={`${data.interviews.length} interview${data.interviews.length === 1 ? "" : "s"} on record`} />
 
-      {data.interviews.length === 0 && (
+      <PanelListFilters>
+{data.interviews.length === 0 && (
         <GlassCard>
           <CardContent className="py-10 text-center text-sm text-muted-foreground">
             No interviews scheduled yet. Recruitment will add slots here once you&apos;re shortlisted.
@@ -101,6 +101,7 @@ export default async function InterviewsPage() {
           </CardContent>
         </GlassCard>
       )}
+</PanelListFilters>
     </div>
   );
 }

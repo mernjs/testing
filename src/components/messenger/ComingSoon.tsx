@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,14 +15,14 @@ export default function ComingSoon({
 }) {
   return (
     <div className="h-full overflow-y-auto p-6">
-      <div className="mx-auto max-w-xl">
-        <Breadcrumbs items={[{ label: "Messenger", href: "/messenger" }, { label: title }]} />
+      <div className="space-y-4">
+<PanelPageHeader breadcrumbs={[{ label: "Messenger", href: "/messenger" }, { label: title }]} title={<>{title}</>} description={<>{description}</>} />
+<div className="mx-auto max-w-xl">
         <div className="mt-6 rounded-3xl border border-border/50 bg-card p-8 text-center">
           <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-brand-accent text-white">
             <Rocket className="size-5" />
           </div>
-          <h1 className="text-xl font-black tracking-tight text-foreground">{title}</h1>
-          <p className="mx-auto mt-1.5 max-w-md text-sm text-muted-foreground">{description}</p>
+          <p className="text-base font-semibold text-foreground">Coming soon</p>
           <ul className="mx-auto mt-4 max-w-sm space-y-1.5 text-left text-sm text-muted-foreground">
             {bullets.map((b) => (
               <li key={b} className="flex gap-2">
@@ -35,6 +36,7 @@ export default function ComingSoon({
           </Button>
         </div>
       </div>
+</div>
     </div>
   );
 }

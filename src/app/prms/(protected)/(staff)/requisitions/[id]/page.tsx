@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FileSpreadsheet, ShoppingCart } from "lucide-react";
@@ -36,14 +37,14 @@ export default async function StaffRequisitionDetailPage({ params }: { params: P
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "PRMS", href: "/prms" },
           { label: "Purchase Requisition", href: "/prms/requisitions" },
           { label: r.prCode },
         ]}
+        title={<>{r.itemName}</>}
       />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{r.itemName}</h1>
 
       {showConvert && (
         <div className="flex flex-wrap gap-2">

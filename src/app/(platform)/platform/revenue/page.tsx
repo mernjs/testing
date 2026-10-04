@@ -11,6 +11,7 @@ import { getRevenueDashboard, monthKeyOf, AT_RISK_TRIAL_DAYS, RANGE_PRESETS, typ
 import { formatMoney } from "@/lib/platform/billing/types";
 import { cn } from "@/lib/utils";
 import { BilledCollectedChart, EmptyChart, MovementsChart, MrrTrendChart, type ChartMonth } from "./RevenueCharts";
+import FilterCardShell from "@/components/platform/panel/FilterCardShell";
 import RevenueRangePicker from "./RevenueRangePicker";
 
 export const metadata: Metadata = { title: "Revenue & subscriptions" };
@@ -146,7 +147,9 @@ export default async function PlatformRevenuePage({ searchParams }: { searchPara
               </span>
             )}
           </h2>
-          <RevenueRangePicker presets={RANGE_PRESETS} preset={d.range.preset} from={d.range.from} to={d.range.to} maxMonth={monthKeyOf(new Date(d.generatedAt))} />
+          <FilterCardShell description="Pick the period the figures, charts and CSV export cover">
+            <RevenueRangePicker presets={RANGE_PRESETS} preset={d.range.preset} from={d.range.from} to={d.range.to} maxMonth={monthKeyOf(new Date(d.generatedAt))} />
+          </FilterCardShell>
         </div>
         <KpiGrid cols={6}>
           <KpiCard label="Net new MRR" value={signedMoney(s.net)} tone={s.net > 0 ? "up" : s.net < 0 ? "down" : undefined} icon={<ArrowUpRight className="size-4" />} />

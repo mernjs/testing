@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
@@ -19,9 +20,18 @@ export default async function MyPayslipPage({ params }: { params: Promise<{ mont
 
   return (
     <div className="space-y-4">
-      <Link href="/hrms/me/salary" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground print:hidden">
-        <ChevronLeft className="size-4" /> Back to payslips
-      </Link>
+      <div className="print:hidden">
+        <PanelPageHeader
+          breadcrumbs={[{ label: "HRMS", href: "/hrms/me" }, { label: "Salary", href: "/hrms/me/salary" }, { label: month }]}
+          title={<>Payslip · {month}</>}
+          description={<>Your earnings and deductions for this month. Print or download it from below.</>}
+          actions={
+            <Link href="/hrms/me/salary" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+              <ChevronLeft className="size-4" /> Back to payslips
+            </Link>
+          }
+        />
+      </div>
       <PayslipView
         data={{
           payslipId: d.payslipId,

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import {
   CalendarCheck,
@@ -115,20 +117,17 @@ export default async function MeDashboard() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground">Hi, {name.split(" ")[0]}</h1>
-          <p className="text-sm text-muted-foreground">
-            {employee.employeeCode} · {designation} · {department} · {tenure.label} at {brand.name}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
+      <PanelPageHeader
+        title={<>Hi, {name.split(" ")[0]}</>}
+        description={<>{employee.employeeCode} · {designation} · {department} · {tenure.label} at {brand.name}</>}
+        actions={<><div className="flex flex-wrap gap-2">
           <Link href="/hrms/me/salary" className="text-xs font-medium text-primary hover:underline">Payslips →</Link>
           <Link href="/hrms/me/leave" className="text-xs font-medium text-primary hover:underline">Apply leave →</Link>
-        </div>
-      </div>
+        </div></>}
+      />
 
-      <ClockWidget
+      <PanelListFilters>
+<ClockWidget
         dayLabel={todayWorking.label}
         working={todayWorking.working}
         checkIn={clock.checkIn}
@@ -432,6 +431,7 @@ export default async function MeDashboard() {
           ))}
         </div>
       </Section>
+</PanelListFilters>
     </div>
   );
 }

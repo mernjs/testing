@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Trash2, PowerOff, Power } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -19,14 +20,12 @@ export default async function TaxConfigPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Settings" }, { label: "Tax Configuration" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Tax Configuration</h1>
-        <p className="text-sm text-muted-foreground">
-          A named list of tax rates for entering taxable transactions and invoices — not a GST/TDS compliance
-          engine; that stays PRMS&apos;s own procurement-specific territory.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Settings" }, { label: "Tax Configuration" }]}
+        title={<>Tax Configuration</>}
+        description={<>A named list of tax rates for entering taxable transactions and invoices — not a GST/TDS compliance
+          engine; that stays PRMS&apos;s own procurement-specific territory.</>}
+      />
 
       {canManage && (
         <GlassCard interactive={false}>

@@ -76,7 +76,7 @@ export default function ProgramsDataTable({ items, total, page, totalPages, init
               <GraduationCap className="size-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold tracking-tight text-foreground">Program Filters</h3>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
               <p className="text-xs text-muted-foreground">Browse the course catalog by category, status and mode</p>
             </div>
           </div>

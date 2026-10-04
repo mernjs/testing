@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Plus, ClipboardList, Send, CheckCircle2, AlarmClock } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
@@ -32,13 +34,11 @@ export default async function AssignmentsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Assignments" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Assignments</h1>
-          <p className="text-sm text-muted-foreground">{total} assignment{total === 1 ? "" : "s"} across all batches.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Assignments" }]}
+        title={<>Assignments</>}
+        description={<>{total} assignment{total === 1 ? "" : "s"} across all batches.</>}
+        actions={<>{canManage && (
           <AssignmentForm
             batches={batchOptions}
             trigger={
@@ -48,10 +48,11 @@ export default async function AssignmentsPage() {
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Total" value={total} accent icon={<ClipboardList className="size-4" />} />
         <KpiCard label="Submissions" value={totalSubs} icon={<Send className="size-4" />} />
         <KpiCard label="Reviewed" value={totalReviewed} icon={<CheckCircle2 className="size-4" />} />
@@ -100,6 +101,7 @@ export default async function AssignmentsPage() {
           )}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { CalendarRange } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -27,16 +29,15 @@ export default async function TaxReportPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Tax" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Tax Report</h1>
-        <p className="text-sm text-muted-foreground">
-          Tax collected on income vs. tax paid on expenses, from settled transactions&apos; <code>taxAmount</code>.
-          A single flat figure per transaction, not a CGST/SGST/IGST breakdown.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Tax" }]}
+        title={<>Tax Report</>}
+        description={<>Tax collected on income vs. tax paid on expenses, from settled transactions&apos; <code>taxAmount</code>.
+          A single flat figure per transaction, not a CGST/SGST/IGST breakdown.</>}
+      />
 
-      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+      <PanelListFilters>
+<div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
         <div className="flex items-center gap-3 border-b border-border/40 pb-4">
           <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
             <CalendarRange className="size-4" />
@@ -75,6 +76,7 @@ export default async function TaxReportPage({
         <KpiCard label="Tax Paid" value={<span>{formatMoney(result.taxPaid)}</span>} tone="down" />
         <KpiCard label="Net Payable" value={<span>{formatMoney(result.netPayable)}</span>} accent />
       </KpiGrid>
+</PanelListFilters>
     </div>
   );
 }

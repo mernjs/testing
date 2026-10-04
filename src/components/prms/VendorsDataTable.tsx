@@ -116,7 +116,7 @@ export default function VendorsDataTable({ items, total, page, totalPages, canMa
               <Building2 className="size-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold tracking-tight text-foreground">Vendor Filters</h3>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
               <p className="text-xs text-muted-foreground">Search the vendor directory by category and status</p>
             </div>
           </div>

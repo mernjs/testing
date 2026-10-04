@@ -77,7 +77,7 @@ export default function ClientsDataTable({ items, total, page, totalPages, indus
               <Building2 className="size-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold tracking-tight text-foreground">Client Filters</h3>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
               <p className="text-xs text-muted-foreground">Search and filter your client accounts</p>
             </div>
           </div>

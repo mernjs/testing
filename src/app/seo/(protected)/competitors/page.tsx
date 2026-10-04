@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
@@ -32,7 +33,8 @@ export default async function CompetitorsPage() {
         description={<>Compare {brand.name} with competitor sites. Competitor figures are <TrustBadge trust="estimated" /> (entered or imported from SEO tools); our figures are <TrustBadge trust="verified" /> panel data. Visibility is calculated the same way for everyone over our tracked keyword set.</>}
         actions={can(viewer, "MANAGE_COMPETITORS") && <EditDialog trigger={<Button size="sm"><Plus className="size-3.5" data-icon="inline-start" />Add competitor</Button>} title="Add a competitor" columns={2} fields={COMPETITOR_FIELDS} initial={competitorInitial(null)} onSubmit={async (v) => { "use server"; return saveCompetitorAction(null, v); }} />}
       />
-      {comps.length === 0 ? (
+      <PanelListFilters>
+{comps.length === 0 ? (
         <SectionCard title="No competitors yet"><EmptyState title="Add the sites you compete with in search">Then import their keyword positions to find keyword and content gaps.</EmptyState></SectionCard>
       ) : (
         <>
@@ -81,6 +83,7 @@ export default async function CompetitorsPage() {
           </SectionCard>
         </>
       )}
+</PanelListFilters>
     </div>
   );
 }

@@ -21,7 +21,6 @@ export default async function WorkspacePanelAnalyticsPage({
 
   return (
     <div className="relative space-y-6 p-6">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Analytics" }, { label: configs[panel].label }]} />
       <PanelAnalyticsBlock panel={panel} user={user} sp={sp} />
     </div>
   );

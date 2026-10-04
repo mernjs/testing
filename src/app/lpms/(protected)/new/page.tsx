@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { FileText, ChevronRight } from "lucide-react";
@@ -20,22 +21,15 @@ export default async function NewDocumentPage() {
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "LPMS", href: "/lpms" },
           { label: "Documents", href: "/lpms/documents" },
           { label: "New Document" },
         ]}
+        title={<>New Document</>}
+        description={<>Choose a document type to get started.</>}
       />
-
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-          New Document
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Choose a document type to get started.
-        </p>
-      </div>
 
       {makerTypes.length === 0 ? (
         <GlassCard interactive={false}>

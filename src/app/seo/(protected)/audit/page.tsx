@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ScanSearch } from "lucide-react";
@@ -40,7 +41,8 @@ export default async function AuditPage() {
         description={<>Crawls {settings.siteOrigin} (up to {settings.crawl.maxPages} pages) and checks {Object.keys(CHECKS).length} technical, on-page, content, link, mobile, performance and structured-data rules. Scheduled: {settings.schedule.auditFrequency}.</>}
         actions={can(viewer, "RUN_AUDIT") && <JobButton endpoint="/api/seo/audit" label="Run audit now" busyLabel="Auditing… (up to a few minutes)" icon={<ScanSearch className="size-3.5" data-icon="inline-start" />} variant="default" disabled={!!running} successMessage="Audit complete" />}
       />
-      {running && <Badge className="bg-sky-500/15 text-sky-700">An audit started {formatDateTime(running.startedAt)} is running…</Badge>}
+      <PanelListFilters>
+{running && <Badge className="bg-sky-500/15 text-sky-700">An audit started {formatDateTime(running.startedAt)} is running…</Badge>}
 
       {latest ? <AuditRunSummary run={latest} /> : <SectionCard title="No audits yet"><EmptyState icon={<ScanSearch className="size-5" />} title="Run the first audit">The crawler reads robots.txt and the sitemap, then follows internal links.</EmptyState></SectionCard>}
 
@@ -92,6 +94,7 @@ export default async function AuditPage() {
           </Table>
         </div>
       </SectionCard>
+</PanelListFilters>
     </div>
   );
 }

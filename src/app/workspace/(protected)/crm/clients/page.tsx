@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchClients, listIndustries, serializeClient } from "@/lib/pms/clients";
@@ -34,11 +35,11 @@ export default async function AdminClientsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "CRM", panel: "lms" }, { label: "Clients" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Clients</h1>
-        <p className="text-sm text-muted-foreground">{total} client{total === 1 ? "" : "s"}.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "CRM", panel: "lms" }, { label: "Clients" }]}
+        title={<>Clients</>}
+        description={<>{total} client{total === 1 ? "" : "s"}.</>}
+      />
 
       <ClientsGrid
         rows={rows}

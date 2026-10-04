@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -21,13 +23,14 @@ export default async function AuditLogPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Audit Log" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Audit Log</h1>
-        <p className="text-sm text-muted-foreground">{total} recorded action{total === 1 ? "" : "s"}. Append-only.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "HRMS", href: "/hrms" }, { label: "Audit Log" }]}
+        title={<>Audit Log</>}
+        description={<>{total} recorded action{total === 1 ? "" : "s"}. Append-only.</>}
+      />
 
-      <GlassCard interactive={false}>
+      <PanelListFilters>
+<GlassCard interactive={false}>
         <CardContent className="max-h-[70vh] overflow-auto">
           <Table>
             <TableHeader>
@@ -77,6 +80,7 @@ export default async function AuditLogPage({ searchParams }: { searchParams: Pro
           </div>
         </div>
       )}
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -23,13 +25,14 @@ export default async function DepartmentsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Departments & Teams" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Departments &amp; Teams</h1>
-        <p className="text-sm text-muted-foreground">Master data and the reporting hierarchy.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "HRMS", href: "/hrms" }, { label: "Departments & Teams" }]}
+        title={<>Departments &amp; Teams</>}
+        description={<>Master data and the reporting hierarchy.</>}
+      />
 
-      <DepartmentsManager
+      <PanelListFilters>
+<DepartmentsManager
         departments={departments.map((d) => ({
           _id: d._id,
           name: d.name,
@@ -54,6 +57,7 @@ export default async function DepartmentsPage() {
           <OrgTree roots={orgRoots} designations={designations.map((d) => ({ _id: d._id, title: d.title }))} />
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

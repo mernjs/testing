@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -36,14 +37,12 @@ export default async function AssetFinanceDetailPage({ params }: { params: Promi
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Asset Register", href: "/fms/assets" }, { label: asset.assetCode }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{asset.name}</h1>
-          <p className="text-sm text-muted-foreground">{asset.assetCode} · {asset.category}</p>
-        </div>
-        <AssetStatusBadge status={asset.status} />
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Asset Register", href: "/fms/assets" }, { label: asset.assetCode }]}
+        title={<>{asset.name}</>}
+        description={<>{asset.assetCode} · {asset.category}</>}
+        actions={<><AssetStatusBadge status={asset.status} /></>}
+      />
 
       {canManage && asset.status !== "retired" && (
         <GlassCard>

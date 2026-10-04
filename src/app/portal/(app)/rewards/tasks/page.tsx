@@ -1,8 +1,8 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import Link from "next/link";
 import { CheckCircle2, Coins, ListChecks, Repeat, Target, Trophy } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { PortalPageHeader, PortalStat } from "@/components/portal/widgets";
 import { EarnNav, HowItWorks, RewardHistory } from "@/components/portal/rewards/parts";
 import ProgressBar from "@/components/pms/ProgressBar";
@@ -20,9 +20,9 @@ export default async function TaskRewardsPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Bonus tasks" }]} />
       <PortalPageHeader title="Bonus tasks" subtitle="Quick wins and milestones that pay extra credits." />
-      <EarnNav current="tasks" />
+      <PanelListFilters>
+<EarnNav current="tasks" />
 
       <HowItWorks
         steps={[
@@ -72,6 +72,7 @@ export default async function TaskRewardsPage() {
       )}
 
       <RewardHistory title="Task reward history" rows={t.history} empty="Completed tasks and their rewards will appear here." />
+</PanelListFilters>
     </div>
   );
 }

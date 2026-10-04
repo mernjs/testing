@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchChannels } from "@/lib/workspace/yashchat";
@@ -31,11 +32,11 @@ export default async function AdminChannelsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "YashChat", panel: "messenger" }, { label: "Channels" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Channels</h1>
-        <p className="text-sm text-muted-foreground">{total} channel{total === 1 ? "" : "s"}.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "YashChat", panel: "messenger" }, { label: "Channels" }]}
+        title={<>Channels</>}
+        description={<>{total} channel{total === 1 ? "" : "s"}.</>}
+      />
 
       <ChannelsGrid
         rows={items}

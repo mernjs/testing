@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, Scale } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
@@ -33,13 +35,11 @@ export default async function CashReconciliationPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Cash Reconciliation" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Cash Reconciliation</h1>
-          <p className="text-sm text-muted-foreground">{selectedAccount ? selectedAccount.accountName : "No cash accounts yet."}</p>
-        </div>
-        {canManage && accountOpts.length > 0 && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Cash Reconciliation" }]}
+        title={<>Cash Reconciliation</>}
+        description={<>{selectedAccount ? selectedAccount.accountName : "No cash accounts yet."}</>}
+        actions={<>{canManage && accountOpts.length > 0 && (
           <CashCountForm
             cashAccounts={accountOpts}
             presetCashAccountId={selectedId}
@@ -50,10 +50,11 @@ export default async function CashReconciliationPage({
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
-      {accountOpts.length === 0 ? (
+      <PanelListFilters>
+{accountOpts.length === 0 ? (
         <GlassCard>
           <CardContent className="py-10 text-center text-sm text-muted-foreground">
             No cash accounts yet — create one at /fms/cash-accounts.
@@ -97,6 +98,7 @@ export default async function CashReconciliationPage({
           </GlassCard>
         </>
       )}
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { List } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
@@ -18,23 +20,23 @@ export default async function ApplicationsBoardPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Applications", href: "/tms/applications" }, { label: "Board" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Application Pipeline</h1>
-          <p className="text-sm text-muted-foreground">Drag cards to move applicants through the pipeline.</p>
-        </div>
-        <Link href="/tms/applications" className={buttonVariants({ variant: "outline", size: "sm" })}>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Applications", href: "/tms/applications" }, { label: "Board" }]}
+        title={<>Application Pipeline</>}
+        description={<>Drag cards to move applicants through the pipeline.</>}
+        actions={<><Link href="/tms/applications" className={buttonVariants({ variant: "outline", size: "sm" })}>
           <List className="size-3.5" data-icon="inline-start" />
           List view
-        </Link>
-      </div>
+        </Link></>}
+      />
 
-      <GlassCard interactive={false}>
+      <PanelListFilters>
+<GlassCard interactive={false}>
         <CardContent className="py-4">
           <ApplicationsBoard board={serialized} />
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

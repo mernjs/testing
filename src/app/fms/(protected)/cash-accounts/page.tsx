@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Plus, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,13 +24,11 @@ export default async function CashAccountsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Cash Accounts" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Cash Accounts</h1>
-          <p className="text-sm text-muted-foreground">{accounts.length} account{accounts.length === 1 ? "" : "s"}.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Cash Accounts" }]}
+        title={<>Cash Accounts</>}
+        description={<>{accounts.length} account{accounts.length === 1 ? "" : "s"}.</>}
+        actions={<>{canManage && (
           <CashAccountForm
             trigger={
               <Button type="button" size="sm">
@@ -37,10 +37,11 @@ export default async function CashAccountsPage() {
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Total Accounts" value={accounts.length} accent icon={<Coins className="size-4" />} />
         <KpiCard label="Total Cash Balance" value={<span>{formatMoney(total)}</span>} icon={<Coins className="size-4" />} />
       </KpiGrid>
@@ -76,6 +77,7 @@ export default async function CashAccountsPage() {
           </Table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

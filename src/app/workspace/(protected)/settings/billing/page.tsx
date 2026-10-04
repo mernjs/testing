@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -26,15 +27,15 @@ import {
 
 export const metadata: Metadata = { title: "Plan & billing", robots: { index: false, follow: false } };
 
-function Shell({ children }: { children: React.ReactNode }) {
+function Shell({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-muted/70 px-4 py-10 dark:bg-background">
-      <div className="mx-auto max-w-4xl space-y-4">
-        <Link href="/workspace/settings" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4" /> Company settings
-        </Link>
+      <div className="space-y-4">
+<PanelPageHeader breadcrumbs={[{ label: "Company settings", href: "/workspace/settings" }, { label: title }]} title={<>{title}</>} description={<>{description}</>} />
+<div className="mx-auto max-w-4xl space-y-4">
         {children}
       </div>
+</div>
     </div>
   );
 }
@@ -48,12 +49,8 @@ export default async function BillingSettingsPage() {
 
   if (!sub || (sub.status === "internal" && !sub.complimentary)) {
     return (
-      <Shell>
+      <Shell title="Plan & billing" description="Subscription and invoices for this workspace.">
         <GlassCard>
-          <CardHeader>
-            <CardTitle className="text-xl">Plan & billing</CardTitle>
-            <CardDescription>Subscription and invoices for this workspace.</CardDescription>
-          </CardHeader>
           <CardContent>
             <p className="flex items-start gap-2 rounded-lg bg-primary/5 px-3 py-3 text-sm">
               <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -104,12 +101,8 @@ export default async function BillingSettingsPage() {
   };
 
   return (
-    <Shell>
+    <Shell title="Plan & billing" description="Your plan, payments through Razorpay, and the details printed on your GST invoices.">
       <GlassCard>
-        <CardHeader>
-          <CardTitle className="text-xl">Plan & billing</CardTitle>
-          <CardDescription>Your plan, payments through Razorpay, and the details printed on your GST invoices.</CardDescription>
-        </CardHeader>
         <CardContent>
           <BillingManager
             view={view}

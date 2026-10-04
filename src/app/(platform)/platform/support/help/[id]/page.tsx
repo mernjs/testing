@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -15,13 +16,17 @@ export default async function HelpArticleEditPage({ params }: { params: Promise<
   const article = id === "new" ? null : await getArticleById(id);
   if (id !== "new" && !article) notFound();
   return (
-    <div className="mx-auto max-w-3xl space-y-4 p-1">
+    <div className="space-y-4">
+<PanelPageHeader
+        title={<>{article ? "Edit article" : "New article"}</>}
+      />
+<div className="space-y-4 p-1">
       <Link href="/platform/support/help" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" /> Help content</Link>
-      <h1 className="text-2xl font-black tracking-tight text-foreground">{article ? "Edit article" : "New article"}</h1>
       <ArticleEditor
         canManage={can(user, "support.manage")}
         initial={article ? { id: article._id, title: article.title, summary: article.summary, body: article.body, category: article.category, tags: article.tags.join(", "), panels: article.panels.join(", "), status: article.status } : { title: "", summary: "", body: "", category: "", tags: "", panels: "", status: "draft" }}
       />
     </div>
+</div>
   );
 }

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { FolderKanban, Flag, CalendarClock, Package, FileText, ReceiptText, TrendingUp } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import ProgressBar from "@/components/pms/ProgressBar";
 import { InfoCard, PortalPageHeader, LinkPill } from "@/components/portal/widgets";
 import LeadStageCard from "@/components/portal/LeadStageCard";
@@ -36,7 +35,6 @@ export default function ClientDashboard({
 
   return (
     <div className="mx-auto max-w-6xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Dashboard" }]} />
       <PortalPageHeader
         title={`Hello, ${firstName}`}
         subtitle={`${data.client.companyName} · ${data.projects.length} project${data.projects.length === 1 ? "" : "s"}`}

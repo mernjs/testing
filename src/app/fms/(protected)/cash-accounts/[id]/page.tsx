@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Edit, Scale } from "lucide-react";
@@ -26,13 +27,11 @@ export default async function CashAccountDetailPage({ params }: { params: Promis
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Cash Accounts", href: "/fms/cash-accounts" }, { label: account.accountName }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{account.accountName}</h1>
-          <p className="text-sm text-muted-foreground">{formatMoney(account.currentBalance, account.currency)}</p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Cash Accounts", href: "/fms/cash-accounts" }, { label: account.accountName }]}
+        title={<>{account.accountName}</>}
+        description={<>{formatMoney(account.currentBalance, account.currency)}</>}
+        actions={<><div className="flex items-center gap-2">
           <FundAccountStatusBadge status={account.status} />
           <Link href={`/fms/cash-reconciliation?cashAccountId=${account._id}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
             <Scale className="size-3.5" data-icon="inline-start" />
@@ -49,8 +48,8 @@ export default async function CashAccountDetailPage({ params }: { params: Promis
               }
             />
           )}
-        </div>
-      </div>
+        </div></>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <GlassCard>

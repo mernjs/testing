@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { CalendarRange } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -43,13 +45,14 @@ export default async function ExpenseReportPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Expense" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Expense Report</h1>
-        <p className="text-sm text-muted-foreground">Expenses by account and by vendor for the selected range, from posted journal entries and settled transactions.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Expense" }]}
+        title={<>Expense Report</>}
+        description={<>Expenses by account and by vendor for the selected range, from posted journal entries and settled transactions.</>}
+      />
 
-      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+      <PanelListFilters>
+<div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
         <div className="flex items-center gap-3 border-b border-border/40 pb-4">
           <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
             <CalendarRange className="size-4" />
@@ -138,6 +141,7 @@ export default async function ExpenseReportPage({
           </CardContent>
         </GlassCard>
       </div>
+</PanelListFilters>
     </div>
   );
 }

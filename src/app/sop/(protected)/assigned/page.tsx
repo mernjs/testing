@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ClipboardList, Clock, AlertTriangle, CheckCheck } from "lucide-react";
@@ -21,13 +23,14 @@ export default async function AssignedSopsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "Assigned SOPs" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Assigned SOPs</h1>
-        <p className="text-sm text-muted-foreground">Procedures assigned to you. Open one, read it, complete any checklist, then acknowledge it.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "Assigned SOPs" }]}
+        title={<>Assigned SOPs</>}
+        description={<>Procedures assigned to you. Open one, read it, complete any checklist, then acknowledge it.</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Assigned" value={rows.length} accent icon={<ClipboardList className="size-4" />} />
         <KpiCard label="Pending" value={count("pending")} icon={<Clock className="size-4" />} />
         <KpiCard label="Overdue" value={count("overdue")} tone={count("overdue") > 0 ? "down" : undefined} icon={<AlertTriangle className="size-4" />} />
@@ -90,6 +93,7 @@ export default async function AssignedSopsPage() {
           </Table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

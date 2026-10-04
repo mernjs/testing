@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import DashboardSection from "@/components/platform/panel/DashboardSection";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -117,26 +118,18 @@ export default async function HrmsAdvanceAnalyticsPage({
     <div className="relative space-y-6">
 
       {/* Breadcrumbs */}
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Advance Analytics" }]} />
-
-      {/* ── Page Header ── */}
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl flex items-center gap-2">
-            <BarChart3 className="size-7 text-primary" />
-            Advance Analytics & Workforce Intelligence
-          </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            In-depth analytics for headcount trends, hiring velocity, attrition metrics, department distribution, and diversity.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "HRMS", href: "/hrms" }, { label: "Advance Analytics" }]}
+        title={<>
+            Advance Analytics & Workforce Intelligence</>}
+        description={<>In-depth analytics for headcount trends, hiring velocity, attrition metrics, department distribution, and diversity.</>}
+        actions={<><div className="flex flex-wrap items-center gap-2">
           <Link href="/hrms/employees" className={buttonVariants({ variant: "outline", size: "sm" })}>
             <Users className="size-4" />
             <span>Employee Directory</span>
           </Link>
-        </div>
-      </div>
+        </div></>}
+      />
 
       {/* ── Filter Controls ── */}
       <HrmsDashboardFilters

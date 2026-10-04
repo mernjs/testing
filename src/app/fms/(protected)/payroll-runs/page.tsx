@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Users, Coins } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -15,13 +16,11 @@ export default async function PayrollRunsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Payroll Runs" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Payroll Runs</h1>
-        <p className="text-sm text-muted-foreground">
-          Read-only financial view over HRMS&apos;s real payroll runs — {runs.length} run{runs.length === 1 ? "" : "s"}.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Payroll Runs" }]}
+        title={<>Payroll Runs</>}
+        description={<>Read-only financial view over HRMS&apos;s real payroll runs — {runs.length} run{runs.length === 1 ? "" : "s"}.</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Runs" value={runs.length} accent icon={<Users className="size-4" />} />

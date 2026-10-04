@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound, redirect } from "next/navigation";
 import ChatWorkspace from "@/components/aibots/ChatWorkspace";
 import { getViewer, can } from "@/lib/aibots/viewer";
@@ -30,6 +31,9 @@ export default async function BotWorkspacePage({ params }: { params: Promise<{ b
   ]);
 
   return (
+    <div className="flex h-full min-h-0 flex-col gap-4">
+      <PanelPageHeader title={<>{bot.name}</>} description={<>{chat?.title ?? "Start a new conversation."}</>} />
+      <div className="min-h-0 flex-1">
     <ChatWorkspace
       bot={toSummary(bot)}
       chats={chats}
@@ -42,5 +46,8 @@ export default async function BotWorkspacePage({ params }: { params: Promise<{ b
       historyError={transcript.error}
       knowledgeFiles={knowledgeFiles}
     />
+      </div>
+    </div>
   );
+
 }

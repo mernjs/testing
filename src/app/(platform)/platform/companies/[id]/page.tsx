@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
@@ -50,27 +51,27 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
 
   return (
     <div className="space-y-4 p-1">
-        <Breadcrumbs items={[{ label: "Platform", href: "/platform" }, { label: "Companies", href: "/platform/companies" }, { label: company.name }]} />
+        <PanelPageHeader
+          breadcrumbs={[{ label: "Platform", href: "/platform" }, { label: "Companies", href: "/platform/companies" }, { label: company.name }]}
+          title={<>{company.name}</>}
+          description={
+            <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1">
+              <a href={base} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-foreground">
+                {base.replace(/^https?:\/\//, "")} <ExternalLink className="size-3" />
+              </a>
+              <StatusBadge status={company.status} isPlatformOwner={company.isPlatformOwner} />
+            </span>
+          }
+          actions={
+            company.isPlatformOwner ? (
+              <p className="max-w-56 text-xs text-muted-foreground">The platform owner company runs the platform and can&apos;t be suspended.</p>
+            ) : !can(user, "companies.status") ? null : (
+              <StatusControl companyId={company.id} companyName={company.name} status={company.status} />
+            )
+          }
+        />
 
         <GlassCard interactive={false}>
-          <CardHeader>
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="space-y-1">
-                <CardTitle className="text-xl">{company.name}</CardTitle>
-                <CardDescription>
-                  <a href={base} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 hover:text-foreground">
-                    {base.replace(/^https?:\/\//, "")} <ExternalLink className="size-3" />
-                  </a>
-                </CardDescription>
-                <StatusBadge status={company.status} isPlatformOwner={company.isPlatformOwner} />
-              </div>
-              {company.isPlatformOwner ? (
-                <p className="max-w-56 text-xs text-muted-foreground">The platform owner company runs the platform and can&apos;t be suspended.</p>
-              ) : !can(user, "companies.status") ? null : (
-                <StatusControl companyId={company.id} companyName={company.name} status={company.status} />
-              )}
-            </div>
-          </CardHeader>
           <CardContent>
             <dl className="grid gap-4 sm:grid-cols-3">
               <Field label="Owner">

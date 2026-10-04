@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
@@ -29,18 +30,14 @@ export default async function RfqDetailPage({ params }: { params: Promise<{ id: 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "RFQ & Quotations", href: "/prms/rfq" }, { label: r.rfqCode }]} />
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{r.title}</h1>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{r.rfqCode}</span> · <RfqStatusBadge status={r.status} />
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "RFQ & Quotations", href: "/prms/rfq" }, { label: r.rfqCode }]}
+        title={<>{r.title}</>}
+        description={<><span className="font-mono">{r.rfqCode}</span> · <RfqStatusBadge status={r.status} />
             {r.awardedPoId && (
               <> · <Link className="text-primary hover:underline" href={`/prms/purchase-orders/${r.awardedPoId}`}>View PO</Link></>
-            )}
-          </p>
-        </div>
-        {canManage && r.status !== "awarded" && (
+            )}</>}
+        actions={<>{canManage && r.status !== "awarded" && (
           <RfqForm
             rfq={r}
             vendors={vendorOptions}
@@ -52,8 +49,8 @@ export default async function RfqDetailPage({ params }: { params: Promise<{ id: 
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <GlassCard interactive={false}>
         <CardHeader><CardTitle>Requested Items</CardTitle></CardHeader>

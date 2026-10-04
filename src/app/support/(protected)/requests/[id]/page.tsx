@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -23,19 +24,20 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
   const state = stateOf(cfg, r.status);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
-      <Link href="/support/requests" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" /> My Requests</Link>
-      <GlassCard interactive={false} className="p-5 sm:p-6">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-xs font-semibold text-muted-foreground">#{r.number} · {labelOf(cfg.types, r.type)}</p>
-            <h1 className="mt-0.5 text-xl font-black tracking-tight text-foreground">{r.title}</h1>
-          </div>
+    <div className="space-y-4">
+<PanelPageHeader
+        breadcrumbs={[{ label: "Help & Support", href: "/support" }, { label: "My Requests", href: "/support/requests" }, { label: `#${r.number}` }]}
+        title={<>{r.title}</>}
+        description={<>#{r.number} · {labelOf(cfg.types, r.type)}</>}
+        actions={
           <div className="flex flex-wrap items-center gap-2">
             <PriorityBadge label={labelOf(cfg.priorities, r.priority)} />
             <StatusBadge label={statusOf(cfg, r.status)?.label ?? r.status} state={state} />
           </div>
-        </div>
+        }
+      />
+<div className="space-y-4">
+      <GlassCard interactive={false} className="p-5 sm:p-6">
         <p className="mt-3 whitespace-pre-wrap text-sm text-foreground/90">{r.description}</p>
         <AttachmentList items={r.attachments} />
         {Object.keys(r.fields).length > 0 && (
@@ -66,5 +68,6 @@ export default async function RequestDetailPage({ params }: { params: Promise<{ 
         <ReplyBox requestId={r._id} closed={state === "closed"} resolved={state === "resolved"} />
       </GlassCard>
     </div>
+</div>
   );
 }

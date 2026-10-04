@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Plus, FolderGit2, Rocket, CheckCircle2, Users } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
@@ -40,13 +42,11 @@ export default async function ProjectsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Projects" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Live Projects</h1>
-          <p className="text-sm text-muted-foreground">{total} project{total === 1 ? "" : "s"} assigned to students.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Projects" }]}
+        title={<>Live Projects</>}
+        description={<>{total} project{total === 1 ? "" : "s"} assigned to students.</>}
+        actions={<>{canManage && (
           <LiveProjectForm
             programs={programOptions}
             batches={batchOptions}
@@ -59,10 +59,11 @@ export default async function ProjectsPage() {
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Total Projects" value={total} accent icon={<FolderGit2 className="size-4" />} />
         <KpiCard label="In Progress" value={active} icon={<Rocket className="size-4" />} />
         <KpiCard label="Completed" value={completed} icon={<CheckCircle2 className="size-4" />} />
@@ -109,6 +110,7 @@ export default async function ProjectsPage() {
           )}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound, redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { CardContent } from "@/components/ui/card";
@@ -20,8 +21,10 @@ export default async function TemplatePage({ params }: { params: Promise<{ id: s
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "Templates", href: "/sop/templates" }, { label: template.name }]} />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{template.name}</h1>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "Templates", href: "/sop/templates" }, { label: template.name }]}
+        title={<>{template.name}</>}
+      />
       <GlassCard interactive={false}>
         <CardContent className="p-5">
           <TemplateEditor

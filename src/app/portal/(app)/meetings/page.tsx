@@ -1,7 +1,7 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { CalendarClock, Flag, PackageCheck } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getClientOverview } from "@/lib/portal/client";
 import { PortalPageHeader } from "@/components/portal/widgets";
@@ -20,10 +20,10 @@ export default async function MeetingsPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Meetings" }]} />
       <PortalPageHeader title="Meetings & Reviews" subtitle="Derived from your project milestones and delivery dates" />
 
-      <GlassCard>
+      <PanelListFilters>
+<GlassCard>
         <CardHeader>
           <CardTitle className="text-base">Next 60 days</CardTitle>
         </CardHeader>
@@ -51,6 +51,7 @@ export default async function MeetingsPage() {
       <p className="text-xs text-muted-foreground">
         Meeting invites for these reviews are sent separately by your project manager.
       </p>
+</PanelListFilters>
     </div>
   );
 }

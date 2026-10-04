@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import {
@@ -1074,28 +1075,45 @@ export async function PanelAnalyticsBlock({
 
   return (
     <section id={`panel-${panel}`} data-panel-section={panel} className="scroll-mt-24 space-y-5">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className={`flex ${compact ? "size-10" : "size-11"} shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-[var(--color-brand-accent)] text-white shadow-md`}>
-            {icon}
+      {compact ? (
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`flex ${compact ? "size-10" : "size-11"} shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-[var(--color-brand-accent)] text-white shadow-md`}>
+              {icon}
+            </div>
+            <div>
+              {compact ? (
+                <h2 className="text-xl font-black tracking-tight text-foreground">{config.label}</h2>
+              ) : (
+                <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{config.label}</h1>
+              )}
+              <p className="max-w-2xl text-sm text-muted-foreground">{config.description}</p>
+            </div>
           </div>
-          <div>
-            {compact ? (
-              <h2 className="text-xl font-black tracking-tight text-foreground">{config.label}</h2>
-            ) : (
-              <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{config.label}</h1>
-            )}
-            <p className="max-w-2xl text-sm text-muted-foreground">{config.description}</p>
-          </div>
+          <Link
+            href={config.href}
+            className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-[var(--color-brand-accent)] px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg"
+          >
+            {config.ctaLabel}
+            <ArrowUpRight className="size-4" />
+          </Link>
         </div>
-        <Link
+      ) : (
+        <PanelPageHeader
+          breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "Analytics" }, { label: config.label }]}
+          title={<>{config.label}</>}
+          description={<>{config.description}</>}
+          actions={
+            <Link
           href={config.href}
           className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-primary to-[var(--color-brand-accent)] px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg"
         >
           {config.ctaLabel}
           <ArrowUpRight className="size-4" />
         </Link>
-      </div>
+          }
+        />
+      )}
 
       <AnalyticsFilterBar fields={PANEL_FILTER_FIELDS[panel]} title={`${config.label} Search & Filters`} prefix={prefix} />
 

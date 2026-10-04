@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import EmployeeForm from "@/components/hrms/EmployeeForm";
@@ -26,11 +27,11 @@ export default async function NewEmployeePage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Employees", href: "/hrms/employees" }, { label: "New" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Add Employee</h1>
-        <p className="text-sm text-muted-foreground">A unique employee ID is generated automatically on save.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "HRMS", href: "/hrms" }, { label: "Employees", href: "/hrms/employees" }, { label: "New" }]}
+        title={<>Add Employee</>}
+        description={<>A unique employee ID is generated automatically on save.</>}
+      />
 
       <EmployeeForm
         mode="create"

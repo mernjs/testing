@@ -163,7 +163,7 @@ export default function ConversationsDataTable({
             <MessagesSquare className="size-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold tracking-tight text-foreground">Conversation Filters</h3>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
             <p className="text-xs text-muted-foreground">Search and narrow chatbot conversations by device, page, and date</p>
           </div>
         </div>

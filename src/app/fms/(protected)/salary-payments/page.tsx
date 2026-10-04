@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Wallet, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -25,13 +26,11 @@ export default async function SalaryPaymentsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Salary Payments" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Salary Payments</h1>
-        <p className="text-sm text-muted-foreground">
-          Read-only financial view over HRMS&apos;s real salary payouts — {result.total} payment{result.total === 1 ? "" : "s"}.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Salary Payments" }]}
+        title={<>Salary Payments</>}
+        description={<>Read-only financial view over HRMS&apos;s real salary payouts — {result.total} payment{result.total === 1 ? "" : "s"}.</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Payments" value={result.total} accent icon={<Wallet className="size-4" />} />

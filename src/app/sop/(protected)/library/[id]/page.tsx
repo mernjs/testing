@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { panelNameMap } from "@/lib/platform/panels/store";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -6,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { AssignmentStateBadge, ConfidentialityBadge, PriorityBadge, SopStatusBadge } from "@/components/sop/SopBadges";
 import SopDocument, { documentOutline, sectionAnchor, type DocFile } from "@/components/sop/SopDocument";
 import AckPanel from "@/components/sop/AckPanel";
@@ -173,30 +173,25 @@ export default async function SopDetailPage({
   return (
     <div className="space-y-4">
       <div className="sop-print-hide">
-        <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "SOP Library", href: "/sop/library" }, { label: doc.code }]} />
       </div>
       {doc.live && !showDraft && <ViewTracker sopId={id} />}
 
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0 space-y-1.5">
-          <div className="flex flex-wrap items-center gap-2">
+      <PanelPageHeader
+        title={<>{content.title}</>}
+        description={<>{dept?.name ?? "Unknown department"}
+            {fn ? ` › ${fn.name}` : ""}
+            {proc ? ` › ${proc.name}` : ""}
+            {sub ? ` › ${sub.name}` : ""}
+            {" · "}Owner {names.get(doc.ownerId) ?? "—"}</>}
+        eyebrow={<><div className="flex flex-wrap items-center gap-2">
             <span className="font-mono text-xs text-muted-foreground">{doc.code}</span>
             <SopStatusBadge status={status} />
             {doc.version && <Badge className="bg-primary/10 text-primary">v{doc.version}</Badge>}
             <ConfidentialityBadge level={doc.confidentiality} />
             <PriorityBadge priority={doc.priority} />
             {doc.mandatory && <Badge className="bg-destructive/15 text-destructive">Mandatory</Badge>}
-          </div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{content.title}</h1>
-          <p className="text-sm text-muted-foreground">
-            {dept?.name ?? "Unknown department"}
-            {fn ? ` › ${fn.name}` : ""}
-            {proc ? ` › ${proc.name}` : ""}
-            {sub ? ` › ${sub.name}` : ""}
-            {" · "}Owner {names.get(doc.ownerId) ?? "—"}
-          </p>
-        </div>
-        <div className="sop-print-hide flex flex-wrap items-center gap-2">
+          </div></>}
+        actions={<><div className="sop-print-hide flex flex-wrap items-center gap-2">
           {canEdit && (
             <Link href={`/sop/library/${id}/edit`} className={buttonVariants({ variant: "outline", size: "sm" })}>
               <Pencil className="size-3.5" data-icon="inline-start" />
@@ -210,8 +205,8 @@ export default async function SopDetailPage({
             <Link href={tabLink("assignments")} className={buttonVariants({ variant: "outline", size: "sm" })}>Assignments</Link>
           )}
           <SopActions sopId={id} canArchive={canArchive} canRestore={canRestore} canDiscard={canDiscard} canPrint={canDownload && !!doc.live} />
-        </div>
-      </div>
+        </div></>}
+      />
 
       {status === "expired" && (
         <div className="flex items-start gap-2.5 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm">

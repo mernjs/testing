@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchPaymentPlans } from "@/lib/tms/payments";
@@ -38,11 +39,11 @@ export default async function AdminPaymentsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "TMS", panel: "tms" }, { label: "Payments" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Payments</h1>
-        <p className="text-sm text-muted-foreground">{total} payment plan{total === 1 ? "" : "s"}.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "TMS", panel: "tms" }, { label: "Payments" }]}
+        title={<>Payments</>}
+        description={<>{total} payment plan{total === 1 ? "" : "s"}.</>}
+      />
 
       <PaymentsGrid
         rows={rows}

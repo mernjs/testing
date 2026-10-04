@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchVoiceConversations } from "@/lib/voice-conversations";
@@ -49,11 +50,11 @@ export default async function AdminVoiceConversationsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "AI Chatbot" }, { label: "Voice Conversations" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Voice Conversations</h1>
-        <p className="text-sm text-muted-foreground">{total} voice conversation{total === 1 ? "" : "s"}.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "AI Chatbot" }, { label: "Voice Conversations" }]}
+        title={<>Voice Conversations</>}
+        description={<>{total} voice conversation{total === 1 ? "" : "s"}.</>}
+      />
 
       <VoiceConversationsGrid
         rows={rows}

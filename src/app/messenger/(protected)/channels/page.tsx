@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Hash, Users } from "lucide-react";
 import { getCurrentChatUser } from "@/lib/messenger-auth";
 import { listBrowsableChannels, listMemberIds } from "@/lib/messenger/channels";
@@ -13,14 +15,12 @@ export default async function ChannelsIndexPage() {
   const counts = await Promise.all(browsable.map((c) => listMemberIds(c._id).then((m) => m.length)));
 
   return (
-    <div className="h-full overflow-y-auto p-6">
-      <div className="mx-auto max-w-2xl">
-        <h2 className="text-lg font-semibold text-foreground">Browse channels</h2>
-        <p className="mb-4 text-sm text-muted-foreground">
-          Public channels anyone can join. Pick one from the left once you&apos;re in.
-        </p>
+    <div className="h-full overflow-y-auto p-4 sm:p-6">
+      <div className="space-y-4">
+        <PanelPageHeader title={<>Browse channels</>} description={<>Public channels anyone can join. Pick one from the left once you&apos;re in.</>} />
 
-        {browsable.length === 0 ? (
+        <PanelListFilters>
+{browsable.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
             <Hash className="mx-auto mb-2 size-6 opacity-40" />
             You&apos;re in every public channel already.
@@ -46,6 +46,7 @@ export default async function ChannelsIndexPage() {
             ))}
           </ul>
         )}
+</PanelListFilters>
       </div>
     </div>
   );

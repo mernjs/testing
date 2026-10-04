@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, Boxes, UserCheck, Wrench, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -34,13 +35,11 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Asset Management" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Asset Management</h1>
-          <p className="text-sm text-muted-foreground">{total} asset{total === 1 ? "" : "s"} tracked.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Asset Management" }]}
+        title={<>Asset Management</>}
+        description={<>{total} asset{total === 1 ? "" : "s"} tracked.</>}
+        actions={<>{canManage && (
           <AssetForm
             vendors={vendors.map((v) => ({ _id: v._id, companyName: v.companyName }))}
             trigger={
@@ -50,8 +49,8 @@ export default async function AssetsPage({ searchParams }: { searchParams: Promi
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Assets" value={total} accent icon={<Boxes className="size-4" />} />

@@ -29,13 +29,16 @@ export default function PanelFilterBar({
   title = "Search & Filters",
   description = "Refine the dashboard by date range and parameters in real time",
   fields,
-  presets = false,
+  presets,
+  trailing,
 }: {
   title?: string;
   description?: string;
   fields: PanelFilterField[];
   /** Show the quick date presets (needs `from` / `to` fields to be wired on the page). */
   presets?: boolean;
+  /** Extra actions in the card's header, next to Reset (e.g. an Export link). */
+  trailing?: React.ReactNode;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -43,6 +46,7 @@ export default function PanelFilterBar({
   const [pending, start] = useTransition();
   const [text, setText] = useState<Record<string, string>>(() => Object.fromEntries(fields.filter((f) => f.type === "search").map((f) => [f.key, params.get(f.key) ?? ""])));
 
+  const showPresets = presets ?? (fields.some((f) => f.key === "from") && fields.some((f) => f.key === "to"));
   const active = fields.filter((f) => params.get(f.key)).length;
 
   function set(updates: Record<string, string | null>) {
@@ -83,7 +87,7 @@ export default function PanelFilterBar({
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {presets && (
+          {showPresets && (
             <div className="flex items-center gap-1 rounded-xl border border-border/40 bg-muted/30 p-1 text-xs">
               {PRESETS.map((p) => (
                 <button key={p.id} type="button" onClick={() => preset(p.id)} className="rounded-lg px-2.5 py-1 font-medium text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary">
@@ -92,6 +96,7 @@ export default function PanelFilterBar({
               ))}
             </div>
           )}
+          {trailing}
           {active > 0 && (
             <button
               type="button"

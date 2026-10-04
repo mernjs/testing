@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AlertTriangle, CheckCheck, Clock, ClipboardList, Download } from "lucide-react";
@@ -40,21 +42,20 @@ export default async function CompliancePage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "Compliance" }]} />
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Compliance</h1>
-          <p className="text-sm text-muted-foreground">Acknowledgements, overdue reviews and expiry — {c.scopeLabel}.</p>
-        </div>
-        {canExport && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "Compliance" }]}
+        title={<>Compliance</>}
+        description={<>Acknowledgements, overdue reviews and expiry — {c.scopeLabel}.</>}
+        actions={<>{canExport && (
           <div className="flex gap-2">
             <a href="/api/sop/export/compliance?format=csv" className={buttonVariants({ variant: "outline", size: "sm" })}><Download className="size-3.5" data-icon="inline-start" />Department CSV</a>
             <a href="/api/sop/export/acknowledgements?format=xlsx" className={buttonVariants({ variant: "outline", size: "sm" })}><Download className="size-3.5" data-icon="inline-start" />Acknowledgements Excel</a>
           </div>
-        )}
-      </div>
+        )}</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Acknowledgement rate" value={c.overall.rate === null ? <span className="text-muted-foreground">No assignments</span> : <span>{c.overall.rate}%</span>} accent icon={<CheckCheck className="size-4" />} />
         <KpiCard label="Assignments" value={c.overall.assigned} icon={<ClipboardList className="size-4" />} />
         <KpiCard label="Pending" value={c.overall.pending} icon={<Clock className="size-4" />} />
@@ -142,6 +143,7 @@ export default async function CompliancePage() {
           </ul>
         </Panel>
       )}
+</PanelListFilters>
     </div>
   );
 }

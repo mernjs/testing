@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import ProjectTabs from "@/components/pms/ProjectTabs";
@@ -25,15 +26,15 @@ export default async function ProjectDocumentsPage({ params }: { params: Promise
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "PMS", href: "/pms" },
           { label: "Projects", href: "/pms/projects" },
           { label: project.name, href: `/pms/projects/${id}` },
           { label: "Files" },
         ]}
+        title={<>{project.name} · Files</>}
       />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{project.name} · Files</h1>
       <ProjectTabs projectId={id} />
       <DocumentsManager projectId={id} groups={groups} canManage={canManage} />
     </div>

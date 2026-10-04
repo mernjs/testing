@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Video, Clock, Users, Circle } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -63,15 +65,15 @@ export default async function MeetingsPage() {
 
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6">
-      <div className="mx-auto max-w-3xl space-y-5">
-        <Breadcrumbs items={[{ label: "Messenger", href: "/messenger" }, { label: "Meetings" }]} />
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Meetings</h1>
-            <p className="text-sm text-muted-foreground">Voice &amp; video calls with meeting chat.</p>
-          </div>
-          <NewMeetingButton users={directory.map((u) => ({ _id: u._id, displayName: u.displayName }))} />
-        </div>
+      <div className="space-y-4">
+<PanelPageHeader
+          breadcrumbs={[{ label: "Messenger", href: "/messenger" }, { label: "Meetings" }]}
+          title={<>Meetings</>}
+          description={<>Voice &amp; video calls with meeting chat.</>}
+          actions={<><NewMeetingButton users={directory.map((u) => ({ _id: u._id, displayName: u.displayName }))} /></>}
+        />
+<PanelListFilters>
+<div className="space-y-5">
 
         <section className="space-y-2">
           <h2 className="flex items-center gap-1.5 text-xs font-semibold uppercase text-muted-foreground">
@@ -100,6 +102,8 @@ export default async function MeetingsPage() {
           shows you your own camera; a WebRTC-mesh or SFU implementation drops in without touching the rest.
         </p>
       </div>
+</PanelListFilters>
+</div>
     </div>
   );
 }

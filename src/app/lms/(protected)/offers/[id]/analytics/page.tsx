@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import GlassCard from "@/components/lms/GlassCard";
@@ -84,15 +85,15 @@ export default async function CampaignAnalyticsPage({ params }: { params: Promis
 
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "Festival Offers", href: "/lms/offers" },
           { label: campaign.name, href: `/lms/offers/${id}` },
           { label: "Analytics" },
         ]}
+        title={<>{campaign.name} — Analytics</>}
       />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{campaign.name} — Analytics</h1>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Stat label="Campaign Views" value={funnel.campaignViews.toLocaleString("en-IN")} />

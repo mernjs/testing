@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Settings2, Download, Wallet, Receipt, TrendingUp, TrendingDown, Clock, Percent } from "lucide-react";
@@ -42,21 +43,15 @@ export default async function ProjectCostingPage({ params }: { params: Promise<{
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "PMS", href: "/pms" },
           { label: "Costing", href: "/pms/costing" },
           { label: project.name },
         ]}
-      />
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{project.name}</h1>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{project.projectCode}</span> · {report.summary.client}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
+        title={<>{project.name}</>}
+        description={<><span className="font-mono">{project.projectCode}</span> · {report.summary.client}</>}
+        actions={<><div className="flex flex-wrap items-center gap-2">
           <a href={`/api/pms/reports/${id}?format=pdf`} className={buttonVariants({ variant: "outline", size: "sm" })}>
             <Download className="size-3.5" data-icon="inline-start" /> PDF
           </a>
@@ -76,8 +71,8 @@ export default async function ProjectCostingPage({ params }: { params: Promise<{
               </Button>
             }
           />
-        </div>
-      </div>
+        </div></>}
+      />
 
       <KpiGrid>
         <KpiCard label="Project Value" value={<span>{c(f.contractValue)}</span>} accent icon={<Wallet className="size-4" />} />

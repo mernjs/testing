@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -21,17 +22,15 @@ export default async function DebitNoteDetailPage({ params }: { params: Promise<
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Debit Notes", href: "/fms/debit-notes" }, { label: note.debitNoteNumber }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{note.debitNoteNumber}</h1>
-          <p className="text-sm text-muted-foreground">{note.vendorName}</p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Debit Notes", href: "/fms/debit-notes" }, { label: note.debitNoteNumber }]}
+        title={<>{note.debitNoteNumber}</>}
+        description={<>{note.vendorName}</>}
+        actions={<><div className="flex items-center gap-2">
           <NoteStatusBadge status={note.status} />
           {canCancel && note.status === "issued" && <CancelNoteButton id={note._id} action={cancelDebitNoteAction} />}
-        </div>
-      </div>
+        </div></>}
+      />
 
       <GlassCard>
         <CardHeader><CardTitle>Details</CardTitle></CardHeader>

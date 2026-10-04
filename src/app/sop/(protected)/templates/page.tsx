@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LayoutTemplate } from "lucide-react";
@@ -20,15 +22,14 @@ export default async function TemplatesPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "Templates" }]} />
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Templates</h1>
-          <p className="text-sm text-muted-foreground">Reusable section layouts for new SOPs. {canManage ? "You can customise any template or create your own." : "Pick one when you create an SOP."}</p>
-        </div>
-        {canManage && <NewTemplateButton />}
-      </div>
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "Templates" }]}
+        title={<>Templates</>}
+        description={<>Reusable section layouts for new SOPs. {canManage ? "You can customise any template or create your own." : "Pick one when you create an SOP."}</>}
+        actions={<>{canManage && <NewTemplateButton />}</>}
+      />
+      <PanelListFilters>
+<div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {templates.map((t) => (
           <div key={t._id} className="lms-surface flex flex-col gap-2 rounded-2xl border border-border/40 bg-background/95 p-4 dark:bg-card/85">
             <div className="flex items-start gap-3">
@@ -58,6 +59,7 @@ export default async function TemplatesPage() {
           </div>
         ))}
       </div>
+</PanelListFilters>
     </div>
   );
 }

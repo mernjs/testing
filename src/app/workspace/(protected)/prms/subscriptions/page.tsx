@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchSubscriptions } from "@/lib/prms/software-subscriptions";
@@ -48,11 +49,11 @@ export default async function AdminSubscriptionsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "SaaS Subscriptions" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">SaaS Subscriptions</h1>
-        <p className="text-sm text-muted-foreground">{total} subscription{total === 1 ? "" : "s"}.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "SaaS Subscriptions" }]}
+        title={<>SaaS Subscriptions</>}
+        description={<>{total} subscription{total === 1 ? "" : "s"}.</>}
+      />
 
       <SubscriptionsGrid
         rows={rows}

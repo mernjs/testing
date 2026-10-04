@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Mail, Phone, GraduationCap, School, CalendarDays } from "lucide-react";
@@ -43,26 +44,18 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Applications", href: "/tms/applications" }, { label: a.fullName }]} />
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{a.fullName}</h1>
-            <ApplicationStatusBadge status={a.status} />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{a.applicationCode}</span>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Applications", href: "/tms/applications" }, { label: a.fullName }]}
+        title={<><span className="inline-flex flex-wrap items-center gap-2">{a.fullName}<ApplicationStatusBadge status={a.status} /></span></>}
+        description={<><span className="font-mono">{a.applicationCode}</span>
             {program ? (
               <>
                 {" · "}
                 <Link href={`/tms/programs/${program._id}`} className="text-primary hover:underline">{program.name}</Link>
               </>
             ) : null}
-            {a.source ? ` · via ${a.source}` : ""}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
+            {a.source ? ` · via ${a.source}` : ""}</>}
+        actions={<><div className="flex flex-wrap items-center gap-2">
           {canManage && !converted && (
             <ApplicationStatusControl applicationId={a._id} status={a.status} />
           )}
@@ -81,8 +74,8 @@ export default async function ApplicationDetailPage({ params }: { params: Promis
             />
           )}
           {canManage && <ApplicationActions application={a} programs={programs.map((p) => ({ _id: p._id, name: p.name }))} />}
-        </div>
-      </div>
+        </div></>}
+      />
 
       {converted && (
         <GlassCard interactive={false}>

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -23,8 +24,10 @@ export default async function MyProgramPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms/me" }, { label: "My Program" }]} />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">My Program</h1>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms/me" }, { label: "My Program" }]}
+        title={<>My Program</>}
+      />
 
       {enrollments.length === 0 && (
         <GlassCard interactive={false}>

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -79,19 +80,15 @@ export default async function CompareVersionsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "SOP Library", href: "/sop/library" }, { label: found.doc.code, href: `/sop/library/${id}` }, { label: "Compare versions" }]} />
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Compare versions</h1>
-          <p className="text-sm text-muted-foreground">
-            {found.doc.code} · v{from.version} <span className="mx-1">→</span> v{to.version}
-          </p>
-        </div>
-        <Link href={`/sop/library/${id}?tab=versions`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "SOP Library", href: "/sop/library" }, { label: found.doc.code, href: `/sop/library/${id}` }, { label: "Compare versions" }]}
+        title={<>Compare versions</>}
+        description={<>{found.doc.code} · v{from.version} <span className="mx-1">→</span> v{to.version}</>}
+        actions={<><Link href={`/sop/library/${id}?tab=versions`} className={buttonVariants({ variant: "outline", size: "sm" })}>
           <ArrowLeft className="size-3.5" data-icon="inline-start" />
           Back to versions
-        </Link>
-      </div>
+        </Link></>}
+      />
 
       <div className="grid gap-4 sm:grid-cols-2">
         {[from, to].map((v, i) => (

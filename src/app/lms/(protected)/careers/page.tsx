@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import DashboardSection from "@/components/platform/panel/DashboardSection";
 import Link from "next/link";
 import { Inbox, Percent } from "lucide-react";
@@ -98,19 +99,17 @@ export default async function CareersDashboardPage({
 
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Careers" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Careers</h1>
-          <p className="text-sm text-muted-foreground">Applicant overview across every open and closed role.</p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Careers" }]}
+        title={<>Careers</>}
+        description={<>Applicant overview across every open and closed role.</>}
+        actions={<><div className="flex items-center gap-2">
           <Link href="/lms/careers/applicants" className={buttonVariants({ variant: "outline", size: "sm" })}>
             View Applicants
           </Link>
           <CareersExportButton params={exportParams} />
-        </div>
-      </div>
+        </div></>}
+      />
 
       <CareerDashboardFilters
         status={status ?? ""}

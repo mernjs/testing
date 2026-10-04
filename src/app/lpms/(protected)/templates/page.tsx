@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Plus, LayoutTemplate } from "lucide-react";
@@ -34,25 +36,19 @@ export default async function TemplatesPage() {
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "LPMS", href: "/lpms" }, { label: "Templates" }]} />
-
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Templates
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {templates.length} template{templates.length !== 1 ? "s" : ""} across{" "}
-            {Object.keys(grouped).length} maker type{Object.keys(grouped).length !== 1 ? "s" : ""}
-          </p>
-        </div>
-        <Link href="/lpms/templates/new" className={buttonVariants({ size: "sm" })}>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "LPMS", href: "/lpms" }, { label: "Templates" }]}
+        title={<>Templates</>}
+        description={<>{templates.length} template{templates.length !== 1 ? "s" : ""} across{" "}
+            {Object.keys(grouped).length} maker type{Object.keys(grouped).length !== 1 ? "s" : ""}</>}
+        actions={<><Link href="/lpms/templates/new" className={buttonVariants({ size: "sm" })}>
           <Plus className="size-3.5" />
           New Template
-        </Link>
-      </div>
+        </Link></>}
+      />
 
-      {templates.length === 0 ? (
+      <PanelListFilters>
+{templates.length === 0 ? (
         <GlassCard interactive={false}>
           <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
             <LayoutTemplate className="size-10 text-muted-foreground/40" />
@@ -93,6 +89,7 @@ export default async function TemplatesPage() {
           })}
         </div>
       )}
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import { Clock, CheckCircle2, Hourglass, Coins, Download } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -74,13 +75,11 @@ export default async function TimesheetReviewPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PMS", href: "/pms" }, { label: "Timesheet Review" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Timesheet Review</h1>
-          <p className="text-sm text-muted-foreground">Review and approve submitted hours for project delivery and billable tracking.</p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PMS", href: "/pms" }, { label: "Timesheet Review" }]}
+        title={<>Timesheet Review</>}
+        description={<>Review and approve submitted hours for project delivery and billable tracking.</>}
+        actions={<><div className="flex items-center gap-2">
           <a
             href={`/pms/timesheets${showAll ? "" : "?view=all"}`}
             className={buttonVariants({ variant: "outline", size: "sm" })}
@@ -90,8 +89,8 @@ export default async function TimesheetReviewPage({
           <a href={`/api/pms/reports/portfolio?format=xlsx&${exportParams}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
             <Download className="size-3.5" data-icon="inline-start" /> XLSX
           </a>
-        </div>
-      </div>
+        </div></>}
+      />
 
       {showAll && (
         <PmsDashboardFilters

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Building2, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -29,13 +30,11 @@ export default async function VendorsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Vendors" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Vendors</h1>
-        <p className="text-sm text-muted-foreground">
-          Financial view over PRMS&apos;s vendor records — {result.total} vendor{result.total === 1 ? "" : "s"}.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Vendors" }]}
+        title={<>Vendors</>}
+        description={<>Financial view over PRMS&apos;s vendor records — {result.total} vendor{result.total === 1 ? "" : "s"}.</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Vendors" value={result.total} accent icon={<Building2 className="size-4" />} />

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import type { ReactNode } from "react";
 import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -10,19 +11,8 @@ import { TRUST_META, type Trust } from "@/lib/seo-panel/integrations/providers";
 
 /** Shared, server-renderable pieces of the SEO panel UI (badges, headers, cards) — the same visual language as SOP/FMS. */
 
-export function PageHeader({ title, description, crumbs, actions }: { title: string; description?: ReactNode; crumbs: { label: string; href?: string }[]; actions?: ReactNode }) {
-  return (
-    <>
-      <Breadcrumbs items={[{ label: "SEO", href: "/seo" }, ...crumbs]} />
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{title}</h1>
-          {description && <p className="text-sm text-muted-foreground">{description}</p>}
-        </div>
-        {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
-      </div>
-    </>
-  );
+export function PageHeader({ title, description, crumbs, actions }: { title: ReactNode; description?: ReactNode; crumbs: { label: string; href?: string }[]; actions?: ReactNode }) {
+  return <PanelPageHeader breadcrumbs={[{ label: "SEO", href: "/seo" }, ...crumbs]} title={title} description={description} actions={actions} />;
 }
 
 export function SectionCard({ title, description, children, className, action }: { title: ReactNode; description?: ReactNode; children: ReactNode; className?: string; action?: ReactNode }) {

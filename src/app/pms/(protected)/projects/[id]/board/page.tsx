@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -31,20 +32,18 @@ export default async function ProjectBoardPage({ params }: { params: Promise<{ i
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "PMS", href: "/pms" },
           { label: "Projects", href: "/pms/projects" },
           { label: project.name, href: `/pms/projects/${id}` },
           { label: "Board" },
         ]}
-      />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{project.name} · Board</h1>
-        <Link href={`/pms/projects/${id}/tasks`} className="text-sm font-medium text-primary hover:underline">
+        title={<>{project.name} · Board</>}
+        actions={<><Link href={`/pms/projects/${id}/tasks`} className="text-sm font-medium text-primary hover:underline">
           List view →
-        </Link>
-      </div>
+        </Link></>}
+      />
       <ProjectTabs projectId={id} />
 
       <TaskBoard

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import HolidayManager from "@/components/hrms/HolidayManager";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
@@ -16,18 +18,20 @@ export default async function HolidaysPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Holidays" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Holiday Calendar</h1>
-        <p className="text-sm text-muted-foreground">Company-wide holidays. Excluded from working-day counts in attendance and leave.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "HRMS", href: "/hrms" }, { label: "Holidays" }]}
+        title={<>Holiday Calendar</>}
+        description={<>Company-wide holidays. Excluded from working-day counts in attendance and leave.</>}
+      />
 
-      <HolidayManager
+      <PanelListFilters>
+<HolidayManager
         holidays={holidays.map(serializeHoliday).map((h) => ({ _id: h._id, date: h.date, name: h.name, type: h.type }))}
         years={years}
         activeYear={activeYear}
         canManage={canManage}
       />
+</PanelListFilters>
     </div>
   );
 }

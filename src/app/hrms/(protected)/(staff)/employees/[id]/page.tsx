@@ -1,10 +1,10 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Mail, Phone, Calendar, Building2, MapPin, ShieldAlert, Pencil } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { buttonVariants } from "@/components/ui/button";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import EmployeeStatusBadge from "@/components/hrms/EmployeeStatusBadge";
 import LeaveStatusBadge from "@/components/hrms/LeaveStatusBadge";
 import Tabs from "@/components/hrms/Tabs";
@@ -280,7 +280,6 @@ export default async function EmployeeProfilePage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Employees", href: "/hrms/employees" }, { label: name }]} />
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-center gap-4">
@@ -288,13 +287,11 @@ export default async function EmployeeProfilePage({
             {employee.firstName[0]}
             {employee.lastName[0]}
           </div>
-          <div>
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{name}</h1>
-            <p className="text-sm text-muted-foreground">
-              <span className="font-mono">{employee.employeeCode}</span> · {lookups.designationTitle(pr.designationId)} ·{" "}
-              {lookups.departmentName(pr.departmentId)}
-            </p>
-          </div>
+          <PanelPageHeader
+            title={<>{name}</>}
+            description={<><span className="font-mono">{employee.employeeCode}</span> · {lookups.designationTitle(pr.designationId)} ·{" "}
+              {lookups.departmentName(pr.departmentId)}</>}
+          />
         </div>
         <div className="flex items-center gap-2">
           <EmployeeStatusBadge status={employee.status} />

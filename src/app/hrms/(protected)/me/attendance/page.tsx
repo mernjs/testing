@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import ClockWidget from "@/components/hrms/ClockWidget";
@@ -21,12 +23,13 @@ export default async function MyAttendancePage({ searchParams }: { searchParams:
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground">My Attendance</h1>
-        <p className="text-sm text-muted-foreground">Clock in and out, and review your month.</p>
-      </div>
+      <PanelPageHeader
+        title={<>My Attendance</>}
+        description={<>Clock in and out, and review your month.</>}
+      />
 
-      <ClockWidget
+      <PanelListFilters>
+<ClockWidget
         dayLabel={today.label}
         working={today.working}
         checkIn={clock.checkIn}
@@ -41,6 +44,7 @@ export default async function MyAttendancePage({ searchParams }: { searchParams:
           <AttendanceCalendar month={month} cells={monthData.cells} summary={monthData.summary} />
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

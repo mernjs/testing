@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -15,12 +17,13 @@ export default async function CampaignsPage() {
   const campaigns = await listCampaigns();
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet", href: "/lms/wallet" }, { label: "Referral campaigns" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Referral campaigns</h1>
-        <Link href="/lms/wallet/campaigns/new" className={buttonVariants({ size: "sm" })}>New campaign</Link>
-      </div>
-      <p className="text-sm text-muted-foreground">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet", href: "/lms/wallet" }, { label: "Referral campaigns" }]}
+        title={<>Referral campaigns</>}
+        actions={<><Link href="/lms/wallet/campaigns/new" className={buttonVariants({ size: "sm" })}>New campaign</Link></>}
+      />
+      <PanelListFilters>
+<p className="text-sm text-muted-foreground">
         {campaigns.length === 0 ? "No campaigns yet — referrals currently run with defaults (reward on account creation, 50 referrals per person). Create a campaign to control this; once one exists, referrals only work while one is active." : "Referrals are only attributed while at least one campaign is active for the referrer's account type."}
       </p>
       <GlassCard>
@@ -45,6 +48,7 @@ export default async function CampaignsPage() {
           </table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

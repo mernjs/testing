@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { Badge } from "@/components/ui/badge";
@@ -19,15 +21,14 @@ export default async function MyLeavePage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground">My Leave</h1>
-          <p className="text-sm text-muted-foreground">{year} balances and request history.</p>
-        </div>
-        <MyLeaveSheet leaveTypes={leaveTypes.map((t) => ({ code: t.code, label: t.label }))} />
-      </div>
+      <PanelPageHeader
+        title={<>My Leave</>}
+        description={<>{year} balances and request history.</>}
+        actions={<><MyLeaveSheet leaveTypes={leaveTypes.map((t) => ({ code: t.code, label: t.label }))} /></>}
+      />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <PanelListFilters>
+<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {balances.map((b) => (
           <GlassCard key={b.leaveTypeCode} interactive={false}>
             <CardContent className="py-4">
@@ -59,6 +60,7 @@ export default async function MyLeavePage() {
           }))}
         />
       </div>
+</PanelListFilters>
     </div>
   );
 }

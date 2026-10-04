@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -33,14 +34,12 @@ export default async function AuditLogsPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "Audit Logs" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Audit Logs</h1>
-        <p className="text-sm text-muted-foreground">
-          {total} recorded action{total === 1 ? "" : "s"}{filters.sop ? " for this SOP" : ""}. Append-only — entries can't be edited or removed.
-          {filters.sop && <Link href={`/sop/library/${filters.sop}`} className="ml-2 text-primary hover:underline">Open SOP</Link>}
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "Audit Logs" }]}
+        title={<>Audit Logs</>}
+        description={<>{total} recorded action{total === 1 ? "" : "s"}{filters.sop ? " for this SOP" : ""}. Append-only — entries can't be edited or removed.
+          {filters.sop && <Link href={`/sop/library/${filters.sop}`} className="ml-2 text-primary hover:underline">Open SOP</Link>}</>}
+      />
 
       <AuditFilters
         values={filters}

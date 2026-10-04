@@ -14,7 +14,6 @@ import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import KpiCard from "@/components/lms/KpiCard";
 import KpiGrid from "@/components/lms/KpiGrid";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import ProgressBar from "@/components/pms/ProgressBar";
 import { ProgressRing, InfoCard, PortalPageHeader, LinkPill } from "@/components/portal/widgets";
 import LeadStageCard from "@/components/portal/LeadStageCard";
@@ -59,7 +58,6 @@ export default function LearnerDashboard({
 
   return (
     <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Dashboard" }]} />
       <PortalPageHeader
         title={`Welcome, ${firstName}`}
         subtitle={primary ? `${primary.programName} · ${primary.batchName}` : "Your training overview"}

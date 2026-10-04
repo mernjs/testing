@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
@@ -40,20 +41,12 @@ export default async function PaymentDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Payments", href: "/tms/payments" }, { label: plan.studentName }]} />
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{plan.studentName}</h1>
-            <PaymentStatusBadge status={plan.status} />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            <Link href={`/tms/students/${plan.studentId}`} className="text-primary hover:underline">Student profile</Link>
-            {" · "}{plan.programName}{plan.batchName ? ` · ${plan.batchName}` : ""}
-          </p>
-        </div>
-        <PaymentPlanForm
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Payments", href: "/tms/payments" }, { label: plan.studentName }]}
+        title={<><span className="inline-flex flex-wrap items-center gap-2">{plan.studentName}<PaymentStatusBadge status={plan.status} /></span></>}
+        description={<><Link href={`/tms/students/${plan.studentId}`} className="text-primary hover:underline">Student profile</Link>
+            {" · "}{plan.programName}{plan.batchName ? ` · ${plan.batchName}` : ""}</>}
+        actions={<><PaymentPlanForm
           plan={plan}
           students={students}
           programs={programs}
@@ -65,8 +58,8 @@ export default async function PaymentDetailPage({ params }: { params: Promise<{ 
               Edit plan
             </Button>
           }
-        />
-      </div>
+        /></>}
+      />
 
       <KpiGrid>
         <KpiCard label="Net Fees" value={net} format="currency" accent icon={undefined} />

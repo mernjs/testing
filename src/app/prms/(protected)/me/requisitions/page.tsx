@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -52,13 +53,11 @@ export default async function MyRequisitionsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms/me" }, { label: "My Requisitions" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">My Requisitions</h1>
-          <p className="text-sm text-muted-foreground">{result.total} raised by you.</p>
-        </div>
-        <RequisitionForm
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms/me" }, { label: "My Requisitions" }]}
+        title={<>My Requisitions</>}
+        description={<>{result.total} raised by you.</>}
+        actions={<><RequisitionForm
           departments={departments.map((d) => ({ _id: d._id, name: d.name }))}
           projects={projects.map((p) => ({ _id: p._id, name: p.name }))}
           vendors={vendors.map((v) => ({ _id: v._id, companyName: v.companyName }))}
@@ -69,8 +68,8 @@ export default async function MyRequisitionsPage({
               New Requisition
             </Button>
           }
-        />
-      </div>
+        /></>}
+      />
 
       <RequisitionsDataTable
         items={result.items.map(serializeRequisition)}

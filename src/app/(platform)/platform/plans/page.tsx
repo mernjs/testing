@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
@@ -57,7 +58,8 @@ export default async function PlansPage() {
         }
       />
 
-      {plans.length === 0 ? (
+      <PanelListFilters>
+{plans.length === 0 ? (
         <GlassCard interactive={false}>
           <CardContent className="py-8 text-center text-sm text-muted-foreground">No plans yet. Create one to start selling.</CardContent>
         </GlassCard>
@@ -142,6 +144,7 @@ export default async function PlansPage() {
           })}
         </ul>
       )}
+</PanelListFilters>
     </div>
   );
 }

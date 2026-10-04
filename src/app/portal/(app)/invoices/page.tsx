@@ -1,8 +1,8 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { ReceiptText, Download } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getClientOverview } from "@/lib/portal/client";
 import { listPortalInvoicesForClient } from "@/lib/fms/portal-invoices";
@@ -39,10 +39,10 @@ export default async function InvoicesPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Invoices" }]} />
       <PortalPageHeader title="Invoices" subtitle="Your formal tax invoices and a milestone-billing view of your engagements" />
 
-      {invoices.length > 0 && (
+      <PanelListFilters>
+{invoices.length > 0 && (
         <GlassCard>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
@@ -158,6 +158,7 @@ export default async function InvoicesPage() {
         The milestone view above is an indicative summary based on completion against each project&apos;s agreed
         value, not a formal invoice — your issued tax invoices are listed at the top of this page.
       </p>
+</PanelListFilters>
     </div>
   );
 }

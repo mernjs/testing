@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchApplications, getAllJobPositions } from "@/lib/career-applications";
@@ -78,14 +79,12 @@ export default async function AdminApplicantsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Careers" }, { label: "Applicants" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Job Applicants</h1>
-        <p className="text-sm text-muted-foreground">
-          {total} applicant{total === 1 ? "" : "s"}. Interview Schedule and Offer Status come from real linked
-          records (portal interviews, HRMS offers) — not every applicant has either yet.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "Careers" }, { label: "Applicants" }]}
+        title={<>Job Applicants</>}
+        description={<>{total} applicant{total === 1 ? "" : "s"}. Interview Schedule and Offer Status come from real linked
+          records (portal interviews, HRMS offers) — not every applicant has either yet.</>}
+      />
 
       <ApplicantsGrid
         rows={rows}

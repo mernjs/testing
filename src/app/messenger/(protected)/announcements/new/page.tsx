@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import AnnouncementComposer from "@/components/messenger/AnnouncementComposer";
@@ -16,16 +17,20 @@ export default async function NewAnnouncementPage() {
 
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6">
-      <div className="mx-auto max-w-3xl space-y-4">
-        <Breadcrumbs
-          items={[
+      <div className="space-y-4">
+<PanelPageHeader
+          breadcrumbs={[
             { label: "Messenger", href: "/messenger" },
             { label: "Announcements", href: "/messenger/announcements" },
             { label: "New" },
           ]}
+          title={<>New announcement</>}
+          description={<>Compose an announcement, choose who sees it and when it goes out.</>}
         />
+<div className="space-y-4">
         <AnnouncementComposer {...opts} />
       </div>
+</div>
     </div>
   );
 }

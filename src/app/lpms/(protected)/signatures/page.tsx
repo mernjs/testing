@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import { PenLine } from "lucide-react";
 import GlassCard from "@/components/lms/GlassCard";
@@ -26,18 +28,14 @@ export default async function SignaturesPage() {
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "LPMS", href: "/lpms" }, { label: "Signatures" }]} />
+      <PanelPageHeader
+        breadcrumbs={[{ label: "LPMS", href: "/lpms" }, { label: "Signatures" }]}
+        title={<>Signature Requests</>}
+        description={<>{requests.length} signature request{requests.length !== 1 ? "s" : ""}</>}
+      />
 
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-          Signature Requests
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {requests.length} signature request{requests.length !== 1 ? "s" : ""}
-        </p>
-      </div>
-
-      <GlassCard interactive={false}>
+      <PanelListFilters>
+<GlassCard interactive={false}>
         <CardContent className="p-0">
           {requests.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-16 text-center">
@@ -82,6 +80,7 @@ export default async function SignaturesPage() {
           )}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

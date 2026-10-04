@@ -1,7 +1,7 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { Briefcase, FileCheck2, MessageSquareText } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getApplicantOverview } from "@/lib/portal/applicant";
 import { getCareerApplicationStatusMeta } from "@/lib/career-application-status";
@@ -24,14 +24,14 @@ export default async function ApplicationPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "My Application" }]} />
       <PortalPageHeader
         title="My Application"
         subtitle={data.positionTitle}
         action={<span className={cn("rounded-full px-3 py-1 text-sm font-semibold", statusMeta.badgeClass)}>{statusMeta.label}</span>}
       />
 
-      <div className="grid gap-5 lg:grid-cols-[1.1fr_1fr]">
+      <PanelListFilters>
+<div className="grid gap-5 lg:grid-cols-[1.1fr_1fr]">
         <GlassCard>
           <CardHeader>
             <CardTitle>Hiring progress</CardTitle>
@@ -99,6 +99,7 @@ export default async function ApplicationPage() {
           ))}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

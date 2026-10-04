@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -13,16 +14,17 @@ export default async function NewOfferPage({ params }: { params: Promise<{ id: s
   if (!campaign) notFound();
 
   return (
-    <div className="relative mx-auto max-w-3xl space-y-4">
-      <Breadcrumbs
-        items={[
+    <div className="space-y-4">
+<PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "Festival Offers", href: "/lms/offers" },
           { label: campaign.name, href: `/lms/offers/${id}` },
           { label: "New offer" },
         ]}
+        title={<>New offer</>}
       />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">New offer</h1>
+<div className="relative mx-auto max-w-3xl space-y-4">
       <GlassCard>
         <CardHeader>
           <CardTitle className="text-base">Details</CardTitle>
@@ -32,5 +34,6 @@ export default async function NewOfferPage({ params }: { params: Promise<{ id: s
         </CardContent>
       </GlassCard>
     </div>
+</div>
   );
 }

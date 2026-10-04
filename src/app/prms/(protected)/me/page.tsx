@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { FileText, Clock, CheckCircle2, FilePen, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -38,15 +40,11 @@ export default async function EmployeePortalHome() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "My Dashboard" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Welcome, {user.email.split("@")[0]}
-          </h1>
-          <p className="text-sm text-muted-foreground">Raise purchase requisitions and track your approvals.</p>
-        </div>
-        <RequisitionForm
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "My Dashboard" }]}
+        title={<>Welcome, {user.email.split("@")[0]}</>}
+        description={<>Raise purchase requisitions and track your approvals.</>}
+        actions={<><RequisitionForm
           departments={deptOptions}
           projects={projOptions}
           vendors={vendorOptions}
@@ -57,10 +55,11 @@ export default async function EmployeePortalHome() {
               New Requisition
             </Button>
           }
-        />
-      </div>
+        /></>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="My Requisitions" value={total} accent icon={<FileText className="size-4" />} />
         <KpiCard label="Drafts" value={drafts} icon={<FilePen className="size-4" />} />
         <KpiCard label="Pending Approval" value={pending} icon={<Clock className="size-4" />} />
@@ -95,6 +94,7 @@ export default async function EmployeePortalHome() {
           </div>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

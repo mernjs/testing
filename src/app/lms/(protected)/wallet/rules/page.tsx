@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -13,12 +15,13 @@ export default async function RewardRulesPage() {
   const rules = await listRewardRules();
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet", href: "/lms/wallet" }, { label: "Reward rules" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Reward rules</h1>
-        <Link href="/lms/wallet/rules/new" className={buttonVariants({ size: "sm" })}>New rule</Link>
-      </div>
-      <GlassCard>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet", href: "/lms/wallet" }, { label: "Reward rules" }]}
+        title={<>Reward rules</>}
+        actions={<><Link href="/lms/wallet/rules/new" className={buttonVariants({ size: "sm" })}>New rule</Link></>}
+      />
+      <PanelListFilters>
+<GlassCard>
         <CardContent className="overflow-x-auto py-3">
           <table className="w-full min-w-[560px] text-sm">
             <thead>
@@ -42,6 +45,7 @@ export default async function RewardRulesPage() {
           </table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

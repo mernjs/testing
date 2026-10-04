@@ -1,9 +1,9 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Plus, GripVertical, Type, List, Table2, Image, Signature } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { getViewer } from "@/lib/lpms/viewer";
 import { lpmsCan } from "@/lib/lpms-roles";
@@ -39,22 +39,15 @@ export default async function TemplateEditorPage({
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Breadcrumbs
-        items={[
-          { label: "LPMS", href: "/lpms" },
-          { label: "Templates", href: "/lpms/templates" },
-          { label: template ? ((template as any).name ?? (template as any).title) : "New Template" },
-        ]}
-      />
 
       <div className="flex items-center gap-3">
         <Link href="/lpms/templates" className={buttonVariants({ variant: "ghost", size: "sm" })}>
           <ArrowLeft className="size-4" />
         </Link>
         <div className="flex-1">
-          <h1 className="text-xl font-black tracking-tight text-foreground">
-            {template ? `Template: ${(template as any).name ?? (template as any).title}` : "New Template"}
-          </h1>
+          <PanelPageHeader
+            title={<>{template ? `Template: ${(template as any).name ?? (template as any).title}` : "New Template"}</>}
+          />
           {template && (
             <p className="text-xs text-muted-foreground">v{(template as any).version ?? 1}</p>
           )}

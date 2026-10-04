@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CalendarDays, Clock, Video, UserRound, FileText, Film } from "lucide-react";
@@ -41,29 +42,21 @@ export default async function ClassDetailPage({ params }: { params: Promise<{ id
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Classes", href: "/tms/classes" }, { label: c.topic }]} />
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{c.topic}</h1>
-            <ClassStatusBadge status={c.status} />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {batch ? (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Classes", href: "/tms/classes" }, { label: c.topic }]}
+        title={<><span className="inline-flex flex-wrap items-center gap-2">{c.topic}<ClassStatusBadge status={c.status} /></span></>}
+        description={<>{batch ? (
               <Link href={`/tms/batches/${batch._id}`} className="text-primary hover:underline">{batch.name}</Link>
             ) : "Unknown batch"}
-            {program ? ` · ${program.name}` : ""}
-          </p>
-        </div>
-        {canManage && (
+            {program ? ` · ${program.name}` : ""}</>}
+        actions={<>{canManage && (
           <ClassActions
             classItem={c}
             batches={batches.map((b) => ({ _id: b._id, name: b.name, programName: b.programName }))}
             mentors={mentors.map((m) => ({ _id: m._id, name: m.name }))}
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Roster" value={roster.length} accent icon={<UserRound className="size-4" />} />

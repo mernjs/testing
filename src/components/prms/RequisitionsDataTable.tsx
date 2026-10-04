@@ -111,7 +111,7 @@ export default function RequisitionsDataTable({
               <ClipboardList className="size-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold tracking-tight text-foreground">Requisition Filters</h3>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
               <p className="text-xs text-muted-foreground">Find purchase requisitions by status, priority and category</p>
             </div>
           </div>

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import MyProfileForm from "@/components/tms/MyProfileForm";
@@ -12,13 +13,11 @@ export default async function MyProfilePage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms/me" }, { label: "Profile" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">My Profile</h1>
-        <p className="text-sm text-muted-foreground">
-          Keep your contact details and links up to date. <span className="font-mono">{student.studentCode}</span>
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms/me" }, { label: "Profile" }]}
+        title={<>My Profile</>}
+        description={<>Keep your contact details and links up to date. <span className="font-mono">{student.studentCode}</span></>}
+      />
       <MyProfileForm student={serializeStudent(student)} />
     </div>
   );

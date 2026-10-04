@@ -69,7 +69,7 @@ export default function ApplicationsDataTable({ items, total, page, totalPages, 
               <FileText className="size-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold tracking-tight text-foreground">Application Filters</h3>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
               <p className="text-xs text-muted-foreground">Track admissions pipeline by status, program and source</p>
             </div>
           </div>

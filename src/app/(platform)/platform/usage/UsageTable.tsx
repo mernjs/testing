@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronUp, ChevronsUpDown, Download, Gauge, Search } from "lucide-react";
+import FilterCardShell from "@/components/platform/panel/FilterCardShell";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -136,8 +137,8 @@ export default function UsageTable({ rows, period }: { rows: CompanyUsageRow[]; 
 
   return (
     <div className="space-y-4">
-      <GlassCard interactive={false}>
-        <CardContent className="flex flex-wrap items-end gap-3">
+      <FilterCardShell description="Find companies by name, limit status or subscription status">
+        <div className="flex flex-wrap items-end gap-3">
           <div className="flex min-w-0 flex-1 flex-col gap-1.5 sm:flex-none">
             <label htmlFor="usage-search" className="text-xs font-medium text-muted-foreground">
               Search
@@ -181,8 +182,8 @@ export default function UsageTable({ rows, period }: { rows: CompanyUsageRow[]; 
             <Download className="size-4" />
             Export CSV
           </Button>
-        </CardContent>
-      </GlassCard>
+        </div>
+      </FilterCardShell>
 
       <GlassCard interactive={false}>
         <CardContent>

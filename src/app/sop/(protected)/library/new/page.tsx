@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -19,12 +20,13 @@ export default async function NewSopPage() {
   const home = viewer.memberDepartmentIds.find((d) => departments.some((x) => x._id === d)) ?? departments[0]?._id ?? "";
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "SOP Library", href: "/sop/library" }, { label: "New SOP" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">New SOP</h1>
-        <p className="text-sm text-muted-foreground">Pick a department and template. You&apos;ll write it as a draft, then publish it directly — no approval step.</p>
-      </div>
+    <div className="space-y-4">
+<PanelPageHeader
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "SOP Library", href: "/sop/library" }, { label: "New SOP" }]}
+        title={<>New SOP</>}
+        description={<>Pick a department and template. You&apos;ll write it as a draft, then publish it directly — no approval step.</>}
+      />
+<div className="space-y-4">
       <GlassCard interactive={false}>
         <CardContent className="p-5">
           <NewSopForm
@@ -38,5 +40,6 @@ export default async function NewSopPage() {
         </CardContent>
       </GlassCard>
     </div>
+</div>
   );
 }

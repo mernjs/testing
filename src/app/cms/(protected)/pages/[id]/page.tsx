@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound, redirect } from "next/navigation";
 import { getViewer, can } from "@/lib/cms/viewer";
 import { getPage } from "@/lib/cms/pages";
@@ -16,6 +17,7 @@ export default async function CmsPageBuilderPage({ params }: { params: Promise<{
 
   return (
     <>
+    <PanelPageHeader title={<>Edit page</>} description={<>{page.title} · {page.path}</>} />
     <PageBuilder
       pageId={page._id}
       path={page.path}

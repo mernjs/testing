@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -19,11 +20,12 @@ export default async function SecurityPage() {
 
   return (
     <div className="min-h-screen bg-muted/70 px-4 py-10 dark:bg-background">
-      <div className="mx-auto max-w-4xl space-y-4">
-        <Link href="/workspace/settings" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4" /> Company settings
-        </Link>
-        <h1 className="text-2xl font-black tracking-tight">Security</h1>
+      <div className="space-y-4">
+<PanelPageHeader
+          breadcrumbs={[{ label: "Company settings", href: "/workspace/settings" }, { label: "Security" }]}
+          title={<>Security</>}
+        />
+<div className="space-y-4">
 
         <GlassCard interactive={false}>
           <CardHeader>
@@ -75,6 +77,7 @@ export default async function SecurityPage() {
           </CardContent>
         </GlassCard>
       </div>
+</div>
     </div>
   );
 }

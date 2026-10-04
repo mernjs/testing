@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import { Settings, Layers, LayoutTemplate, Tags, GitBranch } from "lucide-react";
 import GlassCard from "@/components/lms/GlassCard";
@@ -59,16 +60,11 @@ export default async function LpmsSettingsPage() {
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "LPMS", href: "/lpms" }, { label: "Settings" }]} />
-
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-          LPMS Settings
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Configure your Legal &amp; Document Automation system.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "LPMS", href: "/lpms" }, { label: "Settings" }]}
+        title={<>LPMS Settings</>}
+        description={<>Configure your Legal &amp; Document Automation system.</>}
+      />
 
       <div className="grid gap-4 sm:grid-cols-2">
         {stats.map(({ label, count, icon: Icon, href, description }) => (

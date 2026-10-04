@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { redirect } from "next/navigation";
 import { PageHeader, Notice } from "@/components/seo/SeoUi";
 import RobotsEditor from "@/components/seo/RobotsEditor";
@@ -23,7 +24,8 @@ export default async function RobotsPage() {
         crumbs={[{ label: "Robots.txt" }]}
         description={<>Edit, validate and publish <a href={`${siteUrl}/robots.txt`} target="_blank" rel="noreferrer" className="text-primary hover:underline">/robots.txt</a>. Publishing updates the live file without a deploy. {doc.publishedAt && `Last published ${formatDateTime(doc.publishedAt)}.`}</>}
       />
-      {live.status !== 200 && <Notice tone="warn">Could not read the live file at {settings.siteOrigin}/robots.txt ({live.error ?? `HTTP ${live.status}`}).</Notice>}
+      <PanelListFilters>
+{live.status !== 200 && <Notice tone="warn">Could not read the live file at {settings.siteOrigin}/robots.txt ({live.error ?? `HTTP ${live.status}`}).</Notice>}
       {liveDiffers && <Notice tone="info">The file served at {settings.siteOrigin} differs from the version below — a CDN may still be caching the previous file, or the audited origin runs different code.</Notice>}
       <RobotsEditor
         initial={managedText}
@@ -34,6 +36,7 @@ export default async function RobotsPage() {
         canEdit={can(viewer, "MANAGE_ROBOTS")}
         revisions={doc.revisions.map((r) => ({ content: r.content, at: formatDateTime(r.at), byEmail: r.byEmail, note: r.note }))}
       />
+</PanelListFilters>
     </div>
   );
 }

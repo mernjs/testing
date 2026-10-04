@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchAllTasks } from "@/lib/workspace/pms-work-items";
@@ -54,11 +55,11 @@ export default async function AdminTasksPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "PMS", panel: "pms" }, { label: "Tasks" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Tasks</h1>
-        <p className="text-sm text-muted-foreground">{total} task{total === 1 ? "" : "s"} across every project.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "PMS", panel: "pms" }, { label: "Tasks" }]}
+        title={<>Tasks</>}
+        description={<>{total} task{total === 1 ? "" : "s"} across every project.</>}
+      />
 
       <TasksGrid
         rows={rows}

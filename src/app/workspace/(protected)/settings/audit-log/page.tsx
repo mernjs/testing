@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { panelNameMap } from "@/lib/platform/panels/store";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -79,11 +80,11 @@ export default async function AuditLogPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="space-y-4 p-6">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Company", href: "/workspace/settings" }, { label: "Audit log" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Audit log</h1>
-        <p className="text-sm text-muted-foreground">Who did what across your workspace and its panels, and when.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "Company", href: "/workspace/settings" }, { label: "Audit log" }]}
+        title={<>Audit log</>}
+        description={<>Who did what across your workspace and its panels, and when.</>}
+      />
 
       {tabs.length > 1 && (
         <nav className="flex flex-wrap gap-2" aria-label="Audit log source" id="audit-sources">

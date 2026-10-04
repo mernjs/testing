@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Plus, BadgeCheck, GraduationCap, Briefcase, Ban } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
@@ -34,13 +36,11 @@ export default async function CertificatesPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Certificates" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Certificates</h1>
-          <p className="text-sm text-muted-foreground">{total} certificate{total === 1 ? "" : "s"} issued.</p>
-        </div>
-        {canIssue && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Certificates" }]}
+        title={<>Certificates</>}
+        description={<>{total} certificate{total === 1 ? "" : "s"} issued.</>}
+        actions={<>{canIssue && (
           <CertificateIssueForm
             students={students}
             programs={programs.map((p) => ({ _id: p._id, name: p.name }))}
@@ -52,10 +52,11 @@ export default async function CertificatesPage() {
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Total Issued" value={total} accent icon={<BadgeCheck className="size-4" />} />
         <KpiCard label="Industrial Training" value={industrial} icon={<GraduationCap className="size-4" />} />
         <KpiCard label="Internship" value={internship} icon={<Briefcase className="size-4" />} />
@@ -105,6 +106,7 @@ export default async function CertificatesPage() {
           )}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

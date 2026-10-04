@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CheckCircle2, AlertTriangle, CalendarClock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -23,13 +25,14 @@ export default async function TrialBalancePage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Trial Balance" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Trial Balance</h1>
-        <p className="text-sm text-muted-foreground">Every account&apos;s total debits and credits{result.asOf ? ` as of ${new Date(result.asOf).toLocaleDateString()}` : ""}.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Trial Balance" }]}
+        title={<>Trial Balance</>}
+        description={<>Every account&apos;s total debits and credits{result.asOf ? ` as of ${new Date(result.asOf).toLocaleDateString()}` : ""}.</>}
+      />
 
-      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+      <PanelListFilters>
+<div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
         <div className="flex items-center gap-3 border-b border-border/40 pb-4">
           <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
             <CalendarClock className="size-4" />
@@ -107,6 +110,7 @@ export default async function TrialBalancePage({
           </Table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

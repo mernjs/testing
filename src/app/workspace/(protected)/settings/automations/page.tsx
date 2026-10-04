@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -26,20 +27,20 @@ export default async function AutomationsSettingsPage() {
 
   return (
     <div className="min-h-screen bg-muted/70 px-4 py-10 dark:bg-background">
-      <div className="mx-auto max-w-4xl space-y-4">
-        <Link href="/workspace/settings" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4" /> Company settings
-        </Link>
+      <div className="space-y-4">
+<PanelPageHeader
+          breadcrumbs={[{ label: "Company settings", href: "/workspace/settings" }, { label: "Automations" }]}
+          title={<>Automations</>}
+          description={<>When something happens in your workspace, notify people, send an email or call a webhook — automatically.</>}
+        />
+<div className="space-y-4">
         <GlassCard interactive={false}>
-          <CardHeader>
-            <CardTitle className="text-xl">Automations</CardTitle>
-            <CardDescription>When something happens in your workspace, notify people, send an email or call a webhook — automatically.</CardDescription>
-          </CardHeader>
           <CardContent>
             <AutomationsManager initial={workflows} roles={roles} people={people.map((p) => ({ id: String(p._id), email: p.email }))} max={MAX_WORKFLOWS_PER_COMPANY} />
           </CardContent>
         </GlassCard>
       </div>
+</div>
     </div>
   );
 }

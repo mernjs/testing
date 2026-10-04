@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { listPanels } from "@/lib/platform/panels/store";
 import Link from "next/link";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -55,19 +56,11 @@ export default async function AdminUsersPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Centralized User & Access Management" }]} />
-      
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Centralized User &amp; Role Management
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Complete identity control &amp; panel-wise user roster across all {panelCount} platform panels.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "Centralized User & Access Management" }]}
+        title={<>Centralized User &amp; Role Management</>}
+        description={<>Complete identity control &amp; panel-wise user roster across all {panelCount} platform panels.</>}
+        actions={<><div className="flex flex-wrap items-center gap-2">
           <Link href="/workspace/settings/usage" id="users-seats" title="Seats used against your plan">
             <Badge variant="outline" className="px-3 py-1 text-xs gap-1.5 bg-primary/10 text-primary border-primary/20">
               <span className="font-semibold">
@@ -85,8 +78,8 @@ export default async function AdminUsersPage({
           <Badge variant="outline" className="px-3 py-1 text-xs gap-1.5 bg-rose-500/10 text-rose-600 border-rose-500/20">
             <span className="font-semibold">{deactivatedCount}</span> Deactivated
           </Badge>
-        </div>
-      </div>
+        </div></>}
+      />
 
       <UsersGrid
         rows={rows}

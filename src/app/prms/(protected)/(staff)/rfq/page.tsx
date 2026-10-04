@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, FileSpreadsheet, Send, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -38,13 +39,11 @@ export default async function RfqPage({ searchParams }: { searchParams: Promise<
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "RFQ & Quotations" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">RFQ &amp; Quotations</h1>
-          <p className="text-sm text-muted-foreground">{total} RFQ{total === 1 ? "" : "s"}.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "RFQ & Quotations" }]}
+        title={<>RFQ &amp; Quotations</>}
+        description={<>{total} RFQ{total === 1 ? "" : "s"}.</>}
+        actions={<>{canManage && (
           <RfqForm
             vendors={vOpts}
             departments={dOpts}
@@ -55,8 +54,8 @@ export default async function RfqPage({ searchParams }: { searchParams: Promise<
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total RFQs" value={total} accent icon={<FileSpreadsheet className="size-4" />} />

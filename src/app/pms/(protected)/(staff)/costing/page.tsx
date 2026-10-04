@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Wallet, Receipt, TrendingUp, TrendingDown, Clock, Coins, PieChart, Percent } from "lucide-react";
@@ -62,18 +63,15 @@ export default async function CostingPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PMS", href: "/pms" }, { label: "Costing" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Project Costing</h1>
-          <p className="text-sm text-muted-foreground">Financials computed live from timesheets and team rates.</p>
-        </div>
-        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-        <a href={`/api/pms/reports/portfolio?format=xlsx${dateFrom ? `&dateFrom=${dateFrom}&dateTo=${dateTo}` : ""}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PMS", href: "/pms" }, { label: "Costing" }]}
+        title={<>Project Costing</>}
+        description={<>Financials computed live from timesheets and team rates.</>}
+        actions={<><a href={`/api/pms/reports/portfolio?format=xlsx${dateFrom ? `&dateFrom=${dateFrom}&dateTo=${dateTo}` : ""}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
           <Download className="size-3.5" data-icon="inline-start" />
           Export XLSX
-        </a>
-      </div>
+        </a></>}
+      />
 
       <PmsDashboardFilters
         range={rangeParam}

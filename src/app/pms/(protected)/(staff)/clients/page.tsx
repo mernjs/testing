@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Plus, Download, Building2, CheckCircle2, Sparkles, FolderKanban } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -42,13 +43,11 @@ export default async function ClientsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PMS", href: "/pms" }, { label: "Clients" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Clients</h1>
-          <p className="text-sm text-muted-foreground">{totalClients} client{totalClients === 1 ? "" : "s"} in the directory.</p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PMS", href: "/pms" }, { label: "Clients" }]}
+        title={<>Clients</>}
+        description={<>{totalClients} client{totalClients === 1 ? "" : "s"} in the directory.</>}
+        actions={<><div className="flex items-center gap-2">
           <a href={exportHref} className={buttonVariants({ variant: "outline", size: "sm" })}>
             <Download className="size-3.5" data-icon="inline-start" />
             Export CSV
@@ -63,8 +62,8 @@ export default async function ClientsPage({
               }
             />
           )}
-        </div>
-      </div>
+        </div></>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Clients" value={totalClients} accent icon={<Building2 className="size-4" />} />

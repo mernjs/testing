@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -36,16 +37,12 @@ export default async function InventoryItemDetailPage({ params }: { params: Prom
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Inventory & Stationery", href: "/prms/inventory" }, { label: i.itemCode }]} />
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{i.name}</h1>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{i.itemCode}</span> · {i.currentStock} {i.uom} on hand
-            {i.currentStock <= i.minStock && <span className="ml-1 text-destructive">(below minimum)</span>}
-          </p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Inventory & Stationery", href: "/prms/inventory" }, { label: i.itemCode }]}
+        title={<>{i.name}</>}
+        description={<><span className="font-mono">{i.itemCode}</span> · {i.currentStock} {i.uom} on hand
+            {i.currentStock <= i.minStock && <span className="ml-1 text-destructive">(below minimum)</span>}</>}
+        actions={<>{canManage && (
           <InventoryItemForm
             item={i}
             vendors={vendors.map((v) => ({ _id: v._id, companyName: v.companyName }))}
@@ -56,8 +53,8 @@ export default async function InventoryItemDetailPage({ params }: { params: Prom
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-4">

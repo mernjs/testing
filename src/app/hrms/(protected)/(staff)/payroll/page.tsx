@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Banknote } from "lucide-react";
@@ -16,21 +18,18 @@ export default async function PayrollPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Payroll" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Payroll</h1>
-          <p className="text-sm text-muted-foreground">
-            Generate monthly runs, review payslips, and approve. Disbursement happens under Salary Payouts.
-          </p>
-        </div>
-        <Link href="/hrms/payroll/payouts" className={buttonVariants({ variant: "outline", size: "sm" })}>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "HRMS", href: "/hrms" }, { label: "Payroll" }]}
+        title={<>Payroll</>}
+        description={<>Generate monthly runs, review payslips, and approve. Disbursement happens under Salary Payouts.</>}
+        actions={<><Link href="/hrms/payroll/payouts" className={buttonVariants({ variant: "outline", size: "sm" })}>
           <Banknote className="size-3.5" data-icon="inline-start" />
           Salary Payouts
-        </Link>
-      </div>
+        </Link></>}
+      />
 
-      <PayrollRunManager
+      <PanelListFilters>
+<PayrollRunManager
         runs={runs.map((r) => ({
           _id: r._id,
           month: r.month,
@@ -42,6 +41,7 @@ export default async function PayrollPage() {
           generatedAt: r.generatedAt,
         }))}
       />
+</PanelListFilters>
     </div>
   );
 }

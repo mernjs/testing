@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import {
   Clock,
@@ -39,25 +40,17 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Programs", href: "/tms/programs" }, { label: p.name }]} />
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{p.name}</h1>
-            <ProgramStatusBadge status={p.status} />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{p.programCode}</span>
-            {p.technology ? ` · ${p.technology}` : ""}
-          </p>
-          <div className="flex flex-wrap items-center gap-2 pt-1">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Programs", href: "/tms/programs" }, { label: p.name }]}
+        title={<><span className="inline-flex flex-wrap items-center gap-2">{p.name}<ProgramStatusBadge status={p.status} /></span></>}
+        description={<><span className="font-mono">{p.programCode}</span>
+            {p.technology ? ` · ${p.technology}` : ""}</>}
+        meta={<><div className="flex flex-wrap items-center gap-2 pt-1">
             <ProgramCategoryBadge category={p.category} />
             <TrainingModeBadge mode={p.mode} />
-          </div>
-        </div>
-        {canManage && <ProgramActions program={p} technologySuggestions={settings.technologySuggestions} />}
-      </div>
+          </div></>}
+        actions={<>{canManage && <ProgramActions program={p} technologySuggestions={settings.technologySuggestions} />}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Duration" value={p.durationWeeks ?? 0} suffix=" wk" accent icon={<Clock className="size-4" />} />

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CalendarRange } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -26,11 +27,11 @@ export default async function GeneralLedgerPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "General Ledger" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">General Ledger</h1>
-        <p className="text-sm text-muted-foreground">Per-account journal-line detail with a running balance, computed live from posted entries.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "General Ledger" }]}
+        title={<>General Ledger</>}
+        description={<>Per-account journal-line detail with a running balance, computed live from posted entries.</>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-[260px_1fr]">
         <GlassCard interactive={false}>

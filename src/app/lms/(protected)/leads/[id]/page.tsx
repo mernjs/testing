@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Mail, Phone, ExternalLink } from "lucide-react";
@@ -48,36 +49,26 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
 
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "Lead Management", href: "/lms/leads" },
           { label: lead.name },
         ]}
-      />
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{lead.name}</h1>
-            <span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">
+        title={<><span className="inline-flex flex-wrap items-center gap-2">{lead.name}<span className="rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">
               {TYPE_LABEL[lead.type]}
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {lead.code} · {LEAD_SOURCE_META[lead.source].label}
-            {lead.subService ? ` · ${lead.subService}` : ""}
-          </p>
-          <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+            </span></span></>}
+        description={<>{lead.code} · {LEAD_SOURCE_META[lead.source].label}
+            {lead.subService ? ` · ${lead.subService}` : ""}</>}
+        meta={<><div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
             <a href={`mailto:${lead.email}`} className="flex items-center gap-1 hover:text-primary">
               <Mail className="size-3.5" /> {lead.email}
             </a>
             <a href={`tel:${lead.phone}`} className="flex items-center gap-1 hover:text-primary">
               <Phone className="size-3.5" /> {lead.phone}
             </a>
-          </div>
-        </div>
-        <div className="text-right text-xs text-muted-foreground space-y-1.5">
+          </div></>}
+        actions={<><div className="text-right text-xs text-muted-foreground space-y-1.5">
           <p>Portal account: {lead.externalUserId.slice(0, 8)}…</p>
           {lead.applicationId && (
             <Link href={`/lms/careers/applicants/${lead.applicationId}`} className="inline-flex items-center gap-1 text-primary hover:underline">
@@ -92,8 +83,8 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
               variant="full"
             />
           </div>
-        </div>
-      </div>
+        </div></>}
+      />
 
       {lead.message && (
         <GlassCard>

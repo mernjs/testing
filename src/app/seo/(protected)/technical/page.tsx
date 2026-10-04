@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Gauge } from "lucide-react";
@@ -77,7 +78,8 @@ export default async function TechnicalPage() {
   return (
     <div className="space-y-4">
       <PageHeader title="Technical SEO" crumbs={[{ label: "Technical SEO" }]} description="Crawlability, indexability, redirects, canonicals, HTTPS, structure and performance — from the latest audit." />
-      {crawled.length === 0 && <Notice>Run a website audit to populate technical SEO data.</Notice>}
+      <PanelListFilters>
+{crawled.length === 0 && <Notice>Run a website audit to populate technical SEO data.</Notice>}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <Link href="/seo/sitemap" className="rounded-2xl border border-border/40 bg-card/90 p-4 hover:border-primary/40">
@@ -225,6 +227,7 @@ export default async function TechnicalPage() {
           </div>
         )}
       </SectionCard>
+</PanelListFilters>
     </div>
   );
 }

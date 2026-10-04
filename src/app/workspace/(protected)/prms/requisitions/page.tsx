@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchRequisitions } from "@/lib/prms/requisitions";
@@ -46,14 +47,12 @@ export default async function AdminRequisitionsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "Requisitions" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Purchase Requisitions</h1>
-        <p className="text-sm text-muted-foreground">
-          {total} requisition{total === 1 ? "" : "s"}. Approval decisions stay on the native review page — real
-          multi-level approval logic isn&apos;t replicated here.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "Requisitions" }]}
+        title={<>Purchase Requisitions</>}
+        description={<>{total} requisition{total === 1 ? "" : "s"}. Approval decisions stay on the native review page — real
+          multi-level approval logic isn&apos;t replicated here.</>}
+      />
 
       <RequisitionsGrid
         rows={rows}

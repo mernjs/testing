@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import PmsSettingsForm from "@/components/pms/PmsSettingsForm";
@@ -13,11 +14,11 @@ export default async function PmsSettingsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PMS", href: "/pms" }, { label: "Settings" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Settings</h1>
-        <p className="text-sm text-muted-foreground">Configure project categories, technology suggestions and defaults.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PMS", href: "/pms" }, { label: "Settings" }]}
+        title={<>Settings</>}
+        description={<>Configure project categories, technology suggestions and defaults.</>}
+      />
       <PmsSettingsForm
         categories={settings.categories}
         technologySuggestions={settings.technologySuggestions}

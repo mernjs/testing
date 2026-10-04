@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import DashboardSection from "@/components/platform/panel/DashboardSection";
 import Link from "next/link";
 import {
@@ -61,13 +62,11 @@ export default async function EmployeeDashboardPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PMS", href: "/pms" }, { label: "My Dashboard" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-          Hi, {user.email.split("@")[0]}
-        </h1>
-        <p className="text-sm text-muted-foreground">Your projects, tasks and logged hours at a glance.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PMS", href: "/pms" }, { label: "My Dashboard" }]}
+        title={<>Hi, {user.email.split("@")[0]}</>}
+        description={<>Your projects, tasks and logged hours at a glance.</>}
+      />
 
       <PmsDashboardFilters
         range={rangeParam}

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Wrench, Coins } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -31,13 +33,14 @@ export default async function AssetExpensesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Asset Expenses" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Asset Expenses</h1>
-        <p className="text-sm text-muted-foreground">{result.total} recorded expense{result.total === 1 ? "" : "s"} — maintenance, insurance, AMC and other ongoing asset costs.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Asset Expenses" }]}
+        title={<>Asset Expenses</>}
+        description={<>{result.total} recorded expense{result.total === 1 ? "" : "s"} — maintenance, insurance, AMC and other ongoing asset costs.</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Total Recorded" value={result.total} accent icon={<Wrench className="size-4" />} />
         <KpiCard label="This Page's Total" value={<span>{formatMoney(pageTotal)}</span>} icon={<Coins className="size-4" />} />
       </KpiGrid>
@@ -84,6 +87,7 @@ export default async function AssetExpensesPage({
           </Table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

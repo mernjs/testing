@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/ots/OtsUi";
 import CandidateTests from "@/components/ots/CandidateTests";
@@ -11,7 +12,9 @@ export default async function MyTestsPage() {
   return (
     <div className="space-y-4">
       <PageHeader title="My Tests" crumbs={[{ label: "My Tests" }]} description="Tests assigned to you — pending, in progress, completed and expired." />
-      <CandidateTests cards={cards} channel="staff" paths={basePath("staff")} />
+      <PanelListFilters>
+<CandidateTests cards={cards} channel="staff" paths={basePath("staff")} />
+</PanelListFilters>
     </div>
   );
 }

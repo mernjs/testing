@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, ArrowLeftRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
@@ -38,13 +40,11 @@ export default async function TransfersPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Transfers" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Transfers</h1>
-          <p className="text-sm text-muted-foreground">{result.total} transfer{result.total === 1 ? "" : "s"} between accounts.</p>
-        </div>
-        {canManage && accountOptions.length >= 2 && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Transfers" }]}
+        title={<>Transfers</>}
+        description={<>{result.total} transfer{result.total === 1 ? "" : "s"} between accounts.</>}
+        actions={<>{canManage && accountOptions.length >= 2 && (
           <FundTransferForm
             accounts={accountOptions}
             trigger={
@@ -54,10 +54,11 @@ export default async function TransfersPage({
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Total Transfers" value={result.total} accent icon={<ArrowLeftRight className="size-4" />} />
       </KpiGrid>
 
@@ -92,6 +93,7 @@ export default async function TransfersPage({
           </Table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

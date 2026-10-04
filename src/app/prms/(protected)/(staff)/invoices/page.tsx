@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, FileCheck2, Clock, AlertTriangle, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -36,13 +37,11 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Invoices & Payments" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Invoices &amp; Payments</h1>
-          <p className="text-sm text-muted-foreground">{total} invoice{total === 1 ? "" : "s"} in accounts payable.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Invoices & Payments" }]}
+        title={<>Invoices &amp; Payments</>}
+        description={<>{total} invoice{total === 1 ? "" : "s"} in accounts payable.</>}
+        actions={<>{canManage && (
           <InvoiceForm
             vendors={vOpts}
             trigger={
@@ -52,8 +51,8 @@ export default async function InvoicesPage({ searchParams }: { searchParams: Pro
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Invoices" value={total} accent icon={<FileCheck2 className="size-4" />} />

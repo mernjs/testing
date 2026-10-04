@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -15,19 +17,18 @@ export default async function OfferClaimsPage() {
 
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Festival Offers", href: "/lms/offers" }, { label: "Claims" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Offer claims</h1>
-        <p className="text-sm text-muted-foreground">
-          Every submission also created a real lead — open{" "}
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Festival Offers", href: "/lms/offers" }, { label: "Claims" }]}
+        title={<>Offer claims</>}
+        description={<>Every submission also created a real lead — open{" "}
           <Link href="/lms/submissions" className="text-primary hover:underline">
             Submissions
           </Link>{" "}
-          for the full contact record and follow-up workflow.
-        </p>
-      </div>
+          for the full contact record and follow-up workflow.</>}
+      />
 
-      <GlassCard>
+      <PanelListFilters>
+<GlassCard>
         <CardContent className="overflow-x-auto py-3">
           <table className="w-full min-w-[760px] text-sm">
             <thead>
@@ -68,6 +69,7 @@ export default async function OfferClaimsPage() {
           </table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

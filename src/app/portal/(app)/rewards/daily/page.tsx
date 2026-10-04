@@ -1,8 +1,8 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import Link from "next/link";
 import { CalendarCheck, Coins, Flame, LogIn, Trophy, Zap } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { PortalPageHeader, PortalStat } from "@/components/portal/widgets";
 import { EarnNav, HowItWorks, RewardHistory } from "@/components/portal/rewards/parts";
 import { guardPortalPage } from "@/lib/portal/guard";
@@ -18,9 +18,9 @@ export default async function DailyRewardsPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Daily rewards" }]} />
       <PortalPageHeader title="Daily rewards" subtitle="Visit every day to keep your streak alive and earn bonus credits." />
-      <EarnNav current="daily" />
+      <PanelListFilters>
+<EarnNav current="daily" />
 
       <GlassCard interactive={false}>
         <CardContent className="space-y-4 py-5">
@@ -70,6 +70,7 @@ export default async function DailyRewardsPage() {
 
       <RewardHistory title="Daily reward history" rows={d.history} empty="Your daily rewards will appear here after your first visit." />
       <p className="text-xs text-muted-foreground">Days count in India time. See the <Link href="/rewards" className="text-primary hover:underline">rewards guide</Link> for every way to earn.</p>
+</PanelListFilters>
     </div>
   );
 }

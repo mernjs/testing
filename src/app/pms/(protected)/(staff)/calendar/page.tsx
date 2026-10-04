@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { AlarmClock, CalendarClock, CalendarDays } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import KpiCard from "@/components/lms/KpiCard";
@@ -21,13 +23,14 @@ export default async function PmsCalendarPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PMS", href: "/pms" }, { label: "Calendar" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Calendar</h1>
-        <p className="text-sm text-muted-foreground">Task due dates, milestones and project deadlines across the portfolio.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PMS", href: "/pms" }, { label: "Calendar" }]}
+        title={<>Calendar</>}
+        description={<>Task due dates, milestones and project deadlines across the portfolio.</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Tracked Deadlines" value={items.length} accent icon={<CalendarDays className="size-4" />} />
         <KpiCard label="Overdue" value={overdue} tone={overdue > 0 ? "down" : undefined} icon={<AlarmClock className="size-4" />} />
         <KpiCard label="Due This Week" value={thisWeek} icon={<CalendarClock className="size-4" />} />
@@ -40,6 +43,7 @@ export default async function PmsCalendarPage() {
           No dated tasks, milestones or project deadlines yet.
         </p>
       )}
+</PanelListFilters>
     </div>
   );
 }

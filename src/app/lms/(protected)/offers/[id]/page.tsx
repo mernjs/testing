@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -36,17 +37,15 @@ export default async function EditCampaignPage({ params }: { params: Promise<{ i
   }));
 
   return (
-    <div className="relative mx-auto max-w-5xl space-y-4">
-      <Breadcrumbs
-        items={[
+    <div className="space-y-4">
+<PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "Festival Offers", href: "/lms/offers" },
           { label: campaign.name },
         ]}
-      />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{campaign.name}</h1>
-        <div className="flex items-center gap-2">
+        title={<>{campaign.name}</>}
+        actions={<><div className="flex items-center gap-2">
           <Link href={`/lms/offers/${id}/analytics`} className={buttonVariants({ variant: "outline", size: "sm" })}>
             Analytics
           </Link>
@@ -56,8 +55,9 @@ export default async function EditCampaignPage({ params }: { params: Promise<{ i
             onDelete={deleteCampaignAction.bind(null, id)}
             redirectTo="/lms/offers"
           />
-        </div>
-      </div>
+        </div></>}
+      />
+<div className="relative mx-auto max-w-5xl space-y-4">
 
       <GlassCard>
         <CardHeader>
@@ -185,5 +185,6 @@ export default async function EditCampaignPage({ params }: { params: Promise<{ i
         </CardContent>
       </GlassCard>
     </div>
+</div>
   );
 }

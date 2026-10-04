@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { UserPlus, ArrowUpRight } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -59,19 +61,18 @@ export default async function RecruitmentPage({ searchParams }: { searchParams: 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Recruitment" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Recruitment</h1>
-          <p className="text-sm text-muted-foreground">Track offers for shortlisted candidates and onboard them.</p>
-        </div>
-        <a href="/lms/careers/applicants" target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: "outline", size: "sm" })}>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "HRMS", href: "/hrms" }, { label: "Recruitment" }]}
+        title={<>Recruitment</>}
+        description={<>Track offers for shortlisted candidates and onboard them.</>}
+        actions={<><a href="/lms/careers/applicants" target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: "outline", size: "sm" })}>
           <ArrowUpRight className="size-3.5" data-icon="inline-start" />
           Open Careers
-        </a>
-      </div>
+        </a></>}
+      />
 
-      <Tabs
+      <PanelListFilters>
+<Tabs
         initial={tab}
         syncParam="tab"
         tabs={[
@@ -101,6 +102,7 @@ export default async function RecruitmentPage({ searchParams }: { searchParams: 
           { key: "convert", label: "Ready to Convert", content: convertTab },
         ]}
       />
+</PanelListFilters>
     </div>
   );
 }

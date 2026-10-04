@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
@@ -52,19 +53,14 @@ export default async function UsagePage() {
 
   return (
     <div className="min-h-screen bg-muted/70 px-4 py-10 dark:bg-background">
-      <div className="mx-auto max-w-4xl space-y-4">
-        <Link href="/workspace/settings" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-          <ArrowLeft className="size-4" /> Company settings
-        </Link>
+      <div className="space-y-4">
+<PanelPageHeader
+          breadcrumbs={[{ label: "Company settings", href: "/workspace/settings" }, { label: "Usage" }]}
+          title={<>Usage</>}
+          description={<>{usage.status === "internal" ? "Your workspace has no plan limits." : `What your workspace uses against the limits of your ${usage.planName ?? "current"} plan, including add-ons.`}</>}
+        />
+<div className="space-y-4">
         <GlassCard interactive={false}>
-          <CardHeader>
-            <CardTitle className="text-xl">
-              <h1>Usage</h1>
-            </CardTitle>
-            <CardDescription>
-              {usage.status === "internal" ? "Your workspace has no plan limits." : `What your workspace uses against the limits of your ${usage.planName ?? "current"} plan, including add-ons.`}
-            </CardDescription>
-          </CardHeader>
           <CardContent className="space-y-3">
             <Meter id="usage-seats" label="Seats" unit="users" hint="Active accounts that can sign in. Training students don't take a seat." meter={usage.seats} />
             <Meter id="usage-ai" label="AI tokens this month" unit="tokens" hint="Used by the AI assistants across your panels. Resets on the 1st." meter={usage.aiTokens} />
@@ -78,6 +74,7 @@ export default async function UsagePage() {
           </CardContent>
         </GlassCard>
       </div>
+</div>
     </div>
   );
 }

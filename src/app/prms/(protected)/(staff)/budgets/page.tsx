@@ -1,6 +1,6 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, Pencil, PiggyBank, TrendingDown, RefreshCw, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import KpiCard from "@/components/lms/KpiCard";
 import KpiGrid from "@/components/lms/KpiGrid";
 import UnauthorizedNotice from "@/components/lms/UnauthorizedNotice";
@@ -22,7 +22,6 @@ export default async function BudgetsPage({ searchParams }: { searchParams: Prom
   if (!user || !canManageFinance(user)) {
     return (
       <div className="space-y-4">
-        <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Budget Management" }]} />
         <UnauthorizedNotice backHref="/prms" message="Finance access required to view budgets." />
       </div>
     );
@@ -47,13 +46,11 @@ export default async function BudgetsPage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Budget Management" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Budget Management</h1>
-          <p className="text-sm text-muted-foreground">{total} budget{total === 1 ? "" : "s"}.</p>
-        </div>
-        <div className="flex gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Budget Management" }]}
+        title={<>Budget Management</>}
+        description={<>{total} budget{total === 1 ? "" : "s"}.</>}
+        actions={<><div className="flex gap-2">
           <RefreshBudgetsButton />
           <BudgetForm
             departments={dOpts}
@@ -65,8 +62,8 @@ export default async function BudgetsPage({ searchParams }: { searchParams: Prom
               </Button>
             }
           />
-        </div>
-      </div>
+        </div></>}
+      />
 
       <KpiGrid>
         <KpiCard label="Allocated" value={<span>{formatMoney(totals.allocated)}</span>} accent icon={<PiggyBank className="size-4" />} />

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { List } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
@@ -12,19 +14,18 @@ export default async function BatchCalendarPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Batches", href: "/tms/batches" }, { label: "Calendar" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Batch Calendar</h1>
-          <p className="text-sm text-muted-foreground">Every batch by start date.</p>
-        </div>
-        <Link href="/tms/batches" className={buttonVariants({ variant: "outline", size: "sm" })}>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Batches", href: "/tms/batches" }, { label: "Calendar" }]}
+        title={<>Batch Calendar</>}
+        description={<>Every batch by start date.</>}
+        actions={<><Link href="/tms/batches" className={buttonVariants({ variant: "outline", size: "sm" })}>
           <List className="size-3.5" data-icon="inline-start" />
           List view
-        </Link>
-      </div>
+        </Link></>}
+      />
 
-      <GlassCard interactive={false}>
+      <PanelListFilters>
+<GlassCard interactive={false}>
         <CardContent className="py-5">
           <BatchCalendar
             batches={batches.map((b) => ({
@@ -41,6 +42,7 @@ export default async function BatchCalendarPage() {
           />
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

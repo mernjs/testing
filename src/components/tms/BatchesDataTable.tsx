@@ -84,7 +84,7 @@ export default function BatchesDataTable({ items, total, page, totalPages, progr
               <CalendarDays className="size-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold tracking-tight text-foreground">Batch Filters</h3>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
               <p className="text-xs text-muted-foreground">Find training batches by program, mentor, status and mode</p>
             </div>
           </div>

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchAssets } from "@/lib/prms/assets";
@@ -41,11 +42,11 @@ export default async function AdminAssetsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "Assets" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Assets</h1>
-        <p className="text-sm text-muted-foreground">{total} asset{total === 1 ? "" : "s"}.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "Assets" }]}
+        title={<>Assets</>}
+        description={<>{total} asset{total === 1 ? "" : "s"}.</>}
+      />
 
       <AssetsGrid
         rows={rows}

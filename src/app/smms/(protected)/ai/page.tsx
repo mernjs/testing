@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { redirect } from "next/navigation";
 import { PageHeader, Notice } from "@/components/smms/SmmsUi";
 import AiWorkspace from "@/components/smms/AiWorkspace";
@@ -17,7 +18,8 @@ export default async function AiGeneratorPage() {
   return (
     <div className="space-y-4">
       <PageHeader title="AI Content Generator" crumbs={[{ label: "AI Content Generator" }]} description="Campaign ideas, ad copy, posts, captions, scripts, headlines, CTAs, hashtags and creative concepts — written by OpenAI from your brand context." />
-      {!(await isOpenAIConfigured()) && <Notice tone="warn">OpenAI isn&apos;t connected for this workspace (Settings → Integrations), so generation will fail.</Notice>}
+      <PanelListFilters>
+{!(await isOpenAIConfigured()) && <Notice tone="warn">OpenAI isn&apos;t connected for this workspace (Settings → Integrations), so generation will fail.</Notice>}
       <AiWorkspace
         canCreatePost={can(viewer, "MANAGE_POSTS")}
         offers={offers.map((o) => ({ _id: o._id, title: o.title, badge: o.badge }))}
@@ -27,6 +29,7 @@ export default async function AiGeneratorPage() {
           return { id: r.targetId, kind: r.kind, label: r.label, platform: r.platform, createdAt: r.createdAt.toISOString(), output: normalizeWorkspace(snap.output) };
         })}
       />
+</PanelListFilters>
     </div>
   );
 }

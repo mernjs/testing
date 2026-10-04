@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { UserPlus, Download } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -55,16 +56,12 @@ export default async function EmployeesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Employees" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Employees</h1>
-          <p className="text-sm text-muted-foreground">
-            {total} employee{total === 1 ? "" : "s"}
-            {restrictToManagerId ? " in your reporting line" : ""}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "HRMS", href: "/hrms" }, { label: "Employees" }]}
+        title={<>Employees</>}
+        description={<>{total} employee{total === 1 ? "" : "s"}
+            {restrictToManagerId ? " in your reporting line" : ""}</>}
+        actions={<><div className="flex items-center gap-2">
           <a href="/api/hrms/employees/export" className={buttonVariants({ variant: "outline", size: "sm" })}>
             <Download className="size-3.5" data-icon="inline-start" />
             Export CSV
@@ -75,8 +72,8 @@ export default async function EmployeesPage({
               Add Employee
             </Link>
           )}
-        </div>
-      </div>
+        </div></>}
+      />
 
       <EmployeesDataTable
         items={items.map(serializeEmployee)}

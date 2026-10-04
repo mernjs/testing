@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -21,13 +23,14 @@ export default async function ActivityLogPage({ searchParams }: { searchParams: 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Activity Log" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Activity Log</h1>
-        <p className="text-sm text-muted-foreground">{total} recorded action{total === 1 ? "" : "s"}. Append-only.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Activity Log" }]}
+        title={<>Activity Log</>}
+        description={<>{total} recorded action{total === 1 ? "" : "s"}. Append-only.</>}
+      />
 
-      <GlassCard interactive={false}>
+      <PanelListFilters>
+<GlassCard interactive={false}>
         <CardContent className="max-h-[70vh] overflow-auto">
           <Table>
             <TableHeader>
@@ -77,6 +80,7 @@ export default async function ActivityLogPage({ searchParams }: { searchParams: 
           </div>
         </div>
       )}
+</PanelListFilters>
     </div>
   );
 }

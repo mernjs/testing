@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import { FolderGit2, Rocket, CheckCircle2, Flag } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -24,10 +26,13 @@ export default async function MyProjectsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms/me" }, { label: "Live Projects" }]} />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Live Projects</h1>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms/me" }, { label: "Live Projects" }]}
+        title={<>Live Projects</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="My Projects" value={projects.length} accent icon={<FolderGit2 className="size-4" />} />
         <KpiCard label="In Progress" value={active} icon={<Rocket className="size-4" />} />
         <KpiCard label="Completed" value={completed} icon={<CheckCircle2 className="size-4" />} />
@@ -81,6 +86,7 @@ export default async function MyProjectsPage() {
           ))}
         </div>
       )}
+</PanelListFilters>
     </div>
   );
 }

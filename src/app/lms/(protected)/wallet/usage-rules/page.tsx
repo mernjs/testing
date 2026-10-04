@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -13,12 +15,13 @@ export default async function UsageRulesPage() {
   const rules = await listUsageRules();
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet", href: "/lms/wallet" }, { label: "Usage rules" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Credit usage rules</h1>
-        <Link href="/lms/wallet/usage-rules/new" className={buttonVariants({ size: "sm" })}>New rule</Link>
-      </div>
-      <p className="text-sm text-muted-foreground">Controls where and how much of a purchase credits may cover, per account type. Festival Offers is live; other modules take effect as each panel is connected to the central wallet.</p>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet", href: "/lms/wallet" }, { label: "Usage rules" }]}
+        title={<>Credit usage rules</>}
+        actions={<><Link href="/lms/wallet/usage-rules/new" className={buttonVariants({ size: "sm" })}>New rule</Link></>}
+      />
+      <PanelListFilters>
+<p className="text-sm text-muted-foreground">Controls where and how much of a purchase credits may cover, per account type. Festival Offers is live; other modules take effect as each panel is connected to the central wallet.</p>
       <GlassCard>
         <CardContent className="overflow-x-auto py-3">
           <table className="w-full min-w-[680px] text-sm">
@@ -38,6 +41,7 @@ export default async function UsageRulesPage() {
           </table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

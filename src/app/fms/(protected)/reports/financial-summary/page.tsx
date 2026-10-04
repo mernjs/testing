@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CheckCircle2, AlertTriangle } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -29,16 +31,15 @@ export default async function FinancialSummaryPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Financial Summary" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Financial Summary</h1>
-        <p className="text-sm text-muted-foreground">
-          An executive overview for the current month, combining P&amp;L, Balance Sheet, Cash Flow and Tax — each
-          figure links to its own full report for detail.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Financial Summary" }]}
+        title={<>Financial Summary</>}
+        description={<>An executive overview for the current month, combining P&amp;L, Balance Sheet, Cash Flow and Tax — each
+          figure links to its own full report for detail.</>}
+      />
 
-      <GlassCard interactive={false}>
+      <PanelListFilters>
+<GlassCard interactive={false}>
         <CardHeader>
           <CardTitle>
             <Link href="/fms/reports/profit-and-loss" className="text-primary hover:underline">Profit &amp; Loss</Link>
@@ -108,6 +109,7 @@ export default async function FinancialSummaryPage() {
           </KpiGrid>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

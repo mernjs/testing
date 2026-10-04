@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import DashboardSection from "@/components/platform/panel/DashboardSection";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -48,14 +49,11 @@ export default async function CampaignAnalyticsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Campaign Analytics" }]} />
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Campaign Analytics</h1>
-          <p className="text-sm text-muted-foreground">Spend, attributed leads and ROI from your imported Meta, Google &amp; LinkedIn reports.</p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Campaign Analytics" }]}
+        title={<>Campaign Analytics</>}
+        description={<>Spend, attributed leads and ROI from your imported Meta, Google &amp; LinkedIn reports.</>}
+        actions={<><div className="flex items-center gap-2">
           <Link
             href={`/api/lms/campaigns/export?${exportQuery.toString()}`}
             className={buttonVariants({ variant: "outline", size: "sm", className: "transition-transform duration-200 hover:scale-105" })}
@@ -63,8 +61,8 @@ export default async function CampaignAnalyticsPage({
             Export CSV
           </Link>
           <CampaignImportButton />
-        </div>
-      </div>
+        </div></>}
+      />
 
       <CampaignFilters
         values={{

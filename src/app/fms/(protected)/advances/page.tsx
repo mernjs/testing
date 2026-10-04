@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, Wallet, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -33,13 +34,11 @@ export default async function AdvancesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Advances" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Employee Advances</h1>
-          <p className="text-sm text-muted-foreground">{result.total} advance{result.total === 1 ? "" : "s"} requested.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Advances" }]}
+        title={<>Employee Advances</>}
+        description={<>{result.total} advance{result.total === 1 ? "" : "s"} requested.</>}
+        actions={<>{canManage && (
           <AdvanceForm
             employees={employeeOpts}
             trigger={
@@ -49,8 +48,8 @@ export default async function AdvancesPage({
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Advances" value={result.total} accent icon={<Wallet className="size-4" />} />

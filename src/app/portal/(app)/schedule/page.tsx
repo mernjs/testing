@@ -1,7 +1,7 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { CalendarClock, Video } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getLearnerOverview, getLearnerSchedule } from "@/lib/portal/student";
 import { PortalPageHeader } from "@/components/portal/widgets";
@@ -44,10 +44,10 @@ export default async function SchedulePage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: user.role === "intern" ? "Batch Schedule" : "Class Schedule" }]} />
       <PortalPageHeader title={user.role === "intern" ? "Batch Schedule" : "Class Schedule"} subtitle={`${upcoming.length} upcoming · ${past.length} completed`} />
 
-      <GlassCard>
+      <PanelListFilters>
+<GlassCard>
         <CardHeader>
           <CardTitle className="text-base">Upcoming classes</CardTitle>
         </CardHeader>
@@ -71,6 +71,7 @@ export default async function SchedulePage() {
           </CardContent>
         </GlassCard>
       )}
+</PanelListFilters>
     </div>
   );
 }

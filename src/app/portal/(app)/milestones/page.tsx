@@ -1,7 +1,7 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { Flag } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import ProgressBar from "@/components/pms/ProgressBar";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getClientOverview } from "@/lib/portal/client";
@@ -27,10 +27,10 @@ export default async function MilestonesPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Milestones" }]} />
       <PortalPageHeader title="Milestones" subtitle={`${data.overallProgress}% overall delivery`} />
 
-      {data.projects.map(({ project, milestones }) => (
+      <PanelListFilters>
+{data.projects.map(({ project, milestones }) => (
         <GlassCard key={project._id}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
@@ -60,6 +60,7 @@ export default async function MilestonesPage() {
           </CardContent>
         </GlassCard>
       ))}
+</PanelListFilters>
     </div>
   );
 }

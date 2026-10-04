@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, FileText, Clock, CheckCircle2, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -57,13 +58,11 @@ export default async function RequisitionsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Purchase Requisition" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Purchase Requisition</h1>
-          <p className="text-sm text-muted-foreground">{total} requisition{total === 1 ? "" : "s"} raised.</p>
-        </div>
-        <RequisitionForm
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Purchase Requisition" }]}
+        title={<>Purchase Requisition</>}
+        description={<>{total} requisition{total === 1 ? "" : "s"} raised.</>}
+        actions={<><RequisitionForm
           departments={deptOptions}
           projects={projOptions}
           vendors={vendorOptions}
@@ -74,8 +73,8 @@ export default async function RequisitionsPage({
               New Requisition
             </Button>
           }
-        />
-      </div>
+        /></>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Requisitions" value={total} accent icon={<FileText className="size-4" />} />

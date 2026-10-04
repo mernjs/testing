@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchStudents } from "@/lib/tms/students";
@@ -47,14 +48,12 @@ export default async function AdminStudentsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "TMS", panel: "tms" }, { label: "Students" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Students</h1>
-        <p className="text-sm text-muted-foreground">
-          {total} student{total === 1 ? "" : "s"}. There is no delete for students anywhere in the app — only
-          status changes — so this listing doesn&apos;t add one either.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "TMS", panel: "tms" }, { label: "Students" }]}
+        title={<>Students</>}
+        description={<>{total} student{total === 1 ? "" : "s"}. There is no delete for students anywhere in the app — only
+          status changes — so this listing doesn&apos;t add one either.</>}
+      />
 
       <StudentsGrid
         rows={rows}

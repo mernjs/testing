@@ -1,4 +1,3 @@
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import CandidateHistory from "@/components/ots/CandidateHistory";
 import PortalTestsNav from "@/components/ots/PortalTestsNav";
@@ -19,7 +18,6 @@ export default async function PortalResultsPage({ searchParams }: { searchParams
   const rows = taker ? await candidateHistory(taker, sp) : [];
   return (
     <div className="mx-auto max-w-6xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Tests", href: "/portal/tests" }, { label: "Results" }]} />
       <PortalPageHeader title="My Results" subtitle="Every attempt, with scores once they are released." />
       <PortalTestsNav active="results" />
       <SmmsFilterBar

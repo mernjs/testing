@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
@@ -23,10 +24,16 @@ export default async function PayrollRunPage({ params }: { params: Promise<{ mon
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Payroll", href: "/hrms/payroll" }, { label: month }]} />
-      <Link href="/hrms/payroll" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-        <ChevronLeft className="size-4" /> All runs
-      </Link>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "HRMS", href: "/hrms" }, { label: "Payroll", href: "/hrms/payroll" }, { label: month }]}
+        title={<>Payroll · {month}</>}
+        description={<>Review, approve and pay this payroll run.</>}
+        actions={
+          <Link href="/hrms/payroll" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+            <ChevronLeft className="size-4" /> All runs
+          </Link>
+        }
+      />
 
       <PayrollRunDetail
         run={{

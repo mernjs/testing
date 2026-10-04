@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { FileMinus } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -29,11 +30,11 @@ export default async function CreditNotesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Credit Notes" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Credit Notes</h1>
-        <p className="text-sm text-muted-foreground">{result.total} credit note{result.total === 1 ? "" : "s"}. Issue one from an invoice&apos;s detail page.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Credit Notes" }]}
+        title={<>Credit Notes</>}
+        description={<>{result.total} credit note{result.total === 1 ? "" : "s"}. Issue one from an invoice&apos;s detail page.</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Credit Notes" value={result.total} accent icon={<FileMinus className="size-4" />} />

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CheckSquare, ArrowLeftRight, RotateCcw, Receipt } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
@@ -21,16 +23,15 @@ export default async function ApprovalsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Approvals" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Pending Approvals</h1>
-        <p className="text-sm text-muted-foreground">
-          An aggregated inbox across FMS transactions, refunds, and PRMS personal expense claims. Each item links to its
-          own real detail page for the actual approve/reject action.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Approvals" }]}
+        title={<>Pending Approvals</>}
+        description={<>An aggregated inbox across FMS transactions, refunds, and PRMS personal expense claims. Each item links to its
+          own real detail page for the actual approve/reject action.</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Total Pending" value={items.length} accent icon={<CheckSquare className="size-4" />} />
         <KpiCard label="Transactions" value={byKind.transaction ?? 0} icon={<ArrowLeftRight className="size-4" />} />
         <KpiCard label="Refunds" value={byKind.refund ?? 0} icon={<RotateCcw className="size-4" />} />
@@ -69,6 +70,7 @@ export default async function ApprovalsPage() {
           )}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

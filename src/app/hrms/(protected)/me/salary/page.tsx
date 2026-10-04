@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { FileDown } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -28,12 +30,13 @@ export default async function MySalaryPage() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground">Salary &amp; Payments</h1>
-        <p className="text-sm text-muted-foreground">Your structure, payslips and salary payment history.</p>
-      </div>
+      <PanelPageHeader
+        title={<>Salary &amp; Payments</>}
+        description={<>Your structure, payslips and salary payment history.</>}
+      />
 
-      <GlassCard interactive={false}>
+      <PanelListFilters>
+<GlassCard interactive={false}>
         <CardHeader><CardTitle>Salary Bank Account</CardTitle></CardHeader>
         <CardContent className="text-sm">
           {bank ? (
@@ -114,6 +117,7 @@ export default async function MySalaryPage() {
           ))}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

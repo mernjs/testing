@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import VoiceConversationsDataTable from "@/components/lms/VoiceConversationsDataTable";
 import { searchVoiceConversations } from "@/lib/voice-conversations";
@@ -45,20 +46,16 @@ export default async function VoiceConversationsListPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "AI Chatbot", href: "/lms/chatbot" },
           { label: "Conversation AI", href: "/lms/chatbot/voice" },
           { label: "Voice Conversations" },
         ]}
+        title={<>Voice Conversations</>}
+        description={<>{total} voice conversation{total === 1 ? "" : "s"} · open one to listen to the AI responses</>}
       />
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Voice Conversations</h1>
-        <p className="text-sm text-muted-foreground">
-          {total} voice conversation{total === 1 ? "" : "s"} · open one to listen to the AI responses
-        </p>
-      </div>
 
       <VoiceConversationsDataTable
         items={items}

@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Plus } from "lucide-react";
@@ -33,7 +34,9 @@ export default async function PlatformAddonsPage() {
           </Link>
         }
       />
-      <AddonsGrid rows={rows} />
+      <PanelListFilters>
+<AddonsGrid rows={rows} />
+</PanelListFilters>
     </div>
   );
 }

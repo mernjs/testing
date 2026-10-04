@@ -84,7 +84,7 @@ export default function DashboardFilters({
             <UserSearch className="size-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold tracking-tight text-foreground">Lead Filters</h3>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
             <p className="text-xs text-muted-foreground">Search and segment your CRM leads</p>
           </div>
         </div>

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, ShoppingCart, Send, PackageCheck, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -48,13 +49,11 @@ export default async function PurchaseOrdersPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Purchase Orders" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Purchase Orders</h1>
-          <p className="text-sm text-muted-foreground">{total} PO{total === 1 ? "" : "s"} raised.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Purchase Orders" }]}
+        title={<>Purchase Orders</>}
+        description={<>{total} PO{total === 1 ? "" : "s"} raised.</>}
+        actions={<>{canManage && (
           <PurchaseOrderForm
             vendors={vOpts}
             departments={dOpts}
@@ -66,8 +65,8 @@ export default async function PurchaseOrdersPage({
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total POs" value={total} accent icon={<ShoppingCart className="size-4" />} />

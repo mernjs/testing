@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Plus, Layers, Rocket, CalendarDays, Users } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -60,13 +61,11 @@ export default async function BatchesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Batches" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Batches</h1>
-          <p className="text-sm text-muted-foreground">{totalBatches} batch{totalBatches === 1 ? "" : "es"} across all programs.</p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Batches" }]}
+        title={<>Batches</>}
+        description={<>{totalBatches} batch{totalBatches === 1 ? "" : "es"} across all programs.</>}
+        actions={<><div className="flex items-center gap-2">
           <Link href="/tms/batches/calendar" className={buttonVariants({ variant: "outline", size: "sm" })}>
             <CalendarDays className="size-3.5" data-icon="inline-start" />
             Calendar
@@ -83,8 +82,8 @@ export default async function BatchesPage({
               }
             />
           )}
-        </div>
-      </div>
+        </div></>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Batches" value={totalBatches} accent icon={<Layers className="size-4" />} />

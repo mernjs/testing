@@ -64,7 +64,7 @@ export default function TmsDashboardFilters({
             <SlidersHorizontal className="size-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold tracking-tight text-foreground">Dashboard Analytics Filters</h3>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
             <p className="text-xs text-muted-foreground">Slice training analytics by date, program and mode</p>
           </div>
         </div>

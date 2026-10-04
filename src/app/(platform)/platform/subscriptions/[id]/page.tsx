@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
@@ -45,22 +46,16 @@ export default async function PlatformSubscriptionPage({ params }: { params: Pro
 
   return (
     <div className="space-y-4 p-1">
-      <Breadcrumbs items={[{ label: "Platform", href: "/platform" }, { label: "Subscriptions", href: "/platform/subscriptions" }, { label: row.name }]} />
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Platform", href: "/platform" }, { label: "Subscriptions", href: "/platform/subscriptions" }, { label: row.name }]}
+        title={<>{row.name}</>}
+        description={<><Link href={`/platform/companies/${row.companyId}`} className="hover:text-foreground hover:underline">
+                  Company details
+                </Link></>}
+        actions={<><SubscriptionStatusBadge status={row.status} complimentary={row.complimentary} cancelAtPeriodEnd={row.cancelAtPeriodEnd} /></>}
+      />
 
       <GlassCard interactive={false}>
-        <CardHeader>
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="min-w-0 space-y-1">
-              <CardTitle className="text-xl">{row.name}</CardTitle>
-              <CardDescription>
-                <Link href={`/platform/companies/${row.companyId}`} className="hover:text-foreground hover:underline">
-                  Company details
-                </Link>
-              </CardDescription>
-            </div>
-            <SubscriptionStatusBadge status={row.status} complimentary={row.complimentary} cancelAtPeriodEnd={row.cancelAtPeriodEnd} />
-          </div>
-        </CardHeader>
         <CardContent>
           <dl className="grid gap-4 sm:grid-cols-3">
             <Field label="Plan">{row.planName}</Field>

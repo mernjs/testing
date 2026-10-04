@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import type { Metadata } from "next";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
 import { can, requirePlatformPermission } from "@/lib/platform/console/access";
@@ -24,7 +25,8 @@ export default async function PlatformUsersPage({ searchParams }: { searchParams
   return (
     <div className="space-y-6 p-1">
       <PlatformPageHeader title="Platform users & roles" description="Who from your team can use the Platform Panel, and what each role is allowed to do." crumbs={[{ label: "Administration" }]} />
-      <UsersAndRoles
+      <PanelListFilters>
+<UsersAndRoles
         initialTab={tab === "roles" ? "roles" : "users"}
         currentUserId={user.id}
         currentPermissions={user.platform.permissions}
@@ -36,6 +38,7 @@ export default async function PlatformUsersPage({ searchParams }: { searchParams
         presets={ROLE_PRESETS.map((p) => ({ value: p.value, label: p.label }))}
         groups={PERMISSION_GROUPS.map((g) => ({ area: g.area, permissions: g.permissions.map((p) => ({ key: p.key, label: p.label })) }))}
       />
+</PanelListFilters>
     </div>
   );
 }

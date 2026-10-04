@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import { FileText, FileSpreadsheet, FileDown } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
@@ -27,13 +29,14 @@ export default async function ReportsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Reports & Analytics" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Reports &amp; Analytics</h1>
-        <p className="text-sm text-muted-foreground">Download enterprise reports as CSV, Excel or PDF.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Reports & Analytics" }]}
+        title={<>Reports &amp; Analytics</>}
+        description={<>Download enterprise reports as CSV, Excel or PDF.</>}
+      />
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <PanelListFilters>
+<div className="grid gap-4 md:grid-cols-2">
         {REPORT_TYPES.map((r) => (
           <GlassCard key={r.value} interactive={false}>
             <CardContent className="space-y-3 py-4">
@@ -59,6 +62,7 @@ export default async function ReportsPage() {
           </GlassCard>
         ))}
       </div>
+</PanelListFilters>
     </div>
   );
 }

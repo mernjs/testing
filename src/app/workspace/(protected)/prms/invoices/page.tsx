@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchInvoices, serializeInvoice } from "@/lib/prms/invoices";
@@ -44,11 +45,11 @@ export default async function AdminInvoicesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Finance", panel: "fms" }, { label: "Vendor Invoices" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Vendor Invoices</h1>
-        <p className="text-sm text-muted-foreground">{total} invoice{total === 1 ? "" : "s"}.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "Finance", panel: "fms" }, { label: "Vendor Invoices" }]}
+        title={<>Vendor Invoices</>}
+        description={<>{total} invoice{total === 1 ? "" : "s"}.</>}
+      />
 
       <InvoicesGrid
         rows={rows}

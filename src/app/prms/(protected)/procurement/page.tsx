@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { ShoppingCart, FileText, Building2, Plus, ArrowRight, Clock, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -34,18 +35,11 @@ export default async function ProcurementHubPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Procurement Hub" }]} />
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Procurement Hub
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Startup purchasing workflow — Requisitions, Purchase Orders, and Vendor Directory.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Procurement Hub" }]}
+        title={<>Procurement Hub</>}
+        description={<>Startup purchasing workflow — Requisitions, Purchase Orders, and Vendor Directory.</>}
+        actions={<><div className="flex items-center gap-2">
           <Link href="/prms/requisitions">
             <Button size="sm">
               <Plus className="size-3.5 mr-1" />
@@ -58,8 +52,8 @@ export default async function ProcurementHubPage({
               Add Vendor
             </Button>
           </Link>
-        </div>
-      </div>
+        </div></>}
+      />
 
       <KpiGrid>
         <KpiCard

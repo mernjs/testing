@@ -55,7 +55,7 @@ export default function TaskList({
               <ListChecks className="size-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold tracking-tight text-foreground">Task Filters</h3>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
               <p className="text-xs text-muted-foreground">Search and filter tasks in this project</p>
             </div>
           </div>

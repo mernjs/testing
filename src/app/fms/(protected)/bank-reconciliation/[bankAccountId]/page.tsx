@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -48,13 +49,11 @@ export default async function BankReconciliationPage({ params }: { params: Promi
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Bank Reconciliation", href: "/fms/bank-reconciliation" }, { label: account.accountName }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{account.accountName}</h1>
-          <p className="text-sm text-muted-foreground">{formatMoney(account.currentBalance, account.currency)} system balance.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Bank Reconciliation", href: "/fms/bank-reconciliation" }, { label: account.accountName }]}
+        title={<>{account.accountName}</>}
+        description={<>{formatMoney(account.currentBalance, account.currency)} system balance.</>}
+        actions={<>{canManage && (
           <StatementLineForm
             bankAccountId={bankAccountId}
             trigger={
@@ -64,8 +63,8 @@ export default async function BankReconciliationPage({ params }: { params: Promi
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Lines" value={lines.length} accent />

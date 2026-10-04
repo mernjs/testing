@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -16,24 +17,23 @@ export default async function EditOfferPage({ params }: { params: Promise<{ id: 
   if (!campaign || !offer || offer.campaignId !== id) notFound();
 
   return (
-    <div className="relative mx-auto max-w-3xl space-y-4">
-      <Breadcrumbs
-        items={[
+    <div className="space-y-4">
+<PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "Festival Offers", href: "/lms/offers" },
           { label: campaign.name, href: `/lms/offers/${id}` },
           { label: offer.title },
         ]}
-      />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{offer.title}</h1>
-        <DeleteEntityButton
+        title={<>{offer.title}</>}
+        actions={<><DeleteEntityButton
           label="offer"
           confirmText="This removes the offer from the public page immediately. This can't be undone."
           onDelete={deleteOfferAction.bind(null, id, offerId)}
           redirectTo={`/lms/offers/${id}`}
-        />
-      </div>
+        /></>}
+      />
+<div className="relative mx-auto max-w-3xl space-y-4">
       <GlassCard>
         <CardHeader>
           <CardTitle className="text-base">Details</CardTitle>
@@ -43,5 +43,6 @@ export default async function EditOfferPage({ params }: { params: Promise<{ id: 
         </CardContent>
       </GlassCard>
     </div>
+</div>
   );
 }

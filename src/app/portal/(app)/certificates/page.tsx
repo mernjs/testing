@@ -1,7 +1,7 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { Award, ShieldCheck } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import ProgressBar from "@/components/pms/ProgressBar";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getLearnerOverview } from "@/lib/portal/student";
@@ -22,10 +22,10 @@ export default async function CertificatesPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Certificates" }]} />
       <PortalPageHeader title="Certificates" subtitle={`${certs.length} issued`} />
 
-      <GlassCard>
+      <PanelListFilters>
+<GlassCard>
         <CardHeader>
           <CardTitle className="text-base">Certificate progress</CardTitle>
         </CardHeader>
@@ -67,6 +67,7 @@ export default async function CertificatesPage() {
           ))}
         </div>
       )}
+</PanelListFilters>
     </div>
   );
 }

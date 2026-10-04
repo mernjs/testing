@@ -1,7 +1,7 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Banknote, CheckCircle2, CalendarClock, FileDown } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import KpiCard from "@/components/lms/KpiCard";
 import KpiGrid from "@/components/lms/KpiGrid";
 import PrmsDataTable from "@/components/prms/PrmsDataTable";
@@ -21,7 +21,6 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
   if (!user || !canManageFinance(user)) {
     return (
       <div className="space-y-4">
-        <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Payments" }]} />
         <UnauthorizedNotice backHref="/prms" message="Finance access required to view payments." />
       </div>
     );
@@ -40,11 +39,11 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Payments" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Payments</h1>
-        <p className="text-sm text-muted-foreground">{result.total} payment{result.total === 1 ? "" : "s"} recorded against invoices.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Payments" }]}
+        title={<>Payments</>}
+        description={<>{result.total} payment{result.total === 1 ? "" : "s"} recorded against invoices.</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Paid This Month" value={<span>{formatMoney(monthTotal)}</span>} accent icon={<Banknote className="size-4" />} />

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, FileText, Clock, AlertTriangle, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -43,13 +44,11 @@ export default async function InvoicesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Invoices" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Invoices</h1>
-          <p className="text-sm text-muted-foreground">{total} invoice{total === 1 ? "" : "s"} raised.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Invoices" }]}
+        title={<>Invoices</>}
+        description={<>{total} invoice{total === 1 ? "" : "s"} raised.</>}
+        actions={<>{canManage && (
           <InvoiceForm
             customers={customerOpts}
             projects={projectOpts}
@@ -60,8 +59,8 @@ export default async function InvoicesPage({
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Invoices" value={total} accent icon={<FileText className="size-4" />} />

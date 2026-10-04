@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -27,16 +29,12 @@ export default async function OffersCampaignsPage() {
 
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Festival Offers" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Festival Offers</h1>
-          <p className="text-sm text-muted-foreground">
-            Campaigns power the public <code className="text-xs">/offers</code> page. Only one campaign is ever live at a
-            time — resolved automatically by priority and date, no deploy needed.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Festival Offers" }]}
+        title={<>Festival Offers</>}
+        description={<>Campaigns power the public <code className="text-xs">/offers</code> page. Only one campaign is ever live at a
+            time — resolved automatically by priority and date, no deploy needed.</>}
+        actions={<><div className="flex items-center gap-2">
           <Link href="/lms/offers/coupons" className={buttonVariants({ variant: "outline", size: "sm" })}>
             Coupons
           </Link>
@@ -46,10 +44,11 @@ export default async function OffersCampaignsPage() {
           <Link href="/lms/offers/new" className={buttonVariants({ size: "sm" })}>
             New campaign
           </Link>
-        </div>
-      </div>
+        </div></>}
+      />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <PanelListFilters>
+<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <GlassCard interactive={false}>
           <CardContent className="py-4">
             <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><Flame className="size-3.5 text-primary" /> Live now</p>
@@ -186,6 +185,7 @@ export default async function OffersCampaignsPage() {
           </table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

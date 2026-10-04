@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarClock, Clock, Paperclip, Tag, User } from "lucide-react";
@@ -54,25 +55,17 @@ export default async function TaskDetailPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "PMS", href: "/pms" },
           { label: "Projects", href: "/pms/projects" },
           { label: project.name, href: `/pms/projects/${id}` },
           { label: "Tasks", href: `/pms/projects/${id}/tasks` },
           { label: task.taskCode },
         ]}
-      />
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-xl font-black tracking-tight text-foreground sm:text-2xl">{task.title}</h1>
-            <PriorityBadge priority={task.priority} />
-            <TaskStatusBadge status={task.status} />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{task.taskCode}</span>
+        title={<><span className="inline-flex flex-wrap items-center gap-2">{task.title}<PriorityBadge priority={task.priority} />
+            <TaskStatusBadge status={task.status} /></span></>}
+        description={<><span className="font-mono">{task.taskCode}</span>
             {parent && (
               <>
                 {" · subtask of "}
@@ -80,10 +73,8 @@ export default async function TaskDetailPage({
                   {parent.title}
                 </Link>
               </>
-            )}
-          </p>
-        </div>
-        {canManage ? (
+            )}</>}
+        actions={<>{canManage ? (
           <TaskDetailActions
             task={serialized}
             employees={employeeOpts}
@@ -100,8 +91,8 @@ export default async function TaskDetailPage({
               timesheetProjects={timesheetProjects}
             />
           )
-        )}
-      </div>
+        )}</>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <GlassCard className="lg:col-span-2">

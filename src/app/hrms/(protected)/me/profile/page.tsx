@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import MyProfileEditForm from "@/components/hrms/MyProfileEditForm";
@@ -25,10 +26,10 @@ export default async function MyProfilePage() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground">My Profile</h1>
-        <p className="text-sm text-muted-foreground">{employee.employeeCode} · {employeeFullName(employee)}</p>
-      </div>
+      <PanelPageHeader
+        title={<>My Profile</>}
+        description={<>{employee.employeeCode} · {employeeFullName(employee)}</>}
+      />
 
       <GlassCard interactive={false}>
         <CardHeader><CardTitle>Employment (read-only)</CardTitle></CardHeader>

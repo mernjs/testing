@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import KpiCard from "@/components/lms/KpiCard";
 import KpiGrid from "@/components/lms/KpiGrid";
@@ -21,19 +23,21 @@ export default async function MyProjectsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PMS", href: "/pms/me" }, { label: "My Projects" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">My Projects</h1>
-        <p className="text-sm text-muted-foreground">Projects you’re assigned to or manage.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PMS", href: "/pms/me" }, { label: "My Projects" }]}
+        title={<>My Projects</>}
+        description={<>Projects you’re assigned to or manage.</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Assigned Projects" value={d.projects.length} accent icon={<FolderKanban className="size-4" />} />
         <KpiCard label="Active" value={active} icon={<Rocket className="size-4" />} />
         <KpiCard label="My Logged Hours" value={myHours} suffix="h" icon={<Clock className="size-4" />} />
       </KpiGrid>
 
       <MyProjectsView projects={d.projects} />
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchEntries } from "@/lib/pms/timesheets";
@@ -58,14 +59,12 @@ export default async function AdminTimesheetsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "PMS", panel: "pms" }, { label: "Timesheets" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Timesheets</h1>
-        <p className="text-sm text-muted-foreground">
-          {total} entr{total === 1 ? "y" : "ies"}. Only entries awaiting review (&quot;Submitted&quot;) can be
-          approved or rejected — the same guard the PMS review page uses.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "PMS", panel: "pms" }, { label: "Timesheets" }]}
+        title={<>Timesheets</>}
+        description={<>{total} entr{total === 1 ? "y" : "ies"}. Only entries awaiting review (&quot;Submitted&quot;) can be
+          approved or rejected — the same guard the PMS review page uses.</>}
+      />
 
       <TimesheetsGrid
         rows={rows}

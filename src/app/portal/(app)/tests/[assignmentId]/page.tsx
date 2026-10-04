@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import CandidateAssignment from "@/components/ots/CandidateAssignment";
 import { guardPortalPage } from "@/lib/portal/guard";
@@ -18,7 +17,6 @@ export default async function PortalTestPage({ params }: { params: Promise<{ ass
   if (!data) notFound();
   return (
     <div className="mx-auto max-w-6xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Tests", href: "/portal/tests" }, { label: data.card.testName }]} />
       <PortalPageHeader title={data.card.testName} subtitle={[data.card.testType, data.card.category].filter(Boolean).join(" · ")} />
       <CandidateAssignment data={data} channel="portal" paths={basePath("portal")} />
     </div>

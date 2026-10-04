@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import { BadgeCheck, Download, ExternalLink, Ban } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
@@ -16,10 +18,13 @@ export default async function MyCertificatesPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms/me" }, { label: "Certificates" }]} />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">My Certificates</h1>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms/me" }, { label: "Certificates" }]}
+        title={<>My Certificates</>}
+      />
 
-      {certs.length === 0 ? (
+      <PanelListFilters>
+{certs.length === 0 ? (
         <GlassCard interactive={false}>
           <CardContent className="py-12 text-center text-sm text-muted-foreground">
             No certificates issued to you yet. They appear here once your program is complete.
@@ -66,6 +71,7 @@ export default async function MyCertificatesPage() {
           ))}
         </div>
       )}
+</PanelListFilters>
     </div>
   );
 }

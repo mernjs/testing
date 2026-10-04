@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import KnowledgeBaseManager from "@/components/lms/KnowledgeBaseManager";
 import { getWebsiteKbSummary, listIndexedPages } from "@/lib/kb-website";
@@ -18,21 +20,18 @@ export default async function KnowledgeBasePage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "AI Chatbot", href: "/lms/chatbot" },
           { label: "Knowledge Base" },
         ]}
+        title={<>Knowledge Base</>}
+        description={<>Index website content and documents into the OpenAI vector store the assistant retrieves from.</>}
       />
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Knowledge Base</h1>
-        <p className="text-sm text-muted-foreground">
-          Index website content and documents into the OpenAI vector store the assistant retrieves from.
-        </p>
-      </div>
 
-      <KnowledgeBaseManager
+      <PanelListFilters>
+<KnowledgeBaseManager
         openAiConfigured={(await isOpenAIConfigured())}
         vectorStoreId={config.vectorStoreId}
         websiteSummary={websiteSummary}
@@ -41,6 +40,7 @@ export default async function KnowledgeBasePage() {
         pdfs={pdfs}
         initialRuns={runs}
       />
+</PanelListFilters>
     </div>
   );
 }

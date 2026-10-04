@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchPurchaseOrders } from "@/lib/prms/purchase-orders";
@@ -40,11 +41,11 @@ export default async function AdminPurchaseOrdersPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "Purchase Orders" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Purchase Orders</h1>
-        <p className="text-sm text-muted-foreground">{total} purchase order{total === 1 ? "" : "s"}.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "Purchase Orders" }]}
+        title={<>Purchase Orders</>}
+        description={<>{total} purchase order{total === 1 ? "" : "s"}.</>}
+      />
 
       <PurchaseOrdersGrid
         rows={rows}

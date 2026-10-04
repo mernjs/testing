@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import DashboardSection from "@/components/platform/panel/DashboardSection";
 import Link from "next/link";
 import { AudioLines, MessageSquare, Clock, Gauge, Activity, Users, Radio } from "lucide-react";
@@ -81,27 +82,23 @@ export default async function VoiceDashboardPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "AI Chatbot", href: "/lms/chatbot" },
           { label: "Conversation AI" },
         ]}
-      />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Conversation AI</h1>
-          <p className="text-sm text-muted-foreground">ElevenLabs voice mode — real-time speech analytics.</p>
-        </div>
-        <div className="flex items-center gap-2">
+        title={<>Conversation AI</>}
+        description={<>ElevenLabs voice mode — real-time speech analytics.</>}
+        actions={<><div className="flex items-center gap-2">
           <Link href="/lms/chatbot/voice/conversations" className={buttonVariants({ variant: "outline", size: "sm" })}>
             Voice Conversations
           </Link>
           <VoiceExportButton
             params={{ dateFrom: dateFrom?.toISOString().slice(0, 10), dateTo: dateTo?.toISOString().slice(0, 10) }}
           />
-        </div>
-      </div>
+        </div></>}
+      />
 
       {!(await isElevenLabsConfigured()) && (
         <GlassCard interactive={false} className="border-primary/40 bg-primary/5">

@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { redirect } from "next/navigation";
 import { SearchCheck } from "lucide-react";
 import { getViewer } from "@/lib/cms/viewer";
@@ -17,7 +18,8 @@ export default async function CmsSeoOverviewPage() {
         title="SEO Overview"
         description={<>Every page&apos;s live search appearance at a glance, with length checks. Click a page to edit its SEO; overrides in the SEO panel still take priority.</>}
       />
-      <SeoTable
+      <PanelListFilters>
+<SeoTable
         rows={pages
           .filter((p) => p.status !== "archived")
           .map((p) => {
@@ -37,6 +39,7 @@ export default async function CmsSeoOverviewPage() {
           })
           .sort((a, b) => a.path.localeCompare(b.path))}
       />
+</PanelListFilters>
     </div>
   );
 }

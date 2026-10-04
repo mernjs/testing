@@ -3,7 +3,6 @@ import { KeyRound, LogOut } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { PORTAL_ROLE_META } from "@/lib/portal-roles";
 import { PortalPageHeader } from "@/components/portal/widgets";
@@ -20,7 +19,6 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Profile" }]} />
       <PortalPageHeader title="Profile & Settings" subtitle={meta.portalName} />
 
       <GlassCard>

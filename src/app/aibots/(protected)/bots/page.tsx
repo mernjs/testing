@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Bot, Plus, Pencil, MessageSquare, Trash2, Users, Globe2 } from "lucide-react";
@@ -42,7 +43,8 @@ export default async function ManageBotsPage() {
           )
         }
       />
-      <SectionCard title="All bots">
+      <PanelListFilters>
+<SectionCard title="All bots">
         {bots.length === 0 ? (
           <EmptyState icon={<Bot className="size-5" />} title="No bots yet">
             Create a bot, give it instructions and a knowledge base, and it shows up in everyone&apos;s sidebar.
@@ -130,6 +132,7 @@ export default async function ManageBotsPage() {
           </div>
         )}
       </SectionCard>
+</PanelListFilters>
     </div>
   );
 }

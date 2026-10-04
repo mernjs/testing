@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Boxes, Coins } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import KpiCard from "@/components/lms/KpiCard";
@@ -25,13 +26,11 @@ export default async function AssetsFinancePage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Asset Register" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Asset Register</h1>
-        <p className="text-sm text-muted-foreground">
-          Financial view over PRMS&apos;s real asset register — {result.total} asset{result.total === 1 ? "" : "s"}.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Asset Register" }]}
+        title={<>Asset Register</>}
+        description={<>Financial view over PRMS&apos;s real asset register — {result.total} asset{result.total === 1 ? "" : "s"}.</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Assets" value={result.total} accent icon={<Boxes className="size-4" />} />

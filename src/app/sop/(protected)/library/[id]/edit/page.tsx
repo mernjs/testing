@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound, redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import SopEditor from "@/components/sop/SopEditor";
@@ -35,7 +36,11 @@ export default async function EditSopPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "SOP Library", href: "/sop/library" }, { label: doc.code, href: `/sop/library/${id}` }, { label: "Edit" }]} />
+      <PanelPageHeader
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "SOP Library", href: "/sop/library" }, { label: doc.code, href: `/sop/library/${id}` }, { label: "Edit" }]}
+        title={<>Edit {doc.code}</>}
+        description={<>Update the document, then save it as a draft or submit it for review.</>}
+      />
       <SopEditor
         sopId={id}
         code={doc.code}

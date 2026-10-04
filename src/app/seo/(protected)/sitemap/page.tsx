@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { RefreshCw, Send, ExternalLink } from "lucide-react";
@@ -37,7 +38,8 @@ export default async function SitemapPage() {
         actions={canManage && <JobButton body={{ job: "sitemap-discover" }} label="Discover & validate" busyLabel="Reading sitemaps…" icon={<RefreshCw className="size-3.5" data-icon="inline-start" />} successMessage="{sitemaps} sitemap(s), {urls} URLs" />}
       />
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+      <PanelListFilters>
+<div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
         <Stat label="Sitemap files" value={records.length} />
         <Stat label="URLs listed" value={urlTotal} />
         <Stat label="Errors" value={records.reduce((s, r) => s + r.errors.length, 0)} />
@@ -121,6 +123,7 @@ export default async function SitemapPage() {
           )}
         </SectionCard>
       </div>
+</PanelListFilters>
     </div>
   );
 }

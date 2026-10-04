@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -21,14 +22,12 @@ export default async function RefundDetailPage({ params }: { params: Promise<{ i
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Refunds", href: "/fms/refunds" }, { label: refund.refundNumber }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{refund.refundNumber}</h1>
-          <p className="text-sm text-muted-foreground">{refund.customerName}</p>
-        </div>
-        <RefundStatusBadge status={refund.status} />
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Refunds", href: "/fms/refunds" }, { label: refund.refundNumber }]}
+        title={<>{refund.refundNumber}</>}
+        description={<>{refund.customerName}</>}
+        actions={<><RefundStatusBadge status={refund.status} /></>}
+      />
 
       {canAct && (
         <GlassCard>

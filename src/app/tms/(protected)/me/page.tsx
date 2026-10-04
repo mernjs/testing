@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { GraduationCap, Layers, Gauge, CalendarDays, UserRound } from "lucide-react";
@@ -23,17 +25,14 @@ export default async function StudentHomePage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "My Dashboard" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-          Welcome, {s.fullName.split(" ")[0]}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          <span className="font-mono">{s.studentCode}</span> · <StudentStatusBadge status={s.status} />
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "My Dashboard" }]}
+        title={<>Welcome, {s.fullName.split(" ")[0]}</>}
+        description={<><span className="font-mono">{s.studentCode}</span> · <StudentStatusBadge status={s.status} /></>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Enrolments" value={enrollments.length} accent icon={<Layers className="size-4" />} />
         <KpiCard label="Overall Progress" value={averageProgress} suffix="%" icon={<Gauge className="size-4" />} />
         <KpiCard
@@ -114,6 +113,7 @@ export default async function StudentHomePage() {
       <p className="text-xs text-muted-foreground">
         Class schedule, assignments, live projects, certificates and payments appear here as later phases roll out.
       </p>
+</PanelListFilters>
     </div>
   );
 }

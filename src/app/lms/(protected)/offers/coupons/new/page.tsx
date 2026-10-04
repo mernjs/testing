@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -11,16 +12,17 @@ export default async function NewCouponPage() {
   const campaignOptions = await listCampaignOptions();
 
   return (
-    <div className="relative mx-auto max-w-2xl space-y-4">
-      <Breadcrumbs
-        items={[
+    <div className="space-y-4">
+<PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "Festival Offers", href: "/lms/offers" },
           { label: "Coupons", href: "/lms/offers/coupons" },
           { label: "New coupon" },
         ]}
+        title={<>New coupon</>}
       />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">New coupon</h1>
+<div className="relative mx-auto max-w-2xl space-y-4">
       <GlassCard>
         <CardHeader>
           <CardTitle className="text-base">Details</CardTitle>
@@ -30,5 +32,6 @@ export default async function NewCouponPage() {
         </CardContent>
       </GlassCard>
     </div>
+</div>
   );
 }

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -26,22 +28,19 @@ export default async function SubscribersPage({ searchParams }: { searchParams: 
 
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Festival Offers", href: "/lms/offers" }, { label: "Subscribers" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Notify-Me subscribers</h1>
-          <p className="text-sm text-muted-foreground">
-            People who asked to hear about a coming-soon / future campaign, or joined early access. When a campaign first goes live, subscribers with a portal account get an in-portal
-            notification automatically; email and WhatsApp are not sent by the system — export the list or use the links below.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Festival Offers", href: "/lms/offers" }, { label: "Subscribers" }]}
+        title={<>Notify-Me subscribers</>}
+        description={<>People who asked to hear about a coming-soon / future campaign, or joined early access. When a campaign first goes live, subscribers with a portal account get an in-portal
+            notification automatically; email and WhatsApp are not sent by the system — export the list or use the links below.</>}
+        actions={<><div className="flex items-center gap-2">
           <a href={`/lms/offers/subscribers/export${campaign ? `?campaign=${encodeURIComponent(campaign)}` : ""}`} className={buttonVariants({ variant: "outline", size: "sm" })}>Export CSV</a>
           {subs.length > 0 && <a href={`mailto:?bcc=${encodeURIComponent(emails)}&subject=${encodeURIComponent(`New ${brand.name} offers are live`)}`} className={buttonVariants({ size: "sm" })}>Email all ({subs.length})</a>}
-        </div>
-      </div>
+        </div></>}
+      />
 
-      <div className="flex flex-wrap gap-2">
+      <PanelListFilters>
+<div className="flex flex-wrap gap-2">
         <Link href="/lms/offers/subscribers" className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${!campaign ? "border-primary bg-primary text-primary-foreground" : "border-border/60 hover:border-primary"}`}>All ({total})</Link>
         <Link href="/lms/offers/subscribers?campaign=any" className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${campaign === "any" ? "border-primary bg-primary text-primary-foreground" : "border-border/60 hover:border-primary"}`}>Any campaign ({counts.get(null) ?? 0})</Link>
         {campaigns.filter((c) => counts.get(c._id)).map((c) => (
@@ -88,6 +87,7 @@ export default async function SubscribersPage({ searchParams }: { searchParams: 
           </table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

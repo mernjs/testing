@@ -1,8 +1,8 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import Link from "next/link";
 import { Check, Circle, Clock, Coins, Flag, Route, Sparkles, Target } from "lucide-react";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { PortalPageHeader, PortalStat } from "@/components/portal/widgets";
 import { EarnNav, HowItWorks, RewardHistory } from "@/components/portal/rewards/parts";
 import { guardPortalPage } from "@/lib/portal/guard";
@@ -18,9 +18,9 @@ export default async function JourneyRewardsPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Journey rewards" }]} />
       <PortalPageHeader title="Journey rewards" subtitle="Earn credits every time you complete a stage of your journey." />
-      <EarnNav current="journey" />
+      <PanelListFilters>
+<EarnNav current="journey" />
 
       {!j.hasJourney ? (
         <GlassCard interactive={false}>
@@ -92,6 +92,7 @@ export default async function JourneyRewardsPage() {
       )}
 
       <RewardHistory title="Stage reward history" rows={j.history} empty="No stage rewards yet — they appear here as you progress." />
+</PanelListFilters>
     </div>
   );
 }

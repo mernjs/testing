@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, CalendarDays, CheckCircle2, Video, Users } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -32,13 +34,11 @@ export default async function ClassesPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Classes" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Classes &amp; Schedule</h1>
-          <p className="text-sm text-muted-foreground">{total} class{total === 1 ? "" : "es"} scheduled across all batches.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Classes" }]}
+        title={<>Classes &amp; Schedule</>}
+        description={<>{total} class{total === 1 ? "" : "es"} scheduled across all batches.</>}
+        actions={<>{canManage && (
           <ClassForm
             batches={batches.map((b) => ({ _id: b._id, name: b.name, programName: b.programName }))}
             mentors={mentors.map((m) => ({ _id: m._id, name: m.name }))}
@@ -50,10 +50,11 @@ export default async function ClassesPage() {
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Total Classes" value={total} accent icon={<CalendarDays className="size-4" />} />
         <KpiCard label="Upcoming" value={upcoming} icon={<CalendarDays className="size-4" />} />
         <KpiCard label="Completed" value={completed} icon={<CheckCircle2 className="size-4" />} />
@@ -91,6 +92,7 @@ export default async function ClassesPage() {
           )}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

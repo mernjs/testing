@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound, redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import ProjectForm from "@/components/pms/ProjectForm";
@@ -23,18 +24,16 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "PMS", href: "/pms" },
           { label: "Projects", href: "/pms/projects" },
           { label: project.name, href: `/pms/projects/${id}` },
           { label: "Edit" },
         ]}
+        title={<>Edit Project</>}
+        description={<>{project.projectCode}</>}
       />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Edit Project</h1>
-        <p className="text-sm text-muted-foreground font-mono">{project.projectCode}</p>
-      </div>
 
       <ProjectForm
         project={serializeProject(project)}

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -26,12 +28,13 @@ export default async function AdminReferralsPage({ searchParams }: { searchParam
 
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet", href: "/lms/wallet" }, { label: "Referrals" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Referrals</h1>
-        <a href="/api/lms/wallet/export?kind=referrals" className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary">Export CSV</a>
-      </div>
-      <div className="flex flex-wrap gap-2 text-xs">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet", href: "/lms/wallet" }, { label: "Referrals" }]}
+        title={<>Referrals</>}
+        actions={<><a href="/api/lms/wallet/export?kind=referrals" className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary">Export CSV</a></>}
+      />
+      <PanelListFilters>
+<div className="flex flex-wrap gap-2 text-xs">
         <Link href="/lms/wallet/referrals" className={`rounded-full border px-3 py-1 ${!filter ? "border-primary text-primary" : "border-border text-muted-foreground"}`}>All</Link>
         {REFERRAL_STATUSES.map((s) => (
           <Link key={s} href={`/lms/wallet/referrals?status=${s}`} className={`rounded-full border px-3 py-1 ${filter === s ? "border-primary text-primary" : "border-border text-muted-foreground"}`}>{REFERRAL_STATUS_META[s].label}</Link>
@@ -70,6 +73,7 @@ export default async function AdminReferralsPage({ searchParams }: { searchParam
           </table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Scale } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
@@ -11,13 +13,14 @@ export default async function BankReconciliationIndexPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Bank Reconciliation" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Bank Reconciliation</h1>
-        <p className="text-sm text-muted-foreground">Pick a bank account to reconcile.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Bank Reconciliation" }]}
+        title={<>Bank Reconciliation</>}
+        description={<>Pick a bank account to reconcile.</>}
+      />
 
-      {accounts.length === 0 ? (
+      <PanelListFilters>
+{accounts.length === 0 ? (
         <GlassCard>
           <CardContent className="py-10 text-center text-sm text-muted-foreground">
             No bank accounts yet — create one at <Link href="/fms/bank-accounts" className="text-primary hover:underline">/fms/bank-accounts</Link>.
@@ -41,6 +44,7 @@ export default async function BankReconciliationIndexPage() {
           ))}
         </div>
       )}
+</PanelListFilters>
     </div>
   );
 }

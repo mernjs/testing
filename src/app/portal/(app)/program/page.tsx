@@ -1,7 +1,7 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { GraduationCap, UserRound, Layers, CalendarRange } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import ProgressBar from "@/components/pms/ProgressBar";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getLearnerOverview } from "@/lib/portal/student";
@@ -22,13 +22,13 @@ export default async function ProgramPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: isIntern ? "My Internship" : "My Programme" }]} />
       <PortalPageHeader
         title={isIntern ? "My Internship" : "My Programme"}
         subtitle={`Overall progress ${overview.averageProgress}%`}
       />
 
-      {overview.enrollments.length === 0 && (
+      <PanelListFilters>
+{overview.enrollments.length === 0 && (
         <GlassCard>
           <CardContent className="py-10 text-center text-sm text-muted-foreground">Not enrolled in a programme yet.</CardContent>
         </GlassCard>
@@ -63,6 +63,7 @@ export default async function ProgramPage() {
           {overview.enrollments.find((e) => e.mentorName)?.mentorName ?? "A mentor will be assigned to your batch shortly."}
         </p>
       </InfoCard>
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { panelNameMap } from "@/lib/platform/panels/store";
 import Link from "next/link";
 import {
@@ -16,7 +18,6 @@ import {
 import GlassCard from "@/components/lms/GlassCard";
 import KpiCard from "@/components/lms/KpiCard";
 import KpiGrid from "@/components/lms/KpiGrid";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { listBeneficiaries, type BeneficiaryEntity } from "@/lib/fms/beneficiaries";
 import { Badge } from "@/components/ui/badge";
 import { revalidatePath } from "next/cache";
@@ -87,31 +88,19 @@ export default async function BeneficiariesPage({
 
   return (
     <div className="relative space-y-6">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Banking" }, { label: "Entity Bank Accounts" }]} />
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-brand-accent text-white shadow-sm">
-              <Building2 className="size-5" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Entity Bank &amp; UPI Accounts</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                Centralized directory of saved bank details for Vendors, Employees, Clients, and Students for 1-click payouts.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Action button modal target / quick add link */}
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="px-3 py-1.5 text-xs font-semibold bg-primary/10 text-primary border-primary/20">
+      <PanelPageHeader
+        title={<>Entity Bank &amp; UPI Accounts</>}
+        description={<>Centralized directory of saved bank details for Vendors, Employees, Clients, and Students for 1-click payouts.</>}
+        actions={
+            <Badge variant="outline" className="px-3 py-1.5 text-xs font-semibold bg-primary/10 text-primary border-primary/20">
             <ShieldCheck className="size-3.5 mr-1" />
             Instant Bank Verification Active
           </Badge>
-        </div>
-      </div>
+          }
+        />
+
+      <PanelListFilters>
 
       {/* KPIs */}
       <KpiGrid>
@@ -306,6 +295,7 @@ export default async function BeneficiariesPage({
           </table>
         </div>
       </GlassCard>
+      </PanelListFilters>
     </div>
   );
 }

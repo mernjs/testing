@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -25,18 +26,16 @@ export default async function SupportRequestPage({ params }: { params: Promise<{
 
   return (
     <div className="space-y-4 p-1">
-      <Link href="/platform/support" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" /> Support requests</Link>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Platform", href: "/platform" }, { label: "Support requests", href: "/platform/support" }, { label: `#${r.number}` }]}
+        title={<>{r.title}</>}
+        description={<><span className="font-semibold text-foreground">{r.companyName}</span> · {r.createdBy.email} · {formatDateTime(r.createdAt)}</>}
+        eyebrow={<>#{r.number} · {labelOf(cfg.types, r.type)} · {r.source === "chat" ? "from AI chat" : "from form"}</>}
+        actions={<div className="flex items-center gap-2"><PriorityBadge label={labelOf(cfg.priorities, r.priority)} /><StatusBadge label={statusOf(cfg, r.status)?.label ?? r.status} state={stateOf(cfg, r.status)} /></div>}
+      />
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           <GlassCard interactive={false} className="p-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-xs font-semibold text-muted-foreground">#{r.number} · {labelOf(cfg.types, r.type)} · {r.source === "chat" ? "from AI chat" : "from form"}</p>
-                <h1 className="mt-0.5 text-xl font-black tracking-tight text-foreground">{r.title}</h1>
-                <p className="mt-1 text-xs text-muted-foreground"><span className="font-semibold text-foreground">{r.companyName}</span> · {r.createdBy.email} · {formatDateTime(r.createdAt)}</p>
-              </div>
-              <div className="flex items-center gap-2"><PriorityBadge label={labelOf(cfg.priorities, r.priority)} /><StatusBadge label={statusOf(cfg, r.status)?.label ?? r.status} state={stateOf(cfg, r.status)} /></div>
-            </div>
             <p className="mt-3 whitespace-pre-wrap text-sm text-foreground/90">{r.description}</p>
             <AttachmentList items={r.attachments} />
             {Object.keys(r.fields).length > 0 && (

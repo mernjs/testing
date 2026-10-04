@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -25,13 +26,11 @@ export default async function GrnDetailPage({ params }: { params: Promise<{ id: 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Goods Receipt", href: "/prms/grn" }, { label: g.grnNumber }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{g.grnNumber}</h1>
-        <p className="text-sm text-muted-foreground">
-          <Link className="text-primary hover:underline" href={`/prms/purchase-orders/${g.poId}`}>{g.poNumber}</Link> · {g.vendorName} · <GrnStatusBadge status={g.status} />
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Goods Receipt", href: "/prms/grn" }, { label: g.grnNumber }]}
+        title={<>{g.grnNumber}</>}
+        description={<><Link className="text-primary hover:underline" href={`/prms/purchase-orders/${g.poId}`}>{g.poNumber}</Link> · {g.vendorName} · <GrnStatusBadge status={g.status} /></>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-4">
         <Field label="Received date" value={formatDate(g.receivedDate)} />

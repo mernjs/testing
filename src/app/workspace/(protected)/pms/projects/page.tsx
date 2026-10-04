@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchProjects } from "@/lib/pms/projects";
@@ -56,14 +57,12 @@ export default async function AdminProjectsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "PMS", panel: "pms" }, { label: "Projects" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Projects</h1>
-        <p className="text-sm text-muted-foreground">
-          {total} project{total === 1 ? "" : "s"}. Status changes are guarded — illegal transitions (e.g. planning
-          → completed) are refused with the real reason.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "PMS", panel: "pms" }, { label: "Projects" }]}
+        title={<>Projects</>}
+        description={<>{total} project{total === 1 ? "" : "s"}. Status changes are guarded — illegal transitions (e.g. planning
+          → completed) are refused with the real reason.</>}
+      />
 
       <ProjectsGrid
         rows={rows}

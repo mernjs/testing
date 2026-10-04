@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import Tabs from "@/components/hrms/Tabs";
 import AttendanceRegister from "@/components/hrms/AttendanceRegister";
@@ -33,15 +35,14 @@ export default async function AttendancePage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Attendance" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Attendance</h1>
-        <p className="text-sm text-muted-foreground">
-          {canEdit ? "Record and correct daily attendance." : "Daily attendance overview."}
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "HRMS", href: "/hrms" }, { label: "Attendance" }]}
+        title={<>Attendance</>}
+        description={<>{canEdit ? "Record and correct daily attendance." : "Daily attendance overview."}</>}
+      />
 
-      <Tabs
+      <PanelListFilters>
+<Tabs
         initial={tab}
         syncParam="tab"
         tabs={[
@@ -86,6 +87,7 @@ export default async function AttendancePage({
           },
         ]}
       />
+</PanelListFilters>
     </div>
   );
 }

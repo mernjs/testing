@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Lock, LockOpen } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,14 +20,12 @@ export default async function FiscalPeriodsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Settings" }, { label: "Fiscal Periods" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Fiscal Periods</h1>
-        <p className="text-sm text-muted-foreground">
-          Closing a period posts a real journal entry that zeroes its income/expense activity into Retained Earnings
-          and locks it against further postings. Reopening reverses that entry.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Settings" }, { label: "Fiscal Periods" }]}
+        title={<>Fiscal Periods</>}
+        description={<>Closing a period posts a real journal entry that zeroes its income/expense activity into Retained Earnings
+          and locks it against further postings. Reopening reverses that entry.</>}
+      />
 
       {canManage && (
         <GlassCard interactive={false}>

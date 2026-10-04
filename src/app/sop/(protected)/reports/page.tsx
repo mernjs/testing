@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Download, FileSpreadsheet } from "lucide-react";
@@ -48,13 +50,14 @@ export default async function ReportsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "Reports & Analytics" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Reports & Analytics</h1>
-        <p className="text-sm text-muted-foreground">Trends, coverage and exportable reports — scoped to what you can access.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "Reports & Analytics" }]}
+        title={<>Reports & Analytics</>}
+        description={<>Trends, coverage and exportable reports — scoped to what you can access.</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="SOPs" value={d.kpis.total} accent />
         <KpiCard label="In force (published/active)" value={d.kpis.published} />
         <KpiCard label="Overdue reviews" value={d.kpis.overdueReviews} tone={d.kpis.overdueReviews > 0 ? "down" : undefined} />
@@ -130,6 +133,7 @@ export default async function ReportsPage() {
           </CardContent>
         </GlassCard>
       )}
+</PanelListFilters>
     </div>
   );
 }

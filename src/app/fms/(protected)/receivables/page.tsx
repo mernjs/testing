@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { panelNameMap } from "@/lib/platform/panels/store";
 import Link from "next/link";
 import {
@@ -14,7 +16,6 @@ import {
 import GlassCard from "@/components/lms/GlassCard";
 import KpiCard from "@/components/lms/KpiCard";
 import KpiGrid from "@/components/lms/KpiGrid";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { getDb } from "@/lib/mongodb";
 import { Badge } from "@/components/ui/badge";
 import { getCurrentFmsUser } from "@/lib/fms-auth";
@@ -89,28 +90,19 @@ export default async function CollectMoneyPage({
 
   return (
     <div className="relative space-y-6">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Finance Desk" }, { label: "Collect Money" }]} />
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-brand-accent text-white shadow-sm">
-              <ArrowDownLeft className="size-5" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Collect Money</h1>
-              <p className="text-sm text-muted-foreground mt-0.5">
-                Generate 1-click payment links &amp; send instant payment requests to Students (TMS) or Clients (PMS).
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <Badge variant="outline" className="px-3 py-1.5 text-xs font-semibold bg-primary/10 text-primary border-primary/20">
+      <PanelPageHeader
+        title={<>Collect Money</>}
+        description={<>Generate 1-click payment links &amp; send instant payment requests to Students (TMS) or Clients (PMS).</>}
+        actions={
+            <Badge variant="outline" className="px-3 py-1.5 text-xs font-semibold bg-primary/10 text-primary border-primary/20">
           <Sparkles className="size-3.5 mr-1" />
           UPI QR Code &amp; Card Gateway Active
         </Badge>
-      </div>
+          }
+        />
+
+      <PanelListFilters>
 
       {/* Summary Cards */}
       <KpiGrid>
@@ -373,6 +365,7 @@ export default async function CollectMoneyPage({
           </table>
         </div>
       </GlassCard>
+      </PanelListFilters>
     </div>
   );
 }

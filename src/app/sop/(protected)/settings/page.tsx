@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Check, Minus, ExternalLink } from "lucide-react";
@@ -21,11 +22,11 @@ export default async function SopSettingsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "Settings" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Settings</h1>
-        <p className="text-sm text-muted-foreground">Operational defaults, and how access to the SOP panel is granted.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "Settings" }]}
+        title={<>Settings</>}
+        description={<>Operational defaults, and how access to the SOP panel is granted.</>}
+      />
 
       <GlassCard interactive={false}>
         <CardHeader className="pb-1"><CardTitle className="text-sm font-bold">Lifecycle & reminders</CardTitle></CardHeader>

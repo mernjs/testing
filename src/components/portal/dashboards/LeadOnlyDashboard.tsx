@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Route, MessagesSquare, FileText, Clock } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import LeadStageCard from "@/components/portal/LeadStageCard";
 import LeadJourney from "@/components/portal/LeadJourney";
@@ -22,7 +21,6 @@ const NEXT_HINT: Record<string, string> = {
 export default function LeadOnlyDashboard({ view, firstName }: { view: PortalLeadView; firstName: string }) {
   return (
     <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Dashboard" }]} />
       <PortalPageHeader title={`Welcome, ${firstName}`} subtitle={view.lead.name ? `Request ${view.lead.code}` : undefined} />
 
       <LeadStageCard view={view} />

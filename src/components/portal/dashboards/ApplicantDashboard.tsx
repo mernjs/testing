@@ -1,7 +1,6 @@
 import { Briefcase, CalendarClock, FileCheck2, MessageSquareText, PartyPopper, XCircle } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { HiringTimeline, InfoCard, PortalPageHeader, LinkPill } from "@/components/portal/widgets";
 import { getCareerApplicationStatusMeta } from "@/lib/career-application-status";
 import { offerStatusMeta } from "@/lib/hrms/offers-status";
@@ -33,7 +32,6 @@ export default function ApplicantDashboard({
 
   return (
     <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Dashboard" }]} />
       <PortalPageHeader
         title={`Hi ${firstName}`}
         subtitle={`Your application for ${data.positionTitle}`}

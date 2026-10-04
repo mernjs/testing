@@ -1,7 +1,7 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarClock, Clock, Hash, KeyRound, MessageSquare, Circle, Video } from "lucide-react";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import MeetingControls from "@/components/messenger/MeetingControls";
 import PresenceDot from "@/components/messenger/PresenceDot";
 import { getCurrentChatUser } from "@/lib/messenger-auth";
@@ -32,14 +32,11 @@ export default async function MeetingDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6">
-      <div className="mx-auto max-w-3xl space-y-4">
-        <Breadcrumbs
-          items={[
-            { label: "Messenger", href: "/messenger" },
-            { label: "Meetings", href: "/messenger/meetings" },
-            { label: detail.title },
-          ]}
-        />
+      <div className="space-y-4">
+<PanelPageHeader
+            title={<>{detail.title}</>}
+          />
+<div className="space-y-4">
 
         <div className="rounded-2xl border border-border/50 bg-card p-5 sm:p-6">
           <div className="flex flex-wrap items-center gap-2">
@@ -59,7 +56,6 @@ export default async function MeetingDetailPage({ params }: { params: Promise<{ 
             </span>
           </div>
 
-          <h1 className="mt-2 text-2xl font-black tracking-tight text-foreground">{detail.title}</h1>
           {detail.description && <p className="mt-1 text-sm text-muted-foreground">{detail.description}</p>}
 
           <dl className="mt-4 grid gap-2 border-t border-border/60 pt-4 text-sm sm:grid-cols-2">
@@ -123,6 +119,7 @@ export default async function MeetingDetailPage({ params }: { params: Promise<{ 
           </ul>
         </div>
       </div>
+</div>
     </div>
   );
 }

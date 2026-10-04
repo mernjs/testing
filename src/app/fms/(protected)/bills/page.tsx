@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Building2, Clock } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import KpiCard from "@/components/lms/KpiCard";
@@ -29,13 +30,11 @@ export default async function BillsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Bills" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Bills</h1>
-        <p className="text-sm text-muted-foreground">
-          Financial view over PRMS&apos;s vendor bills — {result.total} bill{result.total === 1 ? "" : "s"}.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Bills" }]}
+        title={<>Bills</>}
+        description={<>Financial view over PRMS&apos;s vendor bills — {result.total} bill{result.total === 1 ? "" : "s"}.</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Payable" value={<span>{formatMoney(payable)}</span>} accent icon={<Building2 className="size-4" />} />

@@ -7,6 +7,7 @@ import { CardHeader, CardTitle, CardDescription, CardContent } from "@/component
 import GlassCard from "@/components/lms/GlassCard";
 import { Button } from "@/components/ui/button";
 import { usePanelMeta } from "@/components/platform/PanelsProvider";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { cn } from "@/lib/utils";
 
 export interface PanelNotificationItem {
@@ -107,36 +108,21 @@ export default function GenericPanelNotificationsPage({
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
-      {/* Top Header & GlassCard */}
-      <GlassCard interactive={false}>
-        <CardHeader className="flex flex-row items-start justify-between gap-4 pb-4 border-b border-border/40">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-bold text-primary">
-                ⚡ {shortCode}
-              </span>
-              <CardTitle className="text-xl font-bold">{panelName} Notifications</CardTitle>
-            </div>
-            <CardDescription className="text-xs text-muted-foreground">
-              {description || `Updates, alerts and automations for ${panelName}`}
-            </CardDescription>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            {unreadCount > 0 && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={markAllRead}
-                className="h-8 gap-1.5 text-xs"
-              >
-                <CheckCheck className="size-3.5 text-primary" /> Mark all read
-              </Button>
-            )}
-          </div>
-        </CardHeader>
+    <div className="space-y-4">
+<PanelPageHeader
+        title={<>{panelName} Notifications</>}
+        description={description || `Updates, alerts and automations for ${panelName}`}
+        actions={
+          unreadCount > 0 ? (
+            <Button type="button" variant="outline" size="sm" onClick={markAllRead} className="h-8 gap-1.5 text-xs">
+              <CheckCheck className="size-3.5 text-primary" /> Mark all read
+            </Button>
+          ) : null
+        }
+      />
+<div className="space-y-4">
 
+      <GlassCard interactive={false}>
         <CardContent className="pt-4 space-y-3">
           {/* Unread Counter Bar */}
           <div className="flex items-center justify-between text-xs font-medium text-muted-foreground mb-2 px-1">
@@ -197,5 +183,6 @@ export default function GenericPanelNotificationsPage({
         </CardContent>
       </GlassCard>
     </div>
+</div>
   );
 }

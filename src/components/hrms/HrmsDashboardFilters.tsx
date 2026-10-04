@@ -75,7 +75,7 @@ export default function HrmsDashboardFilters({
             <SlidersHorizontal className="size-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold tracking-tight text-foreground">Workforce Filters</h3>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
             <p className="text-xs text-muted-foreground">Slice dashboard metrics by date range, department, and employee attributes</p>
           </div>
         </div>

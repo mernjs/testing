@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Users, DoorOpen, UserX, Sparkles } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -25,25 +27,22 @@ export default async function LeadsDashboardPage() {
 
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Lead Management" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Lead Management</h1>
-          <p className="text-sm text-muted-foreground">
-            Single source of truth for the external portal — every website submission, its journey, and its account.
-          </p>
-        </div>
-        <div className="flex gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Lead Management" }]}
+        title={<>Lead Management</>}
+        description={<>Single source of truth for the external portal — every website submission, its journey, and its account.</>}
+        actions={<><div className="flex gap-2">
           <Link href="/lms/leads/list" className={buttonVariants({ variant: "outline", size: "sm" })}>
             All leads
           </Link>
           <Link href="/lms/leads/new" className={buttonVariants({ size: "sm" })}>
             New lead
           </Link>
-        </div>
-      </div>
+        </div></>}
+      />
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <PanelListFilters>
+<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard label="Total leads" value={stats.total} accent icon={<Users className="size-4" />} />
         <KpiCard label="Open" value={stats.open} icon={<DoorOpen className="size-4" />} />
         <KpiCard label="Unassigned" value={stats.unassigned} tone={stats.unassigned > 0 ? "down" : undefined} icon={<UserX className="size-4" />} />
@@ -143,6 +142,7 @@ export default async function LeadsDashboardPage() {
           </table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

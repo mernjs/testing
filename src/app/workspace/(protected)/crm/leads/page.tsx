@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchAllLeads } from "@/lib/workspace/crm-leads";
@@ -52,15 +53,13 @@ export default async function AdminLeadsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "CRM", panel: "lms" }, { label: "Leads" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Leads</h1>
-        <p className="text-sm text-muted-foreground">
-          {total} lead{total === 1 ? "" : "s"}{" "}
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "CRM", panel: "lms" }, { label: "Leads" }]}
+        title={<>Leads</>}
+        description={<>{total} lead{total === 1 ? "" : "s"}{" "}
           across every service category. A fresh, unqualified lead is what the spec calls an
-          &quot;inquiry&quot; — filter by Status to see just those.
-        </p>
-      </div>
+          &quot;inquiry&quot; — filter by Status to see just those.</>}
+      />
 
       <LeadsGrid
         rows={items}

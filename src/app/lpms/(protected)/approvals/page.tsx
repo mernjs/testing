@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { CheckSquare, XCircle, Clock } from "lucide-react";
@@ -36,18 +38,14 @@ export default async function ApprovalsPage() {
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "LPMS", href: "/lpms" }, { label: "Approvals" }]} />
+      <PanelPageHeader
+        breadcrumbs={[{ label: "LPMS", href: "/lpms" }, { label: "Approvals" }]}
+        title={<>Approval Queue</>}
+        description={<>{approvals.length} pending approval{approvals.length !== 1 ? "s" : ""}</>}
+      />
 
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-          Approval Queue
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {approvals.length} pending approval{approvals.length !== 1 ? "s" : ""}
-        </p>
-      </div>
-
-      {approvals.length === 0 ? (
+      <PanelListFilters>
+{approvals.length === 0 ? (
         <GlassCard interactive={false}>
           <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
             <CheckSquare className="size-10 text-emerald-500/40" />
@@ -118,6 +116,7 @@ export default async function ApprovalsPage() {
           })}
         </div>
       )}
+</PanelListFilters>
     </div>
   );
 }

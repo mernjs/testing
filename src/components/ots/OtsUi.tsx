@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import type { ReactNode } from "react";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,18 +10,7 @@ import { ASSIGNMENT_STATUSES, TEST_STATUSES, TONE_CLASS, toneFor, labelOf, type 
 /** Shared, server-renderable pieces of the OTS UI — the same visual language as SOP / SMMS / DLMS. */
 
 export function PageHeader({ title, description, crumbs, actions, root = { label: "Online Tests", href: "/ots" } }: { title: ReactNode; description?: ReactNode; crumbs: { label: string; href?: string }[]; actions?: ReactNode; root?: { label: string; href: string } | null }) {
-  return (
-    <>
-      <Breadcrumbs items={[...(root ? [root] : []), ...crumbs]} />
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{title}</h1>
-          {description && <p className="text-sm text-muted-foreground">{description}</p>}
-        </div>
-        {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
-      </div>
-    </>
-  );
+  return <PanelPageHeader breadcrumbs={[...(root ? [root] : []), ...crumbs]} title={title} description={description} actions={actions} />;
 }
 
 export function SectionCard({ title, description, children, className, action }: { title: ReactNode; description?: ReactNode; children: ReactNode; className?: string; action?: ReactNode }) {

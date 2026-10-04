@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Globe, Mail, Phone, MapPin, CreditCard, Tag } from "lucide-react";
@@ -24,21 +25,13 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PMS", href: "/pms" }, { label: "Clients", href: "/pms/clients" }, { label: client.companyName }]} />
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{client.companyName}</h1>
-            <ClientStatusBadge status={client.status} />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{client.clientCode}</span>
-            {client.industry ? ` · ${client.industry}` : ""}
-          </p>
-        </div>
-        {canManage && <ClientActions client={serialized} />}
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PMS", href: "/pms" }, { label: "Clients", href: "/pms/clients" }, { label: client.companyName }]}
+        title={<><span className="inline-flex flex-wrap items-center gap-2">{client.companyName}<ClientStatusBadge status={client.status} /></span></>}
+        description={<><span className="font-mono">{client.clientCode}</span>
+            {client.industry ? ` · ${client.industry}` : ""}</>}
+        actions={<>{canManage && <ClientActions client={serialized} />}</>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <GlassCard>

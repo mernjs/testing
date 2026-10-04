@@ -70,7 +70,7 @@ export default function VoiceDashboardFilters({
             <Mic className="size-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold tracking-tight text-foreground">Voice Session Filters</h3>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
             <p className="text-xs text-muted-foreground">Filter voice conversations by device, browser, and source</p>
           </div>
         </div>

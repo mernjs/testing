@@ -23,7 +23,7 @@ export interface BreadcrumbItemData {
 /** The panel home a crumb points at (`/hrms`, `/tms/me`), or null — the crumb's text then comes from the Panel Registry. */
 const panelOf = (href: string | undefined) => href?.match(/^\/([a-z][a-z0-9-]*)(?:\/me)?\/?$/)?.[1] ?? null;
 
-export default function Breadcrumbs({ items: given }: { items: BreadcrumbItemData[] }) {
+export default function Breadcrumbs({ items: given, showHome = true }: { items: BreadcrumbItemData[]; showHome?: boolean }) {
   const panels = usePanels();
   // The first crumb that names a panel shows the registry's short name, so every page says the same thing.
   const items = given.map((item, i) => {
@@ -35,7 +35,7 @@ export default function Breadcrumbs({ items: given }: { items: BreadcrumbItemDat
       <BreadcrumbList className="gap-1.5">
         {items.map((item, i) => {
           const isLast = i === items.length - 1;
-          const isFirst = i === 0;
+          const isFirst = showHome && i === 0;
           return (
             <Fragment key={`${item.label}-${i}`}>
               {i > 0 && <BreadcrumbSeparator />}

@@ -1,10 +1,10 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { headers } from "next/headers";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getReferralOverview } from "@/lib/portal/wallet";
 import { REFERRAL_STATUS_META, type ReferralStatus } from "@/lib/wallet/constants";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { PortalPageHeader, PortalStat } from "@/components/portal/widgets";
 import { Users, BadgeCheck, Coins, Hourglass, Share2, UserPlus, Gift } from "lucide-react";
 import ReferralCodeCard from "@/components/portal/ReferralCodeCard";
@@ -27,9 +27,9 @@ export default async function PortalReferralsPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Referrals" }]} />
       <PortalPageHeader title="Refer & earn" subtitle={`Share your link. When someone new joins ${brand.name} through it, you both earn credits.`} />
-      <EarnNav current="referrals" />
+      <PanelListFilters>
+<EarnNav current="referrals" />
       <ReferralCodeCard code={overview.code} link={overview.link} />
 
       <div className="grid gap-3 sm:grid-cols-3">
@@ -95,6 +95,7 @@ export default async function PortalReferralsPage() {
           </table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

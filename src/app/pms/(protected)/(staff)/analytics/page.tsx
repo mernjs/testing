@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import ProjectClientAnalytics, { type AnalyticsProjectRow } from "@/components/pms/ProjectClientAnalytics";
 import { getCurrentPmsUser } from "@/lib/pms-auth";
@@ -77,7 +78,7 @@ export default async function PmsAnalyticsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PMS", href: "/pms" }, { label: "Project & Client Analytics" }]} />
+      <PanelPageHeader breadcrumbs={[{ label: "PMS", href: "/pms" }, { label: "Project & Client Analytics" }]} title={<>Project &amp; Client Analytics</>} description={<>Hours, budget, milestones and team size across your projects and clients.</>} />
       <ProjectClientAnalytics
         projects={projects}
         clients={clients.map((c: { _id: string; companyName: string }) => ({ _id: c._id, companyName: c.companyName }))}

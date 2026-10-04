@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, LifeBuoy } from "lucide-react";
@@ -14,12 +15,14 @@ export default async function HelpArticlePage({ params }: { params: Promise<{ sl
   const article = await getPublishedBySlug(slug);
   if (!article) notFound();
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
-      <Link href="/support/help" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4" /> Help Center</Link>
+    <div className="space-y-4">
+<PanelPageHeader
+        breadcrumbs={[{ label: "Help & Support", href: "/support" }, { label: "Help Center", href: "/support/help" }, { label: article.title }]}
+        title={<>{article.title}</>}
+        description={<>{article.category} · Updated {formatDate(article.updatedAt)}</>}
+      />
+<div className="space-y-4">
       <GlassCard interactive={false} className="p-6 sm:p-8">
-        <p className="text-xs font-semibold tracking-wide text-primary uppercase">{article.category}</p>
-        <h1 className="mt-1 text-2xl font-black tracking-tight text-foreground">{article.title}</h1>
-        <p className="mt-1 text-xs text-muted-foreground">Updated {formatDate(article.updatedAt)}</p>
         <Markdown content={article.body} className="mt-5" />
       </GlassCard>
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/50 bg-card p-4">
@@ -27,5 +30,6 @@ export default async function HelpArticlePage({ params }: { params: Promise<{ sl
         <Link href="/support/requests/new" className={buttonVariants({ size: "sm" })}><LifeBuoy className="size-3.5" data-icon="inline-start" /> Contact YashOrbit</Link>
       </div>
     </div>
+</div>
   );
 }

@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { redirect } from "next/navigation";
 import { Download, FileBarChart } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
@@ -31,7 +32,8 @@ export default async function ReportsPage() {
   return (
     <div className="space-y-4">
       <PageHeader title="Reports" crumbs={[{ label: "Reports" }]} description="SEO reports as CSV or formatted Excel, built from the same data as the panel. Every export is recorded in the audit log." />
-      {!canExport && <Notice tone="info">Downloading reports needs the “Export reports” permission (SEO managers and admins).</Notice>}
+      <PanelListFilters>
+{!canExport && <Notice tone="info">Downloading reports needs the “Export reports” permission (SEO managers and admins).</Notice>}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {(Object.keys(REPORTS) as (keyof typeof REPORTS)[]).map((k) => (
           <GlassCard key={k} interactive={false}>
@@ -54,6 +56,7 @@ export default async function ReportsPage() {
           </GlassCard>
         ))}
       </div>
+</PanelListFilters>
     </div>
   );
 }

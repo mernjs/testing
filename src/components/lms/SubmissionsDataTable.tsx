@@ -191,7 +191,7 @@ export default function SubmissionsDataTable({
             <ListFilter className="size-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold tracking-tight text-foreground">Submission Filters</h3>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
             <p className="text-xs text-muted-foreground">Search and narrow submissions by status and date</p>
           </div>
         </div>

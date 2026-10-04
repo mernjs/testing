@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -45,7 +46,8 @@ export default async function PlatformPaymentsPage() {
           </Badge>
         }
       />
-      <RazorpayConfigForm view={view} webhookUrl={`${origin}/api/platform/billing/webhook`} />
+      <PanelListFilters>
+<RazorpayConfigForm view={view} webhookUrl={`${origin}/api/platform/billing/webhook`} />
 
       <GlassCard interactive={false}>
         <CardHeader>
@@ -86,6 +88,7 @@ export default async function PlatformPaymentsPage() {
           )}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

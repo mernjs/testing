@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Hammer } from "lucide-react";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -22,11 +23,7 @@ export default function PhasePlaceholder({
 }) {
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={breadcrumbs} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{title}</h1>
-        <p className="text-sm text-muted-foreground">{description}</p>
-      </div>
+      <PanelPageHeader breadcrumbs={breadcrumbs} title={<>{title}</>} description={<>{description}</>} />
       <GlassCard interactive={false}>
         <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
           <div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-brand-accent text-white">

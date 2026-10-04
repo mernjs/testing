@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, Receipt as ReceiptIcon, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -35,13 +36,11 @@ export default async function ReceiptsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Payment Receipts" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Payment Receipts</h1>
-          <p className="text-sm text-muted-foreground">{result.total} receipt{result.total === 1 ? "" : "s"} recorded.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Payment Receipts" }]}
+        title={<>Payment Receipts</>}
+        description={<>{result.total} receipt{result.total === 1 ? "" : "s"} recorded.</>}
+        actions={<>{canManage && (
           <ReceiptForm
             customers={customerOpts}
             fundAccounts={fundAccounts}
@@ -52,8 +51,8 @@ export default async function ReceiptsPage({
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Receipts" value={result.total} accent icon={<ReceiptIcon className="size-4" />} />

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Clock, AlertTriangle } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -23,13 +25,14 @@ export default async function PayablesPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Payables" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Accounts Payable</h1>
-        <p className="text-sm text-muted-foreground">Real aging computed from PRMS&apos;s open vendor bills plus FMS debit notes.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Payables" }]}
+        title={<>Accounts Payable</>}
+        description={<>Real aging computed from PRMS&apos;s open vendor bills plus FMS debit notes.</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Total Outstanding" value={<span>{formatMoney(outstanding)}</span>} accent icon={<Clock className="size-4" />} />
         <KpiCard label="Overdue Bills" value={overdue.count} tone={overdue.count > 0 ? "down" : undefined} icon={<AlertTriangle className="size-4" />} />
         <KpiCard label="Overdue Amount" value={<span>{formatMoney(overdue.amount)}</span>} icon={<AlertTriangle className="size-4" />} />
@@ -74,6 +77,7 @@ export default async function PayablesPage() {
           </Table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

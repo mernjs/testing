@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Plus, Inbox, Clock, CheckCircle2, KanbanSquare } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -38,13 +39,11 @@ export default async function ApplicationsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Applications" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Applications</h1>
-          <p className="text-sm text-muted-foreground">{total} application{total === 1 ? "" : "s"} in the pipeline.</p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Applications" }]}
+        title={<>Applications</>}
+        description={<>{total} application{total === 1 ? "" : "s"} in the pipeline.</>}
+        actions={<><div className="flex items-center gap-2">
           <Link href="/tms/applications/board" className={buttonVariants({ variant: "outline", size: "sm" })}>
             <KanbanSquare className="size-3.5" data-icon="inline-start" />
             Board
@@ -60,8 +59,8 @@ export default async function ApplicationsPage({
               }
             />
           )}
-        </div>
-      </div>
+        </div></>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total" value={total} accent icon={<Inbox className="size-4" />} />

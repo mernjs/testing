@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { redirect } from "next/navigation";
 import { getViewer, can } from "@/lib/cms/viewer";
 import { getFormDoc, CONTACT_FORM_FIELD_NAMES } from "@/lib/cms/forms";
@@ -19,7 +20,9 @@ export default async function CmsFormsPage() {
         title="Forms"
         description={<>The contact form&apos;s field labels, placeholders and help text. Submissions still go through the existing leads pipeline — this only controls how the fields are presented.</>}
       />
-      <ContactFormEditor initialFields={fields} canEdit={can(viewer, "FORMS_MANAGE")} />
+      <PanelListFilters>
+<ContactFormEditor initialFields={fields} canEdit={can(viewer, "FORMS_MANAGE")} />
+</PanelListFilters>
     </div>
   );
 }

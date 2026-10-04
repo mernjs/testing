@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import DepartmentsManager, { type DeptNode } from "@/components/sop/DepartmentsManager";
@@ -47,14 +49,14 @@ export default async function DepartmentsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "Departments" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Departments</h1>
-        <p className="text-sm text-muted-foreground">
-          {nodes.length} departments, each with its functions, processes and sub-processes. Departments come from HRMS and can be extended here — any future department is supported.
-        </p>
-      </div>
-      <DepartmentsManager nodes={nodes} canManage={canManage} hrmsOptions={hrms.map((h) => ({ value: h._id, label: h.name }))} />
+      <PanelPageHeader
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "Departments" }]}
+        title={<>Departments</>}
+        description={<>{nodes.length} departments, each with its functions, processes and sub-processes. Departments come from HRMS and can be extended here — any future department is supported.</>}
+      />
+      <PanelListFilters>
+<DepartmentsManager nodes={nodes} canManage={canManage} hrmsOptions={hrms.map((h) => ({ value: h._id, label: h.name }))} />
+</PanelListFilters>
     </div>
   );
 }

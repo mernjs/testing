@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { RotateCcw } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import KpiCard from "@/components/lms/KpiCard";
@@ -21,11 +22,11 @@ export default async function RefundsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Refunds" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Refunds</h1>
-        <p className="text-sm text-muted-foreground">{result.total} refund{result.total === 1 ? "" : "s"}. Request one from a receipt&apos;s detail page.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Refunds" }]}
+        title={<>Refunds</>}
+        description={<>{result.total} refund{result.total === 1 ? "" : "s"}. Request one from a receipt&apos;s detail page.</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Refunds" value={result.total} accent icon={<RotateCcw className="size-4" />} />

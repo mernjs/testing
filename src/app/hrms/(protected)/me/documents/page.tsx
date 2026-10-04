@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import MyDocuments from "@/components/hrms/MyDocuments";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 import { listDocuments, serializeDocument } from "@/lib/hrms/documents";
@@ -8,11 +10,12 @@ export default async function MyDocumentsPage() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground">My Documents</h1>
-        <p className="text-sm text-muted-foreground">Download your records, or upload certificates and proofs.</p>
-      </div>
-      <MyDocuments
+      <PanelPageHeader
+        title={<>My Documents</>}
+        description={<>Download your records, or upload certificates and proofs.</>}
+      />
+      <PanelListFilters>
+<MyDocuments
         documents={docs.map((d) => ({
           _id: d._id,
           category: d.category,
@@ -26,6 +29,7 @@ export default async function MyDocumentsPage() {
           createdAt: d.createdAt,
         }))}
       />
+</PanelListFilters>
     </div>
   );
 }

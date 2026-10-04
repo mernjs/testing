@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Badge } from "@/components/ui/badge";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -32,13 +33,11 @@ const DOCUMENT_TYPES = [
 export default function NumberingPage() {
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Settings" }, { label: "Numbering" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Numbering</h1>
-        <p className="text-sm text-muted-foreground">
-          Every document type&apos;s real, in-use numbering format — reference only, not an editable config.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Settings" }, { label: "Numbering" }]}
+        title={<>Numbering</>}
+        description={<>Every document type&apos;s real, in-use numbering format — reference only, not an editable config.</>}
+      />
 
       <GlassCard interactive={false}>
         <CardHeader><CardTitle>Document Numbering</CardTitle></CardHeader>

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import SopLibraryTable from "@/components/sop/SopLibraryTable";
@@ -15,13 +16,11 @@ export default async function SopLibraryPage({ searchParams }: { searchParams: P
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "SOP Library" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">SOP Library</h1>
-        <p className="text-sm text-muted-foreground">
-          {result.total} SOP{result.total === 1 ? "" : "s"} you can access. Search covers title, SOP ID, department, function, process, category, tags, owner, author, version, dates and status.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "SOP Library" }]}
+        title={<>SOP Library</>}
+        description={<>{result.total} SOP{result.total === 1 ? "" : "s"} you can access. Search covers title, SOP ID, department, function, process, category, tags, owner, author, version, dates and status.</>}
+      />
       <SopLibraryTable
         result={result}
         query={query}

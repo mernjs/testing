@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { panelNameMap } from "@/lib/platform/panels/store";
 import { CreditCard, CheckCircle2, Clock, AlertTriangle, RefreshCw, Link as LinkIcon } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -47,26 +48,19 @@ export default async function FmsPaymentsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Central Payments" }]} />
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Central Payment Engine
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Single financial source of truth for all {brand.name} payment operations & collections.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Central Payments" }]}
+        title={<>Central Payment Engine</>}
+        description={<>Single financial source of truth for all {brand.name} payment operations & collections.</>}
+        actions={<><div className="flex items-center gap-2">
           <Link href="/fms/payment-links">
             <Button size="sm" variant="outline">
               <LinkIcon className="size-3.5 mr-1" />
               Manage Payment Links
             </Button>
           </Link>
-        </div>
-      </div>
+        </div></>}
+      />
 
       <KpiGrid>
         <KpiCard

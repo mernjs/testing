@@ -90,7 +90,7 @@ export default function CareerDashboardFilters({
             <Briefcase className="size-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold tracking-tight text-foreground">Applicant Filters</h3>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
             <p className="text-xs text-muted-foreground">Search and filter career applications</p>
           </div>
         </div>

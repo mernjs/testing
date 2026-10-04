@@ -1,4 +1,3 @@
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getActivePortalLead } from "@/lib/portal/lead";
 import { PortalPageHeader } from "@/components/portal/widgets";
@@ -18,7 +17,6 @@ export default async function MessagesPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-5 p-4 sm:p-6 lg:max-w-3xl">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Messages" }]} />
       <PortalPageHeader title="Messages" subtitle={`Chat directly with your ${brand.name} team`} />
       <PortalMessagesThread initialMessages={view.messages} />
     </div>

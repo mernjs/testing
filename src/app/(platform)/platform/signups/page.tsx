@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import type { Metadata } from "next";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -25,7 +26,8 @@ export default async function ConsoleSignupsPage() {
   return (
     <div className="space-y-6 p-1">
         <PlatformPageHeader title="Sign-ups & approvals" description="Control who can sign up, and decide on requests waiting for approval." />
-        <GlassCard interactive={false}>
+        <PanelListFilters>
+<GlassCard interactive={false}>
           <CardHeader>
             <CardTitle className="text-base">Who can create a company</CardTitle>
             <CardDescription>
@@ -50,6 +52,7 @@ export default async function ConsoleSignupsPage() {
             <ApprovalQueue requests={requests} addressOf={addressOf} canManage={canManage} />
           </CardContent>
         </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

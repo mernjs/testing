@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -365,20 +366,15 @@ export default async function ApplicantDetailPage({ params, searchParams }: { pa
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "Applicants", href: "/lms/careers/applicants" },
           { label: application.name },
         ]}
-      />
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{application.name}</h1>
-          <p className="text-sm text-muted-foreground">{`${application.positionTitle} · applied ${formatDateTime(application.createdAt)}${lead ? ` · ${lead.code}` : ""}`}</p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
+        title={<>{application.name}</>}
+        description={<>{`${application.positionTitle} · applied ${formatDateTime(application.createdAt)}${lead ? ` · ${lead.code}` : ""}`}</>}
+        actions={<><div className="flex flex-wrap items-center gap-2">
           <LoginAsPortalUserButton
             applicationId={id}
             leadId={lead?.id}
@@ -387,8 +383,8 @@ export default async function ApplicantDetailPage({ params, searchParams }: { pa
             variant="full"
           />
           <CareerStatusBadge status={application.status} />
-        </div>
-      </div>
+        </div></>}
+      />
 
       <Tabs
         initial={tab}

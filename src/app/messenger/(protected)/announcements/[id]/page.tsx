@@ -1,6 +1,6 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import { Paperclip } from "lucide-react";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { Markdown } from "@/components/chat/Markdown";
 import AnnouncementActions, { AcknowledgeButton } from "@/components/messenger/AnnouncementActions";
 import AnnouncementReadStats from "@/components/messenger/AnnouncementReadStats";
@@ -39,14 +39,14 @@ export default async function AnnouncementDetailPage({ params }: { params: Promi
 
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6">
-      <div className="mx-auto max-w-3xl space-y-4">
-        <Breadcrumbs
-          items={[
-            { label: "Messenger", href: "/messenger" },
-            { label: "Announcements", href: "/messenger/announcements" },
-            { label: a.title },
-          ]}
-        />
+      <div className="space-y-4">
+<PanelPageHeader
+            title={<>{a.title}</>}
+            description={<>{a.authorName}
+            {a.publishedAt ? ` · ${new Date(a.publishedAt).toLocaleString()}` : a.scheduledFor ? ` · scheduled for ${new Date(a.scheduledFor).toLocaleString()}` : " · draft"}
+            {a.status === "published" ? ` · ${a.recipientCount} recipient${a.recipientCount === 1 ? "" : "s"}` : ""}</>}
+          />
+<div className="space-y-4">
 
         <div className="rounded-2xl border border-border/50 bg-card p-5 sm:p-6">
           <div className="flex flex-wrap items-center gap-2">
@@ -60,12 +60,6 @@ export default async function AnnouncementDetailPage({ params }: { params: Promi
             </span>
           </div>
 
-          <h1 className="mt-2 text-2xl font-black tracking-tight text-foreground">{a.title}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {a.authorName}
-            {a.publishedAt ? ` · ${new Date(a.publishedAt).toLocaleString()}` : a.scheduledFor ? ` · scheduled for ${new Date(a.scheduledFor).toLocaleString()}` : " · draft"}
-            {a.status === "published" ? ` · ${a.recipientCount} recipient${a.recipientCount === 1 ? "" : "s"}` : ""}
-          </p>
 
           <div className="mt-4 border-t border-border/60 pt-4">
             <Markdown content={a.body} />
@@ -101,6 +95,7 @@ export default async function AnnouncementDetailPage({ params }: { params: Promi
 
         {isAuthor && <AnnouncementActions id={id} status={a.status} />}
       </div>
+</div>
     </div>
   );
 }

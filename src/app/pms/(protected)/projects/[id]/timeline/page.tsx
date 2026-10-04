@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarClock } from "lucide-react";
@@ -26,15 +27,15 @@ export default async function ProjectTimelinePage({ params }: { params: Promise<
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "PMS", href: "/pms" },
           { label: "Projects", href: "/pms/projects" },
           { label: project.name, href: `/pms/projects/${id}` },
           { label: "Timeline" },
         ]}
+        title={<>{project.name} · Timeline</>}
       />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{project.name} · Timeline</h1>
       <ProjectTabs projectId={id} />
 
       <GlassCard interactive={false}>

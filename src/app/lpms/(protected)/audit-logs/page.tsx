@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import { ScrollText } from "lucide-react";
 import GlassCard from "@/components/lms/GlassCard";
@@ -31,18 +33,14 @@ export default async function AuditLogsPage({
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "LPMS", href: "/lpms" }, { label: "Audit Logs" }]} />
+      <PanelPageHeader
+        breadcrumbs={[{ label: "LPMS", href: "/lpms" }, { label: "Audit Logs" }]}
+        title={<>Audit Logs</>}
+        description={<>{total} events recorded</>}
+      />
 
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-          Audit Logs
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {total} events recorded
-        </p>
-      </div>
-
-      <GlassCard interactive={false}>
+      <PanelListFilters>
+<GlassCard interactive={false}>
         <CardContent className="p-0">
           {items.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-16 text-center">
@@ -78,6 +76,7 @@ export default async function AuditLogsPage({
           )}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

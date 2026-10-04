@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -16,16 +18,15 @@ export default async function ProjectProfitabilityPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Project Profitability" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Project Profitability</h1>
-        <p className="text-sm text-muted-foreground">
-          Real revenue and expenses per project from booked Finance transactions — distinct from PMS&apos;s own
-          simulated costing (timesheets × rates), shown on each project&apos;s costing page.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Project Profitability" }]}
+        title={<>Project Profitability</>}
+        description={<>Real revenue and expenses per project from booked Finance transactions — distinct from PMS&apos;s own
+          simulated costing (timesheets × rates), shown on each project&apos;s costing page.</>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Projects with Activity" value={rows.length} accent />
         <KpiCard label="Total Revenue" value={<span>{formatMoney(totalRevenue)}</span>} />
         <KpiCard label="Total Expenses" value={<span>{formatMoney(totalExpenses)}</span>} />
@@ -69,6 +70,7 @@ export default async function ProjectProfitabilityPage() {
           </Table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

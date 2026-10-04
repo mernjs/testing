@@ -57,7 +57,7 @@ export default function MessengerDashboardFilters({
             <MessageSquare className="size-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold tracking-tight text-foreground">Messenger Filters</h3>
+            <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
             <p className="text-xs text-muted-foreground">Filter messenger analytics by date range</p>
           </div>
         </div>

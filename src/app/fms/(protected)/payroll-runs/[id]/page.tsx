@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -18,14 +19,12 @@ export default async function PayrollRunDetailPage({ params }: { params: Promise
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Payroll Runs", href: "/fms/payroll-runs" }, { label: monthLabelLong(run.month) }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{monthLabelLong(run.month)}</h1>
-          <p className="text-sm text-muted-foreground">{run.payslipCount} payslip{run.payslipCount === 1 ? "" : "s"}</p>
-        </div>
-        <Badge className={meta.badgeClass}>{meta.label}</Badge>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Payroll Runs", href: "/fms/payroll-runs" }, { label: monthLabelLong(run.month) }]}
+        title={<>{monthLabelLong(run.month)}</>}
+        description={<>{run.payslipCount} payslip{run.payslipCount === 1 ? "" : "s"}</>}
+        actions={<><Badge className={meta.badgeClass}>{meta.label}</Badge></>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <GlassCard>

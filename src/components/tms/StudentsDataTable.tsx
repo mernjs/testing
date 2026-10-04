@@ -67,7 +67,7 @@ export default function StudentsDataTable({ items, total, page, totalPages, init
               <Users className="size-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold tracking-tight text-foreground">Student Filters</h3>
+              <h3 className="text-sm font-bold tracking-tight text-foreground">Search &amp; Filters</h3>
               <p className="text-xs text-muted-foreground">Search the student roster by name, contact and status</p>
             </div>
           </div>

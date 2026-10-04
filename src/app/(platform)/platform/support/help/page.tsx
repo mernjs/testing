@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Plus } from "lucide-react";
@@ -22,7 +23,8 @@ export default async function HelpContentPage() {
         crumbs={[{ label: "Support" }]}
         actions={can(user, "support.manage") ? <Link href="/platform/support/help/new" className={buttonVariants({ size: "sm" })}><Plus className="size-3.5" data-icon="inline-start" /> New article</Link> : undefined}
       />
-      {articles.length === 0 ? (
+      <PanelListFilters>
+{articles.length === 0 ? (
         <GlassCard interactive={false} className="p-8 text-center text-sm text-muted-foreground">No articles yet. Write the first guide so the assistant has something to answer from.</GlassCard>
       ) : (
         <GlassCard interactive={false} className="divide-y divide-border/50 overflow-hidden p-0">
@@ -37,6 +39,7 @@ export default async function HelpContentPage() {
           ))}
         </GlassCard>
       )}
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, Server, Coins, CalendarClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -35,13 +36,11 @@ export default async function InfrastructurePage({ searchParams }: { searchParam
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Infrastructure & Servers" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Infrastructure &amp; Servers</h1>
-          <p className="text-sm text-muted-foreground">{total} resource{total === 1 ? "" : "s"} tracked.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Infrastructure & Servers" }]}
+        title={<>Infrastructure &amp; Servers</>}
+        description={<>{total} resource{total === 1 ? "" : "s"} tracked.</>}
+        actions={<>{canManage && (
           <InfrastructureForm
             vendors={vendors.map((v) => ({ _id: v._id, companyName: v.companyName }))}
             trigger={
@@ -51,8 +50,8 @@ export default async function InfrastructurePage({ searchParams }: { searchParam
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Resources" value={total} accent icon={<Server className="size-4" />} />

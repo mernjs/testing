@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import DashboardSection from "@/components/platform/panel/DashboardSection";
 import { Clock, CalendarClock, CalendarDays, Coins } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -81,17 +82,15 @@ export default async function MyTimesheetPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PMS", href: "/pms/me" }, { label: "Timesheet" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Timesheet</h1>
-          <p className="text-sm text-muted-foreground">Log your work hours and track them against your projects.</p>
-        </div>
-        <TimesheetLogger
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PMS", href: "/pms/me" }, { label: "Timesheet" }]}
+        title={<>Timesheet</>}
+        description={<>Log your work hours and track them against your projects.</>}
+        actions={<><TimesheetLogger
           projects={projectOptions}
           trigger={<Button type="button" size="sm"><Clock className="size-3.5" data-icon="inline-start" />Log Hours</Button>}
-        />
-      </div>
+        /></>}
+      />
 
       <PmsDashboardFilters
         range={rangeParam}

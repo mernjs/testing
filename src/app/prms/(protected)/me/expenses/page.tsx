@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -28,13 +29,11 @@ export default async function MyExpensesPage({ searchParams }: { searchParams: P
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms/me" }, { label: "My Expenses" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">My Expenses</h1>
-          <p className="text-sm text-muted-foreground">{result.total} expense claims raised by you.</p>
-        </div>
-        <ExpenseForm
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms/me" }, { label: "My Expenses" }]}
+        title={<>My Expenses</>}
+        description={<>{result.total} expense claims raised by you.</>}
+        actions={<><ExpenseForm
           vendors={vendors.map((v) => ({ _id: v._id, companyName: v.companyName }))}
           departments={departments.map((d) => ({ _id: d._id, name: d.name }))}
           projects={projects.map((p) => ({ _id: p._id, name: p.name }))}
@@ -44,8 +43,8 @@ export default async function MyExpensesPage({ searchParams }: { searchParams: P
               New Expense Claim
             </Button>
           }
-        />
-      </div>
+        /></>}
+      />
 
       <PrmsDataTable
         columns={[

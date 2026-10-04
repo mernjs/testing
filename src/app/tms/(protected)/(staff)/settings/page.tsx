@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import TmsSettingsForm from "@/components/tms/TmsSettingsForm";
@@ -13,11 +14,11 @@ export default async function TmsSettingsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Settings" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Settings</h1>
-        <p className="text-sm text-muted-foreground">Track suggestions, currency, certificate numbering and institute identity.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Settings" }]}
+        title={<>Settings</>}
+        description={<>Track suggestions, currency, certificate numbering and institute identity.</>}
+      />
       <TmsSettingsForm settings={settings} />
     </div>
   );

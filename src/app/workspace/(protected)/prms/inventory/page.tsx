@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchInventoryItems } from "@/lib/prms/inventory";
@@ -39,11 +40,11 @@ export default async function AdminInventoryPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "Inventory" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Inventory</h1>
-        <p className="text-sm text-muted-foreground">{total} item{total === 1 ? "" : "s"}.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "Inventory" }]}
+        title={<>Inventory</>}
+        description={<>{total} item{total === 1 ? "" : "s"}.</>}
+      />
 
       <InventoryGrid
         rows={rows}

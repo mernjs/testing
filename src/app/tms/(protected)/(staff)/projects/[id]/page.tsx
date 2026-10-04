@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { GitBranch, ExternalLink, UserRound, Users, Flag, Gauge } from "lucide-react";
@@ -49,20 +50,12 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Projects", href: "/tms/projects" }, { label: p.title }]} />
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{p.title}</h1>
-            <LiveProjectStatusBadge status={p.status} />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{p.projectCode}</span>
-            {program ? ` · ${program.name}` : ""}
-          </p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Projects", href: "/tms/projects" }, { label: p.title }]}
+        title={<><span className="inline-flex flex-wrap items-center gap-2">{p.title}<LiveProjectStatusBadge status={p.status} /></span></>}
+        description={<><span className="font-mono">{p.projectCode}</span>
+            {program ? ` · ${program.name}` : ""}</>}
+        actions={<>{canManage && (
           <LiveProjectActions
             project={p}
             programs={programs.map((x) => ({ _id: x._id, name: x.name }))}
@@ -70,8 +63,8 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             mentors={mentors.map((m) => ({ _id: m._id, name: m.name }))}
             memberships={memberships.map((m) => ({ studentId: m.studentId, fullName: m.fullName, batchId: m.batchId }))}
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Progress" value={progress} suffix="%" accent icon={<Gauge className="size-4" />} />

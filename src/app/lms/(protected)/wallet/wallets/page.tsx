@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -17,12 +19,13 @@ export default async function AllWalletsPage() {
   const byId = new Map(users.map((u) => [u._id, u]));
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet", href: "/lms/wallet" }, { label: "Balances" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Wallet balances</h1>
-        <a href="/api/lms/wallet/export?kind=wallets" className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary">Export CSV</a>
-      </div>
-      <GlassCard>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet", href: "/lms/wallet" }, { label: "Balances" }]}
+        title={<>Wallet balances</>}
+        actions={<><a href="/api/lms/wallet/export?kind=wallets" className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary">Export CSV</a></>}
+      />
+      <PanelListFilters>
+<GlassCard>
         <CardContent className="overflow-x-auto py-3">
           <table className="w-full min-w-[760px] text-sm">
             <thead><tr className="border-b border-border/60 text-left text-xs text-muted-foreground"><th className="py-2 pr-3 font-medium">User</th><th className="py-2 pr-3 font-medium">Type</th><th className="py-2 pr-3 font-medium">Available</th><th className="py-2 pr-3 font-medium">Locked</th><th className="py-2 pr-3 font-medium">Earned</th><th className="py-2 pr-3 font-medium">Used</th><th className="py-2 font-medium">Status</th></tr></thead>
@@ -46,6 +49,7 @@ export default async function AllWalletsPage() {
           </table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

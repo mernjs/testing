@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import GlassCard from "@/components/lms/GlassCard";
 import { CardContent } from "@/components/ui/card";
@@ -33,13 +35,14 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
 
   return (
     <div className="space-y-5">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms/me" }, { label: "Directory" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground">Company Directory</h1>
-        <p className="text-sm text-muted-foreground">Everyone at {brand.name} and how the team is organised.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "HRMS", href: "/hrms/me" }, { label: "Directory" }]}
+        title={<>Company Directory</>}
+        description={<>Everyone at {brand.name} and how the team is organised.</>}
+      />
 
-      <Tabs
+      <PanelListFilters>
+<Tabs
         initial={tab}
         syncParam="tab"
         tabs={[
@@ -96,6 +99,7 @@ export default async function DirectoryPage({ searchParams }: { searchParams: Pr
           },
         ]}
       />
+</PanelListFilters>
     </div>
   );
 }

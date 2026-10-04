@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, Pencil, Cloud, Coins, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -45,13 +46,11 @@ export default async function SubscriptionsPage({ searchParams }: { searchParams
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Software & SaaS Services" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Software &amp; SaaS Services</h1>
-          <p className="text-sm text-muted-foreground">{total} subscription{total === 1 ? "" : "s"}.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Software & SaaS Services" }]}
+        title={<>Software &amp; SaaS Services</>}
+        description={<>{total} subscription{total === 1 ? "" : "s"}.</>}
+        actions={<>{canManage && (
           <SubscriptionForm
             vendors={vOpts}
             employees={eOpts}
@@ -62,8 +61,8 @@ export default async function SubscriptionsPage({ searchParams }: { searchParams
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Subscriptions" value={total} accent icon={<Cloud className="size-4" />} />

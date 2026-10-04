@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchDirectConversations } from "@/lib/workspace/yashchat";
@@ -21,11 +22,11 @@ export default async function AdminDirectMessagesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "YashChat", panel: "messenger" }, { label: "Direct Messages" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Direct Message Conversations</h1>
-        <p className="text-sm text-muted-foreground">{total} conversation{total === 1 ? "" : "s"}.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "YashChat", panel: "messenger" }, { label: "Direct Messages" }]}
+        title={<>Direct Message Conversations</>}
+        description={<>{total} conversation{total === 1 ? "" : "s"}.</>}
+      />
 
       <DirectMessagesGrid
         rows={items}

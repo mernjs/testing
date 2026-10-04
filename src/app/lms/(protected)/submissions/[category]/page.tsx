@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import SubmissionsDataTable from "@/components/lms/SubmissionsDataTable";
@@ -58,13 +59,11 @@ export default async function SubmissionsListPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: getCategoryLabel(category) }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">{getCategoryLabel(category)}</h1>
-          <p className="text-sm text-muted-foreground">{total} submission{total === 1 ? "" : "s"}</p>
-        </div>
-        <ExportButton
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: getCategoryLabel(category) }]}
+        title={<>{getCategoryLabel(category)}</>}
+        description={<>{total} submission{total === 1 ? "" : "s"}</>}
+        actions={<><ExportButton
           params={{
             category,
             search: sp.search,
@@ -74,8 +73,8 @@ export default async function SubmissionsListPage({
             sortBy,
             sortDir,
           }}
-        />
-      </div>
+        /></>}
+      />
 
       <SubmissionsDataTable
         category={category}

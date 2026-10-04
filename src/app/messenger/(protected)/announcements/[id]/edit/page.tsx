@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound, redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import AnnouncementComposer from "@/components/messenger/AnnouncementComposer";
@@ -22,14 +23,17 @@ export default async function EditAnnouncementPage({ params }: { params: Promise
 
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6">
-      <div className="mx-auto max-w-3xl space-y-4">
-        <Breadcrumbs
-          items={[
+      <div className="space-y-4">
+<PanelPageHeader
+          breadcrumbs={[
             { label: "Messenger", href: "/messenger" },
             { label: "Announcements", href: "/messenger/announcements" },
             { label: "Edit" },
           ]}
+          title={<>Edit announcement</>}
+          description={<>Update this draft before it is published.</>}
         />
+<div className="space-y-4">
         <AnnouncementComposer
           {...opts}
           existing={{
@@ -45,6 +49,7 @@ export default async function EditAnnouncementPage({ params }: { params: Promise
           }}
         />
       </div>
+</div>
     </div>
   );
 }

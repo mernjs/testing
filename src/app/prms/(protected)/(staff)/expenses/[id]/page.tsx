@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,10 +30,10 @@ export default async function ExpenseDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Expense Management", href: "/prms/expenses" }, { label: e.expenseCode }]} />
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{e.expenseCode}</h1>
-        {e.approvalStatus === "pending" && (isOwner || canApprove) && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Expense Management", href: "/prms/expenses" }, { label: e.expenseCode }]}
+        title={<>{e.expenseCode}</>}
+        actions={<>{e.approvalStatus === "pending" && (isOwner || canApprove) && (
           <ExpenseForm
             expense={e}
             vendors={vendors.map((v) => ({ _id: v._id, companyName: v.companyName }))}
@@ -46,8 +47,8 @@ export default async function ExpenseDetailPage({ params }: { params: Promise<{ 
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <ExpenseSummary expense={e} />

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import DashboardSection from "@/components/platform/panel/DashboardSection";
 import Link from "next/link";
 import { MessageSquare, Users, Activity, Bot, Clock, TriangleAlert, ShieldAlert, Gauge, UserCheck } from "lucide-react";
@@ -69,21 +70,17 @@ export default async function ChatbotDashboardPage({
 
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "AI Chatbot" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">AI Chatbot</h1>
-          <p className="text-sm text-muted-foreground">
-            Public assistant analytics · model <span className="font-medium text-foreground">{config.model}</span>
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "AI Chatbot" }]}
+        title={<>AI Chatbot</>}
+        description={<>Public assistant analytics · model <span className="font-medium text-foreground">{config.model}</span></>}
+        actions={<><div className="flex items-center gap-2">
           <Link href="/lms/chatbot/conversations" className={buttonVariants({ variant: "outline", size: "sm" })}>
             View Conversations
           </Link>
           <ChatbotExportButton params={exportParams} />
-        </div>
-      </div>
+        </div></>}
+      />
 
       {!(await isOpenAIConfigured()) && (
         <GlassCard interactive={false} className="border-primary/40 bg-primary/5">

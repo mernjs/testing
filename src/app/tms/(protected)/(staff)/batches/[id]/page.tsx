@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Users, CalendarDays, UserRound, Armchair } from "lucide-react";
@@ -43,33 +44,25 @@ export default async function BatchDetailPage({ params }: { params: Promise<{ id
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Batches", href: "/tms/batches" }, { label: b.name }]} />
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{b.name}</h1>
-            <BatchStatusBadge status={b.status} />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{b.batchCode}</span>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Batches", href: "/tms/batches" }, { label: b.name }]}
+        title={<><span className="inline-flex flex-wrap items-center gap-2">{b.name}<BatchStatusBadge status={b.status} /></span></>}
+        description={<><span className="font-mono">{b.batchCode}</span>
             {program ? (
               <>
                 {" · "}
                 <Link href={`/tms/programs/${program._id}`} className="text-primary hover:underline">{program.name}</Link>
               </>
-            ) : null}
-          </p>
-          <div className="pt-1"><TrainingModeBadge mode={b.mode} /></div>
-        </div>
-        {canManage && (
+            ) : null}</>}
+        meta={<><div className="pt-1"><TrainingModeBadge mode={b.mode} /></div></>}
+        actions={<>{canManage && (
           <BatchActions
             batch={b}
             programs={programs.map((p) => ({ _id: p._id, name: p.name }))}
             mentors={mentors.map((m) => ({ _id: m._id, name: m.name }))}
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Enrolled" value={enrolled} accent icon={<Users className="size-4" />} />

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -19,15 +20,12 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Customers", href: "/fms/customers" }, { label: client.companyName }]} />
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{client.companyName}</h1>
-          <p className="text-sm text-muted-foreground">{client.clientCode} · {client.industry ?? "No industry set"}</p>
-        </div>
-        <Badge className={getClientStatusMeta(client.status).badgeClass}>{getClientStatusMeta(client.status).label}</Badge>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Customers", href: "/fms/customers" }, { label: client.companyName }]}
+        title={<>{client.companyName}</>}
+        description={<>{client.clientCode} · {client.industry ?? "No industry set"}</>}
+        actions={<><Badge className={getClientStatusMeta(client.status).badgeClass}>{getClientStatusMeta(client.status).label}</Badge></>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <GlassCard>

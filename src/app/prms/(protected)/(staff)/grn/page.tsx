@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { PackageCheck, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -49,13 +50,11 @@ export default async function GrnPage({ searchParams }: { searchParams: Promise<
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Goods Receipt" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Goods Receipt (GRN)</h1>
-          <p className="text-sm text-muted-foreground">{total} receipt{total === 1 ? "" : "s"} recorded.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Goods Receipt" }]}
+        title={<>Goods Receipt (GRN)</>}
+        description={<>{total} receipt{total === 1 ? "" : "s"} recorded.</>}
+        actions={<>{canManage && (
           <GoodsReceiptForm
             pos={posForForm}
             selectedPoId={sp.po}
@@ -67,8 +66,8 @@ export default async function GrnPage({ searchParams }: { searchParams: Promise<
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Receipts" value={total} accent icon={<PackageCheck className="size-4" />} />

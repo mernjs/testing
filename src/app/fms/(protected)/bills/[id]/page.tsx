@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import { Plus, Download } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -27,13 +28,11 @@ export default async function BillDetailPage({ params }: { params: Promise<{ id:
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Bills", href: "/fms/bills" }, { label: bill.invoiceNumber }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{bill.invoiceNumber}</h1>
-          <p className="text-sm text-muted-foreground">{bill.vendorName} · {formatMoney(bill.totalAmount, bill.currency)}</p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Bills", href: "/fms/bills" }, { label: bill.invoiceNumber }]}
+        title={<>{bill.invoiceNumber}</>}
+        description={<>{bill.vendorName} · {formatMoney(bill.totalAmount, bill.currency)}</>}
+        actions={<><div className="flex items-center gap-2">
           <InvoiceStatusBadge status={bill.status} />
           {bill.poNumber && (
             <a href={`/api/prms/purchase-orders/${bill.poNumber}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
@@ -41,8 +40,8 @@ export default async function BillDetailPage({ params }: { params: Promise<{ id:
               PO
             </a>
           )}
-        </div>
-      </div>
+        </div></>}
+      />
 
       {canManage && totalOutstanding > 0.01 && (
         <GlassCard>

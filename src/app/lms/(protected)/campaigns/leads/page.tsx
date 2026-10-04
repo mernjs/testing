@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -47,17 +48,14 @@ export default async function AttributedLeadsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Campaign Analytics", href: "/lms/campaigns" }, { label: "Attributed Leads" }]} />
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Attributed Leads</h1>
-          <p className="text-sm text-muted-foreground">{total} lead{total === 1 ? "" : "s"} tied to a campaign or paid source.</p>
-        </div>
-        <Link href="/lms/campaigns" className="flex items-center gap-1 text-sm text-primary hover:underline">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Campaign Analytics", href: "/lms/campaigns" }, { label: "Attributed Leads" }]}
+        title={<>Attributed Leads</>}
+        description={<>{total} lead{total === 1 ? "" : "s"} tied to a campaign or paid source.</>}
+        actions={<><Link href="/lms/campaigns" className="flex items-center gap-1 text-sm text-primary hover:underline">
           <ArrowLeft className="size-3.5" /> Back to analytics
-        </Link>
-      </div>
+        </Link></>}
+      />
 
       <CampaignFilters
         values={{

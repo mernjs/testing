@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import { FileText, FileSpreadsheet, FileType } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -14,13 +16,14 @@ export default async function ReportsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Reports" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Reports</h1>
-        <p className="text-sm text-muted-foreground">Export training data to CSV, Excel or PDF.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Reports" }]}
+        title={<>Reports</>}
+        description={<>Export training data to CSV, Excel or PDF.</>}
+      />
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <PanelListFilters>
+<div className="grid gap-4 sm:grid-cols-2">
         {REPORT_TYPES.map((r) => (
           <GlassCard key={r.value} interactive={false}>
             <CardHeader>
@@ -49,6 +52,7 @@ export default async function ReportsPage() {
           </GlassCard>
         ))}
       </div>
+</PanelListFilters>
     </div>
   );
 }

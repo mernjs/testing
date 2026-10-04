@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { redirect } from "next/navigation";
 import { getViewer, can } from "@/lib/cms/viewer";
 import { listAudit, AUDIT_ACTION_LABEL } from "@/lib/cms/audit";
@@ -21,7 +22,8 @@ export default async function CmsAuditLogsPage() {
         title="Audit Log"
         description={<>Every change made in the CMS.</>}
       />
-      <div className="space-y-2">
+      <PanelListFilters>
+<div className="space-y-2">
         {items.map((log) => (
           <GlassCard key={log._id} className="flex items-start justify-between gap-3 p-4">
             <div className="min-w-0">
@@ -43,6 +45,7 @@ export default async function CmsAuditLogsPage() {
         ))}
         {items.length === 0 && <GlassCard className="p-8 text-center text-sm text-muted-foreground">No activity yet.</GlassCard>}
       </div>
+</PanelListFilters>
     </div>
   );
 }

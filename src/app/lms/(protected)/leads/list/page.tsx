@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -52,15 +54,16 @@ export default async function LeadsListPage({
 
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Lead Management", href: "/lms/leads" }, { label: "All leads" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">All leads</h1>
-        <Link href="/lms/leads/new" className={buttonVariants({ size: "sm" })}>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Lead Management", href: "/lms/leads" }, { label: "All leads" }]}
+        title={<>All leads</>}
+        actions={<><Link href="/lms/leads/new" className={buttonVariants({ size: "sm" })}>
           New lead
-        </Link>
-      </div>
+        </Link></>}
+      />
 
-      <div className="flex flex-wrap items-center gap-2">
+      <PanelListFilters>
+<div className="flex flex-wrap items-center gap-2">
         {TYPE_TABS.map((t) => (
           <Link
             key={t.key}
@@ -149,6 +152,7 @@ export default async function LeadsListPage({
           </table>
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

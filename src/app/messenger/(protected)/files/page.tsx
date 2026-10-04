@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import FilesHub from "@/components/messenger/FilesHub";
 import { getCurrentChatUser } from "@/lib/messenger-auth";
@@ -10,16 +12,18 @@ export default async function SharedFilesPage() {
 
   return (
     <div className="h-full overflow-y-auto p-4 sm:p-6">
-      <div className="mx-auto max-w-3xl space-y-4">
-        <Breadcrumbs items={[{ label: "Messenger", href: "/messenger" }, { label: "Shared Files" }]} />
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Shared Files</h1>
-          <p className="text-sm text-muted-foreground">
-            Every file shared in a channel or DM you can see — searchable and filterable.
-          </p>
-        </div>
+      <div className="space-y-4">
+<PanelPageHeader
+          breadcrumbs={[{ label: "Messenger", href: "/messenger" }, { label: "Shared Files" }]}
+          title={<>Shared Files</>}
+          description={<>Every file shared in a channel or DM you can see — searchable and filterable.</>}
+        />
+<PanelListFilters>
+<div className="space-y-4">
         <FilesHub />
       </div>
+</PanelListFilters>
+</div>
     </div>
   );
 }

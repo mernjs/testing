@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Plus } from "lucide-react";
@@ -36,17 +37,15 @@ export default async function ProjectTasksPage({ params }: { params: Promise<{ i
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "PMS", href: "/pms" },
           { label: "Projects", href: "/pms/projects" },
           { label: project.name, href: `/pms/projects/${id}` },
           { label: "Tasks" },
         ]}
-      />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{project.name} · Tasks</h1>
-        <div className="flex items-center gap-2">
+        title={<>{project.name} · Tasks</>}
+        actions={<><div className="flex items-center gap-2">
           <Link href={`/pms/projects/${id}/board`} className="text-sm font-medium text-primary hover:underline">Board view →</Link>
           {canManage && (
             <TaskSheet
@@ -61,8 +60,8 @@ export default async function ProjectTasksPage({ params }: { params: Promise<{ i
               }
             />
           )}
-        </div>
-      </div>
+        </div></>}
+      />
       <ProjectTabs projectId={id} />
 
       <TaskList

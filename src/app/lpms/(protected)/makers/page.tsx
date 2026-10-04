@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Plus, Layers, Pencil, Archive } from "lucide-react";
@@ -20,24 +22,18 @@ export default async function MakersPage() {
 
   return (
     <div className="space-y-4 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "LPMS", href: "/lpms" }, { label: "Maker Types" }]} />
-
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Maker Types
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Configure the types of documents your team can create.
-          </p>
-        </div>
-        <Link href="/lpms/makers/new" className={buttonVariants({ size: "sm" })}>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "LPMS", href: "/lpms" }, { label: "Maker Types" }]}
+        title={<>Maker Types</>}
+        description={<>Configure the types of documents your team can create.</>}
+        actions={<><Link href="/lpms/makers/new" className={buttonVariants({ size: "sm" })}>
           <Plus className="size-3.5" />
           New Maker Type
-        </Link>
-      </div>
+        </Link></>}
+      />
 
-      {makerTypes.length === 0 ? (
+      <PanelListFilters>
+{makerTypes.length === 0 ? (
         <GlassCard interactive={false}>
           <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
             <Layers className="size-10 text-muted-foreground/40" />
@@ -82,6 +78,7 @@ export default async function MakersPage() {
           ))}
         </div>
       )}
+</PanelListFilters>
     </div>
   );
 }

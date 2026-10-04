@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import { CalendarDays, Clock, UserRound } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -18,10 +20,13 @@ export default async function MyBatchPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms/me" }, { label: "My Batch" }]} />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">My Batch</h1>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms/me" }, { label: "My Batch" }]}
+        title={<>My Batch</>}
+      />
 
-      {enrollments.length === 0 && (
+      <PanelListFilters>
+{enrollments.length === 0 && (
         <GlassCard interactive={false}>
           <CardContent className="py-12 text-center text-sm text-muted-foreground">
             You have not been assigned to a batch yet.
@@ -59,6 +64,7 @@ export default async function MyBatchPage() {
           </CardContent>
         </GlassCard>
       ))}
+</PanelListFilters>
     </div>
   );
 }

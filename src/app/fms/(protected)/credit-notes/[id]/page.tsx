@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -22,17 +23,15 @@ export default async function CreditNoteDetailPage({ params }: { params: Promise
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Credit Notes", href: "/fms/credit-notes" }, { label: note.creditNoteNumber }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{note.creditNoteNumber}</h1>
-          <p className="text-sm text-muted-foreground">{note.customerName}</p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Credit Notes", href: "/fms/credit-notes" }, { label: note.creditNoteNumber }]}
+        title={<>{note.creditNoteNumber}</>}
+        description={<>{note.customerName}</>}
+        actions={<><div className="flex items-center gap-2">
           <NoteStatusBadge status={note.status} />
           {canCancel && note.status === "issued" && <CancelNoteButton id={note._id} action={cancelCreditNoteAction} />}
-        </div>
-      </div>
+        </div></>}
+      />
 
       <GlassCard>
         <CardHeader><CardTitle>Details</CardTitle></CardHeader>

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import VoiceConfigForm from "@/components/lms/VoiceConfigForm";
 import { getChatbotConfig } from "@/lib/chatbot-config";
@@ -10,21 +11,17 @@ export default async function VoiceConfigPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "AI Chatbot", href: "/lms/chatbot" },
           { label: "Conversation AI", href: "/lms/chatbot/voice" },
           { label: "ElevenLabs Config" },
         ]}
+        title={<>ElevenLabs Configuration</>}
+        description={<>Voice, model and delivery settings for voice mode on the Ask {brand.name} page. The API key is read from
+          the server environment only.</>}
       />
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">ElevenLabs Configuration</h1>
-        <p className="text-sm text-muted-foreground">
-          Voice, model and delivery settings for voice mode on the Ask {brand.name} page. The API key is read from
-          the server environment only.
-        </p>
-      </div>
 
       <VoiceConfigForm voice={config.voice} elevenLabsConfigured={(await isElevenLabsConfigured())} />
     </div>

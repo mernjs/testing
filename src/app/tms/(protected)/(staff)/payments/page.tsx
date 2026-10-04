@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Plus, IndianRupee, Wallet, AlarmClock, TrendingUp } from "lucide-react";
@@ -36,13 +38,11 @@ export default async function PaymentsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Payments" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Payments</h1>
-          <p className="text-sm text-muted-foreground">{analytics.planCount} fee plan{analytics.planCount === 1 ? "" : "s"}.</p>
-        </div>
-        <PaymentPlanForm
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Payments" }]}
+        title={<>Payments</>}
+        description={<>{analytics.planCount} fee plan{analytics.planCount === 1 ? "" : "s"}.</>}
+        actions={<><PaymentPlanForm
           students={students}
           programs={programs}
           batches={batches.map((b) => ({ _id: b._id, name: b.name, programId: b.programId }))}
@@ -53,10 +53,11 @@ export default async function PaymentsPage() {
               New Fee Plan
             </Button>
           }
-        />
-      </div>
+        /></>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Total Billed" value={analytics.totalBilled} format="currency" accent icon={<IndianRupee className="size-4" />} />
         <KpiCard label="Collected" value={analytics.totalCollected} format="currency" icon={<Wallet className="size-4" />} />
         <KpiCard label="Pending" value={analytics.totalPending} format="currency" tone={analytics.totalPending > 0 ? "down" : undefined} icon={<AlarmClock className="size-4" />} />
@@ -111,6 +112,7 @@ export default async function PaymentsPage() {
           )}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

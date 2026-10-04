@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Download, Receipt as ReceiptIcon, FileMinus } from "lucide-react";
@@ -36,23 +37,18 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Invoices", href: "/fms/invoices" }, { label: invoice.invoiceNumber }]} />
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{invoice.invoiceNumber}</h1>
-          <p className="text-sm text-muted-foreground">
-            {invoice.customerName} · {formatMoney(invoice.totalAmount, invoice.currency)} · Due {formatDate(invoice.dueDate)}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Invoices", href: "/fms/invoices" }, { label: invoice.invoiceNumber }]}
+        title={<>{invoice.invoiceNumber}</>}
+        description={<>{invoice.customerName} · {formatMoney(invoice.totalAmount, invoice.currency)} · Due {formatDate(invoice.dueDate)}</>}
+        actions={<><div className="flex items-center gap-2">
           <InvoiceStatusBadge status={invoice.status} />
           <a href={`/api/fms/invoices/${invoice.invoiceNumber}`} target="_blank" rel="noreferrer" className={buttonVariants({ variant: "outline", size: "sm" })}>
             <Download className="size-3.5" data-icon="inline-start" />
             PDF
           </a>
-        </div>
-      </div>
+        </div></>}
+      />
 
       {canManage && (
         <GlassCard>

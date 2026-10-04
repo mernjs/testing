@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Plus, GraduationCap, Rocket, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -46,13 +47,11 @@ export default async function ProgramsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Programs" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Programs</h1>
-          <p className="text-sm text-muted-foreground">{totalPrograms} program{totalPrograms === 1 ? "" : "s"} in the catalogue.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Programs" }]}
+        title={<>Programs</>}
+        description={<>{totalPrograms} program{totalPrograms === 1 ? "" : "s"} in the catalogue.</>}
+        actions={<>{canManage && (
           <ProgramForm
             technologySuggestions={settings.technologySuggestions}
             trigger={
@@ -62,8 +61,8 @@ export default async function ProgramsPage({
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Programs" value={totalPrograms} accent icon={<GraduationCap className="size-4" />} />

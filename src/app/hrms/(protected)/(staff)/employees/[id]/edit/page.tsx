@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound, redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import EmployeeForm from "@/components/hrms/EmployeeForm";
@@ -23,18 +24,16 @@ export default async function EditEmployeePage({ params }: { params: Promise<{ i
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "HRMS", href: "/hrms" },
           { label: "Employees", href: "/hrms/employees" },
           { label: employeeFullName(employee), href: `/hrms/employees/${id}` },
           { label: "Edit" },
         ]}
+        title={<>Edit {employeeFullName(employee)}</>}
+        description={<>{employee.employeeCode}</>}
       />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Edit {employeeFullName(employee)}</h1>
-        <p className="text-sm text-muted-foreground">{employee.employeeCode}</p>
-      </div>
 
       <EmployeeForm
         mode="edit"

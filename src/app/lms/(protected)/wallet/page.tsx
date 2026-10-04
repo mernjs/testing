@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { UserSearch } from "lucide-react";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,8 +33,10 @@ export default async function WalletOverviewPage({ searchParams }: { searchParam
 
   return (
     <div className="relative space-y-4">
-      <Breadcrumbs items={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet" }]} />
-      <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Wallet &amp; Credits</h1>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Dashboard", href: "/lms" }, { label: "Wallet" }]}
+        title={<>Wallet &amp; Credits</>}
+      />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-muted-foreground">Promotional credits only — not cash, not an accounting balance.</p>
         <ReasonAction needsReason={false} label="Run expiry sweep" action={runExpirySweepAction as (r: string) => Promise<{ error?: string }>} />

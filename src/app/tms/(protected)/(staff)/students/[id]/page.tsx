@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Mail, Phone, MapPin, School, Users, GraduationCap, Layers, Gauge, Pencil, Plus, ExternalLink } from "lucide-react";
@@ -41,25 +42,17 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Students", href: "/tms/students" }, { label: s.fullName }]} />
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{s.fullName}</h1>
-            <StudentStatusBadge status={s.status} />
-          </div>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{s.studentCode}</span>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Students", href: "/tms/students" }, { label: s.fullName }]}
+        title={<><span className="inline-flex flex-wrap items-center gap-2">{s.fullName}<StudentStatusBadge status={s.status} /></span></>}
+        description={<><span className="font-mono">{s.studentCode}</span>
             {s.applicationId ? (
               <>
                 {" · from "}
                 <Link href={`/tms/applications/${s.applicationId}`} className="text-primary hover:underline">application</Link>
               </>
-            ) : null}
-          </p>
-        </div>
-        {canManage && (
+            ) : null}</>}
+        actions={<>{canManage && (
           <div className="flex flex-wrap items-center gap-2">
             <AssignBatchForm
               studentId={s._id}
@@ -82,8 +75,8 @@ export default async function StudentDetailPage({ params }: { params: Promise<{ 
               }
             />
           </div>
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Enrolments" value={enrollments.length} accent icon={<Layers className="size-4" />} />

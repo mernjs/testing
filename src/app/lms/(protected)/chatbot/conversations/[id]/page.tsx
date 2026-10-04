@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
@@ -35,21 +36,16 @@ export default async function ConversationDetailPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs
-        items={[
+      <PanelPageHeader
+        breadcrumbs={[
           { label: "Dashboard", href: "/lms" },
           { label: "AI Chatbot", href: "/lms/chatbot" },
           { label: "Conversations", href: "/lms/chatbot/conversations" },
           { label: `${s.sessionId.slice(0, 8)}…` },
         ]}
-      />
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">Conversation transcript</h1>
-          <p className="text-sm text-muted-foreground">Session {s.sessionId}</p>
-        </div>
-        <div className="flex items-center gap-2">
+        title={<>Conversation transcript</>}
+        description={<>Session {s.sessionId}</>}
+        actions={<><div className="flex items-center gap-2">
           <Link
             href="/lms/chatbot/conversations"
             className={buttonVariants({ variant: "outline", size: "sm" })}
@@ -57,8 +53,8 @@ export default async function ConversationDetailPage({
             Back to list
           </Link>
           <DeleteConversationButton id={s.sessionId} />
-        </div>
-      </div>
+        </div></>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
         <GlassCard className="h-fit">

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import CategoriesManager from "@/components/sop/CategoriesManager";
@@ -22,12 +24,14 @@ export default async function CategoriesPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "Categories" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Categories</h1>
-        <p className="text-sm text-muted-foreground">Cross-department groupings for SOPs. Click a category to see its SOPs.</p>
-      </div>
-      <CategoriesManager rows={rows} canManage={canManage} />
+      <PanelPageHeader
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "Categories" }]}
+        title={<>Categories</>}
+        description={<>Cross-department groupings for SOPs. Click a category to see its SOPs.</>}
+      />
+      <PanelListFilters>
+<CategoriesManager rows={rows} canManage={canManage} />
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Plus } from "lucide-react";
@@ -28,17 +29,15 @@ export default async function EmployeeExpenseDetailPage({ params }: { params: Pr
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Employee Expenses", href: "/fms/employee-expenses" }, { label: expense.expenseCode }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{expense.expenseCode}</h1>
-          <p className="text-sm text-muted-foreground">{expense.raisedByName} · {formatMoney(expense.totalAmount, expense.currency)}</p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Employee Expenses", href: "/fms/employee-expenses" }, { label: expense.expenseCode }]}
+        title={<>{expense.expenseCode}</>}
+        description={<>{expense.raisedByName} · {formatMoney(expense.totalAmount, expense.currency)}</>}
+        actions={<><div className="flex items-center gap-2">
           <ExpenseCategoryBadge category={expense.category} />
           <ExpenseStatusBadge status={expense.approvalStatus} />
-        </div>
-      </div>
+        </div></>}
+      />
 
       {canManage && expense.approvalStatus === "approved" && outstanding > 0.01 && (
         <GlassCard>

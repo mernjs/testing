@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Plus, Building2, CheckCircle2, Ban, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -41,13 +42,11 @@ export default async function VendorsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Vendors" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Vendors</h1>
-          <p className="text-sm text-muted-foreground">{totalVendors} supplier{totalVendors === 1 ? "" : "s"} in the CRM.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Vendors" }]}
+        title={<>Vendors</>}
+        description={<>{totalVendors} supplier{totalVendors === 1 ? "" : "s"} in the CRM.</>}
+        actions={<>{canManage && (
           <VendorForm
             trigger={
               <Button type="button" size="sm">
@@ -56,8 +55,8 @@ export default async function VendorsPage({
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Vendors" value={totalVendors} accent icon={<Building2 className="size-4" />} />

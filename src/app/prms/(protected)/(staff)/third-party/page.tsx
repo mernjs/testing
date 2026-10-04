@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, Pencil, Handshake, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -35,13 +36,11 @@ export default async function ThirdPartyPage({ searchParams }: { searchParams: P
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Third-Party Services" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Third-Party Services</h1>
-          <p className="text-sm text-muted-foreground">{total} outsourced service{total === 1 ? "" : "s"}.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Third-Party Services" }]}
+        title={<>Third-Party Services</>}
+        description={<>{total} outsourced service{total === 1 ? "" : "s"}.</>}
+        actions={<>{canManage && (
           <ThirdPartyForm
             vendors={vOpts}
             trigger={
@@ -51,8 +50,8 @@ export default async function ThirdPartyPage({ searchParams }: { searchParams: P
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Services" value={total} accent icon={<Handshake className="size-4" />} />

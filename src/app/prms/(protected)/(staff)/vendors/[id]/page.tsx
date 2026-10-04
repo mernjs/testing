@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Pencil, Building2, Landmark, ReceiptText } from "lucide-react";
@@ -35,15 +36,11 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Vendors", href: "/prms/vendors" }, { label: v.companyName }]} />
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{v.companyName}</h1>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-mono">{v.vendorCode}</span> · <VendorCategoryBadge category={v.category} /> · <VendorStatusBadge status={v.status} />
-          </p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Vendors", href: "/prms/vendors" }, { label: v.companyName }]}
+        title={<>{v.companyName}</>}
+        description={<><span className="font-mono">{v.vendorCode}</span> · <VendorCategoryBadge category={v.category} /> · <VendorStatusBadge status={v.status} /></>}
+        actions={<>{canManage && (
           <VendorForm
             vendor={v}
             trigger={
@@ -53,8 +50,8 @@ export default async function VendorProfilePage({ params }: { params: Promise<{ 
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <GlassCard interactive={false}>

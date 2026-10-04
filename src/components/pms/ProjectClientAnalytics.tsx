@@ -1,5 +1,6 @@
 "use client";
 
+import FilterCardShell from "@/components/platform/panel/FilterCardShell";
 import React, { useState } from "react";
 import {
   Clock, CheckCircle2, AlertCircle, Building2, FolderKanban,
@@ -499,18 +500,8 @@ export default function ProjectClientAnalytics({ projects, clients }: Props) {
     <div className="space-y-8">
 
       {/* ── Filter Bar ── */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 via-background to-secondary/5 p-4 shadow-xs">
-        <div className="flex items-center gap-2.5">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <BarChart3 className="size-5" />
-          </div>
-          <div>
-            <h3 className="font-bold text-foreground">Advanced Project &amp; Client Analytics</h3>
-            <p className="text-xs text-muted-foreground">10+ interactive charts · Billable efficiency · Variance analysis · PDF billing</p>
-          </div>
-        </div>
+      <FilterCardShell description="Slice every chart and table below by client, status, billing model and priority">
         <div className="flex flex-wrap items-center gap-2">
-          <Filter className="size-3.5 text-muted-foreground" />
           <Select value={selectedClientId} onValueChange={(v) => setSelectedClientId(v || "all")}>
             <SelectTrigger className="h-8 w-40 text-xs"><SelectValue placeholder="All Clients" /></SelectTrigger>
             <SelectContent>
@@ -549,7 +540,7 @@ export default function ProjectClientAnalytics({ projects, clients }: Props) {
             </SelectContent>
           </Select>
         </div>
-      </div>
+      </FilterCardShell>
 
       {/* ── KPI Row 1: Core metrics ── */}
       <div>

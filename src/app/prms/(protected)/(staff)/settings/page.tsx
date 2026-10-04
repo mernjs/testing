@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import PrmsSettingsForm from "@/components/prms/PrmsSettingsForm";
@@ -13,13 +14,11 @@ export default async function PrmsSettingsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Settings" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Settings</h1>
-        <p className="text-sm text-muted-foreground">
-          Company identity for purchase orders and invoices, requisition approval thresholds and default currency.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Settings" }]}
+        title={<>Settings</>}
+        description={<>Company identity for purchase orders and invoices, requisition approval thresholds and default currency.</>}
+      />
       <PrmsSettingsForm settings={JSON.parse(JSON.stringify(settings))} />
     </div>
   );

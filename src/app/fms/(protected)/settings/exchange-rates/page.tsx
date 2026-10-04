@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -21,14 +22,12 @@ export default async function ExchangeRatesPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Settings" }, { label: "Exchange Rates" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Exchange Rates</h1>
-        <p className="text-sm text-muted-foreground">
-          Rates to {DEFAULT_CURRENCY}, the base currency. A currency with no rate here converts at 1.0 in every
-          report and is flagged — reports never crash on an unrated currency, they just warn.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Settings" }, { label: "Exchange Rates" }]}
+        title={<>Exchange Rates</>}
+        description={<>Rates to {DEFAULT_CURRENCY}, the base currency. A currency with no rate here converts at 1.0 in every
+          report and is flagged — reports never crash on an unrated currency, they just warn.</>}
+      />
 
       {canManage && (
         <GlassCard interactive={false}>

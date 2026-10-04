@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchBatches } from "@/lib/tms/batches";
@@ -43,11 +44,11 @@ export default async function AdminBatchesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "TMS", panel: "tms" }, { label: "Batches" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Batches</h1>
-        <p className="text-sm text-muted-foreground">{total} batch{total === 1 ? "" : "es"}.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "TMS", panel: "tms" }, { label: "Batches" }]}
+        title={<>Batches</>}
+        description={<>{total} batch{total === 1 ? "" : "es"}.</>}
+      />
 
       <BatchesGrid
         rows={rows}

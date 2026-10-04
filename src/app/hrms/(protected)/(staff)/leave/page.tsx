@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Inbox, CalendarCheck, CheckCircle2, Tags } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -72,16 +74,15 @@ export default async function LeavePage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Leave" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Leave</h1>
-          <p className="text-sm text-muted-foreground">Requests, balances and the leave calendar.</p>
-        </div>
-        {canDecide && <FileLeaveSheet employees={scopedEmployees} leaveTypes={typeOpts} />}
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "HRMS", href: "/hrms" }, { label: "Leave" }]}
+        title={<>Leave</>}
+        description={<>Requests, balances and the leave calendar.</>}
+        actions={<>{canDecide && <FileLeaveSheet employees={scopedEmployees} leaveTypes={typeOpts} />}</>}
+      />
 
-      <Tabs
+      <PanelListFilters>
+<Tabs
         initial={tab}
         syncParam="tab"
         tabs={[
@@ -163,6 +164,7 @@ export default async function LeavePage({
           },
         ]}
       />
+</PanelListFilters>
     </div>
   );
 }

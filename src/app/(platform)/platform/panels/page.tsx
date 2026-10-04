@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import type { Metadata } from "next";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
 import { can, requirePlatformPermission } from "@/lib/platform/console/access";
@@ -26,7 +27,9 @@ export default async function PlatformPanelsPage() {
         description="The Panel Registry: one name, description and on/off switch for every panel, used by the Workspace, onboarding, plans, panel headers and search. Deactivating a panel hides it and blocks access."
         crumbs={[{ label: "Tenants" }]}
       />
-      <PanelsManager panels={panels} disabledFor={disabledFor} canManage={can(user, "panels.manage")} />
+      <PanelListFilters>
+<PanelsManager panels={panels} disabledFor={disabledFor} canManage={can(user, "panels.manage")} />
+</PanelListFilters>
     </div>
   );
 }

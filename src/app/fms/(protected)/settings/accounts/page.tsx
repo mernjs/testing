@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,13 +32,11 @@ export default async function ChartOfAccountsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Settings" }, { label: "Chart of Accounts" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Chart of Accounts</h1>
-          <p className="text-sm text-muted-foreground">{accounts.length} account{accounts.length === 1 ? "" : "s"} configured.</p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Settings" }, { label: "Chart of Accounts" }]}
+        title={<>Chart of Accounts</>}
+        description={<>{accounts.length} account{accounts.length === 1 ? "" : "s"} configured.</>}
+        actions={<>{canManage && (
           <div className="flex gap-2">
             <SeedDefaultsButton />
             <AccountForm
@@ -49,8 +48,8 @@ export default async function ChartOfAccountsPage() {
               }
             />
           </div>
-        )}
-      </div>
+        )}</>}
+      />
 
       {accounts.length === 0 && (
         <GlassCard>

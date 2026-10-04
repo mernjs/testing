@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { CheckCircle2, AlertTriangle, CalendarClock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -54,13 +56,14 @@ export default async function BalanceSheetPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Balance Sheet" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Balance Sheet</h1>
-        <p className="text-sm text-muted-foreground">Assets, liabilities and equity as of {new Date(result.asOf).toLocaleDateString()}. Retained Earnings is computed live, not journal-posted.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Reports" }, { label: "Balance Sheet" }]}
+        title={<>Balance Sheet</>}
+        description={<>Assets, liabilities and equity as of {new Date(result.asOf).toLocaleDateString()}. Retained Earnings is computed live, not journal-posted.</>}
+      />
 
-      <div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
+      <PanelListFilters>
+<div className="rounded-2xl border border-border/40 bg-card/90 p-5 shadow-sm backdrop-blur-md">
         <div className="flex items-center gap-3 border-b border-border/40 pb-4">
           <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
             <CalendarClock className="size-4" />
@@ -102,6 +105,7 @@ export default async function BalanceSheetPage({
           <Section title="Equity" lines={result.equity} total={result.totalEquity} />
         </div>
       </div>
+</PanelListFilters>
     </div>
   );
 }

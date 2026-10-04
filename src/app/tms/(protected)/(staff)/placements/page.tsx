@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Plus, Briefcase, Target, TrendingUp, ExternalLink } from "lucide-react";
@@ -39,13 +41,11 @@ export default async function PlacementsPage() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "TMS", href: "/tms" }, { label: "Placements" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Placements</h1>
-          <p className="text-sm text-muted-foreground">{rows.length} placement{rows.length === 1 ? "" : "s"} recorded.</p>
-        </div>
-        <PlacementForm
+      <PanelPageHeader
+        breadcrumbs={[{ label: "TMS", href: "/tms" }, { label: "Placements" }]}
+        title={<>Placements</>}
+        description={<>{rows.length} placement{rows.length === 1 ? "" : "s"} recorded.</>}
+        actions={<><PlacementForm
           students={students}
           programs={programOptions}
           trigger={
@@ -54,10 +54,11 @@ export default async function PlacementsPage() {
               Record Placement
             </Button>
           }
-        />
-      </div>
+        /></>}
+      />
 
-      <KpiGrid>
+      <PanelListFilters>
+<KpiGrid>
         <KpiCard label="Total Placements" value={rows.length} accent icon={<Briefcase className="size-4" />} />
         <KpiCard label="Placement Rate" value={rate} suffix="%" icon={<Target className="size-4" />} />
         <KpiCard label="Avg Package (LPA)" value={avgPackage} icon={<TrendingUp className="size-4" />} />
@@ -111,6 +112,7 @@ export default async function PlacementsPage() {
           )}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import SopLibraryTable from "@/components/sop/SopLibraryTable";
@@ -14,12 +16,13 @@ export default async function MySopsPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "SOP", href: "/sop" }, { label: "My SOPs" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">My SOPs</h1>
-        <p className="text-sm text-muted-foreground">SOPs you own, wrote or created — including your drafts. {result.total} total.</p>
-      </div>
-      <SopLibraryTable
+      <PanelPageHeader
+        breadcrumbs={[{ label: "SOP", href: "/sop" }, { label: "My SOPs" }]}
+        title={<>My SOPs</>}
+        description={<>SOPs you own, wrote or created — including your drafts. {result.total} total.</>}
+      />
+      <PanelListFilters>
+<SopLibraryTable
         result={result}
         query={query}
         canCreate={creatableDepartmentIds(viewer)?.length !== 0}
@@ -27,6 +30,7 @@ export default async function MySopsPage({ searchParams }: { searchParams: Promi
         exportBase="/api/sop/export/my"
         emptyLabel="You haven't created or been made owner of any SOPs yet."
       />
+</PanelListFilters>
     </div>
   );
 }

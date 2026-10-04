@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { redirect } from "next/navigation";
 import { getViewer, can } from "@/lib/cms/viewer";
 import { listNavItems } from "@/lib/cms/nav";
@@ -19,7 +20,9 @@ export default async function CmsNavigationPage() {
         title="Header & Navigation"
         description={<>The website&apos;s header menu — its columns, links, icons and featured cards. The desktop mega-menu and the mobile menu share it; changes go live immediately.</>}
       />
-      <NavigationManager initialItems={items} canEdit={can(viewer, "NAV_MANAGE")} />
+      <PanelListFilters>
+<NavigationManager initialItems={items} canEdit={can(viewer, "NAV_MANAGE")} />
+</PanelListFilters>
     </div>
   );
 }

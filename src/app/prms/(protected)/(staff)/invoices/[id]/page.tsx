@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
@@ -39,15 +40,11 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Invoices & Payments", href: "/prms/invoices" }, { label: i.invoiceNumber }]} />
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{i.invoiceNumber}</h1>
-          <p className="text-sm text-muted-foreground">
-            {i.vendorName} · <InvoiceStatusBadge status={i.status} /> · {formatMoney(i.netPayable, i.currency)} net
-          </p>
-        </div>
-        {canManage && !["paid", "partially_paid"].includes(i.status) && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Invoices & Payments", href: "/prms/invoices" }, { label: i.invoiceNumber }]}
+        title={<>{i.invoiceNumber}</>}
+        description={<>{i.vendorName} · <InvoiceStatusBadge status={i.status} /> · {formatMoney(i.netPayable, i.currency)} net</>}
+        actions={<>{canManage && !["paid", "partially_paid"].includes(i.status) && (
           <InvoiceForm
             invoice={i}
             vendors={vendors.map((v) => ({ _id: v._id, companyName: v.companyName }))}
@@ -58,8 +55,8 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <div className="space-y-4">

@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { PortalPageHeader } from "@/components/portal/widgets";
 import ResultReport from "@/components/ots/ResultReport";
 import { guardPortalPage } from "@/lib/portal/guard";
@@ -18,7 +17,6 @@ export default async function PortalResultPage({ params }: { params: Promise<{ a
   if (!view) notFound();
   return (
     <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Results", href: "/portal/tests/results" }, { label: `Attempt ${view.attemptNo}` }]} />
       <PortalPageHeader title={view.testName} subtitle={`Attempt ${view.attemptNo}`} />
       <ResultReport view={view} />
     </div>

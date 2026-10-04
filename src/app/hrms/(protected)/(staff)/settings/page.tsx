@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import Tabs from "@/components/hrms/Tabs";
@@ -28,13 +29,11 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Settings" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Settings</h1>
-        <p className="text-sm text-muted-foreground">
-          Company identity, work schedule, leave configuration and statutory payroll rates.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "HRMS", href: "/hrms" }, { label: "Settings" }]}
+        title={<>Settings</>}
+        description={<>Company identity, work schedule, leave configuration and statutory payroll rates.</>}
+      />
 
       <Tabs
         initial={tab}

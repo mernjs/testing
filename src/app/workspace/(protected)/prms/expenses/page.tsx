@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { requireWorkspaceAccess } from "@/lib/workspace/access";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { searchExpenses } from "@/lib/prms/expenses";
@@ -42,11 +43,11 @@ export default async function AdminExpensesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "Expenses" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Expenses</h1>
-        <p className="text-sm text-muted-foreground">{total} expense{total === 1 ? "" : "s"}.</p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "Expenses" }]}
+        title={<>Expenses</>}
+        description={<>{total} expense{total === 1 ? "" : "s"}.</>}
+      />
 
       <ExpensesGrid
         rows={rows}

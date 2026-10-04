@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import Link from "next/link";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getWalletOverview, getWalletHistory } from "@/lib/portal/wallet";
@@ -6,7 +7,6 @@ import { EarnNav } from "@/components/portal/rewards/parts";
 import { Hourglass, Lock, Clock3, TrendingUp, ShoppingBag, CalendarX } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { PortalPageHeader, PortalStat } from "@/components/portal/widgets";
 import { formatDateTime } from "@/lib/utils";
 import { BrandName } from "@/components/platform/BrandProvider";
@@ -26,10 +26,10 @@ export default async function PortalWalletPage({ searchParams }: { searchParams:
 
   return (
     <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Wallet" }]} />
       <PortalPageHeader title={`${brand.name} Wallet`} subtitle="Promotional credits you earn and can redeem on eligible offers." />
 
-      <GlassCard interactive={false}>
+      <PanelListFilters>
+<GlassCard interactive={false}>
         <CardContent className="py-8 text-center">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Available credits</p>
           <p className="mt-2 text-4xl font-black tracking-tight text-foreground">{formatCredits(b.available)}</p>
@@ -102,6 +102,7 @@ export default async function PortalWalletPage({ searchParams }: { searchParams:
         <BrandName /> Credits are promotional/reward credits, not cash. They are subject to eligibility, expiry, redemption limits and campaign rules, are not
         transferable, and may be reversed in case of cancellation or misuse.
       </p>
+</PanelListFilters>
     </div>
   );
 }

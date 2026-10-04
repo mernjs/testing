@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Check, Circle, Clock, X, type LucideIcon } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -15,15 +16,7 @@ export function PortalPageHeader({
   subtitle?: string;
   action?: React.ReactNode;
 }) {
-  return (
-    <div className="flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{brandify(title)}</h1>
-        {subtitle && <p className="text-sm text-muted-foreground">{brandify(subtitle)}</p>}
-      </div>
-      {action}
-    </div>
-  );
+  return <PanelPageHeader title={brandify(title)} description={subtitle ? brandify(subtitle) : undefined} actions={action} />;
 }
 
 // ---------------------------------------------------------------------------

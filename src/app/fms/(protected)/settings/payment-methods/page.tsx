@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import GlassCard from "@/components/lms/GlassCard";
@@ -7,14 +8,12 @@ import { PAYMENT_METHODS } from "@/lib/fms/constants";
 export default function PaymentMethodsPage() {
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Settings" }, { label: "Payment Methods" }]} />
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Payment Methods</h1>
-        <p className="text-sm text-muted-foreground">
-          A fixed set matching the payment rails FMS already supports across transactions, receipts and payments —
-          not an editable per-org list.
-        </p>
-      </div>
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Settings" }, { label: "Payment Methods" }]}
+        title={<>Payment Methods</>}
+        description={<>A fixed set matching the payment rails FMS already supports across transactions, receipts and payments —
+          not an editable per-org list.</>}
+      />
 
       <GlassCard interactive={false}>
         <CardHeader><CardTitle>Available Methods</CardTitle></CardHeader>

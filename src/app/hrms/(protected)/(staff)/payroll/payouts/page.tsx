@@ -1,7 +1,7 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import PayoutsDashboard from "@/components/hrms/PayoutsDashboard";
 import { getCurrentHrmsUser } from "@/lib/hrms-auth";
 import { canRunPayroll } from "@/lib/hrms-roles";
@@ -29,14 +29,13 @@ export default async function PayoutsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "HRMS", href: "/hrms" }, { label: "Payroll", href: "/hrms/payroll" }, { label: "Salary Payouts" }]} />
       <Link href="/hrms/payroll" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
         <ChevronLeft className="size-4" /> Payroll runs
       </Link>
-      <div>
-        <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Salary Payouts</h1>
-        <p className="text-sm text-muted-foreground">Initiate, track and reconcile employee salary disbursements.</p>
-      </div>
+      <PanelPageHeader
+        title={<>Salary Payouts</>}
+        description={<>Initiate, track and reconcile employee salary disbursements.</>}
+      />
 
       <PayoutsDashboard
         items={result.items.map((p) => ({

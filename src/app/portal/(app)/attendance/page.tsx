@@ -1,7 +1,7 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { CalendarCheck } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { getLearnerOverview, getLearnerSchedule } from "@/lib/portal/student";
 import { ProgressRing, PortalPageHeader } from "@/components/portal/widgets";
@@ -21,10 +21,10 @@ export default async function AttendancePage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Attendance" }]} />
       <PortalPageHeader title="Attendance" subtitle={`${attendance.attended} of ${attendance.total} sessions attended`} />
 
-      <div className="grid gap-5 sm:grid-cols-[auto_1fr]">
+      <PanelListFilters>
+<div className="grid gap-5 sm:grid-cols-[auto_1fr]">
         <GlassCard>
           <CardContent className="flex items-center justify-center py-6">
             <ProgressRing value={attendance.ratePercent} label="Attendance" />
@@ -61,6 +61,7 @@ export default async function AttendancePage() {
           ))}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { Plus, Download, FolderKanban, Rocket, AlarmClock, Gauge } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
@@ -67,15 +68,11 @@ export default async function ProjectsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PMS", href: "/pms" }, { label: "Projects" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Projects</h1>
-          <p className="text-sm text-muted-foreground">
-            {restrictToEmployeeId ? "Projects you manage or contribute to." : `${totalProjects} project${totalProjects === 1 ? "" : "s"} across the portfolio.`}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PMS", href: "/pms" }, { label: "Projects" }]}
+        title={<>Projects</>}
+        description={<>{restrictToEmployeeId ? "Projects you manage or contribute to." : `${totalProjects} project${totalProjects === 1 ? "" : "s"} across the portfolio.`}</>}
+        actions={<><div className="flex items-center gap-2">
           <a href={exportHref} className={buttonVariants({ variant: "outline", size: "sm" })}>
             <Download className="size-3.5" data-icon="inline-start" />
             Export CSV
@@ -86,8 +83,8 @@ export default async function ProjectsPage({
               New Project
             </Link>
           )}
-        </div>
-      </div>
+        </div></>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Projects" value={totalProjects} accent icon={<FolderKanban className="size-4" />} />

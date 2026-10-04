@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
@@ -45,15 +46,11 @@ export default async function PurchaseOrderDetailPage({ params }: { params: Prom
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "Purchase Orders", href: "/prms/purchase-orders" }, { label: p.poNumber }]} />
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{p.poNumber}</h1>
-          <p className="text-sm text-muted-foreground">
-            {p.vendorName} · <PoStatusBadge status={p.status} /> · {formatMoney(p.totalAmount, p.currency)}
-          </p>
-        </div>
-        {canManage && p.status === "draft" && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "PRMS", href: "/prms" }, { label: "Purchase Orders", href: "/prms/purchase-orders" }, { label: p.poNumber }]}
+        title={<>{p.poNumber}</>}
+        description={<>{p.vendorName} · <PoStatusBadge status={p.status} /> · {formatMoney(p.totalAmount, p.currency)}</>}
+        actions={<>{canManage && p.status === "draft" && (
           <PurchaseOrderForm
             po={p}
             vendors={vendors.map((v) => ({ _id: v._id, companyName: v.companyName }))}
@@ -66,8 +63,8 @@ export default async function PurchaseOrderDetailPage({ params }: { params: Prom
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <PurchaseOrderWorkflow id={p._id} poNumber={p.poNumber} status={p.status} canManage={canManage} />
 

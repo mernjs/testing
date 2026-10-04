@@ -1,7 +1,7 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import { FileText, Download } from "lucide-react";
 import { CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
-import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { guardPortalPage } from "@/lib/portal/guard";
 import { listPortalDocuments } from "@/lib/portal/documents";
 import { PortalPageHeader } from "@/components/portal/widgets";
@@ -32,10 +32,10 @@ export default async function DocumentsPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Documents" }]} />
       <PortalPageHeader title="Documents" subtitle={`${docs.length} file${docs.length === 1 ? "" : "s"} available to you`} />
 
-      <GlassCard>
+      <PanelListFilters>
+<GlassCard>
         <CardHeader>
           <CardTitle className="text-base">Your documents</CardTitle>
         </CardHeader>
@@ -69,6 +69,7 @@ export default async function DocumentsPage() {
           ))}
         </CardContent>
       </GlassCard>
+</PanelListFilters>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import type { Metadata } from "next";
 import PlatformPageHeader from "@/components/platform/panel/PlatformPageHeader";
 import { requirePlatformPermission } from "@/lib/platform/console/access";
@@ -16,7 +17,9 @@ export default async function PlatformIntegrationsPage() {
         description="The email and domain providers the whole platform uses. Anything left blank falls back to the server's environment variables."
         crumbs={[{ label: "Administration" }]}
       />
-      <IntegrationsForm key={view.updatedAt ?? "none"} view={view} adminEmail={user.email} />
+      <PanelListFilters>
+<IntegrationsForm key={view.updatedAt ?? "none"} view={view} adminEmail={user.email} />
+</PanelListFilters>
     </div>
   );
 }

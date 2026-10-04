@@ -1,3 +1,4 @@
+import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { Plus, ArrowLeftRight, Clock, CheckSquare, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
@@ -73,16 +74,12 @@ export default async function TransactionsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Transactions" }]} />
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Transactions</h1>
-          <p className="text-sm text-muted-foreground">
-            {result.total} transaction{result.total === 1 ? "" : "s"} logged.
-            {accountByCode && ` Filtered to ${accountByCode.name}.`}
-          </p>
-        </div>
-        {canManage && (
+      <PanelPageHeader
+        breadcrumbs={[{ label: "FMS", href: "/fms" }, { label: "Transactions" }]}
+        title={<>Transactions</>}
+        description={<>{result.total} transaction{result.total === 1 ? "" : "s"} logged.
+            {accountByCode && ` Filtered to ${accountByCode.name}.`}</>}
+        actions={<>{canManage && (
           <TransactionForm
             customers={customerOpts}
             vendors={vendorOpts}
@@ -96,8 +93,8 @@ export default async function TransactionsPage({
               </Button>
             }
           />
-        )}
-      </div>
+        )}</>}
+      />
 
       <KpiGrid>
         <KpiCard label="Total Transactions" value={result.total} accent icon={<ArrowLeftRight className="size-4" />} />
