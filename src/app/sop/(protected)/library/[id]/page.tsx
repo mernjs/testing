@@ -1,3 +1,4 @@
+import { panelNameMap } from "@/lib/platform/panels/store";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { AlertTriangle, Archive, FilePenLine, GitCompare, Info, Pencil, ScrollText } from "lucide-react";
@@ -60,6 +61,7 @@ export default async function SopDetailPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
+  const panelName = await panelNameMap();
   const viewer = await getViewer();
   if (!viewer) redirect("/sop/login");
   const { id } = await params;
@@ -345,7 +347,7 @@ export default async function SopDetailPage({
                   {content.moduleLinks.map((m, i) => (
                     <li key={i}>
                       <a href={m.url} target={m.url.startsWith("/") ? undefined : "_blank"} rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 px-2.5 py-1 text-xs hover:bg-muted">
-                        <span className="font-semibold">{SOP_MODULES.find((x) => x.value === m.module)?.label}</span>
+                        <span className="font-semibold">{panelName(m.module, SOP_MODULES.find((x) => x.value === m.module)?.label)}</span>
                         <span className="text-muted-foreground">{m.label}</span>
                       </a>
                     </li>

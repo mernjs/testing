@@ -3,14 +3,13 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Megaphone, X } from "lucide-react";
+import { usePanels } from "@/components/platform/PanelsProvider";
 
-/** Company panels (signed-in workspace areas) — never the public site or the client portal. */
-const PANEL_PREFIXES = ["/workspace", "/hrms", "/pms", "/prms", "/tms", "/fms", "/lms", "/cms", "/dlms", "/sop", "/ots", "/seo", "/smms", "/aibots", "/intelligence", "/messenger"];
-
-function isPanelPath(path: string | null): boolean {
+/** Company panels (signed-in workspace areas) — never the public site or the client portal. The list is the Panel Registry's. */
+function isPanelPath(path: string | null, prefixes: string[]): boolean {
   if (!path) return false;
   if (/\/login$|\/handoff$/.test(path)) return false;
-  return PANEL_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`));
+  return prefixes.some((p) => path === p || path.startsWith(`${p}/`));
 }
 
 function storageKey(message: string): string {
@@ -26,6 +25,8 @@ function storageKey(message: string): string {
  */
 export default function PlatformNoticeBanner({ message }: { message: string }) {
   const pathname = usePathname();
+  // Every panel the registry lists, except the client portal and the public website.
+  const prefixes = Object.values(usePanels()).filter((p) => p.key !== "portal" && p.key !== "website").map((p) => p.route);
   const [dismissed, setDismissed] = useState(true);
 
   useEffect(() => {
@@ -36,7 +37,7 @@ export default function PlatformNoticeBanner({ message }: { message: string }) {
     setDismissed(wasDismissed);
   }, [message]);
 
-  if (!message || dismissed || !isPanelPath(pathname)) return null;
+  if (!message || dismissed || !isPanelPath(pathname, prefixes)) return null;
 
   return (
     <div role="status" id="platform-notice-banner" className="pointer-events-none fixed inset-x-0 bottom-4 z-[60] flex justify-center px-4">

@@ -9,7 +9,7 @@ import { candidateCertificates } from "@/lib/ots/candidate";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Test Certificates · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Test Certificates · {brand} {panel:portal}");
 
 export default async function PortalTestCertificatesPage() {
   await guardPortalPage(...TEST_TAKER_ROLES);

@@ -46,7 +46,7 @@ export default async function AdminInfrastructurePage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement" }, { label: "Infrastructure" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "Infrastructure" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Infrastructure</h1>
         <p className="text-sm text-muted-foreground">{total} resource{total === 1 ? "" : "s"}.</p>

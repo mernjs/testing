@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Lock, LockOpen } from "lucide-react";
 import { MODULES } from "@/lib/platform/onboarding/catalog";
+import { listPanels } from "@/lib/platform/panels/store";
 import { getEntitlements } from "@/lib/platform/billing/entitlements";
 import { BILLING_SETTINGS_PATH } from "@/lib/platform/billing/enforce";
 
@@ -13,7 +14,10 @@ export const metadata: Metadata = { title: "Upgrade to unlock", robots: { index:
  */
 export default async function UpgradePage({ searchParams }: { searchParams: Promise<{ module?: string }> }) {
   const { module: key } = await searchParams;
-  const mod = MODULES.find((m) => m.key === key) ?? null;
+  const base = MODULES.find((m) => m.key === key) ?? null;
+  // Name and description come from the Panel Registry, like everywhere else.
+  const reg = (await listPanels()).find((p) => p.key === key);
+  const mod = base ? { key: base.key, label: reg?.name ?? base.label, description: reg?.description ?? base.description } : null;
   const e = await getEntitlements();
   const unlocked = mod !== null && (e.modules === null || e.modules.has(mod.key));
   const label = mod?.label ?? "this panel";

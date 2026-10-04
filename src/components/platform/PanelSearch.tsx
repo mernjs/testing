@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { CornerDownLeft, Database, LayoutGrid, Loader2, Search } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { usePanelMeta } from "@/components/platform/PanelsProvider";
 import { hubSearchAction } from "@/app/workspace/hub-actions";
 import { cn } from "@/lib/utils";
 
@@ -14,11 +15,6 @@ interface Entry {
   href: string;
 }
 
-const PANEL_NAMES: Record<string, string> = {
-  workspace: "Workspace", support: "Help & Support", portal: "Portal", platform: "Platform", aibots: "AI Bots", dlms: "Digi Locker", fms: "Finance", hrms: "HR", intelligence: "Intelligence", lms: "Leads / CRM", messenger: "Messenger",
-  ots: "Online Tests", pms: "Projects", prms: "Procurement", seo: "SEO", smms: "Social Media", sop: "SOPs", tms: "Training",
-};
-
 /**
  * ⌘K / Ctrl+K search for the panel you are in: every page in its sidebar (so exactly what this person may open) plus
  * the records that live in this panel (leads, clients, projects, tasks, people, invoices) when the Workspace can find them.
@@ -27,7 +23,7 @@ export default function PanelSearch({ variant = "pill" }: { variant?: "pill" | "
   const router = useRouter();
   const pathname = usePathname();
   const panel = pathname.split("/")[1] ?? "";
-  const name = PANEL_NAMES[panel] ?? "this panel";
+  const name = usePanelMeta(panel)?.name ?? "this panel";
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [screens, setScreens] = useState<Entry[]>([]);

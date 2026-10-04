@@ -1,5 +1,7 @@
 "use client";
 
+import { usePanelLabel } from "@/components/platform/PanelsProvider";
+
 import { useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
@@ -22,6 +24,7 @@ export default function PanelActivityFilterBar({
   initialDateFrom: string;
   initialDateTo: string;
 }) {
+  const panelLabel = usePanelLabel();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -63,7 +66,7 @@ export default function PanelActivityFilterBar({
           <SelectContent>
             <SelectItem value="all">All modules</SelectItem>
             {ACTIVITY_LOG_MODULES.map((m) => (
-              <SelectItem key={m} value={m}>{activityModuleLabel(m)}</SelectItem>
+              <SelectItem key={m} value={m}>{panelLabel(m, activityModuleLabel(m))}</SelectItem>
             ))}
           </SelectContent>
         </Select>

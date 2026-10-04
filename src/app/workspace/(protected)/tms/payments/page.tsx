@@ -38,7 +38,7 @@ export default async function AdminPaymentsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "TMS" }, { label: "Payments" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "TMS", panel: "tms" }, { label: "Payments" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Payments</h1>
         <p className="text-sm text-muted-foreground">{total} payment plan{total === 1 ? "" : "s"}.</p>

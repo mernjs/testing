@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ExternalLink, LifeBuoy, X } from "lucide-react";
+import { usePanelMeta } from "@/components/platform/PanelsProvider";
 import HelpChat from "@/components/support/HelpChat";
 import { captureContext, rememberContext } from "@/lib/support/client-context";
 
@@ -15,6 +16,7 @@ import { captureContext, rememberContext } from "@/lib/support/client-context";
 export default function HelpLauncher() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const supportName = usePanelMeta("support")?.name ?? "Help & Support";
   useEffect(() => setMounted(true), []);
 
   function toggle() {
@@ -27,8 +29,8 @@ export default function HelpLauncher() {
       <button
         type="button"
         onClick={toggle}
-        title="Help & Support"
-        aria-label="Help & Support"
+        title={supportName}
+        aria-label={supportName}
         aria-expanded={open}
         className="flex size-9 items-center justify-center rounded-full border border-border/60 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
       >
@@ -45,7 +47,7 @@ export default function HelpLauncher() {
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", stiffness: 320, damping: 32 }}
                 className="fixed inset-y-0 right-0 z-[1001] flex h-full w-full flex-col border-l border-border/80 bg-background shadow-2xl sm:w-[420px]"
-                aria-label="Help & Support"
+                aria-label={supportName}
               >
                 <div className="flex shrink-0 items-center justify-between border-b border-border/60 bg-muted/20 px-4 py-3.5">
                   <div className="flex min-w-0 items-center gap-3">
@@ -53,7 +55,7 @@ export default function HelpLauncher() {
                       <LifeBuoy className="size-4" />
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-bold text-foreground">YASH · Help &amp; Support</p>
+                      <p className="truncate text-sm font-bold text-foreground">YASH · {supportName}</p>
                       <p className="truncate text-[11px] text-muted-foreground">AI help from the YashOrbit team</p>
                     </div>
                   </div>

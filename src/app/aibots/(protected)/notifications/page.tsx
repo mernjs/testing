@@ -23,6 +23,7 @@ export default async function AibotsNotificationsPage() {
 
   return (
     <GenericPanelNotificationsPage
+      panel="aibots"
       live
       panelName="AI Bots Management"
       shortCode="AIBOTS"

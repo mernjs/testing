@@ -54,7 +54,7 @@ export default async function AdminTasksPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "PMS" }, { label: "Tasks" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "PMS", panel: "pms" }, { label: "Tasks" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Tasks</h1>
         <p className="text-sm text-muted-foreground">{total} task{total === 1 ? "" : "s"} across every project.</p>

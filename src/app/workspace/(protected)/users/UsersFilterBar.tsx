@@ -1,5 +1,6 @@
 "use client";
 
+import { usePanels } from "@/components/platform/PanelsProvider";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Search, Filter, ShieldCheck, Layers, UserCheck, CheckCircle2, XCircle } from "lucide-react";
@@ -29,6 +30,10 @@ export default function UsersFilterBar({
   initialStatus: string;
   initialUserType: string;
 }) {
+  // Panel names come from the Panel Registry, like every other listing.
+  const allPanels = usePanels();
+  const panelOptions = Object.values(allPanels)
+    .sort((a, b) => a.order - b.order);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -80,25 +85,13 @@ export default function UsersFilterBar({
             <SelectValue placeholder="All Panels" />
           </SelectTrigger>
           <SelectContent align="start">
-            <SelectItem value="all">All 13 Panels</SelectItem>
-            <SelectSeparator />
+            <SelectItem value="all">All Panels</SelectItem>
             <SelectItem value="admin">Super Admin Panel</SelectItem>
-            <SelectItem value="hrms">HRMS Panel</SelectItem>
-            <SelectItem value="pms">PMS (Projects)</SelectItem>
-            <SelectItem value="prms">Procurement (PRMS)</SelectItem>
-            <SelectItem value="tms">Training (TMS)</SelectItem>
-            <SelectItem value="fms">Finance (FMS)</SelectItem>
-            <SelectItem value="sop">SOP Panel</SelectItem>
-            <SelectItem value="seo">SEO Panel</SelectItem>
-            <SelectItem value="dlms">Digi Locker (DLMS)</SelectItem>
-            <SelectItem value="aibots">AI Bots</SelectItem>
-            <SelectItem value="intelligence">AI Intelligence</SelectItem>
-            <SelectItem value="smms">Social Media (SMMS)</SelectItem>
-            <SelectItem value="ots">Online Tests (OTS)</SelectItem>
-            <SelectItem value="messenger">Messenger Panel</SelectItem>
-            <SelectItem value="lms">LMS (CRM &amp; Learning)</SelectItem>
-            <SelectItem value="portal">External Portal</SelectItem>
-            <SelectItem value="workspace">Workspace Panel</SelectItem>
+            {panelOptions.map((p) => (
+              <SelectItem key={p.key} value={p.key}>
+                {p.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -166,7 +159,7 @@ export default function UsersFilterBar({
             {ROLE_GROUPS.map((g) => (
               <SelectGroup key={g.module}>
                 <SelectSeparator />
-                <SelectLabel>{g.module}</SelectLabel>
+                <SelectLabel>{allPanels[g.panel]?.name ?? g.module}</SelectLabel>
                 {g.roles.map((r) => (
                   <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
                 ))}

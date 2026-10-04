@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Milestones · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Milestones · {brand} {panel:portal}");
 
 const STATUS_CLASS: Record<string, string> = {
   completed: "bg-green-500/10 text-green-600 dark:text-green-400",

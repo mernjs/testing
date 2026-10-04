@@ -86,6 +86,8 @@ interface NavItemDef {
   group?: string;
   /** Panel key (`onboarding/catalog.ts` MODULES): must be in the plan and switched on. */
   module?: string;
+  /** Panel Registry key for items that aren't plan-gated modules (e.g. Help & Support). */
+  panel?: string;
   /** Opens in a new tab (panels have their own shell). */
   external?: boolean;
   /** Needs the Platform Panel access check instead of a company role. */
@@ -225,6 +227,9 @@ const MANAGE_PAGES: [group: string, path: string, label: string, icon: NavIcon, 
   ["Website chatbot", "chatbot/conversations", "Conversations", "bot", P.chatbot],
   ["Website chatbot", "chatbot/voice-conversations", "Voice conversations", "bot", P.chatbot],
 ];
+/** Management groups that ARE a panel: their heading is that panel's Panel Registry name. */
+const GROUP_PANEL: Record<string, string> = { CRM: "lms", Projects: "pms", Procurement: "prms", Training: "tms", "Team chat": "messenger" };
+
 const MANAGE: NavItemDef[] = MANAGE_PAGES.map(([group, path, label, icon, permission, module]) => ({
   key: `manage.${path.replace(/\//g, ".")}`,
   section: "manage",
@@ -270,7 +275,10 @@ const NAV_ITEMS: NavItemDef[] = [
   { key: "dashboard", section: "dashboard", label: "Dashboard", href: "/workspace", icon: "dashboard", allow: anyone },
   ...PANELS,
   // Help & Support is YashOrbit's own service for every company: no role gate and no plan module.
-  { key: "panel.support", section: "panels", label: "Help & Support", href: "/support", icon: "help", allow: anyone },
+  { key: "panel.support", section: "panels", label: "Help & Support", href: "/support", icon: "help", panel: "support", allow: anyone },
+  // The external portal and the company's public website are panels in the registry too, so they are listed like the rest.
+  { key: "panel.portal", section: "panels", label: "Client & Student Portal", href: "/portal", icon: "globe", module: "portal", allow: (u: RoleContext) => resolvePermission(u, "portal.isPortalAdmin", () => u.roles.includes("portal_admin")) },
+  { key: "panel.website", section: "panels", label: "Public Website", href: "/", icon: "website", panel: "website", external: true, allow: anyone },
   ...ANALYTICS,
   ...MANAGE,
   ...COMPANY,
@@ -311,6 +319,10 @@ export interface NavContext {
   enabledModules: ReadonlySet<string> | null;
   /** Result of the Platform Panel's own access check (owner company + platform role). */
   platformAccess: boolean;
+  /** Panels the platform switched off (for everyone, or for this company): their items are hidden. */
+  unavailablePanels?: ReadonlySet<string>;
+  /** Panel Registry names / descriptions, so every listing says the same thing. */
+  panels?: Readonly<Record<string, { name: string; description: string }>>;
 }
 
 export type NavState = "open" | "locked" | "hidden";
@@ -318,6 +330,8 @@ export type NavState = "open" | "locked" | "hidden";
 function stateOf(item: NavItemDef, ctx: NavContext): NavState {
   if (item.platform) return ctx.platformAccess ? "open" : "hidden";
   if (!item.allow(ctx.user)) return "hidden";
+  const panelKey = item.module ?? item.panel;
+  if (panelKey && ctx.unavailablePanels?.has(panelKey)) return "hidden";
   if (item.module) {
     if (ctx.enabledModules && !ctx.enabledModules.has(item.module)) return "hidden";
     if (ctx.planModules && !ctx.planModules.has(item.module)) return item.section === "panels" ? "locked" : "hidden";
@@ -371,7 +385,14 @@ export function resolveNav(ctx: NavContext): ResolvedNav {
     sidebar: s.sidebar !== false,
     items: open
       .filter((i) => i.section === s.key)
-      .map((i) => ({ key: i.key, label: i.label, title: i.title ?? i.label, description: i.description ?? null, href: i.href, icon: i.icon, group: i.group ?? null, external: i.external === true })),
+      .map((i) => {
+        // Panel tiles and analytics entries take their name / description from the Panel Registry.
+        const meta = ctx.panels?.[i.module ?? i.panel ?? ""];
+        const named = meta && i.section === "panels" ? meta.name : meta && i.section === "analytics" ? `${meta.name} Analytics` : null;
+        const label = named ?? i.label;
+        const description = meta && i.section === "panels" ? meta.description : (i.description ?? null);
+        return { key: i.key, label, title: named ?? i.title ?? i.label, description, href: i.href, icon: i.icon, group: (i.group && ctx.panels?.[GROUP_PANEL[i.group] ?? ""]?.name) || i.group || null, external: i.external === true };
+      }),
   })).filter((s) => s.items.length > 0);
   return { sections, allowed: open.map((i) => i.key), lockedPanels };
 }

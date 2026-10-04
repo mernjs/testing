@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Assignments · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Assignments · {brand} {panel:portal}");
 
 const SUB_CLASS: Record<string, string> = {
   reviewed: "bg-green-500/10 text-green-600 dark:text-green-400",

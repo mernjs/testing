@@ -4,11 +4,13 @@ import { requirePlatformPermission } from "@/lib/platform/console/access";
 import { listPlans } from "@/lib/platform/billing/plans";
 import { getBillingSettings } from "@/lib/platform/billing/settings";
 import { MODULES } from "@/lib/platform/onboarding/catalog";
+import { panelLabels } from "@/lib/platform/panels/choices";
 import AddonForm from "../AddonForm";
 
 export const metadata: Metadata = { title: "New add-on" };
 
 export default async function NewAddonPage() {
+  const labels = await panelLabels();
   await requirePlatformPermission("addons.read");
   const [plans, settings] = await Promise.all([listPlans(), getBillingSettings()]);
   return (
@@ -17,7 +19,7 @@ export default async function NewAddonPage() {
       <AddonForm
         addon={null}
         plans={plans.map((p) => ({ id: p._id, name: p.name }))}
-        modules={MODULES.filter((m) => !m.core).map((m) => ({ key: m.key, label: m.label }))}
+        modules={MODULES.filter((m) => !m.core).map((m) => ({ key: m.key, label: labels.get(m.key) ?? m.label }))}
         currency={settings.billing.currency}
       />
     </div>

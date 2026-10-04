@@ -21,6 +21,7 @@ export default async function Page() {
   }
   return (
     <GenericPanelNotificationsPage
+      panel="messenger"
       live
       panelName="Team Chat"
       shortCode="MSG"

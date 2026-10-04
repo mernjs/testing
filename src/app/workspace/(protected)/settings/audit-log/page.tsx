@@ -1,3 +1,4 @@
+import { panelNameMap } from "@/lib/platform/panels/store";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -119,6 +120,9 @@ async function PanelActivity({ sp, page, from, to }: { sp: SP; page: number; fro
     searchActivityLog({ page, pageSize: PANELS_PAGE_SIZE, search: sp.search, module: moduleFilter, action: sp.action, dateFrom: day(from, false), dateTo: day(to, true) }),
     getActivityActions(),
   ]);
+  const panelName = await panelNameMap();
+  const names = ACTIVITY_LOG_MODULES.map((m) => panelName(m, m));
+  const moduleNames = names.length > 1 ? `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}` : names.join("");
   const hasActiveFilters = Boolean(sp.search || moduleFilter || sp.action || from || to);
   const exportParams = new URLSearchParams();
   if (sp.search) exportParams.set("search", sp.search);
@@ -130,7 +134,7 @@ async function PanelActivity({ sp, page, from, to }: { sp: SP; page: number; fro
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        {total} event{total === 1 ? "" : "s"} across Procurement, Projects, YashChat, Training, HRMS, the External Portal and Online Tests.
+        {total} event{total === 1 ? "" : "s"} across {moduleNames}.
       </p>
       <PanelActivityGrid
         rows={items}

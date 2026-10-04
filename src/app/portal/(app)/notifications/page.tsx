@@ -4,7 +4,7 @@ import { listPortalNotifications, markPortalRead, markAllPortalRead } from "@/li
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Notifications · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Notifications · {brand} {panel:portal}");
 
 export default async function NotificationsPage() {
   const user = await guardPortalPage();
@@ -22,6 +22,7 @@ export default async function NotificationsPage() {
   }
   return (
     <GenericPanelNotificationsPage
+      panel="portal"
       live
       panelName="Client Portal"
       shortCode="PORTAL"

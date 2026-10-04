@@ -23,6 +23,7 @@ export default async function SopNotificationsPage() {
 
   return (
     <GenericPanelNotificationsPage
+      panel="sop"
       live
       panelName="Standard Operating Procedures"
       shortCode="SOP"

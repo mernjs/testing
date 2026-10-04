@@ -1,5 +1,7 @@
 "use client";
 
+import { usePanelLabel } from "@/components/platform/PanelsProvider";
+
 import { useEffect, useState } from "react";
 import { getUserActivityAction } from "./actions";
 import type { AdminActivityRow } from "@/lib/workspace/activity-log";
@@ -8,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Activity, Clock } from "lucide-react";
 
 export default function UserActivityTab({ userEmail }: { userEmail: string }) {
+  const panelLabel = usePanelLabel();
   const [loading, setLoading] = useState(true);
   const [activities, setActivities] = useState<AdminActivityRow[]>([]);
 
@@ -59,7 +62,7 @@ export default function UserActivityTab({ userEmail }: { userEmail: string }) {
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <Badge variant="outline" className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0">
-                    {activityModuleLabel(item.module)}
+                    {panelLabel(item.module, activityModuleLabel(item.module))}
                   </Badge>
                   <span className="font-semibold text-foreground">{item.action}</span>
                   {item.entity && <span className="text-muted-foreground font-mono">({item.entity})</span>}

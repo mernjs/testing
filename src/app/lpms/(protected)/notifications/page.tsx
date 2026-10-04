@@ -3,6 +3,7 @@ import GenericPanelNotificationsPage from "@/components/platform/panel/GenericPa
 export default function LpmsNotificationsPage() {
   return (
     <GenericPanelNotificationsPage
+      panel="lpms"
       panelName="Legal & Process Management"
       shortCode="LPMS"
       description="Track legal workflow approvals, contract template changes & signature verification alerts."

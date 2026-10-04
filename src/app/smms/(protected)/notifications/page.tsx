@@ -23,6 +23,7 @@ export default async function SmmsNotificationsPage() {
 
   return (
     <GenericPanelNotificationsPage
+      panel="smms"
       live
       panelName="Social Media Marketing"
       shortCode="SMMS"

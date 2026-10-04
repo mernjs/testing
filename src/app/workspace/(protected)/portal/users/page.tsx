@@ -51,7 +51,7 @@ export default async function AdminPortalUsersPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Portal" }, { label: "Users" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Portal", panel: "portal" }, { label: "Users" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">External Portal Users</h1>
         <p className="text-sm text-muted-foreground">

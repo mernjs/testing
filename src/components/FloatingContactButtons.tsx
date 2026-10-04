@@ -1,5 +1,6 @@
 "use client";
 
+import { usePanels } from "@/components/platform/PanelsProvider";
 import * as React from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -13,6 +14,7 @@ export default function FloatingContactButtons() {
   const [open, setOpen] = React.useState(false);
   const [chatOpen, setChatOpen] = React.useState(false);
   const pathname = usePathname();
+  const panels = usePanels();
   const { contact, floating, display, liveChatId } = useSiteInfo();
   const fd = display.floating;
   const showAssistant = fd.assistant && !!floating.assistantLabel;
@@ -40,7 +42,9 @@ export default function FloatingContactButtons() {
   if (/^\/(platform|console|signup|workspace\/(settings|onboarding))(\/|$)/.test(pathname ?? "") || pathname?.startsWith("/workspace/invite")) return null;
   // The CMS is an admin panel too (its draft preview, /cms/preview, shows the site exactly as visitors see it).
   const inCms = pathname?.startsWith("/cms") && !pathname.startsWith("/cms/preview");
-  if (pathname?.startsWith("/lms") || pathname?.startsWith("/aibots") || pathname?.startsWith("/intelligence") || pathname?.startsWith("/smms") || inCms || pathname === "/ask") {
+  // Every signed-in panel the Panel Registry lists is an app screen, not the public site.
+  const inPanel = Object.values(panels).some((p) => p.key !== "website" && p.key !== "portal" && p.route.length > 1 && (pathname === p.route || pathname?.startsWith(`${p.route}/`)));
+  if (inPanel || inCms || pathname === "/ask") {
     return chatOpen ? <ChatWidget open={chatOpen} onClose={() => setChatOpen(false)} /> : null;
   }
 

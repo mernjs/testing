@@ -15,7 +15,7 @@ import { getCompanyBrand } from "@/lib/platform/branding";
 import { companySiteUrl } from "@/lib/platform/tenancy/site-url";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Referrals · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Referrals · {brand} {panel:portal}");
 
 export default async function PortalReferralsPage() {
   const brand = await getCompanyBrand();

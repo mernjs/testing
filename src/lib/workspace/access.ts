@@ -5,7 +5,8 @@ import { NextResponse } from "next/server";
 import { getCurrentHubUser, type CurrentHubUser } from "@/lib/hub-auth";
 import { getEntitlements } from "@/lib/platform/billing/entitlements";
 import { enabledModules } from "@/lib/platform/onboarding/state";
-import { isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { currentCompanyId, isPlatformOwnerContext } from "@/lib/platform/tenancy/context";
+import { listPanels, unavailablePanelKeys } from "@/lib/platform/panels/store";
 import { getPlatformAccessForUser } from "@/lib/platform/console/roles";
 import { navAllows, resolveNav, type NavContext, type ResolvedNav } from "@/lib/workspace/nav";
 
@@ -30,8 +31,11 @@ async function hasPlatformAccess(userId: string): Promise<boolean> {
 }
 
 export async function loadNavContext(user: WorkspaceUser): Promise<NavContext> {
-  const [entitlements, enabled, platformAccess] = await Promise.all([getEntitlements(), enabledModules(), hasPlatformAccess(user.id)]);
+  const companyId = await currentCompanyId();
+  const [entitlements, enabled, platformAccess, unavailable, registry] = await Promise.all([getEntitlements(), enabledModules(), hasPlatformAccess(user.id), unavailablePanelKeys(companyId), listPanels()]);
   return {
+    unavailablePanels: unavailable,
+    panels: Object.fromEntries(registry.map((p) => [p.key, { name: p.name, description: p.description }])),
     user: { roles: user.roles, permissionOverrides: user.permissionOverrides ?? null },
     planModules: entitlements.modules,
     enabledModules: enabled,

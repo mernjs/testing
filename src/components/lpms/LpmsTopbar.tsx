@@ -1,5 +1,6 @@
 "use client";
 
+import { PanelHeading } from "@/components/platform/PanelsProvider";
 import HelpLauncher from "@/components/support/HelpLauncher";
 import { useState } from "react";
 import Link from "next/link";
@@ -21,10 +22,7 @@ export default function LpmsTopbar({
   const [bellOpen, setBellOpen] = useState(false);
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-foreground">Legal &amp; Document Automation</p>
-        <p className="truncate text-[11px] text-muted-foreground">Policies, agreements &amp; document workflows</p>
-      </div>
+      <PanelHeading panel="lpms" fallbackTitle="Legal & Document Automation" fallbackDescription="Policies, agreements & document workflows" />
       <div className="flex min-w-0 flex-1 justify-center">
         <PanelSearch />
       </div>

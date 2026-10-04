@@ -1,3 +1,5 @@
+import { currentCompanyId } from "@/lib/platform/tenancy/context";
+import { listPanels, unavailablePanelKeys } from "@/lib/platform/panels/store";
 import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -5,7 +7,7 @@ import { Sparkles, UserCheck, SearchX } from "lucide-react";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import { getWorkspaceNav } from "@/lib/workspace/access";
 import { loadExecutiveOverview } from "@/lib/workspace/executive-overview";
-import { PANEL_CONFIGS, getPanelHeadlineStats, type PanelKey } from "@/lib/workspace/panel-analytics";
+import { getPanelHeadlineStats, isPanelKey, panelConfigs, type PanelKey } from "@/lib/workspace/panel-analytics";
 import ExecutiveSection from "@/components/workspace/ExecutiveSection";
 import { AnalyticsFilterBar } from "@/components/workspace/AnalyticsFilterBar";
 import { PanelPerformanceMatrix } from "@/components/workspace/CommandCenterSections";
@@ -41,19 +43,28 @@ export default async function HubDashboardPage({
   const session = await getWorkspaceNav();
   const allowed = new Set(session?.nav.allowed ?? []);
   const locked = session?.nav.lockedPanels ?? [];
-  const panelKeys = (Object.keys(PANEL_CONFIGS) as PanelKey[]).sort((a, b) => PANEL_CONFIGS[a].label.localeCompare(PANEL_CONFIGS[b].label));
-  const visibleKeys = panelKeys.filter((k) => allowed.has(`analytics.${k}`) || allowed.has(`panel.${k}`));
+  const PANEL_CONFIGS = await panelConfigs();
+  const [registry, unavailable] = await Promise.all([listPanels(), currentCompanyId().then(unavailablePanelKeys)]);
+  const registryNames = Object.fromEntries(registry.map((p) => [p.key, p.name]));
+  const analyticsKeys = Object.keys(PANEL_CONFIGS) as PanelKey[];
+  // Every panel the Panel Registry lists (and that is switched on for this company), in its display order.
+  const shownPanels = registry.filter((p) => !unavailable.has(p.key));
+  const visibleKeys = shownPanels.map((p) => p.key).filter((k) => allowed.has(`analytics.${k}`) || allowed.has(`panel.${k}`));
 
-  const matches = (k: PanelKey) => {
-    const c = PANEL_CONFIGS[k];
-    return (!onlyPanel || onlyPanel === k) && (!q || c.label.toLowerCase().includes(q) || k.includes(q) || c.description.toLowerCase().includes(q));
+  const matches = (k: string) => {
+    const reg = registry.find((p) => p.key === k);
+    const c = (PANEL_CONFIGS as Record<string, { label: string; description: string }>)[k];
+    const label = reg?.name ?? c?.label ?? k;
+    const description = reg?.description ?? c?.description ?? "";
+    return (!onlyPanel || onlyPanel === k) && (!q || label.toLowerCase().includes(q) || k.includes(q) || description.toLowerCase().includes(q));
   };
-  const sections = visibleKeys.filter((k) => allowed.has(`analytics.${k}`) && matches(k));
+  const sections = visibleKeys.filter((k): k is PanelKey => isPanelKey(k) && allowed.has(`analytics.${k}`) && matches(k));
   const matrixPanels = visibleKeys.filter(matches);
-  const matrixLocked = locked.filter((k) => panelKeys.includes(k as PanelKey) && matches(k as PanelKey));
+  const matrixLocked = locked.filter((k) => shownPanels.some((p) => p.key === k) && matches(k));
+  const panelKeys = shownPanels.map((p) => p.key);
 
   const headline = Object.fromEntries(
-    await Promise.all(matrixPanels.map(async (k) => [k, await getPanelHeadlineStats(k, { dateFrom: first(sp.dateFrom), dateTo: first(sp.dateTo) })] as const)),
+    await Promise.all(matrixPanels.filter(isPanelKey).map(async (k) => [k, await getPanelHeadlineStats(k, { dateFrom: first(sp.dateFrom), dateTo: first(sp.dateTo) })] as const)),
   );
 
   const hour = new Date().getHours();
@@ -79,7 +90,7 @@ export default async function HubDashboardPage({
             title="Whole Dashboard Search & Filter"
             fields={[
               { key: "q", label: "Search panels", type: "text", placeholder: "Search any panel, e.g. finance, leads, SEO…" },
-              { key: "panel", label: "Panel", type: "select", options: panelKeys.map((k) => ({ label: PANEL_CONFIGS[k].label, value: k })) },
+              { key: "panel", label: "Panel", type: "select", options: shownPanels.map((p) => ({ label: p.name, value: p.key })) },
             ]}
           />
         }
@@ -87,7 +98,7 @@ export default async function HubDashboardPage({
 
       {/* ── Section 1: whole-dashboard search & filter + panel performance matrix ── */}
       <section id="dashboard-overview" data-section="overview" className="space-y-6 rounded-3xl border border-border/60 border-t-2 border-t-primary/60 bg-muted/70 dark:bg-[color-mix(in_oklch,var(--background)_82%,black)] p-5 shadow-sm sm:p-6">
-        <PanelPerformanceMatrix modules={executive?.modules} stats={headline} panels={matrixPanels} locked={matrixLocked} />
+        <PanelPerformanceMatrix modules={executive?.modules} stats={headline} panels={matrixPanels} locked={matrixLocked} names={registryNames} unavailable={[...unavailable]} registry={shownPanels.map((p) => ({ key: p.key, name: p.name, description: p.description, route: p.route }))} />
       </section>
 
       {/* ── Section 2: one analytics block per panel ── */}

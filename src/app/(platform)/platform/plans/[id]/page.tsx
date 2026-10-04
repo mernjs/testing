@@ -1,3 +1,4 @@
+import { listPanelChoices } from "@/lib/platform/panels/choices";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -16,6 +17,7 @@ import { planToFormValues } from "../planFormValues";
 export const metadata: Metadata = { title: "Edit plan" };
 
 export default async function EditPlanPage({ params }: { params: Promise<{ id: string }> }) {
+  const choices = await listPanelChoices({ includeUnavailable: true });
   await requirePlatformPermission("plans.read");
   const { id } = await params;
   const [plan, companies, settings] = await Promise.all([getPlan(id), countCompaniesOnPlan(id), getBillingSettings()]);
@@ -31,7 +33,7 @@ export default async function EditPlanPage({ params }: { params: Promise<{ id: s
         crumbs={[{ label: "Plans & pricing", href: "/platform/plans" }]}
       />
       <div className="grid max-w-6xl gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
-        <PlanForm mode="update" initial={planToFormValues(plan)} lockedDefault={plan.isDefault && plan.active} platformTrialDays={settings.billing.defaultTrialDays} companies={companies} />
+        <PlanForm panels={choices.filter((c) => !c.core)} coreLabels={choices.filter((c) => c.core).map((c) => c.label).join(", ")} mode="update" initial={planToFormValues(plan)} lockedDefault={plan.isDefault && plan.active} platformTrialDays={settings.billing.defaultTrialDays} companies={companies} />
         <GlassCard interactive={false} className="h-fit">
           <CardHeader>
             <CardTitle className="text-base">Price history</CardTitle>

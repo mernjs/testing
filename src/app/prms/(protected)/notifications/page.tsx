@@ -19,6 +19,7 @@ export default async function Page() {
   }
   return (
     <GenericPanelNotificationsPage
+      panel="prms"
       live
       panelName="Procurement Management System"
       shortCode="PRMS"

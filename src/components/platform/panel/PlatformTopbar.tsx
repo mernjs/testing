@@ -1,5 +1,6 @@
 "use client";
 
+import { PanelHeading } from "@/components/platform/PanelsProvider";
 import HelpLauncher from "@/components/support/HelpLauncher";
 import { useState } from "react";
 import Link from "next/link";
@@ -38,10 +39,7 @@ export default function PlatformTopbar({ flags }: { flags: PlatformNavFlags }) {
           </div>
         </SheetContent>
       </Sheet>
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-foreground">Platform Panel</p>
-        <p className="truncate text-[11px] text-muted-foreground">Every company, plan and setting of the SaaS platform</p>
-      </div>
+      <PanelHeading panel="platform" fallbackTitle="Platform Panel" fallbackDescription="Every company, plan and setting of the SaaS platform" />
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
         <HelpLauncher />
         <button

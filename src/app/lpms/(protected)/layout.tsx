@@ -13,7 +13,7 @@ import { requireModule } from '@/lib/platform/billing/enforce';
 import PanelBackBar from '@/components/hub/PanelBackBar';
 import { getLpmsDashboard } from '@/lib/lpms/analytics';
 
-export const generateMetadata = () => brandedMetadata('{brand} Legal & Documents', { robots: { index: false, follow: false } });
+export const generateMetadata = () => brandedMetadata('{brand} {panel:lpms}', { robots: { index: false, follow: false } });
 
 export default async function ProtectedLpmsLayout({ children }: { children: React.ReactNode }) {
   await requireModule('lpms');

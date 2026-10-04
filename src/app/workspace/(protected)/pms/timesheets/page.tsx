@@ -58,7 +58,7 @@ export default async function AdminTimesheetsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "PMS" }, { label: "Timesheets" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "PMS", panel: "pms" }, { label: "Timesheets" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Timesheets</h1>
         <p className="text-sm text-muted-foreground">

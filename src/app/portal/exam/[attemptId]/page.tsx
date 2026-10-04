@@ -7,7 +7,7 @@ import { AttemptClosedError, loadExamState } from "@/lib/ots/attempts";
 import { Toaster } from "@/components/ui/sonner";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const generateMetadata = () => brandedMetadata("Test in progress · {brand} Portal", { robots: { index: false, follow: false } });
+export const generateMetadata = () => brandedMetadata("Test in progress · {brand} {panel:portal}", { robots: { index: false, follow: false } });
 export const dynamic = "force-dynamic";
 
 /** Distraction-free exam page for applicants / students — the same ExamRunner as the OTS panel. */

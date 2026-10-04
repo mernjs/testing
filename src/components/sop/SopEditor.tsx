@@ -1,5 +1,6 @@
 "use client";
 
+import { usePanelLabel } from "@/components/platform/PanelsProvider";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -79,6 +80,7 @@ function Field({ label, htmlFor, hint, children, className }: { label: string; h
 }
 
 export default function SopEditor(props: SopEditorProps) {
+  const panelLabel = usePanelLabel();
   const { sopId, taxonomy } = props;
   const [meta, setMeta] = useState<SopMetaInput>(props.initialMeta);
   const [content, setContent] = useState<SopContent>(props.initialContent);
@@ -451,7 +453,7 @@ export default function SopEditor(props: SopEditorProps) {
                 <p className="text-[11px] text-muted-foreground">Tag the panel(s) this SOP serves (e.g. a procurement SOP → PRMS) with a deep link, so it can be filtered by panel and found from there.</p>
                 {content.moduleLinks.map((m, i) => (
                   <div key={i} className="grid gap-2 sm:grid-cols-[11rem_1fr_1fr_auto]">
-                    <OptionSelect value={m.module} onChange={(v) => editContent((c) => ({ ...c, moduleLinks: c.moduleLinks.map((x, j) => (j === i ? { ...x, module: v as typeof m.module } : x)) }))} options={SOP_MODULES.map((x) => ({ value: x.value, label: x.label }))} aria-label="Panel" />
+                    <OptionSelect value={m.module} onChange={(v) => editContent((c) => ({ ...c, moduleLinks: c.moduleLinks.map((x, j) => (j === i ? { ...x, module: v as typeof m.module } : x)) }))} options={SOP_MODULES.map((x) => ({ value: x.value, label: panelLabel(x.value, x.label) }))} aria-label="Panel" />
                     <Input value={m.label} placeholder="Label" aria-label="Link label" onChange={(e) => editContent((c) => ({ ...c, moduleLinks: c.moduleLinks.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)) }))} />
                     <Input value={m.url} placeholder="/prms/vendors or https://…" aria-label="Link URL" onChange={(e) => editContent((c) => ({ ...c, moduleLinks: c.moduleLinks.map((x, j) => (j === i ? { ...x, url: e.target.value } : x)) }))} />
                     <Button type="button" variant="ghost" size="icon-sm" aria-label="Remove panel link" onClick={() => editContent((c) => ({ ...c, moduleLinks: c.moduleLinks.filter((_, j) => j !== i) }))}><X /></Button>

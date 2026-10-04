@@ -1,5 +1,6 @@
 "use client";
 
+import { PanelHeading } from "@/components/platform/PanelsProvider";
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import PortalMobileSidebar from "@/components/portal/PortalMobileSidebar";
@@ -27,10 +28,7 @@ export default function PortalTopbar({
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <PortalMobileSidebar role={role} />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-foreground">{PORTAL_ROLE_META[role].portalName}</p>
-        <p className="truncate text-[11px] text-muted-foreground">Welcome, {displayName}</p>
-      </div>
+      <PanelHeading panel="portal" fallbackTitle={PORTAL_ROLE_META[role].portalName} fallbackDescription={`Welcome, ${displayName}`} />
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
         <LeadSwitcher leads={leads} />
         <button

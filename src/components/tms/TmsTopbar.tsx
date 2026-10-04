@@ -1,5 +1,6 @@
 "use client";
 
+import { PanelHeading } from "@/components/platform/PanelsProvider";
 import HelpLauncher from "@/components/support/HelpLauncher";
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
@@ -29,10 +30,7 @@ export default function TmsTopbar({
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <TmsMobileSidebar roles={roles} permissionOverrides={permissionOverrides} studentId={studentId} />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-foreground">Training Management</p>
-        <p className="truncate text-[11px] text-muted-foreground">Courses, assessments &amp; learning paths</p>
-      </div>
+      <PanelHeading panel="tms" fallbackTitle="Training Management" fallbackDescription="Courses, assessments & learning paths" />
       <div className="flex min-w-0 flex-1 justify-center">
         <PanelSearch />
       </div>

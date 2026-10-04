@@ -1,3 +1,4 @@
+import { panelNameMap } from "@/lib/platform/panels/store";
 import Link from "next/link";
 import {
   ShoppingBag,
@@ -23,6 +24,7 @@ export default async function PrmsFinancePage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
+  const panelName = await panelNameMap();
   const sp = await searchParams;
   const tab = sp.tab ?? "all";
 
@@ -41,7 +43,7 @@ export default async function PrmsFinancePage({
 
   return (
     <div className="relative space-y-6">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Panel Finance" }, { label: "PRMS" }]} />
+      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Panel Finance" }, { label: "PRMS", panel: "prms" }]} />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
@@ -49,7 +51,7 @@ export default async function PrmsFinancePage({
             <ShoppingBag className="size-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">PRMS Procurement Finance</h1>
+            <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{panelName("prms", "PRMS Procurement")} Finance</h1>
             <p className="text-sm text-muted-foreground mt-0.5">
               Vendor purchase orders flow from PRMS → FMS for approval &amp; bank payout.
             </p>

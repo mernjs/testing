@@ -22,7 +22,7 @@ const NEXT_HINT: Record<string, string> = {
 export default function LeadOnlyDashboard({ view, firstName }: { view: PortalLeadView; firstName: string }) {
   return (
     <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal" }, { label: "Dashboard" }]} />
+      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Dashboard" }]} />
       <PortalPageHeader title={`Welcome, ${firstName}`} subtitle={view.lead.name ? `Request ${view.lead.code}` : undefined} />
 
       <LeadStageCard view={view} />

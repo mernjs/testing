@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Interview Schedule · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Interview Schedule · {brand} {panel:portal}");
 
 function fmt(iso: string) {
   return new Date(iso).toLocaleString("en-US", {

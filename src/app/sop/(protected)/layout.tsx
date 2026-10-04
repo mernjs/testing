@@ -15,7 +15,7 @@ import { brandedMetadata } from "@/lib/platform/branding/metadata";
 import { requireModule } from "@/lib/platform/billing/enforce";
 import PanelBackBar from "@/components/hub/PanelBackBar";
 
-export const generateMetadata = () => brandedMetadata("{brand} SOP", { robots: { index: false, follow: false } });
+export const generateMetadata = () => brandedMetadata("{brand} {panel:sop}", { robots: { index: false, follow: false } });
 
 export default async function ProtectedSopLayout({ children }: { children: React.ReactNode }) {
   await requireModule("sop");

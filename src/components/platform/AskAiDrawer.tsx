@@ -15,6 +15,7 @@ import {
   ArrowRight,
   ShieldAlert,
 } from "lucide-react";
+import { usePanelMeta, usePanels } from "@/components/platform/PanelsProvider";
 import {
   PANELS_CONFIG,
   processPanelMessage,
@@ -40,7 +41,13 @@ export default function AskAiDrawer({
   panelDescription,
   roles,
 }: AskAiDrawerProps) {
+  const registry = usePanelMeta(panelId);
+  const allPanels = usePanels();
   const panel = PANELS_CONFIG[panelId] || PANELS_CONFIG.pms;
+  // Names come from the Panel Registry so the assistant, headers and listings all agree.
+  const displayName = registry?.name ?? panel.name;
+  const displayCode = registry?.shortName ?? panel.shortCode;
+  const displayDescription = registry?.description ?? panelDescription;
 
   const [mounted, setMounted] = useState(false);
   const [messages, setMessages] = useState<MessageItem[]>([]);
@@ -83,7 +90,7 @@ export default function AskAiDrawer({
         {
           id: "welcome-msg",
           sender: "assistant",
-          text: `Hello! I am your context-aware **${panel.name} (${panel.shortCode}) AI Agent**.\n\nI can answer questions about panel data, handle automation, or guide you step-by-step through tasks like creating records, scheduling tasks, and managing workflows.`,
+          text: `Hello! I am your context-aware **${displayName} (${displayCode}) AI Agent**.\n\nI can answer questions about panel data, handle automation, or guide you step-by-step through tasks like creating records, scheduling tasks, and managing workflows.`,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         },
       ]);
@@ -115,7 +122,7 @@ export default function AskAiDrawer({
     if (!textToSend) setInputValue("");
 
     // Process via Panel Agentic Engine
-    const { nextState, assistantMessages } = processPanelMessage(query, panelId, flowState, roles);
+    const { nextState, assistantMessages } = processPanelMessage(query, panelId, flowState, roles, { name: registry?.name, shortName: registry?.shortName, description: registry?.description, names: Object.fromEntries(Object.values(allPanels).map((p) => [p.key, p.name])) });
 
     setFlowState(nextState);
     setMessages((prev) => [...prev, ...assistantMessages]);
@@ -135,7 +142,7 @@ export default function AskAiDrawer({
       {
         id: `welcome-${Date.now()}`,
         sender: "assistant",
-        text: `Conversation reset. Ask me anything or trigger a multi-step workflow in **${panel.name}**!`,
+        text: `Conversation reset. Ask me anything or trigger a multi-step workflow in **${displayName}**!`,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       },
     ]);
@@ -165,14 +172,14 @@ export default function AskAiDrawer({
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="truncate text-xs font-bold text-foreground">
-                      {panelTitle || panel.name}
+                      {displayName}
                     </span>
                     <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
-                      ⚡ {panel.shortCode} Agent
+                      ⚡ {displayCode} Agent
                     </span>
                   </div>
                   <p className="truncate text-[11px] text-muted-foreground">
-                    {panelDescription || panel.description}
+                    {displayDescription || panel.description}
                   </p>
                 </div>
               </div>
@@ -344,7 +351,7 @@ export default function AskAiDrawer({
             {panel.quickPrompts.length > 0 && !flowState && (
               <div className="border-t border-border/40 bg-muted/10 px-4 py-2 shrink-0">
                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-                  Suggested {panel.shortCode} Actions:
+                  Suggested {displayCode} Actions:
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {panel.quickPrompts.map((prompt, idx) => (
@@ -375,7 +382,7 @@ export default function AskAiDrawer({
                   type="text"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder={`Ask ${panel.shortCode} AI or request action...`}
+                  placeholder={`Ask ${displayCode} AI or request action...`}
                   className="flex-1 rounded-xl border border-border/60 bg-muted/30 px-3.5 py-2 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 />
                 <button

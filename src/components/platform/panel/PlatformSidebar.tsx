@@ -22,6 +22,7 @@ import {
   ScrollText,
   Settings2,
   LifeBuoy,
+  LayoutGrid,
   BookOpen,
   SlidersHorizontal,
 } from "lucide-react";
@@ -50,6 +51,7 @@ const SECTIONS: { label: string; items: { href: string; label: string; icon: Ico
     label: "Tenants",
     items: [
       { href: "/platform/companies", label: "Companies", icon: Building2 },
+      { href: "/platform/panels", label: "Panels", icon: LayoutGrid },
       { href: "/platform/signups", label: "Sign-ups & approvals", icon: UserPlus, badge: "pendingApprovals" },
       { href: "/platform/domains", label: "Domains & SSL", icon: Globe },
     ],

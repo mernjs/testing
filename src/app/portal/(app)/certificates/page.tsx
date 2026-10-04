@@ -10,7 +10,7 @@ import EmptyPortalState from "@/components/portal/EmptyPortalState";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Certificates · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Certificates · {brand} {panel:portal}");
 
 export default async function CertificatesPage() {
   const user = await guardPortalPage("intern", "trainee");

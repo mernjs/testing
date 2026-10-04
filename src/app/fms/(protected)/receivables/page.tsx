@@ -1,3 +1,4 @@
+import { panelNameMap } from "@/lib/platform/panels/store";
 import Link from "next/link";
 import {
   ArrowDownLeft,
@@ -26,6 +27,7 @@ export default async function CollectMoneyPage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
+  const panelName = await panelNameMap();
   const sp = await searchParams;
   const user = await getCurrentFmsUser();
 
@@ -187,8 +189,8 @@ export default async function CollectMoneyPage({
               name="portal"
               className="mt-1 w-full rounded-lg border border-border/60 bg-background px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
             >
-              <option value="TMS">TMS Student Portal (Course Fee)</option>
-              <option value="PMS">PMS Client Portal (Project Invoice)</option>
+              <option value="TMS">{panelName("tms", "TMS")} Student Portal (Course Fee)</option>
+              <option value="PMS">{panelName("pms", "PMS")} Client Portal (Project Invoice)</option>
               <option value="DIRECT">Direct Payment Link (Public URL)</option>
             </select>
           </div>

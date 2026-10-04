@@ -52,7 +52,7 @@ export default async function AdminLeadsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "CRM" }, { label: "Leads" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "CRM", panel: "lms" }, { label: "Leads" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Leads</h1>
         <p className="text-sm text-muted-foreground">

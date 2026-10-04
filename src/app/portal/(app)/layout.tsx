@@ -12,7 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 import { requireModule } from "@/lib/platform/billing/enforce";
 
-export const generateMetadata = () => brandedMetadata("{brand} Portal", { robots: { index: false, follow: false } });
+export const generateMetadata = () => brandedMetadata("{brand} {panel:portal}", { robots: { index: false, follow: false } });
 
 export default async function PortalAppLayout({ children }: { children: React.ReactNode }) {
   await requireModule("portal");

@@ -40,6 +40,8 @@ interface Props {
   existingDepartments: { id: string; name: string }[];
   invitations: { id: string; email: string; name: string; preset: string }[];
   enabledModules: string[] | null;
+  /** The panels offered in step 4 — names and descriptions from the Panel Registry, minus any the platform switched off. */
+  panelChoices: { key: string; label: string; description: string; core: boolean }[];
   timezones: string[];
   branding: StoredBranding;
   themes: PickerTheme[];
@@ -153,7 +155,7 @@ export default function OnboardingWizard(props: Props) {
               <BrandingThemeForm initial={props.branding} companyName={props.companyName} themes={props.themes} activeKey={props.activeThemeKey} appliedKey={props.appliedThemeKey} submitLabel="Save & continue" onSaved={next} />
             </StepCard>
           )}
-          {step === 4 && <ModulesStep industry={industry || "software_services"} enabled={props.enabledModules} onDone={next} />}
+          {step === 4 && <ModulesStep industry={industry || "software_services"} enabled={props.enabledModules} choices={props.panelChoices} onDone={next} />}
           {done && <DoneStep />}
         </motion.div>
 
@@ -469,7 +471,7 @@ function TeamStep({ departments, invitations, onDone }: { departments: { id: str
 
 // ── Step 4 ───────────────────────────────────────────────────────────────────
 
-function ModulesStep({ industry, enabled, onDone }: { industry: Industry; enabled: string[] | null; onDone: () => void }) {
+function ModulesStep({ industry, enabled, choices, onDone }: { industry: Industry; enabled: string[] | null; choices: { key: string; label: string; description: string; core: boolean }[]; onDone: () => void }) {
   const [selected, setSelected] = useState<Set<string>>(() => new Set(enabled ?? DEFAULT_MODULES[industry]));
   const [pending, start] = useTransition();
   const toggle = (key: string) =>
@@ -481,7 +483,7 @@ function ModulesStep({ industry, enabled, onDone }: { industry: Industry; enable
     });
 
   const recommended = useMemo(() => new Set<string>(DEFAULT_MODULES[industry]), [industry]);
-  const count = MODULES.filter((m) => m.core || selected.has(m.key)).length;
+  const count = choices.filter((m) => m.core || selected.has(m.key)).length;
 
   return (
     <StepCard title="Choose your panels" description="Turn on what your company uses. Everything else stays out of your team's way — switch panels on or off any time.">
@@ -489,13 +491,13 @@ function ModulesStep({ industry, enabled, onDone }: { industry: Industry; enable
         <Button type="button" variant="outline" size="xs" onClick={() => setSelected(new Set<string>(DEFAULT_MODULES[industry]))}>
           <Sparkles className="size-3" /> Use recommended
         </Button>
-        <Button type="button" variant="ghost" size="xs" onClick={() => setSelected(new Set<string>(MODULES.map((m) => m.key)))}>
+        <Button type="button" variant="ghost" size="xs" onClick={() => setSelected(new Set<string>(choices.map((m) => m.key)))}>
           Select all
         </Button>
         <span className="ml-auto text-xs text-muted-foreground">{count} panels on</span>
       </div>
       <div className="grid gap-2 sm:grid-cols-2">
-        {MODULES.map((m) => {
+        {choices.map((m) => {
           const on = m.core || selected.has(m.key);
           return (
             <label key={m.key} className={cn("flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors", on ? "border-primary/50 bg-primary/5" : "hover:bg-muted/50", m.core && "cursor-default")}>

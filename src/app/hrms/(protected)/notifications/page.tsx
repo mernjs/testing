@@ -19,6 +19,7 @@ export default async function Page() {
   }
   return (
     <GenericPanelNotificationsPage
+      panel="hrms"
       live
       panelName="Human Resource Management System"
       shortCode="HRMS"

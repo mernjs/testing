@@ -7,7 +7,7 @@ import JoinForm from "./JoinForm";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 import { getCompanyBrand } from "@/lib/platform/branding";
 
-export const generateMetadata = () => brandedMetadata("Join · {brand} Portal", { robots: { index: false } });
+export const generateMetadata = () => brandedMetadata("Join · {brand} {panel:portal}", { robots: { index: false } });
 export const dynamic = "force-dynamic";
 
 export default async function PortalJoinPage({ searchParams }: { searchParams: Promise<{ ref?: string }> }) {

@@ -39,7 +39,7 @@ export default async function AdminInventoryPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement" }, { label: "Inventory" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "Inventory" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Inventory</h1>
         <p className="text-sm text-muted-foreground">{total} item{total === 1 ? "" : "s"}.</p>

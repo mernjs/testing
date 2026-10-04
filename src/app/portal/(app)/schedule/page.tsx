@@ -10,7 +10,7 @@ import type { ClassView } from "@/lib/tms/classes";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Class Schedule · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Class Schedule · {brand} {panel:portal}");
 
 function ClassRow({ c }: { c: ClassView }) {
   return (

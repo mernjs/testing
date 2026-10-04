@@ -1,3 +1,4 @@
+import { panelNameMap } from "@/lib/platform/panels/store";
 import DashboardSection from "@/components/platform/panel/DashboardSection";
 import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
@@ -107,6 +108,7 @@ export default async function FmsDashboardPage({
 }) {
   const sp = await searchParams;
   const user = await getCurrentFmsUser();
+  const panelName = await panelNameMap();
 
   const granularity: DashboardGranularity = VALID_GRANULARITIES.includes(sp.granularity as DashboardGranularity)
     ? (sp.granularity as DashboardGranularity)
@@ -171,7 +173,7 @@ export default async function FmsDashboardPage({
     {
       href: "/fms/panels/prms",
       icon: <ShoppingBag className="size-3.5" />,
-      label: "PRMS Procurement",
+      label: panelName("prms", "PRMS Procurement"),
       badge: "Payables",
       primaryLabel: "Vendor Payables",
       primaryValue: panel.prms.payables,
@@ -182,7 +184,7 @@ export default async function FmsDashboardPage({
     {
       href: "/fms/panels/pms",
       icon: <Briefcase className="size-3.5" />,
-      label: "PMS Projects",
+      label: panelName("pms", "PMS Projects"),
       badge: "Receivables",
       primaryLabel: "Client Invoices",
       primaryValue: panel.pms.receivables,
@@ -193,7 +195,7 @@ export default async function FmsDashboardPage({
     {
       href: "/fms/panels/hrms",
       icon: <Users className="size-3.5" />,
-      label: "HRMS Payroll",
+      label: panelName("hrms", "HRMS Payroll"),
       badge: "Payroll",
       primaryLabel: "Salary Payable",
       primaryValue: panel.hrms.salaryPayable,
@@ -204,7 +206,7 @@ export default async function FmsDashboardPage({
     {
       href: "/fms/panels/tms",
       icon: <BookOpen className="size-3.5" />,
-      label: "TMS Training",
+      label: panelName("tms", "TMS Training"),
       badge: "Student Fees",
       primaryLabel: "Fee Receivables",
       primaryValue: panel.tms.receivables,
@@ -280,8 +282,8 @@ export default async function FmsDashboardPage({
           </div>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
             {[
-              { href: "/fms/panels/tms", icon: <GraduationCap className="size-3.5 text-primary" />, label: "TMS Fee Link", sub: "Student Portal" },
-              { href: "/fms/panels/pms", icon: <Briefcase className="size-3.5 text-primary" />, label: "PMS Client Link", sub: "Client Portal" },
+              { href: "/fms/panels/tms", icon: <GraduationCap className="size-3.5 text-primary" />, label: `${panelName("tms", "TMS")} Fee Link`, sub: "Student Portal" },
+              { href: "/fms/panels/pms", icon: <Briefcase className="size-3.5 text-primary" />, label: `${panelName("pms", "PMS")} Client Link`, sub: "Client Portal" },
               { href: "/fms/beneficiaries", icon: <Building2 className="size-3.5 text-primary" />, label: "Beneficiaries", sub: "Bank Directory" },
               { href: "/fms/payouts", icon: <ArrowUpRight className="size-3.5 text-rose-500" />, label: "Direct Payout", sub: "Pay Vendors / Staff" },
               { href: "/fms/receivables", icon: <Receipt className="size-3.5 text-emerald-600 dark:text-emerald-400" />, label: "Collect Money", sub: "Central Invoicing" },

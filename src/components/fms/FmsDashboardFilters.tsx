@@ -1,5 +1,6 @@
 "use client";
 
+import { usePanelLabel } from "@/components/platform/PanelsProvider";
 import { useState, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { CalendarRange, SlidersHorizontal, RotateCcw } from "lucide-react";
@@ -25,6 +26,7 @@ export default function FmsDashboardFilters({
   type?: string;
   hasActiveFilters: boolean;
 }) {
+  const panelLabel = usePanelLabel();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -190,10 +192,10 @@ export default function FmsDashboardFilters({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all" className="text-xs">All Panels</SelectItem>
-              <SelectItem value="prms" className="text-xs">PRMS Procurement</SelectItem>
-              <SelectItem value="pms" className="text-xs">PMS Projects</SelectItem>
-              <SelectItem value="hrms" className="text-xs">HRMS Payroll</SelectItem>
-              <SelectItem value="tms" className="text-xs">TMS Training</SelectItem>
+              <SelectItem value="prms" className="text-xs">{panelLabel("prms", "PRMS Procurement")}</SelectItem>
+              <SelectItem value="pms" className="text-xs">{panelLabel("pms", "PMS Projects")}</SelectItem>
+              <SelectItem value="hrms" className="text-xs">{panelLabel("hrms", "HRMS Payroll")}</SelectItem>
+              <SelectItem value="tms" className="text-xs">{panelLabel("tms", "TMS Training")}</SelectItem>
             </SelectContent>
           </Select>
         </div>

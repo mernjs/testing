@@ -67,7 +67,7 @@ import ExecutiveSection from "@/components/workspace/ExecutiveSection";
 import { AnalyticsFilterBar, type FilterField } from "@/components/workspace/AnalyticsFilterBar";
 import {
   isPanelKey,
-  PANEL_CONFIGS,
+  panelConfigs,
   getFmsAnalytics,
   getHrmsAnalytics,
   getLmsAnalytics,
@@ -1063,7 +1063,7 @@ export async function PanelAnalyticsBlock({
   prefix?: string;
   compact?: boolean;
 }) {
-  const config = PANEL_CONFIGS[panel];
+  const config = (await panelConfigs())[panel];
   const icon = PANEL_ICONS[panel];
   const roles = user.roles;
   // The same rule that lists this page in the Workspace navigation: role / permission override, plan and switched-on panels.

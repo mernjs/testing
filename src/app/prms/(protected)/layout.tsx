@@ -9,6 +9,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { listNotifications, unreadCount, runPrmsSweep } from "@/lib/prms/notifications";
 import { requireModule } from "@/lib/platform/billing/enforce";
 import PanelBackBar from "@/components/hub/PanelBackBar";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
+
+export const generateMetadata = () => brandedMetadata("{brand} {panel:prms}", { robots: { index: false, follow: false } });
 
 export default async function ProtectedPrmsLayout({ children }: { children: React.ReactNode }) {
   await requireModule("prms");

@@ -20,6 +20,7 @@ export default async function HubNotificationsPage() {
   }
   return (
     <GenericPanelNotificationsPage
+      panel="workspace"
       live
       panelName="Workspace"
       shortCode="WS"

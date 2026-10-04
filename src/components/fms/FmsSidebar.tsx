@@ -1,5 +1,6 @@
 "use client";
 
+import { usePanelLabel, usePanels } from "@/components/platform/PanelsProvider";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
@@ -112,6 +113,8 @@ export default function FmsSidebar({
   onNavigate?: () => void;
   collapsed?: boolean;
 }) {
+  const panels = usePanels();
+  const panelLabel = usePanelLabel();
   const roleCtx = { roles, permissionOverrides };
   const nav = (props: {
     href: string;
@@ -128,10 +131,10 @@ export default function FmsSidebar({
 
       {/* ── PANELS ── */}
       <SectionLabel collapsed={collapsed}>Panels</SectionLabel>
-      {nav({ href: "/fms/panels/prms", label: "PRMS Panel", icon: ShoppingCart })}
-      {nav({ href: "/fms/panels/pms", label: "PMS Panel", icon: FolderKanban })}
-      {nav({ href: "/fms/panels/hrms", label: "HRMS Panel", icon: Users })}
-      {nav({ href: "/fms/panels/tms", label: "TMS Panel", icon: GraduationCap })}
+      {panels.prms?.available !== false && nav({ href: "/fms/panels/prms", label: panelLabel("prms", "PRMS Panel"), icon: ShoppingCart })}
+      {panels.pms?.available !== false && nav({ href: "/fms/panels/pms", label: panelLabel("pms", "PMS Panel"), icon: FolderKanban })}
+      {panels.hrms?.available !== false && nav({ href: "/fms/panels/hrms", label: panelLabel("hrms", "HRMS Panel"), icon: Users })}
+      {panels.tms?.available !== false && nav({ href: "/fms/panels/tms", label: panelLabel("tms", "TMS Panel"), icon: GraduationCap })}
 
       {/* ── FINANCE DESK ── */}
       <SectionLabel collapsed={collapsed}>Finance Desk</SectionLabel>

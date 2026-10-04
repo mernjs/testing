@@ -1,3 +1,4 @@
+import { panelNameMap } from "@/lib/platform/panels/store";
 import "server-only";
 import { getDb } from "@/lib/mongodb";
 import { escapeRegExp } from "@/lib/text-search";
@@ -176,8 +177,9 @@ export async function exportActivityLog(opts: SearchActivityLogOptions = {}): Pr
   ];
 
   const rows = (await db.collection(first.collection).aggregate(pipeline).toArray()) as Record<string, unknown>[];
+  const panelName = await panelNameMap();
   return rows.map((doc) => ({
-    module: activityModuleLabel(doc.module as string),
+    module: panelName(doc.module as string, activityModuleLabel(doc.module as string)),
     actorEmail: (doc.actorEmail as string) ?? "",
     action: (doc.action as string) ?? "",
     entity: (doc.entity as string) ?? "",

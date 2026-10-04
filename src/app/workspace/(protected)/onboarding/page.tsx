@@ -6,6 +6,7 @@ import { getCompanyDetails } from "@/lib/hrms/company";
 import { listDepartments } from "@/lib/hrms/departments";
 import { listPendingInvitations } from "@/lib/platform/invitations";
 import OnboardingWizard from "./OnboardingWizard";
+import { listPanelChoices } from "@/lib/platform/panels/choices";
 import { getCompanyBrand, getStoredBranding } from "@/lib/platform/branding";
 import { listThemeOptions } from "@/lib/platform/branding/theme-options";
 
@@ -18,6 +19,7 @@ export default async function OnboardingPage() {
 
   const [{ company, state }, details, departments, invitations, stored, brand] = await Promise.all([getOnboarding(), getCompanyDetails(), listDepartments(), listPendingInvitations(), getStoredBranding(), getCompanyBrand()]);
   const { options: themes, activeKey, appliedKey } = await listThemeOptions();
+  const panelChoices = await listPanelChoices();
 
   return (
     <OnboardingWizard
@@ -38,6 +40,7 @@ export default async function OnboardingPage() {
       existingDepartments={departments.map((d) => ({ id: d._id, name: d.name }))}
       invitations={invitations.map((i) => ({ id: i._id, email: i.email, name: i.name, preset: i.preset }))}
       enabledModules={company.enabledModules ?? null}
+      panelChoices={panelChoices}
       themes={themes}
       activeThemeKey={activeKey}
       appliedThemeKey={appliedKey}

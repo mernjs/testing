@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("My Application · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("My Application · {brand} {panel:portal}");
 
 export default async function ApplicationPage() {
   const user = await guardPortalPage("job_applicant");

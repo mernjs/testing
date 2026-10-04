@@ -17,7 +17,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 import PanelBackBar from "@/components/hub/PanelBackBar";
 
-export const generateMetadata = () => brandedMetadata("{brand} Messenger", { robots: { index: false, follow: false } });
+export const generateMetadata = () => brandedMetadata("{brand} {panel:messenger}", { robots: { index: false, follow: false } });
 
 export default async function ProtectedMessengerLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentChatUser();

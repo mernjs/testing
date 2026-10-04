@@ -16,6 +16,9 @@ import { NEUTRAL_BRAND } from "@/lib/platform/branding/types";
 import { resolveSiteThemeState } from "@/lib/cms/theme-preview";
 import { FALLBACK_THEME, isDefaultTokens, themeCssBlock } from "@/lib/cms/theme-shared";
 import { BrandProvider } from "@/components/platform/BrandProvider";
+import { PanelsProvider } from "@/components/platform/PanelsProvider";
+import PanelTextSync from "@/components/platform/PanelTextSync";
+import { panelMetaFor } from "@/lib/platform/panels/store";
 import PlatformNoticeBanner from "@/components/platform/PlatformNoticeBanner";
 import { getTracking, type TrackingSettings } from "@/lib/cms/tracking";
 import { getPlatformSettings } from "@/lib/platform/settings";
@@ -57,7 +60,10 @@ export default async function RootLayout({
 }>) {
   // Brand, contact details and social links (CMS → Site Identity); site-wide structured data (CMS → Settings).
   // No company owns this host (the proxy is showing /workspace-not-found): render the bare shell.
-  const hasCompany = (await currentCompanyIdOrNull()) !== null;
+  const companyId = await currentCompanyIdOrNull();
+  const hasCompany = companyId !== null;
+  // The Panel Registry (names, descriptions, what is switched on) as it applies to this company; never fails the page.
+  const panels = hasCompany ? await panelMetaFor(companyId).catch(() => ({})) : {};
   const [siteInfo, { jsonLd }, brand] = hasCompany
     ? await Promise.all([getSiteInfo(), getSiteSeo(), getCompanyBrand()])
     : [parseSiteInfo(null), parseSiteSeo(null), NEUTRAL_BRAND];
@@ -88,11 +94,14 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <BrandProvider brand={brand}>
-            <SiteInfoProvider value={{ ...siteInfo, liveChatId }}>
-              {children}
+            <PanelsProvider panels={panels}>
+              <PanelTextSync />
+              <SiteInfoProvider value={{ ...siteInfo, liveChatId }}>
+                {children}
 
-              {notice && <PlatformNoticeBanner message={notice} />}
-            </SiteInfoProvider>
+                {notice && <PlatformNoticeBanner message={notice} />}
+              </SiteInfoProvider>
+            </PanelsProvider>
           </BrandProvider>
         </ThemeProvider>
       </body>

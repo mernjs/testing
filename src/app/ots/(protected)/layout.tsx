@@ -17,7 +17,7 @@ import { brandedMetadata } from "@/lib/platform/branding/metadata";
 import { requireModule } from "@/lib/platform/billing/enforce";
 import PanelBackBar from "@/components/hub/PanelBackBar";
 
-export const generateMetadata = () => brandedMetadata("{brand} Online Tests", { robots: { index: false, follow: false } });
+export const generateMetadata = () => brandedMetadata("{brand} {panel:ots}", { robots: { index: false, follow: false } });
 
 export default async function ProtectedOtsLayout({ children }: { children: React.ReactNode }) {
   await requireModule("ots");

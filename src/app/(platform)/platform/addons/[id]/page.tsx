@@ -12,6 +12,7 @@ import { getAddon, listAddonHolders } from "@/lib/platform/billing/addons";
 import { listPlans } from "@/lib/platform/billing/plans";
 import { getBillingSettings } from "@/lib/platform/billing/settings";
 import { MODULES } from "@/lib/platform/onboarding/catalog";
+import { panelLabels } from "@/lib/platform/panels/choices";
 import { describeAddonEffect } from "@/lib/platform/billing/catalog-types";
 import AddonForm from "../AddonForm";
 import { setAddonActiveAction } from "../actions";
@@ -19,6 +20,7 @@ import { setAddonActiveAction } from "../actions";
 export const metadata: Metadata = { title: "Add-on" };
 
 export default async function AddonDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const labels = await panelLabels();
   await requirePlatformPermission("addons.read");
   const addon = await getAddon((await params).id);
   if (!addon) notFound();
@@ -42,7 +44,7 @@ export default async function AddonDetailPage({ params }: { params: Promise<{ id
         key={addon.updatedAt.toISOString()}
         addon={addon}
         plans={plans.map((p) => ({ id: p._id, name: p.name }))}
-        modules={MODULES.filter((m) => !m.core).map((m) => ({ key: m.key, label: m.label }))}
+        modules={MODULES.filter((m) => !m.core).map((m) => ({ key: m.key, label: labels.get(m.key) ?? m.label }))}
         currency={settings.billing.currency}
       />
 

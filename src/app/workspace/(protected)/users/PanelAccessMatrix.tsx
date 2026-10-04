@@ -1,5 +1,6 @@
 "use client";
 
+import { usePanels } from "@/components/platform/PanelsProvider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getPanelAccessSummary, type AdminUserRow } from "@/lib/workspace/admin-users-shared";
@@ -54,7 +55,19 @@ export default function PanelAccessMatrix({
   user: AdminUserRow;
   onEditRoles?: () => void;
 }) {
-  const panels = getPanelAccessSummary(user);
+  const registry = usePanels();
+  // Names come from the Panel Registry so this matches every other listing.
+  const summary = getPanelAccessSummary(user).map((p) => ({ ...p, name: registry[p.key]?.name ?? p.name }));
+  // Every panel in the registry gets a row. Panels with no role of their own (Help & Support, the public website) are open to everyone.
+  const shown = new Set(summary.map((p) => p.key));
+  const everyone = new Set(["support", "website"]);
+  const panels = [
+    ...summary,
+    ...Object.values(registry)
+      .filter((p) => !shown.has(p.key))
+      .sort((a, b) => a.order - b.order)
+      .map((p) => ({ key: p.key, name: p.name, hasAccess: everyone.has(p.key) || user.roles.includes("super_admin"), roles: [] as string[], isSuperAdmin: user.roles.includes("super_admin") })),
+  ];
   const overrideKeys = Object.keys(user.permissionOverrides);
 
   return (
@@ -63,7 +76,7 @@ export default function PanelAccessMatrix({
         <div>
           <h3 className="text-sm font-semibold text-foreground">Panel Access Overview</h3>
           <p className="text-xs text-muted-foreground">
-            Access is automatically determined by assigned roles across the 8 platform panels.
+            Access is automatically determined by assigned roles across the {panels.length} platform panels.
           </p>
         </div>
         {onEditRoles && (

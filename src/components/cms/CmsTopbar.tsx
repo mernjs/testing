@@ -1,5 +1,6 @@
 "use client";
 
+import { PanelHeading } from "@/components/platform/PanelsProvider";
 import HelpLauncher from "@/components/support/HelpLauncher";
 import { useState } from "react";
 import Link from "next/link";
@@ -17,10 +18,7 @@ export default function CmsTopbar({ roles: _roles, flags }: { roles: string[]; f
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <CmsMobileSidebar flags={flags} />
-      <div className="hidden min-w-0 lg:block">
-        <p className="truncate text-sm font-semibold text-foreground">Website CMS</p>
-        <p className="truncate text-[11px] text-muted-foreground">Pages, blogs &amp; website content</p>
-      </div>
+      <PanelHeading panel="cms" className="hidden min-w-0 lg:block" fallbackTitle="Website" fallbackDescription="Your public website, pages and content" />
       <div className="flex min-w-0 flex-1 justify-center">
         <CmsCommandSearch />
       </div>

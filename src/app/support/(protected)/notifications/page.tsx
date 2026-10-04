@@ -22,6 +22,7 @@ export default async function SupportNotificationsPage() {
   }
   return (
     <GenericPanelNotificationsPage
+      panel="support"
       live
       panelName="Help & Support"
       shortCode="HELP"

@@ -1,5 +1,6 @@
 "use client";
 
+import { PanelHeading } from "@/components/platform/PanelsProvider";
 import HelpLauncher from "@/components/support/HelpLauncher";
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
@@ -35,10 +36,7 @@ export default function MessengerTopbar({
         unreadChannels={unreadChannels}
         unreadNotifications={unread}
       />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-foreground">Team Communication</p>
-        <p className="truncate text-[11px] text-muted-foreground">Messages, channels &amp; team collaboration</p>
-      </div>
+      <PanelHeading panel="messenger" fallbackTitle="Team Communication" fallbackDescription="Messages, channels & team collaboration" />
       <div className="flex min-w-0 flex-1 justify-center">
         <PanelSearch />
       </div>

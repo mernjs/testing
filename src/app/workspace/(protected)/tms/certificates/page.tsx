@@ -38,7 +38,7 @@ export default async function AdminCertificatesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "TMS" }, { label: "Certificates" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "TMS", panel: "tms" }, { label: "Certificates" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Certificates</h1>
         <p className="text-sm text-muted-foreground">{total} certificate{total === 1 ? "" : "s"} issued.</p>

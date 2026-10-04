@@ -31,7 +31,7 @@ export default async function AdminChannelsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "YashChat" }, { label: "Channels" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "YashChat", panel: "messenger" }, { label: "Channels" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Channels</h1>
         <p className="text-sm text-muted-foreground">{total} channel{total === 1 ? "" : "s"}.</p>

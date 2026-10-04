@@ -1,4 +1,5 @@
 import "server-only";
+import { listPanels } from "@/lib/platform/panels/store";
 import { getDb } from "@/lib/mongodb";
 import { getFmsDashboardStats } from "@/lib/fms/dashboard";
 import { getHrmsDashboardStats } from "@/lib/hrms/dashboard";
@@ -1097,6 +1098,28 @@ export const PANEL_CONFIGS = {
 } as const;
 
 export type PanelKey = keyof typeof PANEL_CONFIGS;
+
+export interface PanelConfigView {
+  label: string;
+  description: string;
+  href: string;
+  ctaLabel: string;
+}
+
+/**
+ * `PANEL_CONFIGS` with the Panel Registry applied: the panel's name, route and "Open …" button come from the registry
+ * (so they match every other listing), while the description stays the analytics-specific text above.
+ */
+export async function panelConfigs(): Promise<Record<PanelKey, PanelConfigView>> {
+  const registry = new Map((await listPanels()).map((p) => [p.key, p]));
+  return Object.fromEntries(
+    (Object.keys(PANEL_CONFIGS) as PanelKey[]).map((k) => {
+      const base = PANEL_CONFIGS[k];
+      const r = registry.get(k);
+      return [k, { label: r ? `${r.name} Analytics` : base.label, description: base.description, href: r?.route ?? base.href, ctaLabel: r ? `Open ${r.name}` : base.ctaLabel }];
+    }),
+  ) as Record<PanelKey, PanelConfigView>;
+}
 
 export function isPanelKey(val: unknown): val is PanelKey {
   // Own keys only: "toString" and friends are `in` every object.

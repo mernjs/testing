@@ -1,3 +1,4 @@
+import { panelNameMap } from "@/lib/platform/panels/store";
 import Link from "next/link";
 import {
   Briefcase,
@@ -23,6 +24,7 @@ export default async function PmsFinancePage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
+  const panelName = await panelNameMap();
   const sp = await searchParams;
   const tab = sp.tab ?? "all";
 
@@ -42,14 +44,14 @@ export default async function PmsFinancePage({
 
   return (
     <div className="relative space-y-6">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Panel Finance" }, { label: "PMS" }]} />
+      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Panel Finance" }, { label: "PMS", panel: "pms" }]} />
 
       <div className="flex items-center gap-2.5">
         <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-brand-accent text-white shadow-sm">
           <Briefcase className="size-5" />
         </div>
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">PMS Project Finance</h1>
+          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{panelName("pms", "PMS")} Project Finance</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Project milestones flow from PMS → FMS to generate invoices, payment links &amp; receipts.
           </p>

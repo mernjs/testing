@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { getCurrentHubUser } from "@/lib/hub-auth";
-import { PANEL_CONFIGS, isPanelKey } from "@/lib/workspace/panel-analytics";
+import { isPanelKey, panelConfigs } from "@/lib/workspace/panel-analytics";
 import { PanelAnalyticsBlock } from "./PanelAnalyticsBlock";
 
 export default async function WorkspacePanelAnalyticsPage({
@@ -17,10 +17,11 @@ export default async function WorkspacePanelAnalyticsPage({
   const { panel } = await params;
   const sp = await searchParams;
   if (!isPanelKey(panel)) notFound();
+  const configs = await panelConfigs();
 
   return (
     <div className="relative space-y-6 p-6">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Analytics" }, { label: PANEL_CONFIGS[panel].label }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Analytics" }, { label: configs[panel].label }]} />
       <PanelAnalyticsBlock panel={panel} user={user} sp={sp} />
     </div>
   );

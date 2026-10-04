@@ -14,7 +14,7 @@ import { payFeeWithCreditsAction } from "../wallet/pay-actions";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Payments · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Payments · {brand} {panel:portal}");
 
 function inr(n: number) {
   return `₹${Math.round(n).toLocaleString("en-IN")}`;

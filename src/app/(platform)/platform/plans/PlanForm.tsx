@@ -15,8 +15,8 @@ import { BILLING_INTERVALS, PLAN_FLAGS, PLAN_LIMIT_DEFS } from "@/lib/platform/b
 import { savePlanAction } from "./actions";
 import type { PlanFormErrors, PlanFormValues } from "./planFormValues";
 
-const SELECTABLE = MODULES.filter((m) => !m.core);
-const CORE_LABELS = MODULES.filter((m) => m.core).map((m) => m.label).join(", ");
+const STATIC_SELECTABLE = MODULES.filter((m) => !m.core).map((m) => ({ key: m.key, label: m.label, description: m.description }));
+const STATIC_CORE = MODULES.filter((m) => m.core).map((m) => m.label).join(", ");
 const CYCLE_LABEL = new Map<string, string>(BILLING_INTERVALS.map((i) => [i.id, i.label]));
 const checkbox = "size-4 shrink-0 accent-primary";
 
@@ -63,12 +63,17 @@ export default function PlanForm({
   lockedDefault,
   platformTrialDays,
   companies = 0,
+  panels,
+  coreLabels,
 }: {
   mode: "create" | "update";
   initial: PlanFormValues;
   lockedDefault?: boolean;
   platformTrialDays: number;
   companies?: number;
+  /** Selectable panels with Panel Registry names / descriptions (falls back to the built-in list). */
+  panels?: { key: string; label: string; description: string }[];
+  coreLabels?: string;
 }) {
   const router = useRouter();
   const [values, setValues] = useState<PlanFormValues>(initial);
@@ -166,14 +171,14 @@ export default function PlanForm({
         </p>
       </Section>
 
-      <Section title="Panels" description={`Always included: ${CORE_LABELS}.`}>
+      <Section title="Panels" description={`Always included: ${coreLabels ?? STATIC_CORE}.`}>
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" id="plan-all-modules" className={checkbox} checked={values.allModules} onChange={(e) => set("allModules", e.target.checked)} />
           Every panel (including panels added later)
         </label>
         {!values.allModules && (
           <div role="group" aria-label="Included panels" aria-describedby={errors.modules ? "plan-modules-error" : undefined} className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {SELECTABLE.map((m) => (
+            {(panels ?? STATIC_SELECTABLE).map((m) => (
               <label key={m.key} className="flex items-start gap-2 rounded-lg border border-border p-2 text-sm">
                 <input type="checkbox" name="module" value={m.key} className={cn(checkbox, "mt-0.5")} checked={values.modules.includes(m.key)} onChange={(e) => toggleList("modules", m.key, e.target.checked)} />
                 <span className="min-w-0">

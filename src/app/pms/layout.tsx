@@ -1,13 +1,7 @@
-import type { Metadata } from "next";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const metadata: Metadata = {
-  title: "PMS",
-  robots: {
-    index: false,
-    follow: false,
-    googleBot: { index: false, follow: false },
-  },
-};
+// The tab title carries the panel's name from the Panel Registry.
+export const generateMetadata = () => brandedMetadata("{brand} {panel:pms}", { robots: { index: false, follow: false, googleBot: { index: false, follow: false } } });
 
 // `lms-shell` is the shared dashboard design-system class (palette tokens,
 // card treatment, ambient background, control nudges) — reused verbatim so the

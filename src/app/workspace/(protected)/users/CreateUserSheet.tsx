@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ROLE_GROUPS } from "@/lib/workspace/role-catalog";
+import { usePanels } from "@/components/platform/PanelsProvider";
 import { createAdminUserAction } from "./actions";
 
 const USER_TYPE_META = [
@@ -69,6 +70,8 @@ export default function CreateUserSheet({
   const [notes, setNotes] = useState("");
   const [roles, setRoles] = useState<string[]>([]);
   const [moduleFilter, setModuleFilter] = useState<string>("all");
+  // Panel names come from the Panel Registry, like every other listing.
+  const panels = usePanels();
   const [roleSearch, setRoleSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -110,7 +113,7 @@ export default function CreateUserSheet({
 
   const filteredGroups = useMemo(() => {
     return ROLE_GROUPS.map((g) => {
-      const matchesModule = moduleFilter === "all" || g.module.toLowerCase().includes(moduleFilter.toLowerCase());
+      const matchesModule = moduleFilter === "all" || g.panel === moduleFilter;
       if (!matchesModule) return null;
 
       const filteredRoles = g.roles.filter((r) =>
@@ -148,7 +151,7 @@ export default function CreateUserSheet({
             <div>
               <SheetTitle className="text-base font-semibold">New User Account</SheetTitle>
               <SheetDescription className="text-xs">
-                Create a central identity & assign access across all 10 platform panels.
+                Create a central identity & assign access across all {Object.keys(panels).length || 10} platform panels.
               </SheetDescription>
             </div>
           </div>
@@ -252,7 +255,7 @@ export default function CreateUserSheet({
                   Super Admin (Executive Full Access)
                 </p>
                 <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Grants unrestricted access across all 10 platform panels and Super Admin Command Center. Bypasses panel role gates.
+                  Grants unrestricted access across all {Object.keys(panels).length || 10} platform panels and Super Admin Command Center. Bypasses panel role gates.
                 </p>
               </div>
             </label>
@@ -278,21 +281,13 @@ export default function CreateUserSheet({
                       <SelectValue placeholder="All Panels" />
                     </SelectTrigger>
                     <SelectContent align="end">
-                      <SelectItem value="all">All Panels (13)</SelectItem>
-                      <SelectItem value="hrms">HRMS Panel</SelectItem>
-                      <SelectItem value="pms">PMS (Projects)</SelectItem>
-                      <SelectItem value="procurement">Procurement (PRMS)</SelectItem>
-                      <SelectItem value="training">Training (TMS)</SelectItem>
-                      <SelectItem value="yashchat">YashChat</SelectItem>
-                      <SelectItem value="finance">Finance (FMS)</SelectItem>
-                      <SelectItem value="sop">SOP Panel</SelectItem>
-                      <SelectItem value="seo">SEO Panel</SelectItem>
-                      <SelectItem value="dlms">Digi Locker (DLMS)</SelectItem>
-                      <SelectItem value="ai bots">AI Bots</SelectItem>
-                      <SelectItem value="lms">LMS (CRM &amp; Learning)</SelectItem>
-                      <SelectItem value="portal">External Portal</SelectItem>
-                      <SelectItem value="workspace">Workspace Panel</SelectItem>
-                    </SelectContent>
+                      <SelectItem value="all">All Panels</SelectItem>
+                    {ROLE_GROUPS.map((g) => (
+                      <SelectItem key={g.panel} value={g.panel}>
+                        {panels[g.panel]?.name ?? g.module}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                   </Select>
                 </div>
 
@@ -311,7 +306,7 @@ export default function CreateUserSheet({
                         <div key={g.module} className="rounded-xl border border-border/70 bg-card p-3 space-y-2">
                           <div className="flex items-center justify-between border-b border-border/40 pb-1.5">
                             <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                              {g.module}
+                              {panels[g.panel]?.name ?? g.module}
                             </span>
                             {selectedCountInGroup > 0 && (
                               <Badge variant="outline" className="text-[10px] py-0 px-1.5 text-primary border-primary/30">

@@ -1,3 +1,4 @@
+import { panelNameMap } from "@/lib/platform/panels/store";
 import Link from "next/link";
 import {
   BookOpen,
@@ -25,6 +26,7 @@ export default async function TmsFinancePage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
+  const panelName = await panelNameMap();
   const sp = await searchParams;
   const tab = sp.tab ?? "all";
 
@@ -44,14 +46,14 @@ export default async function TmsFinancePage({
 
   return (
     <div className="relative space-y-6">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Panel Finance" }, { label: "TMS" }]} />
+      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Panel Finance" }, { label: "TMS", panel: "tms" }]} />
 
       <div className="flex items-center gap-2.5">
         <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-brand-accent text-white shadow-sm">
           <BookOpen className="size-5" />
         </div>
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">TMS Training &amp; Student Fees</h1>
+          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{panelName("tms", "TMS Training")} &amp; Student Fees</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Student enrollments flow from TMS → FMS to issue fee invoices, payment links &amp; receipts.
           </p>

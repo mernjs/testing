@@ -1,5 +1,6 @@
 "use client";
 
+import { PanelHeading } from "@/components/platform/PanelsProvider";
 import { Sparkles } from "lucide-react";
 import { useAskAiOpen } from "@/lib/ai/use-ask-ai-open";
 import AskAiDrawer from "@/components/platform/AskAiDrawer";
@@ -13,10 +14,7 @@ export default function SupportTopbar({ openRequests, unread }: { openRequests: 
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <SupportMobileSidebar openRequests={openRequests} />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-foreground">Help &amp; Support</p>
-        <p className="truncate text-[11px] text-muted-foreground">AI help, guides &amp; requests to YashOrbit</p>
-      </div>
+      <PanelHeading panel="support" fallbackTitle="Help & Support" fallbackDescription="AI help, guides & requests to YashOrbit" />
       <div className="flex min-w-0 flex-1 justify-center">
         <PanelSearch />
       </div>

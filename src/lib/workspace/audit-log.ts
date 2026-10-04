@@ -1,3 +1,4 @@
+import { panelNameMap } from "@/lib/platform/panels/store";
 import "server-only";
 import { listEvents } from "@/lib/platform/events";
 import { eventLabel } from "@/lib/platform/events/catalog";
@@ -18,11 +19,12 @@ export async function searchMergedAudit(opts: { page: number; pageSize: number; 
     opts.panels ? searchActivityLog({ page: 1, pageSize: need, dateFrom: opts.from, dateTo: opts.to }) : null,
     opts.workspace ? listEvents({ from: opts.from, to: opts.to }, { limit: need, skip: 0 }) : null,
   ]);
+  const panelName = await panelNameMap();
   const panelRows: AuditRow[] = (panelRes?.items ?? []).map((r) => ({
     id: `panels:${r._id}`,
     source: "panels",
     at: r.createdAt,
-    what: `${activityModuleLabel(r.module)} · ${r.action.replace(/_/g, " ")}`,
+    what: `${panelName(r.module, activityModuleLabel(r.module))} · ${r.action.replace(/_/g, " ")}`,
     subject: `${r.entity.replace(/_/g, " ")}${r.entityLabel ? `: ${r.entityLabel}` : ""}`,
     summary: r.summary,
     actor: r.actorEmail ?? "System",

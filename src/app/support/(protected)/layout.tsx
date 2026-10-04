@@ -9,9 +9,11 @@ import PanelBackBar from "@/components/hub/PanelBackBar";
 import { SidebarCollapseProvider } from "@/components/lms/SidebarCollapseContext";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { isPanelAvailable } from "@/lib/platform/panels/store";
+import { notFound } from "next/navigation";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const generateMetadata = () => brandedMetadata("{brand} Help & Support", { robots: { index: false, follow: false } });
+export const generateMetadata = () => brandedMetadata("{brand} {panel:support}", { robots: { index: false, follow: false } });
 
 /**
  * The Help & Support Center every company uses. There is no panel-specific role or sign-in: any signed-in member of the
@@ -23,6 +25,7 @@ export default async function ProtectedSupportLayout({ children }: { children: R
   if (user.mustChangePassword) redirect("/workspace/change-password");
   const caller = await getCompanyCaller();
   if (!caller) redirect("/workspace/login");
+  if (!(await isPanelAvailable(caller.companyId, "support"))) notFound();
 
   const [counts, notifications] = await Promise.all([countForCompany(caller.companyId), listWorkspaceNotifications(user, 100).catch(() => [])]);
   const unread = notifications.filter((n) => !n.read && n.url?.startsWith("/support")).length;

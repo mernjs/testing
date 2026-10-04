@@ -33,7 +33,7 @@ export default function ApplicantDashboard({
 
   return (
     <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal" }, { label: "Dashboard" }]} />
+      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Dashboard" }]} />
       <PortalPageHeader
         title={`Hi ${firstName}`}
         subtitle={`Your application for ${data.positionTitle}`}

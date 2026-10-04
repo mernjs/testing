@@ -1,3 +1,4 @@
+import { panelNameMap } from "@/lib/platform/panels/store";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { todayIso } from "@/lib/sop/db";
 import type { LibraryQuery, LibraryResult } from "@/lib/sop/library";
 
 /** The shared SOP list: used by the Library and by My SOPs. Cells are rendered on the server; the client shell only handles URL state. */
-export default function SopLibraryTable({
+export default async function SopLibraryTable({
   result,
   query,
   canCreate,
@@ -24,6 +25,7 @@ export default function SopLibraryTable({
   exportBase: string;
   emptyLabel?: string;
 }) {
+  const panelLabel = await panelNameMap();
   const today = todayIso();
   const statusValue = query.status.join(",");
   const statusOptions = [
@@ -41,7 +43,7 @@ export default function SopLibraryTable({
     { key: "confidentiality", label: "Confidentiality", value: query.confidentiality, options: CONFIDENTIALITY_LEVELS.map((c) => ({ value: c.value as string, label: c.label })) },
     { key: "owner", label: "Owner", value: query.owner, options: result.facets.owners },
     { key: "author", label: "Author", value: query.author, options: result.facets.authors },
-    { key: "module", label: "Panel", value: query.module, options: SOP_MODULES.map((m) => ({ value: m.value as string, label: m.label })) },
+    { key: "module", label: "Panel", value: query.module, options: SOP_MODULES.map((m) => ({ value: m.value as string, label: panelLabel(m.value, m.label) })) },
     {
       key: "attention",
       label: "Needs attention",

@@ -37,6 +37,8 @@ export interface Company {
   timezone?: string;
   /** Line of business (ISIC Rev.4 category + sub-category) chosen at registration. */
   business?: BusinessSelection;
+  /** Panels the platform switched off for THIS company only (Platform Panel → Companies). The global switch lives in the Panel Registry. */
+  disabledPanels?: string[];
   createdAt: Date;
   updatedAt: Date;
 }

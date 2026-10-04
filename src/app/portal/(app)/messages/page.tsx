@@ -8,7 +8,7 @@ import { brandedMetadata } from "@/lib/platform/branding/metadata";
 import { getCompanyBrand } from "@/lib/platform/branding";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Messages · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Messages · {brand} {panel:portal}");
 
 export default async function MessagesPage() {
   const brand = await getCompanyBrand();

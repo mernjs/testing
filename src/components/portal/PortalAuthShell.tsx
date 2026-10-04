@@ -1,3 +1,4 @@
+import { PanelName } from "@/components/platform/PanelsProvider";
 import BrandMark from "@/components/BrandMark";
 import { brandify } from "@/lib/brand";
 import { BrandName } from "@/components/platform/BrandProvider";
@@ -23,7 +24,7 @@ export default function PortalAuthShell({
         </div>
         <div className="relative z-10 flex items-center gap-2 text-lg font-bold">
           <BrandMark className="size-7 shrink-0" />
-          <BrandName /> <span className="text-foreground">Portal</span>
+          <BrandName /> <span className="text-foreground"><PanelName panel="portal" fallback="Portal" /></span>
         </div>
         <div className="relative z-10 max-w-md">
           <h1 className="text-4xl font-black tracking-tight text-foreground">{headline}</h1>

@@ -20,6 +20,7 @@ export default async function Page() {
   }
   return (
     <GenericPanelNotificationsPage
+      panel="tms"
       live
       panelName="Training Management System"
       shortCode="TMS"

@@ -21,6 +21,8 @@ import { listDomainsForCompany } from "@/lib/platform/domains/overview";
 import DomainActions from "../../domains/DomainActions";
 import { DnsBadge, SslBadge } from "../../domains/DomainBadges";
 import TrialCard from "./TrialCard";
+import CompanyPanelsCard from "./CompanyPanelsCard";
+import { disabledPanelKeys, listPanels } from "@/lib/platform/panels/store";
 import { getTrialOverview } from "@/lib/platform/billing/trials";
 
 export const metadata: Metadata = { title: "Company" };
@@ -44,6 +46,7 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
   const { onboarding: ob } = company;
   const [allAddons, heldAddons] = company.isPlatformOwner ? [[], []] : await Promise.all([listAddons(), getCompanyAddons(company.id)]);
   const trial = company.isPlatformOwner ? null : await getTrialOverview(company.id);
+  const [registry, disabledHere] = await Promise.all([listPanels(), disabledPanelKeys(company.id)]);
 
   return (
     <div className="space-y-4 p-1">
@@ -204,7 +207,22 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
         </GlassCard>
 
         {!company.isPlatformOwner && (
-          <CompanyAddonsCard
+          <>
+          <GlassCard interactive={false}>
+          <CardHeader>
+            <CardTitle className="text-base">Panels</CardTitle>
+            <CardDescription>Switch a panel off for this company only. A panel switched off globally (Panels page) is off for everyone.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <CompanyPanelsCard
+              companyId={company.id}
+              canManage={can(user, "panels.manage")}
+              rows={registry.map((p) => ({ key: p.key, name: p.name, description: p.description, core: p.core, globallyActive: p.active || p.core, off: disabledHere.has(p.key) }))}
+            />
+          </CardContent>
+        </GlassCard>
+
+        <CompanyAddonsCard
             companyId={company.id}
             held={heldAddons.flatMap((h) => {
               const a = allAddons.find((x) => x._id === h.addonId);
@@ -212,6 +230,7 @@ export default async function ConsoleCompanyPage({ params }: { params: Promise<{
             })}
             available={allAddons.filter((a) => a.active).map((a) => ({ id: a._id, name: a.name, maxQuantity: a.type === "module" ? 1 : a.maxQuantity }))}
           />
+          </>
         )}
     </div>
   );

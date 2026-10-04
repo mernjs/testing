@@ -5,7 +5,7 @@ import ChangePasswordForm from "@/components/messenger/ChangePasswordForm";
 import { BrandName } from "@/components/platform/BrandProvider";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
-export const generateMetadata = () => brandedMetadata("Change password · {brand} Messenger", { robots: { index: false } });
+export const generateMetadata = () => brandedMetadata("Change password · {brand} {panel:messenger}", { robots: { index: false } });
 
 export default async function ChangePasswordPage() {
   const user = await getCurrentChatUser();

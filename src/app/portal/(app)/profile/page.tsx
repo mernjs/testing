@@ -12,7 +12,7 @@ import { portalLogoutAction } from "@/app/portal/(app)/actions";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Profile · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Profile · {brand} {panel:portal}");
 
 export default async function ProfilePage() {
   const user = await guardPortalPage();

@@ -61,7 +61,7 @@ export default async function EmployeeDashboardPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PMS" }, { label: "My Dashboard" }]} />
+      <Breadcrumbs items={[{ label: "PMS", href: "/pms" }, { label: "My Dashboard" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
           Hi, {user.email.split("@")[0]}

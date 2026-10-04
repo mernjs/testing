@@ -24,6 +24,7 @@ export const GLOBAL_COLLECTIONS = new Set<string>([
   // Platform administration
   "platform_audit_log",
   "platform_roles",
+  "platform_panels", // the Panel Registry (names, descriptions, global on/off)
   // Help & Support Center: YashOrbit's own cross-company service (rows carry their companyId; see lib/support/db.ts)
   "support_requests",
   "support_messages",

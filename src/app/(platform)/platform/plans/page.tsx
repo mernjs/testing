@@ -14,6 +14,7 @@ import { getBillingSettings } from "@/lib/platform/billing/settings";
 import { currentPriceVersion, planIntervals, planPrice } from "@/lib/platform/billing/pricing";
 import { BILLING_INTERVALS, PLAN_FLAGS, PLAN_LIMIT_DEFS, formatMoney, type Plan } from "@/lib/platform/billing/types";
 import { MODULES } from "@/lib/platform/onboarding/catalog";
+import { panelLabels } from "@/lib/platform/panels/choices";
 import PlanActions from "./PlanActions";
 
 export const metadata: Metadata = { title: "Plans & pricing" };
@@ -38,6 +39,8 @@ function panels(plan: Plan): string {
 }
 
 export default async function PlansPage() {
+  // Panel names come from the Panel Registry (names are global, so refreshing this shared map is safe).
+  for (const [k, v] of await panelLabels()) LABELS.set(k, v);
   await requirePlatformPermission("plans.read");
   const [plans, counts, settings] = await Promise.all([listPlans(), countCompaniesByPlan(), getBillingSettings()]);
   const defaultTrial = settings.billing.defaultTrialDays;

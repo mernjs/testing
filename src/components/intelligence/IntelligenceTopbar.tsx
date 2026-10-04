@@ -1,5 +1,6 @@
 "use client";
 
+import { PanelHeading } from "@/components/platform/PanelsProvider";
 import HelpLauncher from "@/components/support/HelpLauncher";
 import { useState } from "react";
 import Link from "next/link";
@@ -16,10 +17,7 @@ export default function IntelligenceTopbar({ roles: _roles }: { roles: string[] 
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <IntelligenceMobileSidebar />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-foreground">AI Intelligence</p>
-        <p className="truncate text-[11px] text-muted-foreground">Data analytics, insights &amp; AI reports</p>
-      </div>
+      <PanelHeading panel="intelligence" fallbackTitle="AI Intelligence" fallbackDescription="Data analytics, insights & AI reports" />
       <div className="flex min-w-0 flex-1 justify-center">
         <PanelSearch />
       </div>

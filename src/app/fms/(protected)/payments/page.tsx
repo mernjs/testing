@@ -1,3 +1,4 @@
+import { panelNameMap } from "@/lib/platform/panels/store";
 import { CreditCard, CheckCircle2, Clock, AlertTriangle, RefreshCw, Link as LinkIcon } from "lucide-react";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import KpiCard from "@/components/lms/KpiCard";
@@ -18,6 +19,7 @@ export default async function FmsPaymentsPage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
+  const panelName = await panelNameMap();
   const brand = await getCompanyBrand();
   const sp = await searchParams;
   await getCurrentFmsUser();
@@ -159,9 +161,9 @@ export default async function FmsPaymentsPage({
             label: "Source Module",
             value: sp.sourceModule ?? "",
             options: [
-              { value: "TMS", label: "TMS (Training)" },
-              { value: "PMS", label: "PMS (Projects)" },
-              { value: "PRMS", label: "PRMS (Procurement)" },
+              { value: "TMS", label: panelName("tms", "TMS (Training)") },
+              { value: "PMS", label: panelName("pms", "PMS (Projects)") },
+              { value: "PRMS", label: panelName("prms", "PRMS (Procurement)") },
               { value: "PORTAL", label: "Client Portal" },
               { value: "OFFERS", label: "Offers Engine" },
               { value: "DIRECT", label: "Direct Payment Link" },

@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { usePanelMeta } from "@/components/platform/PanelsProvider";
 import { LogOut, Settings, ShieldCheck, UserRound, Clock } from "lucide-react";
 import { useSidebarCollapse } from "@/components/lms/SidebarCollapseContext";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -57,8 +59,10 @@ export default function UnifiedProfileMenu({
   lastLoginAt = null,
   governanceItems = [],
   onLogout,
-  panelName = "Workspace",
+  panelName: fallbackPanelName = "Workspace",
 }: UnifiedProfileMenuProps) {
+  // The panel is named by the Panel Registry (the panel this profile menu sits in), like every other listing.
+  const panelName = usePanelMeta(usePathname().split("/")[1] ?? "")?.name ?? fallbackPanelName;
   const { collapsed } = useSidebarCollapse();
   const [isPending, startTransition] = useTransition();
   const [profileOpen, setProfileOpen] = useState(false);

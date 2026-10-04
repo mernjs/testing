@@ -6,6 +6,7 @@ import { getCompanyDetails, updateCompanyDetails } from "@/lib/hrms/company";
 import { syncSiteContact } from "@/lib/platform/website/starter";
 import { createDepartment, createDesignation, listDepartments, listDesignations } from "@/lib/hrms/departments";
 import { isOnboardingOwner, postLoginTarget, showSetupStrip } from "@/lib/platform/onboarding/gate";
+import { unavailablePanelKeys } from "@/lib/platform/panels/store";
 import { COMPANY_SIZES, CURRENCIES, INDUSTRIES, MODULES, ONBOARDING_STEPS, type DepartmentTemplate, type Industry, type ModuleKey, type OnboardingStep } from "@/lib/platform/onboarding/catalog";
 
 /**
@@ -183,7 +184,9 @@ export async function completeTeamStep(): Promise<void> {
 // ── Step 4: panels ───────────────────────────────────────────────────────────
 
 export async function saveModules(keys: string[]): Promise<void> {
-  const valid = new Set<string>(MODULES.map((m) => m.key));
+  // Panels the platform switched off (for everyone or for this company) can't be chosen.
+  const off = await unavailablePanelKeys(await currentCompanyId());
+  const valid = new Set<string>(MODULES.filter((m) => !off.has(m.key)).map((m) => m.key));
   const core = MODULES.filter((m) => m.core).map((m) => m.key);
   const enabled = Array.from(new Set([...core, ...keys.filter((k) => valid.has(k))])) as ModuleKey[];
   await (await companies()).updateOne({ _id: await currentCompanyId() }, { $set: { enabledModules: enabled, updatedAt: new Date() } });

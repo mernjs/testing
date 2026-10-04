@@ -15,7 +15,7 @@ import { payInvoiceWithCreditsAction } from "../wallet/pay-actions";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Invoices · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Invoices · {brand} {panel:portal}");
 
 const STATUS_BADGE: Record<string, string> = {
   sent: "bg-blue-500/15 text-blue-600 dark:text-blue-400",

@@ -23,6 +23,7 @@ export default async function OtsNotificationsPage() {
 
   return (
     <GenericPanelNotificationsPage
+      panel="ots"
       live
       panelName="Online Test System"
       shortCode="OTS"

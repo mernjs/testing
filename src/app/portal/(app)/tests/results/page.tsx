@@ -10,7 +10,7 @@ import { candidateHistory } from "@/lib/ots/candidate";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Test Results · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Test Results · {brand} {panel:portal}");
 
 export default async function PortalResultsPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   await guardPortalPage(...TEST_TAKER_ROLES);

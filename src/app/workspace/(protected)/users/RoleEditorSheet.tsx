@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { ROLE_GROUPS } from "@/lib/workspace/role-catalog";
+import { usePanels } from "@/components/platform/PanelsProvider";
 import { updateAdminUserRolesAction } from "./actions";
 
 export default function RoleEditorSheet({
@@ -29,6 +30,8 @@ export default function RoleEditorSheet({
 }) {
   const [roles, setRoles] = useState<string[]>(initialRoles);
   const [moduleFilter, setModuleFilter] = useState<string>("all");
+  // Panel names come from the Panel Registry, like every other listing.
+  const panels = usePanels();
   const [roleSearch, setRoleSearch] = useState("");
   const [isPending, startTransition] = useTransition();
 
@@ -53,7 +56,7 @@ export default function RoleEditorSheet({
 
   const filteredGroups = useMemo(() => {
     return ROLE_GROUPS.map((g) => {
-      const matchesModule = moduleFilter === "all" || g.module.toLowerCase().includes(moduleFilter.toLowerCase());
+      const matchesModule = moduleFilter === "all" || g.panel === moduleFilter;
       if (!matchesModule) return null;
 
       const filteredRoles = g.roles.filter((r) =>
@@ -82,7 +85,7 @@ export default function RoleEditorSheet({
             <div>
               <SheetTitle className="text-base font-semibold">{userEmail ?? "Manage Roles"}</SheetTitle>
               <SheetDescription className="text-xs">
-                Grant or revoke role-based access across all 10 platform panels.
+                Grant or revoke role-based access across all {Object.keys(panels).length || 10} platform panels.
               </SheetDescription>
             </div>
           </div>
@@ -142,19 +145,11 @@ export default function RoleEditorSheet({
                   </SelectTrigger>
                   <SelectContent align="end">
                     <SelectItem value="all">All Panels</SelectItem>
-                    <SelectItem value="hrms">HRMS Panel</SelectItem>
-                    <SelectItem value="pms">PMS (Projects)</SelectItem>
-                    <SelectItem value="procurement">PRMS (Procurement)</SelectItem>
-                    <SelectItem value="training">TMS (Training)</SelectItem>
-                    <SelectItem value="yashchat">YashChat</SelectItem>
-                    <SelectItem value="finance">FMS (Finance)</SelectItem>
-                    <SelectItem value="sop">SOP Panel</SelectItem>
-                    <SelectItem value="seo">SEO Panel</SelectItem>
-                    <SelectItem value="dlms">Digi Locker (DLMS)</SelectItem>
-                    <SelectItem value="ai bots">AI Bots</SelectItem>
-                    <SelectItem value="lms">LMS (CRM)</SelectItem>
-                    <SelectItem value="portal">External Portal</SelectItem>
-                    <SelectItem value="workspace">Workspace Panel</SelectItem>
+                    {ROLE_GROUPS.map((g) => (
+                      <SelectItem key={g.panel} value={g.panel}>
+                        {panels[g.panel]?.name ?? g.module}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -173,7 +168,7 @@ export default function RoleEditorSheet({
                       <div key={g.module} className="rounded-xl border border-border/70 bg-card p-3 space-y-2">
                         <div className="flex items-center justify-between border-b border-border/40 pb-1.5">
                           <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-                            {g.module}
+                            {panels[g.panel]?.name ?? g.module}
                           </span>
                           {countInGroup > 0 && (
                             <Badge variant="outline" className="text-[10px] py-0 px-1.5 text-primary border-primary/30">

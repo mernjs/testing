@@ -19,6 +19,7 @@ export default async function Page() {
   }
   return (
     <GenericPanelNotificationsPage
+      panel="pms"
       live
       panelName="Project Management System"
       shortCode="PMS"

@@ -1,3 +1,4 @@
+import { panelNameMap } from "@/lib/platform/panels/store";
 import "server-only";
 import { normalizeRoles } from "@/lib/hrms-roles";
 import {
@@ -168,11 +169,12 @@ export async function getAdminNotifications(user: FeedUser, limit = 50): Promise
       messengerUnread(user.id),
     ]);
 
+  const panelName = await panelNameMap();
   const items: UnifiedNotification[] = [
     ...hrms.items.map((n) => ({
       id: n._id,
       module: "hrms" as const,
-      moduleLabel: MODULE_LABELS.hrms,
+      moduleLabel: panelName("hrms", MODULE_LABELS.hrms),
       type: n.type,
       title: n.title,
       body: n.body,
@@ -184,7 +186,7 @@ export async function getAdminNotifications(user: FeedUser, limit = 50): Promise
     ...pms.map((n) => ({
       id: n._id,
       module: "pms" as const,
-      moduleLabel: MODULE_LABELS.pms,
+      moduleLabel: panelName("pms", MODULE_LABELS.pms),
       type: n.type,
       title: n.title,
       body: n.body,
@@ -196,7 +198,7 @@ export async function getAdminNotifications(user: FeedUser, limit = 50): Promise
     ...prms.map((n) => ({
       id: n._id,
       module: "prms" as const,
-      moduleLabel: MODULE_LABELS.prms,
+      moduleLabel: panelName("prms", MODULE_LABELS.prms),
       type: n.type,
       title: n.title,
       body: n.body,
@@ -208,7 +210,7 @@ export async function getAdminNotifications(user: FeedUser, limit = 50): Promise
     ...tms.map((n) => ({
       id: n._id,
       module: "tms" as const,
-      moduleLabel: MODULE_LABELS.tms,
+      moduleLabel: panelName("tms", MODULE_LABELS.tms),
       type: n.type,
       title: n.title,
       body: n.body,
@@ -220,7 +222,7 @@ export async function getAdminNotifications(user: FeedUser, limit = 50): Promise
     ...chat.map((n) => ({
       id: n._id,
       module: "messenger" as const,
-      moduleLabel: MODULE_LABELS.messenger,
+      moduleLabel: panelName("messenger", MODULE_LABELS.messenger),
       type: n.type,
       title: n.title,
       body: n.body,

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { MessageSquarePlus, Lightbulb, Search, Trash2, LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
+import { usePanelMeta } from "@/components/platform/PanelsProvider";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -79,6 +80,7 @@ function ConversationRow({ c, active, onNavigate }: { c: ConversationListItem; a
 }
 
 export default function IntelligenceSidebar({ onNavigate, collapsed = false }: { onNavigate?: () => void; collapsed?: boolean }) {
+  const panelName = usePanelMeta("intelligence")?.name ?? "AI Intelligence";
   const ctx = useIntelligence();
   const pathname = usePathname();
   const router = useRouter();
@@ -116,7 +118,7 @@ export default function IntelligenceSidebar({ onNavigate, collapsed = false }: {
   }
 
   return (
-    <nav className="flex h-full flex-col gap-1 p-3" aria-label="AI Intelligence">
+    <nav className="flex h-full flex-col gap-1 p-3" aria-label={panelName}>
       {newLink}
 
       <SectionLabel>Conversations</SectionLabel>

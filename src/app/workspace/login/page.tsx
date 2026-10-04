@@ -1,3 +1,5 @@
+import { listPanels } from "@/lib/platform/panels/store";
+import { PanelName } from "@/components/platform/PanelsProvider";
 import { redirect } from "next/navigation";
 import { getCurrentHubUser } from "@/lib/hub-auth";
 import BrandMark from "@/components/BrandMark";
@@ -7,6 +9,8 @@ import { loginLanding } from "@/lib/platform/onboarding/state";
 import { BrandName } from "@/components/platform/BrandProvider";
 
 export default async function HubLoginPage({ searchParams }: { searchParams: Promise<{ next?: string | string[] }> }) {
+  // The headline panels come from the Panel Registry (the first few active, non-core business panels).
+  const panelList = (await listPanels().catch(() => [])).filter((p) => p.active && !p.core && !(["website", "support", "portal"] as string[]).includes(p.key)).slice(0, 5).map((p) => p.name).join(", ");
   // Where to go after sign-in: only a same-origin path survives `safeNextPath` (no open redirect).
   const next = safeNextPath((await searchParams).next);
   const user = await getCurrentHubUser();
@@ -27,7 +31,7 @@ export default async function HubLoginPage({ searchParams }: { searchParams: Pro
 
         <div className="relative z-10 flex items-center gap-2 text-lg font-bold">
           <BrandMark className="size-7 shrink-0" />
-          <BrandName /> <span className="text-foreground">Staff Hub</span>
+          <BrandName /> <span className="text-foreground"><PanelName panel="workspace" fallback="Workspace" /></span>
         </div>
 
         <div className="relative z-10 max-w-md">
@@ -36,7 +40,7 @@ export default async function HubLoginPage({ searchParams }: { searchParams: Pro
             <span className="bg-gradient-to-r from-primary to-brand-accent bg-clip-text text-transparent">every panel you need.</span>
           </h1>
           <p className="mt-4 text-muted-foreground">
-            Sign in once and reach HR, Projects, Procurement, Training, YashChat, CRM and more — only the panels
+            Sign in once and reach {panelList} and more — only the panels
             your role gives you access to, no separate login for each one.
           </p>
         </div>

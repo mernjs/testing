@@ -1,10 +1,11 @@
 import "server-only";
-import { redirect, unstable_rethrow } from "next/navigation";
+import { notFound, redirect, unstable_rethrow } from "next/navigation";
 import { getDb } from "@/lib/mongodb";
 import { currentCompanyId, currentCompanyIdOrNull, runAsCompany } from "@/lib/platform/tenancy/context";
 import { getEntitlements } from "@/lib/platform/billing/entitlements";
 import { getCompanySubscription } from "@/lib/platform/billing/subscription";
 import { getUsage, recordUsage } from "@/lib/platform/billing/usage";
+import { isPanelAvailable } from "@/lib/platform/panels/store";
 import type { ModuleKey } from "@/lib/platform/onboarding/catalog";
 import type { SubscriptionStatus } from "@/lib/platform/billing/types";
 
@@ -59,6 +60,8 @@ export async function moduleBlockReason(moduleKey: ModuleKey | string): Promise<
 export async function requireModule(moduleKey: ModuleKey): Promise<void> {
   let locked = false;
   try {
+    // Switched off in the Panel Registry (everywhere, or for this company)? The proxy already blocks it; this is the second lock.
+    if (!(await isPanelAvailable(await currentCompanyId(), moduleKey))) notFound();
     locked = (await moduleBlockReason(moduleKey)) !== null;
   } catch (err) {
     unstable_rethrow(err);

@@ -1,5 +1,7 @@
 "use client";
 
+import { usePanelLabel } from "@/components/platform/PanelsProvider";
+
 import { useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
@@ -14,6 +16,7 @@ export default function DocumentsFilterBar({
   initialSearch: string;
   initialModule: string;
 }) {
+  const panelLabel = usePanelLabel();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -55,7 +58,7 @@ export default function DocumentsFilterBar({
           <SelectContent>
             <SelectItem value="all">All modules</SelectItem>
             {DOCUMENT_MODULES.map((m) => (
-              <SelectItem key={m} value={m}>{documentModuleLabel(m)}</SelectItem>
+              <SelectItem key={m} value={m}>{panelLabel(m, documentModuleLabel(m))}</SelectItem>
             ))}
           </SelectContent>
         </Select>

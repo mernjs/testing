@@ -12,7 +12,7 @@ import { getTaskRewards } from "@/lib/portal/rewards";
 import { brandify } from "@/lib/brand";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Bonus tasks · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Bonus tasks · {brand} {panel:portal}");
 
 export default async function TaskRewardsPage() {
   const user = await guardPortalPage();

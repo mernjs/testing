@@ -16,7 +16,7 @@ import { brandedMetadata } from "@/lib/platform/branding/metadata";
 import { requireModule } from "@/lib/platform/billing/enforce";
 import PanelBackBar from "@/components/hub/PanelBackBar";
 
-export const generateMetadata = () => brandedMetadata("{brand} Digi Locker", { robots: { index: false, follow: false } });
+export const generateMetadata = () => brandedMetadata("{brand} {panel:dlms}", { robots: { index: false, follow: false } });
 
 export default async function ProtectedDlmsLayout({ children }: { children: React.ReactNode }) {
   await requireModule("dlms");

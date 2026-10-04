@@ -1,3 +1,4 @@
+import { panelNameMap } from "@/lib/platform/panels/store";
 import Link from "next/link";
 import {
   Building2,
@@ -27,6 +28,7 @@ export default async function BeneficiariesPage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
+  const panelName = await panelNameMap();
   const sp = await searchParams;
   const entityType = (sp.type as BeneficiaryEntity) || undefined;
   const query = sp.q?.toLowerCase() || "";
@@ -142,10 +144,10 @@ export default async function BeneficiariesPage({
               name="entityType"
               className="mt-1 w-full rounded-lg border border-border/60 bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
             >
-              <option value="vendor">Vendor (PRMS)</option>
-              <option value="employee">Employee (HRMS)</option>
-              <option value="client">Client (PMS)</option>
-              <option value="student">Student (TMS)</option>
+              <option value="vendor">Vendor ({panelName("prms", "PRMS")})</option>
+              <option value="employee">Employee ({panelName("hrms", "HRMS")})</option>
+              <option value="client">Client ({panelName("pms", "PMS")})</option>
+              <option value="student">Student ({panelName("tms", "TMS")})</option>
             </select>
           </div>
           <div>
@@ -213,10 +215,10 @@ export default async function BeneficiariesPage({
         <div className="flex items-center gap-2 overflow-x-auto">
           {[
             { key: "", label: "All Accounts" },
-            { key: "vendor", label: "Vendors (PRMS)" },
-            { key: "employee", label: "Employees (HRMS)" },
-            { key: "client", label: "Clients (PMS)" },
-            { key: "student", label: "Students (TMS)" },
+            { key: "vendor", label: `Vendors (${panelName("prms", "PRMS")})` },
+            { key: "employee", label: `Employees (${panelName("hrms", "HRMS")})` },
+            { key: "client", label: `Clients (${panelName("pms", "PMS")})` },
+            { key: "student", label: `Students (${panelName("tms", "TMS")})` },
           ].map((item) => (
             <Link
               key={item.key}

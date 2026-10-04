@@ -21,6 +21,13 @@ export const PERMISSION_GROUPS = [
     ],
   },
   {
+    area: "Panels",
+    permissions: [
+      { key: "panels.read", label: "View the Panel Registry and which panels each company has" },
+      { key: "panels.manage", label: "Create, edit, switch on/off and delete panels (everywhere or per company)" },
+    ],
+  },
+  {
     area: "Billing",
     permissions: [
       { key: "plans.read", label: "View plans & pricing" },
@@ -109,6 +116,7 @@ export const VIEWER_PERMISSIONS: PlatformPermission[] = ALL_PERMISSIONS.filter((
 export const ROUTE_PERMISSIONS: Record<string, PlatformPermission | null> = {
   "/platform": null, // any platform user
   "/platform/companies": "companies.read",
+  "/platform/panels": "panels.read",
   "/platform/signups": "signups.read",
   "/platform/domains": "domains.read",
   "/platform/plans": "plans.read",

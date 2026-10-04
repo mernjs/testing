@@ -10,7 +10,7 @@ import { getJourneyRewards } from "@/lib/portal/rewards";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Journey rewards · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Journey rewards · {brand} {panel:portal}");
 
 export default async function JourneyRewardsPage() {
   const user = await guardPortalPage();

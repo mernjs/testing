@@ -41,7 +41,7 @@ export default async function AdminRfqsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement" }, { label: "RFQs" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "RFQs" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Requests for Quotation</h1>
         <p className="text-sm text-muted-foreground">{total} RFQ{total === 1 ? "" : "s"}.</p>

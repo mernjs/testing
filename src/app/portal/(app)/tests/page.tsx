@@ -11,7 +11,7 @@ import { afterForCompany } from "@/lib/platform/tenancy/context";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Tests · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Tests · {brand} {panel:portal}");
 
 export default async function PortalTestsPage() {
   const user = await guardPortalPage(...TEST_TAKER_ROLES);

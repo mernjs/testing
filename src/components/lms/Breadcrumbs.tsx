@@ -1,6 +1,9 @@
+"use client";
+
 import { Fragment } from "react";
 import Link from "next/link";
 import { Home } from "lucide-react";
+import { usePanels } from "@/components/platform/PanelsProvider";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -13,9 +16,20 @@ import {
 export interface BreadcrumbItemData {
   label: string;
   href?: string;
+  /** Panel Registry key: the crumb then shows that panel's short name (`label` is only the fallback). */
+  panel?: string;
 }
 
-export default function Breadcrumbs({ items }: { items: BreadcrumbItemData[] }) {
+/** The panel home a crumb points at (`/hrms`, `/tms/me`), or null — the crumb's text then comes from the Panel Registry. */
+const panelOf = (href: string | undefined) => href?.match(/^\/([a-z][a-z0-9-]*)(?:\/me)?\/?$/)?.[1] ?? null;
+
+export default function Breadcrumbs({ items: given }: { items: BreadcrumbItemData[] }) {
+  const panels = usePanels();
+  // The first crumb that names a panel shows the registry's short name, so every page says the same thing.
+  const items = given.map((item, i) => {
+    const key = item.panel ?? (i === 0 ? panelOf(item.href) : null);
+    return key && panels[key] ? { ...item, label: panels[key].shortName } : item;
+  });
   return (
     <Breadcrumb className="mb-1.5">
       <BreadcrumbList className="gap-1.5">

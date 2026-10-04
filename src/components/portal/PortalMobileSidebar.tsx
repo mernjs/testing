@@ -1,5 +1,6 @@
 "use client";
 
+import { PanelName } from "@/components/platform/PanelsProvider";
 import { MobileSidebarProfile } from "@/components/lms/SidebarCollapseContext";
 import { useState } from "react";
 import { Menu } from "lucide-react";
@@ -20,7 +21,7 @@ export default function PortalMobileSidebar({ role }: { role: PortalRole }) {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="left" className="flex w-72 flex-col p-0 sm:max-w-72">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
-          <SheetDescription className="sr-only">Portal navigation menu</SheetDescription>
+          <SheetDescription className="sr-only"><PanelName panel="portal" fallback="Portal" /> navigation menu</SheetDescription>
           <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border/60 px-4">
             <BrandMark className="size-6 shrink-0" />
             <span className="text-sm font-bold">

@@ -46,7 +46,7 @@ export default async function AdminRequisitionsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement" }, { label: "Requisitions" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Procurement", panel: "prms" }, { label: "Requisitions" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Purchase Requisitions</h1>
         <p className="text-sm text-muted-foreground">

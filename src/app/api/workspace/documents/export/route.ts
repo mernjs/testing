@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authorizeWorkspaceApi } from "@/lib/workspace/access";
 import { searchDocuments, documentModuleLabel, DOCUMENT_MODULES, type DocumentModule } from "@/lib/workspace/documents";
 import { toCsv } from "@/lib/csv";
+import { panelNameMap } from "@/lib/platform/panels/store";
 
 export async function GET(req: NextRequest) {
   const auth = await authorizeWorkspaceApi("account.documents");
@@ -18,8 +19,9 @@ export async function GET(req: NextRequest) {
   // high-volume transactional rows).
   const { items } = await searchDocuments({ search: sp.get("search") ?? undefined, module: moduleFilter, page: 1, pageSize: 5000 });
 
+  const panelName = await panelNameMap();
   const csv = toCsv(items, [
-    { header: "Module", value: (r) => documentModuleLabel(r.module) },
+    { header: "Module", value: (r) => panelName(r.module, documentModuleLabel(r.module)) },
     { header: "Title", value: (r) => r.title },
     { header: "Filename", value: (r) => r.filename },
     { header: "Category", value: (r) => r.category },

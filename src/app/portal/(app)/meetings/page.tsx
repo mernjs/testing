@@ -9,7 +9,7 @@ import EmptyPortalState from "@/components/portal/EmptyPortalState";
 import { brandedMetadata } from "@/lib/platform/branding/metadata";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Meetings · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Meetings · {brand} {panel:portal}");
 
 const KIND_ICON = { milestone: Flag, review: CalendarClock, delivery: PackageCheck } as const;
 

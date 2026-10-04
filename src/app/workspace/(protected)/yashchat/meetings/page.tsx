@@ -28,7 +28,7 @@ export default async function AdminMeetingsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "YashChat" }, { label: "Meetings" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "YashChat", panel: "messenger" }, { label: "Meetings" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Meetings</h1>
         <p className="text-sm text-muted-foreground">{total} meeting{total === 1 ? "" : "s"}.</p>

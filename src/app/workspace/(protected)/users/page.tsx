@@ -1,3 +1,4 @@
+import { listPanels } from "@/lib/platform/panels/store";
 import Link from "next/link";
 import Breadcrumbs from "@/components/lms/Breadcrumbs";
 import { countSeatsUsed } from "@/lib/platform/billing/enforce";
@@ -23,6 +24,7 @@ export default async function AdminUsersPage({
     sortDir?: string;
   }>;
 }) {
+  const panelCount = (await listPanels()).length;
   const admin = await requireWorkspaceAccess("company.users");
   const sp = await searchParams;
   const page = Math.max(Number(sp.page) || 1, 1);
@@ -61,7 +63,7 @@ export default async function AdminUsersPage({
             Centralized User &amp; Role Management
           </h1>
           <p className="text-sm text-muted-foreground">
-            Complete identity control &amp; panel-wise user roster across all 10 platform panels.
+            Complete identity control &amp; panel-wise user roster across all {panelCount} platform panels.
           </p>
         </div>
 

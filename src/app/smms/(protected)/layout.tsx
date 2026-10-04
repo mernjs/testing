@@ -15,7 +15,7 @@ import { brandedMetadata } from "@/lib/platform/branding/metadata";
 import { requireModule } from "@/lib/platform/billing/enforce";
 import PanelBackBar from "@/components/hub/PanelBackBar";
 
-export const generateMetadata = () => brandedMetadata("{brand} Social Media", { robots: { index: false, follow: false } });
+export const generateMetadata = () => brandedMetadata("{brand} {panel:smms}", { robots: { index: false, follow: false } });
 
 export default async function ProtectedSmmsLayout({ children }: { children: React.ReactNode }) {
   await requireModule("smms");

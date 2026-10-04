@@ -1,5 +1,6 @@
 "use client";
 
+import { PanelHeading } from "@/components/platform/PanelsProvider";
 import HelpLauncher from "@/components/support/HelpLauncher";
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
@@ -33,10 +34,7 @@ export default function LmsTopbar({
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <MobileSidebar />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-foreground">Lead Management</p>
-        <p className="truncate text-[11px] text-muted-foreground">Track leads, pipeline &amp; career applications</p>
-      </div>
+      <PanelHeading panel="lms" fallbackTitle="Lead Management" fallbackDescription="Track leads, pipeline & career applications" />
       <div className="flex min-w-0 flex-1 justify-center">
         <PanelSearch />
       </div>

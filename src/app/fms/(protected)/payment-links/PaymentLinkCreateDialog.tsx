@@ -1,5 +1,6 @@
 "use client";
 
+import { usePanelLabel } from "@/components/platform/PanelsProvider";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Loader2, Link as LinkIcon, CheckCircle2, Copy } from "lucide-react";
@@ -12,6 +13,7 @@ import { toast } from "sonner";
 import { brandify } from "@/lib/brand";
 
 export default function PaymentLinkCreateDialog() {
+  const panelLabel = usePanelLabel();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -120,10 +122,10 @@ export default function PaymentLinkCreateDialog() {
                   className="w-full rounded-md border border-border/60 bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                 >
                   <option value="DIRECT">Direct Payment Link</option>
-                  <option value="TMS">TMS Student Portal (Course Fee)</option>
-                  <option value="PMS">PMS Client Portal (Project Invoice)</option>
-                  <option value="HRMS">HRMS Employee Portal</option>
-                  <option value="PRMS">PRMS Vendor Portal</option>
+                  <option value="TMS">{panelLabel("tms", "TMS")} Student Portal (Course Fee)</option>
+                  <option value="PMS">{panelLabel("pms", "PMS")} Client Portal (Project Invoice)</option>
+                  <option value="HRMS">{panelLabel("hrms", "HRMS")} Employee Portal</option>
+                  <option value="PRMS">{panelLabel("prms", "PRMS")} Vendor Portal</option>
                 </select>
               </div>
 

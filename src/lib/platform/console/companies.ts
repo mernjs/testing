@@ -2,6 +2,7 @@ import "server-only";
 import type { Filter } from "mongodb";
 import { getPlatformDb } from "@/lib/platform/tenancy/platform-db";
 import { COMPANIES_COLLECTION, COMPANY_DOMAINS_COLLECTION, forgetCompanyRouting, type Company, type CompanyDomain, type CompanyStatus } from "@/lib/platform/tenancy/companies";
+import { panelLabels } from "@/lib/platform/panels/choices";
 import { MODULES, ONBOARDING_STEPS } from "@/lib/platform/onboarding/catalog";
 import type { CompanyProfile, OnboardingState } from "@/lib/platform/onboarding/state";
 import type { StoredBranding } from "@/lib/platform/branding/types";
@@ -142,7 +143,7 @@ export async function getCompanyDetail(id: string): Promise<CompanyDetail | null
   const c = await companies.findOne({ _id: id });
   if (!c) return null;
   const facts = await companyFacts([c._id]);
-  const labels = new Map<string, string>(MODULES.map((m) => [m.key, m.label]));
+  const labels = await panelLabels();
   const b = c.branding ?? {};
   const wordmark = `${b.namePrimary ?? ""}${b.nameAccent ?? ""}`.trim();
   return {

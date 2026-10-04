@@ -6,6 +6,7 @@ import { BellOff, CheckCheck, Clock } from "lucide-react";
 import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
 import { Button } from "@/components/ui/button";
+import { usePanelMeta } from "@/components/platform/PanelsProvider";
 import { cn } from "@/lib/utils";
 
 export interface PanelNotificationItem {
@@ -23,8 +24,9 @@ export interface PanelNotificationItem {
 type MarkRead = (items: { id: string; meta?: string }[]) => Promise<unknown>;
 
 export default function GenericPanelNotificationsPage({
-  panelName,
-  shortCode,
+  panel,
+  panelName: fallbackName,
+  shortCode: fallbackCode,
   description,
   initialNotifications,
   live = false,
@@ -32,6 +34,8 @@ export default function GenericPanelNotificationsPage({
   onMarkAllRead,
   unreadEvent,
 }: {
+  /** Panel Registry key — the page then shows the registry's name, not the fallback text below. */
+  panel?: string;
   panelName: string;
   shortCode: string;
   description: string;
@@ -45,6 +49,9 @@ export default function GenericPanelNotificationsPage({
   unreadEvent?: string;
 }) {
   const router = useRouter();
+  const meta = usePanelMeta(panel ?? "");
+  const panelName = meta?.name ?? fallbackName;
+  const shortCode = meta?.shortName ?? fallbackCode;
   const defaultItems: PanelNotificationItem[] = live ? [] : [
     {
       id: "notif-1",

@@ -14,7 +14,7 @@ import { brandedMetadata } from "@/lib/platform/branding/metadata";
 import { getCompanyBrand } from "@/lib/platform/branding";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Wallet · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Wallet · {brand} {panel:portal}");
 
 export default async function PortalWalletPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const brand = await getCompanyBrand();

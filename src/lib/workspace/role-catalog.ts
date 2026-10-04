@@ -32,17 +32,22 @@ export interface RoleOption {
 }
 
 export interface RoleGroup {
+  /** Fallback label; screens show the Panel Registry name for `panel` instead. */
   module: string;
+  /** Panel Registry key this group's roles belong to. */
+  panel: string;
   roles: RoleOption[];
 }
 
 function group<T extends string>(
   moduleLabel: string,
   all: readonly T[],
-  meta: Record<T, { label: string; description: string }>
+  meta: Record<T, { label: string; description: string }>,
+  panel: string
 ): RoleGroup {
   return {
     module: moduleLabel,
+    panel,
     roles: all.filter((r) => r !== "super_admin").map((r) => ({ value: r, ...meta[r] })),
   };
 }
@@ -52,22 +57,23 @@ export const PORTAL_ADMIN_ROLES = ["portal_admin", "portal_manager"] as const;
 export const WORKSPACE_ROLES = ["workspace_admin", "workspace_member"] as const;
 
 export const ROLE_GROUPS: RoleGroup[] = [
-  group("HRMS", HRMS_ROLES, HRMS_ROLE_META),
-  group("PMS (Projects)", PMS_ROLES, PMS_ROLE_META),
-  group("Procurement (PRMS)", PRMS_ROLES, PRMS_ROLE_META),
-  group("Training (TMS)", TMS_ROLES, TMS_ROLE_META),
-  group("YashChat (Messenger)", CHAT_ROLES, CHAT_ROLE_META),
-  group("Finance (FMS)", FMS_ROLES, FMS_ROLE_META),
-  group("SOP Panel", SOP_ROLES, SOP_ROLE_META),
-  group("SEO Panel", SEO_ROLES, SEO_ROLE_META),
-  group("Digi Locker (DLMS)", DLMS_ROLES, DLMS_ROLE_META),
-  group("AI Bots", AIBOTS_ROLES, AIBOTS_ROLE_META),
-  group("AI Intelligence", INTELLIGENCE_ROLES, INTELLIGENCE_ROLE_META),
-  group("Social Media (SMMS)", SMMS_ROLES, SMMS_ROLE_META),
-  group("Online Tests (OTS)", OTS_ROLES, OTS_ROLE_META),
-  group("Website CMS", CMS_ROLES, CMS_ROLE_META),
+  group("HRMS", HRMS_ROLES, HRMS_ROLE_META, "hrms"),
+  group("PMS (Projects)", PMS_ROLES, PMS_ROLE_META, "pms"),
+  group("Procurement (PRMS)", PRMS_ROLES, PRMS_ROLE_META, "prms"),
+  group("Training (TMS)", TMS_ROLES, TMS_ROLE_META, "tms"),
+  group("YashChat (Messenger)", CHAT_ROLES, CHAT_ROLE_META, "messenger"),
+  group("Finance (FMS)", FMS_ROLES, FMS_ROLE_META, "fms"),
+  group("SOP Panel", SOP_ROLES, SOP_ROLE_META, "sop"),
+  group("SEO Panel", SEO_ROLES, SEO_ROLE_META, "seo"),
+  group("Digi Locker (DLMS)", DLMS_ROLES, DLMS_ROLE_META, "dlms"),
+  group("AI Bots", AIBOTS_ROLES, AIBOTS_ROLE_META, "aibots"),
+  group("AI Intelligence", INTELLIGENCE_ROLES, INTELLIGENCE_ROLE_META, "intelligence"),
+  group("Social Media (SMMS)", SMMS_ROLES, SMMS_ROLE_META, "smms"),
+  group("Online Tests (OTS)", OTS_ROLES, OTS_ROLE_META, "ots"),
+  group("Website CMS", CMS_ROLES, CMS_ROLE_META, "cms"),
   {
     module: "LMS (CRM & Learning)",
+    panel: "lms",
     roles: [
       { value: "lms_admin", label: "LMS Admin", description: "Full control over leads, marketing campaigns, courses, and sales analytics." },
       { value: "lms_manager", label: "LMS Manager", description: "Manage lead assignments, sales stages, student enrollments, and reports." },
@@ -76,6 +82,7 @@ export const ROLE_GROUPS: RoleGroup[] = [
   },
   {
     module: "External Portal",
+    panel: "portal",
     roles: [
       { value: "portal_admin", label: "Portal Admin", description: "Full administration of applicant, student, and client portal experiences." },
       { value: "portal_manager", label: "Portal Manager", description: "Manage job applications, student batches, and client document sharing." },
@@ -83,6 +90,7 @@ export const ROLE_GROUPS: RoleGroup[] = [
   },
   {
     module: "Workspace Panel",
+    panel: "workspace",
     roles: [
       { value: "workspace_admin", label: "Workspace Admin", description: "Manage workspace settings, department analytics, and employee panel access." },
       { value: "workspace_member", label: "Workspace Member", description: "Access to workspace dashboard, employee self-service, and department KPIs." },

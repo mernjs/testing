@@ -1,3 +1,4 @@
+import { panelNameMap } from "@/lib/platform/panels/store";
 import Link from "next/link";
 import {
   Users,
@@ -23,6 +24,7 @@ export default async function HrmsFinancePage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
+  const panelName = await panelNameMap();
   const sp = await searchParams;
   const tab = sp.tab ?? "all";
 
@@ -41,14 +43,14 @@ export default async function HrmsFinancePage({
 
   return (
     <div className="relative space-y-6">
-      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Panel Finance" }, { label: "HRMS" }]} />
+      <Breadcrumbs items={[{ label: "FMS", href: "/fms" }, { label: "Panel Finance" }, { label: "HRMS", panel: "hrms" }]} />
 
       <div className="flex items-center gap-2.5">
         <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-brand-accent text-white shadow-sm">
           <Users className="size-5" />
         </div>
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">HRMS Payroll &amp; Employee Finance</h1>
+          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">{panelName("hrms", "HRMS Payroll")} &amp; Employee Finance</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Payroll sheets, advances &amp; claims flow from HRMS into FMS for executive approval &amp; corporate bank payout.
           </p>
@@ -72,7 +74,7 @@ export default async function HrmsFinancePage({
       <GlassCard className="p-4 bg-card/60 border-border/40 backdrop-blur-md">
         <div className="text-xs font-bold text-primary uppercase tracking-wider mb-2">Workflow</div>
         <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-muted-foreground sm:gap-4">
-          <span className="px-3 py-1.5 rounded-lg bg-background border border-border/60 text-foreground">HRMS Payroll</span>
+          <span className="px-3 py-1.5 rounded-lg bg-background border border-border/60 text-foreground">{panelName("hrms", "HRMS Payroll")}</span>
           <ArrowRight className="size-3.5 text-primary shrink-0" />
           <span className="px-3 py-1.5 rounded-lg bg-background border border-border/60 text-foreground">FMS Request</span>
           <ArrowRight className="size-3.5 text-primary shrink-0" />

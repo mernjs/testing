@@ -1,5 +1,7 @@
 "use client";
 
+import { usePanelLabel } from "@/components/platform/PanelsProvider";
+
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { MoreHorizontal, Trash2, FileText } from "lucide-react";
@@ -154,6 +156,7 @@ export default function DocumentsGrid({
   hasActiveFilters?: boolean;
   exportHref: string;
 }) {
+  const panelLabel = usePanelLabel();
   const rowsById = useMemo(() => new Map(rows.map((r) => [rowKey(r), r])), [rows]);
 
   const columns: AdminDataGridColumn<AdminDocumentRow>[] = [
@@ -167,7 +170,7 @@ export default function DocumentsGrid({
         </div>
       ),
     },
-    { key: "module", label: "Module", render: (row) => <Badge variant="outline">{documentModuleLabel(row.module)}</Badge> },
+    { key: "module", label: "Module", render: (row) => <Badge variant="outline">{panelLabel(row.module, documentModuleLabel(row.module))}</Badge> },
     { key: "category", label: "Category", render: (row) => <span className="capitalize">{row.category.replace(/_/g, " ")}</span> },
     { key: "ownerLabel", label: "Owner", render: (row) => row.ownerLabel },
     { key: "size", label: "Size", render: (row) => formatBytes(row.size) },

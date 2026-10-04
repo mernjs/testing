@@ -20,6 +20,7 @@
     "db:seed-seo": "node --env-file=.env scripts/seed-seo-demo.mjs",
     "db:seed-cms": "node --env-file=.env scripts/seed-cms-demo.mjs",
     "db:migrate-tenancy": "npx --yes tsx --env-file=.env scripts/migrate-to-multitenant.ts",
+    "db:seed-panels": "npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/seed-panels.ts",
     "db:create-company": "npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/create-company.ts",
     "db:seed-owner-profile": "npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/seed-owner-profile.ts",
     "db:migrate-cms-content": "npx --yes tsx --require ./scripts/lib/next-server-shims.cjs --env-file=.env scripts/migrate-cms-content.ts",

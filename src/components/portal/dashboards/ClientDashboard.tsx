@@ -36,7 +36,7 @@ export default function ClientDashboard({
 
   return (
     <div className="mx-auto max-w-6xl space-y-5 p-4 sm:p-6">
-      <Breadcrumbs items={[{ label: "Portal" }, { label: "Dashboard" }]} />
+      <Breadcrumbs items={[{ label: "Portal", href: "/portal" }, { label: "Dashboard" }]} />
       <PortalPageHeader
         title={`Hello, ${firstName}`}
         subtitle={`${data.client.companyName} · ${data.projects.length} project${data.projects.length === 1 ? "" : "s"}`}

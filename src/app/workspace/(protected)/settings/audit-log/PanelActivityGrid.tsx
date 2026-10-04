@@ -1,5 +1,7 @@
 "use client";
 
+import { usePanelLabel } from "@/components/platform/PanelsProvider";
+
 import { Download, History } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import AdminDataGrid, { type AdminDataGridColumn } from "@/components/workspace/data-grid/AdminDataGrid";
@@ -44,8 +46,9 @@ export default function PanelActivityGrid({
   hasActiveFilters?: boolean;
   exportHref: string;
 }) {
+  const panelLabel = usePanelLabel();
   const columns: AdminDataGridColumn<AdminActivityRow>[] = [
-    { key: "module", label: "Module", render: (row) => <Badge variant="outline">{activityModuleLabel(row.module)}</Badge> },
+    { key: "module", label: "Module", render: (row) => <Badge variant="outline">{panelLabel(row.module, activityModuleLabel(row.module))}</Badge> },
     {
       key: "action",
       label: "Action",

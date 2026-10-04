@@ -23,6 +23,7 @@ export default async function DlmsNotificationsPage() {
 
   return (
     <GenericPanelNotificationsPage
+      panel="dlms"
       live
       panelName="Document Lifecycle Management"
       shortCode="DLMS"

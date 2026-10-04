@@ -38,7 +38,7 @@ export default async function EmployeePortalHome() {
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "PRMS" }, { label: "My Dashboard" }]} />
+      <Breadcrumbs items={[{ label: "PRMS", href: "/prms" }, { label: "My Dashboard" }]} />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">

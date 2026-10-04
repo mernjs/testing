@@ -637,12 +637,15 @@ export function processPanelMessage(
   userText: string,
   panelId: string,
   currentState: AgenticFlowState | null,
-  userRoles?: string[]
+  userRoles?: string[],
+  /** Panel Registry names, so the assistant calls panels what every listing calls them. */
+  registry?: { name?: string; shortName?: string; description?: string; names?: Record<string, string> }
 ): {
   nextState: AgenticFlowState | null;
   assistantMessages: MessageItem[];
 } {
-  const panel = PANELS_CONFIG[panelId] || PANELS_CONFIG.pms;
+  const baseConfig = PANELS_CONFIG[panelId] || PANELS_CONFIG.pms;
+  const panel = { ...baseConfig, ...(registry?.name ? { name: registry.name } : {}), ...(registry?.shortName ? { shortCode: registry.shortName } : {}), ...(registry?.description ? { description: registry.description } : {}) };
   const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   // 1. If user is currently in an active multi-step flow
@@ -838,6 +841,7 @@ export function processPanelMessage(
   // 3. Check for Cross-Panel request
   const crossCheck = checkCrossPanelRequest(userText, panel.id);
   if (crossCheck.isCrossPanel && crossCheck.targetPanelName) {
+    crossCheck.targetPanelName = (crossCheck.targetPanelId && registry?.names?.[crossCheck.targetPanelId]) || crossCheck.targetPanelName;
     return {
       nextState: null,
       assistantMessages: [

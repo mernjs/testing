@@ -1,5 +1,6 @@
 "use client";
 
+import { PanelHeading } from "@/components/platform/PanelsProvider";
 import HelpLauncher from "@/components/support/HelpLauncher";
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
@@ -27,10 +28,7 @@ export default function SopTopbar({
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <SopMobileSidebar flags={flags} />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-foreground">Standard Operating Procedures</p>
-        <p className="truncate text-[11px] text-muted-foreground">Create, review &amp; publish SOPs and workflows</p>
-      </div>
+      <PanelHeading panel="sop" fallbackTitle="Standard Operating Procedures" fallbackDescription="Create, review & publish SOPs and workflows" />
       <div className="flex min-w-0 flex-1 justify-center">
         <PanelSearch />
       </div>

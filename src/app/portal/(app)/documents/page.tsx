@@ -10,7 +10,7 @@ import { brandedMetadata } from "@/lib/platform/branding/metadata";
 import { getCompanyBrand } from "@/lib/platform/branding";
 
 export const dynamic = "force-dynamic";
-export const generateMetadata = () => brandedMetadata("Documents · {brand} Portal");
+export const generateMetadata = () => brandedMetadata("Documents · {brand} {panel:portal}");
 
 function size(n: number | null) {
   if (!n) return "";

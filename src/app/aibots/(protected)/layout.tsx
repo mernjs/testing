@@ -14,7 +14,7 @@ import { brandedMetadata } from "@/lib/platform/branding/metadata";
 import { requireModule } from "@/lib/platform/billing/enforce";
 import PanelBackBar from "@/components/hub/PanelBackBar";
 
-export const generateMetadata = () => brandedMetadata("{brand} AI Bots", { robots: { index: false, follow: false } });
+export const generateMetadata = () => brandedMetadata("{brand} {panel:aibots}", { robots: { index: false, follow: false } });
 
 export default async function ProtectedAibotsLayout({ children }: { children: React.ReactNode }) {
   await requireModule("aibots");

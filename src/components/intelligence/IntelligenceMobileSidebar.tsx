@@ -6,11 +6,13 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import IntelligenceSidebar from "@/components/intelligence/IntelligenceSidebar";
+import { usePanelMeta } from "@/components/platform/PanelsProvider";
 import BrandMark from "@/components/BrandMark";
 import { BrandName } from "@/components/platform/BrandProvider";
 
 export default function IntelligenceMobileSidebar() {
   const [open, setOpen] = useState(false);
+  const panelName = usePanelMeta("intelligence")?.name ?? "AI Intelligence";
 
   return (
     <>
@@ -20,7 +22,7 @@ export default function IntelligenceMobileSidebar() {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="left" className="flex w-72 flex-col p-0 sm:max-w-72">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
-          <SheetDescription className="sr-only">AI Intelligence conversations and examples</SheetDescription>
+          <SheetDescription className="sr-only">{panelName} conversations and examples</SheetDescription>
           <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border/60 px-4">
             <BrandMark className="size-6 shrink-0" />
             <span className="text-sm font-bold">

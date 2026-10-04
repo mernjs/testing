@@ -8,6 +8,9 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { requireModule } from "@/lib/platform/billing/enforce";
 import PanelBackBar from "@/components/hub/PanelBackBar";
+import { brandedMetadata } from "@/lib/platform/branding/metadata";
+
+export const generateMetadata = () => brandedMetadata("{brand} {panel:fms}", { robots: { index: false, follow: false } });
 
 export default async function ProtectedFmsLayout({ children }: { children: React.ReactNode }) {
   await requireModule("fms");

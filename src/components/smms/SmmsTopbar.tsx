@@ -1,5 +1,6 @@
 "use client";
 
+import { PanelHeading } from "@/components/platform/PanelsProvider";
 import HelpLauncher from "@/components/support/HelpLauncher";
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
@@ -27,10 +28,7 @@ export default function SmmsTopbar({
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <SmmsMobileSidebar flags={flags} />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-foreground">Social Media Marketing</p>
-        <p className="truncate text-[11px] text-muted-foreground">Schedule posts, analytics &amp; campaign management</p>
-      </div>
+      <PanelHeading panel="smms" fallbackTitle="Social Media Marketing" fallbackDescription="Schedule posts, analytics & campaign management" />
       <div className="flex min-w-0 flex-1 justify-center">
         <PanelSearch />
       </div>

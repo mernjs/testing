@@ -1,5 +1,6 @@
 "use client";
 
+import { PanelHeading } from "@/components/platform/PanelsProvider";
 import HelpLauncher from "@/components/support/HelpLauncher";
 import { useState } from "react";
 import Link from "next/link";
@@ -23,10 +24,7 @@ export default function FmsTopbar({
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 px-3 sm:gap-3 sm:px-4">
       <FmsMobileSidebar roles={roles} permissionOverrides={permissionOverrides} />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-foreground">Finance Management</p>
-        <p className="truncate text-[11px] text-muted-foreground">Budgets, invoices, expenses &amp; financial reports</p>
-      </div>
+      <PanelHeading panel="fms" fallbackTitle="Finance Management" fallbackDescription="Budgets, invoices, expenses & financial reports" />
       <div className="flex min-w-0 flex-1 justify-center">
         <PanelSearch />
       </div>

@@ -349,6 +349,9 @@ export function PanelPerformanceMatrix({
   panels,
   locked,
   query,
+  names,
+  unavailable,
+  registry,
 }: {
   modules?: CommandCenterStats["modules"];
   /** Headline figures per panel key (take precedence over `modules`). */
@@ -358,10 +361,33 @@ export function PanelPerformanceMatrix({
   locked?: string[];
   /** Case-insensitive text matched against the panel name. */
   query?: string;
+  /** Panel Registry names, so every card is titled like the panel everywhere else. */
+  names?: Record<string, string>;
+  /** Panels the platform switched off (for everyone or this company): their cards are not shown at all. */
+  unavailable?: string[];
+  /** The Panel Registry's panels: one card each, in order — including panels that have no analytics of their own. */
+  registry?: { key: string; name: string; description: string; route: string }[];
 }) {
   const moduleStats = { ...Object.fromEntries((modules ?? []).map((m) => [m.key, m.stats])), ...Object.fromEntries(Object.entries(stats ?? {}).filter(([, v]) => v.length > 0)) };
   const q = query?.trim().toLowerCase();
-  const grid = PANEL_GRID.filter((p) => !q || p.label.toLowerCase().includes(q) || p.key.includes(q));
+  const base = registry
+    ? registry.map((r) => {
+        const known = PANEL_GRID.find((g) => g.key === r.key);
+        return {
+          key: r.key,
+          label: r.name,
+          description: r.description,
+          icon: known?.icon ?? <LayoutGrid className="size-5" />,
+          color: known?.color ?? "from-primary to-brand-accent",
+          analyticsHref: known?.analyticsHref ?? null,
+          panelHref: r.route,
+        };
+      })
+    : PANEL_GRID.map((p) => ({ ...p, description: "", analyticsHref: p.analyticsHref as string | null }));
+  const grid = base
+    .map((p) => ({ ...p, label: names?.[p.key] ?? p.label }))
+    .filter((p) => !unavailable?.includes(p.key))
+    .filter((p) => !q || p.label.toLowerCase().includes(q) || p.key.includes(q));
   return (
       <ExecutiveSection
         title="Panel Performance Matrix"
@@ -384,6 +410,9 @@ export function PanelPerformanceMatrix({
                   {isLocked && <span className="ml-auto inline-flex items-center gap-1 rounded-full border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400"><Lock className="size-2.5" />Locked</span>}
                 </CardHeader>
                 <CardContent className="space-y-3">
+                  {!panel.analyticsHref ? (
+                    <p className="flex min-h-16 items-center rounded-lg border border-border/50 px-3 py-2 text-xs text-muted-foreground">{panel.description || "This panel has no analytics of its own."}</p>
+                  ) : (
                   <dl className="grid grid-cols-3 gap-2">
                     {[0, 1, 2].map((i) => {
                       const s = mStats[i];
@@ -397,7 +426,9 @@ export function PanelPerformanceMatrix({
                       );
                     })}
                   </dl>
+                  )}
                   <div className="flex items-center gap-2 pt-1">
+                    {panel.analyticsHref && (
                     <Link
                       href={isLocked ? `/workspace/upgrade?module=${panel.key}` : panel.analyticsHref}
                       className="inline-flex flex-1 items-center justify-center gap-1 rounded-lg border border-border/50 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-primary/8 hover:border-primary/40 hover:text-primary"
@@ -405,6 +436,7 @@ export function PanelPerformanceMatrix({
                       <Activity className="size-3" />
                       Analytics
                     </Link>
+                    )}
                     <Link
                       href={isLocked ? `/workspace/upgrade?module=${panel.key}` : panel.panelHref}
                       className={cn(

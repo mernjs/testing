@@ -21,7 +21,7 @@ export default async function AdminDirectMessagesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "YashChat" }, { label: "Direct Messages" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "YashChat", panel: "messenger" }, { label: "Direct Messages" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Direct Message Conversations</h1>
         <p className="text-sm text-muted-foreground">{total} conversation{total === 1 ? "" : "s"}.</p>

@@ -23,6 +23,7 @@ export default async function SeoNotificationsPage() {
 
   return (
     <GenericPanelNotificationsPage
+      panel="seo"
       live
       panelName="Search Engine Optimization"
       shortCode="SEO"

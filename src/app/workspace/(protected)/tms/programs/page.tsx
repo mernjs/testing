@@ -43,7 +43,7 @@ export default async function AdminProgramsPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "TMS" }, { label: "Programs" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "TMS", panel: "tms" }, { label: "Programs" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Programs</h1>
         <p className="text-sm text-muted-foreground">{total} program{total === 1 ? "" : "s"}.</p>

@@ -44,7 +44,7 @@ export default async function AdminInvoicesPage({
 
   return (
     <div className="space-y-4">
-      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Finance" }, { label: "Vendor Invoices" }]} />
+      <Breadcrumbs items={[{ label: "Workspace", href: "/workspace" }, { label: "Finance", panel: "fms" }, { label: "Vendor Invoices" }]} />
       <div>
         <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">Vendor Invoices</h1>
         <p className="text-sm text-muted-foreground">{total} invoice{total === 1 ? "" : "s"}.</p>
