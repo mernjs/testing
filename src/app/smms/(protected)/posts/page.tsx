@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Plus, Share2, ChevronLeft, ChevronRight, List, CalendarDays } from "lucide-react";
@@ -150,10 +151,7 @@ export default async function PostsPage({ searchParams }: { searchParams: Promis
         description="One idea, adapted per platform for Instagram, Facebook, YouTube, LinkedIn and Google Business Profile."
         actions={
           <>
-            <div className="flex rounded-lg border border-border/60 p-0.5">
-              <Link href={qs({ view: null, page: null })} className={cn("flex items-center gap-1 rounded-md px-2 py-1 text-xs", view === "list" ? "bg-primary/10 text-primary" : "text-muted-foreground")}><List className="size-3.5" /> List</Link>
-              <Link href={qs({ view: "calendar", page: null })} className={cn("flex items-center gap-1 rounded-md px-2 py-1 text-xs", view === "calendar" ? "bg-primary/10 text-primary" : "text-muted-foreground")}><CalendarDays className="size-3.5" /> Calendar</Link>
-            </div>
+            <PanelTabs label="Posts view" active={view} tabs={[{ key: "list", label: "List", icon: <List className="size-3.5" />, href: qs({ view: null, page: null }) }, { key: "calendar", label: "Calendar", icon: <CalendarDays className="size-3.5" />, href: qs({ view: "calendar", page: null }) }]} />
             {can(viewer, "MANAGE_POSTS") && <Button nativeButton={false} render={<Link href="/smms/posts/new" />}><Plus className="size-4" /> New post</Button>}
           </>
         }

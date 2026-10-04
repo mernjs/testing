@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import PanelDashboardHeader from "@/components/platform/panel/PanelDashboardHeader";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
@@ -167,13 +168,7 @@ export default function DashboardView({ model }: { model: DashboardModel }) {
         title={brandify(model.title)}
         description={`${model.subtitle}${model.badge ? ` · ${model.badge}` : ""}`}
         filters={
-            <div role="group" aria-label="Date range" className="inline-flex rounded-xl border border-border p-0.5 text-xs font-medium">
-              {RANGES.map((r) => (
-                <button key={r.id} type="button" onClick={() => setRange(r.id)} aria-pressed={range === r.id} className={cn("rounded-lg px-2.5 py-1 transition-colors", range === r.id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
-                  {r.label}
-                </button>
-              ))}
-            </div>
+            <PanelTabs label="Date range" active={range} onSelect={(k) => setRange(k as typeof range)} tabs={RANGES.map((r) => ({ key: r.id, label: r.label }))} />
         }
         actions={
             <button type="button" onClick={() => setCustomize((v) => !v)} aria-expanded={customize} className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-1.5 text-xs font-medium hover:border-primary">
@@ -384,13 +379,7 @@ export default function DashboardView({ model }: { model: DashboardModel }) {
 
       {show("tables") && activeTable && (
         <Section title="Detailed reports" hint="Search, sort, filter by date range and export">
-          <div className="flex flex-wrap gap-1.5" role="tablist">
-            {model.tables.map((t) => (
-              <button key={t.id} role="tab" aria-selected={t.id === activeTable.id} type="button" onClick={() => setTab(t.id)} className={cn("rounded-full border px-3 py-1 text-xs font-medium", t.id === activeTable.id ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:border-primary hover:text-foreground")}>
-                {t.title}
-              </button>
-            ))}
-          </div>
+          <PanelTabs active={activeTable.id} onSelect={setTab} tabs={model.tables.map((t) => ({ key: t.id, label: t.title }))} />
           <DataTableCard key={activeTable.id} table={activeTable} range={range} />
         </Section>
       )}

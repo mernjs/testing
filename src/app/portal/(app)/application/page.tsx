@@ -23,7 +23,7 @@ export default async function ApplicationPage() {
   const offer = data.offer;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader
         title="My Application"
         subtitle={data.positionTitle}

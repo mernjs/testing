@@ -16,7 +16,7 @@ export default async function PortalTestCertificatesPage() {
   const taker = await resolveTaker("portal");
   const certs = taker ? await candidateCertificates(taker) : [];
   return (
-    <div className="mx-auto max-w-6xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="Test Certificates" subtitle="Certificates from certification tests you passed — each one verifiable online." />
       <PanelListFilters>
 <PortalTestsNav active="certificates" />

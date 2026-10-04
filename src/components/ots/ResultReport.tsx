@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useState } from "react";
 import { CheckCircle2, XCircle, MinusCircle, CircleDashed, CircleSlash, Filter } from "lucide-react";
 import QuestionRenderer from "@/components/ots/QuestionRenderer";
@@ -92,39 +93,7 @@ export default function ResultReport({ view, candidateName, evaluator }: { view:
       )}
       {view.items.length > 0 && (
         <SectionCard title="Answers & Question Review" description="Review your submitted answers alongside correct solutions and explanations.">
-          <div className="mb-4 flex flex-wrap items-center gap-2 border-b border-border/40 pb-3">
-            <span className="flex items-center gap-1 text-xs font-semibold text-muted-foreground">
-              <Filter className="size-3.5" /> Filter:
-            </span>
-            <button
-              type="button"
-              onClick={() => setFilter("all")}
-              className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${filter === "all" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
-            >
-              All ({view.items.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilter("correct")}
-              className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${filter === "correct" ? "bg-emerald-600 text-white" : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20"}`}
-            >
-              Correct ({correctCount})
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilter("incorrect")}
-              className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${filter === "incorrect" ? "bg-rose-600 text-white" : "bg-rose-500/10 text-rose-700 dark:text-rose-400 hover:bg-rose-500/20"}`}
-            >
-              Incorrect ({incorrectCount})
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilter("unanswered")}
-              className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${filter === "unanswered" ? "bg-secondary text-secondary-foreground" : "bg-muted/50 text-muted-foreground hover:bg-muted"}`}
-            >
-              Unanswered ({unansweredCount})
-            </button>
-          </div>
+          <div className="mb-4"><PanelTabs label="Answer filter" active={filter} onSelect={(k) => setFilter(k as typeof filter)} tabs={[{ key: "all", label: "All", count: view.items.length }, { key: "correct", label: "Correct", count: correctCount }, { key: "incorrect", label: "Incorrect", count: incorrectCount }, { key: "unanswered", label: "Unanswered", count: unansweredCount }]} /></div>
 
           <ol className="space-y-6">
             {filteredItems.map((it) => {

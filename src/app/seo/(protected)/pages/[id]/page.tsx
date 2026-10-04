@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ExternalLink, Gauge, SearchCheck, Send, Trash2 } from "lucide-react";
@@ -86,13 +87,7 @@ export default async function PageDetail({ params, searchParams }: { params: Pro
         }
       />
 
-      <div className="flex flex-wrap gap-1 rounded-2xl border border-border/40 bg-card/90 p-1">
-        {TABS.map(([k, label]) => (
-          <Link key={k} href={`/seo/pages/${page._id}?tab=${k}`} className={cn("rounded-xl px-3 py-1.5 text-sm font-medium transition-colors", tab === k ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground")}>
-            {label}
-          </Link>
-        ))}
-      </div>
+      <PanelTabs active={tab} tabs={TABS.map(([k, label]) => ({ key: k, label, href: `/seo/pages/${page._id}?tab=${k}` }))} />
 
       {tab === "overview" && <Overview pageId={page._id} path={page.path} viewerCanSitemap={can(viewer, "MANAGE_SITEMAP")} />}
       {tab === "on-page" && (

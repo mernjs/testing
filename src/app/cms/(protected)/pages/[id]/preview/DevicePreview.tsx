@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useState } from "react";
 import { Monitor, Tablet, Smartphone, RotateCw, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -20,20 +21,7 @@ export default function DevicePreview({ src }: { src: string }) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex gap-1 rounded-full border border-border/60 bg-muted/30 p-1" role="tablist" aria-label="Preview width">
-          {DEVICES.map((d) => (
-            <button
-              key={d.key}
-              type="button"
-              role="tab"
-              aria-selected={device === d.key}
-              onClick={() => setDevice(d.key)}
-              className={cn("flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors", device === d.key ? "bg-background text-foreground shadow-sm ring-1 ring-border/60" : "text-muted-foreground hover:text-foreground")}
-            >
-              <d.icon className="size-3.5" /> {d.label}
-            </button>
-          ))}
-        </div>
+        <PanelTabs label="Preview width" active={device} onSelect={(k) => setDevice(k as typeof device)} tabs={DEVICES.map((d) => ({ key: d.key, label: d.label, icon: <d.icon className="size-3.5" /> }))} />
         <button type="button" onClick={() => { setLoading(true); setNonce((n) => n + 1); }} className="flex items-center gap-1.5 rounded-full border border-border/60 px-3 py-1 text-xs font-medium text-muted-foreground hover:border-primary/40 hover:text-primary">
           <RotateCw className="size-3.5" /> Reload
         </button>

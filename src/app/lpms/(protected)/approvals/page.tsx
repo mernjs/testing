@@ -37,7 +37,7 @@ export default async function ApprovalsPage() {
   const docMap = Object.fromEntries(allDocs.map((d: any) => [d._id.toString(), d]));
 
   return (
-    <div className="space-y-4 p-4 sm:p-6">
+    <div className="space-y-4">
       <PanelPageHeader
         breadcrumbs={[{ label: "LPMS", href: "/lpms" }, { label: "Approvals" }]}
         title={<>Approval Queue</>}

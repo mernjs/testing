@@ -16,7 +16,7 @@ export default async function MessagesPage() {
   if (!view) return <EmptyPortalState title="No messages" body={`Messages from the ${brand.name} team appear here.`} />;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-5 p-4 sm:p-6 lg:max-w-3xl">
+    <div className="space-y-5 lg:">
       <PortalPageHeader title="Messages" subtitle={`Chat directly with your ${brand.name} team`} />
       <PortalMessagesThread initialMessages={view.messages} />
     </div>

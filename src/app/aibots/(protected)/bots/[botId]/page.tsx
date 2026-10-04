@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { MessageSquare } from "lucide-react";
@@ -47,13 +48,7 @@ export default async function EditBotPage({ params, searchParams }: { params: Pr
           </>
         }
       />
-      <nav className="flex gap-1 border-b border-border/60" aria-label="Bot sections">
-        {tabs.map((t) => (
-          <Link key={t.key} href={t.href} aria-current={tab === t.key ? "page" : undefined} className={cn("-mb-px border-b-2 px-3 py-2 text-sm font-medium transition-colors", tab === t.key ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground")}>
-            {t.label}
-          </Link>
-        ))}
-      </nav>
+      <PanelTabs label="Bot sections" active={tab} tabs={tabs.map((t) => ({ key: t.key, label: t.label, href: t.href }))} />
       {!openAIReady && <Notice tone="warn">OpenAI isn&apos;t connected for this workspace (Settings → Integrations), so knowledge files can&apos;t be uploaded and the bot can&apos;t reply yet.</Notice>}
       {tab === "config" && o ? (
         <BotForm

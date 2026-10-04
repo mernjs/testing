@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Plus, Pencil } from "lucide-react";
@@ -69,11 +70,7 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Pro
         }
       />
 
-      <div className="flex flex-wrap gap-1 rounded-2xl border border-border/40 bg-card/90 p-1">
-        {TABS.map(([k, label]) => (
-          <Link key={k} href={`/seo/keywords?tab=${k}`} className={cn("rounded-xl px-3 py-1.5 text-sm font-medium", tab === k ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground")}>{label}</Link>
-        ))}
-      </div>
+      <PanelTabs active={tab} tabs={TABS.map(([k, label]) => ({ key: k, label, href: `/seo/keywords?tab=${k}` }))} />
 
       {tab === "keywords" && <KeywordList sp={sp} groups={groups} users={userOpts} canExport={can(viewer, "EXPORT_REPORTS")} />}
       {tab === "groups" && <Groups groups={groups} canManage={canManage} canDelete={can(viewer, "DELETE")} />}

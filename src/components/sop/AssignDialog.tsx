@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -76,21 +77,7 @@ export default function AssignDialog({ sopId, options, defaultDueDate }: { sopId
           <DialogDescription>Assignees are notified and must acknowledge the current version by the due date.</DialogDescription>
         </DialogHeader>
         <div className="space-y-3 px-4">
-          <div className="flex gap-1 rounded-xl bg-muted/50 p-1" role="tablist">
-            {TABS.map((t) => (
-              <button
-                key={t.key}
-                type="button"
-                role="tab"
-                aria-selected={tab === t.key}
-                onClick={() => { setTab(t.key); setSearch(""); }}
-                className={cn("flex-1 rounded-lg px-2 py-1.5 text-xs font-medium transition-colors", tab === t.key ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}
-              >
-                {t.label}
-                {picked[t.key].length > 0 && <span className="ml-1 rounded-full bg-primary/15 px-1.5 text-[10px] text-primary">{picked[t.key].length}</span>}
-              </button>
-            ))}
-          </div>
+          <PanelTabs className="w-full [&>*]:flex-1" active={tab} onSelect={(k) => { setTab(k as Tab); setSearch(""); }} tabs={TABS.map((t) => ({ key: t.key, label: t.label, count: picked[t.key].length > 0 ? picked[t.key].length : undefined }))} />
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={`Search ${TABS.find((t) => t.key === tab)?.label.toLowerCase()}…`} aria-label="Search targets" />
           <ul className="max-h-56 space-y-0.5 overflow-y-auto rounded-xl border border-border/50 p-1">
             {filtered.length === 0 && <li className="px-2 py-4 text-center text-xs text-muted-foreground">Nothing to show.</li>}

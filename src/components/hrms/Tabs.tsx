@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { cn } from "@/lib/utils";
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 
 export interface TabDef {
   key: string;
@@ -42,28 +42,11 @@ export default function Tabs({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-1 rounded-lg border border-border/60 bg-muted/40 p-1">
-        {tabs.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            disabled={t.disabled}
-            onClick={() => !t.disabled && select(t.key)}
-            className={cn(
-              "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-              t.disabled
-                ? "cursor-not-allowed text-muted-foreground/40"
-                : active === t.key
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-            )}
-            title={t.disabled ? t.hint : undefined}
-          >
-            {t.label}
-            {t.disabled && <span className="ml-1.5 text-[10px] uppercase tracking-wide">Phase 2</span>}
-          </button>
-        ))}
-      </div>
+      <PanelTabs
+        tabs={tabs.map((t) => ({ key: t.key, label: t.label, disabled: t.disabled, title: t.disabled ? t.hint : undefined, icon: t.disabled ? <span className="text-[10px] uppercase tracking-wide">Phase 2</span> : undefined }))}
+        active={active}
+        onSelect={select}
+      />
       <div>{tabs.find((t) => t.key === active)?.content}</div>
     </div>
   );

@@ -21,7 +21,7 @@ export default async function CategoriesPage() {
   const categories = await listCategories(viewer);
 
   return (
-    <div className="space-y-4 p-4 sm:p-6">
+    <div className="space-y-4">
       <PanelPageHeader
         breadcrumbs={[{ label: "LPMS", href: "/lpms" }, { label: "Categories" }]}
         title={<>Categories</>}

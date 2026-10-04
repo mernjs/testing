@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Plus, Pencil, ShieldCheck, ExternalLink } from "lucide-react";
@@ -94,11 +95,7 @@ export default async function BacklinksPage({ searchParams }: { searchParams: Pr
         </SectionCard>
       </div>
 
-      <div className="flex flex-wrap gap-1 rounded-2xl border border-border/40 bg-card/90 p-1">
-        {([["links", "Backlinks"], ["domains", "Referring domains"], ["anchors", "Anchor text"]] as const).map(([k, label]) => (
-          <Link key={k} href={`/seo/backlinks?tab=${k}`} className={cn("rounded-xl px-3 py-1.5 text-sm font-medium", tab === k ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground")}>{label}</Link>
-        ))}
-      </div>
+      <PanelTabs active={tab} tabs={([["links", "Backlinks"], ["domains", "Referring domains"], ["anchors", "Anchor text"]] as const).map(([k, label]) => ({ key: k, label, href: `/seo/backlinks?tab=${k}` }))} />
 
       {tab === "links" && (
         <FmsDataTable

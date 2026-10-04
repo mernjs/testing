@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -46,7 +47,7 @@ export default async function LpmsDocumentsPage({
   const statusMeta = Object.fromEntries(LPMS_STATUSES.map((s) => [s.value, s]));
 
   return (
-    <div className="space-y-4 p-4 sm:p-6">
+    <div className="space-y-4">
       <PanelPageHeader
         breadcrumbs={[{ label: "LPMS", href: "/lpms" }, { label: "Document Library" }]}
         title={<>Document Library</>}
@@ -59,30 +60,11 @@ export default async function LpmsDocumentsPage({
         )}</>}
       />
 
-      {/* Status filter pills */}
-      <div className="flex flex-wrap gap-2">
-        <Link
-          href="/lpms/documents"
-          className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-            !sp.status ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"
-          }`}
-        >
-          All
-        </Link>
-        {LPMS_STATUSES.map((s) => (
-          <Link
-            key={s.value}
-            href={`/lpms/documents?status=${s.value}`}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-              sp.status === s.value
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
-            }`}
-          >
-            {s.label}
-          </Link>
-        ))}
-      </div>
+      <PanelTabs
+        label="Document status"
+        active={sp.status ?? "all"}
+        tabs={[{ key: "all", label: "All", href: "/lpms/documents" }, ...LPMS_STATUSES.map((s) => ({ key: s.value, label: s.label, href: `/lpms/documents?status=${s.value}` }))]}
+      />
 
       <GlassCard interactive={false}>
         <CardContent className="p-0">

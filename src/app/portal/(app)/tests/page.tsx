@@ -19,7 +19,7 @@ export default async function PortalTestsPage() {
   const taker = await resolveTaker("portal");
   const cards = taker ? await candidateCards(taker) : [];
   return (
-    <div className="mx-auto max-w-6xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title={user.role === "job_applicant" ? "Assessments" : "Tests & Exams"} subtitle={user.role === "job_applicant" ? "Screening and technical tests for your application." : "Course, chapter, practice, mock and final exams."} />
       <PanelListFilters>
 <PortalTestsNav active="tests" />

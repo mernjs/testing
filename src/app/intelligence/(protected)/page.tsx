@@ -1,4 +1,3 @@
-import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { redirect } from "next/navigation";
 import ChatWorkspace from "@/components/intelligence/ChatWorkspace";
@@ -12,11 +11,9 @@ export default async function IntelligenceHomePage() {
   return (
     <div className="flex h-full min-h-0 flex-col gap-4">
       <PanelPageHeader title={<>Ask your business data</>} description={<>Ask a question in plain language and get an answer built from your company's real records.</>} />
-      <PanelListFilters>
 <div className="min-h-0 flex-1">
         <ChatWorkspace conversationId={null} title={null} initialMessages={[]} ownerEmail={user.email} openAIReady={(await isOpenAIConfigured())} />
       </div>
-</PanelListFilters>
     </div>
   );
 }

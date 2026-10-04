@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, CalendarDays, List, Video, Clock } from "lucide-react";
@@ -106,22 +107,7 @@ export default function ClassScheduleView({ classes, linked = true }: { classes:
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="inline-flex items-center gap-0.5 rounded-lg border border-border/60 bg-muted/40 p-0.5">
-          <button
-            type="button"
-            onClick={() => setView("calendar")}
-            className={cn("inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors", view === "calendar" ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground")}
-          >
-            <CalendarDays className="size-3.5" /> Calendar
-          </button>
-          <button
-            type="button"
-            onClick={() => setView("agenda")}
-            className={cn("inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors", view === "agenda" ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground")}
-          >
-            <List className="size-3.5" /> Agenda
-          </button>
-        </div>
+        <PanelTabs label="Schedule view" active={view} onSelect={(k) => setView(k as typeof view)} tabs={[{ key: "calendar", label: "Calendar", icon: <CalendarDays className="size-3.5" /> }, { key: "agenda", label: "Agenda", icon: <List className="size-3.5" /> }]} />
         {view === "calendar" && (
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-foreground">

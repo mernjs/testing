@@ -29,7 +29,7 @@ export default async function AssignmentsPage() {
   const submitted = rows.filter((a) => a.submission && a.submission.status !== "resubmit");
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="Assignments" subtitle={`${pending.length} to do · ${submitted.length} submitted`} />
 
       <PanelListFilters>

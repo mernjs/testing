@@ -17,7 +17,7 @@ export default async function JourneyPage() {
   if (!view) return <EmptyPortalState title="No activity yet" body="Your journey appears here once your request is in our system." />;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader
         title="My Journey"
         subtitle={`${view.lead.code} · currently: ${view.currentStagePortalLabel}`}

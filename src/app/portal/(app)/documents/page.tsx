@@ -31,7 +31,7 @@ export default async function DocumentsPage() {
   const docs = await listPortalDocuments(user);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="Documents" subtitle={`${docs.length} file${docs.length === 1 ? "" : "s"} available to you`} />
 
       <PanelListFilters>

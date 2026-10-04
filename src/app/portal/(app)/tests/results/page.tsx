@@ -17,7 +17,7 @@ export default async function PortalResultsPage({ searchParams }: { searchParams
   const sp = await searchParams;
   const rows = taker ? await candidateHistory(taker, sp) : [];
   return (
-    <div className="mx-auto max-w-6xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="My Results" subtitle="Every attempt, with scores once they are released." />
       <PortalTestsNav active="results" />
       <SmmsFilterBar

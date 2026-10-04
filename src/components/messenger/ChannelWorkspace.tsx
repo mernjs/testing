@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useState, useTransition } from "react";
 import { Info, Users, Pin, FolderOpen, X, UserPlus, Loader2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -96,21 +97,8 @@ export default function ChannelWorkspace({
               <X className="size-4" />
             </button>
           </div>
-          <div className="flex border-b border-border/60">
-            {tabs.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setTab(t.id)}
-                className={cn(
-                  "flex flex-1 items-center justify-center gap-1 py-2 text-xs font-medium transition-colors",
-                  tab === t.id ? "border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <t.icon className="size-3.5" />
-                {t.count !== undefined && t.count > 0 ? t.count : ""}
-              </button>
-            ))}
+          <div className="border-b border-border/40 p-2">
+            <PanelTabs className="w-full [&>*]:flex-1 [&>*]:px-2" active={tab} onSelect={(k) => setTab(k as Tab)} tabs={tabs.map((t) => ({ key: t.id, label: <span className="sr-only">{t.id}</span>, icon: <t.icon className="size-3.5" />, count: t.count !== undefined && t.count > 0 ? t.count : undefined }))} />
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto p-3 text-sm">

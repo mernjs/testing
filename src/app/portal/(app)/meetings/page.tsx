@@ -19,7 +19,7 @@ export default async function MeetingsPage() {
   if (!data) return <EmptyPortalState title="No meetings" body="Upcoming reviews and delivery dates appear here." />;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="Meetings & Reviews" subtitle="Derived from your project milestones and delivery dates" />
 
       <PanelListFilters>

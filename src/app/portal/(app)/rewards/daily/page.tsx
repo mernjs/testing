@@ -17,7 +17,7 @@ export default async function DailyRewardsPage() {
   const d = await getDailyRewards(user);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="Daily rewards" subtitle="Visit every day to keep your streak alive and earn bonus credits." />
       <PanelListFilters>
 <EarnNav current="daily" />

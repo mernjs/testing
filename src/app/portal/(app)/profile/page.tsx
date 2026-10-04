@@ -18,7 +18,7 @@ export default async function ProfilePage() {
   const meta = PORTAL_ROLE_META[user.role];
 
   return (
-    <div className="mx-auto max-w-2xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="Profile & Settings" subtitle={meta.portalName} />
 
       <GlassCard>

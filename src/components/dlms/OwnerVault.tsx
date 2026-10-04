@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import Link from "next/link";
 import { Plus, Upload, Globe, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -172,19 +173,7 @@ export default async function OwnerVault({ viewer, owner, basePath, info, sp }: 
         }
         actions={actions}
       />
-      <nav aria-label="Vault sections" className="flex flex-wrap gap-1 rounded-2xl border border-border/40 bg-card/90 p-1.5 backdrop-blur-md">
-        {TABS.map((t) => (
-          <Link
-            key={t.key}
-            href={t.key === "overview" ? basePath : `${basePath}?tab=${t.key}`}
-            aria-current={tab === t.key ? "page" : undefined}
-            className={cn("flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-medium transition-colors", tab === t.key ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground")}
-          >
-            {t.label}
-            {tabCount[t.key] !== undefined && <span className="rounded-full bg-muted px-1.5 text-[10px] tabular-nums">{tabCount[t.key]}</span>}
-          </Link>
-        ))}
-      </nav>
+      <PanelTabs label="Vault sections" active={tab} tabs={TABS.map((t) => ({ key: t.key, label: t.label, count: tabCount[t.key], href: t.key === "overview" ? basePath : `${basePath}?tab=${t.key}` }))} />
       {tabType && filterBar}
       {body}
     </div>

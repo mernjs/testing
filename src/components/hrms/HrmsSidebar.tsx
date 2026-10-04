@@ -171,7 +171,7 @@ export default function HrmsSidebar({
       {nav({ href: "/hrms/holidays", label: "Holidays", icon: CalendarCheck })}
       {canRunPayroll(roleCtx) && nav({ href: "/hrms/payroll", label: "Payroll", icon: Wallet })}
 
-      {employeeId && (
+      {employeeId && !roles.includes("super_admin") && (
         <>
           <SectionLabel collapsed={collapsed}>Me</SectionLabel>
           {nav({ href: "/hrms/me", label: "My Dashboard", icon: LayoutDashboard, exact: true })}

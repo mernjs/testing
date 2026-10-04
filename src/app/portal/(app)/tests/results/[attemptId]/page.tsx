@@ -16,7 +16,7 @@ export default async function PortalResultPage({ params }: { params: Promise<{ a
   const view = await candidateResult(taker, attemptId).catch(() => null);
   if (!view) notFound();
   return (
-    <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title={view.testName} subtitle={`Attempt ${view.attemptNo}`} />
       <ResultReport view={view} />
     </div>

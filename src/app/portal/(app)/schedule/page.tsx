@@ -43,7 +43,7 @@ export default async function SchedulePage() {
   const { upcoming, past } = await getLearnerSchedule(data.batchIds);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title={user.role === "intern" ? "Batch Schedule" : "Class Schedule"} subtitle={`${upcoming.length} upcoming · ${past.length} completed`} />
 
       <PanelListFilters>

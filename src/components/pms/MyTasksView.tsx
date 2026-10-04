@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { LayoutGrid, List, Search } from "lucide-react";
@@ -44,14 +45,7 @@ export default function MyTasksView({ tasks, projects }: { tasks: MyTaskRow[]; p
       <GlassCard interactive={false}>
         <CardContent>
           <div className="flex flex-wrap items-end gap-3">
-            <div className="flex gap-1 rounded-lg border border-border/60 bg-muted/40 p-1">
-              <button type="button" onClick={() => setView("list")} className={cn("flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium", view === "list" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground")}>
-                <List className="size-3.5" /> List
-              </button>
-              <button type="button" onClick={() => setView("board")} className={cn("flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium", view === "board" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground")}>
-                <LayoutGrid className="size-3.5" /> Board
-              </button>
-            </div>
+            <PanelTabs label="View" active={view} onSelect={(k) => setView(k as typeof view)} tabs={[{ key: "list", label: "List", icon: <List className="size-3.5" /> }, { key: "board", label: "Board", icon: <LayoutGrid className="size-3.5" /> }]} />
             <div className="relative">
               <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search tasks" className="h-8 w-52 rounded-xl border-border/50 bg-background pl-8 text-xs placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-primary/50" />

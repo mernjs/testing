@@ -179,33 +179,21 @@ export default function UserDetailDrawer({
         </SheetHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-          <div className="border-b border-border px-6 bg-card">
-            <TabsList className="bg-transparent h-12 gap-2 p-0">
-              <TabsTrigger
-                value="profile"
-                className="gap-1.5 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-3 text-xs"
-              >
+          <div className="border-b border-border/40 px-6 py-3">
+            <TabsList>
+              <TabsTrigger value="profile">
                 <User className="size-3.5" />
                 Profile & Meta
               </TabsTrigger>
-              <TabsTrigger
-                value="access"
-                className="gap-1.5 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-3 text-xs"
-              >
+              <TabsTrigger value="access">
                 <Shield className="size-3.5" />
                 Panel Access
               </TabsTrigger>
-              <TabsTrigger
-                value="permissions"
-                className="gap-1.5 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-3 text-xs"
-              >
+              <TabsTrigger value="permissions">
                 <KeyRound className="size-3.5" />
                 Permissions
               </TabsTrigger>
-              <TabsTrigger
-                value="activity"
-                className="gap-1.5 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-3 text-xs"
-              >
+              <TabsTrigger value="activity">
                 <Activity className="size-3.5" />
                 Activity Trail
               </TabsTrigger>

@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -144,14 +145,7 @@ export default function PostEditor(p: PostEditorProps) {
         </SectionCard>
 
         <SectionCard title="Platform versions" description="Each platform gets its own version within its limits and conventions.">
-          <div className="mb-3 flex flex-wrap gap-1.5" role="tablist">
-            {variants.map((v) => (
-              <button key={v.platform} type="button" role="tab" aria-selected={tab === v.platform} onClick={() => setTab(v.platform)} className={cn("flex items-center gap-1 rounded-lg border px-2 py-1", tab === v.platform ? "border-primary bg-primary/10" : "border-border/50 hover:border-primary/40")}>
-                <PlatformChip platform={v.platform} full />
-                {v.published && <Lock className="size-3 text-emerald-600" aria-label="Published" />}
-              </button>
-            ))}
-          </div>
+          <PanelTabs className="mb-3" active={tab} onSelect={(k) => setTab(k as PostPlatform)} tabs={variants.map((v) => ({ key: v.platform, label: <><PlatformChip platform={v.platform} full />{v.published && <Lock className="size-3 text-emerald-600" aria-label="Published" />}</> }))} />
           {current && (
             <>
               {current.published && <p className="mb-2 text-xs text-emerald-700 dark:text-emerald-400">Published — this version is locked as a record of what went out.</p>}

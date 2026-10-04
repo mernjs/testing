@@ -45,7 +45,7 @@ export default async function PaymentsPage() {
   );
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="Fee & Payments" subtitle={`${inr(totals.paid)} paid of ${inr(totals.net)}`} />
 
       <PanelListFilters>

@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useState } from "react";
 import Link from "next/link";
 import { LayoutGrid, List } from "lucide-react";
@@ -17,22 +18,7 @@ export default function MyProjectsView({ projects }: { projects: EmployeeProject
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-1 rounded-lg border border-border/60 bg-muted/40 p-1">
-        <button
-          type="button"
-          onClick={() => setView("list")}
-          className={cn("flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium", view === "list" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground")}
-        >
-          <List className="size-3.5" /> List
-        </button>
-        <button
-          type="button"
-          onClick={() => setView("board")}
-          className={cn("flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium", view === "board" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground")}
-        >
-          <LayoutGrid className="size-3.5" /> Board
-        </button>
-      </div>
+      <PanelTabs label="View" active={view} onSelect={(k) => setView(k as typeof view)} tabs={[{ key: "list", label: "List", icon: <List className="size-3.5" /> }, { key: "board", label: "Board", icon: <LayoutGrid className="size-3.5" /> }]} />
 
       {view === "list" ? (
         <GlassCard interactive={false}>

@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { Search, X, ArrowUpDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -22,24 +23,7 @@ export function SearchInput({ value, onChange, placeholder }: { value: string; o
 /** Segmented status filter with counts (All / Published / Draft …). */
 export function FilterChips<T extends string>({ options, value, onChange }: { options: { value: T; label: string; count?: number }[]; value: T; onChange: (v: T) => void }) {
   return (
-    <div className="flex flex-wrap gap-1 rounded-full border border-border/60 bg-muted/30 p-1" role="tablist">
-      {options.map((o) => (
-        <button
-          key={o.value}
-          type="button"
-          role="tab"
-          aria-selected={value === o.value}
-          onClick={() => onChange(o.value)}
-          className={cn(
-            "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors",
-            value === o.value ? "bg-background text-foreground shadow-sm ring-1 ring-border/60" : "text-muted-foreground hover:text-foreground"
-          )}
-        >
-          {o.label}
-          {o.count !== undefined && <span className={cn("rounded-full px-1.5 text-[10px] tabular-nums", value === o.value ? "bg-primary/10 text-primary" : "bg-muted")}>{o.count}</span>}
-        </button>
-      ))}
-    </div>
+    <PanelTabs label="Filter" active={value} onSelect={(k) => onChange(k as T)} tabs={options.map((o) => ({ key: o.value, label: o.label, count: o.count }))} />
   );
 }
 

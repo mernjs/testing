@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
@@ -45,31 +46,16 @@ export default function CategoryTabs({ categories }: { categories: CategoryPanel
   return (
     <div className="space-y-4">
       {categories.length > 1 && (
-        <div className="flex flex-wrap items-center gap-1 rounded-lg border border-border/60 bg-muted/40 p-1">
-          {categories.map((c) => {
+        <PanelTabs
+          label="Categories"
+          active={activeCategory.slug}
+          onSelect={(k) => setActive(k as CategorySlug)}
+          tabs={categories.map((c) => {
             const Icon = CATEGORY_ICONS[c.slug];
-            const isActive = activeCategory.slug === c.slug;
-            const accentColor = isDark ? CATEGORY_CHART_COLORS[c.slug].dark : CATEGORY_CHART_COLORS[c.slug].light;
-            return (
-              <button
-                key={c.slug}
-                type="button"
-                onClick={() => setActive(c.slug)}
-                className={cn(
-                  "relative flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
-                  isActive ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <Icon
-                  className="size-3.5"
-                  style={{ color: isActive ? accentColor : undefined }}
-                />
-                {c.label}
-                <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] tabular-nums text-muted-foreground">{c.total}</span>
-              </button>
-            );
+            const color = isDark ? CATEGORY_CHART_COLORS[c.slug].dark : CATEGORY_CHART_COLORS[c.slug].light;
+            return { key: c.slug, label: c.label, count: c.total, icon: <Icon className="size-3.5" style={{ color: activeCategory.slug === c.slug ? color : undefined }} /> };
           })}
-        </div>
+        />
       )}
 
       <AnimatePresence mode="wait">

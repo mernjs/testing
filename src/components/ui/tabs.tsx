@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { tabItemClass, tabTrackClass } from "@/components/platform/panel/PanelTabs";
 
 interface TabsContextValue {
   value: string;
@@ -41,10 +42,8 @@ export function Tabs({ value: valueProp, defaultValue, onValueChange, className,
 export function TabsList({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn(
-        "inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground",
-        className
-      )}
+      role="tablist"
+      className={cn(tabTrackClass, className)}
       {...props}
     >
       {children}
@@ -68,13 +67,7 @@ export function TabsTrigger({ value, className, children, ...props }: TabsTrigge
       role="tab"
       aria-selected={isSelected}
       onClick={() => context.onValueChange(value)}
-      className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-        isSelected
-          ? "bg-background text-foreground shadow-sm"
-          : "hover:bg-background/50 hover:text-foreground",
-        className
-      )}
+      className={cn(tabItemClass(isSelected, props.disabled), className)}
       {...props}
     >
       {children}
@@ -96,7 +89,7 @@ export function TabsContent({ value, className, children, ...props }: TabsConten
     <div
       role="tabpanel"
       className={cn(
-        "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "mt-4 outline-none",
         className
       )}
       {...props}

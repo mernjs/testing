@@ -16,7 +16,7 @@ export default async function PortalTestPage({ params }: { params: Promise<{ ass
   const data = await candidateAssignment(taker, assignmentId).catch(() => null);
   if (!data) notFound();
   return (
-    <div className="mx-auto max-w-6xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title={data.card.testName} subtitle={[data.card.testType, data.card.category].filter(Boolean).join(" · ")} />
       <CandidateAssignment data={data} channel="portal" paths={basePath("portal")} />
     </div>

@@ -26,7 +26,7 @@ export default async function MilestonesPage() {
   if (!data) return <EmptyPortalState title="No milestones" body="Milestones appear here once your projects are underway." />;
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="Milestones" subtitle={`${data.overallProgress}% overall delivery`} />
 
       <PanelListFilters>

@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { panelNameMap } from "@/lib/platform/panels/store";
 import Link from "next/link";
@@ -237,24 +238,15 @@ export default async function SopDetailPage({
         </div>
       )}
 
-      <nav className="sop-print-hide flex gap-1 overflow-x-auto border-b border-border/60" aria-label="SOP sections">
-        {visibleTabs.map((t) => (
-          <Link
-            key={t}
-            href={tabLink(t)}
-            aria-current={tab === t ? "page" : undefined}
-            className={cn("shrink-0 border-b-2 px-3 py-2 text-sm font-medium transition-colors", tab === t ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground")}
-          >
-            {tabLabels[t]}
-          </Link>
-        ))}
+      <div className="sop-print-hide flex flex-wrap items-center justify-between gap-3">
+        <PanelTabs label="SOP sections" active={tab} tabs={visibleTabs.map((t) => ({ key: t, label: tabLabels[t], href: tabLink(t) }))} />
         {sopCan(ctx, "VIEW_AUDIT") && (
-          <Link href={`/sop/audit-logs?sop=${id}`} className="ml-auto flex shrink-0 items-center gap-1 px-3 py-2 text-sm text-muted-foreground hover:text-foreground">
+          <Link href={`/sop/audit-logs?sop=${id}`} className="flex shrink-0 items-center gap-1 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted/60 hover:text-foreground">
             <ScrollText className="size-3.5" />
             Audit trail
           </Link>
         )}
-      </nav>
+      </div>
 
       {tab === "document" && (
         <div className="space-y-4">

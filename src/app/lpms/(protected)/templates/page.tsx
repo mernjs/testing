@@ -35,7 +35,7 @@ export default async function TemplatesPage() {
   }, {});
 
   return (
-    <div className="space-y-4 p-4 sm:p-6">
+    <div className="space-y-4">
       <PanelPageHeader
         breadcrumbs={[{ label: "LPMS", href: "/lpms" }, { label: "Templates" }]}
         title={<>Templates</>}

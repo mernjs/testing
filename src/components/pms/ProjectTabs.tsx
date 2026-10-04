@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 
 export default function ProjectTabs({ projectId }: { projectId: string }) {
   const pathname = usePathname();
@@ -15,23 +14,6 @@ export default function ProjectTabs({ projectId }: { projectId: string }) {
     { href: `${base}/documents`, label: "Files" },
   ];
 
-  return (
-    <div className="flex gap-1 rounded-lg border border-border/60 bg-muted/40 p-1">
-      {tabs.map((t) => {
-        const active = t.exact ? pathname === t.href : pathname?.startsWith(t.href);
-        return (
-          <Link
-            key={t.href}
-            href={t.href}
-            className={cn(
-              "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-              active ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {t.label}
-          </Link>
-        );
-      })}
-    </div>
-  );
+  const active = tabs.find((t) => (t.exact ? pathname === t.href : pathname?.startsWith(t.href)) && (t.exact || t.href !== base))?.href ?? base;
+  return <PanelTabs tabs={tabs.map((t) => ({ key: t.href, label: t.label, href: t.href }))} active={active} label="Project sections" />;
 }

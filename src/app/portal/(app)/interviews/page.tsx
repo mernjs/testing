@@ -40,7 +40,7 @@ export default async function InterviewsPage() {
   const past = data.interviews.filter((i) => !upcomingIds.has(i._id));
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="Interview Schedule" subtitle={`${data.interviews.length} interview${data.interviews.length === 1 ? "" : "s"} on record`} />
 
       <PanelListFilters>

@@ -24,16 +24,12 @@ export default async function MakerTypePage({
   if (id !== "new" && !maker) notFound();
 
   return (
-    <div className="space-y-4 p-4 sm:p-6">
+    <div className="space-y-4">
 
-      <div className="flex items-center gap-3">
-        <Link href="/lpms/makers" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-          <ArrowLeft className="size-4" />
-        </Link>
-        <PanelPageHeader
-          title={<>{maker ? `Edit: ${(maker as any).name}` : "New Maker Type"}</>}
-        />
-      </div>
+      <PanelPageHeader
+        title={<>{maker ? `Edit: ${(maker as any).name}` : "New Maker Type"}</>}
+        description={<>Define a maker type — who may create documents, and which templates and workflows apply.</>}
+      />
 
       <MakerTypeForm maker={maker} />
     </div>

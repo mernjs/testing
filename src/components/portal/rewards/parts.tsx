@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import Link from "next/link";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import GlassCard from "@/components/lms/GlassCard";
@@ -68,12 +69,8 @@ export function EarnNav({ current }: { current: "referrals" | "daily" | "journey
     { id: "tasks", href: "/portal/rewards/tasks", label: "Bonus tasks" },
   ] as const;
   return (
-    <div className="flex flex-wrap items-center gap-2 text-sm">
-      {items.map((i) => (
-        <Link key={i.id} href={i.href} className={`rounded-full border px-3 py-1 ${i.id === current ? "border-primary bg-primary/10 font-semibold text-primary" : "border-border text-muted-foreground hover:border-primary hover:text-foreground"}`}>
-          {i.label}
-        </Link>
-      ))}
+    <div className="flex flex-wrap items-center gap-3">
+      <PanelTabs label="Earn sections" active={current} tabs={items.map((i) => ({ key: i.id, label: i.label, href: i.href }))} />
       <Link href="/rewards" className="ml-auto text-xs font-semibold text-primary hover:underline">Full rewards guide →</Link>
     </div>
   );

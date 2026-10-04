@@ -123,7 +123,7 @@ export default function PmsSidebar({
       <SectionLabel collapsed={collapsed}>Timesheets & Tracking</SectionLabel>
       {canReviewTimesheets(roleCtx) && nav({ href: "/pms/timesheets", label: "Timesheet", icon: Clock })}
 
-      {employeeId && (
+      {employeeId && !roles.includes("super_admin") && (
         <>
           <SectionLabel collapsed={collapsed}>Me</SectionLabel>
           {nav({ href: "/pms/me", label: "My Dashboard", icon: CircleUser, exact: true })}

@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -150,21 +151,7 @@ export default function DepartmentsManager({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex gap-1 rounded-lg border border-border/60 bg-muted/40 p-1">
-          {tabs.map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              onClick={() => setTab(t.key)}
-              className={cn(
-                "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                tab === t.key ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {t.label} <span className="text-xs text-muted-foreground">{t.count}</span>
-            </button>
-          ))}
-        </div>
+        <PanelTabs active={tab} onSelect={(k) => setTab(k as Kind)} tabs={tabs.map((t) => ({ key: t.key, label: t.label, count: t.count }))} />
         {canManage && (
           <Button type="button" size="sm" onClick={() => openCreate(tab)}>
             <Plus className="size-3.5" data-icon="inline-start" />

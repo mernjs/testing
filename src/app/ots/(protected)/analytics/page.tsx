@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import SmmsFilterBar from "@/components/smms/SmmsFilterBar";
@@ -28,13 +29,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
   return (
     <div className="space-y-4">
       <PageHeader title="Analytics" crumbs={[{ label: "Analytics" }]} description="Department, role, designation, candidate type, batch and course analytics — people are grouped by their CURRENT department / role / batch in HRMS and TMS." />
-      <div className="flex flex-wrap gap-1.5">
-        {GROUP_BYS.map((g) => (
-          <Link key={g.value} href={href(g.value)} className={cn("rounded-lg border px-2.5 py-1 text-xs", g.value === groupBy ? "border-primary bg-primary/10 font-semibold text-primary" : "border-border/60 text-muted-foreground hover:text-foreground")}>
-            {`By ${g.label}`}
-          </Link>
-        ))}
-      </div>
+      <PanelTabs label="Group by" active={groupBy} tabs={GROUP_BYS.map((g) => ({ key: g.value, label: `By ${g.label}`, href: href(g.value) }))} />
       <SmmsFilterBar
         values={{ from: sp.from ?? "", to: sp.to ?? "", testId: sp.testId ?? "", kind: sp.kind ?? "", departmentId: sp.departmentId ?? "", designationId: sp.designationId ?? "" }}
         fields={[

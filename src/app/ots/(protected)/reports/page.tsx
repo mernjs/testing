@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Download } from "lucide-react";
@@ -43,13 +44,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           )
         }
       />
-      <div className="flex flex-wrap gap-1.5">
-        {REPORT_TYPES.map((r) => (
-          <Link key={r.value} href={tabHref(r.value)} className={cn("rounded-lg border px-2.5 py-1 text-xs", r.value === type ? "border-primary bg-primary/10 font-semibold text-primary" : "border-border/60 text-muted-foreground hover:text-foreground")}>
-            {r.label}
-          </Link>
-        ))}
-      </div>
+      <PanelTabs label="Report type" active={type} tabs={REPORT_TYPES.map((r) => ({ key: r.value, label: r.label, href: tabHref(r.value) }))} />
       <SmmsFilterBar
         values={{ from: sp.from ?? "", to: sp.to ?? "", testId: sp.testId ?? "", categoryId: sp.categoryId ?? "", kind: sp.kind ?? "", departmentId: sp.departmentId ?? "", designationId: sp.designationId ?? "" }}
         fields={[

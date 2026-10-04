@@ -38,7 +38,7 @@ export default async function InvoicesPage() {
   const money = (n: number) => `${inv.currency === "INR" ? "₹" : inv.currency + " "}${Math.round(n).toLocaleString("en-IN")}`;
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="Invoices" subtitle="Your formal tax invoices and a milestone-billing view of your engagements" />
 
       <PanelListFilters>

@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { panelNameMap } from "@/lib/platform/panels/store";
@@ -75,26 +76,17 @@ export default async function PmsFinancePage({
         <KpiCard label="Collected" value={collectedCount} icon={<CheckCircle2 className="size-4" />} />
       </KpiGrid>
 
-      {/* Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto border-b border-border/60 pb-2">
-        {[
+      <PanelTabs
+        label="Transaction type"
+        active={tab}
+        tabs={[
           { key: "all", label: "All" },
           { key: "billing", label: "Client Billing" },
           { key: "invoices", label: "Invoices" },
           { key: "links", label: "Payment Links" },
           { key: "receivables", label: "Receivables" },
-        ].map((item) => (
-          <Link
-            key={item.key}
-            href={`/fms/panels/pms?tab=${item.key}`}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
-              tab === item.key ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
-            }`}
-          >
-            {item.label}
-          </Link>
-        ))}
-      </div>
+        ].map((item) => ({ ...item, href: `/fms/panels/pms?tab=${item.key}` }))}
+      />
 
       {/* Table */}
       <GlassCard className="overflow-hidden">

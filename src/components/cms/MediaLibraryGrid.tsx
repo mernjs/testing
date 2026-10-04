@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useConfirm } from "@/components/cms/ui/ConfirmProvider";
 import { useMemo, useRef, useState, useTransition } from "react";
 import Image from "next/image";
@@ -118,10 +119,7 @@ export default function MediaLibraryGrid({ initialItems, canUpload, canDelete }:
         />
         <div className="flex flex-wrap items-center gap-2">
           <SearchInput value={query} onChange={setQuery} placeholder="Search by name or alt text…" />
-          <div className="inline-flex rounded-lg border border-border/60 p-0.5" role="group" aria-label="View">
-            <Button variant={view === "grid" ? "secondary" : "ghost"} size="icon-sm" onClick={() => setView("grid")} aria-label="Grid view" aria-pressed={view === "grid"}><LayoutGrid className="size-4" /></Button>
-            <Button variant={view === "list" ? "secondary" : "ghost"} size="icon-sm" onClick={() => setView("list")} aria-label="List view" aria-pressed={view === "list"}><List className="size-4" /></Button>
-          </div>
+          <PanelTabs label="View" active={view} onSelect={(k) => setView(k as typeof view)} tabs={[{ key: "grid", label: <span className="sr-only">Grid view</span>, icon: <LayoutGrid className="size-4" /> }, { key: "list", label: <span className="sr-only">List view</span>, icon: <List className="size-4" /> }]} />
           {canUpload && (
             <>
               <input ref={fileInput} type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml" className="hidden" onChange={(e) => { void uploadAll([...(e.target.files ?? [])]); e.target.value = ""; }} />

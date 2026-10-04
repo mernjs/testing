@@ -1,11 +1,11 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 
 /**
  * Date range for /platform/revenue: preset chips (one row, wraps on phones)
@@ -35,32 +35,19 @@ export default function RevenueRangePicker({
   const [toValue, setToValue] = useState(to);
 
   const go = (query: string) => startTransition(() => router.replace(`${pathname}?${query}`, { scroll: false }));
-  const chip = (active: boolean) =>
-    cn(
-      "h-8 rounded-full border px-3 text-xs font-medium transition-colors",
-      active ? "border-primary bg-primary text-primary-foreground" : "border-border/60 bg-background text-muted-foreground hover:text-foreground",
-    );
-
   return (
     <div className="space-y-2" data-testid="revenue-range">
-      <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Date range">
-        {presets.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            className={chip(!custom && preset === p.id)}
-            aria-pressed={!custom && preset === p.id}
-            onClick={() => {
-              setCustom(false);
-              go(`range=${p.id}`);
-            }}
-          >
-            {p.label}
-          </button>
-        ))}
-        <button type="button" className={chip(custom)} aria-pressed={custom} onClick={() => setCustom(true)}>
-          Custom
-        </button>
+      <div className="flex flex-wrap items-center gap-2">
+        <PanelTabs
+          label="Date range"
+          active={custom ? "custom" : preset}
+          onSelect={(k) => {
+            if (k === "custom") return setCustom(true);
+            setCustom(false);
+            go(`range=${k}`);
+          }}
+          tabs={[...presets.map((p) => ({ key: p.id, label: p.label })), { key: "custom", label: "Custom" }]}
+        />
         {pending && <Loader2 className="size-4 animate-spin text-muted-foreground" aria-label="Loading" />}
       </div>
       {custom && (

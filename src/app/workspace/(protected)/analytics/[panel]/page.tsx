@@ -20,7 +20,7 @@ export default async function WorkspacePanelAnalyticsPage({
   const configs = await panelConfigs();
 
   return (
-    <div className="relative space-y-6 p-6">
+    <div className="relative space-y-6">
       <PanelAnalyticsBlock panel={panel} user={user} sp={sp} />
     </div>
   );

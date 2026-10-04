@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { StickyNote, Send, FileQuestion, Paperclip, Download, X } from "lucide-react";
@@ -126,20 +127,7 @@ export default function LeadComms({
     <GlassCard>
       <CardHeader className="flex-row items-center justify-between space-y-0">
         <CardTitle className="text-base">Communication</CardTitle>
-        <div className="flex gap-1 rounded-lg border border-border/60 p-0.5">
-          {(["portal", "internal"] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={cn(
-                "rounded-md px-2.5 py-1 text-xs font-medium",
-                tab === t ? "bg-primary text-primary-foreground" : "text-muted-foreground"
-              )}
-            >
-              {t === "portal" ? "Portal messages" : "Internal notes"}
-            </button>
-          ))}
-        </div>
+        <PanelTabs label="Conversation" active={tab} onSelect={(k) => setTab(k as typeof tab)} tabs={[{ key: "portal", label: "Portal messages" }, { key: "internal", label: "Internal notes" }]} />
       </CardHeader>
       <CardContent className="space-y-3">
         <div ref={listRef} className="max-h-64 space-y-2 overflow-y-auto">

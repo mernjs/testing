@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, CalendarClock, CreditCard, Loader2, RotateCcw, TicketPercent, XCircle } from "lucide-react";
@@ -217,20 +218,7 @@ export default function BillingManager({ view, plans, actions }: { view: Billing
 
           <fieldset className="space-y-2">
             <legend className="sr-only">Billing cycle</legend>
-            <div className="inline-flex rounded-lg border border-border p-0.5" role="radiogroup" aria-label="Billing cycle">
-              {(["monthly", "yearly"] as const).map((i) => (
-                <button
-                  key={i}
-                  type="button"
-                  role="radio"
-                  aria-checked={interval === i}
-                  onClick={() => setInterval(i)}
-                  className={`rounded-md px-3 py-1.5 text-sm ${interval === i ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-                >
-                  {i === "monthly" ? "Monthly" : "Yearly"}
-                </button>
-              ))}
-            </div>
+            <PanelTabs label="Billing cycle" active={interval} onSelect={(k) => setInterval(k as typeof interval)} tabs={[{ key: "monthly", label: "Monthly" }, { key: "yearly", label: "Yearly" }]} />
           </fieldset>
 
           <div className="grid gap-3 sm:grid-cols-3" role="radiogroup" aria-label="Plan">

@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -69,13 +70,7 @@ export default function PostBriefForm({ postId, initial, offers, clients, servic
           </div>
         </Field>
         <Field label="Media type">
-          <div className="flex gap-2">
-            {(["image", "video"] as const).map((t) => (
-              <button key={t} type="button" aria-pressed={v.contentType === t} onClick={() => set("contentType", t)} className={cn("flex flex-1 items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-sm", v.contentType === t ? "border-primary bg-primary/10 text-primary" : "border-border/60")}>
-                {t === "video" ? <Film className="size-4" /> : <ImageIcon className="size-4" />} {t === "video" ? "Video" : "Image"}
-              </button>
-            ))}
-          </div>
+          <PanelTabs className="w-full [&>*]:flex-1" label="Media type" active={v.contentType} onSelect={(k) => set("contentType", k as "image" | "video")} tabs={[{ key: "image", label: "Image", icon: <ImageIcon className="size-4" /> }, { key: "video", label: "Video", icon: <Film className="size-4" /> }]} />
         </Field>
         <Field label="Content objective" htmlFor="p-obj"><Suggest id="p-obj" value={v.objective} onChange={(x) => set("objective", x)} options={POST_OBJECTIVES} placeholder="Engagement" /></Field>
         <Field label="Service / product" htmlFor="p-svc"><Suggest id="p-svc" value={v.serviceProduct} onChange={(x) => set("serviceProduct", x)} options={services} /></Field>

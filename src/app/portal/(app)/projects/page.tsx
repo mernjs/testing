@@ -57,7 +57,7 @@ export default async function ProjectsPage() {
   if (!data) return <EmptyPortalState title="No projects assigned" body="Live projects assigned to you appear here." />;
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="Live Projects" subtitle={`${data.projects.length} assigned`} />
       {data.projects.length === 0 && (
         <GlassCard>

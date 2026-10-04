@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -376,13 +377,7 @@ export default function ThemeCustomizer({
                         ))}
                       </div>
                     </div>
-                    <div className="flex items-center justify-between rounded-xl bg-muted/60 p-1">
-                      {(["light", "dark"] as Mode[]).map((m) => (
-                        <button key={m} type="button" onClick={() => setMode(m)} className={cn("flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-medium transition-colors", mode === m ? "bg-background text-foreground shadow-sm" : "text-muted-foreground")}>
-                          {m === "light" ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />} {m === "light" ? "Light mode" : "Dark mode"}
-                        </button>
-                      ))}
-                    </div>
+                    <PanelTabs className="w-full [&>*]:flex-1" label="Preview mode" active={mode} onSelect={(k) => setMode(k as Mode)} tabs={[{ key: "light", label: "Light mode", icon: <Sun className="size-3.5" /> }, { key: "dark", label: "Dark mode", icon: <Moon className="size-3.5" /> }]} />
                     <p className="text-[11px] text-muted-foreground">Editing the {mode} palette — the preview switches to {mode} mode to match.</p>
                     {COLOR_GROUPS.map((g) => (
                       <div key={g.label}>
@@ -513,13 +508,7 @@ export default function ThemeCustomizer({
           <Button variant="ghost" size="sm" onClick={() => setCollapsed(true)} className="text-muted-foreground">
             <PanelLeftClose className="size-4" /> Hide controls
           </Button>
-          <div className="ml-auto hidden items-center gap-0.5 md:flex">
-            {([["desktop", Monitor], ["tablet", Tablet], ["mobile", Smartphone]] as const).map(([d, Icon]) => (
-              <Button key={d} variant={device === d ? "secondary" : "ghost"} size="icon-sm" onClick={() => setDevice(d)} aria-label={`${d} preview`} aria-pressed={device === d}>
-                <Icon className="size-4" />
-              </Button>
-            ))}
-          </div>
+          <PanelTabs className="ml-auto hidden md:inline-flex" label="Preview device" active={device} onSelect={(k) => setDevice(k as typeof device)} tabs={([["desktop", Monitor], ["tablet", Tablet], ["mobile", Smartphone]] as const).map(([d, Icon]) => ({ key: d, label: <span className="sr-only">{d} preview</span>, icon: <Icon className="size-4" /> }))} />
           <Button variant="ghost" size="icon-sm" onClick={() => setMode(mode === "light" ? "dark" : "light")} aria-label="Toggle light/dark preview" className="ml-auto md:ml-0">
             {mode === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}
           </Button>

@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { useState, useTransition, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -247,16 +248,7 @@ export default function PageBuilder({
       />
 
       {otherThemes.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5 border-b border-border/60 pb-2">
-          <TabButton active={isDefaultTab} onClick={() => setActiveTab(DEFAULT_TAB)}>
-            Default
-          </TabButton>
-          {otherThemes.map((t) => (
-            <TabButton key={t.key} active={activeTab === t.key} onClick={() => setActiveTab(t.key)}>
-              {t.name}
-            </TabButton>
-          ))}
-        </div>
+        <PanelTabs label="Theme arrangements" active={activeTab} onSelect={setActiveTab} tabs={[{ key: DEFAULT_TAB, label: "Default" }, ...otherThemes.map((t) => ({ key: t.key, label: t.name }))]} />
       )}
 
       {!isDefaultTab && (
@@ -370,21 +362,6 @@ export default function PageBuilder({
         </SheetContent>
       </Sheet>
     </div>
-  );
-}
-
-function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-        active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted"
-      )}
-    >
-      {children}
-    </button>
   );
 }
 

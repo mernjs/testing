@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import PanelListFilters from "@/components/platform/panel/PanelListFilters";
 import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { panelNameMap } from "@/lib/platform/panels/store";
@@ -200,28 +201,18 @@ export default async function BeneficiariesPage({
       </GlassCard>
 
       {/* Tabs & Search */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-3">
-        <div className="flex items-center gap-2 overflow-x-auto">
-          {[
-            { key: "", label: "All Accounts" },
-            { key: "vendor", label: `Vendors (${panelName("prms", "PRMS")})` },
-            { key: "employee", label: `Employees (${panelName("hrms", "HRMS")})` },
-            { key: "client", label: `Clients (${panelName("pms", "PMS")})` },
-            { key: "student", label: `Students (${panelName("tms", "TMS")})` },
-          ].map((item) => (
-            <Link
-              key={item.key}
-              href={`/fms/beneficiaries?type=${item.key}`}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap ${
-                (entityType || "") === item.key
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-primary/5 hover:text-primary"
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <PanelTabs
+          label="Account type"
+          active={entityType || ""}
+          tabs={[
+            { key: "", label: "All Accounts", href: "/fms/beneficiaries?type=" },
+            { key: "vendor", label: `Vendors (${panelName("prms", "PRMS")})`, href: "/fms/beneficiaries?type=vendor" },
+            { key: "employee", label: `Employees (${panelName("hrms", "HRMS")})`, href: "/fms/beneficiaries?type=employee" },
+            { key: "client", label: `Clients (${panelName("pms", "PMS")})`, href: "/fms/beneficiaries?type=client" },
+            { key: "student", label: `Students (${panelName("tms", "TMS")})`, href: "/fms/beneficiaries?type=student" },
+          ]}
+        />
 
         <form className="relative min-w-[240px]">
           <Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />

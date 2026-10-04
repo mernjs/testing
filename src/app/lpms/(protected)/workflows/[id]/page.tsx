@@ -24,16 +24,12 @@ export default async function WorkflowDetailPage({
   if (id !== "new" && !workflow) notFound();
 
   return (
-    <div className="space-y-4 p-4 sm:p-6">
+    <div className="space-y-4">
 
-      <div className="flex items-center gap-3">
-        <Link href="/lpms/workflows" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-          <ArrowLeft className="size-4" />
-        </Link>
-        <PanelPageHeader
-          title={<>{workflow ? `Edit: ${(workflow as any).name}` : "New Approval Workflow"}</>}
-        />
-      </div>
+      <PanelPageHeader
+        title={<>{workflow ? `Edit: ${(workflow as any).name}` : "New Approval Workflow"}</>}
+        description={<>Set the approval steps a document goes through before it is issued.</>}
+      />
 
       <WorkflowForm workflow={workflow} />
     </div>

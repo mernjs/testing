@@ -17,7 +17,7 @@ export default async function JourneyRewardsPage() {
   const j = await getJourneyRewards(user);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="Journey rewards" subtitle="Earn credits every time you complete a stage of your journey." />
       <PanelListFilters>
 <EarnNav current="journey" />

@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import Link from "next/link";
 import { ShoppingCart, FileText, Building2, Plus, ArrowRight, Clock, CheckCircle2 } from "lucide-react";
@@ -80,39 +81,14 @@ export default async function ProcurementHubPage({
         />
       </KpiGrid>
 
-      {/* Startup Quick Hub Tabs */}
-      <div className="flex items-center gap-2 border-b border-border/60 pb-2">
-        <Link href="/prms/procurement?tab=requisitions">
-          <Button
-            size="sm"
-            variant={activeTab === "requisitions" ? "default" : "ghost"}
-            className="rounded-lg text-xs"
-          >
-            <FileText className="size-3.5 mr-1" />
-            Purchase Requests ({reqs.total})
-          </Button>
-        </Link>
-        <Link href="/prms/procurement?tab=orders">
-          <Button
-            size="sm"
-            variant={activeTab === "orders" ? "default" : "ghost"}
-            className="rounded-lg text-xs"
-          >
-            <ShoppingCart className="size-3.5 mr-1" />
-            Purchase Orders ({pos.total})
-          </Button>
-        </Link>
-        <Link href="/prms/procurement?tab=vendors">
-          <Button
-            size="sm"
-            variant={activeTab === "vendors" ? "default" : "ghost"}
-            className="rounded-lg text-xs"
-          >
-            <Building2 className="size-3.5 mr-1" />
-            Vendors ({vendorsResult.total})
-          </Button>
-        </Link>
-      </div>
+      <PanelTabs
+        active={activeTab}
+        tabs={[
+          { key: "requisitions", label: "Purchase Requests", count: reqs.total, icon: <FileText className="size-3.5" />, href: "/prms/procurement?tab=requisitions" },
+          { key: "orders", label: "Purchase Orders", count: pos.total, icon: <ShoppingCart className="size-3.5" />, href: "/prms/procurement?tab=orders" },
+          { key: "vendors", label: "Vendors", count: vendorsResult.total, icon: <Building2 className="size-3.5" />, href: "/prms/procurement?tab=vendors" },
+        ]}
+      />
 
       {activeTab === "orders" ? (
         <PrmsDataTable

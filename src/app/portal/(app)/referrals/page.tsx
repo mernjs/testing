@@ -26,7 +26,7 @@ export default async function PortalReferralsPage() {
   const overview = await getReferralOverview(user.id, host ? `${proto}://${host}` : await companySiteUrl());
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="Refer & earn" subtitle={`Share your link. When someone new joins ${brand.name} through it, you both earn credits.`} />
       <PanelListFilters>
 <EarnNav current="referrals" />

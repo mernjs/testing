@@ -24,16 +24,12 @@ export default async function CategoryDetailPage({
   if (id !== "new" && !category) notFound();
 
   return (
-    <div className="space-y-4 p-4 sm:p-6">
+    <div className="space-y-4">
 
-      <div className="flex items-center gap-3">
-        <Link href="/lpms/categories" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-          <ArrowLeft className="size-4" />
-        </Link>
-        <PanelPageHeader
-          title={<>{category ? `Edit: ${(category as any).name}` : "New Category"}</>}
-        />
-      </div>
+      <PanelPageHeader
+        title={<>{category ? `Edit: ${(category as any).name}` : "New Category"}</>}
+        description={<>Group documents so they are easier to find, filter and report on.</>}
+      />
 
       <CategoryForm category={category} />
     </div>

@@ -25,7 +25,7 @@ export default async function PortalWalletPage({ searchParams }: { searchParams:
   const b = overview.balances;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title={`${brand.name} Wallet`} subtitle="Promotional credits you earn and can redeem on eligible offers." />
 
       <PanelListFilters>

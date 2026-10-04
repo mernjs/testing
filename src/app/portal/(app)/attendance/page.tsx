@@ -20,7 +20,7 @@ export default async function AttendancePage() {
   const { past } = await getLearnerSchedule(data.batchIds);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6">
+    <div className="space-y-5">
       <PortalPageHeader title="Attendance" subtitle={`${attendance.attended} of ${attendance.total} sessions attended`} />
 
       <PanelListFilters>

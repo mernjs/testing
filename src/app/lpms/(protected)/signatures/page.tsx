@@ -27,7 +27,7 @@ export default async function SignaturesPage() {
     .toArray();
 
   return (
-    <div className="space-y-4 p-4 sm:p-6">
+    <div className="space-y-4">
       <PanelPageHeader
         breadcrumbs={[{ label: "LPMS", href: "/lpms" }, { label: "Signatures" }]}
         title={<>Signature Requests</>}

@@ -146,7 +146,7 @@ export default function TmsSidebar({
       {canManagePayments(roleCtx) && nav({ href: "/tms/payments", label: "Payments", icon: Wallet })}
       {canManageTraining(roleCtx) && nav({ href: "/tms/placements", label: "Placements", icon: Briefcase })}
 
-      {studentId && (
+      {studentId && !roles.includes("super_admin") && (
         <>
           <SectionLabel collapsed={collapsed}>Me</SectionLabel>
           {nav({ href: "/tms/me", label: "My Dashboard", icon: CircleUser, exact: true })}

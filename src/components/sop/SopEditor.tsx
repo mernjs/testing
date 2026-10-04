@@ -1,5 +1,6 @@
 "use client";
 
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import { usePanelLabel } from "@/components/platform/PanelsProvider";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
@@ -242,20 +243,7 @@ export default function SopEditor(props: SopEditorProps) {
 
       {error && <p role="alert" className="rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>}
 
-      <nav className="flex gap-1 overflow-x-auto border-b border-border/60" role="tablist" aria-label="Editor sections">
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            role="tab"
-            aria-selected={tab === t.key}
-            onClick={() => setTab(t.key)}
-            className={cn("shrink-0 border-b-2 px-3 py-2 text-sm font-medium transition-colors", tab === t.key ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground")}
-          >
-            {t.label}
-          </button>
-        ))}
-      </nav>
+      <PanelTabs label="Editor sections" active={tab} onSelect={(k) => setTab(k as Tab)} tabs={TABS.map((t) => ({ key: t.key, label: t.label }))} />
 
       {/* ------------------------------------------------------------ CONTENT */}
       {tab === "content" && (

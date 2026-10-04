@@ -37,7 +37,7 @@ export default async function LpmsDocumentPage({
   const statusMeta = LPMS_STATUSES.find((s) => s.value === (doc as any).status);
 
   return (
-    <div className="space-y-4 p-4 sm:p-6">
+    <div className="space-y-4">
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>

@@ -1,3 +1,4 @@
+import PanelTabs from "@/components/platform/panel/PanelTabs";
 import PanelPageHeader from "@/components/platform/panel/PanelPageHeader";
 import { panelNameMap } from "@/lib/platform/panels/store";
 import type { Metadata } from "next";
@@ -79,7 +80,7 @@ export default async function AuditLogPage({ searchParams }: { searchParams: Pro
   };
 
   return (
-    <div className="space-y-4 p-6">
+    <div className="space-y-4">
       <PanelPageHeader
         breadcrumbs={[{ label: "Workspace", href: "/workspace" }, { label: "Company", href: "/workspace/settings" }, { label: "Audit log" }]}
         title={<>Audit log</>}
@@ -87,23 +88,7 @@ export default async function AuditLogPage({ searchParams }: { searchParams: Pro
       />
 
       {tabs.length > 1 && (
-        <nav className="flex flex-wrap gap-2" aria-label="Audit log source" id="audit-sources">
-          {tabs.map((s) => (
-            <Link
-              key={s}
-              href={tabHref(s)}
-              data-audit-source={s}
-              aria-current={s === source ? "page" : undefined}
-              className={
-                s === source
-                  ? "rounded-full border border-primary bg-primary/10 px-3.5 py-1.5 text-sm font-semibold text-primary"
-                  : "rounded-full border border-border/60 px-3.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
-              }
-            >
-              {AUDIT_SOURCE_LABELS[s]}
-            </Link>
-          ))}
-        </nav>
+        <PanelTabs label="Audit log source" active={source} tabs={tabs.map((s) => ({ key: s, label: AUDIT_SOURCE_LABELS[s], href: tabHref(s) }))} />
       )}
 
       {source === "panels" && <PanelActivity sp={sp} page={page} from={dateFrom} to={dateTo} />}

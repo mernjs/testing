@@ -245,18 +245,22 @@ export default async function EmployeeProfilePage({
 
   const leaveTab = (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-foreground">{year} Balances</h3>
-        {canLeave && (
-          <FileLeaveSheet
-            employees={[{ _id: id, name, employeeCode: employee.employeeCode }]}
-            leaveTypes={leaveTypes.map((t) => ({ code: t.code, label: t.label }))}
-            fixedEmployeeId={id}
-            triggerVariant="outline"
-          />
-        )}
-      </div>
-      <LeaveBalances employeeId={id} year={year} balances={balances.map((b) => ({ ...b }))} canEditAllocation={canEdit} />
+      <GlassCard interactive={false}>
+        <CardHeader className="flex-row items-center justify-between space-y-0">
+          <CardTitle>{year} Balances</CardTitle>
+          {canLeave && (
+            <FileLeaveSheet
+              employees={[{ _id: id, name, employeeCode: employee.employeeCode }]}
+              leaveTypes={leaveTypes.map((t) => ({ code: t.code, label: t.label }))}
+              fixedEmployeeId={id}
+              triggerVariant="outline"
+            />
+          )}
+        </CardHeader>
+        <CardContent>
+          <LeaveBalances employeeId={id} year={year} balances={balances.map((b) => ({ ...b }))} canEditAllocation={canEdit} />
+        </CardContent>
+      </GlassCard>
       <GlassCard interactive={false}>
         <CardHeader><CardTitle>Request History</CardTitle></CardHeader>
         <CardContent className="space-y-2">
@@ -281,31 +285,30 @@ export default async function EmployeeProfilePage({
   return (
     <div className="space-y-4">
 
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-brand-accent text-lg font-bold text-white">
+      <PanelPageHeader
+        leading={
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-brand-accent text-lg font-bold text-white shadow-sm">
             {employee.firstName[0]}
             {employee.lastName[0]}
           </div>
-          <PanelPageHeader
-            title={<>{name}</>}
-            description={<><span className="font-mono">{employee.employeeCode}</span> · {lookups.designationTitle(pr.designationId)} ·{" "}
-              {lookups.departmentName(pr.departmentId)}</>}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <EmployeeStatusBadge status={employee.status} />
-          {canEdit && (
-            <Link href={`/hrms/employees/${id}/edit`} className={buttonVariants({ variant: "outline", size: "sm" })}>
-              <Pencil className="size-3.5" data-icon="inline-start" />
-              Edit
-            </Link>
-          )}
-        </div>
-      </div>
+        }
+        title={<>{name}</>}
+        description={<><span className="font-mono">{employee.employeeCode}</span> · {lookups.designationTitle(pr.designationId)} · {lookups.departmentName(pr.departmentId)}</>}
+        actions={
+          <>
+            <EmployeeStatusBadge status={employee.status} />
+            {canEdit && (
+              <Link href={`/hrms/employees/${id}/edit`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                <Pencil className="size-3.5" data-icon="inline-start" />
+                Edit
+              </Link>
+            )}
+          </>
+        }
+      />
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_18rem]">
-        <div className="min-w-0">
+      <div className="grid gap-4 lg:grid-cols-[1fr_20rem] lg:items-start">
+        <section className="min-w-0 rounded-3xl border border-border/60 bg-muted/70 p-4 shadow-sm sm:p-5 dark:bg-[color-mix(in_oklch,var(--background)_82%,black)]">
           <Tabs
             initial={sp.tab}
             syncParam="tab"
@@ -346,9 +349,9 @@ export default async function EmployeeProfilePage({
               { key: "activity", label: "Activity", content: activityTab },
             ]}
           />
-        </div>
+        </section>
 
-        <div className="space-y-4">
+        <aside className="space-y-4 rounded-3xl border border-border/60 bg-muted/70 p-4 shadow-sm sm:p-5 dark:bg-[color-mix(in_oklch,var(--background)_82%,black)] lg:sticky lg:top-0">
           <GlassCard interactive={false}>
             <CardHeader><CardTitle>Contact</CardTitle></CardHeader>
             <CardContent className="space-y-2.5 text-sm">
@@ -394,7 +397,7 @@ export default async function EmployeeProfilePage({
               </CardContent>
             </GlassCard>
           )}
-        </div>
+        </aside>
       </div>
     </div>
   );

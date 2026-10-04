@@ -38,22 +38,13 @@ export default async function TemplateEditorPage({
   const blocks = (template as any)?.blocks ?? [];
 
   return (
-    <div className="space-y-4 p-4 sm:p-6">
+    <div className="space-y-4">
 
-      <div className="flex items-center gap-3">
-        <Link href="/lpms/templates" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-          <ArrowLeft className="size-4" />
-        </Link>
-        <div className="flex-1">
-          <PanelPageHeader
-            title={<>{template ? `Template: ${(template as any).name ?? (template as any).title}` : "New Template"}</>}
-          />
-          {template && (
-            <p className="text-xs text-muted-foreground">v{(template as any).version ?? 1}</p>
-          )}
-        </div>
-        <button className={buttonVariants({ size: "sm" })}>Save Template</button>
-      </div>
+      <PanelPageHeader
+        title={<>{template ? `Template: ${(template as any).name ?? (template as any).title}` : "New Template"}</>}
+        description={<>{template ? `Version ${(template as any).version ?? 1} · ` : ""}Arrange the blocks a document built from this template is made of.</>}
+        actions={<button className={buttonVariants({ size: "sm" })}>Save Template</button>}
+      />
 
       <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
         {/* Canvas */}
